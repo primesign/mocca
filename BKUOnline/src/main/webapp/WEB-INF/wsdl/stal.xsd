@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2008 Federal Chancellery Austria and
+  Graz University of Technology
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.egiz.gv.at/stal"
+    xmlns:tns="http://www.egiz.gv.at/stal"
+    elementFormDefault="qualified">
+    <element name="GetNextRequest" type="tns:GetNextRequestType"/>
+    <element name="GetNextRequestResponse" type="tns:GetNextRequestResponseType"/>
+    <element name="GetHashDataInput" type="tns:GetHashDataInputType"/>
+    <element name="GetHashDataInputResponse" type="tns:GetHashDataInputResponseType"/>
+    <element name="GetHashDataInputFault" type="tns:GetHashDataInputFaultType"/>
+    <complexType name="GetNextRequestType">
+        <sequence>
+            <element name="Response" type="tns:ResponseType"  minOccurs="0"  maxOccurs="unbounded"/>
+        </sequence>
+        <attribute name="sessionId" type="string"/>
+        <!--choice maxOccurs="unbounded">
+            <element name="InfoboxReadResponse" type="tns:InfoboxReadResponseType"/>
+            <element name="SignResponse" type="tns:SignResponseType"/>
+            <element name="ErrorResponse" type="tns:ErrorResponseType"/>
+        </choice-->
+    </complexType>
+    <complexType name="ResponseType" abstract="true">
+        <attribute name="Id" type="ID"/>
+    </complexType>
+    <complexType name="InfoboxReadResponseType">
+        <complexContent>
+            <extension base="tns:ResponseType">
+                <sequence>
+                    <element name="InfoboxValue" type="base64Binary"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="SignResponseType">
+        <complexContent>
+            <extension base="tns:ResponseType">
+                <sequence>
+                    <element name="SignatureValue" type="base64Binary"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="ErrorResponseType">
+        <complexContent>
+            <extension base="tns:ResponseType">
+                <sequence>
+                    <element name="ErrorCode" type="int"/>
+                    <element name="ErrorMessage" type="string"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="GetNextRequestResponseType">
+        <sequence>
+            <element name="Request" type="tns:RequestType" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+        <attribute name="sessionId" type="string"/>
+        <!--choice maxOccurs="unbounded">
+            <element name="InfoboxReadRequest" type="tns:InfoboxReadRequestType"/>
+            <element name="SignRequest" type="tns:SignRequestType"/>
+            <element name="QuitRequest" type="tns:QuitRequestType"/>
+        </choice-->
+    </complexType>
+    <complexType name="RequestType" abstract="true"/>
+    <complexType name="InfoboxReadRequestType">
+        <complexContent>
+            <extension base="tns:RequestType">
+                <sequence>
+                    <element name="InfoboxIdentifier" type="string"/>
+                    <element name="DomainIdentifier" type="string" minOccurs="0"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="SignRequestType">
+        <complexContent>
+            <extension base="tns:RequestType">
+                <sequence>
+                    <element name="KeyIdentifier" type="string"/>
+                    <element name="SignedInfo" type="base64Binary"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="QuitRequestType">
+        <complexContent>
+            <extension base="tns:RequestType"/>
+        </complexContent>
+    </complexType>
+    <complexType name="GetHashDataInputType">
+        <sequence>
+            <element name="Reference" maxOccurs="unbounded">
+                <complexType>
+                    <attribute name="ID" type="string"/>
+                </complexType>
+            </element>
+        </sequence>
+        <attribute name="sessionId" type="string"/>
+    </complexType>
+    <complexType name="GetHashDataInputResponseType">
+        <sequence>
+            <element name="Reference" maxOccurs="unbounded">
+                <complexType>
+                    <simpleContent>
+                        <extension base="base64Binary">
+                            <attribute name="ID" type="ID"/>
+                        </extension>
+                    </simpleContent>
+                </complexType>
+            </element>
+        </sequence>
+        <attribute name="sessionId" type="string"/>
+    </complexType>
+    <complexType name="GetHashDataInputFaultType">
+        <sequence>
+            <element name="ErrorCode" type="int"/>
+            <element name="ErrorMessage" type="string"/>
+        </sequence>
+    </complexType>
+</schema>

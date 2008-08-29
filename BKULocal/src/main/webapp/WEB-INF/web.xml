@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2008 Federal Chancellery Austria and
+  Graz University of Technology
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app id="WebApp_ID">
+  <display-name>http-security-layer-request</display-name>
+  
+  <!--  Begin Spring Config -->
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>/WEB-INF/applicationContext.xml</param-value>
+  </context-param>
+  <listener>
+    <listener-class>
+      org.springframework.web.context.ContextLoaderListener 
+    </listener-class>
+  </listener>
+  <!--  End Spring Config -->
+  
+  <!--  Begin BKU Config -->
+  <servlet>
+    <servlet-name>BKUServlet</servlet-name>
+    <servlet-class>at.gv.egiz.bku.local.webapp.SpringBKUServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>BKUServlet</servlet-name>
+    <url-pattern>/http-security-layer-request</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>BKUServlet</servlet-name>
+    <url-pattern>/https-security-layer-request</url-pattern>
+  </servlet-mapping>
+  <!--  Begin BKU Config -->
+  
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+</web-app>
