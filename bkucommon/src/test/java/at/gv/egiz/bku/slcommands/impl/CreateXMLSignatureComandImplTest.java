@@ -28,6 +28,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import at.gv.egiz.bku.slcommands.CreateXMLSignatureCommand;
@@ -42,7 +43,7 @@ import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.dummy.DummySTAL;
-
+@Ignore
 public class CreateXMLSignatureComandImplTest {
 
   private SLCommandFactory factory;
