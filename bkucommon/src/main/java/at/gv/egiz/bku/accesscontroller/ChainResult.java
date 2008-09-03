@@ -12,6 +12,7 @@ public class ChainResult {
 	public ChainResult(Action action, UserAction userAction, boolean matchFound) {
 		this.action = action;
 		this.userAction = userAction;
+		this.matchFound = matchFound;
 	}
 	
 	public Action getAction() {
