@@ -20,40 +20,30 @@
  */
 package at.gv.egiz.bku.binding;
 
-import at.gv.egiz.bku.slcommands.SLCommandFactory;
-import at.gv.egiz.bku.slcommands.SLResult;
-
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.After;
-import static org.junit.Assert.*;
-
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.sun.net.httpserver.Headers;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 
 /**
  * 
@@ -83,7 +73,7 @@ public class DataUrlConnectionTest {
     manager = new BindingProcessorManagerImpl(new DummyStalFactory(),
         new SLCommandInvokerImpl());
     bindingProcessor = (HTTPBindingProcessor) manager.createBindingProcessor(
-        "http", null);
+        "http://www.iaik.at", null);
     Map<String, String> headers = new HashMap<String, String>();
     headers.put("Content-Type", InputDecoderFactory.MULTIPART_FORMDATA
         + ";boundary=---------------------------2330864292941");

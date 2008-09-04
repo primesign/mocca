@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <AccessControl>
 	<Chains>
-		<Chain Id="Identification">
+		<Chain Id="InputChain">
 			<Rules>
 				<Rule Id="rule-1">
 					<AuthClass>certifiedGovAgency</AuthClass>
@@ -53,7 +53,8 @@
 				</Rule>
 				<Rule Id="cmd-rule-2">
 					<AuthClass>certified</AuthClass>
-					<URL>https://finanzonline.bmf.gv.at/*</URL>
+					<URL>https://finanzonline.bmf.gv.at/*
+					</URL>
 					<Command Name="InfoboxReadRequest">
 						<Param Name="InfoboxIdentifier">Mandates</Param>
 						<Param Name="PersonIdentifier">.*</Param>
@@ -71,6 +72,25 @@
 						<RuleAction>allow</RuleAction>
 					</Action>
 					<UserInteraction>none</UserInteraction>
+				</Rule>
+				<Rule Id="cmd-rule-4">
+					<AuthClass>anonymous</AuthClass>
+					<AnyPeer />
+					<Command Name="InfoboxReadRequest" />
+					<IPv4Address>127.0.0.1</IPv4Address>
+					<Action>
+						<RuleAction>allow</RuleAction>
+					</Action>
+					<UserInteraction>none</UserInteraction>
+				</Rule>
+			</Rules>
+		</Chain>
+		<Chain Id="OutputChain">
+			<Rules>
+				<Rule Id="out-1">
+					<Action>
+						<RuleAction>allow</RuleAction>
+					</Action>
 				</Rule>
 			</Rules>
 		</Chain>

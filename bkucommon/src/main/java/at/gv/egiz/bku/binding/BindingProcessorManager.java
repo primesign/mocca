@@ -16,6 +16,7 @@
 */
 package at.gv.egiz.bku.binding;
 
+import java.net.MalformedURLException;
 import java.util.Locale;
 import java.util.Set;
 
@@ -34,28 +35,28 @@ public interface BindingProcessorManager {
    * FactoryMethod creating a new BindingProcessor object.
    * The created binding processor must be passed to the process method to execute.
    * 
-   * @param protcol
-   *          the transport binding protocol
+   * @param urlString
+   *          the source url
    * @param aSessionId
    *          optional an external sessionId (e.g. http session) could be
    *          provided. This parameter may be null.
    * @param locale the locale used for user interaction, may be null
    */
-  public BindingProcessor createBindingProcessor(String protcol,
-      String aSessionId, Locale locale);
+  public BindingProcessor createBindingProcessor(String urlString,
+      String aSessionId, Locale locale) throws MalformedURLException;
 
   /**
    * FactoryMethod creating a new BindingProcessor object.
    * The created binding processor must be passed to the process method to execute.
    * 
    * @param protcol
-   *          the transport binding protocol
+   *          the source url
    * @param aSessionId
    *          optional an external sessionId (e.g. http session) could be
    *          provided. This parameter may be null.
    */
-  public BindingProcessor createBindingProcessor(String protcol,
-      String aSessionId);
+  public BindingProcessor createBindingProcessor(String urlString,
+      String aSessionId) throws MalformedURLException;
 
   
   /**

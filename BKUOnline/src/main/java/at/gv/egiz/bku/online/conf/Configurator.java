@@ -22,6 +22,7 @@ import iaik.xml.crypto.XSecProvider;
 import java.net.HttpURLConnection;
 import java.security.Provider;
 import java.security.Security;
+import java.util.Properties;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -36,9 +37,10 @@ import at.gv.egiz.bku.slcommands.impl.xsect.STALProvider;
  */
 public class Configurator {
   private Log log = LogFactory.getLog(Configurator.class);
+  
+  protected Properties properties;
 
   public Configurator() {
-    configure();
   }
 
   protected void configUrlConnections() {
@@ -63,7 +65,18 @@ public class Configurator {
   public void configure() {
     configureProviders();
     configUrlConnections();
-
   }
 
+  public void setConfiguration(Properties props) {
+  	this.properties = props;
+  	configure();
+  }
+  
+  public String getProperty(String key) {
+  	if (properties != null) {
+  		return properties.getProperty(key);
+  	}
+  	return null;
+  }
+  
 }

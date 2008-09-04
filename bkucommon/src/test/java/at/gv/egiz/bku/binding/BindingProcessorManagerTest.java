@@ -18,6 +18,8 @@ package at.gv.egiz.bku.binding;
 
 import static org.junit.Assert.*;
 
+import java.net.MalformedURLException;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,16 +31,16 @@ public class BindingProcessorManagerTest {
   }
 
   
-  @Test(expected = UnsupportedOperationException.class)
-  public void basicCreationTest() {
+  @Test(expected = MalformedURLException.class)
+  public void basicCreationTest() throws MalformedURLException {
    BindingProcessorManager manager = new BindingProcessorManagerImpl(new DummyStalFactory(), new SLCommandInvokerImpl());
-   BindingProcessor bp = manager.createBindingProcessor("http", null);
+   BindingProcessor bp = manager.createBindingProcessor("http://www.at/", null);
    assertNotNull(bp.getId().toString());
    assertEquals(40, bp.getId().toString().length());
    String hansi = "Hansi";
-   bp = manager.createBindingProcessor("http",hansi);
+   bp = manager.createBindingProcessor("http://www.iaik.at",hansi);
    assertEquals(hansi, bp.getId().toString()); 
-   bp = manager.createBindingProcessor("HtTp", null);
+   bp = manager.createBindingProcessor("HtTp://www.iaik.at", null);
    assertNotNull(bp);
    manager.createBindingProcessor("seppl", null);
   }

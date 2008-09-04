@@ -16,6 +16,7 @@
 */
 package at.gv.egiz.bku.slcommands;
 
+import java.net.URL;
 import java.security.cert.X509Certificate;
 
 import at.gv.egiz.bku.utils.binding.Protocol;
@@ -23,17 +24,17 @@ import at.gv.egiz.bku.utils.binding.Protocol;
 
 public class SLSourceContext {
   
-  private Protocol sourceProtocol;
+  private URL sourceUrl;
   private boolean sourceIsDataURL;
   private X509Certificate sourceCertificate;
   private String sourceHTTPReferer;
 
-  public Protocol getSourceProtocol() {
-    return sourceProtocol;
+  public URL getSourceUrl() {
+    return sourceUrl;
   }
 
-  public void setSourceProtocol(Protocol sourceProtocol) {
-    this.sourceProtocol = sourceProtocol;
+  public void setSourceUrl(URL sourceProtocol) {
+    this.sourceUrl = sourceProtocol;
   }
 
   public boolean isSourceIsDataURL() {

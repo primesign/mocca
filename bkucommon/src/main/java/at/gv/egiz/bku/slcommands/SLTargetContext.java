@@ -16,19 +16,20 @@
 */
 package at.gv.egiz.bku.slcommands;
 
+import java.net.URL;
 import java.security.cert.X509Certificate;
 
 public class SLTargetContext {
-  private String targetProtocol;
+  private URL targetUrl;
   private boolean targetIsDataURL;
   private X509Certificate targetCertificate;
 
-  public String getTargetProtocol() {
-    return targetProtocol;
+  public URL getTargetUrl() {
+    return targetUrl;
   }
 
-  public void setTargetProtocol(String targetProtocol) {
-    this.targetProtocol = targetProtocol;
+  public void setTargetUrl(URL targetUrl) {
+    this.targetUrl = targetUrl;
   }
 
   public boolean isTargetIsDataURL() {

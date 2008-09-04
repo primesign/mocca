@@ -17,4 +17,12 @@
 package at.gv.egiz.bku.slcommands;
 
 public interface InfoboxReadCommand extends SLCommand {
+	 public String getInfoboxIdentifier();
+	 
+	 /**
+	  * Convenience method to get the domain identifier if the infobox 
+	  * referes to a Identitylink. 
+	  * @return the domain id or null if the Infobox is not of type Identitylink or no domain parameter was specified
+	  */
+	 public String getIdentityLinkDomainId();
 }

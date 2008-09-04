@@ -213,4 +213,9 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
   public DataUrlConnectionSPI newInstance() {
     return new DataUrlConnectionImpl();
   }
+
+	@Override
+	public URL getUrl() {
+		return url;
+	}
 }

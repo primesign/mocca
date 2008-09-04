@@ -17,6 +17,7 @@
 package at.gv.egiz.bku.binding;
 
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,9 +33,9 @@ public class NullOperationTest {
   protected BindingProcessorManager manager;
   
   @Before
-  public void setUp() {
+  public void setUp() throws MalformedURLException {
     manager = new BindingProcessorManagerImpl(new DummyStalFactory(), new SLCommandInvokerImpl());
-    HTTPBindingProcessor http =   (HTTPBindingProcessor) manager.createBindingProcessor("http", null);
+    HTTPBindingProcessor http =   (HTTPBindingProcessor) manager.createBindingProcessor("http://www.at/", null);
     Map<String, String> headers = new HashMap<String, String>();
     headers.put("Content-Type", "application/x-www-form-urlencoded");
     http.setHTTPHeaders(headers);

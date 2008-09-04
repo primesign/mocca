@@ -16,16 +16,18 @@
 */
 package at.gv.egiz.bku.binding;
 
+import java.net.MalformedURLException;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class ExpiryRemoverTest {
   
   @Test
-  public void testMe() throws InterruptedException {
+  public void testMe() throws InterruptedException, MalformedURLException {
     BindingProcessorManager manager = new BindingProcessorManagerImpl(new DummyStalFactory(),
         new SLCommandInvokerImpl());
-    BindingProcessor bp = manager.createBindingProcessor("http", null);
+    BindingProcessor bp = manager.createBindingProcessor("http://www.at", null);
     ExpiryRemover remover = new ExpiryRemover();
     remover.setBindingProcessorManager(manager);
     remover.execute();
@@ -42,10 +44,10 @@ public class ExpiryRemoverTest {
   }
   
   @Test
-  public void testMe2() throws InterruptedException {
+  public void testMe2() throws InterruptedException, MalformedURLException {
     BindingProcessorManager manager = new BindingProcessorManagerImpl(new DummyStalFactory(),
         new SLCommandInvokerImpl());
-    BindingProcessor bp = manager.createBindingProcessor("http", null);
+    BindingProcessor bp = manager.createBindingProcessor("http://www.iaik.at", null);
     ExpiryRemover remover = new ExpiryRemover();
     remover.setBindingProcessorManager(manager);
     remover.execute();

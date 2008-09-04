@@ -31,6 +31,7 @@ public class RuleChecker implements AccessChecker {
 	protected Action action;
 	protected UserAction userAction;
 	protected String chainId;
+	protected CommandParamChecker paramChecker;
 
 	public RuleChecker(String id) {
 		if (id == null) {
@@ -40,27 +41,33 @@ public class RuleChecker implements AccessChecker {
 	}
 
 	public void setAuthenticationClass(String ac) {
-		AuthenticationClass tmp = AuthenticationClass.fromString(ac);
-		if (tmp == null) {
-			throw new SLRuntimeException("Unknown authentication class " + ac);
+		if (ac != null) {
+			AuthenticationClass tmp = AuthenticationClass.fromString(ac);
+			if (tmp == null) {
+				throw new SLRuntimeException("Unknown authentication class " + ac);
+			}
+			authenticationClass = tmp;
 		}
-		authenticationClass = tmp;
 	}
 
 	public void setAction(String ac) {
-		Action tmp = Action.fromString(ac);
-		if (tmp == null) {
-			throw new SLRuntimeException("Unknown action " + ac);
+		if (ac != null) {
+			Action tmp = Action.fromString(ac);
+			if (tmp == null) {
+				throw new SLRuntimeException("Unknown action " + ac);
+			}
+			action = tmp;
 		}
-		action = tmp;
 	}
 
 	public void setUserAction(String uac) {
-		UserAction tmp = UserAction.fromString(uac);
-		if (tmp == null) {
-			throw new SLRuntimeException("Unknown user action " + uac);
+		if (uac != null) {
+			UserAction tmp = UserAction.fromString(uac);
+			if (tmp == null) {
+				throw new SLRuntimeException("Unknown user action " + uac);
+			}
+			userAction = tmp;
 		}
-		userAction = tmp;
 	}
 
 	public void setChainId(String chainId) {
@@ -76,6 +83,22 @@ public class RuleChecker implements AccessChecker {
 	public void setCommandName(String commandName) {
 		this.commandName = commandName;
 		commandNamePattern = Pattern.compile(commandName);
+		paramChecker = AccessControllerFactory.getInstance().createParamChecker(
+				commandName);
+	}
+
+	/**
+	 * Make sure to set the commandName first
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public void addParameter(String key, String value) {
+		if (paramChecker == null) {
+			throw new IllegalArgumentException("Cannot set parameters for command "
+					+ commandName);
+		}
+		paramChecker.addParameter(key, value);
 	}
 
 	public String getId() {
@@ -83,22 +106,30 @@ public class RuleChecker implements AccessChecker {
 	}
 
 	protected boolean matchAuthenticationClass(AuthenticationClass cls) {
-		if (this.authenticationClass == null) {
+		if ((this.authenticationClass == null) || (cls == null)) {
 			return true;
 		}
 		return this.authenticationClass.compareTo(cls) <= 0;
 	}
 
 	protected boolean matchCommandName(SLCommand cmd) {
-		if (commandName == null) {
+		if ((commandName == null) || (cmd == null)) {
 			return true;
 		}
 		Matcher matcher = commandNamePattern.matcher(cmd.getName());
-		return matcher.matches();
+		if (matcher.matches()) {
+			if (paramChecker != null) {
+				return paramChecker.checkParameter(cmd);
+			} else {
+				return true;
+			}
+		} else {
+			return false;
+		}
 	}
 
 	protected boolean matchPeerId(String peerUrl) {
-		if (peerId == null) {
+		if ((peerId == null) || (peerUrl == null)) {
 			return true;
 		}
 		if (peerType == PEER_TYPE.URL) {
@@ -110,7 +141,8 @@ public class RuleChecker implements AccessChecker {
 				if (peerType == PEER_TYPE.HOST) {
 					try {
 						String host = url.getHost();
-						String hostName = InetAddress.getByName(host).getCanonicalHostName();
+						String hostName = InetAddress.getByName(host)
+								.getCanonicalHostName();
 						Matcher matcher = peerIdPattern.matcher(hostName);
 						return matcher.matches();
 					} catch (UnknownHostException e) {
@@ -143,9 +175,13 @@ public class RuleChecker implements AccessChecker {
 				&& matchPeerId(checkCtx.getPeerUrl())) {
 			log.debug("Match found for rule: " + id);
 			return new RuleResult(action, userAction, true, chainId);
-		} 
+		}
 		log.debug("No match found for rule: " + id);
 		return new RuleResult(action, userAction, false, chainId);
+	}
+
+	public String getChainId() {
+		return chainId;
 	}
 
 }

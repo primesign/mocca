@@ -17,6 +17,7 @@
 package at.gv.egiz.bku.slcommands;
 
 import at.gv.egiz.bku.slexceptions.SLCanceledException;
+import at.gv.egiz.bku.slexceptions.SLException;
 
 public interface SLCommandInvoker {
 
@@ -25,7 +26,7 @@ public interface SLCommandInvoker {
    * @param aContext
    * @throws SLCanceledException if the security management prevents execution of this command
    */
-  public void invoke(SLSourceContext aContext) throws SLCanceledException;
+  public void invoke(SLSourceContext aContext) throws SLException;
 
   /**
    * 
@@ -33,7 +34,7 @@ public interface SLCommandInvoker {
    * @return
    * @throws SLCanceledException if the security management prevents execution of this command
    */
-  public SLResult getResult(SLTargetContext aContext) throws SLCanceledException;
+  public SLResult getResult(SLTargetContext aContext) throws SLException;
 
   public void setCommand(at.gv.egiz.bku.slcommands.SLCommand aCmd);
   

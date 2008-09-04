@@ -120,4 +120,9 @@ public class TestDataUrlConnection implements DataUrlConnectionSPI {
   public DataUrlConnectionSPI newInstance() {
     return this;
   }
+
+	@Override
+	public URL getUrl() {
+		return url;
+	}
  }

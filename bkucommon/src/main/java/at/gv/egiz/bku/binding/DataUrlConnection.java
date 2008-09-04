@@ -19,6 +19,7 @@ package at.gv.egiz.bku.binding;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.security.cert.X509Certificate;
 
 import at.gv.egiz.bku.slcommands.SLResult;
@@ -42,6 +43,8 @@ public interface DataUrlConnection {
     public static final String XML_RESPONSE_ENCODING = "UTF-8";
 
     public String getProtocol();
+    
+    public URL getUrl();
     
     /**
      * Set a HTTP Header.

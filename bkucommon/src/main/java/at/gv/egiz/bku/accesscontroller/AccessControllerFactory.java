@@ -15,8 +15,9 @@ import at.gv.egiz.bku.accesscontrol.config.AccessControl;
 import at.gv.egiz.bku.accesscontrol.config.Chain;
 import at.gv.egiz.bku.accesscontrol.config.Command;
 import at.gv.egiz.bku.accesscontrol.config.ObjectFactory;
+import at.gv.egiz.bku.accesscontrol.config.Param;
 import at.gv.egiz.bku.accesscontrol.config.Rule;
-import at.gv.egiz.bku.slcommands.impl.InfoboxReadCommandImpl;
+import at.gv.egiz.bku.accesscontroller.RuleChecker.PEER_TYPE;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 
 public class AccessControllerFactory {
@@ -24,6 +25,8 @@ public class AccessControllerFactory {
 	private static AccessControllerFactory instance = new AccessControllerFactory();
 	private static Log log = LogFactory.getLog(AccessControllerFactory.class);
 	private static JAXBContext jaxbContext;
+	public static String INPUT_CHAIN = "InputChain";
+	public static String OUTPUT_CHAIN = "OutputChain";
 
 	static {
 		try {
@@ -63,43 +66,72 @@ public class AccessControllerFactory {
 	public void registerChainChecker(ChainChecker cc) {
 		chainTable.put(cc.getId(), cc);
 	}
-	
+
+	public CommandParamChecker createParamChecker(String cmd) {
+		if ((cmd != null) && (cmd.startsWith("Infobox"))) {
+			return new InfoboxParamChecker();
+		} else {
+			return null;
+		}
+	}
+
 	public RuleChecker createRuleChecker(Rule rule) {
 		RuleChecker rc;
+		rc = new RuleChecker(rule.getId());
 		Command cmd = rule.getCommand();
 		if (cmd != null) {
-			if ((cmd.getParam() != null) && (cmd.getParam().size()>0)) {
-				if (cmd.getName().startsWith("Infobox")) {
-					rc = new InfoboxRuleChecker(rule.getId());
-				} else {
-					throw new SLRuntimeException("Cannot handle parameters for command "+cmd.getName());
-				}
-			} else {
-				rc = new RuleChecker(rule.getId());
+			rc.setCommandName(cmd.getName());
+			for (Param p : cmd.getParam()) {
+				rc.addParameter(p.getName(), p.getValue());
 			}
-		} else {
-			rc = new RuleChecker(rule.getId());
 		}
-		// FIXME TODO cont. here
-		
-		
-	return  rc;	
+		rc.setAuthenticationClass(rule.getAuthClass());
+		if (rule.getIPv4Address() != null) {
+			rc.setPeerId(rule.getIPv4Address(), PEER_TYPE.IP);
+		} else if (rule.getDomainName() != null) {
+			rc.setPeerId(rule.getDomainName(), PEER_TYPE.HOST);
+		} else if (rule.getURL() != null) {
+			rc.setPeerId(rule.getURL(), PEER_TYPE.URL);
+		}
+		rc.setAction(rule.getAction().getRuleAction());
+		rc.setChainId(rule.getAction().getChainRef());
+		rc.setUserAction(rule.getUserInteraction());
+		return rc;
 	}
-	
-	
+
 	public void init(InputStream is) throws JAXBException {
+		chainTable.clear();
 		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 		AccessControl ac = (AccessControl) unmarshaller.unmarshal(is);
 		List<Chain> chainList = ac.getChains().getChain();
-		log.debug("Found "+chainList.size()+" chains in config");
+		log.debug("Found " + chainList.size() + " chains in config");
 		for (Chain chain : chainList) {
+			log.trace("Creating chain: " + chain.getId());
+			ChainChecker cc = createChainChecker(chain.getId(), false);
 			List<Rule> ruleList = chain.getRules().getRule();
-			log.debug("Found "+ruleList.size()+" rules in chain "+chain.getId());
+			log
+					.debug("Found " + ruleList.size() + " rules in chain "
+							+ chain.getId());
 			for (Rule rule : ruleList) {
-				//rule.g
+				log.trace("Creating rule: " + rule.getId());
+				cc.addRule(createRuleChecker(rule));
+			}
+			registerChainChecker(cc);
+		}
+		validate();
+	}
+	
+	private void validate() {
+		for (ChainChecker chain : chainTable.values()) {
+			for (RuleChecker rule : chain.getRules()) {
+				if (rule.getChainId() != null) {
+					log.trace("Checking reference to chain: "+rule.getChainId());
+					if (getChainChecker(rule.getChainId()) == null) {
+						throw new SLRuntimeException("Invalid reference to unknown chain: "+rule.getChainId());
+					}
+				}
 			}
 		}
-		
 	}
 
 }

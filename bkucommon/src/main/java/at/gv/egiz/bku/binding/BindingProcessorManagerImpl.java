@@ -16,6 +16,8 @@
 */
 package at.gv.egiz.bku.binding;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -152,9 +154,9 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
   /**
    * Uses the default locale
    */
-  public BindingProcessor createBindingProcessor(String protocol,
-      String aSessionId) {
-    return createBindingProcessor(protocol, aSessionId, null);
+  public BindingProcessor createBindingProcessor(String srcUrl,
+      String aSessionId) throws MalformedURLException  {
+    return createBindingProcessor(srcUrl, aSessionId, null);
   }
   
   /**
@@ -162,10 +164,12 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
    * 
    * @param protocol
    *          must not be null
+   * @throws MalformedURLException 
    */
-  public BindingProcessor createBindingProcessor(String protocol,
-      String aSessionId, Locale locale) {
-    String low = protocol.toLowerCase();
+  public BindingProcessor createBindingProcessor(String srcUrl,
+      String aSessionId, Locale locale) throws MalformedURLException {
+  	URL url = new URL(srcUrl);
+    String low = url.getProtocol().toLowerCase();
     Protocol proto = null;
     for (int i = 0; i < SUPPORTED_PROTOCOLS.length; i++) {
       if (SUPPORTED_PROTOCOLS[i].toString().equals(low)) {
@@ -177,7 +181,7 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
       throw new UnsupportedOperationException();
     }
     BindingProcessor bindingProcessor = new HTTPBindingProcessor(aSessionId,
-        commandInvokerClass.newInstance(), proto);
+        commandInvokerClass.newInstance(), url);
     STAL stal = stalFactory.createSTAL();
     bindingProcessor.init(stal, commandInvokerClass.newInstance());
     if (locale != null) {

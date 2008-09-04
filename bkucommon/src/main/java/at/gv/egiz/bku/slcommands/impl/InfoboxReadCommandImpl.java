@@ -406,4 +406,9 @@ public class InfoboxReadCommandImpl extends SLCommandImpl<InfoboxReadRequestType
     return result;
     
   }
+
+	@Override
+	public String getIdentityLinkDomainId() {
+		return identityLinkDomainIdentifier;
+	}
 }

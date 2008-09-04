@@ -1,5 +1,6 @@
 package at.gv.egiz.bku.accesscontroller;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,6 +36,10 @@ public class ChainChecker implements AccessChecker {
 			rules.add(rule);
 		}
 	}
+	
+	public List<RuleChecker> getRules() {
+		return Collections.unmodifiableList(rules);
+	}
 
 	@Override
 	public ChainResult check(AccessCheckerContext checkCtx) throws SLException {
@@ -43,7 +48,6 @@ public class ChainChecker implements AccessChecker {
 			log.trace("Checking rule: "+rule.getId());
 			RuleResult result = rule.check(checkCtx);
 			if (result.matchFound()) {
-				log.debug("Found matching rule: "+rule.getId());
 				if (result.getDelegateChainId() != null) {
 					// process chain
 					ChainChecker cc = AccessControllerFactory.getInstance().getChainChecker(result.getDelegateChainId());

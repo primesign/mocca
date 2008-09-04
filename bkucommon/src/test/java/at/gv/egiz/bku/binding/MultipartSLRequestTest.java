@@ -17,6 +17,7 @@
 package at.gv.egiz.bku.binding;
 
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,11 +35,11 @@ public class MultipartSLRequestTest {
   protected BindingProcessorManager manager;
 
   @Before
-  public void setUp() {
+  public void setUp() throws MalformedURLException {
     manager = new BindingProcessorManagerImpl(new DummyStalFactory(),
         new SLCommandInvokerImpl());
     HTTPBindingProcessor http = (HTTPBindingProcessor) manager
-        .createBindingProcessor("http", null);
+        .createBindingProcessor("http://www.at/", null);
     Map<String, String> headers = new HashMap<String, String>();
     headers.put("Content-Type", InputDecoderFactory.MULTIPART_FORMDATA
         + ";boundary=---------------------------2330864292941");

@@ -93,7 +93,7 @@ public class HttpBindingProcessorTest {
     manager = new BindingProcessorManagerImpl(new DummyStalFactory(),
         new SLCommandInvokerImpl());
     bindingProcessor = (HTTPBindingProcessor) manager.createBindingProcessor(
-        "http", null);
+        "http://www.iaik.at", null);
     clientHeaderMap = new HashMap<String, String>();
     clientHeaderMap.put("Content-Type",
         "application/x-www-form-urlencoded;charset=utf8");
