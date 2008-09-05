@@ -95,7 +95,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
         currentHashDataInput = null;
         for (STALRequest request : requests) {
             if (request instanceof SignRequest) {
-                log.trace("Received SignRequest, keep HashDataInput callback.");
+                log.trace("Received SignRequest, keep HashDataInput.");
                 currentHashDataInput = ((SignRequest) request).getHashDataInput();
                 break;
             } else if (request instanceof QuitRequest) {

@@ -86,7 +86,7 @@ public class BKUGUIWorker implements Runnable {
 
                         @Override
                         public String getMimeType() {
-                            return "text/xml";
+                            return "text/plain";
                         }
 
                         @Override
@@ -104,13 +104,13 @@ public class BKUGUIWorker implements Runnable {
 //
 //        Thread.sleep(2000);
         
-            gui.showInsertCardDialog(cancelListener, "cancel");
-            
-            Thread.sleep(2000);
-            
-            gui.showCardNotSupportedDialog(cancelListener, "cancel");
-            
-            Thread.sleep(2000);
+//            gui.showInsertCardDialog(cancelListener, "cancel");
+//            
+//            Thread.sleep(2000);
+//            
+//            gui.showCardNotSupportedDialog(cancelListener, "cancel");
+//            
+//            Thread.sleep(2000);
 
 //            PINSpec cardPinSpec = new PINSpec(4, 4, "[0-9]", "Karten-PIN");
 //            
@@ -119,19 +119,23 @@ public class BKUGUIWorker implements Runnable {
 //            Thread.sleep(2000);
 //
             
-//            gui.showSignaturePINDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
-//
-//            Thread.sleep(2000);
-//            
-//            gui.showSignaturePINRetryDialog(signPinSpec, 2, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
-//
-//            Thread.sleep(2000);
+            gui.showSignaturePINDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
+
+            Thread.sleep(2000);
+            
+            gui.showSignaturePINRetryDialog(signPinSpec, 2, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
+
+            Thread.sleep(2000);
 ////            
 //            gui.showErrorDialog("Testfehler occured", null, null);
 //            
 //            Thread.sleep(2000);
 //            
 //            gui.showErrorDialog("Testfehler occured"); 
+            
+            
+//            gui.showTextPlainHashDataInput("hallo,\n welt!", "12345", null, "cancel", null, "save");
+//            Thread.sleep(2000);
 
         } catch (InterruptedException ex) {
             ex.printStackTrace();

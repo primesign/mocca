@@ -29,15 +29,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.GroupLayout;
@@ -48,6 +55,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
@@ -677,11 +686,44 @@ public class BKUGUI implements BKUGUIFacade {
 
                 if (signedReferences != null && signedReferences.size() == 1) {
 
-                    HashDataInput signedRef = signedReferences.get(0);
-//                    if ("text/plain".equals(signedRef.getMimeType())) {
-//                    } else {
+                    final HashDataInput signedRef = signedReferences.get(0);
+                    if ("text/plain".equals(signedRef.getMimeType())) {
+                        //TODO get encoding from mimetype
+                        //read directly to byte[] since hashDataIS is backed by byte[] ?
+                        ByteArrayOutputStream baos = null;
+                        try {
+                            String refId = signedRef.getReferenceId();
+                            InputStream hashDataIS = signedRef.getHashDataInput();
+                            if (hashDataIS == null) {
+                                showErrorDialog("Failed to obtain HashDataInput for reference " + refId, okListener, okCommand);
+                            } else {
+                                baos = new ByteArrayOutputStream(hashDataIS.available());
+                                int c;
+                                while ((c = hashDataIS.read()) != -1) {
+                                    baos.write(c);
+                                }
+                                String text = baos.toString("UTF-8");
+
+                                ActionListener al = new ActionListener() {
+
+                                    @Override
+                                    public void actionPerformed(ActionEvent e) {
+                                        showSaveHashDataInputDialog(signedRef, okListener, okCommand);
+                                    }
+                                };
+                                showPlainTextHashDataInputDialog(text, refId, okListener, okCommand, al, "save");
+                            }
+                        } catch (IOException ex) {
+                            showErrorDialog("Failed to read HashDataInput for reference " + signedRef.getReferenceId() + ": " + ex.getMessage(), okListener, okCommand);
+                        } finally {
+                            try {
+                                baos.close();
+                            } catch (IOException ex) {
+                            }
+                        }
+                    } else {
                         showSaveHashDataInputDialog(signedRef, okListener, okCommand);
-//                    }
+                    }
 
                 } else {
                     mainPanel.removeAll();
@@ -723,7 +765,66 @@ public class BKUGUI implements BKUGUIFacade {
         });
     }
 
-    
+    private void showPlainTextHashDataInputDialog(String text, String refId, ActionListener cancelListener, String cancelCommand, ActionListener saveListener, String saveCommand) {
+        mainPanel.removeAll();
+        buttonPanel.removeAll();
+
+        titleLabel.setText(messages.getString(TITLE_HASHDATA));
+
+        JLabel refIdLabel = new JLabel();
+        refIdLabel.setFont(refIdLabel.getFont().deriveFont(refIdLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+        String refIdLabelPattern = messages.getString(MESSAGE_HASHDATA);
+        refIdLabel.setText(MessageFormat.format(refIdLabelPattern, new Object[] {refId} ));
+
+        JScrollPane hashDataScrollPane = new JScrollPane();
+        JTextArea hashDataTextArea = new JTextArea(text);
+        hashDataTextArea.setEditable(false);
+        hashDataTextArea.setColumns(20);
+        hashDataTextArea.setRows(3);
+        hashDataScrollPane.setViewportView(hashDataTextArea);
+
+        
+        JButton cancelButton = new JButton();
+        cancelButton.setFont(cancelButton.getFont());
+        cancelButton.setText(messages.getString(BUTTON_CANCEL));
+        cancelButton.setActionCommand(cancelCommand);
+        cancelButton.addActionListener(cancelListener);
+
+        JButton saveButton = new JButton();
+        saveButton.setFont(saveButton.getFont());
+        saveButton.setText(messages.getString(BUTTON_SAVE));
+        saveButton.setActionCommand(saveCommand);
+        saveButton.addActionListener(saveListener);
+
+        GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
+        mainPanel.setLayout(mainPanelLayout);
+
+        mainPanelLayout.setHorizontalGroup(
+          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+          .addGroup(mainPanelLayout.createSequentialGroup()
+          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+          .addComponent(refIdLabel)
+          .addComponent(hashDataScrollPane, GroupLayout.PREFERRED_SIZE, PREF_SIZE_PINFIELD, Short.MAX_VALUE))
+          .addContainerGap()));
+          
+        mainPanelLayout.setVerticalGroup(
+          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+          .addGroup(mainPanelLayout.createSequentialGroup()
+          .addComponent(refIdLabel)
+          .addGap(refIdLabel.getFont().getSize())
+          .addComponent(hashDataScrollPane)
+          .addGap(refIdLabel.getFont().getSize())));
+                
+        GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+        buttonPanel.setLayout(buttonPanelLayout);
+
+        buttonPanelLayout.setHorizontalGroup(
+          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(15, Short.MAX_VALUE).addComponent(saveButton).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(cancelButton).addContainerGap()));
+        buttonPanelLayout.setVerticalGroup(
+          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(saveButton).addComponent(cancelButton)));
+
+        contentPanel.validate();
+    }
 
     private void showSaveHashDataInputDialog(HashDataInput signedRef, ActionListener okListener, String okCommand) {
         String dir = System.getProperty("user.home");
