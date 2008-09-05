@@ -20,12 +20,11 @@
  */
 package at.gv.egiz.stal.service.impl;
 
+import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
-import at.gv.egiz.stal.HashDataInputCallback;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 /**
  *
@@ -34,10 +33,9 @@ import java.util.concurrent.TimeoutException;
 public interface STALRequestBroker extends STAL {
 
     public static final int ERR_6000 = 6000;
-    public static final long TIMEOUT_MS = 1000*60*5; //300000;
+    public static final long TIMEOUT_MS = 1000*60*3; //3mn
 
     public List<STALRequest> nextRequest(List<STALResponse> response);
-//    public void setResponse(List<STALResponse> response) throws TimeoutException;
-//    public void interruptRequestHandling(ErrorResponseType error);
-    public HashDataInputCallback getHashDataInput();
+
+    public List<HashDataInput> getHashDataInput();
 }

@@ -21,10 +21,10 @@
 package at.gv.egiz.stal.service.impl;
 
 import at.gv.egiz.stal.ErrorResponse;
+import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
-import at.gv.egiz.stal.HashDataInputCallback;
 import at.gv.egiz.stal.SignRequest;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,7 +50,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
 //    protected RequestResponseBroker broker;   
     protected List<STALRequest> requests = null;
     protected List<STALResponse> responses = null;
-    protected HashDataInputCallback currentHashDataInputCallback;
+    protected List<HashDataInput> currentHashDataInput;
     private boolean isHandlingRequest = false;
     private boolean expectingResponse = false;
 //    private Object handleRequestCondition = new Object();
@@ -75,10 +75,10 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
      */
     @Override
     public synchronized List<STALResponse> handleRequest(List<STALRequest> requests) {
+        long beforeWait = System.currentTimeMillis();
         while (isHandlingRequest) {
             log.trace("waiting to produce request");
             try {
-                long beforeWait = System.currentTimeMillis();
                 wait(TIMEOUT_MS);
                 if (System.currentTimeMillis() - beforeWait >= TIMEOUT_MS) {
                     log.warn("timeout while waiting to produce request");
@@ -92,11 +92,11 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
         isHandlingRequest = true;
 
         this.requests = requests;
-        currentHashDataInputCallback = null;
+        currentHashDataInput = null;
         for (STALRequest request : requests) {
             if (request instanceof SignRequest) {
                 log.trace("Received SignRequest, keep HashDataInput callback.");
-                currentHashDataInputCallback = ((SignRequest) request).getHashDataInput();
+                currentHashDataInput = ((SignRequest) request).getHashDataInput();
                 break;
             } else if (request instanceof QuitRequest) {
                 //alternative1:
@@ -107,7 +107,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                 notify();
                 //alternative2:
                 //wait for QUIT to be consumed
-                // (i.e. notify me noce QUIT is consumed)
+                // (i.e. notify me once QUIT is consumed)
 //                while (this.requests != null) {
 //                    try {
 //                        long beforeWait = System.currentTimeMillis();
@@ -131,15 +131,15 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
         log.trace("notifying request consumers");
         notify();
 
+        beforeWait = System.currentTimeMillis();
         while (this.responses == null) {
             log.trace("waiting to consume response");
             try {
-                long beforeWait = System.currentTimeMillis();
                 wait(TIMEOUT_MS);
                 if (System.currentTimeMillis() - beforeWait >= TIMEOUT_MS) {
                     log.warn("timeout while waiting to consume response");
                     this.requests = null;
-                    currentHashDataInputCallback = null;
+                    currentHashDataInput = null;
                     isHandlingRequest = false;
                     return Collections.singletonList((STALResponse) new ErrorResponse(ERR_6000));
                 }
@@ -172,10 +172,10 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                 log.warn("Received unexpected response in nextRequest()");
                 return Collections.singletonList((STALRequest) new QuitRequest());
             }
+            long beforeWait = System.currentTimeMillis();
             while (this.responses != null) {
                 log.trace("waiting to produce response");
                 try {
-                    long beforeWait = System.currentTimeMillis();
                     wait(TIMEOUT_MS);
                     if (System.currentTimeMillis() - beforeWait >= TIMEOUT_MS) {
                         log.warn("timeout while waiting to produce response");
@@ -204,10 +204,10 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
             log.trace("expecting non-null response in next nextRequest(response)");
             expectingResponse = true;
         }
+        long beforeWait = System.currentTimeMillis();
         while (this.requests == null) {
             log.trace("waiting to consume request");
             try {
-                long beforeWait = System.currentTimeMillis();
                 wait(TIMEOUT_MS);
                 if (System.currentTimeMillis() - beforeWait >= TIMEOUT_MS) {
                     log.warn("timeout while waiting to consume request");
@@ -239,9 +239,9 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
     }
 
     @Override
-    public synchronized HashDataInputCallback getHashDataInput() {
-        log.trace("return current HashDataInput callback");
-        return currentHashDataInputCallback;
+    public synchronized List<HashDataInput> getHashDataInput() {
+        log.trace("return " + currentHashDataInput.size() + " current HashDataInput(s) ");
+        return currentHashDataInput;
     }
 //    /**
 //     * Causes the calling thread to sleep until response is passed via nextRequest()
