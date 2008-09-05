@@ -14,23 +14,14 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package at.gv.egiz.bku.gui;
 
-//import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.smcc.PINSpec;
 import java.awt.Container;
 import java.awt.event.ActionListener;
 import java.util.List;
-import javax.swing.JPasswordField;
 
-/**
- *
- * @author clemens
- */
 public interface BKUGUIFacade {
     
     public void init(Container contentPane, String localeString);
@@ -42,7 +33,10 @@ public interface BKUGUIFacade {
      * @param loginListener
      */
     public void showLoginDialog(ActionListener loginListener, String actionCommand);
-    
+
+   /** optional wait message */
+    public void showWaitDialog(String waitMessage);
+
     public void showInsertCardDialog(ActionListener cancelListener, String actionCommand);
     
     public void showCardNotSupportedDialog(ActionListener cancelListener, String actionCommand);
@@ -62,5 +56,4 @@ public interface BKUGUIFacade {
     public void showErrorDialog(String errorMsg, ActionListener okListener, String actionCommand);
     
     public void showErrorDialog(String errorMsg);
-    
 }

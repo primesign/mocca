@@ -21,10 +21,9 @@
 package at.gv.egiz.bku.gui;
 
 import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.stal.HashDataInput;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Collections;
@@ -88,6 +87,11 @@ public class BKUGUIWorker implements Runnable {
                         @Override
                         public String getMimeType() {
                             return "text/xml";
+                        }
+
+                        @Override
+                        public String getReferenceId() {
+                            return "ref123";
                         }
                     };
                     gui.showHashDataInputDialog(Collections.singletonList(signedRef), returnListener, "return");
