@@ -118,7 +118,8 @@
                 <complexType>
                     <simpleContent>
                         <extension base="base64Binary">
-                            <attribute name="ID" type="ID"/>
+                            <attribute name="ID" type="string"/>
+                            <attribute name="MimeType" type="string"/>
                         </extension>
                     </simpleContent>
                 </complexType>

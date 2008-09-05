@@ -62,12 +62,31 @@ legend {
 <fieldset><legend>Enter XML Request</legend>
 <p><label for="XMLRequest">XML Request</label> <textarea
 	name="XMLRequest" rows=15 cols="60" id="XMLRequest">
+<?xml version="1.0" encoding="UTF-8"?>
+<sl:CreateXMLSignatureRequest 
+   xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#">
+<sl:KeyboxIdentifier>SecureSignatureKeypair</sl:KeyboxIdentifier>
+   <sl:DataObjectInfo Structure="enveloping">
+     <sl:DataObject>
+       <sl:XMLContent>Ich bin ein einfacher Text.</sl:XMLContent>
+     </sl:DataObject>
+    <sl:TransformsInfo>
+      <sl:FinalDataMetaInfo>
+       <sl:MimeType>text/plain</sl:MimeType>
+       </sl:FinalDataMetaInfo>
+    </sl:TransformsInfo>
+  </sl:DataObjectInfo>
+</sl:CreateXMLSignatureRequest> 
+</textarea></p>
+<!--
 <?xml version="1.0" encoding="UTF-8" ?>
 <sl:InfoboxReadRequest
 	xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#">
 <sl:InfoboxIdentifier>IdentityLink</sl:InfoboxIdentifier>
 <sl:BinaryFileParameters ContentIsXMLEntity="true" />
 </sl:InfoboxReadRequest>
+-->
+
 </textarea></p>
 <!-- 
 <p><label for="RedirectURL">RedirectURL</label> <input

@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.bku.slcommands.impl.xsect.STALProvider;
+import iaik.security.provider.IAIK;
 
 /**
  * 
@@ -51,19 +52,20 @@ public class Configurator {
 
 	protected void configureProviders() {
 		log.debug("Registering security providers");
-		Security.addProvider(new STALProvider());
+                Security.insertProviderAt(new IAIK(), 1);
+                Security.insertProviderAt(new ECCProvider(false), 2);
+    		Security.addProvider(new STALProvider());
 		XSecProvider.addAsProvider(false);
-		Security.insertProviderAt(new ECCProvider(false), 1);
-		StringBuffer sb = new StringBuffer();
-		sb.append("Following providers are now registered: ");
+		StringBuilder sb = new StringBuilder();
+		sb.append("Registered providers: ");
 		int i = 1;
 		for (Provider prov : Security.getProviders()) {
 			sb.append((i++) + ". : " + prov);
 		}
-		log.debug("Configured provider" + sb.toString());
+		log.debug(sb.toString());
 	}
 
-	public void configure() {
+        public void configure() {
 		configureProviders();
 		configUrlConnections();
 	}

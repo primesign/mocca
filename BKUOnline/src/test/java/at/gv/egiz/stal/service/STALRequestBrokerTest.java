@@ -24,7 +24,7 @@ import at.gv.egiz.stal.service.impl.STALRequestBrokerImpl;
 import at.gv.egiz.stal.service.impl.RequestBrokerSTALFactory;
 import at.gv.egiz.stal.service.impl.STALRequestBroker;
 import at.gv.egiz.stal.ErrorResponse;
-import at.gv.egiz.stal.HashDataInputCallback;
+import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.InfoboxReadResponse;
 import at.gv.egiz.stal.QuitRequest;
@@ -95,13 +95,24 @@ public class STALRequestBrokerTest {
         SignRequest r1 = new SignRequest();
         r1.setKeyIdentifier("keybox1");
         r1.setSignedInfo("1234".getBytes());
-        r1.setHashDataInput(new HashDataInputCallback() {
+        HashDataInput hdi = new HashDataInput() {
 
             @Override
-            public InputStream getHashDataInput(String referenceId) {
+            public String getReferenceId() {
+                return "refId1234";
+            }
+
+            @Override
+            public String getMimeType() {
+                return "text/plain";
+            }
+
+            @Override
+            public InputStream getHashDataInput() {
                 return new ByteArrayInputStream("hashdatainput1234".getBytes());
             }
-        });
+        };
+        r1.setHashDataInput(Collections.singletonList(hdi));
         requests.add(r1);
 
         BindingProcessorSimulator bp = new BindingProcessorSimulator();
@@ -125,13 +136,24 @@ public class STALRequestBrokerTest {
         SignRequest r1 = new SignRequest();
         r1.setKeyIdentifier("keybox1");
         r1.setSignedInfo("1234".getBytes());
-        r1.setHashDataInput(new HashDataInputCallback() {
+        HashDataInput hdi = new HashDataInput() {
 
             @Override
-            public InputStream getHashDataInput(String referenceId) {
+            public String getReferenceId() {
+                return "refId1234";
+            }
+
+            @Override
+            public String getMimeType() {
+                return "text/plain";
+            }
+
+            @Override
+            public InputStream getHashDataInput() {
                 return new ByteArrayInputStream("hashdatainput1234".getBytes());
             }
-        });
+        };
+        r1.setHashDataInput(Collections.singletonList(hdi));
         requests.add(r1);
 
         BindingProcessorSimulator bp = new BindingProcessorSimulator();
@@ -169,26 +191,48 @@ public class STALRequestBrokerTest {
         SignRequest r1 = new SignRequest();
         r1.setKeyIdentifier("keybox1");
         r1.setSignedInfo("1234".getBytes());
-        r1.setHashDataInput(new HashDataInputCallback() {
+        HashDataInput hdi = new HashDataInput() {
 
             @Override
-            public InputStream getHashDataInput(String referenceId) {
+            public String getReferenceId() {
+                return "refId1234";
+            }
+
+            @Override
+            public String getMimeType() {
+                return "text/plain";
+            }
+
+            @Override
+            public InputStream getHashDataInput() {
                 return new ByteArrayInputStream("hashdatainput1234".getBytes());
             }
-        });
+        };
+        r1.setHashDataInput(Collections.singletonList(hdi));
         requests.add(r1);
 
         List<STALRequest> requests2 = new ArrayList<STALRequest>();
         SignRequest r2 = new SignRequest();
         r2.setKeyIdentifier("keybox2");
         r2.setSignedInfo("6789".getBytes());
-        r2.setHashDataInput(new HashDataInputCallback() {
+        HashDataInput hdi2 = new HashDataInput() {
 
             @Override
-            public InputStream getHashDataInput(String referenceId) {
-                return new ByteArrayInputStream("hashdatainput6789".getBytes());
+            public String getReferenceId() {
+                return "refId6789";
             }
-        });
+
+            @Override
+            public String getMimeType() {
+                return "text/xml";
+            }
+
+            @Override
+            public InputStream getHashDataInput() {
+                return new ByteArrayInputStream("<xml>hashdatainput6789</xml>".getBytes());
+            }
+        };
+        r2.setHashDataInput(Collections.singletonList(hdi2));
         requests2.add(r2);
 
         BindingProcessorSimulator bp = new BindingProcessorSimulator();
@@ -228,9 +272,11 @@ public class STALRequestBrokerTest {
                     } else if (request instanceof SignRequest) {
 
                         log.debug("calling stal.getCurrentHashDataInputCallback");
-                        HashDataInputCallback cb = stal.getHashDataInput();
-                        assertNotNull(cb);
-                        InputStream hd = cb.getHashDataInput("1234");
+                        List<HashDataInput> hdis = stal.getHashDataInput();
+                        assertNotNull(hdis);
+                        assertEquals(hdis.size(), 1);
+                        HashDataInput hdi = hdis.get(0);// cb.getHashDataInput("1234");
+                        InputStream hd = hdi.getHashDataInput();
                         byte[] data = new byte[hd.available()];
                         hd.read(data);
                         log.debug("got HashDataInput " + new String(data));
@@ -280,9 +326,11 @@ public class STALRequestBrokerTest {
 //                    if (request instanceof InfoboxReadRequest) {
                     if (request instanceof SignRequest) {
                         log.debug("calling stal.getCurrentHashDataInputCallback");
-                        HashDataInputCallback cb = stal.getHashDataInput();
-                        assertNotNull(cb);
-                        InputStream hd = cb.getHashDataInput("1234");
+                        List<HashDataInput> hdis = stal.getHashDataInput();
+                        assertNotNull(hdis);
+                        assertEquals(hdis.size(), 1);
+                        HashDataInput hdi = hdis.get(0);// cb.getHashDataInput("1234");
+                        InputStream hd = hdi.getHashDataInput();
                         byte[] data = new byte[hd.available()];
                         hd.read(data);
                         log.debug("got HashDataInput " + new String(data));
