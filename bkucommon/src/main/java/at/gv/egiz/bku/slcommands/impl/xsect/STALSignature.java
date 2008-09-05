@@ -16,6 +16,7 @@
 */
 package at.gv.egiz.bku.slcommands.impl.xsect;
 
+import at.gv.egiz.bku.slcommands.impl.HashDataInputImpl;
 import java.io.ByteArrayOutputStream;
 import java.security.InvalidKeyException;
 import java.security.InvalidParameterException;
@@ -27,12 +28,14 @@ import java.util.Collections;
 import java.util.List;
 
 import at.gv.egiz.stal.ErrorResponse;
+import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.SignResponse;
-import at.gv.egiz.stal.HashDataInputCallback;
+//import at.gv.egiz.stal.HashDataInputCallback;
+import java.util.ArrayList;
 
 /**
  * A signature service provider implementation that uses STAL to sign.
@@ -41,6 +44,8 @@ import at.gv.egiz.stal.HashDataInputCallback;
  */
 public class STALSignature extends SignatureSpi {
 
+//    private static final Log log = LogFactory.getLog(STALSignature.class);
+    
   /**
    * The private key.
    */
@@ -106,8 +111,6 @@ public class STALSignature extends SignatureSpi {
       		"to provide a STAL implementation reference.");
     }
     
-    HashDataInputCallback signRefDataSupplier = privateKey.getHashDataInputCallback();
-    
     String keyboxIdentifier = privateKey.getKeyboxIdentifier();
     
     if (keyboxIdentifier == null) {
@@ -115,10 +118,19 @@ public class STALSignature extends SignatureSpi {
           "to provide a KeyboxIdentifier.");
     }
     
+    // get hashDataInputs (DigestInputStreams) once slcommands.impl.xsect.Signature::sign() was called
+    List<DataObject> dataObjects = privateKey.getDataObjects();
+//    log.debug("got " + dataObjects.size() + " DataObjects, passing HashDataInputs to STAL SignRequest");
+    
+    List<HashDataInput> hashDataInputs = new ArrayList<HashDataInput>();
+      for (DataObject dataObject : dataObjects) {
+          hashDataInputs.add(new HashDataInputImpl(dataObject));
+      }
+    
     SignRequest signRequest = new SignRequest();
     signRequest.setKeyIdentifier(keyboxIdentifier);
     signRequest.setSignedInfo(data.toByteArray());
-    signRequest.setHashDataInput(signRefDataSupplier);
+    signRequest.setHashDataInput(hashDataInputs);
     
     List<STALResponse> responses = stal.handleRequest(Collections.singletonList((STALRequest) signRequest));
     

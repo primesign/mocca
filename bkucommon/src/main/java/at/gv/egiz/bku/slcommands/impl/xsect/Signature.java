@@ -16,6 +16,7 @@
 */
 package at.gv.egiz.bku.slcommands.impl.xsect;
 
+import at.gv.egiz.stal.HashDataInput;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -86,7 +87,6 @@ import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencerContext;
 import at.gv.egiz.dom.DOMUtils;
 import at.gv.egiz.slbinding.impl.XMLContentType;
-import at.gv.egiz.stal.HashDataInputCallback;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.xades.QualifyingPropertiesException;
 import at.gv.egiz.xades.QualifyingPropertiesFactory;
@@ -97,7 +97,7 @@ import at.gv.egiz.xades.QualifyingPropertiesFactory;
  * 
  * @author mcentner
  */
-public class Signature implements HashDataInputCallback {
+public class Signature {
   
   /**
    * Logging facility.
@@ -123,7 +123,7 @@ public class Signature implements HashDataInputCallback {
    * A mapping from the <code>Id</code>-attribute values of this signature's 
    * <code>ds:Reference</code>s to the corresponding {@link DataObject}s.
    */
-  private Map<String, DataObject> dataObjectReferencIds = new HashMap<String, DataObject>();
+//  private Map<String, DataObject> dataObjectReferencIds = new HashMap<String, DataObject>();
   
   /**
    * The SignatureEnvironment for this signature.
@@ -293,7 +293,7 @@ public class Signature implements HashDataInputCallback {
     
     dataObjects.add(dataObject);
     
-    dataObjectReferencIds.put(dataObject.getReference().getId(), dataObject);
+//    dataObjectReferencIds.put(dataObject.getReference().getId(), dataObject);
     
   }
   
@@ -503,7 +503,8 @@ public class Signature implements HashDataInputCallback {
     SignatureMethod signatureMethod = xmlSignature.getSignedInfo().getSignatureMethod();
     String algorithm = signatureMethod.getAlgorithm();
     
-    PrivateKey privateKey = new STALPrivateKey(stal, algorithm, keyboxIdentifier, this);
+    //don't get hashDataInputs (digestInputStreams) now, only once Signature.sign() was called (cf STALSignature.engineSign)
+    PrivateKey privateKey = new STALPrivateKey(stal, algorithm, keyboxIdentifier, dataObjects); // hashDataInputs);
     
     DOMSignContext signContext;
     if (getNextSibling() == null) {
@@ -515,16 +516,32 @@ public class Signature implements HashDataInputCallback {
     sign(signContext);
   }
   
-  @Override
-  public InputStream getHashDataInput(String referenceId) {
-    
-    DataObject dataObject = dataObjectReferencIds.get(referenceId);
-    if (dataObject != null) {
-      return dataObject.getReference().getDigestInputStream();
-    } else {
-      return null;
-    }
-  }
+//  @Override
+//  public HashDataInput getHashDataInput(final String referenceId) {
+//      final DataObject dataObject = dataObjectReferencIds.get(referenceId);
+//      if (dataObject != null) {
+//          return new HashDataInput() {
+//
+//              InputStream hashDataInput = dataObject.getReference().getDigestInputStream();
+//              
+//                @Override
+//                public String getReferenceId() {
+//                    return referenceId;
+//                }
+//
+//                @Override
+//                public String getMimeType() {
+//                    return dataObject.getMimeType();
+//                }
+//
+//                @Override
+//                public InputStream getHashDataInput() {
+//                    return hashDataInput;
+//                }
+//          };
+//      } 
+//      return null;
+//  }
 
   /**
    * Adds the XAdES <code>QualifyingProperties</code> as an

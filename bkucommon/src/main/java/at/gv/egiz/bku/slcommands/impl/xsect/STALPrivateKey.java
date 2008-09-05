@@ -16,10 +16,12 @@
 */
 package at.gv.egiz.bku.slcommands.impl.xsect;
 
+import at.gv.egiz.stal.HashDataInput;
 import java.security.PrivateKey;
 
 import at.gv.egiz.stal.STAL;
-import at.gv.egiz.stal.HashDataInputCallback;
+//import at.gv.egiz.stal.HashDataInputCallback;
+import java.util.List;
 
 /**
  * This class implements a private key used by the {@link STALSignature} class. 
@@ -38,7 +40,10 @@ public class STALPrivateKey implements PrivateKey {
   /**
    * The callback interface for obtaining the hash input data.
    */
-  private HashDataInputCallback hashDataInputCallback;
+//  private HashDataInputCallback hashDataInputCallback;
+  
+
+  private List<DataObject> dataObjects;
   
   /**
    * The keybox identifier.
@@ -66,10 +71,10 @@ public class STALPrivateKey implements PrivateKey {
    *          the interface for obtaining the has input data
    */
   public STALPrivateKey(STAL stal,
-      String algorithm, String keyboxIdentifier, HashDataInputCallback hashDataInputCallback) {
+      String algorithm, String keyboxIdentifier, List<DataObject> dataObjects) {
     super();
     this.keyboxIdentifier = keyboxIdentifier;
-    this.hashDataInputCallback = hashDataInputCallback;
+    this.dataObjects = dataObjects;
     this.stal = stal;
     this.algorithm = algorithm;
   }
@@ -108,8 +113,9 @@ public class STALPrivateKey implements PrivateKey {
   /**
    * @return the interface for obtaining the hash data input
    */
-  public HashDataInputCallback getHashDataInputCallback() {
-    return hashDataInputCallback;
+  public List<DataObject> getDataObjects() {
+      
+    return dataObjects;
   }
 
   /**
