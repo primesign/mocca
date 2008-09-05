@@ -1,39 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <AccessControl>
 	<Chains>
+		<!--
+			The input chain defines filters that are applied before command
+			execution
+		-->
 		<Chain Id="InputChain">
 			<Rules>
-				<Rule Id="rule-1">
+				<!-- there is no command implemented that requires input filtering -->
+				<Rule Id="InputChain-AllowAll">
+					<Action>
+						<RuleAction>allow</RuleAction>
+					</Action>
+					<UserInteraction>confirm</UserInteraction>
+				</Rule>
+			</Rules>
+		</Chain>
+
+		<!--
+			The output chain defines filters that are applied after command
+			execution
+		-->
+		<Chain Id="OutputChain">
+			<Rules>
+				<Rule Id="OutputChain-Egov">
 					<AuthClass>certifiedGovAgency</AuthClass>
-					<AnyPeer />
 					<Action>
 						<RuleAction>allow</RuleAction>
 					</Action>
 					<UserInteraction>confirm</UserInteraction>
 				</Rule>
-				<Rule Id="rule-2">
-					<AuthClass>pseudoanonymous</AuthClass>
-					<AnyPeer />
+				<Rule Id="OutputChain-Command">
+					<AuthClass>anonymous</AuthClass>
 					<Action>
 						<ChainRef>Command</ChainRef>
 					</Action>
-					<UserInteraction>none</UserInteraction>
-				</Rule>
-				<Rule Id="rule-3">
-					<AuthClass>anonymous</AuthClass>
-					<IPv4Address>127.0.0.1</IPv4Address>
-					<Action>
-						<ChainRef>Command</ChainRef>
-					</Action>
-					<UserInteraction>none</UserInteraction>
-				</Rule>
-				<Rule Id="rule-4">
-					<AuthClass>anonymous</AuthClass>
-					<DomainName>$.gv.at</DomainName>
-					<Action>
-						<RuleAction>allow</RuleAction>
-					</Action>
-					<UserInteraction>confirm</UserInteraction>
 				</Rule>
 			</Rules>
 		</Chain>
@@ -44,7 +45,7 @@
 					<AnyPeer />
 					<Command Name="Infobox*">
 						<Param Name="InfoboxIdentifier">IdentityLink</Param>
-						<Param Name="PersonIdentifier">.*</Param>
+						<Param Name="PersonIdentifier">derived</Param>
 					</Command>
 					<Action>
 						<RuleAction>allow</RuleAction>
@@ -52,42 +53,16 @@
 					<UserInteraction>confirm</UserInteraction>
 				</Rule>
 				<Rule Id="cmd-rule-2">
-					<AuthClass>certified</AuthClass>
-					<URL>https://finanzonline.bmf.gv.at/*
-					</URL>
-					<Command Name="InfoboxReadRequest">
-						<Param Name="InfoboxIdentifier">Mandates</Param>
-						<Param Name="PersonIdentifier">.*</Param>
+					<AuthClass>anonymous</AuthClass>
+					<Command Name="Infobox.*">
+						<Param Name="InfoboxIdentifier">IdentityLink</Param>
 					</Command>
 					<Action>
-						<RuleAction>allow</RuleAction>
+						<RuleAction>deny</RuleAction>
 					</Action>
 					<UserInteraction>info</UserInteraction>
 				</Rule>
 				<Rule Id="cmd-rule-3">
-					<AuthClass>certified</AuthClass>
-					<AnyPeer />
-					<Command Name="InfoboxReadRequest" />
-					<Action>
-						<RuleAction>allow</RuleAction>
-					</Action>
-					<UserInteraction>none</UserInteraction>
-				</Rule>
-				<Rule Id="cmd-rule-4">
-					<AuthClass>anonymous</AuthClass>
-					<AnyPeer />
-					<Command Name="InfoboxReadRequest" />
-					<IPv4Address>127.0.0.1</IPv4Address>
-					<Action>
-						<RuleAction>allow</RuleAction>
-					</Action>
-					<UserInteraction>none</UserInteraction>
-				</Rule>
-			</Rules>
-		</Chain>
-		<Chain Id="OutputChain">
-			<Rules>
-				<Rule Id="out-1">
 					<Action>
 						<RuleAction>allow</RuleAction>
 					</Action>

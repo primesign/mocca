@@ -6,14 +6,11 @@ import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
-import java.security.cert.CertPath;
-import java.security.cert.CertPathBuilder;
 import java.security.cert.CertStore;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.PKIXBuilderParameters;
-import java.security.cert.PKIXCertPathBuilderResult;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509CertSelector;
 import java.security.cert.X509Certificate;
@@ -28,9 +25,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.ManagerFactoryParameters;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,7 +66,6 @@ public class SpringConfigurator extends Configurator implements
 		String caDirectory = getProperty("SSL.caDirectory");
 		if (caDirectory != null) {
 			Resource caDirRes = resourceLoader.getResource(caDirectory);
-
 			File caDir = caDirRes.getFile();
 			if (!caDir.isDirectory()) {
 				log.error("Expecting directory as SSL.caDirectory parameter");
