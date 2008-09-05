@@ -23,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
-import at.gv.egiz.smcc.PINProvider;
 import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;

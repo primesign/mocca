@@ -16,6 +16,7 @@
 */
 package at.gv.egiz.stal;
 
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -55,7 +56,7 @@ public class SignRequest
     @XmlElement(name = "SignedInfo", required = true)
     protected byte[] signedInfo;
     @XmlTransient
-    protected HashDataInputCallback hashData;
+    protected List<HashDataInput> hashData;
 
     /**
      * Gets the value of the keyIdentifier property.
@@ -103,11 +104,11 @@ public class SignRequest
         this.signedInfo = ((byte[]) value);
     }
 
-    public HashDataInputCallback getHashDataInput() {
+    public List<HashDataInput> getHashDataInput() {
         return hashData;
     }
 
-    public void setHashDataInput(HashDataInputCallback hashData) {
+    public void setHashDataInput(List<HashDataInput> hashData) {
         this.hashData = hashData;
     }
 }

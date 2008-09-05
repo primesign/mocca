@@ -23,12 +23,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 
 /**
@@ -45,7 +41,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *           &lt;complexType>
  *             &lt;simpleContent>
  *               &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>base64Binary">
- *                 &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}ID" />
+ *                 &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *                 &lt;attribute name="MimeType" type="{http://www.w3.org/2001/XMLSchema}string" />
  *               &lt;/extension>
  *             &lt;/simpleContent>
  *           &lt;/complexType>
@@ -133,7 +130,8 @@ public class GetHashDataInputResponseType {
      * &lt;complexType>
      *   &lt;simpleContent>
      *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>base64Binary">
-     *       &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}ID" />
+     *       &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}string" />
+     *       &lt;attribute name="MimeType" type="{http://www.w3.org/2001/XMLSchema}string" />
      *     &lt;/extension>
      *   &lt;/simpleContent>
      * &lt;/complexType>
@@ -150,10 +148,9 @@ public class GetHashDataInputResponseType {
         @XmlValue
         protected byte[] value;
         @XmlAttribute(name = "ID")
-        @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
-        @XmlID
-        @XmlSchemaType(name = "ID")
         protected String id;
+        @XmlAttribute(name = "MimeType")
+        protected String mimeType;
 
         /**
          * Gets the value of the value property.
@@ -199,6 +196,30 @@ public class GetHashDataInputResponseType {
          */
         public void setID(String value) {
             this.id = value;
+        }
+
+        /**
+         * Gets the value of the mimeType property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getMimeType() {
+            return mimeType;
+        }
+
+        /**
+         * Sets the value of the mimeType property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setMimeType(String value) {
+            this.mimeType = value;
         }
 
     }

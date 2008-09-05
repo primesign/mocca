@@ -26,7 +26,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
-import at.gv.egiz.smcc.PINProvider;
 import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.smcc.util.SMCCHelper;
 import at.gv.egiz.stal.ErrorResponse;
@@ -47,9 +46,6 @@ public abstract class AbstractSMCCSTAL implements STAL {
   static {
     addRequestHandler(InfoboxReadRequest.class, new InfoBoxReadRequestHandler());
     addRequestHandler(SignRequest.class, new SignRequestHandler());
-  }
-
-  public AbstractSMCCSTAL() {
   }
 
   /**
