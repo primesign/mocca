@@ -37,6 +37,7 @@ import at.gv.egiz.smcc.util.SMCCHelper;
 import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
+import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.service.GetNextRequestResponseType;
 import at.gv.egiz.stal.service.GetNextRequestType;
 import at.gv.egiz.stal.service.ObjectFactory;
@@ -70,6 +71,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     this.parent = parent;
     this.errorMessages = errorMessageBundle;
     addRequestHandler(QuitRequest.class, this);
+    //register SignRequestHandler once we have a webservice port
   }
 
   private STALPortType getSTALPort() throws MalformedURLException {
@@ -127,6 +129,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
       sessionId = "TestSession";
     }
     nextRequest.setSessionId(sessionId);
+    addRequestHandler(SignRequest.class, new WSSignRequestHandler(sessionId, stalPort));
     do {
       GetNextRequestResponseType resp = stalPort.getNextRequest(nextRequest);
       log.info("Got " + resp.getRequest().size() + " requests from server.");

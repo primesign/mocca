@@ -29,9 +29,7 @@ import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUGUIFactory;
 
 /**
- * 
- * 
- *
+ * Note: all swing code is executed by the event dispatch thread (see BKUGUIFacade)
  */
 public class BKUApplet extends JApplet {
 
