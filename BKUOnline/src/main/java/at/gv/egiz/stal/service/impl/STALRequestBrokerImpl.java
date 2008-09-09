@@ -1,19 +1,19 @@
 /*
-* Copyright 2008 Federal Chancellery Austria and
-* Graz University of Technology
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright 2008 Federal Chancellery Austria and
+ * Graz University of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -75,39 +75,40 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
      */
     @Override
     public synchronized List<STALResponse> handleRequest(List<STALRequest> requests) {
-        long beforeWait = System.currentTimeMillis();
-        while (isHandlingRequest) {
-            log.trace("waiting to produce request");
-            try {
+        try {
+            long beforeWait = System.currentTimeMillis();
+            while (isHandlingRequest) {
+                log.trace("waiting to produce request");
+//            try {
                 wait(TIMEOUT_MS);
                 if (System.currentTimeMillis() - beforeWait >= TIMEOUT_MS) {
                     log.warn("timeout while waiting to produce request");
                     return Collections.singletonList((STALResponse) new ErrorResponse(ERR_6000));
                 }
-            } catch (InterruptedException ex) {
-                log.warn("interrupt while waiting to produce request: " + ex.getMessage());
+//            } catch (InterruptedException ex) {
+//                log.warn("interrupt while waiting to produce request: " + ex.getMessage());
+//            }
             }
-        }
-        log.trace("produce request");
-        isHandlingRequest = true;
+            log.trace("produce request");
+            isHandlingRequest = true;
 
-        this.requests = requests;
-        currentHashDataInput = null;
-        for (STALRequest request : requests) {
-            if (request instanceof SignRequest) {
-                log.trace("Received SignRequest, keep HashDataInput.");
-                currentHashDataInput = ((SignRequest) request).getHashDataInput();
-                break;
-            } else if (request instanceof QuitRequest) {
-                //alternative1:
-                //for QUIT requests, do not wait for responses, but for request consumation
-                // (i.e. set isHandlingReq to false once QUIT is consumed)
-                log.trace("Received QuitRequest, do not wait for responses.");
-                log.trace("notifying request consumers");
-                notify();
-                //alternative2:
-                //wait for QUIT to be consumed
-                // (i.e. notify me once QUIT is consumed)
+            this.requests = requests;
+            currentHashDataInput = null;
+            for (STALRequest request : requests) {
+                if (request instanceof SignRequest) {
+                    log.trace("Received SignRequest, keep HashDataInput.");
+                    currentHashDataInput = ((SignRequest) request).getHashDataInput();
+                    break;
+                } else if (request instanceof QuitRequest) {
+                    //alternative1:
+                    //for QUIT requests, do not wait for responses, but for request consumation
+                    // (i.e. set isHandlingReq to false once QUIT is consumed)
+                    log.trace("Received QuitRequest, do not wait for responses.");
+                    log.trace("notifying request consumers");
+                    notify();
+                    //alternative2:
+                    //wait for QUIT to be consumed
+                    // (i.e. notify me once QUIT is consumed)
 //                while (this.requests != null) {
 //                    try {
 //                        long beforeWait = System.currentTimeMillis();
@@ -123,18 +124,18 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
 //                    }
 //                }
 //                isHandlingRequest = false;
-                return new ArrayList<STALResponse>();
-            } else if (log.isTraceEnabled()) {
-                log.trace("Received STAL request: " + request.getClass().getName());
+                    return new ArrayList<STALResponse>();
+                } else if (log.isTraceEnabled()) {
+                    log.trace("Received STAL request: " + request.getClass().getName());
+                }
             }
-        }
-        log.trace("notifying request consumers");
-        notify();
+            log.trace("notifying request consumers");
+            notify();
 
-        beforeWait = System.currentTimeMillis();
-        while (this.responses == null) {
-            log.trace("waiting to consume response");
-            try {
+            beforeWait = System.currentTimeMillis();
+            while (this.responses == null) {
+                log.trace("waiting to consume response");
+//            try {
                 wait(TIMEOUT_MS);
                 if (System.currentTimeMillis() - beforeWait >= TIMEOUT_MS) {
                     log.warn("timeout while waiting to consume response");
@@ -143,11 +144,11 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                     isHandlingRequest = false;
                     return Collections.singletonList((STALResponse) new ErrorResponse(ERR_6000));
                 }
-            } catch (InterruptedException ex) {
-                log.warn("interrupt while waiting to consume response: " + ex.getMessage());
+//            } catch (InterruptedException ex) {
+//                log.warn("interrupt while waiting to consume response: " + ex.getMessage());
+//            }
             }
-        }
-        log.trace("consuming responses");
+            log.trace("consuming responses");
         List<STALResponse> resps = responses;
         responses = null;
         log.trace("notifying response producers");
@@ -158,6 +159,10 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
         notify();
 
         return resps;
+        } catch (InterruptedException ex) {
+            log.warn("interrupt in handleRequest(): " + ex.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -167,75 +172,80 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
      */
     @Override
     public synchronized List<STALRequest> nextRequest(List<STALResponse> responses) {
-        if (responses != null && responses.size() > 0) {
-            if (!expectingResponse) {
-                log.warn("Received unexpected response in nextRequest()");
-                return Collections.singletonList((STALRequest) new QuitRequest());
-            }
-            long beforeWait = System.currentTimeMillis();
-            while (this.responses != null) {
-                log.trace("waiting to produce response");
-                try {
+        try {
+            if (responses != null && responses.size() > 0) {
+                if (!expectingResponse) {
+                    log.warn("Received unexpected response in nextRequest()");
+                    return Collections.singletonList((STALRequest) new QuitRequest());
+                }
+                long beforeWait = System.currentTimeMillis();
+                while (this.responses != null) {
+                    log.trace("waiting to produce response");
+//                try {
                     wait(TIMEOUT_MS);
                     if (System.currentTimeMillis() - beforeWait >= TIMEOUT_MS) {
                         log.warn("timeout while waiting to produce response");
                         return Collections.singletonList((STALRequest) new QuitRequest());
                     }
-                } catch (InterruptedException ex) {
-                    log.warn("interrupt while waiting to produce response: " + ex.getMessage());
+//                } catch (InterruptedException ex) {
+//                    log.warn("interrupt while waiting to produce response: " + ex.getMessage());
+//                }
                 }
-            }
-            log.trace("produce response");
-            this.responses = responses;
-            //reset HashDataInputCallback
-            if (log.isTraceEnabled()) {
-                for (STALResponse response : responses) {
-                    log.trace("Received STAL response: " + response.getClass().getName());
+                log.trace("produce response");
+                this.responses = responses;
+                //reset HashDataInputCallback
+                if (log.isTraceEnabled()) {
+                    for (STALResponse response : responses) {
+                        log.trace("Received STAL response: " + response.getClass().getName());
+                    }
                 }
+                log.trace("notifying response consumers");
+                notify();
+            } else {
+                if (expectingResponse) {
+                    // while (expectingResponse) wait();
+                    log.warn("No expected response received in nextRequest()");
+                    return Collections.singletonList((STALRequest) new QuitRequest());
+                }
+                log.trace("expecting non-null response in next nextRequest(response)");
+                expectingResponse = true;
             }
-            log.trace("notifying response consumers");
-            notify();
-        } else {
-            if (expectingResponse) {
-                // while (expectingResponse) wait();
-                log.warn("No expected response received in nextRequest()");
-                return Collections.singletonList((STALRequest) new QuitRequest());
-            }
-            log.trace("expecting non-null response in next nextRequest(response)");
-            expectingResponse = true;
-        }
-        long beforeWait = System.currentTimeMillis();
-        while (this.requests == null) {
-            log.trace("waiting to consume request");
-            try {
+            long beforeWait = System.currentTimeMillis();
+            while (this.requests == null) {
+                log.trace("waiting to consume request");
+//            try {
                 wait(TIMEOUT_MS);
                 if (System.currentTimeMillis() - beforeWait >= TIMEOUT_MS) {
                     log.warn("timeout while waiting to consume request");
                     return Collections.singletonList((STALRequest) new QuitRequest());
                 }
-            } catch (InterruptedException ex) {
-                log.warn("interrupt while waiting to consume request: " + ex.getMessage());
+//            } catch (InterruptedException ex) {
+//                log.warn("interrupt while waiting to consume request: " + ex.getMessage());
+//            }
             }
-        }
-        log.trace("consume request");
-        List<STALRequest> reqs = requests;
-        //TODO check if QUIT and set isHandlingReq to false here? 
-        // (rename isHandlingReq -> produce)
-        // handleReq(QUIT) doesn't wait() and returns immediately
-        // cf. handleReq(QUIT)
-        requests = null;
-        //no need to notify; request producer is waiting for isHandlingRequest
-        //(alt2: the QUIT producer returned immediately and didn't notify)
-        //(alt1: the QUIT producer is waiting for notification on QUIT consumption)
-        if (reqs.size() > 0 && reqs.get(0) instanceof QuitRequest) {
-            isHandlingRequest = false;
-            log.trace("consumed QUIT, notifying request producers");
-            notify();
-            log.trace("expecting no response in next nextRequest()");
-            expectingResponse = false;
+            log.trace("consume request");
+            List<STALRequest> reqs = requests;
+            //TODO check if QUIT and set isHandlingReq to false here? 
+            // (rename isHandlingReq -> produce)
+            // handleReq(QUIT) doesn't wait() and returns immediately
+            // cf. handleReq(QUIT)
+            requests = null;
+            //no need to notify; request producer is waiting for isHandlingRequest
+            //(alt2: the QUIT producer returned immediately and didn't notify)
+            //(alt1: the QUIT producer is waiting for notification on QUIT consumption)
+            if (reqs.size() > 0 && reqs.get(0) instanceof QuitRequest) {
+                isHandlingRequest = false;
+                log.trace("consumed QUIT, notifying request producers");
+                notify();
+                log.trace("expecting no response in next nextRequest()");
+                expectingResponse = false;
             //notify no-response request consumers
+            }
+            return reqs;
+        } catch (InterruptedException ex) {
+            log.warn("interrupt in nextRequest(): " + ex.getMessage());
+            return null;
         }
-        return reqs;
     }
 
     @Override
