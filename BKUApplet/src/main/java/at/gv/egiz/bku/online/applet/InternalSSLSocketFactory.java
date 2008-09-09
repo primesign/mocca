@@ -40,12 +40,12 @@ import org.apache.commons.logging.LogFactory;
 
 public class InternalSSLSocketFactory extends SSLSocketFactory {
 
+	private final static String GOV_DOMAIN = ".gv.at";
+
 	private static InternalSSLSocketFactory instance = new InternalSSLSocketFactory();
 
 	private final static Log log = LogFactory
 			.getLog(InternalSSLSocketFactory.class);
-
-	private final static String GOV_DOMAIN = ".gv.at";
 
 	private SSLSocket sslSocket;
 

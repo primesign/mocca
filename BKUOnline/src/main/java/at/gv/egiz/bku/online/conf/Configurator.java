@@ -52,9 +52,9 @@ public class Configurator {
 
 	protected void configureProviders() {
 		log.debug("Registering security providers");
-                Security.insertProviderAt(new IAIK(), 1);
-                Security.insertProviderAt(new ECCProvider(false), 2);
-    		Security.addProvider(new STALProvider());
+		Security.insertProviderAt(new IAIK(), 1);
+		Security.insertProviderAt(new ECCProvider(false), 2);
+		Security.addProvider(new STALProvider());
 		XSecProvider.addAsProvider(false);
 		StringBuilder sb = new StringBuilder();
 		sb.append("Registered providers: ");
@@ -65,7 +65,7 @@ public class Configurator {
 		log.debug(sb.toString());
 	}
 
-        public void configure() {
+	public void configure() {
 		configureProviders();
 		configUrlConnections();
 	}

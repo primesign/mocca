@@ -150,6 +150,11 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
     log.info("Shutting down the BindingProcessorManager");
     executorService.shutdown();
   }
+  
+  public void shutdownNow() {
+  	log.info("Shutting down the BindingProcessorManager NOW!");
+    executorService.shutdownNow();
+  }
 
   /**
    * Uses the default locale
@@ -224,6 +229,7 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
           "Clashing ids, cannot process bindingprocessor with id:"
               + aBindingProcessor.getId());
     }
+    log.debug("processing bindingprocessor: "+aBindingProcessor.getId());
     Future<?> f = executorService.submit(aBindingProcessor);
     bindingProcessorMap.put(aBindingProcessor.getId(), new MapEntityWrapper(f,
         aBindingProcessor));
@@ -236,6 +242,7 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
 
   @Override
   public void removeBindingProcessor(Id sessionId) {
+  	log.debug("Removing binding processor: "+sessionId);
     MapEntityWrapper wrapper = bindingProcessorMap
         .get(sessionId);
     if (wrapper == null) {

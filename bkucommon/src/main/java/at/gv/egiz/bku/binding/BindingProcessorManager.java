@@ -100,4 +100,6 @@ public interface BindingProcessorManager {
   public Set<Id> getManagedIds();
       
   public void shutdown();
+  
+  public void shutdownNow();
 }

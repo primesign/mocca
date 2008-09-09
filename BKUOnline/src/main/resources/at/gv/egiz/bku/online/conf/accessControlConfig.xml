@@ -54,8 +54,7 @@
 			<Rules>
 				<Rule Id="cmd-rule-1">
 					<AuthClass>certified</AuthClass>
-					<AnyPeer />
-					<Command Name="Infobox*">
+					<Command Name="Infobox.*">
 						<Param Name="InfoboxIdentifier">IdentityLink</Param>
 						<Param Name="PersonIdentifier">derived</Param>
 					</Command>
