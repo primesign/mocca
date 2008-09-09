@@ -34,6 +34,8 @@ import at.gv.egiz.bku.smccstal.AbstractSMCCSTAL;
 import at.gv.egiz.bku.smccstal.SMCCSTALRequestHandler;
 import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.smcc.util.SMCCHelper;
+import at.gv.egiz.stal.ErrorResponse;
+import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
@@ -107,6 +109,8 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     gui.showWelcomeDialog();
     try {
       stalPort = getSTALPort();
+     
+      
     } catch (Exception e) {
       log.fatal("Failed to call STAL service.", e);
       actionCommandList.clear();
@@ -134,7 +138,26 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
       GetNextRequestResponseType resp = stalPort.getNextRequest(nextRequest);
       log.info("Got " + resp.getRequest().size() + " requests from server.");
       List<STALRequest> stalRequests = resp.getRequest();
-      List<STALResponse> responses = handleRequest(stalRequests);
+      boolean handle = true;
+      for (STALRequest request : stalRequests) {
+      	if (request instanceof InfoboxReadRequest) {
+      		InfoboxReadRequest infobx = (InfoboxReadRequest) request;
+      		if (infobx.getInfoboxIdentifier().equals("IdentityLink")) {
+      			if (infobx.getDomainIdentifier() == null) {
+      				if (!InternalSSLSocketFactory.getInstance().isEgovAgency()) {
+      					handle = false;
+      				}
+      			}
+      		}
+      	}
+      }
+      List<STALResponse> responses;
+      if (handle) {
+           responses = handleRequest(stalRequests);
+      } else {
+      	responses = new ArrayList<STALResponse>(1);
+        responses.add(new ErrorResponse(6002));
+      }
       log.info("Got " + responses.size() + " responses.");
       nextRequest = factory.createGetNextRequestType();
       nextRequest.setSessionId(sessionId);

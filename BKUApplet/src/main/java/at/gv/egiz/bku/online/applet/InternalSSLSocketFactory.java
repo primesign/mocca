@@ -1,19 +1,19 @@
 /*
-* Copyright 2008 Federal Chancellery Austria and
-* Graz University of Technology
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright 2008 Federal Chancellery Austria and
+ * Graz University of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -22,80 +22,139 @@
 package at.gv.egiz.bku.online.applet;
 
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
+import java.util.Collection;
+import java.util.List;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.X509TrustManager;
 
-public class InternalSSLSocketFactory {
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-  private SSLSocketFactory factory;
+public class InternalSSLSocketFactory extends SSLSocketFactory {
 
-  public static SSLSocketFactory getSocketFactory() throws InternalSSLSocketFactoryException {
-    return new InternalSSLSocketFactory().factory;
-  }
-  
-  public static HostnameVerifier getHostNameVerifier() throws InternalSSLSocketFactoryException {
-   return (new HostnameVerifier() {
-    @Override
-    public boolean verify(String hostname, SSLSession session) {
-      return true;
-    }    
-   });
-  }
+	private static InternalSSLSocketFactory instance = new InternalSSLSocketFactory();
 
-  public InternalSSLSocketFactory() throws InternalSSLSocketFactoryException {
-    SSLContext sslContext;
-    try {
-      sslContext = SSLContext.getInstance("TLSv1");
-      sslContext.getClientSessionContext().setSessionTimeout(0);
-      KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+	private final static Log log = LogFactory
+			.getLog(InternalSSLSocketFactory.class);
 
-      KeyStore keyStore = KeyStore.getInstance("JKS");
-      keyStore.load(null, null);
-      keyManagerFactory.init(keyStore, null);
+	private final static String GOV_DOMAIN = ".gv.at";
 
-      sslContext.init(keyManagerFactory.getKeyManagers(), 
-        new X509TrustManager[] { new AcceptAllTrustManager() },
-        null);
-    } catch (NoSuchAlgorithmException e) {
-      throw new InternalSSLSocketFactoryException(e);
-    } catch (CertificateException e) {
-      throw new InternalSSLSocketFactoryException(e);
-    } catch (IOException e) {
-      throw new InternalSSLSocketFactoryException(e);
-    } catch (KeyStoreException e) {
-      throw new InternalSSLSocketFactoryException(e);
-    } catch (UnrecoverableKeyException e) {
-      throw new InternalSSLSocketFactoryException(e);
-    } catch (KeyManagementException e) {
-      throw new InternalSSLSocketFactoryException(e);
-    }
+	private SSLSocket sslSocket;
 
-    this.factory = sslContext.getSocketFactory();
-  }
+	private SSLSocketFactory proxy;
 
-  class AcceptAllTrustManager implements X509TrustManager {
+	private InternalSSLSocketFactory() {
+		proxy = HttpsURLConnection.getDefaultSSLSocketFactory();
+	}
 
-    public X509Certificate[] getAcceptedIssuers() {
-      return null;
-    }
+	public static InternalSSLSocketFactory getInstance() {
+		return instance;
+	}
 
-    public void checkClientTrusted(X509Certificate[] chain, String authType) {
-    }
+	@Override
+	public Socket createSocket() throws IOException {
+		sslSocket = (SSLSocket) proxy.createSocket();
+		return sslSocket;
+	}
 
-    public void checkServerTrusted(X509Certificate[] chain, String authType) {
-      //FIXME
-    }
-  }
-};
+	@Override
+	public Socket createSocket(String arg0, int arg1) throws IOException,
+			UnknownHostException {
+		sslSocket = (SSLSocket) proxy.createSocket(arg0, arg1);
+
+		return sslSocket;
+	}
+
+	@Override
+	public Socket createSocket(InetAddress arg0, int arg1) throws IOException {
+		sslSocket = (SSLSocket) proxy.createSocket(arg0, arg1);
+		return sslSocket;
+	}
+
+	@Override
+	public Socket createSocket(String arg0, int arg1, InetAddress arg2, int arg3)
+			throws IOException, UnknownHostException {
+		sslSocket = (SSLSocket) proxy.createSocket(arg0, arg1, arg2, arg3);
+		return sslSocket;
+	}
+
+	@Override
+	public Socket createSocket(InetAddress arg0, int arg1, InetAddress arg2,
+			int arg3) throws IOException {
+		sslSocket = (SSLSocket) proxy.createSocket(arg0, arg1, arg2, arg3);
+		return sslSocket;
+	}
+
+	@Override
+	public Socket createSocket(Socket arg0, String arg1, int arg2, boolean arg3)
+			throws IOException {
+		sslSocket = (SSLSocket) proxy.createSocket(arg0, arg1, arg2, arg3);
+		return sslSocket;
+	}
+
+	@Override
+	public String[] getDefaultCipherSuites() {
+		return proxy.getDefaultCipherSuites();
+	}
+
+	@Override
+	public String[] getSupportedCipherSuites() {
+		return proxy.getSupportedCipherSuites();
+	}
+
+	public boolean isEgovAgency() {
+		log.info("Checking if server is egov agency");
+		if (sslSocket != null) {
+			try {
+				X509Certificate cert = (X509Certificate) sslSocket.getSession()
+						.getPeerCertificates()[0];
+				log.info("Server cert: " + cert);
+				return isGovAgency(cert);
+			} catch (SSLPeerUnverifiedException e) {
+				log.error(e);
+				return false;
+			}
+		}
+		log.info("Not a SSL connection");
+		return false;
+	}
+
+	public static boolean isGovAgency(X509Certificate cert) {
+		String[] rdns = (cert.getSubjectX500Principal().getName()).split(",");
+		for (String rdn : rdns) {
+			if (rdn.startsWith("CN=")) {
+				String dns = rdn.split("=")[1];
+				if (dns.endsWith(GOV_DOMAIN)) {
+					return true;
+				}
+			}
+		}
+		try {
+			Collection<List<?>> sanList = cert.getSubjectAlternativeNames();
+			if (sanList != null) {
+				for (List<?> san : sanList) {
+					if ((Integer) san.get(0) == 2) {
+						String dns = (String) san.get(1);
+						if (dns.endsWith(GOV_DOMAIN)) {
+							return true;
+						}
+					}
+				}
+			}
+		} catch (CertificateParsingException e) {
+			log.error(e);
+		}
+		if (cert.getExtensionValue("1.2.40.0.10.1.1.1") != null) {
+			return true;
+		}
+		return false;
+	}
+}
