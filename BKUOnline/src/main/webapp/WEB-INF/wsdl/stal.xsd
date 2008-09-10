@@ -81,6 +81,7 @@
         <complexContent>
             <extension base="tns:RequestType">
                 <sequence>
+                    <!-- enumeration IdentityLink, CertifiedKeyPair -->
                     <element name="InfoboxIdentifier" type="string"/>
                     <element name="DomainIdentifier" type="string" minOccurs="0"/>
                 </sequence>
