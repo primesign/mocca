@@ -23,43 +23,47 @@ package at.gv.egiz.bku.gui;
 import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.stal.HashDataInput;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingUtilities;
+import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
@@ -75,9 +79,9 @@ public class BKUGUI implements BKUGUIFacade {
     private static final Log log = LogFactory.getLog(BKUGUI.class);
     public static final String MESSAGES_BUNDLE = "at/gv/egiz/bku/gui/Messages";
     public static final String LOGO_RESOURCE = "/images/logo.png";
-    public static final int MAIN_PANEL_WIDTH = 100;
+//    public static final int MAIN_PANEL_WIDTH = 100;
 //    public static final int MAIN_PANEL_HEIGHT = 20;
-    public static final int PREF_SIZE_PINFIELD = 118;
+//    public static final int PREF_SIZE_PINFIELD = 118;
     public static final Color ERROR_COLOR = Color.RED;
     public static final Color HYPERLINK_COLOR = Color.BLUE;
     private static final String TITLE_WELCOME = "title.welcome";
@@ -95,18 +99,21 @@ public class BKUGUI implements BKUGUIFacade {
     private static final String MESSAGE_INSERTCARD = "message.insertcard";
     private static final String MESSAGE_HASHDATALINK = "message.hashdatalink";
     private static final String MESSAGE_HASHDATA = "message.hashdata";
+    private static final String MESSAGE_HASHDATALIST = "message.hashdatalist";
     private static final String MESSAGE_RETRIES = "message.retries";
     private static final String MESSAGE_OVERWRITE = "message.overwrite";
     private static final String LABEL_PIN = "label.pin";
     private static final String LABEL_PINSIZE = "label.pinsize";
-//    private static final String LABEL_CARDPINSIZE="label.cardpinsize";
-//    private static final String LABEL_SIGNPIN="label.signpin";
-//    private static final String LABEL_SIGNPINSIZE="label.signpinsize";
+    private static final String ERROR_HASHDATA = "error.hashdata";
+    
     private static final String BUTTON_OK = "button.ok";
     private static final String BUTTON_CANCEL = "button.cancel";
+    private static final String BUTTON_BACK = "button.back";
     private static final String BUTTON_SIGN = "button.sign";
     private static final String BUTTON_SAVE = "button.save";
     private static final String MIMETYPE_DESC_XML = "mimetype.desc.xml";
+    private static final String MIMETYPE_DESC_HTML = "mimetype.desc.html";
+    private static final String MIMETYPE_DESC_XHTML = "mimetype.desc.xhtml";
     private static final String MIMETYPE_DESC_TXT = "mimetype.desc.txt";
     private static final String MIMETYPE_DESC_PDF = "mimetype.desc.pdf";
     private static final String MIMETYPE_DESC_BIN = "mimetype.desc.bin";
@@ -125,6 +132,15 @@ public class BKUGUI implements BKUGUIFacade {
     /** remember the pinfield to return to worker */
     protected JPasswordField pinField;
 
+    protected JButton okButton;
+    protected JButton cancelButton;
+    protected JButton signButton;
+    protected JButton saveButton;
+    protected JButton backButton;
+    protected int buttonSize;
+    
+    private static final int CHECKBOX_WIDTH = new JCheckBox().getPreferredSize().width;
+    
     /**
      * @param contentPane
      * @param localeString may be null
@@ -168,9 +184,19 @@ public class BKUGUI implements BKUGUIFacade {
         GroupLayout iconPanelLayout = new GroupLayout(iconPanel);
         iconPanel.setLayout(iconPanelLayout);
         iconPanelLayout.setHorizontalGroup(
-          iconPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(iconPanelLayout.createSequentialGroup().addContainerGap().addComponent(iconLabel).addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+          iconPanelLayout.createSequentialGroup()
+//          iconPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//            .addGroup(iconPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(iconLabel, GroupLayout.PREFERRED_SIZE, iconLabel.getPreferredSize().width, GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)); //);
         iconPanelLayout.setVerticalGroup(
-          iconPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(iconPanelLayout.createSequentialGroup().addContainerGap().addComponent(iconLabel, GroupLayout.PREFERRED_SIZE, 105, GroupLayout.PREFERRED_SIZE).addContainerGap(41, Short.MAX_VALUE)));
+          iconPanelLayout.createSequentialGroup()
+//          iconPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//            .addGroup(iconPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(iconLabel, GroupLayout.PREFERRED_SIZE, iconLabel.getPreferredSize().height, GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)); //);
     }
 
     protected void initContentPanel() {
@@ -190,23 +216,60 @@ public class BKUGUI implements BKUGUIFacade {
           java.awt.Font.BOLD, titleLabel.getFont().getSize() + 2));
 //        titleLabel.setForeground(defaultForground);
 
+        okButton = new JButton();
+        okButton.setText(messages.getString(BUTTON_OK));
+        cancelButton = new JButton();
+        cancelButton.setText(messages.getString(BUTTON_CANCEL));
+        signButton = new JButton();
+        signButton.setText(messages.getString(BUTTON_SIGN));
+        backButton = new JButton();
+        backButton.setText(messages.getString(BUTTON_BACK));
+        saveButton = new JButton();
+        saveButton.setText(messages.getString(BUTTON_SAVE));
+//        contentPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
+        
+        if (okButton.getPreferredSize().width > buttonSize)
+            buttonSize = okButton.getPreferredSize().width;
+        if (cancelButton.getPreferredSize().width > buttonSize)
+            buttonSize = cancelButton.getPreferredSize().width;
+        if (signButton.getPreferredSize().width > buttonSize)
+            buttonSize = signButton.getPreferredSize().width;
+        if (backButton.getPreferredSize().width > buttonSize)
+            buttonSize = backButton.getPreferredSize().width;
+        if (saveButton.getPreferredSize().width > buttonSize)
+            buttonSize = saveButton.getPreferredSize().width;
+
+        
         GroupLayout headerPanelLayout = new GroupLayout(headerPanel);
         headerPanel.setLayout(headerPanelLayout);
 
         headerPanelLayout.setHorizontalGroup(
-          headerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(titleLabel, GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE));
+          headerPanelLayout.createSequentialGroup()
+//          headerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addComponent(titleLabel, 0, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
         headerPanelLayout.setVerticalGroup(
-          headerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(titleLabel));
+          headerPanelLayout.createSequentialGroup()
+//          headerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addComponent(titleLabel, 0, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
 
 //        mainPanel.setPreferredSize(new Dimension(MAIN_PANEL_WIDTH, MAIN_PANEL_HEIGHT));
 
         GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
         contentPanel.setLayout(contentPanelLayout);
         contentPanelLayout.setHorizontalGroup(
-          contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(contentPanelLayout.createSequentialGroup().addContainerGap().addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(headerPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addComponent(mainPanel, GroupLayout.DEFAULT_SIZE, MAIN_PANEL_WIDTH, Short.MAX_VALUE).addComponent(buttonPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))));
+          contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addComponent(headerPanel, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(mainPanel, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(buttonPanel, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)); //));
         contentPanelLayout.setVerticalGroup(
-          contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(contentPanelLayout.createSequentialGroup().addContainerGap().addComponent(headerPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(mainPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE) //79, GroupLayout.PREFERRED_SIZE)
-          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addComponent(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addContainerGap()));
+          contentPanelLayout.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(headerPanel, 0, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(mainPanel, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) 
+            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED) //, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(buttonPanel, 0, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+            .addContainerGap()); //);
     }
 
     @Override
@@ -229,9 +292,13 @@ public class BKUGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(waitMsgLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
+                  mainPanelLayout.createSequentialGroup()
+//                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                  .addComponent(waitMsgLabel)
+                  .addContainerGap()); //, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
                 mainPanelLayout.setVerticalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(waitMsgLabel));
+                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                  .addComponent(waitMsgLabel));
 
                 contentPanel.validate();
             }
@@ -257,9 +324,14 @@ public class BKUGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(waitMsgLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
+                  mainPanelLayout.createSequentialGroup()
+//                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                  .addComponent(waitMsgLabel)
+                  .addContainerGap()); //, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
                 mainPanelLayout.setVerticalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(waitMsgLabel));
+                  mainPanelLayout.createSequentialGroup()
+//                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                  .addComponent(waitMsgLabel));
 
                 contentPanel.validate();
 
@@ -276,21 +348,25 @@ public class BKUGUI implements BKUGUIFacade {
                 buttonPanel.removeAll();
 
                 titleLabel.setText(messages.getString(TITLE_INSERTCARD));
-//                titleLabel.setForeground(defaultForground);
 
-                JButton cancelButton = new JButton();
-                cancelButton.setFont(cancelButton.getFont());
-                cancelButton.setText(messages.getString(BUTTON_CANCEL));
                 cancelButton.addActionListener(cancelListener);
                 cancelButton.setActionCommand(cancelCommand);
 
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
 
+//                buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
                 buttonPanelLayout.setHorizontalGroup(
-                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addComponent(cancelButton).addContainerGap()));
+                  buttonPanelLayout.createSequentialGroup()
+//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//                    .addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
+                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap()); //);
                 buttonPanelLayout.setVerticalGroup(
-                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(cancelButton));
+                  buttonPanelLayout.createSequentialGroup()
+//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(cancelButton));
 
                 contentPanel.validate();
             }
@@ -308,12 +384,6 @@ public class BKUGUI implements BKUGUIFacade {
                 titleLabel.setText(messages.getString(TITLE_CARD_NOT_SUPPORTED));
 //                titleLabel.setForeground(defaultForground);
 
-                JButton cancelButton = new JButton();
-                cancelButton.setFont(cancelButton.getFont());
-                cancelButton.setText(messages.getString(BUTTON_CANCEL));
-                cancelButton.addActionListener(cancelListener);
-                cancelButton.setActionCommand(cancelCommand);
-
                 JLabel errorMsgLabel = new JLabel();
                 errorMsgLabel.setFont(errorMsgLabel.getFont().deriveFont(errorMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                 errorMsgLabel.setText(messages.getString(MESSAGE_INSERTCARD));
@@ -322,19 +392,33 @@ public class BKUGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(errorMsgLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
+                  mainPanelLayout.createSequentialGroup()
+//                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(errorMsgLabel)); //, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
                 mainPanelLayout.setVerticalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(errorMsgLabel));
+                  mainPanelLayout.createSequentialGroup()
+//                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(errorMsgLabel));
 
+                cancelButton.addActionListener(cancelListener);
+                cancelButton.setActionCommand(cancelCommand);
 
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
 
+//                buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
                 buttonPanelLayout.setHorizontalGroup(
-                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addComponent(cancelButton).addContainerGap()));
+                  buttonPanelLayout.createSequentialGroup()
+//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//                    .addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
+                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap()); //);
                 buttonPanelLayout.setVerticalGroup(
-                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(cancelButton));
-
+                  buttonPanelLayout.createSequentialGroup()
+//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(cancelButton));
+                
                 contentPanel.validate();
             }
         });
@@ -355,16 +439,10 @@ public class BKUGUI implements BKUGUIFacade {
                     titleLabel.setText(messages.getString(TITLE_RETRY));
                 }
 
-                JButton cancelButton = new JButton();
-                cancelButton.setFont(cancelButton.getFont());
-                cancelButton.setText(messages.getString(BUTTON_CANCEL));
                 cancelButton.setActionCommand(cancelCommand);
                 cancelButton.addActionListener(cancelListener);
 
-                JButton okButton = new JButton();
                 okButton.setEnabled(false);
-                okButton.setFont(okButton.getFont());
-                okButton.setText(messages.getString(BUTTON_OK));
                 okButton.setActionCommand(okCommand);
                 okButton.addActionListener(okListener);
 
@@ -402,37 +480,77 @@ public class BKUGUI implements BKUGUIFacade {
                     infoLabel.setForeground(ERROR_COLOR);
                 }
 
+//                GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
+//                mainPanel.setLayout(mainPanelLayout);
+//
+//                mainPanelLayout.setHorizontalGroup(
+//                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//                  .addGroup(mainPanelLayout.createSequentialGroup() //                  .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//                  //                  .addComponent(hashDataLabel)
+//                  //                  .addGroup(GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+//                  .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED) //RELATED)
+//                  .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING) //TRAILING)
+//                  .addComponent(infoLabel) //, GroupLayout.DEFAULT_SIZE, PREF_SIZE_PINFIELD, Short.MAX_VALUE)
+//                  .addComponent(pinField, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)) //))
+//                  .addContainerGap()));
+//
+//                mainPanelLayout.setVerticalGroup(
+//                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(mainPanelLayout.createSequentialGroup().addContainerGap() //                  .addComponent(hashDataLabel).addGap(14, 14, 14)
+//                  .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) //, false)
+//                  .addComponent(cardPinLabel) //, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE)
+//                  .addComponent(pinField)) //, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE))
+//                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(infoLabel).addGap(cardPinLabel.getFont().getSize()))); //10, 10, 10)));
+//
+//                GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+//                buttonPanel.setLayout(buttonPanelLayout);
+//
+//                buttonPanelLayout.setHorizontalGroup(
+//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(15, Short.MAX_VALUE).addComponent(okButton).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(cancelButton).addContainerGap()));
+//                buttonPanelLayout.setVerticalGroup(
+//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(okButton).addComponent(cancelButton)));
+
+                
                 GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
                 mainPanel.setLayout(mainPanelLayout);
 
-//                GroupLayout.ParallelGroup mainGroup = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
-//                mainGroup.addComponent(pinSizeLabel) //, GroupLayout.DEFAULT_SIZE, PREF_SIZE_PINFIELD, Short.MAX_VALUE)
-//                  .addComponent(pinField, GroupLayout.DEFAULT_SIZE, PREF_SIZE_PINFIELD, Short.MAX_VALUE);
-
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(mainPanelLayout.createSequentialGroup() //                  .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                  //                  .addComponent(hashDataLabel)
-                  //                  .addGroup(GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                  .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED) //RELATED)
-                  .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING) //TRAILING)
-                  .addComponent(infoLabel) //, GroupLayout.DEFAULT_SIZE, PREF_SIZE_PINFIELD, Short.MAX_VALUE)
-                  .addComponent(pinField, GroupLayout.DEFAULT_SIZE, PREF_SIZE_PINFIELD, Short.MAX_VALUE)) //))
-                  .addContainerGap()));
+                  mainPanelLayout.createSequentialGroup()
+//                        .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//                            .addComponent(hashDataLabel)
+//                        .addGroup(GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                        .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) //))
+                            .addComponent(infoLabel))
+                        .addContainerGap());
 
                 mainPanelLayout.setVerticalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(mainPanelLayout.createSequentialGroup().addContainerGap() //                  .addComponent(hashDataLabel).addGap(14, 14, 14)
-                  .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) //, false)
-                  .addComponent(cardPinLabel) //, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE)
-                  .addComponent(pinField)) //, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE))
-                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(infoLabel).addGap(cardPinLabel.getFont().getSize()))); //10, 10, 10)));
+                  mainPanelLayout.createSequentialGroup()
+//                        .addComponent(hashDataLabel)
+//                        .addGap(hashDataLabel.getFont().getSize())
+                        .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                            .addComponent(cardPinLabel)
+                            .addComponent(pinField))
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(infoLabel));
+//                        .addGap(signPinLabel.getFont().getSize())); 
 
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
 
+//                buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
                 buttonPanelLayout.setHorizontalGroup(
-                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(15, Short.MAX_VALUE).addComponent(okButton).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(cancelButton).addContainerGap()));
+                  buttonPanelLayout.createSequentialGroup()
+                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(okButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap());//);
                 buttonPanelLayout.setVerticalGroup(
-                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(okButton).addComponent(cancelButton)));
+                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) 
+                        .addComponent(okButton)
+                        .addComponent(cancelButton)); 
 
                 pinField.requestFocusInWindow();
                 contentPanel.validate();
@@ -474,16 +592,10 @@ public class BKUGUI implements BKUGUIFacade {
                     titleLabel.setText(messages.getString(TITLE_RETRY));
                 }
 
-                JButton cancelButton = new JButton();
-                cancelButton.setFont(cancelButton.getFont());
-                cancelButton.setText(messages.getString(BUTTON_CANCEL));
                 cancelButton.setActionCommand(cancelCommand);
                 cancelButton.addActionListener(cancelListener);
 
-                JButton signButton = new JButton();
                 signButton.setEnabled(false);
-                signButton.setFont(signButton.getFont());
-                signButton.setText(messages.getString(BUTTON_SIGN));
                 signButton.setActionCommand(signCommand);
                 signButton.addActionListener(signListener);
 
@@ -539,22 +651,43 @@ public class BKUGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(mainPanelLayout.createSequentialGroup().addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(hashDataLabel).addGroup(GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup().addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING).addComponent(infoLabel) //, GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)
-                  .addComponent(pinField, GroupLayout.DEFAULT_SIZE, PREF_SIZE_PINFIELD, Short.MAX_VALUE)))).addContainerGap()));
+                  mainPanelLayout.createSequentialGroup()
+                        .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                            .addComponent(hashDataLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                            .addGroup(GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                                .addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                                    .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(infoLabel))))
+                        .addContainerGap());
 
                 mainPanelLayout.setVerticalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(mainPanelLayout.createSequentialGroup().addComponent(hashDataLabel).addGap(hashDataLabel.getFont().getSize()) //14, 14, 14)
-                  .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE, false).addComponent(signPinLabel) //, GroupLayout.PREFERRED_SIZE, 17, GroupLayout.PREFERRED_SIZE)
-                  .addComponent(pinField)) //, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE))
-                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(infoLabel).addGap(signPinLabel.getFont().getSize()))); //10, 10, 10)));
+                  mainPanelLayout.createSequentialGroup()
+                        .addComponent(hashDataLabel)
+                        .addGap(hashDataLabel.getFont().getSize())
+                        .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                            .addComponent(signPinLabel)
+                            .addComponent(pinField))
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(infoLabel));
+//                        .addGap(signPinLabel.getFont().getSize())); 
 
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
 
+//                buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
                 buttonPanelLayout.setHorizontalGroup(
-                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(15, Short.MAX_VALUE).addComponent(signButton).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(cancelButton).addContainerGap()));
+                  buttonPanelLayout.createSequentialGroup()
+                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(signButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap());//);
                 buttonPanelLayout.setVerticalGroup(
-                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(signButton).addComponent(cancelButton)));
+                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) 
+                        .addComponent(signButton)
+                        .addComponent(cancelButton)); 
 
                 pinField.requestFocusInWindow();
                 contentPanel.validate();
@@ -625,23 +758,30 @@ public class BKUGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(errorMsgLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
+                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                  .addComponent(errorMsgLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
                 mainPanelLayout.setVerticalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(errorMsgLabel));
+                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                  .addComponent(errorMsgLabel));
 
-                JButton okButton = new JButton();
-                okButton.setFont(okButton.getFont());
-                okButton.setText(messages.getString(BUTTON_OK));
                 okButton.setActionCommand(okCommand);
                 okButton.addActionListener(okListener);
 
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
 
+//                buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
                 buttonPanelLayout.setHorizontalGroup(
-                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addComponent(okButton).addContainerGap()));
+                  buttonPanelLayout.createSequentialGroup()
+//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//                    .addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
+                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(okButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap()); //);
                 buttonPanelLayout.setVerticalGroup(
-                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(okButton));
+                  buttonPanelLayout.createSequentialGroup()
+//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(okButton));
 
                 contentPanel.validate();
             }
@@ -668,9 +808,13 @@ public class BKUGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(errorMsgLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
+                  mainPanelLayout.createSequentialGroup()
+//                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                  .addComponent(errorMsgLabel)
+                  .addContainerGap()); //, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
                 mainPanelLayout.setVerticalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(errorMsgLabel));
+                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                  .addComponent(errorMsgLabel));
 
                 contentPanel.validate();
             }
@@ -725,41 +869,26 @@ public class BKUGUI implements BKUGUIFacade {
                         showSaveHashDataInputDialog(signedRef, okListener, okCommand);
                     }
 
+                } else if (signedReferences != null && signedReferences.size() > 1) {
+                    final HashDataTableModel tableModel = new HashDataTableModel(signedReferences);
+
+                    ActionListener al = new ActionListener() {
+
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            List<String> selection = tableModel.getSelectedReferenceIds();
+                            StringBuilder sb = new StringBuilder("<html>Not implemented yet. \n");
+                            for (String string : selection) {
+                                sb.append(string);
+                                sb.append('\n');
+                            }
+                            showErrorDialog(sb.toString(), okListener, okCommand);
+//                            showSaveHashDataInputDialog(signedRef, okListener, okCommand);
+                        }
+                    };
+                    showMultipleHashDataInputDialog(tableModel, okListener, okCommand, al, "save");
                 } else {
-                    mainPanel.removeAll();
-                    buttonPanel.removeAll();
-
-                    titleLabel.setText(messages.getString(TITLE_ERROR));
-                    //                titleLabel.setForeground(defaultForground);
-
-                    JLabel errorMsgLabel = new JLabel();
-                    errorMsgLabel.setFont(errorMsgLabel.getFont().deriveFont(errorMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                    errorMsgLabel.setText("<html>HashDataInputDialog not supported yet.</html>");
-                    errorMsgLabel.setForeground(ERROR_COLOR);
-
-                    GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
-                    mainPanel.setLayout(mainPanelLayout);
-
-                    mainPanelLayout.setHorizontalGroup(
-                      mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(errorMsgLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
-                    mainPanelLayout.setVerticalGroup(
-                      mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(errorMsgLabel));
-
-                    JButton okButton = new JButton();
-                    okButton.setFont(okButton.getFont());
-                    okButton.setText(messages.getString(BUTTON_OK));
-                    okButton.setActionCommand(okCommand);
-                    okButton.addActionListener(okListener);
-
-                    GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
-                    buttonPanel.setLayout(buttonPanelLayout);
-
-                    buttonPanelLayout.setHorizontalGroup(
-                      buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addComponent(okButton).addContainerGap()));
-                    buttonPanelLayout.setVerticalGroup(
-                      buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(okButton));
-
-                    contentPanel.validate();
+                    showErrorDialog(messages.getString(ERROR_HASHDATA), okListener, okCommand);
                 }
             }
         });
@@ -774,54 +903,193 @@ public class BKUGUI implements BKUGUIFacade {
         JLabel refIdLabel = new JLabel();
         refIdLabel.setFont(refIdLabel.getFont().deriveFont(refIdLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
         String refIdLabelPattern = messages.getString(MESSAGE_HASHDATA);
-        refIdLabel.setText(MessageFormat.format(refIdLabelPattern, new Object[] {refId} ));
+        refIdLabel.setText(MessageFormat.format(refIdLabelPattern, new Object[]{refId}));
 
         JScrollPane hashDataScrollPane = new JScrollPane();
         JTextArea hashDataTextArea = new JTextArea(text);
         hashDataTextArea.setEditable(false);
-        hashDataTextArea.setColumns(20);
-        hashDataTextArea.setRows(3);
+        hashDataTextArea.setColumns(1);
+        hashDataTextArea.setRows(1);
         hashDataScrollPane.setViewportView(hashDataTextArea);
-
-        
-        JButton cancelButton = new JButton();
-        cancelButton.setFont(cancelButton.getFont());
-        cancelButton.setText(messages.getString(BUTTON_CANCEL));
-        cancelButton.setActionCommand(cancelCommand);
-        cancelButton.addActionListener(cancelListener);
-
-        JButton saveButton = new JButton();
-        saveButton.setFont(saveButton.getFont());
-        saveButton.setText(messages.getString(BUTTON_SAVE));
-        saveButton.setActionCommand(saveCommand);
-        saveButton.addActionListener(saveListener);
 
         GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
 
         mainPanelLayout.setHorizontalGroup(
-          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-          .addGroup(mainPanelLayout.createSequentialGroup()
-          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-          .addComponent(refIdLabel)
-          .addComponent(hashDataScrollPane, GroupLayout.PREFERRED_SIZE, PREF_SIZE_PINFIELD, Short.MAX_VALUE))
-          .addContainerGap()));
-          
+          mainPanelLayout.createSequentialGroup()
+                .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(refIdLabel)
+                    .addComponent(hashDataScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap());
+
         mainPanelLayout.setVerticalGroup(
-          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-          .addGroup(mainPanelLayout.createSequentialGroup()
-          .addComponent(refIdLabel)
-          .addGap(refIdLabel.getFont().getSize())
-          .addComponent(hashDataScrollPane)
-          .addGap(refIdLabel.getFont().getSize())));
-                
+          mainPanelLayout.createSequentialGroup()
+                .addComponent(refIdLabel)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(hashDataScrollPane, 0, GroupLayout.PREFERRED_SIZE, hashDataTextArea.getPreferredSize().height+3));
+
+        
+        
+//        GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
+//        mainPanel.setLayout(mainPanelLayout);
+//
+//        mainPanelLayout.setHorizontalGroup(
+//          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(mainPanelLayout.createSequentialGroup().addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(refIdLabel).addComponent(hashDataScrollPane, GroupLayout.PREFERRED_SIZE, PREF_SIZE_PINFIELD, Short.MAX_VALUE)).addContainerGap()));
+//
+//        mainPanelLayout.setVerticalGroup(
+//          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(mainPanelLayout.createSequentialGroup().addComponent(refIdLabel).addGap(refIdLabel.getFont().getSize()).addComponent(hashDataScrollPane).addGap(refIdLabel.getFont().getSize())));
+
+        backButton.setActionCommand(cancelCommand);
+        backButton.addActionListener(cancelListener);
+
+        saveButton.setActionCommand(saveCommand);
+        saveButton.addActionListener(saveListener);
+        
         GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
         buttonPanel.setLayout(buttonPanelLayout);
 
+//        buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
         buttonPanelLayout.setHorizontalGroup(
-          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(15, Short.MAX_VALUE).addComponent(saveButton).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(cancelButton).addContainerGap()));
+          buttonPanelLayout.createSequentialGroup()
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(saveButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(backButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                .addContainerGap());
         buttonPanelLayout.setVerticalGroup(
-          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(saveButton).addComponent(cancelButton)));
+          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) 
+                .addComponent(saveButton)
+                .addComponent(backButton)); 
+
+
+//        GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+//        buttonPanel.setLayout(buttonPanelLayout);
+//
+//        buttonPanelLayout.setHorizontalGroup(
+//          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(15, Short.MAX_VALUE).addComponent(saveButton).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(cancelButton).addContainerGap()));
+//        buttonPanelLayout.setVerticalGroup(
+//          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(saveButton).addComponent(cancelButton)));
+
+        contentPanel.validate();
+    }
+
+    private void showMultipleHashDataInputDialog(final TableModel signedReferences, final ActionListener cancelListener, final String cancelCommand, ActionListener saveListener, String saveCommand) {
+        mainPanel.removeAll();
+        buttonPanel.removeAll();
+
+        titleLabel.setText(messages.getString(TITLE_HASHDATA));
+
+        JLabel refIdLabel = new JLabel();
+        refIdLabel.setFont(refIdLabel.getFont().deriveFont(refIdLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+        String refIdLabelPattern = messages.getString(MESSAGE_HASHDATALIST);
+        refIdLabel.setText(MessageFormat.format(refIdLabelPattern, new Object[]{signedReferences.getRowCount()}));
+
+        JTable hashDataTable = new JTable();
+        hashDataTable.setModel(signedReferences);
+        hashDataTable.setTableHeader(null);
+//        hashDataTable.setShowVerticalLines(false);
+//        hashDataTable.setRowSelectionAllowed(false);
+        TableColumn selectCol = hashDataTable.getColumnModel().getColumn(1);
+        selectCol.setMinWidth(CHECKBOX_WIDTH);
+        selectCol.setMaxWidth(CHECKBOX_WIDTH);
+        
+        
+        hashDataTable.setPreferredScrollableViewportSize(mainPanel.getPreferredSize());
+        
+        JScrollPane hashDataScrollPane = new JScrollPane(hashDataTable);
+        
+        GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
+        mainPanel.setLayout(mainPanelLayout);
+
+        mainPanelLayout.setHorizontalGroup(
+          mainPanelLayout.createSequentialGroup()
+                .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(refIdLabel)
+                    .addComponent(hashDataScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap());
+
+        mainPanelLayout.setVerticalGroup(
+          mainPanelLayout.createSequentialGroup()
+                .addComponent(refIdLabel)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(hashDataScrollPane, 0, GroupLayout.PREFERRED_SIZE, hashDataTable.getPreferredSize().height+3));
+//                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED));
+
+        
+        
+//        
+//        GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
+//        mainPanel.setLayout(mainPanelLayout);
+//
+//        mainPanelLayout.setHorizontalGroup(
+//          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//            .addGroup(mainPanelLayout.createSequentialGroup()
+//                .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//                    .addComponent(refIdLabel)
+//                    .addComponent(hashDataScrollPane, GroupLayout.PREFERRED_SIZE, PREF_SIZE_PINFIELD, Short.MAX_VALUE))
+//                    .addContainerGap()));
+//
+//        mainPanelLayout.setVerticalGroup(
+//          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//          .addGroup(mainPanelLayout.createSequentialGroup()
+//            .addComponent(refIdLabel)
+//            .addGap(refIdLabel.getFont().getSize())
+//            .addComponent(hashDataScrollPane)
+//            .addGap(refIdLabel.getFont().getSize())));
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+//        GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+//        buttonPanel.setLayout(buttonPanelLayout);
+//
+//        buttonPanelLayout.setHorizontalGroup(
+//          buttonPanelLayout.createSequentialGroup()
+////          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+////            .addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
+//                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//                .addComponent(saveButton)
+//                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+//                .addComponent(cancelButton)
+//                .addContainerGap()); //);
+//        buttonPanelLayout.setVerticalGroup(
+//          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//          .addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
+//            .addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+//                .addComponent(saveButton)
+//                .addComponent(cancelButton))
+//            .addContainerGap()));
+
+        
+        backButton.setActionCommand(cancelCommand);
+        backButton.addActionListener(cancelListener);
+
+        saveButton.setActionCommand(saveCommand);
+        saveButton.addActionListener(saveListener);
+        
+        GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+        buttonPanel.setLayout(buttonPanelLayout);
+
+//        buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
+        buttonPanelLayout.setHorizontalGroup(
+          buttonPanelLayout.createSequentialGroup()
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(saveButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(backButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                .addContainerGap());//);
+        buttonPanelLayout.setVerticalGroup(
+          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) 
+                .addComponent(saveButton)
+                .addComponent(backButton)); 
 
         contentPanel.validate();
     }
@@ -901,9 +1169,13 @@ public class BKUGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(waitMsgLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
+                  mainPanelLayout.createSequentialGroup()
+//                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                  .addComponent(waitMsgLabel)
+                  .addContainerGap()); //, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
                 mainPanelLayout.setVerticalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(waitMsgLabel));
+                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                  .addComponent(waitMsgLabel));
 
                 contentPanel.validate();
             }
@@ -975,13 +1247,17 @@ public class BKUGUI implements BKUGUIFacade {
 
             String ext = getExtension(f);
             if ("text/xml".equals(mimeType)) {
-                return "xml".equals(ext);
+                return "xml".equalsIgnoreCase(ext);
+            } else if ("text/html".equals(mimeType)) {
+                return "html".equalsIgnoreCase(ext) || "htm".equalsIgnoreCase(ext);
+            } else if ("application/xhtml+xml".equals(mimeType)) {
+                return "xhtml".equalsIgnoreCase(ext);
             } else if ("text/plain".equals(mimeType)) {
-                return "txt".equals(ext);
+                return "txt".equalsIgnoreCase(ext);
             } else if ("application/pdf".equals(mimeType)) {
-                return "pdf".equals(ext);
+                return "pdf".equalsIgnoreCase(ext);
             } else {
-                return "bin".equals(ext);
+                return true;
             }
         }
 
@@ -1000,6 +1276,10 @@ public class BKUGUI implements BKUGUIFacade {
         public String getDescription() {
             if ("text/xml".equals(mimeType)) {
                 return messages.getString(MIMETYPE_DESC_XML);
+            } else if ("text/html".equals(mimeType)) {
+                return messages.getString(MIMETYPE_DESC_HTML);
+            } else if ("application/xhtml+xml".equals(mimeType)) {
+                return messages.getString(MIMETYPE_DESC_XHTML);
             } else if ("text/plain".equals(mimeType)) {
                 return messages.getString(MIMETYPE_DESC_TXT);
             } else if ("application/pdf".equals(mimeType)) {
@@ -1012,6 +1292,10 @@ public class BKUGUI implements BKUGUIFacade {
         public String getExtension() {
             if ("text/xml".equals(mimeType)) {
                 return ".xml";
+            } else if ("text/html".equals(mimeType)) {
+                return ".html";
+            } else if ("application/xhtml+xml".equals(mimeType)) {
+                return ".xhtml";
             } else if ("text/plain".equals(mimeType)) {
                 return ".txt";
             } else if ("application/pdf".equals(mimeType)) {
@@ -1020,5 +1304,35 @@ public class BKUGUI implements BKUGUIFacade {
                 return ".bin";
             }
         }
+    }
+
+    class HashDataTableModel extends DefaultTableModel {
+
+        Class[] types = new Class[]{
+            java.lang.String.class, java.lang.Boolean.class
+        };
+        
+        public HashDataTableModel(List<HashDataInput> signedReferences) {
+            super(0, 2);
+            for (HashDataInput hashDataInput : signedReferences) {
+                addRow(new Object[]{hashDataInput.getReferenceId(), new Boolean(true)});
+            }
+        }
+
+        @Override
+        public Class getColumnClass(int columnIndex) {
+            return types [columnIndex];
+        }
+
+        public List<String> getSelectedReferenceIds() {
+            ArrayList<String> selection = new ArrayList<String>();
+            for (Object row : dataVector) {
+                if ((Boolean) ((Vector) row).elementAt(1)) {
+                    selection.add((String) ((Vector) row).elementAt(0));
+                }
+            }
+            return selection;
+        }
+        
     }
 }

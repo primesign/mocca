@@ -26,7 +26,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -42,7 +43,7 @@ public class BKUGUIWorker implements Runnable {
 
     @Override
     public void run() {
-        try {
+//        try {
 
             final PINSpec signPinSpec = new PINSpec(6, 10, "[0-9]", "Signatur-PIN");
 
@@ -77,11 +78,11 @@ public class BKUGUIWorker implements Runnable {
                             gui.showSignaturePINDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", null, "hashdata");
                         }
                     };
-                    HashDataInput signedRef = new HashDataInput() {
+                    HashDataInput signedRef1 = new HashDataInput() {
 
                         @Override
                         public InputStream getHashDataInput() {
-                            return new ByteArrayInputStream("<xml>HashDataInput_002</xml>".getBytes());
+                            return new ByteArrayInputStream("HashDataInput_001\n12345\n\tHello, world!\n12345\n\n12345\n6789\nblabla".getBytes());
                         }
 
                         @Override
@@ -91,10 +92,69 @@ public class BKUGUIWorker implements Runnable {
 
                         @Override
                         public String getReferenceId() {
-                            return "ref123";
+                            return "Reference-ref1-00000000000000000000001";
                         }
                     };
-                    gui.showHashDataInputDialog(Collections.singletonList(signedRef), returnListener, "return");
+                    HashDataInput signedRef2 = new HashDataInput() {
+
+                        @Override
+                        public InputStream getHashDataInput() {
+                            return new ByteArrayInputStream("<xml>HashDataInput_002</xml>".getBytes());
+                        }
+
+                        @Override
+                        public String getMimeType() {
+                            return "text/xml";
+                        }
+
+                        @Override
+                        public String getReferenceId() {
+                            return "Reference-ref2-00000000000000000000002";
+                        }
+                    };
+                    HashDataInput signedRef3 = new HashDataInput() {
+
+                        @Override
+                        public InputStream getHashDataInput() {
+                            return new ByteArrayInputStream("<xml>HashDataInput_003</xml>".getBytes());
+                        }
+
+                        @Override
+                        public String getMimeType() {
+                            return "text/xml";
+                        }
+
+                        @Override
+                        public String getReferenceId() {
+                            return "Reference-ref3-00000000000000000000003";
+                        }
+                    };
+                    HashDataInput signedRef4 = new HashDataInput() {
+
+                        @Override
+                        public InputStream getHashDataInput() {
+                            return new ByteArrayInputStream("<xml>HashDataInput_004</xml>".getBytes());
+                        }
+
+                        @Override
+                        public String getMimeType() {
+                            return "text/xml";
+                        }
+
+                        @Override
+                        public String getReferenceId() {
+                            return "ref4";
+                        }
+                    };
+                    
+                    //
+                    List<HashDataInput> signedRefs = new ArrayList();
+                    signedRefs.add(signedRef1);
+                    signedRefs.add(signedRef2);
+                    signedRefs.add(signedRef3);
+                    signedRefs.add(signedRef4);
+//                    signedRefs = Collections.singletonList(signedRef1);
+                    gui.showHashDataInputDialog(signedRefs, returnListener, "return");
                 }
             };
            
@@ -105,7 +165,7 @@ public class BKUGUIWorker implements Runnable {
 //        Thread.sleep(2000);
         
 //            gui.showInsertCardDialog(cancelListener, "cancel");
-//            
+            
 //            Thread.sleep(2000);
 //            
 //            gui.showCardNotSupportedDialog(cancelListener, "cancel");
@@ -113,7 +173,7 @@ public class BKUGUIWorker implements Runnable {
 //            Thread.sleep(2000);
 
 //            PINSpec cardPinSpec = new PINSpec(4, 4, "[0-9]", "Karten-PIN");
-//            
+////            
 //            gui.showCardPINDialog(cardPinSpec, okListener, "ok", cancelListener, "cancel");
 //            
 //            Thread.sleep(2000);
@@ -121,11 +181,11 @@ public class BKUGUIWorker implements Runnable {
             
             gui.showSignaturePINDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
 
-            Thread.sleep(2000);
+//            Thread.sleep(2000);
             
-            gui.showSignaturePINRetryDialog(signPinSpec, 2, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
-
-            Thread.sleep(2000);
+//            gui.showSignaturePINRetryDialog(signPinSpec, 2, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
+//
+//            Thread.sleep(2000);
 ////            
 //            gui.showErrorDialog("Testfehler occured", null, null);
 //            
@@ -137,8 +197,8 @@ public class BKUGUIWorker implements Runnable {
 //            gui.showTextPlainHashDataInput("hallo,\n welt!", "12345", null, "cancel", null, "save");
 //            Thread.sleep(2000);
 
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
+//        } catch (InterruptedException ex) {
+//            ex.printStackTrace();
+//        }
     }
 }

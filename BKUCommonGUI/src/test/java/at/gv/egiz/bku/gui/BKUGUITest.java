@@ -21,6 +21,8 @@
 
 package at.gv.egiz.bku.gui;
 
+import java.awt.Container;
+import java.awt.Dimension;
 import javax.swing.JFrame;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -36,7 +38,9 @@ public class BKUGUITest {
     public void testBKUGUI() {
         JFrame testFrame = new JFrame("BKUGUITest");
         BKUGUI gui = new BKUGUI();
-        gui.init(testFrame.getContentPane(), null);
+        Container contentPane = testFrame.getContentPane();
+        contentPane.setPreferredSize(new Dimension(500, 200));
+        gui.init(contentPane, null);
         BKUGUIWorker worker = new BKUGUIWorker();
         worker.init(gui);
         testFrame.pack();
@@ -50,4 +54,8 @@ public class BKUGUITest {
     @Test
     public void dummyTest() {
     }
+    
+//    public static void main(String[] args) {
+//        new BKUGUITest().testBKUGUI();
+//    }
 }
