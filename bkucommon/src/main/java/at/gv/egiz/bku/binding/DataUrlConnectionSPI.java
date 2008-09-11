@@ -17,6 +17,7 @@
 package at.gv.egiz.bku.binding;
 
 import java.net.URL;
+import java.util.Properties;
 
 /**
  * Prototype of a DataurlconnectionSPI
@@ -37,6 +38,12 @@ public interface DataUrlConnectionSPI extends DataUrlConnection {
    * @param url
    */
   public void init(URL url);
+  
+  /**
+   * Sets configuration parameters for this connection
+   * @param config
+   */
+  public void setConfiguration(Properties config);
 
 
 }

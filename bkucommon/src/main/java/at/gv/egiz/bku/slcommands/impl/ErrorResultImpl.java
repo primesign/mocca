@@ -16,12 +16,14 @@
 */
 package at.gv.egiz.bku.slcommands.impl;
 
+import java.util.Locale;
+
+import javax.xml.transform.Result;
+
 import at.buergerkarte.namespaces.securitylayer._1.ErrorResponseType;
 import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
 import at.gv.egiz.bku.slcommands.ErrorResult;
 import at.gv.egiz.bku.slexceptions.SLException;
-
-import javax.xml.transform.Result;
 
 /**
  * This class implements the security layer result <code>ErrorResponse</code>.

@@ -18,6 +18,7 @@ package at.gv.egiz.bku.binding;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,6 +32,7 @@ import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 public class DataUrl {
   private static DataUrlConnectionSPI defaultDataUrlConnection = new DataUrlConnectionImpl();
   private static Log log = LogFactory.getLog(DataUrl.class);
+  private static Properties configuration;
   
   private URL url;
 
@@ -58,5 +60,9 @@ public class DataUrl {
       log.error(e);
       throw new SLRuntimeException("Cannot instantiate a dataurlconnection:",e);
     }
+  }
+  
+  public static void setConfiguration(Properties props) {
+    configuration = props;
   }
 }

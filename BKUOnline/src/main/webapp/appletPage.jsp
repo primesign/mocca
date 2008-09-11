@@ -25,15 +25,15 @@
 <body>
 <script src="./js/deployJava.js"></script>
 <script>
-	if (!deployJava.versionCheck('1.6.0')) {
+	if (!deployJava.versionCheck('1.6.0_02')) {
 		document
-				.write('<b>Diese Anwendung benötigt die Java Platform Version 1.6.0 oder höher.</b>' + '<input type="submit" value="Java Platform 1.6.0 installieren" onclick="deployJava.installLatestJRE();">');
+				.write('<b>Diese Anwendung benötigt die Java Platform Version 1.6.0_02 oder höher.</b>' + '<input type="submit" value="Java Platform 1.6.0_02 installieren" onclick="deployJava.installLatestJRE();">');
 	} else {
 		var attributes = {
 			codebase :'applet',
 			code :'at.gv.egiz.bku.online.applet.BKUApplet.class',
 			archive :'BKUApplet-1.0-SNAPSHOT.jar, commons-logging-1.1.1.jar, iaik_jce_me4se-3.04.jar',
-			width :500,
+			width :400,
 			height :200
 		};
 		var parameters = {
@@ -41,7 +41,7 @@
 			SessionID : '<%= session.getId() %>',
 			redirectURL : '../bkuResult'
 		};
-		var version = '1.6.0';
+		var version = '1.6.0_02';
 		deployJava.runApplet(attributes, parameters, version);
 	}
 </script>

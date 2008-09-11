@@ -25,6 +25,7 @@ import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -125,4 +126,10 @@ public class TestDataUrlConnection implements DataUrlConnectionSPI {
 	public URL getUrl() {
 		return url;
 	}
+
+  @Override
+  public void setConfiguration(Properties config) {
+    // TODO Auto-generated method stub
+    
+  }
  }

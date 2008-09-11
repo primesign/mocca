@@ -49,6 +49,8 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
+import at.gv.egiz.bku.binding.DataUrl;
+import at.gv.egiz.bku.binding.DataUrlConnection;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 
 public class SpringConfigurator extends Configurator implements
@@ -71,9 +73,24 @@ public class SpringConfigurator extends Configurator implements
 		}
 	}
 
+	public void configureVersion() {
+    Properties p = new Properties();
+    try {
+      p.load(resourceLoader.getResource("META-INF/MANIFEST.MF").getInputStream());
+      String version = p.getProperty("Implementation-Build");
+      properties.setProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY, "citizen-card-environment/1.2 MOCCA "+version);
+      DataUrl.setConfiguration(properties);
+      log.debug("Setting user agent to: "+properties.getProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY));
+    } catch (IOException e) {
+     log.error(e);
+    }
+  }
+	
+	
 	public void configure() {
 		super.configure();
 		configureSSL();
+		configureVersion();
 	}
 
 	private Set<TrustAnchor> getCACerts() throws IOException,

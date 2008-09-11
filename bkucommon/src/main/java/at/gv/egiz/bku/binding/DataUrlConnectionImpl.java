@@ -1,22 +1,21 @@
 /*
-* Copyright 2008 Federal Chancellery Austria and
-* Graz University of Technology
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright 2008 Federal Chancellery Austria and
+ * Graz University of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package at.gv.egiz.bku.binding;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,6 +28,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -42,7 +42,6 @@ import at.gv.egiz.bku.binding.multipart.SLResultPart;
 import at.gv.egiz.bku.slcommands.SLResult;
 import at.gv.egiz.bku.slcommands.SLResult.SLResultType;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
-import at.gv.egiz.bku.utils.StreamUtil;
 import at.gv.egiz.bku.utils.binding.Protocol;
 
 /**
@@ -60,6 +59,7 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
   protected Map<String, String> requestHttpHeaders;
   protected ArrayList<Part> formParams;
   protected String boundary;
+  protected Properties config = null;
 
   protected DataUrlResponse result;
 
@@ -83,8 +83,7 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
 
     // FIXXME move this to config.
     HttpURLConnection.setFollowRedirects(false);
-    
-    
+
     connection.setDoOutput(true);
     Set<String> headers = requestHttpHeaders.keySet();
     Iterator<String> headerIt = headers.iterator();
@@ -143,14 +142,14 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
     formParams.add(slResultPart);
 
     OutputStream os = connection.getOutputStream();
-    
+
     Part[] parts = new Part[formParams.size()];
     Part.sendParts(os, formParams.toArray(parts), boundary.getBytes());
     os.close();
     // MultipartRequestEntity PostMethod
     result = new DataUrlResponse(url.toString(), connection.getResponseCode(),
         connection.getInputStream());
-    
+
     Map<String, String> responseHttpHeaders = new HashMap<String, String>();
     Map<String, List<String>> httpHeaders = connection.getHeaderFields();
     for (Iterator<String> keyIt = httpHeaders.keySet().iterator(); keyIt
@@ -162,7 +161,7 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
         value.append(HttpUtil.SEPERATOR[0]);
       }
       String valString = value.substring(0, value.length() - 1);
-      if ((key != null)&&(value.length() > 0)) {
+      if ((key != null) && (value.length() > 0)) {
         responseHttpHeaders.put(key, valString);
       }
     }
@@ -196,7 +195,15 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
     this.url = url;
     boundary = "--" + IdFactory.getInstance().createId().toString();
     requestHttpHeaders = new HashMap<String, String>();
-    requestHttpHeaders.put(HttpUtil.HTTP_HEADER_USER_AGENT, DEFAULT_USERAGENT);
+    if ((config != null)
+        && (config.getProperty(USER_AGENT_PROPERTY_KEY) != null)) {
+      requestHttpHeaders.put(HttpUtil.HTTP_HEADER_USER_AGENT, config
+          .getProperty(USER_AGENT_PROPERTY_KEY));
+    } else {
+      requestHttpHeaders
+          .put(HttpUtil.HTTP_HEADER_USER_AGENT, DEFAULT_USERAGENT);
+
+    }
     requestHttpHeaders.put(HttpUtil.HTTP_HEADER_CONTENT_TYPE,
         HttpUtil.MULTIPART_FOTMDATA + HttpUtil.SEPERATOR[0]
             + HttpUtil.MULTIPART_FOTMDATA_BOUNDARY + "=" + boundary);
@@ -211,11 +218,18 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
 
   @Override
   public DataUrlConnectionSPI newInstance() {
-    return new DataUrlConnectionImpl();
+    DataUrlConnectionSPI uc = new DataUrlConnectionImpl();
+    uc.setConfiguration(config);
+    return uc;
   }
 
-	@Override
-	public URL getUrl() {
-		return url;
-	}
+  @Override
+  public URL getUrl() {
+    return url;
+  }
+
+  @Override
+  public void setConfiguration(Properties config) {
+    this.config = config;
+  }
 }

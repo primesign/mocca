@@ -19,6 +19,7 @@ package at.gv.egiz.bku.online.webapp;
 import javax.servlet.http.HttpServlet;
 
 import at.gv.egiz.bku.binding.BindingProcessorManager;
+import at.gv.egiz.bku.online.conf.Configurator;
 
 public abstract class SpringBKUServlet extends HttpServlet {
 
@@ -27,5 +28,4 @@ public abstract class SpringBKUServlet extends HttpServlet {
   protected BindingProcessorManager getBindingProcessorManager() {
     return (BindingProcessorManager) getServletContext().getAttribute(BEAN_NAME);
   }
-
 }
