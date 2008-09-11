@@ -17,6 +17,8 @@
 package at.gv.egiz.bku.slcommands.impl.xsect;
 
 import at.gv.egiz.bku.slcommands.impl.HashDataInputImpl;
+import at.gv.egiz.bku.slexceptions.SLViewerException;
+
 import java.io.ByteArrayOutputStream;
 import java.security.InvalidKeyException;
 import java.security.InvalidParameterException;
@@ -123,9 +125,14 @@ public class STALSignature extends SignatureSpi {
 //    log.debug("got " + dataObjects.size() + " DataObjects, passing HashDataInputs to STAL SignRequest");
     
     List<HashDataInput> hashDataInputs = new ArrayList<HashDataInput>();
-      for (DataObject dataObject : dataObjects) {
-          hashDataInputs.add(new HashDataInputImpl(dataObject));
+    for (DataObject dataObject : dataObjects) {
+      try {
+        dataObject.validateHashDataInput();
+      } catch (SLViewerException e) {
+        throw new STALSignatureException(e);
       }
+      hashDataInputs.add(new HashDataInputImpl(dataObject));
+    }
     
     SignRequest signRequest = new SignRequest();
     signRequest.setKeyIdentifier(keyboxIdentifier);

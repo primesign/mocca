@@ -68,6 +68,7 @@ import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
 import at.buergerkarte.namespaces.securitylayer._1.SignatureInfoCreationType;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
+import at.gv.egiz.bku.slexceptions.SLViewerException;
 import at.gv.egiz.bku.utils.urldereferencer.StreamData;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencerContext;
@@ -361,7 +362,7 @@ public class SignatureTest {
     
   }
 
-  private void signAndMarshalSignature(Signature signature) throws MarshalException, XMLSignatureException, SLCommandException {
+  private void signAndMarshalSignature(Signature signature) throws MarshalException, XMLSignatureException, SLCommandException, SLViewerException {
 
     Node parent = signature.getParent();
     Node nextSibling = signature.getNextSibling();
@@ -387,7 +388,7 @@ public class SignatureTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testDataObject_Base64Content_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException {
+  public void testDataObject_Base64Content_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Base64Content_1.xml");
     
@@ -427,7 +428,7 @@ public class SignatureTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testDataObject_XMLContent_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException {
+  public void testDataObject_XMLContent_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_XMLContent_1.xml");
     
@@ -467,7 +468,7 @@ public class SignatureTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testDataObject_XMLContent_2() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException {
+  public void testDataObject_XMLContent_2() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_XMLContent_2.xml");
     
@@ -508,7 +509,7 @@ public class SignatureTest {
   
   @SuppressWarnings("unchecked")
   @Test
-  public void testDataObject_LocRefContent_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException {
+  public void testDataObject_LocRefContent_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_LocRefContent_1.xml");
     
@@ -546,7 +547,7 @@ public class SignatureTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testDataObject_LocRefContent_2() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException {
+  public void testDataObject_LocRefContent_2() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_LocRefContent_2.xml");
     
@@ -584,7 +585,7 @@ public class SignatureTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testDataObject_Reference_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException {
+  public void testDataObject_Reference_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Reference_1.xml");
     
@@ -622,7 +623,7 @@ public class SignatureTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testDataObject_Detached_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException {
+  public void testDataObject_Detached_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Detached_1.xml");
     
@@ -653,7 +654,7 @@ public class SignatureTest {
   
   @SuppressWarnings("unchecked")
   @Test
-  public void testDataObject_Detached_Base64Content() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException {
+  public void testDataObject_Detached_Base64Content() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Detached_Base64Content.xml");
     
@@ -704,7 +705,7 @@ public class SignatureTest {
   
   @SuppressWarnings("unchecked")
   @Test
-  public void testTransformsInfo_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException {
+  public void testTransformsInfo_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
 
     CreateXMLSignatureRequestType requestType = unmarshalCreateXMLSignatureRequest("TransformsInfo_1.xml");
     

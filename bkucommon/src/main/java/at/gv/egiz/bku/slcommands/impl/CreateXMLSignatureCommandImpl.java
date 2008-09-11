@@ -44,7 +44,9 @@ import at.gv.egiz.bku.slcommands.impl.xsect.IdValueFactory;
 import at.gv.egiz.bku.slcommands.impl.xsect.IdValueFactoryImpl;
 import at.gv.egiz.bku.slcommands.impl.xsect.Signature;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
+import at.gv.egiz.bku.slexceptions.SLException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
+import at.gv.egiz.bku.slexceptions.SLViewerException;
 import at.gv.egiz.dom.DOMUtils;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.InfoboxReadResponse;
@@ -167,8 +169,9 @@ public class CreateXMLSignatureCommandImpl extends SLCommandImpl<CreateXMLSignat
    * 
    * @throws SLCommandException
    *           if signing the signature fails
+   * @throws SLViewerException 
    */
-  private void signXMLSignature() throws SLCommandException {
+  private void signXMLSignature() throws SLCommandException, SLViewerException {
     
     try {
       signature.sign(getCmdCtx().getSTAL(), keyboxIdentifier);
@@ -213,11 +216,9 @@ public class CreateXMLSignatureCommandImpl extends SLCommandImpl<CreateXMLSignat
       
       return new CreateXMLSignatureResultImpl(signature.getDocument());
       
-    } catch (SLCommandException e) {
+    } catch (SLException e) {
       return new ErrorResultImpl(e);
-    } catch (SLRequestException e) {
-      return new ErrorResultImpl(e);
-    }
+    } 
   }
 
   @Override

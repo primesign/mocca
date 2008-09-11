@@ -81,6 +81,7 @@ import at.buergerkarte.namespaces.securitylayer._1.SignatureInfoCreationType;
 import at.gv.egiz.bku.binding.HttpUtil;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
+import at.gv.egiz.bku.slexceptions.SLViewerException;
 import at.gv.egiz.bku.utils.HexDump;
 import at.gv.egiz.bku.utils.urldereferencer.StreamData;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
@@ -387,10 +388,11 @@ public class Signature {
    *           if signing the XMLSignature fails
    * @throws SLCommandException
    *           if building the XMLSignature fails
+   * @throws SLViewerException 
    * @throws NullPointerException
    *           if <code>signContext</code> is <code>null</code>
    */
-  public void sign(DOMSignContext signContext) throws MarshalException, XMLSignatureException, SLCommandException {
+  public void sign(DOMSignContext signContext) throws MarshalException, XMLSignatureException, SLCommandException, SLViewerException {
 
     if (xmlSignature == null) {
       buildXMLSignature();
@@ -415,6 +417,9 @@ public class Signature {
       Throwable cause = e.getCause();
       while (cause != null) {
         if (cause instanceof STALSignatureException) {
+          if (((STALSignatureException) cause).getCause() instanceof SLViewerException) {
+            throw (SLViewerException) ((STALSignatureException) cause).getCause(); 
+          }
           int errorCode = ((STALSignatureException) cause).getErrorCode();
           SLCommandException commandException = new SLCommandException(errorCode);
           log.info("Failed to sign signature.", commandException);
@@ -482,11 +487,12 @@ public class Signature {
    *           if signing this Signature fails
    * @throws SLCommandException
    *           if building this Signature fails 
+   * @throws SLViewerException 
    * @throws NullPointerException
    *           if <code>stal</code> or <code>keyboxIdentifier</code> is
    *           <code>null</code>
    */
-  public void sign(STAL stal, String keyboxIdentifier) throws MarshalException, XMLSignatureException, SLCommandException {
+  public void sign(STAL stal, String keyboxIdentifier) throws MarshalException, XMLSignatureException, SLCommandException, SLViewerException {
 
     if (stal == null) {
       throw new NullPointerException("Argument 'stal' must not be null.");

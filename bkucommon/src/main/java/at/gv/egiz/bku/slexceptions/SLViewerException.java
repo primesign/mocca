@@ -18,8 +18,11 @@ package at.gv.egiz.bku.slexceptions;
 
 public class SLViewerException extends SLException {
 
+  public SLViewerException(int errorCode) {
+    super(errorCode);
+  }
+
   public SLViewerException(int errorCode, String msg, Object[] args) {
     super(errorCode, msg, args);
-    // TODO Auto-generated constructor stub
   }
 }

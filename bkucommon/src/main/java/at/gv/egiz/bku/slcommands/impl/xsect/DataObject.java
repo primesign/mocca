@@ -30,6 +30,7 @@ import java.nio.charset.Charset;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -71,8 +72,12 @@ import at.gv.egiz.bku.binding.HttpUtil;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
+import at.gv.egiz.bku.slexceptions.SLViewerException;
 import at.gv.egiz.bku.utils.urldereferencer.StreamData;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
+import at.gv.egiz.bku.viewer.ValidationException;
+import at.gv.egiz.bku.viewer.Validator;
+import at.gv.egiz.bku.viewer.ValidatorFactory;
 import at.gv.egiz.dom.DOMUtils;
 import at.gv.egiz.slbinding.impl.XMLContentType;
 
@@ -99,9 +104,50 @@ public class DataObject {
    */
   private static final String[] DEFAULT_PREFFERED_MIME_TYPES = 
     new String[] {
-      "application/xhtml+xml", 
-      "text/plain"
+      "text/plain",
+      "application/xhtml+xml" 
     };
+  
+  /**
+   * Validate hash input.
+   */
+  private static boolean validate = false;
+
+  /**
+   * Enable validation of hash data input.
+   * 
+   * @param validate
+   *          <code>true</code> if validation should be enabled, or
+   *          <code>false</code> otherwise.
+   */
+  public static void enableHashDataInputValidation(boolean validate) {
+    DataObject.validate = validate;
+  }
+
+  /**
+   * @return <code>true</code> if hash data input validation is enabled,
+   * or <code>false</code> otherwise.
+   */
+  public static boolean isHashDataInputValidationEnabled() {
+    return validate;
+  }
+  
+  /**
+   * Valid MIME types.
+   */
+  private static String[] validMimeTypes = DEFAULT_PREFFERED_MIME_TYPES;
+
+  /**
+   * Sets the list of valid hash data input media types.
+   * <p>The array is also used for transformation path selection.
+   * The transformation path with a final type, that appears in the
+   * given array in the earliest position is used selected.</p>
+   * 
+   * @param mediaTypes an array of MIME media types.
+   */
+  public static void setValidHashDataInputMediaTypes(String[] mediaTypes) {
+    validMimeTypes = mediaTypes;
+  }
   
   /**
    * The DOM implementation used.
@@ -185,6 +231,69 @@ public class DataObject {
     return description;
   }
 
+  public void validateHashDataInput() throws SLViewerException {
+    
+    if (validate) {
+
+      if (reference == null) {
+        log.error("Medthod validateHashDataInput() called before reference has been created.");
+        throw new SLViewerException(5000);
+      }
+      
+      InputStream digestInputStream = reference.getDigestInputStream();
+      if (digestInputStream == null) {
+        log.error("Method validateHashDataInput() called before reference has been generated " +
+              "or reference caching is not enabled.");
+        throw new SLViewerException(5000);
+      }
+      
+      if (mimeType == null) {
+        log.info("FinalDataMetaInfo does not specify MIME type of to be signed data.");
+        // TODO: add detailed message
+        throw new SLViewerException(5000);
+      }
+      
+      // get MIME media type
+      String mediaType = mimeType.split(";")[0].trim();
+      // and optional charset 
+      String charset = HttpUtil.getCharset(mimeType, false);
+      
+      if (Arrays.asList(validMimeTypes).contains(mediaType)) {
+        
+        Validator validator;
+        try {
+          validator = ValidatorFactory.newValidator(mediaType);
+        } catch (IllegalArgumentException e) {
+          log.error("No validator found for mime type '" + mediaType + "'.");
+          throw new SLViewerException(5000);
+        }
+        
+        try {
+          validator.validate(digestInputStream, charset);
+        } catch (ValidationException e) {
+          if ("text/plain".equals(mediaType)) {
+            log.info("Data to be displayed contains unsupported characters.", e);
+            // TODO: add detailed message
+            throw new SLViewerException(5003);
+          } else if ("application/xhtml+xml".equals(mediaType)) {
+            // TODO: add detailed message
+            log.info("Standard display format: HTML does not conform to specification.", e);
+            throw new SLViewerException(5004);
+          } else {
+            // TODO: add detailed message
+            log.info("Data to be displayed is invalid.", e);
+            throw new SLViewerException(5000);
+          }
+        }
+        
+      } else {
+        log.info("MIME media type '" + mediaType + "' is not a valid digest input.");
+        throw new SLViewerException(5001); 
+      }
+    }
+    
+  }
+  
   /**
    * Configures this DataObject with the information provided within the given
    * <code>sl:DataObjectInfo</code>.
