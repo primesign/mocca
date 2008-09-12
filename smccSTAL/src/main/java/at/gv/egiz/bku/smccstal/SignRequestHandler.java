@@ -47,6 +47,8 @@ import at.gv.egiz.stal.signedinfo.ObjectFactory;
 import at.gv.egiz.stal.signedinfo.ReferenceType;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
 import at.gv.egiz.stal.util.JCEAlgorithmNames;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -150,9 +152,6 @@ public class SignRequestHandler extends AbstractRequestHandler implements
                             hashDataInputs = getHashDataInputs(signedInfo.getReference());
                         }
                         gui.showHashDataInputDialog(hashDataInputs, this, "ok");
-                        waitForAction();
-                        gui.showSignaturePINDialog(spec, this, "sign", this, "cancel", this,
-                            "hashData");
                     } catch (Exception ex) {
                         //FIXME localize messages
                         log.error("Failed to obtain HashDataInputs: " + ex.getMessage());
@@ -178,6 +177,7 @@ public class SignRequestHandler extends AbstractRequestHandler implements
 
     /**
      * override by subclass
+     * @post-condition returned list != null
      * @return
      */
     protected List<HashDataInput> getHashDataInputs(List<ReferenceType> signedReferences) throws Exception {

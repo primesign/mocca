@@ -53,6 +53,8 @@ public interface BKUGUIFacade {
     
     public void showHashDataInputDialog(List<HashDataInput> signedReferences, ActionListener okListener, String actionCommand);
     
+//    public void showPlainTextHashDataInputDialog(String text, ActionListener saveListener, String saveCommand, ActionListener cancelListener, String cancelCommand);
+    
     public void showErrorDialog(String errorMsg, ActionListener okListener, String actionCommand);
     
     public void showErrorDialog(String errorMsg);

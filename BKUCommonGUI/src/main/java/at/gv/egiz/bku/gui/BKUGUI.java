@@ -27,6 +27,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -75,13 +76,11 @@ import org.apache.commons.logging.LogFactory;
  * @author clemens
  */
 public class BKUGUI implements BKUGUIFacade {
-
+    
     private static final Log log = LogFactory.getLog(BKUGUI.class);
     public static final String MESSAGES_BUNDLE = "at/gv/egiz/bku/gui/Messages";
     public static final String LOGO_RESOURCE = "/images/logo.png";
-//    public static final int MAIN_PANEL_WIDTH = 100;
-//    public static final int MAIN_PANEL_HEIGHT = 20;
-//    public static final int PREF_SIZE_PINFIELD = 118;
+    public static final String HASHDATA_FONT = "Monospaced";
     public static final Color ERROR_COLOR = Color.RED;
     public static final Color HYPERLINK_COLOR = Color.BLUE;
     private static final String TITLE_WELCOME = "title.welcome";
@@ -94,6 +93,7 @@ public class BKUGUI implements BKUGUIFacade {
     private static final String TITLE_WAIT = "title.wait";
     private static final String TITLE_HASHDATA = "title.hashdata";
     private static final String WINDOWTITLE_SAVE = "windowtitle.save";
+    private static final String WINDOWTITLE_SAVEDIR = "windowtitle.savedir";
     private static final String WINDOWTITLE_OVERWRITE = "windowtitle.overwrite";
     private static final String MESSAGE_WAIT = "message.wait";
     private static final String MESSAGE_INSERTCARD = "message.insertcard";
@@ -104,19 +104,13 @@ public class BKUGUI implements BKUGUIFacade {
     private static final String MESSAGE_OVERWRITE = "message.overwrite";
     private static final String LABEL_PIN = "label.pin";
     private static final String LABEL_PINSIZE = "label.pinsize";
-    private static final String ERROR_HASHDATA = "error.hashdata";
+    private static final String ERROR_NO_HASHDATA = "error.no.hashdata";
     
     private static final String BUTTON_OK = "button.ok";
     private static final String BUTTON_CANCEL = "button.cancel";
     private static final String BUTTON_BACK = "button.back";
     private static final String BUTTON_SIGN = "button.sign";
     private static final String BUTTON_SAVE = "button.save";
-    private static final String MIMETYPE_DESC_XML = "mimetype.desc.xml";
-    private static final String MIMETYPE_DESC_HTML = "mimetype.desc.html";
-    private static final String MIMETYPE_DESC_XHTML = "mimetype.desc.xhtml";
-    private static final String MIMETYPE_DESC_TXT = "mimetype.desc.txt";
-    private static final String MIMETYPE_DESC_PDF = "mimetype.desc.pdf";
-    private static final String MIMETYPE_DESC_BIN = "mimetype.desc.bin";
     private static final String SAVE_HASHDATAINPUT_PREFIX = "save.hashdatainput.prefix";
     protected Container contentPane;
     protected ResourceBundle messages;
@@ -132,11 +126,11 @@ public class BKUGUI implements BKUGUIFacade {
     /** remember the pinfield to return to worker */
     protected JPasswordField pinField;
 
-    protected JButton okButton;
-    protected JButton cancelButton;
-    protected JButton signButton;
-    protected JButton saveButton;
-    protected JButton backButton;
+//    protected JButton okButton;
+//    protected JButton cancelButton;
+//    protected JButton signButton;
+//    protected JButton saveButton;
+//    protected JButton backButton;
     protected int buttonSize;
     
     private static final int CHECKBOX_WIDTH = new JCheckBox().getPreferredSize().width;
@@ -216,28 +210,43 @@ public class BKUGUI implements BKUGUIFacade {
           java.awt.Font.BOLD, titleLabel.getFont().getSize() + 2));
 //        titleLabel.setForeground(defaultForground);
 
-        okButton = new JButton();
-        okButton.setText(messages.getString(BUTTON_OK));
-        cancelButton = new JButton();
-        cancelButton.setText(messages.getString(BUTTON_CANCEL));
-        signButton = new JButton();
-        signButton.setText(messages.getString(BUTTON_SIGN));
-        backButton = new JButton();
-        backButton.setText(messages.getString(BUTTON_BACK));
-        saveButton = new JButton();
-        saveButton.setText(messages.getString(BUTTON_SAVE));
+//        okButton = new JButton();
+//        okButton.setText(messages.getString(BUTTON_OK));
+//        cancelButton = new JButton();
+//        cancelButton.setText(messages.getString(BUTTON_CANCEL));
+//        signButton = new JButton();
+//        signButton.setText(messages.getString(BUTTON_SIGN));
+//        backButton = new JButton();
+//        backButton.setText(messages.getString(BUTTON_BACK));
+//        saveButton = new JButton();
+//        saveButton.setText(messages.getString(BUTTON_SAVE));
 //        contentPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
         
-        if (okButton.getPreferredSize().width > buttonSize)
-            buttonSize = okButton.getPreferredSize().width;
-        if (cancelButton.getPreferredSize().width > buttonSize)
-            buttonSize = cancelButton.getPreferredSize().width;
-        if (signButton.getPreferredSize().width > buttonSize)
-            buttonSize = signButton.getPreferredSize().width;
-        if (backButton.getPreferredSize().width > buttonSize)
-            buttonSize = backButton.getPreferredSize().width;
-        if (saveButton.getPreferredSize().width > buttonSize)
-            buttonSize = saveButton.getPreferredSize().width;
+        JButton b = new JButton();
+        b.setText(messages.getString(BUTTON_CANCEL));
+        if (b.getPreferredSize().width > buttonSize)
+            buttonSize = b.getPreferredSize().width;
+        b.setText(messages.getString(BUTTON_OK));
+        if (b.getPreferredSize().width > buttonSize)
+            buttonSize = b.getPreferredSize().width;
+        b.setText(messages.getString(BUTTON_SIGN));
+        if (b.getPreferredSize().width > buttonSize)
+            buttonSize = b.getPreferredSize().width;
+        b.setText(messages.getString(BUTTON_BACK));
+        if (b.getPreferredSize().width > buttonSize)
+            buttonSize = b.getPreferredSize().width;
+        b.setText(messages.getString(BUTTON_SAVE));
+        if (b.getPreferredSize().width > buttonSize)
+            buttonSize = b.getPreferredSize().width;
+        
+//        if (cancelButton.getPreferredSize().width > buttonSize)
+//            buttonSize = cancelButton.getPreferredSize().width;
+//        if (signButton.getPreferredSize().width > buttonSize)
+//            buttonSize = signButton.getPreferredSize().width;
+//        if (backButton.getPreferredSize().width > buttonSize)
+//            buttonSize = backButton.getPreferredSize().width;
+//        if (saveButton.getPreferredSize().width > buttonSize)
+//            buttonSize = saveButton.getPreferredSize().width;
 
         
         GroupLayout headerPanelLayout = new GroupLayout(headerPanel);
@@ -349,6 +358,8 @@ public class BKUGUI implements BKUGUIFacade {
 
                 titleLabel.setText(messages.getString(TITLE_INSERTCARD));
 
+                JButton cancelButton = new JButton();
+                cancelButton.setText(messages.getString(BUTTON_CANCEL));
                 cancelButton.addActionListener(cancelListener);
                 cancelButton.setActionCommand(cancelCommand);
 
@@ -400,6 +411,8 @@ public class BKUGUI implements BKUGUIFacade {
 //                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(errorMsgLabel));
 
+                JButton cancelButton = new JButton();
+                cancelButton.setText(messages.getString(BUTTON_CANCEL));
                 cancelButton.addActionListener(cancelListener);
                 cancelButton.setActionCommand(cancelCommand);
 
@@ -439,9 +452,13 @@ public class BKUGUI implements BKUGUIFacade {
                     titleLabel.setText(messages.getString(TITLE_RETRY));
                 }
 
+                JButton cancelButton = new JButton();
+                cancelButton.setText(messages.getString(BUTTON_CANCEL));
                 cancelButton.setActionCommand(cancelCommand);
                 cancelButton.addActionListener(cancelListener);
 
+                JButton okButton = new JButton();
+                okButton.setText(messages.getString(BUTTON_OK));
                 okButton.setEnabled(false);
                 okButton.setActionCommand(okCommand);
                 okButton.addActionListener(okListener);
@@ -592,9 +609,13 @@ public class BKUGUI implements BKUGUIFacade {
                     titleLabel.setText(messages.getString(TITLE_RETRY));
                 }
 
+                JButton cancelButton = new JButton();
+                cancelButton.setText(messages.getString(BUTTON_CANCEL));
                 cancelButton.setActionCommand(cancelCommand);
                 cancelButton.addActionListener(cancelListener);
 
+                JButton signButton = new JButton();
+                signButton.setText(messages.getString(BUTTON_SIGN));
                 signButton.setEnabled(false);
                 signButton.setActionCommand(signCommand);
                 signButton.addActionListener(signListener);
@@ -764,6 +785,8 @@ public class BKUGUI implements BKUGUIFacade {
                   mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                   .addComponent(errorMsgLabel));
 
+                JButton okButton = new JButton();
+                okButton.setText(messages.getString(BUTTON_OK));
                 okButton.setActionCommand(okCommand);
                 okButton.addActionListener(okListener);
 
@@ -790,343 +813,386 @@ public class BKUGUI implements BKUGUIFacade {
 
     @Override
     public void showErrorDialog(final String errorMsg) {
-        SwingUtilities.invokeLater(new Runnable() {
+      SwingUtilities.invokeLater(new Runnable() {
 
-            public void run() {
-                mainPanel.removeAll();
-                buttonPanel.removeAll();
+        @Override
+        public void run() {
+          mainPanel.removeAll();
+          buttonPanel.removeAll();
 
-                titleLabel.setText(messages.getString(TITLE_ERROR));
+          titleLabel.setText(messages.getString(TITLE_ERROR));
 //                titleLabel.setForeground(defaultForground);
 
-                JLabel errorMsgLabel = new JLabel();
-                errorMsgLabel.setFont(errorMsgLabel.getFont().deriveFont(errorMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                errorMsgLabel.setText("<html>" + errorMsg + "</html>");
-                errorMsgLabel.setForeground(ERROR_COLOR);
+          JLabel errorMsgLabel = new JLabel();
+          errorMsgLabel.setFont(errorMsgLabel.getFont().deriveFont(errorMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+          errorMsgLabel.setText("<html>" + errorMsg + "</html>");
+          errorMsgLabel.setForeground(ERROR_COLOR);
 
-                GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
-                mainPanel.setLayout(mainPanelLayout);
+          GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
+          mainPanel.setLayout(mainPanelLayout);
 
-                mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createSequentialGroup()
+          mainPanelLayout.setHorizontalGroup(
+            mainPanelLayout.createSequentialGroup()
 //                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                  .addComponent(errorMsgLabel)
-                  .addContainerGap()); //, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
-                mainPanelLayout.setVerticalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                  .addComponent(errorMsgLabel));
+            .addComponent(errorMsgLabel)
+            .addContainerGap()); //, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
+          mainPanelLayout.setVerticalGroup(
+            mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addComponent(errorMsgLabel));
 
-                contentPanel.validate();
-            }
-        });
+          contentPanel.validate();
+        }
+      });
     }
 
     @Override
     public void showHashDataInputDialog(final List<HashDataInput> signedReferences, final ActionListener okListener, final String okCommand) {
-        SwingUtilities.invokeLater(new Runnable() {
+      
+      if (signedReferences == null) {
+        showErrorDialog(messages.getString(ERROR_NO_HASHDATA), okListener, okCommand);
+      }
+      
+      if (signedReferences.size() == 1) {
+
+//          final HashDataInput signedRef = signedReferences.get(0);
+          
+          if ("text/plain".equals(signedReferences.get(0).getMimeType())) {
+            
+            ActionListener saveHashDataListener = new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    showSaveHashDataInputDialog(signedReferences, okListener, okCommand);
+                }
+            };
+            String hashDataText = getText(signedReferences.get(0));
+            if (hashDataText != null) {
+              showPlainTextHashDataInputDialog(hashDataText, saveHashDataListener, "save", okListener, okCommand);
+            } else {
+              showErrorDialog(messages.getString(ERROR_NO_HASHDATA), okListener, okCommand);
+            }
+          
+          } else {
+            showSaveHashDataInputDialog(signedReferences, okListener, okCommand);
+          }
+          
+      } else {
+
+        final HashDataTableModel tableModel = new HashDataTableModel(signedReferences);
+
+        ActionListener saveHashDataListener = new ActionListener() {
 
             @Override
-            public void run() {
-
-                if (signedReferences != null && signedReferences.size() == 1) {
-
-                    final HashDataInput signedRef = signedReferences.get(0);
-                    if ("text/plain".equals(signedRef.getMimeType())) {
-                        //TODO get encoding from mimetype
-                        //read directly to byte[] since hashDataIS is backed by byte[] ?
-                        ByteArrayOutputStream baos = null;
-                        try {
-                            String refId = signedRef.getReferenceId();
-                            InputStream hashDataIS = signedRef.getHashDataInput();
-                            if (hashDataIS == null) {
-                                showErrorDialog("Failed to obtain HashDataInput for reference " + refId, okListener, okCommand);
-                            } else {
-                                baos = new ByteArrayOutputStream(hashDataIS.available());
-                                int c;
-                                while ((c = hashDataIS.read()) != -1) {
-                                    baos.write(c);
-                                }
-                                String text = baos.toString("UTF-8");
-
-                                ActionListener al = new ActionListener() {
-
-                                    @Override
-                                    public void actionPerformed(ActionEvent e) {
-                                        showSaveHashDataInputDialog(signedRef, okListener, okCommand);
-                                    }
-                                };
-                                showPlainTextHashDataInputDialog(text, refId, okListener, okCommand, al, "save");
-                            }
-                        } catch (IOException ex) {
-                            showErrorDialog("Failed to read HashDataInput for reference " + signedRef.getReferenceId() + ": " + ex.getMessage(), okListener, okCommand);
-                        } finally {
-                            try {
-                                baos.close();
-                            } catch (IOException ex) {
-                            }
-                        }
-                    } else {
-                        showSaveHashDataInputDialog(signedRef, okListener, okCommand);
-                    }
-
-                } else if (signedReferences != null && signedReferences.size() > 1) {
-                    final HashDataTableModel tableModel = new HashDataTableModel(signedReferences);
-
-                    ActionListener al = new ActionListener() {
-
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            List<String> selection = tableModel.getSelectedReferenceIds();
-                            StringBuilder sb = new StringBuilder("<html>Not implemented yet. \n");
-                            for (String string : selection) {
-                                sb.append(string);
-                                sb.append('\n');
-                            }
-                            showErrorDialog(sb.toString(), okListener, okCommand);
-//                            showSaveHashDataInputDialog(signedRef, okListener, okCommand);
-                        }
-                    };
-                    showMultipleHashDataInputDialog(tableModel, okListener, okCommand, al, "save");
-                } else {
-                    showErrorDialog(messages.getString(ERROR_HASHDATA), okListener, okCommand);
-                }
+            public void actionPerformed(ActionEvent e) {
+              showSaveHashDataInputDialog(tableModel.getSelectedHashData(), okListener, okCommand);
             }
-        });
+        };
+        showMultipleHashDataInputDialog(tableModel, okListener, okCommand, saveHashDataListener, "save");
+      }
+    }
+    
+     private static String getText(HashDataInput hdi) {
+      ByteArrayOutputStream baos = null;
+      try {
+        InputStream hashDataIS = hdi.getHashDataInput();
+        if (hashDataIS == null) {
+          log.error("No HashDataInput stream for reference " + hdi.getReferenceId());
+          return null;
+        } else {
+          baos = new ByteArrayOutputStream(hashDataIS.available());
+          int c;
+          while ((c = hashDataIS.read()) != -1) {
+              baos.write(c);
+          }
+          return baos.toString("UTF-8");
+        }
+      } catch (IOException ex) {
+          log.error("Failed to read HashDataInput for reference " + hdi.getReferenceId() + ": " + ex.getMessage());
+          return null;
+      } finally {
+          try {
+              baos.close();
+          } catch (IOException ex) {
+          }
+      }
     }
 
-    private void showPlainTextHashDataInputDialog(String text, String refId, ActionListener cancelListener, String cancelCommand, ActionListener saveListener, String saveCommand) {
-        mainPanel.removeAll();
-        buttonPanel.removeAll();
+    private void showPlainTextHashDataInputDialog(final String hashDataText, final ActionListener saveListener, final String saveCommand, final ActionListener cancelListener, final String cancelCommand) {
+      SwingUtilities.invokeLater(new Runnable() {
 
-        titleLabel.setText(messages.getString(TITLE_HASHDATA));
+        @Override
+        public void run() {
+          mainPanel.removeAll();
+          buttonPanel.removeAll();
 
-        JLabel refIdLabel = new JLabel();
-        refIdLabel.setFont(refIdLabel.getFont().deriveFont(refIdLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-        String refIdLabelPattern = messages.getString(MESSAGE_HASHDATA);
-        refIdLabel.setText(MessageFormat.format(refIdLabelPattern, new Object[]{refId}));
+          titleLabel.setText(messages.getString(TITLE_HASHDATA));
 
-        JScrollPane hashDataScrollPane = new JScrollPane();
-        JTextArea hashDataTextArea = new JTextArea(text);
-        hashDataTextArea.setEditable(false);
-        hashDataTextArea.setColumns(1);
-        hashDataTextArea.setRows(1);
-        hashDataScrollPane.setViewportView(hashDataTextArea);
+          JLabel refIdLabel = new JLabel();
+          refIdLabel.setFont(refIdLabel.getFont().deriveFont(refIdLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+          refIdLabel.setText(messages.getString(MESSAGE_HASHDATA)); //MessageFormat.format(refIdLabelPattern, new Object[]{refId}));
 
-        GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
-        mainPanel.setLayout(mainPanelLayout);
+          JScrollPane hashDataScrollPane = new JScrollPane();
+          JTextArea hashDataTextArea = new JTextArea(hashDataText);
+          hashDataTextArea.setEditable(false);
+          hashDataTextArea.setColumns(1);
+          hashDataTextArea.setRows(1);
+          hashDataTextArea.setFont(new Font(HASHDATA_FONT, hashDataTextArea.getFont().getStyle(), hashDataTextArea.getFont().getSize()));
+          hashDataScrollPane.setViewportView(hashDataTextArea);
 
-        mainPanelLayout.setHorizontalGroup(
-          mainPanelLayout.createSequentialGroup()
-                .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(refIdLabel)
-                    .addComponent(hashDataScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap());
+          GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
+          mainPanel.setLayout(mainPanelLayout);
 
-        mainPanelLayout.setVerticalGroup(
-          mainPanelLayout.createSequentialGroup()
-                .addComponent(refIdLabel)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(hashDataScrollPane, 0, GroupLayout.PREFERRED_SIZE, hashDataTextArea.getPreferredSize().height+3));
+          mainPanelLayout.setHorizontalGroup(
+            mainPanelLayout.createSequentialGroup()
+                  .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                      .addComponent(refIdLabel)
+                      .addComponent(hashDataScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                  .addContainerGap());
 
-        
-        
-//        GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
-//        mainPanel.setLayout(mainPanelLayout);
-//
-//        mainPanelLayout.setHorizontalGroup(
-//          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(mainPanelLayout.createSequentialGroup().addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(refIdLabel).addComponent(hashDataScrollPane, GroupLayout.PREFERRED_SIZE, PREF_SIZE_PINFIELD, Short.MAX_VALUE)).addContainerGap()));
-//
-//        mainPanelLayout.setVerticalGroup(
-//          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(mainPanelLayout.createSequentialGroup().addComponent(refIdLabel).addGap(refIdLabel.getFont().getSize()).addComponent(hashDataScrollPane).addGap(refIdLabel.getFont().getSize())));
-
-        backButton.setActionCommand(cancelCommand);
-        backButton.addActionListener(cancelListener);
-
-        saveButton.setActionCommand(saveCommand);
-        saveButton.addActionListener(saveListener);
-        
-        GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
-        buttonPanel.setLayout(buttonPanelLayout);
-
-//        buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
-        buttonPanelLayout.setHorizontalGroup(
-          buttonPanelLayout.createSequentialGroup()
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(saveButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(backButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap());
-        buttonPanelLayout.setVerticalGroup(
-          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) 
-                .addComponent(saveButton)
-                .addComponent(backButton)); 
+          mainPanelLayout.setVerticalGroup(
+            mainPanelLayout.createSequentialGroup()
+                  .addComponent(refIdLabel)
+                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(hashDataScrollPane, 0, GroupLayout.PREFERRED_SIZE, hashDataTextArea.getPreferredSize().height+3));
 
 
-//        GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
-//        buttonPanel.setLayout(buttonPanelLayout);
-//
-//        buttonPanelLayout.setHorizontalGroup(
-//          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(15, Short.MAX_VALUE).addComponent(saveButton).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(cancelButton).addContainerGap()));
-//        buttonPanelLayout.setVerticalGroup(
-//          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(saveButton).addComponent(cancelButton)));
 
-        contentPanel.validate();
+  //        GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
+  //        mainPanel.setLayout(mainPanelLayout);
+  //
+  //        mainPanelLayout.setHorizontalGroup(
+  //          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(mainPanelLayout.createSequentialGroup().addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(refIdLabel).addComponent(hashDataScrollPane, GroupLayout.PREFERRED_SIZE, PREF_SIZE_PINFIELD, Short.MAX_VALUE)).addContainerGap()));
+  //
+  //        mainPanelLayout.setVerticalGroup(
+  //          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(mainPanelLayout.createSequentialGroup().addComponent(refIdLabel).addGap(refIdLabel.getFont().getSize()).addComponent(hashDataScrollPane).addGap(refIdLabel.getFont().getSize())));
+
+          JButton backButton = new JButton();
+          backButton.setText(messages.getString(BUTTON_BACK));
+          backButton.setActionCommand(cancelCommand);
+          backButton.addActionListener(cancelListener);
+
+          JButton saveButton = new JButton();
+          saveButton.setText(messages.getString(BUTTON_SAVE));
+          saveButton.setActionCommand(saveCommand);
+          saveButton.addActionListener(saveListener);
+
+          GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+          buttonPanel.setLayout(buttonPanelLayout);
+
+  //        buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
+          buttonPanelLayout.setHorizontalGroup(
+            buttonPanelLayout.createSequentialGroup()
+                  .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                  .addComponent(saveButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(backButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                  .addContainerGap());
+          buttonPanelLayout.setVerticalGroup(
+            buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) 
+                  .addComponent(saveButton)
+                  .addComponent(backButton)); 
+
+
+  //        GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+  //        buttonPanel.setLayout(buttonPanelLayout);
+  //
+  //        buttonPanelLayout.setHorizontalGroup(
+  //          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup().addContainerGap(15, Short.MAX_VALUE).addComponent(saveButton).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(cancelButton).addContainerGap()));
+  //        buttonPanelLayout.setVerticalGroup(
+  //          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE).addComponent(saveButton).addComponent(cancelButton)));
+
+          contentPanel.validate();
+        }
+      });
     }
 
-    private void showMultipleHashDataInputDialog(final TableModel signedReferences, final ActionListener cancelListener, final String cancelCommand, ActionListener saveListener, String saveCommand) {
-        mainPanel.removeAll();
-        buttonPanel.removeAll();
+    private void showMultipleHashDataInputDialog(final TableModel signedReferences, final ActionListener cancelListener, final String cancelCommand, final ActionListener saveListener, final String saveCommand) {
+      SwingUtilities.invokeLater(new Runnable() {
 
-        titleLabel.setText(messages.getString(TITLE_HASHDATA));
+        @Override
+        public void run() {
+          mainPanel.removeAll();
+          buttonPanel.removeAll();
 
-        JLabel refIdLabel = new JLabel();
-        refIdLabel.setFont(refIdLabel.getFont().deriveFont(refIdLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-        String refIdLabelPattern = messages.getString(MESSAGE_HASHDATALIST);
-        refIdLabel.setText(MessageFormat.format(refIdLabelPattern, new Object[]{signedReferences.getRowCount()}));
+          titleLabel.setText(messages.getString(TITLE_HASHDATA));
 
-        JTable hashDataTable = new JTable();
-        hashDataTable.setModel(signedReferences);
-        hashDataTable.setTableHeader(null);
-//        hashDataTable.setShowVerticalLines(false);
-//        hashDataTable.setRowSelectionAllowed(false);
-        TableColumn selectCol = hashDataTable.getColumnModel().getColumn(1);
-        selectCol.setMinWidth(CHECKBOX_WIDTH);
-        selectCol.setMaxWidth(CHECKBOX_WIDTH);
-        
-        
-        hashDataTable.setPreferredScrollableViewportSize(mainPanel.getPreferredSize());
-        
-        JScrollPane hashDataScrollPane = new JScrollPane(hashDataTable);
-        
-        GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
-        mainPanel.setLayout(mainPanelLayout);
+          JLabel refIdLabel = new JLabel();
+          refIdLabel.setFont(refIdLabel.getFont().deriveFont(refIdLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+          String refIdLabelPattern = messages.getString(MESSAGE_HASHDATALIST);
+          refIdLabel.setText(MessageFormat.format(refIdLabelPattern, new Object[]{signedReferences.getRowCount()}));
 
-        mainPanelLayout.setHorizontalGroup(
-          mainPanelLayout.createSequentialGroup()
-                .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(refIdLabel)
-                    .addComponent(hashDataScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap());
+          JTable hashDataTable = new JTable();
+          hashDataTable.setModel(signedReferences);
+          hashDataTable.setTableHeader(null);
+  //        hashDataTable.setShowVerticalLines(false);
+  //        hashDataTable.setRowSelectionAllowed(false);
+          TableColumn selectCol = hashDataTable.getColumnModel().getColumn(1);
+          selectCol.setMinWidth(CHECKBOX_WIDTH);
+          selectCol.setMaxWidth(CHECKBOX_WIDTH);
 
-        mainPanelLayout.setVerticalGroup(
-          mainPanelLayout.createSequentialGroup()
-                .addComponent(refIdLabel)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(hashDataScrollPane, 0, GroupLayout.PREFERRED_SIZE, hashDataTable.getPreferredSize().height+3));
-//                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED));
 
-        
-        
-//        
-//        GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
-//        mainPanel.setLayout(mainPanelLayout);
-//
-//        mainPanelLayout.setHorizontalGroup(
-//          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//            .addGroup(mainPanelLayout.createSequentialGroup()
-//                .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//                    .addComponent(refIdLabel)
-//                    .addComponent(hashDataScrollPane, GroupLayout.PREFERRED_SIZE, PREF_SIZE_PINFIELD, Short.MAX_VALUE))
-//                    .addContainerGap()));
-//
-//        mainPanelLayout.setVerticalGroup(
-//          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//          .addGroup(mainPanelLayout.createSequentialGroup()
-//            .addComponent(refIdLabel)
-//            .addGap(refIdLabel.getFont().getSize())
-//            .addComponent(hashDataScrollPane)
-//            .addGap(refIdLabel.getFont().getSize())));
+          hashDataTable.setPreferredScrollableViewportSize(mainPanel.getPreferredSize());
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-//        GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
-//        buttonPanel.setLayout(buttonPanelLayout);
-//
-//        buttonPanelLayout.setHorizontalGroup(
-//          buttonPanelLayout.createSequentialGroup()
-////          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-////            .addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
-//                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-//                .addComponent(saveButton)
-//                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-//                .addComponent(cancelButton)
-//                .addContainerGap()); //);
-//        buttonPanelLayout.setVerticalGroup(
-//          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//          .addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
-//            .addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-//                .addComponent(saveButton)
-//                .addComponent(cancelButton))
-//            .addContainerGap()));
+          JScrollPane hashDataScrollPane = new JScrollPane(hashDataTable);
 
-        
-        backButton.setActionCommand(cancelCommand);
-        backButton.addActionListener(cancelListener);
+          GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
+          mainPanel.setLayout(mainPanelLayout);
 
-        saveButton.setActionCommand(saveCommand);
-        saveButton.addActionListener(saveListener);
-        
-        GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
-        buttonPanel.setLayout(buttonPanelLayout);
+          mainPanelLayout.setHorizontalGroup(
+            mainPanelLayout.createSequentialGroup()
+                  .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                      .addComponent(refIdLabel)
+                      .addComponent(hashDataScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                  .addContainerGap());
 
-//        buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
-        buttonPanelLayout.setHorizontalGroup(
-          buttonPanelLayout.createSequentialGroup()
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(saveButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(backButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
-                .addContainerGap());//);
-        buttonPanelLayout.setVerticalGroup(
-          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) 
-                .addComponent(saveButton)
-                .addComponent(backButton)); 
+          mainPanelLayout.setVerticalGroup(
+            mainPanelLayout.createSequentialGroup()
+                  .addComponent(refIdLabel)
+                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(hashDataScrollPane, 0, GroupLayout.PREFERRED_SIZE, hashDataTable.getPreferredSize().height+3));
+  //                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED));
 
-        contentPanel.validate();
+
+
+  //        
+  //        GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
+  //        mainPanel.setLayout(mainPanelLayout);
+  //
+  //        mainPanelLayout.setHorizontalGroup(
+  //          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+  //            .addGroup(mainPanelLayout.createSequentialGroup()
+  //                .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+  //                    .addComponent(refIdLabel)
+  //                    .addComponent(hashDataScrollPane, GroupLayout.PREFERRED_SIZE, PREF_SIZE_PINFIELD, Short.MAX_VALUE))
+  //                    .addContainerGap()));
+  //
+  //        mainPanelLayout.setVerticalGroup(
+  //          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+  //          .addGroup(mainPanelLayout.createSequentialGroup()
+  //            .addComponent(refIdLabel)
+  //            .addGap(refIdLabel.getFont().getSize())
+  //            .addComponent(hashDataScrollPane)
+  //            .addGap(refIdLabel.getFont().getSize())));
+
+
+
+
+
+
+
+
+
+
+
+
+  //        GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+  //        buttonPanel.setLayout(buttonPanelLayout);
+  //
+  //        buttonPanelLayout.setHorizontalGroup(
+  //          buttonPanelLayout.createSequentialGroup()
+  ////          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+  ////            .addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
+  //                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+  //                .addComponent(saveButton)
+  //                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+  //                .addComponent(cancelButton)
+  //                .addContainerGap()); //);
+  //        buttonPanelLayout.setVerticalGroup(
+  //          buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+  //          .addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
+  //            .addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+  //                .addComponent(saveButton)
+  //                .addComponent(cancelButton))
+  //            .addContainerGap()));
+
+
+          JButton backButton = new JButton();
+          backButton.setText(messages.getString(BUTTON_BACK));
+          backButton.setActionCommand(cancelCommand);
+          backButton.addActionListener(cancelListener);
+
+          JButton saveButton = new JButton();
+          saveButton.setText(messages.getString(BUTTON_SAVE));
+          saveButton.setActionCommand(saveCommand);
+          saveButton.addActionListener(saveListener);
+
+          GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+          buttonPanel.setLayout(buttonPanelLayout);
+
+  //        buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
+          buttonPanelLayout.setHorizontalGroup(
+            buttonPanelLayout.createSequentialGroup()
+                  .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                  .addComponent(saveButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(backButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                  .addContainerGap());//);
+          buttonPanelLayout.setVerticalGroup(
+            buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) 
+                  .addComponent(saveButton)
+                  .addComponent(backButton)); 
+
+          contentPanel.validate();
+        }
+      });
     }
 
-    private void showSaveHashDataInputDialog(HashDataInput signedRef, ActionListener okListener, String okCommand) {
-        String dir = System.getProperty("user.home");
-        JFileChooser fileDialog = new JFileChooser(dir);
-        fileDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileDialog.setMultiSelectionEnabled(false);
-        fileDialog.setDialogTitle(messages.getString(WINDOWTITLE_SAVE));
-        fileDialog.setDialogType(JFileChooser.SAVE_DIALOG);
-        fileDialog.setFileHidingEnabled(true);
-        MimeFilter mimeFilter = new MimeFilter(signedRef.getMimeType());
-        fileDialog.setFileFilter(mimeFilter);
-        String filename = messages.getString(SAVE_HASHDATAINPUT_PREFIX) + mimeFilter.getExtension();
-        fileDialog.setSelectedFile(new File(dir, filename));
-        switch (fileDialog.showSaveDialog(contentPane)) {
+//    private DisposableFileChooser fileDialog;
+    
+    private void showSaveHashDataInputDialog(final List<HashDataInput> signedRefs, final ActionListener okListener, final String okCommand) {
+      
+      SwingUtilities.invokeLater(new Runnable() {
+
+        @Override
+        public void run() {
+          String userHome = System.getProperty("user.home");
+          
+          JFileChooser fileDialog = new JFileChooser(userHome); 
+          fileDialog.setMultiSelectionEnabled(false);
+          fileDialog.setDialogType(JFileChooser.SAVE_DIALOG);
+          fileDialog.setFileHidingEnabled(true);
+          if (signedRefs.size() == 1) {
+            fileDialog.setDialogTitle(messages.getString(WINDOWTITLE_SAVE));
+            fileDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            String mimeType = signedRefs.get(0).getMimeType();
+            MimeFilter mimeFilter = new MimeFilter(mimeType, messages);
+            fileDialog.setFileFilter(mimeFilter);
+            String filename = messages.getString(SAVE_HASHDATAINPUT_PREFIX) + MimeFilter.getExtension(mimeType);
+            fileDialog.setSelectedFile(new File(userHome, filename));
+          } else {
+            fileDialog.setDialogTitle(messages.getString(WINDOWTITLE_SAVEDIR));
+            fileDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+          }
+          
+          //parent contentPane -> placed over applet
+          switch (fileDialog.showSaveDialog(fileDialog)) {
             case JFileChooser.APPROVE_OPTION:
-                File f = fileDialog.getSelectedFile();
-                if (f.exists()) {
-//                                    log.debug("hashDataInput file exists, overwrite?");
-                    String ovrwrt = messages.getString(MESSAGE_OVERWRITE);
-                    int overwrite = JOptionPane.showConfirmDialog(contentPane, MessageFormat.format(ovrwrt, filename), messages.getString(WINDOWTITLE_OVERWRITE), JOptionPane.OK_CANCEL_OPTION);
-                    if (overwrite != JOptionPane.OK_OPTION) {
-//                                        log.debug("User canceled overwrite HashDataInput, returning to SignaturePin dialog");
-                        okListener.actionPerformed(new ActionEvent(fileDialog, ActionEvent.ACTION_PERFORMED, okCommand));
-                        return;
-                    }
+              File f = fileDialog.getSelectedFile();
+              for (HashDataInput hashDataInput : signedRefs) {
+                String mimeType = hashDataInput.getMimeType();
+                String id = hashDataInput.getReferenceId();
+                File file;
+                if (f.isDirectory()) {
+                  String filename = messages.getString(SAVE_HASHDATAINPUT_PREFIX) + '_' + id + MimeFilter.getExtension(mimeType);
+                  file = new File(f, filename);
+                } else {
+                  file = f;
+                }
+                if (file.exists()) {
+                  String ovrwrt = messages.getString(MESSAGE_OVERWRITE);
+                  int overwrite = JOptionPane.showConfirmDialog(fileDialog, MessageFormat.format(ovrwrt, file), messages.getString(WINDOWTITLE_OVERWRITE), JOptionPane.OK_CANCEL_OPTION);
+                  if (overwrite != JOptionPane.OK_OPTION) {
+                    continue;
+                  }
                 }
                 if (log.isDebugEnabled()) {
-                    log.debug("Writing HashDataInput " + signedRef.getReferenceId() + " (" + signedRef.getMimeType() + ") to file " + f);
+                    log.debug("Writing HashDataInput " + id + " (" + mimeType + ") to file " + file);
                 }
                 FileOutputStream fos = null;
                 try {
-                    fos = new FileOutputStream(f);
+                    fos = new FileOutputStream(file);
                     BufferedOutputStream bos = new BufferedOutputStream(fos);
-                    InputStream hdi = signedRef.getHashDataInput();
+                    InputStream hdi = hashDataInput.getHashDataInput();
                     int b;
                     while ((b = hdi.read()) != -1) {
                         bos.write(b);
@@ -1134,7 +1200,7 @@ public class BKUGUI implements BKUGUIFacade {
                     bos.flush();
                     bos.close();
                 } catch (IOException ex) {
-                    log.error("Failed to write HashDataInput to file " + f + ": " + ex.getMessage());
+                    log.error("Failed to write HashDataInput to file " + file + ": " + ex.getMessage());
                     showErrorDialog("Failed to write signed reference to file: " + ex.getMessage(), null, null);
                     ex.printStackTrace();
                 } finally {
@@ -1142,11 +1208,15 @@ public class BKUGUI implements BKUGUIFacade {
                         fos.close();
                     } catch (IOException ex) {
                     }
-                }
+                }    
+              }  
+          }
+          log.debug("done saving hashdatainput");
+          okListener.actionPerformed(new ActionEvent(fileDialog, ActionEvent.ACTION_PERFORMED, okCommand));
         }
-        okListener.actionPerformed(new ActionEvent(fileDialog, ActionEvent.ACTION_PERFORMED, okCommand));
+      });
     }
-
+    
     @Override
     public void showWaitDialog(final String waitMessage) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -1190,149 +1260,4 @@ public class BKUGUI implements BKUGUIFacade {
         return null;
     }
 
-    class PINDocument extends PlainDocument {
-
-        private PINSpec pinSpec;
-        private Pattern pinPattern;
-        private JButton enterButton;
-
-        public PINDocument(PINSpec pinSpec, JButton enterButton) {
-            this.pinSpec = pinSpec;
-            if (pinSpec.getRexepPattern() != null) {
-                pinPattern = Pattern.compile(pinSpec.getRexepPattern());
-            } else {
-                pinPattern = Pattern.compile(".");
-            }
-            this.enterButton = enterButton;
-        }
-
-        @Override
-        public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
-            if (pinSpec.getMaxLength() >= (getLength() + str.length())) {
-                boolean matches = true;
-                for (int i = 0; i < str.length(); i++) {
-                    Matcher m = pinPattern.matcher(str.substring(i, i + 1));
-                    if (!m.matches()) {
-                        matches = false;
-                    }
-                }
-                if (matches) {
-                    super.insertString(offs, str, a);
-                }
-            }
-            enterButton.setEnabled(getLength() >= pinSpec.getMinLength());
-        }
-
-        @Override
-        public void remove(int offs, int len) throws BadLocationException {
-            super.remove(offs, len);
-            enterButton.setEnabled(getLength() >= pinSpec.getMinLength());
-        }
-    }
-
-    class MimeFilter extends FileFilter {
-
-        protected String mimeType;
-
-        public MimeFilter(String mimeType) {
-            this.mimeType = mimeType;
-        }
-
-        @Override
-        public boolean accept(File f) {
-
-            if (f.isDirectory()) {
-                return true;
-            }
-
-            String ext = getExtension(f);
-            if ("text/xml".equals(mimeType)) {
-                return "xml".equalsIgnoreCase(ext);
-            } else if ("text/html".equals(mimeType)) {
-                return "html".equalsIgnoreCase(ext) || "htm".equalsIgnoreCase(ext);
-            } else if ("application/xhtml+xml".equals(mimeType)) {
-                return "xhtml".equalsIgnoreCase(ext);
-            } else if ("text/plain".equals(mimeType)) {
-                return "txt".equalsIgnoreCase(ext);
-            } else if ("application/pdf".equals(mimeType)) {
-                return "pdf".equalsIgnoreCase(ext);
-            } else {
-                return true;
-            }
-        }
-
-        private String getExtension(File f) {
-            String ext = null;
-            String s = f.getName();
-            int i = s.lastIndexOf('.');
-
-            if (i > 0 && i < s.length() - 1) {
-                ext = s.substring(i + 1).toLowerCase();
-            }
-            return ext;
-        }
-
-        @Override
-        public String getDescription() {
-            if ("text/xml".equals(mimeType)) {
-                return messages.getString(MIMETYPE_DESC_XML);
-            } else if ("text/html".equals(mimeType)) {
-                return messages.getString(MIMETYPE_DESC_HTML);
-            } else if ("application/xhtml+xml".equals(mimeType)) {
-                return messages.getString(MIMETYPE_DESC_XHTML);
-            } else if ("text/plain".equals(mimeType)) {
-                return messages.getString(MIMETYPE_DESC_TXT);
-            } else if ("application/pdf".equals(mimeType)) {
-                return messages.getString(MIMETYPE_DESC_PDF);
-            } else {
-                return messages.getString(MIMETYPE_DESC_BIN);
-            }
-        }
-
-        public String getExtension() {
-            if ("text/xml".equals(mimeType)) {
-                return ".xml";
-            } else if ("text/html".equals(mimeType)) {
-                return ".html";
-            } else if ("application/xhtml+xml".equals(mimeType)) {
-                return ".xhtml";
-            } else if ("text/plain".equals(mimeType)) {
-                return ".txt";
-            } else if ("application/pdf".equals(mimeType)) {
-                return ".pdf";
-            } else {
-                return ".bin";
-            }
-        }
-    }
-
-    class HashDataTableModel extends DefaultTableModel {
-
-        Class[] types = new Class[]{
-            java.lang.String.class, java.lang.Boolean.class
-        };
-        
-        public HashDataTableModel(List<HashDataInput> signedReferences) {
-            super(0, 2);
-            for (HashDataInput hashDataInput : signedReferences) {
-                addRow(new Object[]{hashDataInput.getReferenceId(), new Boolean(true)});
-            }
-        }
-
-        @Override
-        public Class getColumnClass(int columnIndex) {
-            return types [columnIndex];
-        }
-
-        public List<String> getSelectedReferenceIds() {
-            ArrayList<String> selection = new ArrayList<String>();
-            for (Object row : dataVector) {
-                if ((Boolean) ((Vector) row).elementAt(1)) {
-                    selection.add((String) ((Vector) row).elementAt(0));
-                }
-            }
-            return selection;
-        }
-        
-    }
 }

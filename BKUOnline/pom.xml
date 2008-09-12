@@ -58,11 +58,13 @@
 			<version>1.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
-		<!--
-			dependency> <groupId>at.gv.egiz</groupId>
-			<artifactId>BKUApplet</artifactId> <version>1.0-SNAPSHOT</version>
-			<scope>provided</scope> </dependency
-		-->
+        <!-- build BKUApplet prior to BKUOnline -->
+        <dependency>
+          <groupId>at.gv.egiz</groupId>
+          <artifactId>BKUApplet</artifactId> 
+          <version>1.0-SNAPSHOT</version>
+          <scope>provided</scope> 
+        </dependency>
 		<!--
 			| see https://wsit.dev.java.net/issues/show_bug.cgi?id=970
 		-->
@@ -177,4 +179,5 @@
 			</plugin>
 		</plugins>
 	</build>
+>>>>>>> .r33
 </project>
