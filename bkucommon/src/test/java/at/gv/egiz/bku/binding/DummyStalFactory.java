@@ -16,6 +16,8 @@
 */
 package at.gv.egiz.bku.binding;
 
+import java.util.Locale;
+
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
 
@@ -25,6 +27,12 @@ public class DummyStalFactory implements STALFactory {
   public STAL createSTAL() {
     // TODO Auto-generated method stub
     return new at.gv.egiz.stal.dummy.DummySTAL();
+  }
+
+  @Override
+  public void setLocale(Locale locale) {
+    // TODO Auto-generated method stub
+    
   }
   
 }

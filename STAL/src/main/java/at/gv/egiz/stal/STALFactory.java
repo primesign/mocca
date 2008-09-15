@@ -16,7 +16,9 @@
 */
 package at.gv.egiz.stal;
 
-public interface STALFactory { 
+import java.util.Locale;
 
+public interface STALFactory { 
   public STAL createSTAL();
+  public void setLocale(Locale locale);
 }

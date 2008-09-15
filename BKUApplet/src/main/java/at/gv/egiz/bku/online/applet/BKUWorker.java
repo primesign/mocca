@@ -75,6 +75,17 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     addRequestHandler(QuitRequest.class, this);
     //register SignRequestHandler once we have a webservice port
   }
+  
+  /**
+   * Used for non applet variants
+   * @param gui
+   * @param errorMessageBundle
+   */
+  protected BKUWorker(BKUGUIFacade gui, ResourceBundle errorMessageBundle) {
+    this.gui = gui;
+    this.errorMessages = errorMessageBundle;
+    addRequestHandler(QuitRequest.class, this);
+  }
 
   private STALPortType getSTALPort() throws MalformedURLException {
     URL wsdlURL = null;

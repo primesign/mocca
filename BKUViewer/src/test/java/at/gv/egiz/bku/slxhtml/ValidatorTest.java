@@ -16,19 +16,20 @@
 */
 package at.gv.egiz.bku.slxhtml;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import at.gv.egiz.bku.viewer.ValidationException;
 import at.gv.egiz.bku.viewer.Validator;
 import at.gv.egiz.bku.viewer.ValidatorFactory;
 
-
+@Ignore
 public class ValidatorTest {
   
   private static Log log = LogFactory.getLog(ValidatorTest.class);

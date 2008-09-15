@@ -463,6 +463,31 @@ public class Signature {
           log.trace("Reference caching is not enabled.");
         }
       }
+      for (Reference reference : getReferences()) {
+        if (reference.getType() != null) {
+          InputStream digestInputStream = reference.getDigestInputStream();
+          if (digestInputStream != null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("DigestInput for Reference with id='");
+            sb.append(reference.getId());
+            sb.append("'; Type:");
+            sb.append(reference.getType());
+            sb.append("):\n");
+            try {
+              byte[] b = new byte[512];
+              for (int l; (l = digestInputStream.read(b)) != -1;) {
+                sb.append(new String(b, 0, l));
+              }
+            } catch (IOException e) {
+              log.error(e);
+            }
+            log.trace(sb.toString());
+          } else {
+            log.trace("Reference caching is not enabled.");
+          }
+          
+        }
+      }
     }
     
   }

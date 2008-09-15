@@ -36,6 +36,8 @@ import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.bku.binding.multipart.InputStreamPartSource;
 import at.gv.egiz.bku.binding.multipart.SLResultPart;
@@ -49,6 +51,8 @@ import at.gv.egiz.bku.utils.binding.Protocol;
  * 
  */
 public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
+  
+  private final static Log log = LogFactory.getLog(DataUrlConnectionImpl.class);
 
   public final static Protocol[] SUPPORTED_PROTOCOLS = { Protocol.HTTP,
       Protocol.HTTPS };
@@ -80,10 +84,6 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
    */
   public void connect() throws SocketTimeoutException, IOException {
     connection = (HttpURLConnection) url.openConnection();
-
-    // FIXXME move this to config.
-    HttpURLConnection.setFollowRedirects(false);
-
     connection.setDoOutput(true);
     Set<String> headers = requestHttpHeaders.keySet();
     Iterator<String> headerIt = headers.iterator();
@@ -147,9 +147,13 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
     Part.sendParts(os, formParams.toArray(parts), boundary.getBytes());
     os.close();
     // MultipartRequestEntity PostMethod
-    result = new DataUrlResponse(url.toString(), connection.getResponseCode(),
-        connection.getInputStream());
-
+    InputStream is = null;
+    try {
+      is = connection.getInputStream();
+    } catch (IOException iox) {
+      log.info(iox);
+    }
+    result = new DataUrlResponse(url.toString(), connection.getResponseCode(),  is);
     Map<String, String> responseHttpHeaders = new HashMap<String, String>();
     Map<String, List<String>> httpHeaders = connection.getHeaderFields();
     for (Iterator<String> keyIt = httpHeaders.keySet().iterator(); keyIt

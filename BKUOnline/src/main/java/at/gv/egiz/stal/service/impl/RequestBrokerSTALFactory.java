@@ -21,6 +21,8 @@
 
 package at.gv.egiz.stal.service.impl;
 
+import java.util.Locale;
+
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
 
@@ -35,4 +37,7 @@ public class RequestBrokerSTALFactory implements STALFactory {
         return new STALRequestBrokerImpl();
     }
 
+    @Override
+    public void setLocale(Locale locale) {
+    }
 }

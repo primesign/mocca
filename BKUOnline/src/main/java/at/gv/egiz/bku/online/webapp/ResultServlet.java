@@ -123,6 +123,7 @@ public class ResultServlet extends SpringBKUServlet {
     resp.setContentType(bp.getResultContentType());
     resp.setCharacterEncoding(encoding);
     bp.writeResultTo(resp.getOutputStream(), encoding);
+    resp.getOutputStream().flush();
     session.invalidate();
     getBindingProcessorManager().removeBindingProcessor(bp.getId());
   }

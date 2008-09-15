@@ -187,6 +187,7 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
     }
     BindingProcessor bindingProcessor = new HTTPBindingProcessor(aSessionId,
         commandInvokerClass.newInstance(), url);
+    stalFactory.setLocale(locale);
     STAL stal = stalFactory.createSTAL();
     bindingProcessor.init(stal, commandInvokerClass.newInstance());
     if (locale != null) {
