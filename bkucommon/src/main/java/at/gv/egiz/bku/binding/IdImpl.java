@@ -61,14 +61,17 @@ public class IdImpl implements at.gv.egiz.bku.binding.Id {
     this.idString = idString;
   }
 
+  @Override
   public String toString() {
     return idString;
   }
   
+  @Override
   public int hashCode() {
     return idString.hashCode();
   }
   
+  @Override
   public boolean equals(Object other) {
     if (other instanceof Id) {
       Id otherId = (Id)other;

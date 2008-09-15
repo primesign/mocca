@@ -23,5 +23,9 @@ package at.gv.egiz.bku.binding;
  */
 public interface Id {
 
+  @Override
   public String toString();
+  
+  @Override
+  public boolean equals(Object id);
 }

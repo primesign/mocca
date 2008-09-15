@@ -4,6 +4,7 @@
  */
 package at.gv.egiz.bku.slcommands.impl;
 
+import at.gv.egiz.bku.binding.HttpUtil;
 import at.gv.egiz.bku.slcommands.impl.xsect.DataObject;
 import at.gv.egiz.stal.HashDataInput;
 import java.io.InputStream;
@@ -16,11 +17,14 @@ public class HashDataInputImpl implements HashDataInput {
 
     String refId;
     String mimeType;
+    String encoding;
     InputStream hashDataInput;
 
     public HashDataInputImpl(DataObject dataObject) {
         refId = dataObject.getReference().getId();
-        mimeType = dataObject.getMimeType();  
+        String contentType = dataObject.getMimeType();
+        mimeType = contentType.split(";")[0].trim();
+        encoding = HttpUtil.getCharset(dataObject.getMimeType(), false);
         hashDataInput = dataObject.getReference().getDigestInputStream();
     }
     
@@ -37,6 +41,11 @@ public class HashDataInputImpl implements HashDataInput {
     @Override
     public InputStream getHashDataInput() {
         return hashDataInput;
+    }
+
+    @Override
+    public String getEncoding() {
+      return encoding;
     }
 
 }
