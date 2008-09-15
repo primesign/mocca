@@ -17,6 +17,8 @@ public interface HashDataInput {
     
     public String getMimeType();
     
+    public String getEncoding();
+    
     public InputStream getHashDataInput();
 
 }

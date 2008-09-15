@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.XmlValue;
  *               &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>base64Binary">
  *                 &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}string" />
  *                 &lt;attribute name="MimeType" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *                 &lt;attribute name="Encoding" type="{http://www.w3.org/2001/XMLSchema}string" />
  *               &lt;/extension>
  *             &lt;/simpleContent>
  *           &lt;/complexType>
@@ -132,6 +133,7 @@ public class GetHashDataInputResponseType {
      *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>base64Binary">
      *       &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}string" />
      *       &lt;attribute name="MimeType" type="{http://www.w3.org/2001/XMLSchema}string" />
+     *       &lt;attribute name="Encoding" type="{http://www.w3.org/2001/XMLSchema}string" />
      *     &lt;/extension>
      *   &lt;/simpleContent>
      * &lt;/complexType>
@@ -151,6 +153,8 @@ public class GetHashDataInputResponseType {
         protected String id;
         @XmlAttribute(name = "MimeType")
         protected String mimeType;
+        @XmlAttribute(name = "Encoding")
+        protected String encoding;
 
         /**
          * Gets the value of the value property.
@@ -220,6 +224,30 @@ public class GetHashDataInputResponseType {
          */
         public void setMimeType(String value) {
             this.mimeType = value;
+        }
+
+        /**
+         * Gets the value of the encoding property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getEncoding() {
+            return encoding;
+        }
+
+        /**
+         * Sets the value of the encoding property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setEncoding(String value) {
+            this.encoding = value;
         }
 
     }
