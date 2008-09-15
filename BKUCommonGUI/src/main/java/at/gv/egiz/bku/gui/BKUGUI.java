@@ -23,10 +23,8 @@ package at.gv.egiz.bku.gui;
 import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.stal.HashDataInput;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,13 +37,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.StringTokenizer;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -59,15 +54,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.TitledBorder;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -154,6 +144,7 @@ public class BKUGUI implements BKUGUIFacade {
 
             SwingUtilities.invokeAndWait(new Runnable() {
 
+                @Override
                 public void run() {
 
                     initIconPanel();
@@ -285,6 +276,7 @@ public class BKUGUI implements BKUGUIFacade {
     public void showLoginDialog(ActionListener loginListener, String actionCommand) {
         SwingUtilities.invokeLater(new Runnable() {
 
+      @Override
             public void run() {
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
@@ -318,6 +310,7 @@ public class BKUGUI implements BKUGUIFacade {
     public void showWelcomeDialog() {
         SwingUtilities.invokeLater(new Runnable() {
 
+      @Override
             public void run() {
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
@@ -352,6 +345,7 @@ public class BKUGUI implements BKUGUIFacade {
     public void showInsertCardDialog(final ActionListener cancelListener, final String cancelCommand) {
         SwingUtilities.invokeLater(new Runnable() {
 
+      @Override
             public void run() {
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
@@ -388,6 +382,7 @@ public class BKUGUI implements BKUGUIFacade {
     public void showCardNotSupportedDialog(final ActionListener cancelListener, final String cancelCommand) {
         SwingUtilities.invokeLater(new Runnable() {
 
+      @Override
             public void run() {
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
@@ -440,6 +435,7 @@ public class BKUGUI implements BKUGUIFacade {
     private void showCardPINDialog(final PINSpec pinSpec, final int numRetries, final ActionListener okListener, final String okCommand, final ActionListener cancelListener, final String cancelCommand) {
         SwingUtilities.invokeLater(new Runnable() {
 
+      @Override
             public void run() {
 
                 mainPanel.removeAll();
@@ -599,6 +595,7 @@ public class BKUGUI implements BKUGUIFacade {
     private void showSignaturePINDialog(final PINSpec pinSpec, final int numRetries, final ActionListener signListener, final String signCommand, final ActionListener cancelListener, final String cancelCommand, final ActionListener hashdataListener, final String hashdataCommand) {
         SwingUtilities.invokeLater(new Runnable() {
 
+      @Override
             public void run() {
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
@@ -763,6 +760,7 @@ public class BKUGUI implements BKUGUIFacade {
     public void showErrorDialog(final String errorMsg, final ActionListener okListener, final String okCommand) {
         SwingUtilities.invokeLater(new Runnable() {
 
+      @Override
             public void run() {
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
@@ -846,6 +844,50 @@ public class BKUGUI implements BKUGUIFacade {
     }
 
     @Override
+    public void showWaitDialog(final String waitMessage) {
+        SwingUtilities.invokeLater(new Runnable() {
+
+      @Override
+            public void run() {
+                mainPanel.removeAll();
+                buttonPanel.removeAll();
+
+                titleLabel.setText(messages.getString(TITLE_WAIT));
+
+                JLabel waitMsgLabel = new JLabel();
+                waitMsgLabel.setFont(waitMsgLabel.getFont().deriveFont(waitMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+                if (waitMessage != null) {
+                    waitMsgLabel.setText("<html>" + waitMessage + "</html>");
+                } else {
+                    waitMsgLabel.setText("<html>" + messages.getString(MESSAGE_WAIT) + "</html>");
+                }
+
+                GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
+                mainPanel.setLayout(mainPanelLayout);
+
+                mainPanelLayout.setHorizontalGroup(
+                  mainPanelLayout.createSequentialGroup()
+//                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                  .addComponent(waitMsgLabel)
+                  .addContainerGap()); //, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
+                mainPanelLayout.setVerticalGroup(
+                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                  .addComponent(waitMsgLabel));
+
+                contentPanel.validate();
+            }
+        });
+    }
+
+    @Override
+    public char[] getPin() {
+        if (pinField != null) {
+            return pinField.getPassword();
+        }
+        return null;
+    }
+    
+    @Override
     public void showHashDataInputDialog(final List<HashDataInput> signedReferences, final ActionListener okListener, final String okCommand) {
       
       if (signedReferences == null) {
@@ -891,32 +933,6 @@ public class BKUGUI implements BKUGUIFacade {
       }
     }
     
-     private static String getText(HashDataInput hdi) {
-      ByteArrayOutputStream baos = null;
-      try {
-        InputStream hashDataIS = hdi.getHashDataInput();
-        if (hashDataIS == null) {
-          log.error("No HashDataInput stream for reference " + hdi.getReferenceId());
-          return null;
-        } else {
-          baos = new ByteArrayOutputStream(hashDataIS.available());
-          int c;
-          while ((c = hashDataIS.read()) != -1) {
-              baos.write(c);
-          }
-          return baos.toString("UTF-8");
-        }
-      } catch (IOException ex) {
-          log.error("Failed to read HashDataInput for reference " + hdi.getReferenceId() + ": " + ex.getMessage());
-          return null;
-      } finally {
-          try {
-              baos.close();
-          } catch (IOException ex) {
-          }
-      }
-    }
-
     private void showPlainTextHashDataInputDialog(final String hashDataText, final ActionListener saveListener, final String saveCommand, final ActionListener cancelListener, final String cancelCommand) {
       SwingUtilities.invokeLater(new Runnable() {
 
@@ -931,13 +947,16 @@ public class BKUGUI implements BKUGUIFacade {
           refIdLabel.setFont(refIdLabel.getFont().deriveFont(refIdLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
           refIdLabel.setText(messages.getString(MESSAGE_HASHDATA)); //MessageFormat.format(refIdLabelPattern, new Object[]{refId}));
 
-          JScrollPane hashDataScrollPane = new JScrollPane();
           JTextArea hashDataTextArea = new JTextArea(hashDataText);
           hashDataTextArea.setEditable(false);
-          hashDataTextArea.setColumns(1);
-          hashDataTextArea.setRows(1);
+//          hashDataTextArea.setColumns(1);
+//          hashDataTextArea.setRows(1);
           hashDataTextArea.setFont(new Font(HASHDATA_FONT, hashDataTextArea.getFont().getStyle(), hashDataTextArea.getFont().getSize()));
-          hashDataScrollPane.setViewportView(hashDataTextArea);
+//          hashDataScrollPane.setViewportView(hashDataTextArea);
+//          hashDataScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED); //HORIZONTAL_SCROLLBAR_NEVER);
+
+
+          JScrollPane hashDataScrollPane = new JScrollPane(hashDataTextArea);
 
           GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
           mainPanel.setLayout(mainPanelLayout);
@@ -946,16 +965,14 @@ public class BKUGUI implements BKUGUIFacade {
             mainPanelLayout.createSequentialGroup()
                   .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                       .addComponent(refIdLabel)
-                      .addComponent(hashDataScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                      .addComponent(hashDataScrollPane, 0, 0, Short.MAX_VALUE))
                   .addContainerGap());
 
           mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createSequentialGroup()
                   .addComponent(refIdLabel)
                   .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(hashDataScrollPane, 0, GroupLayout.PREFERRED_SIZE, hashDataTextArea.getPreferredSize().height+3));
-
-
+                  .addComponent(hashDataScrollPane, 0, 0, Short.MAX_VALUE));
 
   //        GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
   //        mainPanel.setLayout(mainPanelLayout);
@@ -1031,7 +1048,7 @@ public class BKUGUI implements BKUGUIFacade {
           selectCol.setMaxWidth(CHECKBOX_WIDTH);
 
 
-          hashDataTable.setPreferredScrollableViewportSize(mainPanel.getPreferredSize());
+//          hashDataTable.setPreferredScrollableViewportSize(mainPanel.getPreferredSize());
 
           JScrollPane hashDataScrollPane = new JScrollPane(hashDataTable);
 
@@ -1042,14 +1059,14 @@ public class BKUGUI implements BKUGUIFacade {
             mainPanelLayout.createSequentialGroup()
                   .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                       .addComponent(refIdLabel)
-                      .addComponent(hashDataScrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                      .addComponent(hashDataScrollPane, 0, 0, Short.MAX_VALUE)) // GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                   .addContainerGap());
 
           mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createSequentialGroup()
                   .addComponent(refIdLabel)
                   .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(hashDataScrollPane, 0, GroupLayout.PREFERRED_SIZE, hashDataTable.getPreferredSize().height+3));
+                  .addComponent(hashDataScrollPane, 0, 0, hashDataTable.getPreferredSize().height+3));
   //                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED));
 
 
@@ -1217,47 +1234,112 @@ public class BKUGUI implements BKUGUIFacade {
       });
     }
     
-    @Override
-    public void showWaitDialog(final String waitMessage) {
-        SwingUtilities.invokeLater(new Runnable() {
-
-            public void run() {
-                mainPanel.removeAll();
-                buttonPanel.removeAll();
-
-                titleLabel.setText(messages.getString(TITLE_WAIT));
-
-                JLabel waitMsgLabel = new JLabel();
-                waitMsgLabel.setFont(waitMsgLabel.getFont().deriveFont(waitMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                if (waitMessage != null) {
-                    waitMsgLabel.setText("<html>" + waitMessage + "</html>");
-                } else {
-                    waitMsgLabel.setText("<html>" + messages.getString(MESSAGE_WAIT) + "</html>");
-                }
-
-                GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
-                mainPanel.setLayout(mainPanelLayout);
-
-                mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createSequentialGroup()
-//                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                  .addComponent(waitMsgLabel)
-                  .addContainerGap()); //, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
-                mainPanelLayout.setVerticalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                  .addComponent(waitMsgLabel));
-
-                contentPanel.validate();
-            }
-        });
-    }
-
-    @Override
-    public char[] getPin() {
-        if (pinField != null) {
-            return pinField.getPassword();
+    private static String getText(HashDataInput hdi) {
+      ByteArrayOutputStream baos = null;
+      try {
+        InputStream hashDataIS = hdi.getHashDataInput();
+        if (hashDataIS == null) {
+          log.error("No HashDataInput stream for reference " + hdi.getReferenceId());
+          return null;
+        } else {
+          baos = new ByteArrayOutputStream(hashDataIS.available());
+          int c;
+          while ((c = hashDataIS.read()) != -1) {
+              baos.write(c);
+          }
+          String encoding = hdi.getEncoding();
+          if (encoding == null) {
+            //default for URL-encoded
+            encoding = "UTF-8";
+          }
+          return baos.toString(encoding);
         }
-        return null;
+      } catch (IOException ex) {
+          log.error("Failed to read HashDataInput for reference " + hdi.getReferenceId() + ": " + ex.getMessage());
+          return null;
+      } finally {
+          try {
+              baos.close();
+          } catch (IOException ex) {
+          }
+      }
     }
-
+    
+//    private String parseToken(final char[] terminators) {
+//        char ch;
+//        i1 = pos;
+//        i2 = pos;
+//        while (hasChar()) {
+//            ch = chars[pos];
+//            if (isOneOf(ch, terminators)) {
+//                break;
+//            }
+//            i2++;
+//            pos++;
+//        }
+//        return getToken(false);
+//    }
+    
+//     private static String getCharset(String contentType) {
+//       
+//       StringTokenizer t = new StringTokenizer
+//       
+//       if (contentType == null) {
+//         return "UTF-8";
+//       }
+//       
+//       int pos = 0;
+//       int len = contentType.length();
+//       
+//       while (pos < len) {
+//         pos++;
+//         String paramName = parseToken(new char[] {
+//                    '=', separator });
+//       }
+//       
+//        HashMap params = new HashMap();
+//        this.chars = chars;
+//        this.pos = offset;
+//        this.len = length;
+//
+//        String paramName = null;
+//        String paramValue = null;
+//        while (hasChar()) {
+//            paramName = parseToken(new char[] {
+//                    '=', separator });
+//            paramValue = null;
+//            if (hasChar() && (chars[pos] == '=')) {
+//                pos++; // skip '='
+//                paramValue = parseQuotedToken(new char[] {
+//                        separator });
+//            }
+//            if (hasChar() && (chars[pos] == separator)) {
+//                pos++; // skip separator
+//            }
+//            if ((paramName != null) && (paramName.length() > 0)) {
+//                if (this.lowerCaseNames) {
+//                    paramName = paramName.toLowerCase();
+//                }
+//                params.put(paramName, paramValue);
+//            }
+//        }
+//        return params;
+//       
+//       
+//       
+//       Parser
+//      ParameterParser pf = new ParameterParser();
+//    pf.setLowerCaseNames(true);
+//    Map map = pf.parse(contentType, SEPERATOR);
+//    String retVal = (String) map.get(CHAR_SET);
+//    if ((retVal == null) && (replaceNullWithDefault)) {
+//      if (map.containsKey(APPLICATION_URL_ENCODED)) {
+//        // default charset for url encoded data
+//        return "UTF-8";
+//      }
+//      retVal = getDefaultCharset();
+//    }
+//    return retVal;
+//  }
+    
 }

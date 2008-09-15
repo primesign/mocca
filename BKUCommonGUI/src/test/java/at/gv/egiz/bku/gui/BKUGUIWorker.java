@@ -82,7 +82,7 @@ public class BKUGUIWorker implements Runnable {
 
           @Override
           public InputStream getHashDataInput() {
-            return new ByteArrayInputStream("oialfx HashDataInput_001\n12345\n\tHello, world!\n12345\n\n12345\n6789\nblabla".getBytes());
+            return new ByteArrayInputStream("Ich bin ein einfacher Text mit Umlauten: öäüßéç@€\n123\n456\n\tHello, world!\n\nlkjsd\nnksdjf".getBytes());
           }
 
           @Override
@@ -93,6 +93,10 @@ public class BKUGUIWorker implements Runnable {
           @Override
           public String getReferenceId() {
             return "Reference-ref1-00000000000000000000001";
+          }
+          @Override
+          public String getEncoding() {
+            return "UTF-8";
           }
         };
         HashDataInput signedRef2 = new HashDataInput() {
@@ -111,6 +115,10 @@ public class BKUGUIWorker implements Runnable {
           public String getReferenceId() {
             return "Reference-ref2-00000000000000000000002";
           }
+          @Override
+          public String getEncoding() {
+            return "UTF-8";
+          }
         };
         HashDataInput signedRef3 = new HashDataInput() {
 
@@ -127,6 +135,11 @@ public class BKUGUIWorker implements Runnable {
           @Override
           public String getReferenceId() {
             return "Reference-ref3-00000000000000000000003";
+          }
+          
+          @Override
+          public String getEncoding() {
+            return "UTF-8";
           }
         };
         HashDataInput signedRef4 = new HashDataInput() {
@@ -145,6 +158,11 @@ public class BKUGUIWorker implements Runnable {
           public String getReferenceId() {
             return "ref4";
           }
+
+          @Override
+          public String getEncoding() {
+            return "UTF-8";
+          }
         };
 
         //
@@ -153,6 +171,10 @@ public class BKUGUIWorker implements Runnable {
                     signedRefs.add(signedRef2);
                     signedRefs.add(signedRef3);
                     signedRefs.add(signedRef4);
+//                    signedRefs.add(signedRef4);
+//                    signedRefs.add(signedRef4);
+//                    signedRefs.add(signedRef4);
+//                    signedRefs.add(signedRef4);
 //                    signedRefs = Collections.singletonList(signedRef1);
         gui.showHashDataInputDialog(signedRefs, returnListener, "return");
       }
