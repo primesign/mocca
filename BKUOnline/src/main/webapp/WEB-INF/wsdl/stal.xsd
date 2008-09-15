@@ -120,7 +120,8 @@
                     <simpleContent>
                         <extension base="base64Binary">
                             <attribute name="ID" type="string"/>
-                            <attribute name="MimeType" type="string"/>
+                            <attribute name="MimeType" type="string" use="optional"/>
+                            <attribute name="Encoding" type="string" use="optional"/>
                         </extension>
                     </simpleContent>
                 </complexType>

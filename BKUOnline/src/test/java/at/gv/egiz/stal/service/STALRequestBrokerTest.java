@@ -111,6 +111,10 @@ public class STALRequestBrokerTest {
             public InputStream getHashDataInput() {
                 return new ByteArrayInputStream("hashdatainput1234".getBytes());
             }
+            @Override
+            public String getEncoding() {
+              return "UTF-8";
+            }
         };
         r1.setHashDataInput(Collections.singletonList(hdi));
         requests.add(r1);
@@ -151,6 +155,10 @@ public class STALRequestBrokerTest {
             @Override
             public InputStream getHashDataInput() {
                 return new ByteArrayInputStream("hashdatainput1234".getBytes());
+            }
+            @Override
+            public String getEncoding() {
+              return "UTF-8";
             }
         };
         r1.setHashDataInput(Collections.singletonList(hdi));
@@ -207,6 +215,10 @@ public class STALRequestBrokerTest {
             public InputStream getHashDataInput() {
                 return new ByteArrayInputStream("hashdatainput1234".getBytes());
             }
+            @Override
+            public String getEncoding() {
+              return "UTF-8";
+            }
         };
         r1.setHashDataInput(Collections.singletonList(hdi));
         requests.add(r1);
@@ -230,6 +242,10 @@ public class STALRequestBrokerTest {
             @Override
             public InputStream getHashDataInput() {
                 return new ByteArrayInputStream("<xml>hashdatainput6789</xml>".getBytes());
+            }
+            @Override
+            public String getEncoding() {
+              return "UTF-8";
             }
         };
         r2.setHashDataInput(Collections.singletonList(hdi2));

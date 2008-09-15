@@ -53,6 +53,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
     protected List<HashDataInput> currentHashDataInput;
     private boolean isHandlingRequest = false;
     private boolean expectingResponse = false;
+    private boolean interrupted = false;
 //    private Object handleRequestCondition = new Object();
 //    private Object gotResponsesCondition = new Object();
 //    public STALRequestBrokerImpl() {
@@ -75,6 +76,9 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
      */
     @Override
     public synchronized List<STALResponse> handleRequest(List<STALRequest> requests) {
+      if (interrupted) {
+        return null;
+      }
         try {
             long beforeWait = System.currentTimeMillis();
             while (isHandlingRequest) {
@@ -161,6 +165,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
         return resps;
         } catch (InterruptedException ex) {
             log.warn("interrupt in handleRequest(): " + ex.getMessage());
+            interrupted = true;
             return null;
         }
     }
@@ -172,6 +177,9 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
      */
     @Override
     public synchronized List<STALRequest> nextRequest(List<STALResponse> responses) {
+      if (interrupted) {
+        return null;
+      }
         try {
             if (responses != null && responses.size() > 0) {
                 if (!expectingResponse) {
@@ -244,6 +252,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
             return reqs;
         } catch (InterruptedException ex) {
             log.warn("interrupt in nextRequest(): " + ex.getMessage());
+            interrupted = true;
             return null;
         }
     }
