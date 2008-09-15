@@ -74,11 +74,12 @@ public class WSSignRequestHandler extends SignRequestHandler {
             byte[] hdi = reference.getValue();
             String id = reference.getID();
             String mimeType = reference.getMimeType();
+            String encoding = reference.getEncoding();
 
             if (log.isDebugEnabled()) {
-                log.debug("Got HashDataInput " + id + " (" + mimeType + ")");
+                log.debug("Got HashDataInput " + id + " (" + mimeType + ";" + encoding + ")");
             }
-            hashDataInputs.add(new ByteArrayHashDataInput(hdi, id, mimeType));
+            hashDataInputs.add(new ByteArrayHashDataInput(hdi, id, mimeType, encoding));
         }
         return hashDataInputs;
     }
