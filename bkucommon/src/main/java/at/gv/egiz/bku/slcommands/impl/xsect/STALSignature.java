@@ -16,7 +16,7 @@
 */
 package at.gv.egiz.bku.slcommands.impl.xsect;
 
-import at.gv.egiz.bku.slcommands.impl.HashDataInputImpl;
+import at.gv.egiz.bku.slcommands.impl.DataObjectHashDataInput;
 import at.gv.egiz.bku.slexceptions.SLViewerException;
 
 import java.io.ByteArrayOutputStream;
@@ -131,7 +131,7 @@ public class STALSignature extends SignatureSpi {
       } catch (SLViewerException e) {
         throw new STALSignatureException(e);
       }
-      hashDataInputs.add(new HashDataInputImpl(dataObject));
+      hashDataInputs.add(new DataObjectHashDataInput(dataObject));
     }
     
     SignRequest signRequest = new SignRequest();
