@@ -29,7 +29,10 @@ import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
+import at.gv.egiz.stal.impl.ByteArrayHashDataInput;
 import at.gv.egiz.stal.signedinfo.ReferenceType;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 
 /**
  * 
@@ -55,7 +58,7 @@ public class LocalSignRequestHandler extends SignRequestHandler {
   }
 
   @Override
-  protected List<HashDataInput> getHashDataInputs(
+  public List<HashDataInput> getCashedHashDataInputs(
       List<ReferenceType> dsigReferences) throws Exception {
     ArrayList<HashDataInput> result = new ArrayList<HashDataInput>();
     for (ReferenceType dsigRef : dsigReferences) {
@@ -65,7 +68,14 @@ public class LocalSignRequestHandler extends SignRequestHandler {
         if (dsigRefId != null) {
           for (HashDataInput hdi : hashDataInput) {
             if (hdi.getReferenceId().equals(dsigRefId)) {
-              result.add(hdi);
+              InputStream hdIs = hdi.getHashDataInput();
+              ByteArrayOutputStream baos = new ByteArrayOutputStream(hdIs.available());
+              int b;
+              while ((b = hdIs.read()) != -1) {
+                baos.write(b);
+              }
+              ByteArrayHashDataInput baHdi = new ByteArrayHashDataInput(baos.toByteArray(), hdi.getReferenceId(), hdi.getMimeType(), hdi.getEncoding());
+              result.add(baHdi);
             }
           }
         } else {

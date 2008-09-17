@@ -45,7 +45,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
 
   static {
     addRequestHandler(InfoboxReadRequest.class, new InfoBoxReadRequestHandler());
-    addRequestHandler(SignRequest.class, new SignRequestHandler());
+//    addRequestHandler(SignRequest.class, new SignRequestHandler());
   }
 
   /**
