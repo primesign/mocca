@@ -32,7 +32,8 @@ public class DataObjectHashDataInput implements HashDataInput {
 
     @Override
     public String getMimeType() {
-        return dataObject.getMimeType();
+      String contentType = dataObject.getMimeType();
+      return contentType.split(";")[0].trim();
     }
 
     /**
