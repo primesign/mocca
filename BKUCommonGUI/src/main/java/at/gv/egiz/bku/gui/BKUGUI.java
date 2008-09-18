@@ -835,7 +835,8 @@ public class BKUGUI implements BKUGUIFacade {
             .addComponent(errorMsgLabel)
             .addContainerGap()); //, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
           mainPanelLayout.setVerticalGroup(
-            mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            mainPanelLayout.createSequentialGroup()
+//            mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addComponent(errorMsgLabel));
 
           contentPanel.validate();
@@ -859,7 +860,7 @@ public class BKUGUI implements BKUGUIFacade {
                 if (waitMessage != null) {
                     waitMsgLabel.setText("<html>" + waitMessage + "</html>");
                 } else {
-                    waitMsgLabel.setText("<html>" + messages.getString(MESSAGE_WAIT) + "</html>");
+                    waitMsgLabel.setText(messages.getString(MESSAGE_WAIT));
                 }
 
                 GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
@@ -873,8 +874,7 @@ public class BKUGUI implements BKUGUIFacade {
                 mainPanelLayout.setVerticalGroup(
                   mainPanelLayout.createSequentialGroup()
 //                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                  .addComponent(waitMsgLabel)
-                  .addContainerGap());
+                  .addComponent(waitMsgLabel));
 
                 contentPanel.validate();
             }

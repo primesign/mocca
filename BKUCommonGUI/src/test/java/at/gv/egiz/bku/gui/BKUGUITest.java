@@ -34,7 +34,7 @@ import org.junit.Test;
  */
 public class BKUGUITest {
 
-    @Ignore
+    @Test
     public void testBKUGUI() {
         JFrame testFrame = new JFrame("BKUGUITest");
         BKUGUI gui = new BKUGUI();

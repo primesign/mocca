@@ -43,7 +43,7 @@ public class BKUGUIWorker implements Runnable {
 
   @Override
   public void run() {
-//        try {
+        try {
 
     final PINSpec signPinSpec = new PINSpec(6, 10, "[0-9]", "Signatur-PIN");
 
@@ -185,9 +185,18 @@ public class BKUGUIWorker implements Runnable {
 //        gui.showWelcomeDialog();
 //
 //        Thread.sleep(2000);
+        
+        gui.showWaitDialog(null);
+        
+        Thread.sleep(1000);
+        
+        gui.showWaitDialog("test");
+        
+        Thread.sleep(1000);
+          
 
 //            gui.showInsertCardDialog(cancelListener, "cancel");
-
+//
 //            Thread.sleep(2000);
 //            
 //            gui.showCardNotSupportedDialog(cancelListener, "cancel");
@@ -201,7 +210,7 @@ public class BKUGUIWorker implements Runnable {
 //            Thread.sleep(2000);
 //
 
-    gui.showSignaturePINDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
+//    gui.showSignaturePINDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
 
 //            Thread.sleep(2000);
 
@@ -209,18 +218,18 @@ public class BKUGUIWorker implements Runnable {
 //
 //            Thread.sleep(2000);
 ////            
-//            gui.showErrorDialog("Testfehler occured", null, null);
+            gui.showErrorDialog("Testfehler occured", null, null);
+            
+            Thread.sleep(2000);
 //            
-//            Thread.sleep(2000);
-//            
-//            gui.showErrorDialog("Testfehler occured"); 
+            gui.showErrorDialog("Testfehler occured"); 
 
 
 //            gui.showTextPlainHashDataInput("hallo,\n welt!", "12345", null, "cancel", null, "save");
 //            Thread.sleep(2000);
 
-//        } catch (InterruptedException ex) {
-//            ex.printStackTrace();
-//        }
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
   }
 }
