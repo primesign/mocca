@@ -871,8 +871,10 @@ public class BKUGUI implements BKUGUIFacade {
                   .addComponent(waitMsgLabel)
                   .addContainerGap()); //, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
                 mainPanelLayout.setVerticalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                  .addComponent(waitMsgLabel));
+                  mainPanelLayout.createSequentialGroup()
+//                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                  .addComponent(waitMsgLabel)
+                  .addContainerGap());
 
                 contentPanel.validate();
             }

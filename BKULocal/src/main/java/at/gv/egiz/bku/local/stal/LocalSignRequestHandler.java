@@ -16,6 +16,7 @@
  */
 package at.gv.egiz.bku.local.stal;
 
+import at.gv.egiz.bku.slcommands.impl.DataObjectHashDataInput;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -68,14 +69,27 @@ public class LocalSignRequestHandler extends SignRequestHandler {
         if (dsigRefId != null) {
           for (HashDataInput hdi : hashDataInput) {
             if (hdi.getReferenceId().equals(dsigRefId)) {
-              InputStream hdIs = hdi.getHashDataInput();
-              ByteArrayOutputStream baos = new ByteArrayOutputStream(hdIs.available());
-              int b;
-              while ((b = hdIs.read()) != -1) {
-                baos.write(b);
+              if (hdi instanceof DataObjectHashDataInput) {
+                if (log.isTraceEnabled())
+                  log.trace("adding DataObjectHashDataInput");
+                result.add(hdi);
+              } else if (hdi instanceof ByteArrayHashDataInput) {
+                if (log.isTraceEnabled())
+                  log.trace("adding ByteArrayHashDataInput");
+                result.add(hdi);
+              } else {
+                if (log.isDebugEnabled())
+                  log.debug("provided HashDataInput not chaching enabled, creating ByteArrayHashDataInput");
+                
+                InputStream hdIs = hdi.getHashDataInput();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream(hdIs.available());
+                int b;
+                while ((b = hdIs.read()) != -1) {
+                  baos.write(b);
+                }
+                ByteArrayHashDataInput baHdi = new ByteArrayHashDataInput(baos.toByteArray(), hdi.getReferenceId(), hdi.getMimeType(), hdi.getEncoding());
+                result.add(baHdi);
               }
-              ByteArrayHashDataInput baHdi = new ByteArrayHashDataInput(baos.toByteArray(), hdi.getReferenceId(), hdi.getMimeType(), hdi.getEncoding());
-              result.add(baHdi);
             }
           }
         } else {

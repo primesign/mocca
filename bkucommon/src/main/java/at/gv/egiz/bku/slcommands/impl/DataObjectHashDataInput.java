@@ -10,7 +10,9 @@ import at.gv.egiz.stal.HashDataInput;
 import java.io.InputStream;
 
 /**
- *
+ * DataObject-backed HashDataInput
+ * If <a href="XMLSignContext.html#Supported Properties">reference caching</a> is enabled,
+ * the hashdata input stream can be obtained repeatedly.
  * @author clemens
  */
 public class DataObjectHashDataInput implements HashDataInput {
@@ -34,7 +36,7 @@ public class DataObjectHashDataInput implements HashDataInput {
     }
 
     /**
-     * 
+     * may be called repeatedly
      * @return the pre-digested input stream if reference caching is enabled, null otherwise
      */
     @Override
