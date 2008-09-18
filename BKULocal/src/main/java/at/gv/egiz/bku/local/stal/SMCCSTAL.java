@@ -7,6 +7,7 @@ import javax.swing.JDialog;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.online.applet.BKUWorker;
+import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
@@ -26,8 +27,16 @@ public class SMCCSTAL extends BKUWorker {
   public List<STALResponse> handleRequest(List<STALRequest> requestList) {
     signatureCard = null;
     List<STALResponse> responses = super.handleRequest(requestList);
-    container.setVisible(false);
+    //container.setVisible(false);
     return responses;
+  }
+
+  @Override
+  public STALResponse handleRequest(STALRequest request) {
+    if (request instanceof QuitRequest) {
+      container.setVisible(false);
+    }
+    return null;
   }
 
 }

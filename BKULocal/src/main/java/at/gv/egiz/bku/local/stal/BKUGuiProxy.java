@@ -1,7 +1,12 @@
 package at.gv.egiz.bku.local.stal;
 
 import java.awt.Container;
+import java.awt.EventQueue;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.WindowEvent;
 import java.util.List;
 
 import javax.swing.JDialog;
@@ -126,5 +131,4 @@ public class BKUGuiProxy implements BKUGUIFacade {
     showDialog();
     delegate.showWelcomeDialog();
   }
-
 }

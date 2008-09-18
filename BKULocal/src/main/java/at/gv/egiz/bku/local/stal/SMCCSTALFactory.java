@@ -53,6 +53,7 @@ public class SMCCSTALFactory implements STALFactory {
       stal = new SMCCSTAL(new BKUGuiProxy(dialog, gui), dialog, resourceBundle);
       dialog.setPreferredSize(new Dimension(400, 200));
       dialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+      dialog.pack();
       Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
       Dimension frameSize = dialog.getSize();
       if (frameSize.height > screenSize.height) {
@@ -63,13 +64,12 @@ public class SMCCSTALFactory implements STALFactory {
       }
       dialog.setLocation((screenSize.width - frameSize.width) / 2,
           (screenSize.height - frameSize.height) / 2);
-      dialog.pack();
     }
     return stal;
   }
 
   @Override
-  public void setLocale(Locale locale) {
+   public void setLocale(Locale locale) {
     this.locale = locale;
   }
 }
