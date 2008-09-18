@@ -956,7 +956,8 @@ public class BKUGUI implements BKUGUIFacade {
           hashDataTextArea.setFont(new Font(HASHDATA_FONT, hashDataTextArea.getFont().getStyle(), hashDataTextArea.getFont().getSize()));
 //          hashDataScrollPane.setViewportView(hashDataTextArea);
 //          hashDataScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED); //HORIZONTAL_SCROLLBAR_NEVER);
-
+          hashDataTextArea.setLineWrap(true);
+          hashDataTextArea.setWrapStyleWord(true);
 
           JScrollPane hashDataScrollPane = new JScrollPane(hashDataTextArea);
 
