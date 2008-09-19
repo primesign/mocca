@@ -53,6 +53,7 @@ public class DataUrl {
 
   public DataUrlConnection openConnection() {
     try {
+      log.debug("Opening dataurl connection");
       DataUrlConnectionSPI retVal = defaultDataUrlConnection.newInstance();
       retVal.init(url);
       return retVal;

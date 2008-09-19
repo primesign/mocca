@@ -42,11 +42,16 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.naming.ldap.LdapContext;
+import javax.naming.ldap.LdapReferralException;
 import javax.net.ssl.CertPathTrustManagerParameters;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.ManagerFactoryParameters;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
@@ -118,7 +123,14 @@ public class SpringConfigurator extends Configurator implements
   }
 
   public void configureNetwork() {
-    
+    String proxy = getProperty("HTTPProxyHost");
+    String portString = getProperty("HTTPProxyPort");
+    if ((proxy == null) || (proxy.equals(""))) {
+      log.info("No proxy configured");
+    } else {
+      System.setProperty("proxyHost", proxy);
+      System.setProperty("proxyPort", portString);
+    }
   }
 
   private Set<TrustAnchor> getCACerts() throws IOException,
@@ -258,12 +270,32 @@ public class SpringConfigurator extends Configurator implements
       KeyManager[] km = null;
       SSLContext sslCtx = SSLContext
           .getInstance(getProperty("SSL.sslProtocol"));
-      sslCtx.init(km, trustFab.getTrustManagers(), null);
-      // sslCtx.init(km, new TrustManager[] { new MyTrustManager(caCerts,
-      // certStoreList) }, null);
+      String disableAll = getProperty("SSL.disableAllChecks");
+      if ((disableAll != null) && (Boolean.parseBoolean(disableAll))) {
+        log.warn("--------------------------------------");
+        log.warn(" Disabling SSL Certificate Validation ");
+        log.warn("--------------------------------------");
+
+        sslCtx.init(km, new TrustManager[] { new MyTrustManager(caCerts,
+            certStoreList) }, null);
+      } else {
+        sslCtx.init(km, trustFab.getTrustManagers(), null);
+      }
       HttpsURLConnection.setDefaultSSLSocketFactory(sslCtx.getSocketFactory());
     } catch (Exception e) {
       log.error("Cannot configure SSL", e);
+    }
+    String disableAll = getProperty("SSL.disableAllChecks");
+    if ((disableAll != null) && (Boolean.parseBoolean(disableAll))) {
+      log.warn("---------------------------------");
+      log.warn(" Disabling Hostname Verification ");
+      log.warn("---------------------------------");
+      HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+        @Override
+        public boolean verify(String hostname, SSLSession session) {
+          return true;
+        }
+      });
     }
   }
 
@@ -275,20 +307,15 @@ public class SpringConfigurator extends Configurator implements
 
 class MyTrustManager implements X509TrustManager {
   private static Log log = LogFactory.getLog(MyTrustManager.class);
-  private Set<TrustAnchor> caCerts;
-  private List<CertStore> certStoreList;
   private X509Certificate[] trustedCerts;
 
   public MyTrustManager(Set<TrustAnchor> caCerts, List<CertStore> cs) {
-    this.caCerts = caCerts;
-    this.certStoreList = cs;
     trustedCerts = new X509Certificate[caCerts.size()];
     int i = 0;
     for (Iterator<TrustAnchor> it = caCerts.iterator(); it.hasNext();) {
       TrustAnchor ta = it.next();
       trustedCerts[i++] = ta.getTrustedCert();
     }
-
   }
 
   @Override
@@ -301,31 +328,9 @@ class MyTrustManager implements X509TrustManager {
   @Override
   public void checkServerTrusted(X509Certificate[] certs, String arg1)
       throws CertificateException {
-    try {
-      log.debug("Checking server certificate: " + certs[0].getSubjectDN());
-      CertPathBuilder pathBuilder = CertPathBuilder.getInstance("PKIX");
-      X509CertSelector selector = new X509CertSelector();
-      selector.setCertificate(certs[0]);
-      PKIXBuilderParameters pkixParams;
-      pkixParams = new PKIXBuilderParameters(caCerts, selector);
-      pkixParams.setRevocationEnabled(true); // FIXME
-      for (CertStore cs : certStoreList) {
-        pkixParams.addCertStore(cs);
-      }
-      PKIXCertPathBuilderResult result = (PKIXCertPathBuilderResult) pathBuilder
-          .build(pkixParams);
-      if (log.isTraceEnabled()) {
-        StringBuffer sb = new StringBuffer();
-        for (Certificate cert : result.getCertPath().getCertificates()) {
-          sb.append(((X509Certificate) cert).getSubjectDN());
-          sb.append("->");
-        }
-        sb.append("End");
-        log.trace(sb);
-      }
-    } catch (Exception e) {
-      throw new CertificateException(e);
-    }
+    log.warn("-------------------------------------");
+    log.warn("SSL Certificate Validation Disabled !");
+    log.warn("-------------------------------------");
   }
 
   @Override

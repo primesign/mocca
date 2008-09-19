@@ -70,6 +70,8 @@ public class SpringConfigurator extends Configurator implements
 			} catch (IOException e) {
 				log.error("Cannot load config", e);
 			}
+		} else {
+		  log.warn("Cannot load properties, resource: "+resource);
 		}
 	}
 
@@ -91,8 +93,23 @@ public class SpringConfigurator extends Configurator implements
 		super.configure();
 		configureSSL();
 		configureVersion();
+		configureNetwork();
 	}
 
+	public void configureNetwork() {
+	  String proxyHost = getProperty("HTTPProxyHost");
+	  String proxyPort = getProperty("HTTPProxyPort");
+	  if (proxyPort == null) {
+	    proxyPort = "80";
+	  }
+	  if (proxyHost != null) {
+	    log.debug("Setting proxy server to: "+proxyHost+":"+proxyPort);
+	    System.setProperty("http.proxyHost", proxyHost);
+	    System.setProperty("http.proxyPort", proxyPort);
+	  }
+	  log.debug("No proxy specified");
+	}
+	
 	private Set<TrustAnchor> getCACerts() throws IOException,
 			CertificateException {
 		Set<TrustAnchor> caCerts = new HashSet<TrustAnchor>();

@@ -91,11 +91,13 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
       String name = headerIt.next();
       connection.setRequestProperty(name, requestHttpHeaders.get(name));
     }
+    log.trace("Connecting to: "+url);
     connection.connect();
     if (connection instanceof HttpsURLConnection) {
       HttpsURLConnection ssl = (HttpsURLConnection) connection;
       X509Certificate[] certs = (X509Certificate[]) ssl.getServerCertificates();
       if ((certs != null) && (certs.length >= 1)) {
+        log.trace("Server certificate: "+certs[0]);
         serverCertificate = certs[0];
       }
     }
@@ -142,7 +144,7 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
     formParams.add(slResultPart);
 
     OutputStream os = connection.getOutputStream();
-
+    log.trace("Sending data");
     Part[] parts = new Part[formParams.size()];
     Part.sendParts(os, formParams.toArray(parts), boundary.getBytes());
     os.close();
@@ -153,6 +155,7 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
     } catch (IOException iox) {
       log.info(iox);
     }
+    log.trace("Reading response");
     result = new DataUrlResponse(url.toString(), connection.getResponseCode(),  is);
     Map<String, String> responseHttpHeaders = new HashMap<String, String>();
     Map<String, List<String>> httpHeaders = connection.getHeaderFields();
