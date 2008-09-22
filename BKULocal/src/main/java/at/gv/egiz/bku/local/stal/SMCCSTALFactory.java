@@ -33,43 +33,40 @@ import at.gv.egiz.stal.STALFactory;
 public class SMCCSTALFactory implements STALFactory {
 
   private Locale locale;
-  private SMCCSTAL stal;
-  private JDialog dialog;
 
   @Override
   public STAL createSTAL() {
-    if (stal == null) {
-      ResourceBundle resourceBundle;
-      if (locale != null) {
-        resourceBundle = ResourceBundle.getBundle(
-            BKUApplet.RESOURCE_BUNDLE_BASE, locale);
-      } else {
-        resourceBundle = ResourceBundle
-            .getBundle(BKUApplet.RESOURCE_BUNDLE_BASE);
-      }
-      dialog = new JDialog();
-      BKUGUIFacade gui = BKUGUIFactory.createGUI();
-      gui.init(dialog.getContentPane(), locale.toString());
-      stal = new SMCCSTAL(new BKUGuiProxy(dialog, gui), dialog, resourceBundle);
-      dialog.setPreferredSize(new Dimension(400, 200));
-      dialog.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-      dialog.pack();
-      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-      Dimension frameSize = dialog.getSize();
-      if (frameSize.height > screenSize.height) {
-        frameSize.height = screenSize.height;
-      }
-      if (frameSize.width > screenSize.width) {
-        frameSize.width = screenSize.width;
-      }
-      dialog.setLocation((screenSize.width - frameSize.width) / 2,
-          (screenSize.height - frameSize.height) / 2);
+    SMCCSTAL stal;
+    JDialog dialog;
+    ResourceBundle resourceBundle;
+    if (locale != null) {
+      resourceBundle = ResourceBundle.getBundle(BKUApplet.RESOURCE_BUNDLE_BASE,
+          locale);
+    } else {
+      resourceBundle = ResourceBundle.getBundle(BKUApplet.RESOURCE_BUNDLE_BASE);
     }
+    dialog = new JDialog();
+    BKUGUIFacade gui = BKUGUIFactory.createGUI();
+    gui.init(dialog.getContentPane(), locale.toString());
+    stal = new SMCCSTAL(new BKUGuiProxy(dialog, gui), dialog, resourceBundle);
+    dialog.setPreferredSize(new Dimension(400, 200));
+    dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+    dialog.pack();
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    Dimension frameSize = dialog.getSize();
+    if (frameSize.height > screenSize.height) {
+      frameSize.height = screenSize.height;
+    }
+    if (frameSize.width > screenSize.width) {
+      frameSize.width = screenSize.width;
+    }
+    dialog.setLocation((screenSize.width - frameSize.width) / 2,
+        (screenSize.height - frameSize.height) / 2);
     return stal;
   }
 
   @Override
-   public void setLocale(Locale locale) {
+  public void setLocale(Locale locale) {
     this.locale = locale;
   }
 }
