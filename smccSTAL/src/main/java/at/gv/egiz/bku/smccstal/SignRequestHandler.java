@@ -305,6 +305,7 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
     }
     do {
       waitForAction();
+      gui.showWaitDialog(null);
       if (actionCommand.equals("cancel")) {
         return null;
       } else if (actionCommand.equals("hashData")) {

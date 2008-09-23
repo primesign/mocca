@@ -127,6 +127,7 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler implements
       gui.showCardPINDialog(spec, this, "ok", this, "cancel");
     }
     waitForAction();
+    gui.showWaitDialog(null);
     if (actionCommand.equals("cancel")) {
       return null;
     }
