@@ -283,7 +283,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
         }
         break;
       case SMCCHelper.CARD_FOUND:
-        gui.showWaitDialog(null);
+//        gui.showWaitDialog(null);
         signatureCard = smccHelper.getSignatureCard(errorMessages.getLocale());
         return false;
       }

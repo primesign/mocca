@@ -311,7 +311,7 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
       } else if (actionCommand.equals("hashData")) {
         if (signedInfo != null) {
           try {
-            gui.showWaitDialog(null);
+//            gui.showWaitDialog(null);
             if (hashDataInputs == null || hashDataInputs.size() == 0) {
               hashDataInputs = getCashedHashDataInputs(signedInfo.getReference());
             }

@@ -246,7 +246,8 @@ public class BKUGUI implements BKUGUIFacade {
         headerPanelLayout.setHorizontalGroup(
           headerPanelLayout.createSequentialGroup()
 //          headerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-            .addComponent(titleLabel, 0, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
+            .addComponent(titleLabel, 0, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+            .addContainerGap());
         headerPanelLayout.setVerticalGroup(
           headerPanelLayout.createSequentialGroup()
 //          headerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
