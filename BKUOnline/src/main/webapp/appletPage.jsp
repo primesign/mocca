@@ -20,7 +20,8 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Applet BKU Test</title>
+<title>MOCCA Appletpage</title>
+<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
 </head>
 <body>
 <script src="./js/deployJava.js"></script>
@@ -46,20 +47,7 @@
 	}
 </script>
 <br />
-<script>
-	document.write('App Name: ' + navigator.appName + '<BR>');
-	document.write('User Agent: ' + navigator.userAgent + '<BR>');
-	var list = deployJava.getJREs();
-	if (list.length == 0) {
-		document.write('No Detectable Java Platforms are Installed<BR>');
-	} else {
-		var result = list[0];
-		for ( var i = 1; i < list.length; i++) {
-			result += ", " + list[i];
-		}
-		document.write("You have the following Java Platform(s) installed:"
-				+ result + "<BR>");
-	}
-</script>
+<hr/>
+Powered by <img src="img/mocca-t_s.png" alt="mocca-logo" width="100">
 </body>
 </html>
