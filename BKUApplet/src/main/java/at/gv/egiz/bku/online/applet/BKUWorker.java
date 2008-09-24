@@ -175,7 +175,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
       nextRequest.getResponse().addAll(responses);
     } while (!finished);
     log.info("Done " + Thread.currentThread().getName());
-    gui.showWelcomeDialog();
+//    gui.showWelcomeDialog();
     sendRedirect();
   }
 

@@ -48,6 +48,7 @@ public class BKUApplet extends JApplet {
     }
 
     public void init() {
+      log.info("Welcome to MOCCA\n");
         log.debug("Called init()");
         HttpsURLConnection.setDefaultSSLSocketFactory(InternalSSLSocketFactory.getInstance());
         String localeString = getMyAppletParameter(LOCALE_PARAM_KEY);
