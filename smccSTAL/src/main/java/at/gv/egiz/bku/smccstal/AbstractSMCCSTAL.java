@@ -39,7 +39,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
   private static Log log = LogFactory.getLog(AbstractSMCCSTAL.class);
 
   protected Locale locale = Locale.getDefault();
-  protected SMCCHelper smccHelper = new SMCCHelper();
+//  protected SMCCHelper smccHelper = new SMCCHelper();
   protected SignatureCard signatureCard = null;
   protected static Map<String, SMCCSTALRequestHandler> handlerMap = new HashMap<String, SMCCSTALRequestHandler>();
 
