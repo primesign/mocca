@@ -50,10 +50,10 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
     protected List<STALRequest> requests = null;
     protected List<STALResponse> responses = null;
     protected List<HashDataInput> currentHashDataInput;
-    private boolean isHandlingRequest = false;
+//    private boolean isHandlingRequest = false;
     private boolean expectingResponse = false;
     private boolean interrupted = false;
-
+    
     /**
      * Produce requests (and HashDataInputCallback) and wait for responses.
      * The next thread may enter once we consumed the responses.
@@ -69,17 +69,17 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
         return null;
       }
         try {
-            long beforeWait = System.currentTimeMillis();
-            while (isHandlingRequest) {
-                log.trace("waiting to produce request");
-                wait(TIMEOUT_MS);
-                if (System.currentTimeMillis() - beforeWait >= TIMEOUT_MS) {
-                    log.warn("timeout while waiting to produce request");
-                    return Collections.singletonList((STALResponse) new ErrorResponse(ERR_6000));
-                }
-            }
+//            long beforeWait = System.currentTimeMillis();
+//            while (isHandlingRequest) {
+//                log.trace("waiting to produce request");
+//                wait(TIMEOUT_MS);
+//                if (System.currentTimeMillis() - beforeWait >= TIMEOUT_MS) {
+//                    log.warn("timeout while waiting to produce request");
+//                    return Collections.singletonList((STALResponse) new ErrorResponse(ERR_6000));
+//                }
+//            }
             log.trace("produce request");
-            isHandlingRequest = true;
+//            isHandlingRequest = true;
 
             this.requests = requests;
             currentHashDataInput = null;
@@ -100,7 +100,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
             log.trace("notifying request consumers");
             notify();
 
-            beforeWait = System.currentTimeMillis();
+            long beforeWait = System.currentTimeMillis();
             while (this.responses == null) {
                 log.trace("waiting to consume response");
                 wait(TIMEOUT_MS);
@@ -108,7 +108,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                     log.warn("timeout while waiting to consume response");
                     this.requests = null;
                     currentHashDataInput = null;
-                    isHandlingRequest = false;
+//                    isHandlingRequest = false;
                     return Collections.singletonList((STALResponse) new ErrorResponse(ERR_6000));
                 }
             }
@@ -118,9 +118,9 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
             log.trace("notifying response producers");
             notify();
 
-            isHandlingRequest = false;
-            log.trace("notifying request producers");
-            notify();
+//            isHandlingRequest = false;
+//            log.trace("notifying request producers");
+//            notify();
 
             return resps;
         } catch (InterruptedException ex) {
@@ -186,9 +186,9 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
             List<STALRequest> reqs = requests;
             requests = null;
             if (reqs.size() > 0 && reqs.get(0) instanceof QuitRequest) {
-                isHandlingRequest = false;
-                log.trace("consumed QUIT, notifying request producers");
-                notify();
+//                isHandlingRequest = false;
+//                log.trace("consumed QUIT, notifying request producers");
+//                notify();
                 log.trace("expecting no response in next nextRequest()");
                 expectingResponse = false;
             }
