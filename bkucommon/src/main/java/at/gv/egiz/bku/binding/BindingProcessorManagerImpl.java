@@ -1,19 +1,19 @@
 /*
-* Copyright 2008 Federal Chancellery Austria and
-* Graz University of Technology
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright 2008 Federal Chancellery Austria and
+ * Graz University of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package at.gv.egiz.bku.binding;
 
 import java.net.MalformedURLException;
@@ -58,6 +58,7 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
 
   /**
    * Container to hold a Future and Bindingprocessor object as map value.
+   * 
    * @author wbauer
    * @see BindingProcessorManagerImpl#bindingProcessorMap
    */
@@ -116,7 +117,7 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
 
   /**
    * 
-   * @return the STALFactory currently used. 
+   * @return the STALFactory currently used.
    */
   public STALFactory getStalFactory() {
     return stalFactory;
@@ -124,6 +125,7 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
 
   /**
    * Sets the STALFactory to be used.
+   * 
    * @param stalFactory
    */
   public void setStalFactory(STALFactory stalFactory) {
@@ -132,6 +134,7 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
 
   /**
    * Could be used to setup a new executor service during application stratup.
+   * 
    * @param executorService
    */
   public void setExecutorService(ExecutorService executorService) {
@@ -150,30 +153,42 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
     log.info("Shutting down the BindingProcessorManager");
     executorService.shutdown();
   }
-  
+
   public void shutdownNow() {
-  	log.info("Shutting down the BindingProcessorManager NOW!");
+    log.info("Shutting down the BindingProcessorManager NOW!");
     executorService.shutdownNow();
+    log.debug("Number of binding prcessors currently managed: "
+        + bindingProcessorMap.size());
+    if (log.isDebugEnabled()) {
+      for (Iterator<MapEntityWrapper> it = bindingProcessorMap.values()
+          .iterator(); it.hasNext();) {
+        MapEntityWrapper entry = it.next();
+        log.debug(entry.getBindingProcessor().getId() + ": isDone: "
+            + entry.getFuture().isDone());
+        log.debug(entry.getBindingProcessor().getId() + ": isCanceled: "
+            + entry.getFuture().isCancelled());
+      }
+    }
   }
 
   /**
    * Uses the default locale
    */
   public BindingProcessor createBindingProcessor(String srcUrl,
-      String aSessionId) throws MalformedURLException  {
+      String aSessionId) throws MalformedURLException {
     return createBindingProcessor(srcUrl, aSessionId, null);
   }
-  
+
   /**
    * FactoryMethod creating a new BindingProcessor object.
    * 
    * @param protocol
    *          must not be null
-   * @throws MalformedURLException 
+   * @throws MalformedURLException
    */
   public BindingProcessor createBindingProcessor(String srcUrl,
       String aSessionId, Locale locale) throws MalformedURLException {
-  	URL url = new URL(srcUrl);
+    URL url = new URL(srcUrl);
     String low = url.getProtocol().toLowerCase();
     Protocol proto = null;
     for (int i = 0; i < SUPPORTED_PROTOCOLS.length; i++) {
@@ -198,7 +213,8 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
   }
 
   /**
-   * @return the bindingprocessor object for this id or null if no bindingprocessor was found.
+   * @return the bindingprocessor object for this id or null if no
+   *         bindingprocessor was found.
    */
   public BindingProcessor getBindingProcessor(Id aId) {
     if (bindingProcessorMap.get(aId) != null) {
@@ -220,7 +236,9 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
 
   /**
    * Causes the BindingProcessorManager to manage the provided BindingProcessor
-   * @param aBindingProcessor must not be null
+   * 
+   * @param aBindingProcessor
+   *          must not be null
    */
   public void process(BindingProcessor aBindingProcessor) {
     if (bindingProcessorMap.containsKey(aBindingProcessor.getId())) {
@@ -230,7 +248,7 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
           "Clashing ids, cannot process bindingprocessor with id:"
               + aBindingProcessor.getId());
     }
-    log.debug("processing bindingprocessor: "+aBindingProcessor.getId());
+    log.debug("processing bindingprocessor: " + aBindingProcessor.getId());
     Future<?> f = executorService.submit(aBindingProcessor);
     bindingProcessorMap.put(aBindingProcessor.getId(), new MapEntityWrapper(f,
         aBindingProcessor));
@@ -243,9 +261,8 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
 
   @Override
   public void removeBindingProcessor(Id sessionId) {
-  	log.debug("Removing binding processor: "+sessionId);
-    MapEntityWrapper wrapper = bindingProcessorMap
-        .get(sessionId);
+    log.debug("Removing binding processor: " + sessionId);
+    MapEntityWrapper wrapper = bindingProcessorMap.get(sessionId);
     if (wrapper == null) {
       return;
     }
