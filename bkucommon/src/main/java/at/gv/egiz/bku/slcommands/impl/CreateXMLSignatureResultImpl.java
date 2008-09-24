@@ -21,11 +21,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.Templates;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -104,35 +100,10 @@ public class CreateXMLSignatureResultImpl extends SLResultImpl {
     }
     
   }
-  
+
   @Override
-  public void writeTo(Result result) {
-
-    try {
-      writeTo(result, null);
-    } catch (TransformerException e) {
-      log.error(e);
-    }
-
-  }
-
-  /* (non-Javadoc)
-   * @see at.gv.egiz.bku.slcommands.impl.SLResultImpl#writeTo(javax.xml.transform.Result, javax.xml.transform.Transformer)
-   */
-  @Override
-  public void writeTo(Result result, Transformer transformer) throws TransformerException {
-
-    if (transformer == null) {
-      TransformerFactory transformerFactory = TransformerFactory.newInstance();
-      try {
-        transformer = transformerFactory.newTransformer();
-      } catch (TransformerConfigurationException e) {
-        log.error("Failed to create Transformer.", e);
-        throw new SLRuntimeException(e);
-      }
-    }
-    transformer.transform(new DOMSource(doc), result);
-    
+  public void writeTo(Result result, Templates templates) {
+    writeTo(doc, result, templates);
   }
 
 }

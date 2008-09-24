@@ -35,6 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.net.ssl.SSLHandshakeException;
+import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -108,7 +109,7 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 	protected SLTargetContext targetContext = new SLTargetContext();
 	protected URL srcUrl;
 	protected State currentState = State.INIT;
-	protected Transformer transformer = null;
+	protected Templates templates = null;
 	protected String resultContentType = null;
 	protected SLResult slResult = null;
 	protected int responseCode = 200;
@@ -471,10 +472,10 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 				resultContentType = HttpUtil.TXT_XML;
 			}
 		}
-		transformer = getTransformer(getStyleSheetUrl());
-		if (transformer != null) {
+		templates = getTemplates(getStyleSheetUrl());
+		if (templates != null) {
 			log.debug("Output transformation required");
-			resultContentType = transformer.getOutputProperty("media-type");
+			resultContentType = templates.getOutputProperties().getProperty("media-type");
 			log.debug("Got media type from stylesheet: " + resultContentType);
 			if (resultContentType == null) {
 				log.debug("Setting to default text/xml result conent type");
@@ -703,7 +704,7 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 		return resultContentType;
 	}
 
-	protected Transformer getTransformer(String styleSheetURL) {
+	protected Templates getTemplates(String styleSheetURL) {
 		if (styleSheetURL == null) {
 			log.debug("Stylesheet URL not set");
 			return null;
@@ -713,11 +714,10 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 			URIResolver resolver = new URIResolverAdapter(URLDereferencer
 					.getInstance(), urlCtx);
 			TransformerFactory factory = TransformerFactory.newInstance();
+			factory.setURIResolver(resolver);
 			StreamData sd = URLDereferencer.getInstance().dereference(styleSheetURL,
 					urlCtx);
-			Transformer t = factory.newTransformer(new StreamSource(sd.getStream()));
-			t.setURIResolver(resolver);
-			return t;
+			return factory.newTemplates(new StreamSource(sd.getStream()));
 		} catch (Exception ex) {
 			log.info("Cannot instantiate transformer", ex);
 			bindingProcessorError = new SLException(2002);
@@ -726,15 +726,10 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 	}
 
 	protected void handleBindingProcessorError(OutputStream os, String encoding,
-			Transformer transformer) throws IOException {
+			Templates templates) throws IOException {
 		log.debug("Writing error as result");
 		ErrorResultImpl error = new ErrorResultImpl(bindingProcessorError);
-		try {
-			error.writeTo(new StreamResult(new OutputStreamWriter(os, encoding)),
-					transformer);
-		} catch (TransformerException e) {
-			log.fatal("Cannot write error result to stream", e);
-		}
+		error.writeTo(new StreamResult(new OutputStreamWriter(os, encoding)), templates);
 	}
 
 	@Override
@@ -745,7 +740,7 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 		}
 		if (bindingProcessorError != null) {
 			log.debug("Detected error in binding processor, writing error as result");
-			handleBindingProcessorError(os, encoding, transformer);
+			handleBindingProcessorError(os, encoding, templates);
 			return;
 		} else if (dataUrlResponse != null) {
 			log.debug("Writing data url response  as result");
@@ -754,10 +749,11 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 			InputStreamReader isr = new InputStreamReader(
 					dataUrlResponse.getStream(), charEnc);
 			OutputStreamWriter osw = new OutputStreamWriter(os, encoding);
-			if (transformer == null) {
+			if (templates == null) {
 				StreamUtil.copyStream(isr, osw);
 			} else {
 				try {
+					Transformer transformer = templates.newTransformer();
 					transformer.transform(new StreamSource(isr), new StreamResult(osw));
 				} catch (TransformerException e) {
 					log.fatal("Exception occured during result transformation", e);
@@ -771,18 +767,12 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 		} else if (slResult == null) {
 			// result not yet assigned -> must be a cancel
 			bindingProcessorError = new SLException(6001);
-			handleBindingProcessorError(os, encoding, transformer);
+			handleBindingProcessorError(os, encoding, templates);
 			return;
 		} else {
 			log.debug("Getting result from invoker");
 			OutputStreamWriter osw = new OutputStreamWriter(os, encoding);
-			try {
-				slResult.writeTo(new StreamResult(osw), transformer);
-			} catch (TransformerException e) {
-				log.fatal("Cannot write result to stream", e);
-				// bindingProcessorError = new SLException(2008);
-				// handleBindingProcessorError(os, encoding, transformer);
-			}
+			slResult.writeTo(new StreamResult(osw), templates);
 			osw.flush();
 		}
 	}

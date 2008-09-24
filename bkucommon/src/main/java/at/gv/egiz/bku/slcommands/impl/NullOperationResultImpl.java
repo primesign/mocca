@@ -18,6 +18,7 @@ package at.gv.egiz.bku.slcommands.impl;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.transform.Result;
+import javax.xml.transform.Templates;
 
 import at.buergerkarte.namespaces.securitylayer._1.NullOperationResponseType;
 import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
@@ -40,8 +41,8 @@ public class NullOperationResultImpl extends SLResultImpl implements NullOperati
   }
   
   @Override
-  public void writeTo(Result result) {
-    writeTo(RESPONSE, result);
+  public void writeTo(Result result, Templates templates) {
+    writeTo(RESPONSE, result, templates);
   }
 
 }

@@ -23,11 +23,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -50,8 +54,15 @@ import org.w3c.dom.Node;
 
 import at.buergerkarte.namespaces.personenbindung._20020506_.CompressedIdentityLinkType;
 import at.buergerkarte.namespaces.securitylayer._1.AnyChildrenType;
+import at.buergerkarte.namespaces.securitylayer._1.InfoboxAssocArrayPairType;
+import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadDataAssocArrayType;
+import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadParamsAssocArrayType;
 import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadParamsBinaryFileType;
 import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadRequestType;
+import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
+import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadParamsAssocArrayType.ReadKeys;
+import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadParamsAssocArrayType.ReadPairs;
+import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadParamsAssocArrayType.ReadValue;
 import at.gv.egiz.bku.slcommands.InfoboxReadCommand;
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
@@ -83,6 +94,8 @@ public class InfoboxReadCommandImpl extends SLCommandImpl<InfoboxReadRequestType
    * Logging facility.
    */
   protected static Log log = LogFactory.getLog(InfoboxReadCommandImpl.class);
+  
+  public static final String SEARCH_STRING_PATTERN = ".&&[^/](/.&&[^/])*";
 
   public static final String INFOBOX_IDENTIFIER_CERTIFICATES = "Certificates";
   
@@ -90,15 +103,35 @@ public class InfoboxReadCommandImpl extends SLCommandImpl<InfoboxReadRequestType
   
   public static final String INFOBOX_IDENTIFIER_IDENTITY_LINK = "IdentityLink";
 
+  public static final String[] INFOXBOX_CERTIFICATES_KEYS = new String[] {
+      "SecureSignatureKeypair", 
+      "CertifiedKeypair" };
+  
+  private static final int ASSOC_ARRAY_READ_KEYS = 1;
+  
+  private static final int ASSOC_ARRAY_READ_PAIRS = 2;
+  
+  private static final int ASSOC_ARRAY_READ_VALUE = 3;
+  
   /**
    * The <code>InfoboxIdentifier</code>
    */
   protected String infoboxIdentifier;
   
   /**
-   * The <code>IdentityLinkDomainIdentifier</code> value of an IdentyLink infobox.
+   * The <code>IdentityLinkDomainIdentifier</code> value of an <code>IdentyLink</code> infobox.
    */
   protected String identityLinkDomainIdentifier;
+  
+  /**
+   * The list of certificates to be read from an <code>Certificates</code> infobox.
+   */
+  protected List<String> certificates;
+  
+  /**
+   * The result type.
+   */
+  protected int assocArrayResult;
 
   /**
    * Is content XML entity?
@@ -125,12 +158,6 @@ public class InfoboxReadCommandImpl extends SLCommandImpl<InfoboxReadRequestType
     
     infoboxIdentifier = req.getInfoboxIdentifier();
     
-    InfoboxReadParamsBinaryFileType binaryFileParameters = req.getBinaryFileParameters();
-    if (binaryFileParameters != null) {
-      isXMLEntity = binaryFileParameters.isContentIsXMLEntity();
-      log.debug("Got ContentIsXMLEntity=" + isXMLEntity + ".");
-    }
-    
     if (INFOBOX_IDENTIFIER_IDENTITY_LINK.equals(infoboxIdentifier)) {
       
       if (req.getAssocArrayParameters() != null) {
@@ -138,6 +165,11 @@ public class InfoboxReadCommandImpl extends SLCommandImpl<InfoboxReadRequestType
         throw new SLCommandException(4010);
       }
       
+      InfoboxReadParamsBinaryFileType binaryFileParameters = req.getBinaryFileParameters();
+      if (binaryFileParameters != null) {
+        isXMLEntity = binaryFileParameters.isContentIsXMLEntity();
+        log.debug("Got ContentIsXMLEntity=" + isXMLEntity + ".");
+      }
       
       AnyChildrenType boxSpecificParameters = req.getBoxSpecificParameters();
 
@@ -158,6 +190,74 @@ public class InfoboxReadCommandImpl extends SLCommandImpl<InfoboxReadRequestType
           throw new SLCommandException(4010);
         }
       }
+    
+    } else if (INFOBOX_IDENTIFIER_CERTIFICATES.equals(infoboxIdentifier)) {
+      
+      if (req.getBinaryFileParameters() != null) {
+        log.info("Got BinaryFileParameters but Infobox type is AssocArray.");
+        throw new SLCommandException(4010);
+      }
+      
+      if (req.getBoxSpecificParameters() != null) {
+        log.info("Got invalid BoxSpecificParameters.");
+        throw new SLCommandException(4010);
+      }
+      
+      InfoboxReadParamsAssocArrayType assocArrayParameters = req
+          .getAssocArrayParameters();
+      if (assocArrayParameters == null) {
+        log.info("Infobox type is AssocArray but got no AssocArrayParameters.");
+        throw new SLCommandException(4010);
+      }
+      
+      // RreadKeys?
+      if (assocArrayParameters.getReadKeys() != null) {
+        assocArrayResult = ASSOC_ARRAY_READ_KEYS;
+        ReadKeys readKeys = assocArrayParameters.getReadKeys();
+        certificates = findCertificates(readKeys.getSearchString());
+        if (readKeys.isUserMakesUnique() && certificates.size() > 1) {
+          log.info("UserMakesUnique not supported");
+          // TODO: give more specific error message
+          throw new SLCommandException(4010);
+        }
+      }
+
+      // ReadPairs?
+      if (assocArrayParameters.getReadPairs() != null) {
+        assocArrayResult = ASSOC_ARRAY_READ_PAIRS;
+        ReadPairs readPairs = assocArrayParameters.getReadPairs();
+        if (readPairs.isValuesAreXMLEntities()) {
+          log.info("Got valuesAreXMLEntities but infobox type is binary.");
+          throw new SLCommandException(4010);
+        }
+        certificates = findCertificates(readPairs.getSearchString());
+        if (readPairs.isUserMakesUnique() && certificates.size() > 1) {
+          log.info("UserMakesUnique not supported");
+          // TODO: give more specific error message
+          throw new SLCommandException(4010);
+        }
+      }
+
+      // ReadValue
+      if (assocArrayParameters.getReadValue() != null) {
+        assocArrayResult = ASSOC_ARRAY_READ_VALUE;
+        ReadValue readValue = assocArrayParameters.getReadValue();
+        if (readValue.isValueIsXMLEntity()) {
+          log.info("Got valuesAreXMLEntities but infobox type is binary.");
+          throw new SLCommandException(4010);
+        }
+        String key = readValue.getKey();
+        if (Arrays.asList(INFOXBOX_CERTIFICATES_KEYS).contains(key)) {
+          certificates = Collections.singletonList(key);
+        } else {
+          certificates = Collections.emptyList();
+        }
+      }
+
+      if (assocArrayResult == 0) {
+        log.info("Infobox type is AssocArray but got invalid AssocArrayParameters.");
+        throw new SLCommandException(4010);
+      }
       
     } else {
       throw new SLCommandException(4002,
@@ -170,7 +270,13 @@ public class InfoboxReadCommandImpl extends SLCommandImpl<InfoboxReadRequestType
   @Override
   public SLResult execute() {
     try {
-      return readIdentityLink();
+      if (INFOBOX_IDENTIFIER_IDENTITY_LINK.equals(infoboxIdentifier)) {
+        return readIdentityLink();
+      } else if (INFOBOX_IDENTIFIER_CERTIFICATES.equals(infoboxIdentifier)) {
+        return readCertificates();
+      } else {
+        throw new SLCommandException(4000);
+      }
     } catch (SLCommandException e) {
       return new ErrorResultImpl(e);
     }
@@ -302,7 +408,7 @@ public class InfoboxReadCommandImpl extends SLCommandImpl<InfoboxReadRequestType
           new Object[] { INFOBOX_IDENTIFIER_IDENTITY_LINK });
     }
     
-    InfoboxReadResultImpl result = new InfoboxReadResultImpl();
+    InfoboxReadResultFileImpl result = new InfoboxReadResultFileImpl();
     ByteArrayOutputStream resultBytes = null;
     Result xmlResult = (isXMLEntity || identityLinkDomainIdentifier != null) 
           ? result.getXmlResult(true) 
@@ -406,9 +512,81 @@ public class InfoboxReadCommandImpl extends SLCommandImpl<InfoboxReadRequestType
     return result;
     
   }
+  
+  protected List<String> findCertificates(String searchString) throws SLCommandException {
 
-	@Override
-	public String getIdentityLinkDomainId() {
-		return identityLinkDomainIdentifier;
-	}
+    if ("*".equals(searchString) || "**".equals(searchString)) {
+      return Arrays.asList(INFOXBOX_CERTIFICATES_KEYS);
+    }
+    
+    if (Pattern.matches(SEARCH_STRING_PATTERN, searchString)) {
+      
+//      for (int i = 0; i < searchString.length(); i++) {
+//        int codePoint = searchString.codePointAt(i);
+//        
+//      }
+      
+      // TODO : build pattern
+      return Collections.emptyList();
+    } else {
+      log.info("Got invalid search string '" + searchString + "'");
+      throw new SLCommandException(4010);
+    }
+    
+  }
+
+  private SLResult readCertificates() throws SLCommandException {
+    
+    ObjectFactory objectFactory = new ObjectFactory();
+    
+    InfoboxReadDataAssocArrayType infoboxReadDataAssocArrayType = objectFactory
+        .createInfoboxReadDataAssocArrayType();
+
+    if (assocArrayResult == ASSOC_ARRAY_READ_KEYS) {
+
+      List<String> keys = infoboxReadDataAssocArrayType.getKey();
+      keys.addAll(certificates);
+      
+    } else {
+
+      if (certificates != null && !certificates.isEmpty()) {
+        
+        List<STALRequest> stalRequests = new ArrayList<STALRequest>();
+
+        // get certificates
+        InfoboxReadRequest infoboxReadRequest;
+        for (int i = 0; i < certificates.size(); i++) {
+          infoboxReadRequest = new InfoboxReadRequest();
+          infoboxReadRequest.setInfoboxIdentifier(certificates.get(i));
+          stalRequests.add(infoboxReadRequest);
+        }
+
+        requestSTAL(stalRequests);
+
+        List<X509Certificate> x509Certs = getCertificatesFromResponses();
+
+        for (int i = 0; i < certificates.size(); i++) {
+          InfoboxAssocArrayPairType infoboxAssocArrayPairType = objectFactory.createInfoboxAssocArrayPairType();
+          infoboxAssocArrayPairType.setKey(certificates.get(i));
+          try {
+            infoboxAssocArrayPairType.setBase64Content(x509Certs.get(i).getEncoded());
+          } catch (CertificateEncodingException e) {
+            log.error("Failed to encode certificate.", e);
+            throw new SLCommandException(4000);
+          }
+          infoboxReadDataAssocArrayType.getPair().add(infoboxAssocArrayPairType);
+        }
+        
+      }
+      
+    }
+    
+    return new InfoboxReadResultImpl(infoboxReadDataAssocArrayType);
+    
+  }
+  
+  @Override
+  public String getIdentityLinkDomainId() {
+    return identityLinkDomainIdentifier;
+  }
 }

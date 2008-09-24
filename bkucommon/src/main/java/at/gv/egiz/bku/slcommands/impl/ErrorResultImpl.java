@@ -16,12 +16,9 @@
 */
 package at.gv.egiz.bku.slcommands.impl;
 
-import java.util.Locale;
-
 import javax.xml.transform.Result;
+import javax.xml.transform.Templates;
 
-import at.buergerkarte.namespaces.securitylayer._1.ErrorResponseType;
-import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
 import at.gv.egiz.bku.slcommands.ErrorResult;
 import at.gv.egiz.bku.slexceptions.SLException;
 
@@ -49,14 +46,8 @@ public class ErrorResultImpl extends SLResultImpl implements ErrorResult {
   }
 
   @Override
-  public void writeTo(Result result) {
-
-    ObjectFactory factory = new ObjectFactory();
-    ErrorResponseType responseType = factory.createErrorResponseType();
-    responseType.setErrorCode(slException.getErrorCode());
-    responseType.setInfo(slException.getDetailedMsg());
-    
-    writeTo(factory.createErrorResponse(responseType), result);
-    
+  public void writeTo(Result result, Templates templates) {
+    writeErrorTo(slException, result, templates);
   }
+  
 }

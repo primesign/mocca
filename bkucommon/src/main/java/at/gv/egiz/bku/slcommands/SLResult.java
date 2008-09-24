@@ -17,8 +17,7 @@
 package at.gv.egiz.bku.slcommands;
 
 import javax.xml.transform.Result;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
+import javax.xml.transform.Templates;
 
 public interface SLResult {
   
@@ -40,5 +39,5 @@ public interface SLResult {
    * @param result
    * @param transformer may be null.
    */
-  public void writeTo(Result result, Transformer transformer) throws TransformerException;
+  public void writeTo(Result result, Templates templates);
 }
