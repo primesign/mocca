@@ -142,10 +142,14 @@ public class BKUGUI implements BKUGUIFacade {
 
         try {
 
+          log.debug("scheduling gui initialization");
+      
             SwingUtilities.invokeAndWait(new Runnable() {
 
                 @Override
                 public void run() {
+                  
+                  log.debug("initializing gui");
 
                     initIconPanel();
                     initContentPanel();
@@ -275,10 +279,16 @@ public class BKUGUI implements BKUGUIFacade {
 
     @Override
     public void showLoginDialog(ActionListener loginListener, String actionCommand) {
-        SwingUtilities.invokeLater(new Runnable() {
+      
+      log.debug("scheduling login dialog");
+        
+      SwingUtilities.invokeLater(new Runnable() {
 
-      @Override
+            @Override
             public void run() {
+              
+              log.debug("show login dialog");
+              
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
 
@@ -309,10 +319,16 @@ public class BKUGUI implements BKUGUIFacade {
 
     @Override
     public void showWelcomeDialog() {
+      
+      log.debug("scheduling welcome dialog");
+      
         SwingUtilities.invokeLater(new Runnable() {
 
-      @Override
+            @Override
             public void run() {
+              
+              log.debug("show welcome dialog");
+              
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
 
@@ -344,10 +360,16 @@ public class BKUGUI implements BKUGUIFacade {
 
     @Override
     public void showInsertCardDialog(final ActionListener cancelListener, final String cancelCommand) {
-        SwingUtilities.invokeLater(new Runnable() {
+      
+      log.debug("scheduling insert card dialog");
+      
+      SwingUtilities.invokeLater(new Runnable() {
 
-      @Override
+            @Override
             public void run() {
+              
+              log.debug("show insert card dialog");
+      
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
 
@@ -381,12 +403,18 @@ public class BKUGUI implements BKUGUIFacade {
 
     @Override
     public void showCardNotSupportedDialog(final ActionListener cancelListener, final String cancelCommand) {
-        SwingUtilities.invokeLater(new Runnable() {
+        
+      log.debug("scheduling card not supported dialog");
+      
+      SwingUtilities.invokeLater(new Runnable() {
 
-      @Override
+            @Override
             public void run() {
-                mainPanel.removeAll();
-                buttonPanel.removeAll();
+                
+              log.debug("show card not supported dialog");
+                
+              mainPanel.removeAll();
+              buttonPanel.removeAll();
 
                 titleLabel.setText(messages.getString(TITLE_CARD_NOT_SUPPORTED));
 //                titleLabel.setForeground(defaultForground);
@@ -435,11 +463,16 @@ public class BKUGUI implements BKUGUIFacade {
     }
 
     private void showCardPINDialog(final PINSpec pinSpec, final int numRetries, final ActionListener okListener, final String okCommand, final ActionListener cancelListener, final String cancelCommand) {
-        SwingUtilities.invokeLater(new Runnable() {
+        
+      log.debug("scheduling card-pin dialog");
+      
+      SwingUtilities.invokeLater(new Runnable() {
 
-      @Override
+            @Override
             public void run() {
 
+              log.debug("show card-pin dialog");
+      
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
 
@@ -595,10 +628,16 @@ public class BKUGUI implements BKUGUIFacade {
     }
 
     private void showSignaturePINDialog(final PINSpec pinSpec, final int numRetries, final ActionListener signListener, final String signCommand, final ActionListener cancelListener, final String cancelCommand, final ActionListener hashdataListener, final String hashdataCommand) {
-        SwingUtilities.invokeLater(new Runnable() {
 
-      @Override
+      log.debug("scheduling signature-pin dialog");
+      
+      SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
             public void run() {
+              
+              log.debug("show signature-pin dialog");
+      
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
 
@@ -760,10 +799,16 @@ public class BKUGUI implements BKUGUIFacade {
 
     @Override
     public void showErrorDialog(final String errorMsg, final ActionListener okListener, final String okCommand) {
-        SwingUtilities.invokeLater(new Runnable() {
+        
+      log.debug("scheduling error dialog");
+      
+      SwingUtilities.invokeLater(new Runnable() {
 
-      @Override
+          @Override
             public void run() {
+
+                log.debug("show error dialog");
+                
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
 
@@ -816,10 +861,16 @@ public class BKUGUI implements BKUGUIFacade {
 
     @Override
     public void showErrorDialog(final String errorMsg) {
+      
+      log.debug("scheduling error  dialog");
+      
       SwingUtilities.invokeLater(new Runnable() {
 
         @Override
         public void run() {
+          
+          log.debug("show error dialog");
+      
           mainPanel.removeAll();
           buttonPanel.removeAll();
 
@@ -851,10 +902,16 @@ public class BKUGUI implements BKUGUIFacade {
 
     @Override
     public void showWaitDialog(final String waitMessage) {
-        SwingUtilities.invokeLater(new Runnable() {
+        
+      log.debug("scheduling wait dialog");
+      
+      SwingUtilities.invokeLater(new Runnable() {
 
-      @Override
+            @Override
             public void run() {
+        
+              log.debug("show wait dialog");
+              
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
 
@@ -941,10 +998,16 @@ public class BKUGUI implements BKUGUIFacade {
     }
     
     private void showPlainTextHashDataInputDialog(final String hashDataText, final ActionListener saveListener, final String saveCommand, final ActionListener cancelListener, final String cancelCommand) {
+      
+      log.debug("scheduling plaintext hashdatainput dialog");
+      
       SwingUtilities.invokeLater(new Runnable() {
 
         @Override
         public void run() {
+          
+          log.debug("show plaintext hashdatainput dialog");
+      
           mainPanel.removeAll();
           buttonPanel.removeAll();
 
@@ -1032,10 +1095,16 @@ public class BKUGUI implements BKUGUIFacade {
     }
 
     private void showMultipleHashDataInputDialog(final TableModel signedReferences, final ActionListener cancelListener, final String cancelCommand, final ActionListener saveListener, final String saveCommand) {
+      
+      log.debug("scheduling multiple hashdatainput dialog");
+      
       SwingUtilities.invokeLater(new Runnable() {
 
         @Override
         public void run() {
+          
+          log.debug("show multiple hashdatainput dialog");
+          
           mainPanel.removeAll();
           buttonPanel.removeAll();
 
@@ -1166,10 +1235,15 @@ public class BKUGUI implements BKUGUIFacade {
     
     private void showSaveHashDataInputDialog(final List<HashDataInput> signedRefs, final ActionListener okListener, final String okCommand) {
       
+      log.debug("scheduling save hashdatainput dialog");
+      
       SwingUtilities.invokeLater(new Runnable() {
 
         @Override
         public void run() {
+          
+          log.debug("show save hashdatainput dialog");
+      
           String userHome = System.getProperty("user.home");
           
           JFileChooser fileDialog = new JFileChooser(userHome); 
