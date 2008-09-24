@@ -28,10 +28,11 @@ import java.util.Map;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
@@ -77,7 +78,7 @@ public class IdentityLinkTransformer {
     /**
      * The stylesheet transformer.
      */
-    private Transformer transformer;
+    private Templates templates;
     
     /**
      * Stylesheet URL.
@@ -103,7 +104,7 @@ public class IdentityLinkTransformer {
       }
       StreamSource source = new StreamSource(url.openStream());
       
-      transformer = factory.newTransformer(source);
+      templates = factory.newTemplates(source);
 
       initTime = System.currentTimeMillis() - created;
       
@@ -112,6 +113,7 @@ public class IdentityLinkTransformer {
     public void transform(Source xmlSource, Result outputTarget) throws TransformerException {
       long t0 = System.currentTimeMillis();
       try {
+        Transformer transformer = templates.newTransformer();
         transformer.transform(xmlSource, outputTarget);
       } catch (TransformerException e) {
         throw e;
@@ -146,7 +148,7 @@ public class IdentityLinkTransformer {
   /**
    * The transfomer factory.
    */
-  private static TransformerFactory factory;
+  private static SAXTransformerFactory factory;
 
   /**
    * The instance to be returned by {@link #getInstance()}.
@@ -161,7 +163,7 @@ public class IdentityLinkTransformer {
   public static IdentityLinkTransformer getInstance() {
     if (instance == null) {
       instance = new IdentityLinkTransformer();
-      factory = TransformerFactory.newInstance();
+      factory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
     }
     return instance;
   }
