@@ -78,8 +78,9 @@ public class STALRequestBrokerTest {
         BindingProcessorSimulator bp = new BindingProcessorSimulator();
         bp.setRequests(Collections.singletonList(requests));
 
+        new Thread(new ServiceSimulator(), "STALService1").start();
         new Thread(bp, "BindingProcessor").start();
-        new Thread(new ServiceSimulator(), "STALService").start();
+        new Thread(new ServiceSimulator(), "STALService2").start();
 
         try {
             Thread.sleep(1000);
@@ -88,7 +89,7 @@ public class STALRequestBrokerTest {
         }
     }
 
-    @Ignore
+    @Test
     public void testSign() {
         log.debug("**************** test SignRequest");
         List<STALRequest> requests = new ArrayList<STALRequest>();
@@ -125,7 +126,8 @@ public class STALRequestBrokerTest {
         new Thread(bp, "BindingProcessor").start();
 //        new Thread(bp2, "BindingProcessor2").start();
         new Thread(new ServiceSimulator(), "STALService").start();
-
+        new Thread(new ZombieServiceSimulator(), "STALServiceZombie").start();
+        
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ex) {
@@ -171,7 +173,7 @@ public class STALRequestBrokerTest {
         new Thread(new TimeoutServiceSimulator(), "STALService").start();
 
         try {
-            Thread.sleep(STALRequestBroker.TIMEOUT_MS + 1);
+            Thread.sleep(STALRequestBroker.DEFAULT_TIMEOUT_MS + 1);
         } catch (InterruptedException ex) {
             log.error("interrupted: " + ex.getMessage());
         }
@@ -186,13 +188,13 @@ public class STALRequestBrokerTest {
         new Thread(new ServiceSimulator(), "STALService").start();
 
         try {
-            Thread.sleep(STALRequestBroker.TIMEOUT_MS + 1);
+            Thread.sleep(STALRequestBroker.DEFAULT_TIMEOUT_MS + 1);
         } catch (InterruptedException ex) {
             log.error("interrupted: " + ex.getMessage());
         }
     }
 
-    @Test
+    @Ignore
     public void testMultipleServices() {
         log.debug("**************** test multiple SignRequests");
         List<STALRequest> requests = new ArrayList<STALRequest>();
@@ -269,6 +271,70 @@ public class STALRequestBrokerTest {
         }
     }
 
+    class ZombieServiceSimulator implements Runnable {
+    
+        @Override
+        public void run() {
+            try {
+                log.debug("calling stal.nextRequest(oldResponse)");
+                STALResponse oldResp = new InfoboxReadResponse();
+                List<STALRequest> requests = stal.nextRequest(Collections.singletonList(oldResp));
+                log.debug("got " + requests.size() + " requests. processing...");
+                Thread.sleep(1);
+                List<STALResponse> responses = new ArrayList<STALResponse>();
+                for (STALRequest request : requests) {
+                    if (request instanceof InfoboxReadRequest) {
+                      log.debug("received UNEXPECTED READINFOBOX request");
+                      
+                        InfoboxReadResponse r = new InfoboxReadResponse();
+                        r.setInfoboxValue("dummyInfobox".getBytes());
+                        responses.add(r);
+                    } else if (request instanceof SignRequest) {
+
+                      log.debug("received UNEXPECTED SIGN request");
+                      
+                        log.debug("calling stal.getCurrentHashDataInputCallback");
+                        List<HashDataInput> hdis = stal.getHashDataInput();
+                        assertNotNull(hdis);
+                        assertEquals(hdis.size(), 1);
+                        HashDataInput hdi = hdis.get(0);// cb.getHashDataInput("1234");
+                        InputStream hd = hdi.getHashDataInput();
+                        byte[] data = new byte[hd.available()];
+                        hd.read(data);
+                        log.debug("got HashDataInput " + new String(data));
+
+
+                        SignResponse r = new SignResponse();
+                        r.setSignatureValue("dummySignature".getBytes());
+                        responses.add(r);
+                    } else if (request instanceof QuitRequest) {
+                        log.debug("received EXPECTED QUIT request");
+                        return;
+                    }
+                }
+
+//                if (requests.size() > 0) {
+//                    log.debug("calling stal.setResponse with " + requests.size() + " responses");
+//                    stal.setResponse(responses);
+//                }
+                log.debug("calling stal.nextRequest with " + responses.size() + " responses");
+                requests = stal.nextRequest(responses);
+                for (STALRequest request : requests) {
+                    if (request instanceof QuitRequest) {
+                        log.debug("got QUIT request");
+                    } else {
+                        log.debug("expected QUIT request, got " + request.getClass().getName());
+                    }
+                }
+            } catch (IOException ex) {
+                log.error(ex.getMessage());
+            } catch (InterruptedException ex) {
+                log.error(ex.getMessage());
+            }
+        }
+      
+    }
+    
     class ServiceSimulator implements Runnable {
 
         @Override
