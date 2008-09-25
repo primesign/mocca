@@ -115,6 +115,7 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 	protected int responseCode = 200;
 	protected Map<String, String> responseHeaders = Collections.EMPTY_MAP;
 	protected Locale locale = Locale.getDefault();
+	protected boolean finished = false;
 
 	/**
 	 * 
@@ -246,6 +247,7 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 		commandInvoker.setCommand(slCommand);
 		responseCode = 200;
 		responseHeaders = Collections.EMPTY_MAP;
+		dataUrlResponse = null;
 		try {
 			commandInvoker.invoke(srcContex);
 		} catch (SLException e) {
@@ -253,7 +255,6 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 			bindingProcessorError = e;
 			currentState = State.TRANSFORM;
 		}
-		dataUrlResponse = null;
 		if (getDataUrl() != null) {
 			log.debug("Data Url set to: " + getDataUrl());
 			currentState = State.DATAURL;
@@ -495,6 +496,7 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 		sendSTALQuit();
 		log.info("Terminating Bindingprocessor; Thread: "
 				+ Thread.currentThread().getId());
+		finished = true;
 	}
 
 	// -- END Methods that handle the http binding activities as defined in the
@@ -620,6 +622,7 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 			currentState = State.FINISHED;
 		}
 		log.debug("Terminated http binding processor");
+		finished = true;
 	}
 
 	@Override
@@ -805,4 +808,8 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 		this.locale = locale;
 	}
 
+	@Override
+  public boolean isFinished() {
+    return finished;
+  }
 }

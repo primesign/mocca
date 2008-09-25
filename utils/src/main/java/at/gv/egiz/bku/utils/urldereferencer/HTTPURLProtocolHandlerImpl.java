@@ -53,6 +53,7 @@ public class HTTPURLProtocolHandlerImpl implements URLProtocolHandler {
   protected StreamData dereferenceHTTP(URL url) throws IOException {
     log.debug("Dereferencing url: "+url);
     HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+    log.trace("Successfully opened connection");
     return new StreamData(url.toString(), httpConn.getContentType(), httpConn
         .getInputStream());
   }

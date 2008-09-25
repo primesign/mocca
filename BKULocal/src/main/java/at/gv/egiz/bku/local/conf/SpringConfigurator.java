@@ -128,9 +128,13 @@ public class SpringConfigurator extends Configurator implements
     if ((proxy == null) || (proxy.equals(""))) {
       log.info("No proxy configured");
     } else {
-      log.info("Setting proxy to: "+proxy+":"+portString);
+      log.info("Setting proxy to: " + proxy + ":" + portString);
       System.setProperty("proxyHost", proxy);
       System.setProperty("proxyPort", portString);
+    }
+    String timeout = getProperty("DefaultSocketTimeout");
+    if ((timeout != null) && (!timeout.equals(""))) {
+      System.setProperty("sun.net.client.defaultConnectTimeout", timeout);
     }
   }
 

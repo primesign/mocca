@@ -371,12 +371,12 @@ public class InfoboxReadCommandImpl extends SLCommandImpl<InfoboxReadRequestType
     infoboxReadRequest = new InfoboxReadRequest();
     infoboxReadRequest.setInfoboxIdentifier("SecureSignatureKeypair");
     stalRequests.add(infoboxReadRequest);
-    
     infoboxReadRequest = new InfoboxReadRequest();
     infoboxReadRequest.setInfoboxIdentifier("CertifiedKeypair");
     stalRequests.add(infoboxReadRequest);
 
     requestSTAL(stalRequests);
+    log.trace("Got STAL response");
 
     IdentityLink identityLink = getIdentityLinkFromResponses();
     List<X509Certificate> certificates = getCertificatesFromResponses();
@@ -414,9 +414,11 @@ public class InfoboxReadCommandImpl extends SLCommandImpl<InfoboxReadRequestType
           ? result.getXmlResult(true) 
           : new StreamResult((resultBytes = new ByteArrayOutputStream()));
     try {
+      log.trace("Trying to transform identitylink");
       identityLinkTransformer.transformIdLink(issuerTemplate, new DOMSource(document), xmlResult);
     } catch (IOException e) {
       // we should not get an IOException as we are writing into a DOMResult
+      log.warn("Failed to transform idlink",e);
       throw new SLRuntimeException(e);
     } catch (TransformerException e) {
       log.info("Faild to transform CompressedIdentityLink.", e);

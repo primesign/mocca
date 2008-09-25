@@ -35,13 +35,20 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
+import at.gv.egiz.bku.utils.urldereferencer.StreamData;
+import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
+
 public class IdentityLinkTransformer {
+  
+  protected static Log log = LogFactory.getLog(IdentityLinkTransformer.class);
 
   private class IdLTransformer {
     
@@ -102,10 +109,14 @@ public class IdentityLinkTransformer {
       if (!"http".equalsIgnoreCase(url.getProtocol()) && !"https".equalsIgnoreCase(url.getProtocol())) {
         throw new MalformedURLException("Protocol " + url.getProtocol() + " not supported for IssuerTemplate URL.");
       }
-      StreamSource source = new StreamSource(url.openStream());
       
+      URLDereferencer dereferencer = URLDereferencer.getInstance();
+      StreamData data = dereferencer.dereference(url.toExternalForm(), null);
+      
+      StreamSource source = new StreamSource(data.getStream());
+      log.trace("Trying to creating template from stylesheet");
       templates = factory.newTemplates(source);
-
+      log.trace("Successfully created stylesheet template");
       initTime = System.currentTimeMillis() - created;
       
     }
@@ -233,7 +244,7 @@ public class IdentityLinkTransformer {
     pool = new HashMap<String, List<IdLTransformer>>();
   }
   
-  private synchronized IdLTransformer getFreeTransfomer(String stylesheetURL) throws TransformerConfigurationException, IOException {
+  private IdLTransformer getFreeTransfomer(String stylesheetURL) throws TransformerConfigurationException, IOException {
     
     IdLTransformer transformer = null;
     
@@ -261,8 +272,11 @@ public class IdentityLinkTransformer {
   }
   
   public void transformIdLink(String stylesheetURL, Source source, Result result) throws IOException, TransformerException {
+    log.trace("Trying to get free IdentityLinkTransformer for issuer template '" + stylesheetURL + "'.");
     IdLTransformer transformer = getFreeTransfomer(stylesheetURL);
+    log.trace("Trying to transform IdentityLink.");
     transformer.transform(source, result);
+    log.trace("IdentityLink transformed successfully. " + getStatistics());
   }
   
   public String getStatistics() {

@@ -72,4 +72,6 @@ public interface BindingProcessor extends Runnable {
   * @param locale must not be null.
   */
  public void setLocale(Locale locale);
+ 
+ public boolean isFinished();
 }

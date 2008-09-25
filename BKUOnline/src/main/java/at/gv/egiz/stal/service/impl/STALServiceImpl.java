@@ -248,6 +248,6 @@ public class STALServiceImpl implements STALPortType {
     ServletContext sCtx = (ServletContext) mCtx.get(MessageContext.SERVLET_CONTEXT);
     BindingProcessorManager bpMgr = (BindingProcessorManager) sCtx.getAttribute(BINDING_PROCESSOR_MANAGER);
     BindingProcessor bp = bpMgr.getBindingProcessor(sessionId);
-    return (bp == null) ? null : (STALRequestBroker) bp.getSTAL();
+    return (bp == null) ? null : (bp.isFinished() ? null : (STALRequestBroker) bp.getSTAL());
   }
 }
