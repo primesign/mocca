@@ -32,12 +32,18 @@ import at.gv.egiz.stal.STALFactory;
  */
 public class RequestBrokerSTALFactory implements STALFactory {
 
+  private long timeout;
+  
     @Override
     public STAL createSTAL() {
-        return new STALRequestBrokerImpl();
+      return new STALRequestBrokerImpl(timeout);
     }
 
     @Override
     public void setLocale(Locale locale) {
+    }
+    
+    public void setTimeout(long millisec) {
+      timeout = millisec;
     }
 }
