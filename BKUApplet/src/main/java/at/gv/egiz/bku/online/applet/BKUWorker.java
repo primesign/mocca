@@ -1,19 +1,19 @@
 /*
-* Copyright 2008 Federal Chancellery Austria and
-* Graz University of Technology
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright 2008 Federal Chancellery Austria and
+ * Graz University of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package at.gv.egiz.bku.online.applet;
 
 import java.awt.event.ActionEvent;
@@ -73,11 +73,12 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     this.parent = parent;
     this.errorMessages = errorMessageBundle;
     addRequestHandler(QuitRequest.class, this);
-    //register SignRequestHandler once we have a webservice port
+    // register SignRequestHandler once we have a webservice port
   }
-  
+
   /**
    * Used for non applet variants
+   * 
    * @param gui
    * @param errorMessageBundle
    */
@@ -96,7 +97,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
       try {
         if (codebase.getProtocol().equalsIgnoreCase("file")) {
           // for debugging in appletrunner
-        wsdlURL = new URL(wsdlLocation);
+          wsdlURL = new URL(wsdlLocation);
         } else {
           wsdlURL = new URL(codebase, wsdlLocation);
         }
@@ -120,8 +121,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     gui.showWelcomeDialog();
     try {
       stalPort = getSTALPort();
-     
-      
+
     } catch (Exception e) {
       log.fatal("Failed to call STAL service.", e);
       actionCommandList.clear();
@@ -134,48 +134,57 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
       }
       return;
     }
+    try {
+      ObjectFactory factory = new ObjectFactory();
+      GetNextRequestType nextRequest = factory.createGetNextRequestType();
 
-    ObjectFactory factory = new ObjectFactory();
-    GetNextRequestType nextRequest = factory.createGetNextRequestType();
-
-    String sessionId = parent.getMyAppletParameter(BKUApplet.SESSION_ID);
-    if (sessionId == null) {
-      // use the testsession for testing
-      sessionId = "TestSession";
-    }
-    nextRequest.setSessionId(sessionId);
-    addRequestHandler(SignRequest.class, new WSSignRequestHandler(sessionId, stalPort));
-    do {
-      GetNextRequestResponseType resp = stalPort.getNextRequest(nextRequest);
-      log.info("Got " + resp.getRequest().size() + " requests from server.");
-      List<STALRequest> stalRequests = resp.getRequest();
-      boolean handle = true;
-      for (STALRequest request : stalRequests) {
-      	if (request instanceof InfoboxReadRequest) {
-      		InfoboxReadRequest infobx = (InfoboxReadRequest) request;
-      		if (infobx.getInfoboxIdentifier().equals("IdentityLink")) {
-      			if (infobx.getDomainIdentifier() == null) {
-      				if (!InternalSSLSocketFactory.getInstance().isEgovAgency()) {
-      					handle = false;
-      				}
-      			}
-      		}
-      	}
+      String sessionId = parent.getMyAppletParameter(BKUApplet.SESSION_ID);
+      if (sessionId == null) {
+        // use the testsession for testing
+        sessionId = "TestSession";
       }
-      List<STALResponse> responses;
-      if (handle) {
-           responses = handleRequest(stalRequests);
-      } else {
-      	responses = new ArrayList<STALResponse>(1);
-        responses.add(new ErrorResponse(6002));
-      }
-      log.info("Got " + responses.size() + " responses.");
-      nextRequest = factory.createGetNextRequestType();
       nextRequest.setSessionId(sessionId);
-      nextRequest.getResponse().addAll(responses);
-    } while (!finished);
-    log.info("Done " + Thread.currentThread().getName());
-//    gui.showWelcomeDialog();
+      addRequestHandler(SignRequest.class, new WSSignRequestHandler(sessionId,
+          stalPort));
+      do {
+        GetNextRequestResponseType resp = stalPort.getNextRequest(nextRequest);
+        log.info("Got " + resp.getRequest().size() + " requests from server.");
+        List<STALRequest> stalRequests = resp.getRequest();
+        boolean handle = true;
+        for (STALRequest request : stalRequests) {
+          if (request instanceof InfoboxReadRequest) {
+            InfoboxReadRequest infobx = (InfoboxReadRequest) request;
+            if (infobx.getInfoboxIdentifier().equals("IdentityLink")) {
+              if (infobx.getDomainIdentifier() == null) {
+                if (!InternalSSLSocketFactory.getInstance().isEgovAgency()) {
+                  handle = false;
+                }
+              }
+            }
+          }
+        }
+        List<STALResponse> responses;
+        if (handle) {
+          responses = handleRequest(stalRequests);
+        } else {
+          responses = new ArrayList<STALResponse>(1);
+          responses.add(new ErrorResponse(6002));
+        }
+        log.info("Got " + responses.size() + " responses.");
+        nextRequest = factory.createGetNextRequestType();
+        nextRequest.setSessionId(sessionId);
+        nextRequest.getResponse().addAll(responses);
+      } while (!finished);
+      log.info("Done " + Thread.currentThread().getName());
+      // gui.showWelcomeDialog();
+    } catch (Exception ex) {
+      gui.showErrorDialog("Sorry, an internal error occured: " + ex.getMessage());
+      try {
+        waitForAction();
+      } catch (InterruptedException e) {
+        log.error(e);
+      }
+    }
     sendRedirect();
   }
 
@@ -187,7 +196,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     URL url = null;
     if (redirectURL != null) {
       try {
-        url = new URL(parent.getCodeBase(),redirectURL + ";jsessionid="
+        url = new URL(parent.getCodeBase(), redirectURL + ";jsessionid="
             + parent.getMyAppletParameter(BKUApplet.SESSION_ID));
       } catch (MalformedURLException ex) {
         log.warn("Parameter 'redirectURL': " + redirectURL
@@ -283,7 +292,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
         }
         break;
       case SMCCHelper.CARD_FOUND:
-//        gui.showWaitDialog(null);
+        // gui.showWaitDialog(null);
         signatureCard = smccHelper.getSignatureCard(errorMessages.getLocale());
         return false;
       }

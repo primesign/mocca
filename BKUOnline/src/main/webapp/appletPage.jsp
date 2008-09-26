@@ -26,9 +26,9 @@
 <body>
 <script src="./js/deployJava.js"></script>
 <script>
-	if (!deployJava.versionCheck('1.6.0_02')) {
+	if (!deployJava.versionCheck('1.6.0_04+')) {
 		document
-				.write('<b>Diese Anwendung benötigt die Java Platform Version 1.6.0_02 oder höher.</b>' + '<input type="submit" value="Java Platform 1.6.0_02 installieren" onclick="deployJava.installLatestJRE();">');
+				.write('<b>Diese Anwendung benötigt die Java Platform Version 1.6.0 oder höher.</b>' + '<input type="submit" value="Java Platform 1.6.0_02 installieren" onclick="deployJava.installLatestJRE();">');
 	} else {
 		var attributes = {
 			codebase :'applet',
