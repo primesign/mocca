@@ -186,13 +186,13 @@ public class BKUGUIWorker implements Runnable {
 //
 //        Thread.sleep(2000);
         
-        gui.showWaitDialog(null);
-        
-        Thread.sleep(1000);
-        
-        gui.showWaitDialog("test");
-        
-        Thread.sleep(1000);
+//        gui.showWaitDialog(null);
+//        
+//        Thread.sleep(1000);
+//        
+//        gui.showWaitDialog("test");
+//        
+//        Thread.sleep(1000);
           
 
 //            gui.showInsertCardDialog(cancelListener, "cancel");
@@ -218,11 +218,24 @@ public class BKUGUIWorker implements Runnable {
 //
 //            Thread.sleep(2000);
 ////            
-            gui.showErrorDialog("Testfehler occured", null, null);
-            
+//            gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, new Object[] {"Testfehler"}, null, null);
+//            
+//            Thread.sleep(2000);
+//            
+              
+            gui.showErrorDialog("error.test", new Object[] {"Testfehler", "noch ein TestFehler"}); 
+
             Thread.sleep(2000);
 //            
-            gui.showErrorDialog("Testfehler occured"); 
+            gui.showErrorDialog("error.no.hashdata", null); 
+            
+            Thread.sleep(2000);
+//          
+            gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, new Object[] {"Testfehler"}); 
+
+            Thread.sleep(2000);
+//          
+            gui.showErrorDialog("error.unknown", null); 
 
 
 //            gui.showTextPlainHashDataInput("hallo,\n welt!", "12345", null, "cancel", null, "save");

@@ -65,16 +65,16 @@ public class BKUGuiProxy implements BKUGUIFacade {
   }
 
   @Override
-  public void showErrorDialog(String errorMsg, ActionListener okListener,
+  public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams, ActionListener okListener,
       String actionCommand) {
     showDialog();
-    delegate.showErrorDialog(errorMsg, okListener, actionCommand);
+    delegate.showErrorDialog(errorMsgKey, errorMsgParams, okListener, actionCommand);
   }
 
   @Override
-  public void showErrorDialog(String errorMsg) {
+  public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams) {
     showDialog();
-    delegate.showErrorDialog(errorMsg);
+    delegate.showErrorDialog(errorMsgKey, errorMsgParams);
   }
 
   @Override

@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -94,7 +96,7 @@ public class BKUGUI implements BKUGUIFacade {
     private static final String MESSAGE_OVERWRITE = "message.overwrite";
     private static final String LABEL_PIN = "label.pin";
     private static final String LABEL_PINSIZE = "label.pinsize";
-    private static final String ERROR_NO_HASHDATA = "error.no.hashdata";
+//    private static final String ERROR_NO_HASHDATA = "error.no.hashdata";
     
     private static final String BUTTON_OK = "button.ok";
     private static final String BUTTON_CANCEL = "button.cancel";
@@ -798,7 +800,7 @@ public class BKUGUI implements BKUGUIFacade {
     }
 
     @Override
-    public void showErrorDialog(final String errorMsg, final ActionListener okListener, final String okCommand) {
+    public void showErrorDialog(final String errorMsgKey, final Object[] errorMsgParams, final ActionListener okListener, final String okCommand) {
         
       log.debug("scheduling error dialog");
       
@@ -815,9 +817,12 @@ public class BKUGUI implements BKUGUIFacade {
                 titleLabel.setText(messages.getString(TITLE_ERROR));
 //                titleLabel.setForeground(defaultForground);
 
+                String errorMsgPattern = messages.getString(errorMsgKey);
+                String errorMsg = MessageFormat.format(errorMsgPattern, errorMsgParams);
+                
                 JLabel errorMsgLabel = new JLabel();
                 errorMsgLabel.setFont(errorMsgLabel.getFont().deriveFont(errorMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                errorMsgLabel.setText("<html>" + errorMsg + "</html>");
+                errorMsgLabel.setText(errorMsg);
                 errorMsgLabel.setForeground(ERROR_COLOR);
 
                 GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
@@ -860,7 +865,7 @@ public class BKUGUI implements BKUGUIFacade {
     }
 
     @Override
-    public void showErrorDialog(final String errorMsg) {
+    public void showErrorDialog(final String errorMsgKey, final Object[] errorMsgParams) {
       
       log.debug("scheduling error  dialog");
       
@@ -877,10 +882,13 @@ public class BKUGUI implements BKUGUIFacade {
           titleLabel.setText(messages.getString(TITLE_ERROR));
 //                titleLabel.setForeground(defaultForground);
 
-          JLabel errorMsgLabel = new JLabel();
-          errorMsgLabel.setFont(errorMsgLabel.getFont().deriveFont(errorMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-          errorMsgLabel.setText("<html>" + errorMsg + "</html>");
-          errorMsgLabel.setForeground(ERROR_COLOR);
+          String errorMsgPattern = messages.getString(errorMsgKey);
+                String errorMsg = MessageFormat.format(errorMsgPattern, errorMsgParams);
+                
+                JLabel errorMsgLabel = new JLabel();
+                errorMsgLabel.setFont(errorMsgLabel.getFont().deriveFont(errorMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+                errorMsgLabel.setText(errorMsg);
+                errorMsgLabel.setForeground(ERROR_COLOR);
 
           GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
           mainPanel.setLayout(mainPanelLayout);
@@ -955,7 +963,7 @@ public class BKUGUI implements BKUGUIFacade {
     public void showHashDataInputDialog(final List<HashDataInput> signedReferences, final ActionListener okListener, final String okCommand) {
       
       if (signedReferences == null) {
-        showErrorDialog(messages.getString(ERROR_NO_HASHDATA), okListener, okCommand);
+        showErrorDialog(messages.getString(ERR_NO_HASHDATA), new Object[] {"No SignedReferences provided"}, okListener, okCommand);
       }
       
       if (signedReferences.size() == 1) {
@@ -971,11 +979,12 @@ public class BKUGUI implements BKUGUIFacade {
                     showSaveHashDataInputDialog(signedReferences, okListener, okCommand);
                 }
             };
-            String hashDataText = getText(signedReferences.get(0));
-            if (hashDataText != null) {
+            
+            try {
+              String hashDataText = getText(signedReferences.get(0));
               showPlainTextHashDataInputDialog(hashDataText, saveHashDataListener, "save", okListener, okCommand);
-            } else {
-              showErrorDialog(messages.getString(ERROR_NO_HASHDATA), okListener, okCommand);
+            } catch (IOException ex) {
+              showErrorDialog(messages.getString(ERR_NO_HASHDATA), new Object[] {ex.getMessage()}, okListener, okCommand);
             }
           
           } else {
@@ -1300,7 +1309,7 @@ public class BKUGUI implements BKUGUIFacade {
                     bos.close();
                 } catch (IOException ex) {
                     log.error("Failed to write HashDataInput to file " + file + ": " + ex.getMessage());
-                    showErrorDialog("Failed to write signed reference to file: " + ex.getMessage(), null, null);
+                    showErrorDialog(ERR_WRITE_HASHDATA, new Object[] {ex.getMessage()}, null, null);
                     ex.printStackTrace();
                 } finally {
                     try {
@@ -1316,7 +1325,7 @@ public class BKUGUI implements BKUGUIFacade {
       });
     }
     
-    private static String getText(HashDataInput hdi) {
+    private static String getText(HashDataInput hdi) throws IOException {
       ByteArrayOutputStream baos = null;
       try {
         InputStream hashDataIS = hdi.getHashDataInput();
@@ -1338,7 +1347,7 @@ public class BKUGUI implements BKUGUIFacade {
         }
       } catch (IOException ex) {
           log.error("Failed to read HashDataInput for reference " + hdi.getReferenceId() + ": " + ex.getMessage());
-          return null;
+          throw ex; 
       } finally {
           try {
               baos.close();

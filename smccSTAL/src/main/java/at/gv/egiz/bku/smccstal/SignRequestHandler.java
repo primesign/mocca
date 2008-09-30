@@ -16,6 +16,7 @@
  */
 package at.gv.egiz.bku.smccstal;
 
+import at.gv.egiz.bku.gui.BKUGUIFacade;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -318,15 +319,15 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
             gui.showHashDataInputDialog(hashDataInputs, SignRequestHandler.this, "ok");
           } catch (DigestException ex) { 
             log.error("Bad digest value: " + ex.getMessage());
-            gui.showErrorDialog(ex.getMessage());
+            gui.showErrorDialog(BKUGUIFacade.ERR_INVALID_HASH, new Object[] {ex.getMessage()});
           } catch (Exception ex) {
             //FIXME localize messages
             log.error("Failed to obtain HashDataInputs: " + ex.getMessage());
-            gui.showErrorDialog("Failed to obtain HashDataInputs: " + ex.getMessage(), SignRequestHandler.this, "ok");
+            gui.showErrorDialog(BKUGUIFacade.ERR_NO_HASHDATA, new Object[] {ex.getMessage()}, SignRequestHandler.this, "ok");
           }
         } else {
           //FIXME get all hashdatainputs
-          gui.showErrorDialog("Failed to obtain HashDataInputs: No dsig:SignedInfo provided.", SignRequestHandler.this, "ok");
+          gui.showErrorDialog(BKUGUIFacade.ERR_NO_HASHDATA, new Object[] {"No dsig:SignedInfo provided"}, SignRequestHandler.this, "ok");
         }
       } else if (actionCommand.equals("sign")) {
         return new String(gui.getPin());

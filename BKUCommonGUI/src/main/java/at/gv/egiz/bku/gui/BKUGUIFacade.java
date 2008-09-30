@@ -23,7 +23,15 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 public interface BKUGUIFacade {
-    
+  
+  public static final String ERR_UNKNOWN = "error.unknown";
+  public static final String ERR_SERVICE_UNREACHABLE = "error.ws.unreachable";
+  public static final String ERR_NO_PCSC = "error.pcsc";
+  public static final String ERR_NO_CARDTERMINAL = "error.cardterminal";
+  public static final String ERR_NO_HASHDATA = "error.no.hashdata";
+  public static final String ERR_WRITE_HASHDATA = "error.write.hashdata";
+  public static final String ERR_INVALID_HASH = "error.invalid.hash";
+  
     public void init(Container contentPane, String localeString);
     
     public void showWelcomeDialog(); 
@@ -55,7 +63,7 @@ public interface BKUGUIFacade {
     
 //    public void showPlainTextHashDataInputDialog(String text, ActionListener saveListener, String saveCommand, ActionListener cancelListener, String cancelCommand);
     
-    public void showErrorDialog(String errorMsg, ActionListener okListener, String actionCommand);
+    public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams, ActionListener okListener, String actionCommand);
     
-    public void showErrorDialog(String errorMsg);
+    public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams);
 }

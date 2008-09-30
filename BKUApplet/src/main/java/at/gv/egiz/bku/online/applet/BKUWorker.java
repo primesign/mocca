@@ -126,7 +126,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
       log.fatal("Failed to call STAL service.", e);
       actionCommandList.clear();
       actionCommandList.add("ok");
-      gui.showErrorDialog(errorMessages.getString("failed.WS"));
+      gui.showErrorDialog(BKUGUIFacade.ERR_SERVICE_UNREACHABLE, new Object[] {e.getMessage()});
       try {
         waitForAction();
       } catch (InterruptedException e1) {
@@ -204,7 +204,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
       log.info("Done " + Thread.currentThread().getName());
     } catch (Exception ex) {
       log.error(ex.getMessage(), ex);
-      gui.showErrorDialog("Sorry, an internal error occured: " + ex.getMessage());
+      gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, new Object[] {ex.getMessage()}); 
       try {
         waitForAction();
       } catch (InterruptedException e) {
@@ -279,8 +279,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
         case SMCCHelper.PC_SC_NOT_SUPPORTED:
           actionCommandList.clear();
           actionCommandList.add("ok");
-          gui.showErrorDialog(errorMessages.getString("nopcscsupport"), this,
-            "ok");
+          gui.showErrorDialog(BKUGUIFacade.ERR_NO_PCSC, null, this, "ok");
           try {
             waitForAction();
           } catch (InterruptedException e) {
@@ -290,8 +289,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
         case SMCCHelper.TERMINAL_NOT_PRESENT:
           actionCommandList.clear();
           actionCommandList.add("ok");
-          gui.showErrorDialog(errorMessages.getString("nocardterminal"), this,
-            "ok");
+          gui.showErrorDialog(BKUGUIFacade.ERR_NO_CARDTERMINAL,null,this,"ok");
           try {
             waitForAction();
           } catch (InterruptedException e) {
