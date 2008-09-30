@@ -72,6 +72,7 @@
 			<groupId>com.sun.xml.ws</groupId>
 			<artifactId>jaxws-rt</artifactId>
 			<version>2.1.4</version>
+            <!--scope>provided</scope-->
 			<!--
 				conflict with SAAJ from java 6 ? <exclusions> <exclusion>
 				<groupId>javax.xml.soap</groupId> <artifactId>saaj-api</artifactId>
@@ -127,19 +128,31 @@
                 <skip>true</skip>
               </configuration> 
             </plugin-->
-			<!--plugin> 
+	    <!--plugin> 
               <groupId>org.codehaus.mojo</groupId>
-              <artifactId>jaxws-maven-plugin</artifactId> <executions> <execution>
-              <goals> <goal>wsimport</goal> </goals> <configuration>
-              <verbose>true</verbose>
-              <bindingDirectory>${basedir}/src/main/custom-binding</bindingDirectory>
-              <bindingFiles> <bindingFile>stalservice-custom.xml</bindingFile>
-              <bindingFile>staltypes-custom.xml</bindingFile> </bindingFiles>
-              <wsdlDirectory>${basedir}/src/main/webapp/WEB-INF/wsdl</wsdlDirectory>
-              <wsdlFiles> <wsdlFile>stal.wsdl</wsdlFile> </wsdlFiles>
-              <sourceDestDir>${project.build.directory}/generated-sources/wsimport</sourceDestDir>
-              <staleFile>${project.build.directory}/generated-sources/wsimport/.staleFlag</staleFile>
-              </configuration> </execution> </executions> 
+              <artifactId>jaxws-maven-plugin</artifactId> 
+              <executions> 
+                <execution>
+                  <goals> 
+                    <goal>wsimport</goal> 
+                  </goals> 
+                </execution> 
+              </executions> 
+              <configuration>
+                <target>2.0</target>
+                <verbose>true</verbose>
+                <bindingDirectory>${basedir}/src/main/custom-binding</bindingDirectory>
+                <bindingFiles> 
+                  <bindingFile>stalservice-custom.xml</bindingFile>
+                  <bindingFile>staltypes-custom.xml</bindingFile> 
+                </bindingFiles>
+                <wsdlDirectory>${basedir}/src/main/webapp/WEB-INF/wsdl</wsdlDirectory>
+                <wsdlFiles> 
+                  <wsdlFile>stal.wsdl</wsdlFile>
+                </wsdlFiles>
+                <sourceDestDir>${project.build.directory}/generated-sources/wsimport</sourceDestDir>
+                <staleFile>${project.build.directory}/generated-sources/wsimport/.staleFlag</staleFile>
+              </configuration> 
             </plugin-->
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>

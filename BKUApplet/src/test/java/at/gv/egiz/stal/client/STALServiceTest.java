@@ -33,12 +33,14 @@ import org.junit.Test;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.service.GetHashDataInputFault;
-import at.gv.egiz.stal.service.GetHashDataInputResponseType;
-import at.gv.egiz.stal.service.GetHashDataInputType;
-import at.gv.egiz.stal.service.GetNextRequestResponseType;
-import at.gv.egiz.stal.service.GetNextRequestType;
 import at.gv.egiz.stal.service.STALPortType;
 import at.gv.egiz.stal.service.STALService;
+import at.gv.egiz.stal.service.types.GetHashDataInputResponseType;
+import at.gv.egiz.stal.service.types.GetHashDataInputType;
+import at.gv.egiz.stal.service.types.GetNextRequestResponseType;
+import at.gv.egiz.stal.service.types.GetNextRequestType;
+import at.gv.egiz.stal.service.types.InfoboxReadRequestType;
+import at.gv.egiz.stal.service.types.RequestType;
 
 /**
  *
@@ -60,11 +62,11 @@ public class STALServiceTest {
 //            req.getResponse().add(new ErrorResponse(1234));
             GetNextRequestResponseType nrResp = port.getNextRequest(nrReq);
             assertNotNull(nrResp);
-            System.out.println("got response: " + nrResp.getRequest().size());
-            for (STALRequest stalReq : nrResp.getRequest()) {
-                if (stalReq instanceof InfoboxReadRequest) {
-                   String ibid = ((InfoboxReadRequest) stalReq).getInfoboxIdentifier(); 
-                   String did = ((InfoboxReadRequest) stalReq).getDomainIdentifier();
+            System.out.println("got response: " + nrResp.getInfoboxReadRequestOrSignRequestOrQuitRequest().size());
+            for (RequestType stalReq : nrResp.getInfoboxReadRequestOrSignRequestOrQuitRequest()) {
+                if (stalReq instanceof InfoboxReadRequestType) {
+                   String ibid = ((InfoboxReadRequestType) stalReq).getInfoboxIdentifier(); 
+                   String did = ((InfoboxReadRequestType) stalReq).getDomainIdentifier();
                     System.out.println(" received InfoboxReadRequest for " + ibid + ", " + did);
                 } else {
                     System.out.println(" received STAL request " + stalReq.getClass().getName());

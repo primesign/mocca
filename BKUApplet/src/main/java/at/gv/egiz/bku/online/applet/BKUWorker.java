@@ -34,23 +34,23 @@ import at.gv.egiz.bku.smccstal.AbstractSMCCSTAL;
 import at.gv.egiz.bku.smccstal.SMCCSTALRequestHandler;
 import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.smcc.util.SMCCHelper;
-import at.gv.egiz.stal.ErrorResponse;
-import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
-import at.gv.egiz.stal.SignRequest;
-import at.gv.egiz.stal.service.GetNextRequestResponseType;
-import at.gv.egiz.stal.service.GetNextRequestType;
-import at.gv.egiz.stal.service.ObjectFactory;
+import at.gv.egiz.stal.service.types.GetNextRequestResponseType;
+import at.gv.egiz.stal.service.types.GetNextRequestType;
+import at.gv.egiz.stal.service.types.ObjectFactory;
 import at.gv.egiz.stal.service.STALPortType;
 import at.gv.egiz.stal.service.STALService;
+import at.gv.egiz.stal.service.types.ErrorResponseType;
+import at.gv.egiz.stal.service.types.RequestType;
+import at.gv.egiz.stal.service.types.ResponseType;
+import at.gv.egiz.stal.util.STALTranslator;
 
 public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
-    ActionListener, SMCCSTALRequestHandler {
+  ActionListener, SMCCSTALRequestHandler {
 
   private static Log log = LogFactory.getLog(BKUWorker.class);
-
   protected BKUGUIFacade gui;
   protected BKUApplet parent;
   private STALPortType stalPort;
@@ -65,7 +65,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
    *          must not be null
    */
   public BKUWorker(BKUGUIFacade gui, BKUApplet parent,
-      ResourceBundle errorMessageBundle) {
+    ResourceBundle errorMessageBundle) {
     if ((gui == null) || (parent == null) || (errorMessageBundle == null)) {
       throw new NullPointerException("Parameter must not be set to null");
     }
@@ -73,7 +73,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     this.parent = parent;
     this.errorMessages = errorMessageBundle;
     addRequestHandler(QuitRequest.class, this);
-    // register SignRequestHandler once we have a webservice port
+  // register SignRequestHandler once we have a webservice port
   }
 
   /**
@@ -111,7 +111,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     }
     log.debug("Found WSDL url: " + wsdlURL);
     QName endpointName = new QName("http://www.egiz.gv.at/wsdl/stal",
-        "STALService");
+      "STALService");
     STALService stal = new STALService(wsdlURL, endpointName);
     return stal.getSTALPort();
   }
@@ -135,49 +135,75 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
       return;
     }
     try {
-      ObjectFactory factory = new ObjectFactory();
-      GetNextRequestType nextRequest = factory.createGetNextRequestType();
-
       String sessionId = parent.getMyAppletParameter(BKUApplet.SESSION_ID);
       if (sessionId == null) {
         // use the testsession for testing
         sessionId = "TestSession";
       }
-      nextRequest.setSessionId(sessionId);
-      addRequestHandler(SignRequest.class, new WSSignRequestHandler(sessionId,
-          stalPort));
+      addRequestHandler(at.gv.egiz.stal.SignRequest.class, new WSSignRequestHandler(sessionId, stalPort));
+
+      ObjectFactory of = new ObjectFactory();
+      GetNextRequestResponseType nextRequestResp = stalPort.connect(sessionId);
       do {
-        GetNextRequestResponseType resp = stalPort.getNextRequest(nextRequest);
-        log.info("Got " + resp.getRequest().size() + " requests from server.");
-        List<STALRequest> stalRequests = resp.getRequest();
+        List<RequestType> requests = nextRequestResp.getInfoboxReadRequestOrSignRequestOrQuitRequest();
+        List<STALRequest> stalRequests = STALTranslator.translateRequests(requests);
+
+        if (log.isInfoEnabled()) {
+          StringBuilder sb = new StringBuilder("Received ");
+          sb.append(stalRequests.size());
+          sb.append(" STAL requests: ");
+          for (STALRequest r : stalRequests) {
+            sb.append(r.getClass());
+            sb.append(' ');
+          }
+          log.info(sb.toString());
+        }
+
         boolean handle = true;
         for (STALRequest request : stalRequests) {
-          if (request instanceof InfoboxReadRequest) {
-            InfoboxReadRequest infobx = (InfoboxReadRequest) request;
-            if (infobx.getInfoboxIdentifier().equals("IdentityLink")) {
-              if (infobx.getDomainIdentifier() == null) {
-                if (!InternalSSLSocketFactory.getInstance().isEgovAgency()) {
-                  handle = false;
-                }
+          if (request instanceof at.gv.egiz.stal.InfoboxReadRequest) {
+            at.gv.egiz.stal.InfoboxReadRequest r = (at.gv.egiz.stal.InfoboxReadRequest) request;
+            String infoboxId = r.getInfoboxIdentifier();
+            String domainId = r.getDomainIdentifier();
+            if ("IdentityLink".equals(infoboxId) && domainId == null) {
+              if (!InternalSSLSocketFactory.getInstance().isEgovAgency()) {
+                handle = false;
               }
             }
           }
         }
-        List<STALResponse> responses;
+
+        List<ResponseType> responses;
         if (handle) {
-          responses = handleRequest(stalRequests);
+          List<STALResponse> stalResponses = handleRequest(stalRequests);
+          if (log.isInfoEnabled()) {
+            StringBuilder sb = new StringBuilder(stalResponses.size());
+            sb.append(" STAL responses: ");
+            for (STALResponse r : stalResponses) {
+              sb.append(r.getClass());
+              sb.append(' ');
+            }
+            log.info(sb.toString());
+          }
+          responses = STALTranslator.fromSTAL(stalResponses);
         } else {
-          responses = new ArrayList<STALResponse>(1);
-          responses.add(new ErrorResponse(6002));
+          responses = new ArrayList<ResponseType>(1);
+          ErrorResponseType err = new ErrorResponseType();
+          err.setErrorCode(6002);
+//        err.setErrorMessage();
+          responses.add(err);
         }
-        log.info("Got " + responses.size() + " responses.");
-        nextRequest = factory.createGetNextRequestType();
-        nextRequest.setSessionId(sessionId);
-        nextRequest.getResponse().addAll(responses);
+
+        if (!finished) {
+          GetNextRequestType nextRequest = of.createGetNextRequestType();
+          nextRequest.setSessionId(sessionId);
+          nextRequest.getInfoboxReadResponseOrSignResponseOrErrorResponse().addAll(responses);
+          nextRequestResp = stalPort.getNextRequest(nextRequest);
+        }
       } while (!finished);
       log.info("Done " + Thread.currentThread().getName());
-      // gui.showWelcomeDialog();
     } catch (Exception ex) {
+      log.error(ex.getMessage(), ex);
       gui.showErrorDialog("Sorry, an internal error occured: " + ex.getMessage());
       try {
         waitForAction();
@@ -196,20 +222,17 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     URL url = null;
     if (redirectURL != null) {
       try {
-        url = new URL(parent.getCodeBase(), redirectURL + ";jsessionid="
-            + parent.getMyAppletParameter(BKUApplet.SESSION_ID));
+        url = new URL(parent.getCodeBase(), redirectURL + ";jsessionid=" + parent.getMyAppletParameter(BKUApplet.SESSION_ID));
       } catch (MalformedURLException ex) {
-        log.warn("Parameter 'redirectURL': " + redirectURL
-            + " not a valid URL.", ex);
-        // gui.showErrorDialog(errorMsg, okListener, actionCommand)
+        log.warn("Parameter 'redirectURL': " + redirectURL + " not a valid URL.", ex);
+      // gui.showErrorDialog(errorMsg, okListener, actionCommand)
       }
       if (url != null) {
         if (redirectTarget == null) {
           log.info("Done. Trying to redirect to " + url + " ...");
           parent.getAppletContext().showDocument(url);
         } else {
-          log.info("Done. Trying to redirect to " + url + " (target="
-              + redirectTarget + ") ...");
+          log.info("Done. Trying to redirect to " + url + " (target=" + redirectTarget + ") ...");
           parent.getAppletContext().showDocument(url, redirectTarget);
         }
       }
@@ -253,48 +276,48 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     int oldValue = SMCCHelper.PC_SC_NOT_SUPPORTED; // this is a save default
     while ((signatureCard == null) && (!actionPerformed)) {
       switch (smccHelper.getResultCode()) {
-      case SMCCHelper.PC_SC_NOT_SUPPORTED:
-        actionCommandList.clear();
-        actionCommandList.add("ok");
-        gui.showErrorDialog(errorMessages.getString("nopcscsupport"), this,
-            "ok");
-        try {
-          waitForAction();
-        } catch (InterruptedException e) {
-          log.error(e);
-        }
-        return true;
-      case SMCCHelper.TERMINAL_NOT_PRESENT:
-        actionCommandList.clear();
-        actionCommandList.add("ok");
-        gui.showErrorDialog(errorMessages.getString("nocardterminal"), this,
-            "ok");
-        try {
-          waitForAction();
-        } catch (InterruptedException e) {
-          log.error(e);
-        }
-        return true;
-      case SMCCHelper.CARD_NOT_SUPPORTED:
-        if (oldValue != SMCCHelper.CARD_NOT_SUPPORTED) {
+        case SMCCHelper.PC_SC_NOT_SUPPORTED:
           actionCommandList.clear();
-          actionCommandList.add("cancel");
-          gui.showCardNotSupportedDialog(this, "cancel");
-          oldValue = SMCCHelper.CARD_NOT_SUPPORTED;
-        }
-        break;
-      case SMCCHelper.NO_CARD:
-        if (oldValue != SMCCHelper.NO_CARD) {
+          actionCommandList.add("ok");
+          gui.showErrorDialog(errorMessages.getString("nopcscsupport"), this,
+            "ok");
+          try {
+            waitForAction();
+          } catch (InterruptedException e) {
+            log.error(e);
+          }
+          return true;
+        case SMCCHelper.TERMINAL_NOT_PRESENT:
           actionCommandList.clear();
-          actionCommandList.add("cancel");
-          gui.showInsertCardDialog(this, "cancel");
-          oldValue = SMCCHelper.NO_CARD;
-        }
-        break;
-      case SMCCHelper.CARD_FOUND:
-        // gui.showWaitDialog(null);
-        signatureCard = smccHelper.getSignatureCard(errorMessages.getLocale());
-        return false;
+          actionCommandList.add("ok");
+          gui.showErrorDialog(errorMessages.getString("nocardterminal"), this,
+            "ok");
+          try {
+            waitForAction();
+          } catch (InterruptedException e) {
+            log.error(e);
+          }
+          return true;
+        case SMCCHelper.CARD_NOT_SUPPORTED:
+          if (oldValue != SMCCHelper.CARD_NOT_SUPPORTED) {
+            actionCommandList.clear();
+            actionCommandList.add("cancel");
+            gui.showCardNotSupportedDialog(this, "cancel");
+            oldValue = SMCCHelper.CARD_NOT_SUPPORTED;
+          }
+          break;
+        case SMCCHelper.NO_CARD:
+          if (oldValue != SMCCHelper.NO_CARD) {
+            actionCommandList.clear();
+            actionCommandList.add("cancel");
+            gui.showInsertCardDialog(this, "cancel");
+            oldValue = SMCCHelper.NO_CARD;
+          }
+          break;
+        case SMCCHelper.CARD_FOUND:
+          // gui.showWaitDialog(null);
+          signatureCard = smccHelper.getSignatureCard(errorMessages.getLocale());
+          return false;
       }
       smccHelper.update(3000);
     }

@@ -22,22 +22,27 @@ package at.gv.egiz.stal.service.impl;
 
 import at.gv.egiz.bku.binding.BindingProcessor;
 import at.gv.egiz.bku.binding.BindingProcessorManager;
-import at.gv.egiz.stal.HashDataInput;
-import at.gv.egiz.stal.service.*;
 import at.gv.egiz.bku.binding.Id;
 import at.gv.egiz.bku.binding.IdFactory;
-import at.gv.egiz.stal.ErrorResponse;
-import at.gv.egiz.stal.STALRequest;
-import at.gv.egiz.stal.STALResponse;
-import at.gv.egiz.stal.InfoboxReadRequest;
-import at.gv.egiz.stal.QuitRequest;
-import at.gv.egiz.stal.SignRequest;
 
-import java.io.ByteArrayInputStream;
+import at.gv.egiz.stal.HashDataInput;
+import at.gv.egiz.stal.service.GetHashDataInputFault;
+import at.gv.egiz.stal.service.STALPortType;
+import at.gv.egiz.stal.service.types.ErrorResponseType;
+import at.gv.egiz.stal.service.types.GetHashDataInputFaultType;
+import at.gv.egiz.stal.service.types.GetHashDataInputResponseType;
+import at.gv.egiz.stal.service.types.GetHashDataInputType;
+import at.gv.egiz.stal.service.types.GetNextRequestResponseType;
+import at.gv.egiz.stal.service.types.GetNextRequestType;
+import at.gv.egiz.stal.service.types.InfoboxReadRequestType;
+import at.gv.egiz.stal.service.types.QuitRequestType;
+import at.gv.egiz.stal.service.types.RequestType;
+import at.gv.egiz.stal.service.types.ResponseType;
+import at.gv.egiz.stal.service.types.SignRequestType;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,57 +68,90 @@ public class STALServiceImpl implements STALPortType {
   WebServiceContext wsContext;
   protected IdFactory idF = IdFactory.getInstance();
 
+   
   @Override
-  public GetNextRequestResponseType getNextRequest(GetNextRequestType request) {
+  public GetNextRequestResponseType connect(String sessId) {
+    
+    if (sessId == null) {
+      throw new NullPointerException("No session id provided");
+    }
+    
+    Id sessionId = idF.createId(sessId);
 
-    Id sessionId = idF.createId(request.getSessionId());
-
-    List<STALResponse> responsesIn = request.getResponse();
-
+    if (log.isDebugEnabled()) {
+      log.debug("Received Connect [" + sessionId + "]");
+    }
+    
+    if (TEST_SESSION_ID.equals(sessionId)) {
+      return getTestSessionNextRequestResponse(null);
+    }
+    
     GetNextRequestResponseType response = new GetNextRequestResponseType();
     response.setSessionId(sessionId.toString());
-
-    if (TEST_SESSION_ID.equals(sessionId)) {
-      if (responsesIn.size() > 0 && responsesIn.get(0) instanceof ErrorResponse) {
-        log.info("Received TestSession GetNextRequest(ErrorResponse), returning QuitRequest");
-        response.getRequest().add(new QuitRequest());
-      } else {
-        log.info("Received TestSession GetNextRequest, returning InfoboxReadRequest ");
-        SignRequest sig = new SignRequest();
-        sig.setKeyIdentifier("SecureSignatureKeypair");
-        sig.setSignedInfo("<dsig:SignedInfo  xmlns:dsig=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:xpf=\"http://www.w3.org/2002/06/xmldsig-filter2\"><dsig:CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\" /> <dsig:SignatureMethod Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1\" /> <dsig:Reference Id=\"signed-data-reference-0-1214921968-27971781-24309\" URI=\"#signed-data-object-0-1214921968-27971781-13578\"><dsig:Transforms> <dsig:Transform Algorithm=\"http://www.w3.org/2002/06/xmldsig-filter2\"> <xpf:XPath xmlns:xpf=\"http://www.w3.org/2002/06/xmldsig-filter2\" Filter=\"intersect\">id('signed-data-object-0-1214921968-27971781-13578')/node()</xpf:XPath></dsig:Transform></dsig:Transforms><dsig:DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\" /> <dsig:DigestValue>H1IePEEfGQ2SG03H6LTzw1TpCuM=</dsig:DigestValue></dsig:Reference><dsig:Reference Id=\"etsi-data-reference-0-1214921968-27971781-25439\" Type=\"http://uri.etsi.org/01903/v1.1.1#SignedProperties\" URI=\"#xmlns(etsi=http://uri.etsi.org/01903/v1.1.1%23)%20xpointer(id('etsi-data-object-0-1214921968-27971781-3095')/child::etsi:QualifyingProperties/child::etsi:SignedProperties)\"><dsig:DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\" /><dsig:DigestValue>yV6Q+I60buqR4mMaxA7fi+CV35A=</dsig:DigestValue></dsig:Reference></dsig:SignedInfo>".getBytes());
-        response.getRequest().add(sig);
-        InfoboxReadRequest req = new InfoboxReadRequest();
-        req.setInfoboxIdentifier("IdentityLink");
-        req.setDomainIdentifier("hansiwurzel");
-        response.getRequest().add(req);
-        req = new InfoboxReadRequest();
-        req.setInfoboxIdentifier("CertifiedKeypair");
-        response.getRequest().add(req);
-        req = new InfoboxReadRequest();
-        req.setInfoboxIdentifier("SecureSignatureKeypair");
-        response.getRequest().add(req);
-      }
-      return response;
-    }
 
     STALRequestBroker stal = getStal(sessionId);
 
     if (stal != null) {
+
+      List<RequestType> requestsOut = ((STALRequestBroker) stal).connect();
+      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().addAll(requestsOut);
+
       if (log.isDebugEnabled()) {
-        StringBuilder sb = new StringBuilder("Received GetNextRequest [");
+        StringBuilder sb = new StringBuilder("Returning initial GetNextRequestResponse [");
         sb.append(sessionId.toString());
         sb.append("] containing ");
-        sb.append(responsesIn.size());
-        sb.append(" responses: ");
-        for (STALResponse respIn : responsesIn) {
-          sb.append(respIn);
+        sb.append(requestsOut.size());
+        sb.append(" requests: ");
+        for (RequestType reqOut : requestsOut) {
+          sb.append(reqOut.getClass());
           sb.append(' ');
         }
+        log.debug(sb.toString());
       }
+    } else {
+      log.error("Failed to get STAL for session " + sessionId + ", returning QuitRequest");
+      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(new QuitRequestType());
+    }
+    return response;
+  }
+  
+  @Override
+  public GetNextRequestResponseType getNextRequest(GetNextRequestType request) {
 
-      List<STALRequest> requestsOut = ((STALRequestBroker) stal).nextRequest(responsesIn);
-      response.getRequest().addAll(requestsOut);
+    if (request.getSessionId() == null) {
+      throw new NullPointerException("No session id provided");
+    }
+    
+    Id sessionId = idF.createId(request.getSessionId());
+
+    List<ResponseType> responsesIn = request.getInfoboxReadResponseOrSignResponseOrErrorResponse();//getResponse();
+
+    if (log.isDebugEnabled()) {
+      StringBuilder sb = new StringBuilder("Received GetNextRequest [");
+      sb.append(sessionId.toString());
+      sb.append("] containing ");
+      sb.append(responsesIn.size());
+      sb.append(" responses: ");
+      for (ResponseType respIn : responsesIn) {
+        sb.append(respIn.getClass());
+        sb.append(' ');
+      }
+      log.debug(sb.toString());
+    }
+    
+    if (TEST_SESSION_ID.equals(sessionId)) {
+      return getTestSessionNextRequestResponse(responsesIn);
+    }
+
+    GetNextRequestResponseType response = new GetNextRequestResponseType();
+    response.setSessionId(sessionId.toString());
+    
+    STALRequestBroker stal = getStal(sessionId);
+
+    if (stal != null) {
+
+      List<RequestType> requestsOut = ((STALRequestBroker) stal).nextRequest(responsesIn);
+      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().addAll(requestsOut);
 
       if (log.isDebugEnabled()) {
         StringBuilder sb = new StringBuilder("Returning GetNextRequestResponse [");
@@ -121,14 +159,15 @@ public class STALServiceImpl implements STALPortType {
         sb.append("] containing ");
         sb.append(requestsOut.size());
         sb.append(" requests: ");
-        for (STALRequest reqOut : requestsOut) {
-          sb.append(reqOut);
+        for (RequestType reqOut : requestsOut) {
+          sb.append(reqOut.getClass());
           sb.append(' ');
         }
+        log.debug(sb.toString());
       }
     } else {
       log.error("Failed to get STAL for session " + sessionId + ", returning QuitRequest");
-      response.getRequest().add(new QuitRequest());
+      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(new QuitRequestType());
     }
     return response;
   }
@@ -136,6 +175,10 @@ public class STALServiceImpl implements STALPortType {
   @Override
   public GetHashDataInputResponseType getHashDataInput(GetHashDataInputType request) throws GetHashDataInputFault {
 
+    if (request.getSessionId() == null) {
+      throw new NullPointerException("No session id provided");
+    }
+    
     Id sessionId = idF.createId(request.getSessionId());
 
     if (log.isDebugEnabled()) {
@@ -150,8 +193,17 @@ public class STALServiceImpl implements STALPortType {
       GetHashDataInputResponseType.Reference ref = new GetHashDataInputResponseType.Reference();
       ref.setID("Reference-" + TEST_SESSION_ID + "-001");
       ref.setMimeType("text/plain");
-      ref.setEncoding("UTF-8");
-      ref.setValue("hashdatainput-öäüß@€-00000000001".getBytes());
+      
+      Charset charset;
+      try {
+        charset = Charset.forName("iso-8859-15");
+        ref.setEncoding("iso-8859-15");
+      } catch (Exception ex) {
+        log.warn(ex.getMessage());
+        charset = Charset.defaultCharset();
+        ref.setEncoding(charset.toString());
+      }
+      ref.setValue("hashdatainput-öäüß@€-00000000001".getBytes(charset));
       response.getReference().add(ref);
       return response;
     } else {
@@ -244,10 +296,40 @@ public class STALServiceImpl implements STALPortType {
   }
 
   private STALRequestBroker getStal(Id sessionId) {
+    if (log.isTraceEnabled()) {
+      log.trace("resolve STAL for session " + sessionId);
+    }
     MessageContext mCtx = wsContext.getMessageContext();
     ServletContext sCtx = (ServletContext) mCtx.get(MessageContext.SERVLET_CONTEXT);
     BindingProcessorManager bpMgr = (BindingProcessorManager) sCtx.getAttribute(BINDING_PROCESSOR_MANAGER);
     BindingProcessor bp = bpMgr.getBindingProcessor(sessionId);
     return (bp == null) ? null : (bp.isFinished() ? null : (STALRequestBroker) bp.getSTAL());
+  }
+
+  private GetNextRequestResponseType getTestSessionNextRequestResponse(List<ResponseType> responsesIn) {
+    GetNextRequestResponseType response = new GetNextRequestResponseType();
+    response.setSessionId(TEST_SESSION_ID.toString());
+    
+    if (responsesIn != null && responsesIn.size() > 0 && responsesIn.get(0) instanceof ErrorResponseType) {
+      log.info("Received TestSession GetNextRequest(ErrorResponse), returning QuitRequest");
+      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(new QuitRequestType());
+    } else {
+      log.info("Received TestSession GetNextRequest, returning InfoboxReadRequest ");
+      SignRequestType sig = new SignRequestType();
+      sig.setKeyIdentifier("SecureSignatureKeypair");
+      sig.setSignedInfo("<dsig:SignedInfo  xmlns:dsig=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:xpf=\"http://www.w3.org/2002/06/xmldsig-filter2\"><dsig:CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\" /> <dsig:SignatureMethod Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1\" /> <dsig:Reference Id=\"signed-data-reference-0-1214921968-27971781-24309\" URI=\"#signed-data-object-0-1214921968-27971781-13578\"><dsig:Transforms> <dsig:Transform Algorithm=\"http://www.w3.org/2002/06/xmldsig-filter2\"> <xpf:XPath xmlns:xpf=\"http://www.w3.org/2002/06/xmldsig-filter2\" Filter=\"intersect\">id('signed-data-object-0-1214921968-27971781-13578')/node()</xpf:XPath></dsig:Transform></dsig:Transforms><dsig:DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\" /> <dsig:DigestValue>H1IePEEfGQ2SG03H6LTzw1TpCuM=</dsig:DigestValue></dsig:Reference><dsig:Reference Id=\"etsi-data-reference-0-1214921968-27971781-25439\" Type=\"http://uri.etsi.org/01903/v1.1.1#SignedProperties\" URI=\"#xmlns(etsi=http://uri.etsi.org/01903/v1.1.1%23)%20xpointer(id('etsi-data-object-0-1214921968-27971781-3095')/child::etsi:QualifyingProperties/child::etsi:SignedProperties)\"><dsig:DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\" /><dsig:DigestValue>yV6Q+I60buqR4mMaxA7fi+CV35A=</dsig:DigestValue></dsig:Reference></dsig:SignedInfo>".getBytes());
+      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(sig);
+      InfoboxReadRequestType req = new InfoboxReadRequestType();
+      req.setInfoboxIdentifier("IdentityLink");
+      req.setDomainIdentifier("hansiwurzel");
+      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(req);
+      req = new InfoboxReadRequestType();
+      req.setInfoboxIdentifier("CertifiedKeypair");
+      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(req);
+      req = new InfoboxReadRequestType();
+      req.setInfoboxIdentifier("SecureSignatureKeypair");
+      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(req);
+    }
+    return response;
   }
 }

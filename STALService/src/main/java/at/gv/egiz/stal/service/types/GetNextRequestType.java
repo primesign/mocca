@@ -1,29 +1,13 @@
-/*
-* Copyright 2008 Federal Chancellery Austria and
-* Graz University of Technology
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
 
-package at.gv.egiz.stal.service;
+package at.gv.egiz.stal.service.types;
 
-import at.gv.egiz.stal.STALResponse;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -36,10 +20,12 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="GetNextRequestType">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="Response" type="{http://www.egiz.gv.at/stal}ResponseType" maxOccurs="unbounded" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;attribute name="sessionId" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;choice maxOccurs="unbounded">
+ *         &lt;element name="InfoboxReadResponse" type="{http://www.egiz.gv.at/stal}InfoboxReadResponseType"/>
+ *         &lt;element name="SignResponse" type="{http://www.egiz.gv.at/stal}SignResponseType"/>
+ *         &lt;element name="ErrorResponse" type="{http://www.egiz.gv.at/stal}ErrorResponseType"/>
+ *       &lt;/choice>
+ *       &lt;attribute name="SessionId" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -49,42 +35,48 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetNextRequestType", propOrder = {
-    "response"
+    "infoboxReadResponseOrSignResponseOrErrorResponse"
 })
 public class GetNextRequestType {
 
-    @XmlElement(name = "Response")
-    protected List<STALResponse> response;
-    @XmlAttribute
+    @XmlElements({
+        @XmlElement(name = "SignResponse", type = SignResponseType.class),
+        @XmlElement(name = "InfoboxReadResponse", type = InfoboxReadResponseType.class),
+        @XmlElement(name = "ErrorResponse", type = ErrorResponseType.class)
+    })
+    protected List<ResponseType> infoboxReadResponseOrSignResponseOrErrorResponse;
+    @XmlAttribute(name = "SessionId")
     protected String sessionId;
 
     /**
-     * Gets the value of the response property.
+     * Gets the value of the infoboxReadResponseOrSignResponseOrErrorResponse property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the response property.
+     * This is why there is not a <CODE>set</CODE> method for the infoboxReadResponseOrSignResponseOrErrorResponse property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getResponse().add(newItem);
+     *    getInfoboxReadResponseOrSignResponseOrErrorResponse().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link STALResponse }
+     * {@link SignResponseType }
+     * {@link InfoboxReadResponseType }
+     * {@link ErrorResponseType }
      * 
      * 
      */
-    public List<STALResponse> getResponse() {
-        if (response == null) {
-            response = new ArrayList<STALResponse>();
+    public List<ResponseType> getInfoboxReadResponseOrSignResponseOrErrorResponse() {
+        if (infoboxReadResponseOrSignResponseOrErrorResponse == null) {
+            infoboxReadResponseOrSignResponseOrErrorResponse = new ArrayList<ResponseType>();
         }
-        return this.response;
+        return this.infoboxReadResponseOrSignResponseOrErrorResponse;
     }
 
     /**

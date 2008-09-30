@@ -73,11 +73,11 @@
           <groupId>org.apache.maven.plugins</groupId>
           <version>2.0</version>
         </plugin>
-        <plugin>
+        <!--plugin>
           <artifactId>maven-jaxb2-plugin</artifactId>
           <groupId>org.jvnet.jaxb2.maven2</groupId>
           <version>0.6.0</version>
-        </plugin>
+        </plugin-->
         <plugin>
           <artifactId>jaxws-maven-plugin</artifactId>
           <groupId>org.codehaus.mojo</groupId>

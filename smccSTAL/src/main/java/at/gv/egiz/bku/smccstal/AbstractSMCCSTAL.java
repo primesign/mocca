@@ -65,7 +65,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
     List<STALResponse> responseList = new ArrayList<STALResponse>(requestList
         .size());
     for (STALRequest request : requestList) {
-      log.info("Processing: " + request);
+      log.info("Processing: " + request.getClass());
       SMCCSTALRequestHandler handler = null;
       handler = handlerMap.get(request.getClass().getSimpleName());
       if (handler != null) {
@@ -78,7 +78,10 @@ public abstract class AbstractSMCCSTAL implements STAL {
         try {
           handler = handler.newInstance();
           handler.init(signatureCard, getGUI());
-          responseList.add(handler.handleRequest(request));
+          STALResponse response = handler.handleRequest(request);
+          if (response != null) {
+            responseList.add(response);
+          }
         } catch (Exception e) {
           log.info("Error while handling STAL request:" + e);
           responseList.add(new ErrorResponse(6000));

@@ -35,36 +35,13 @@
     <bindings scd="x-schema::stal" xmlns:stal="http://www.egiz.gv.at/stal">
         <schemaBindings>
             <!-- generate all classes to at.gv.egiz.stal, then move service-only classes to at.gv.egiz.stal.service -->
-            <package name="at.gv.egiz.stal"/>
+            <package name="at.gv.egiz.stal.service.types"/>
         </schemaBindings>
     </bindings>
-    <bindings scd="/type::stal:RequestType">
+    <!--bindings scd="/type::stal:RequestType">
         <class name="STALRequest"/>
     </bindings>
     <bindings scd="/type::stal:ResponseType">
         <class name="STALResponse"/>
-    </bindings>
-    <bindings scd="/type::stal:InfoboxReadResponseType">
-        <class name="InfoboxReadResponse"/>
-    </bindings>
-    <bindings scd="/type::stal:SignResponseType">
-        <class name="SignResponse"/>
-    </bindings>
-    <bindings scd="/type::stal:ErrorResponseType">
-        <class name="ErrorResponse"/>
-        <!--class implClass="at.gv.egiz.stal.types.ErrorResponse"/-->
-    </bindings>
-    <bindings scd="/type::stal:InfoboxReadRequestType" >
-        <class name="InfoboxReadRequest"/>
-    </bindings>
-    <bindings scd="/type::stal:SignRequestType" >
-        <class name="SignRequest"/>
-        <!--class implClass="at.gv.egiz.stal.types.SignRequest"/-->
-    </bindings>
-    <bindings scd="/type::stal:QuitRequestType" >
-        <class name="QuitRequest"/>
-    </bindings>
-    <!--bindings scd="/type::stal:GetHashDataInputFaultType" >
-        <class name="GetHashDataInputFault"/>
     </bindings-->
 </bindings>

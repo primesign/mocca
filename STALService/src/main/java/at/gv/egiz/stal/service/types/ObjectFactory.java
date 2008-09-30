@@ -1,29 +1,6 @@
-/*
-* Copyright 2008 Federal Chancellery Austria and
-* Graz University of Technology
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
 
-package at.gv.egiz.stal.service;
+package at.gv.egiz.stal.service.types;
 
-
-import at.gv.egiz.stal.ErrorResponse;
-import at.gv.egiz.stal.InfoboxReadRequest;
-import at.gv.egiz.stal.InfoboxReadResponse;
-import at.gv.egiz.stal.QuitRequest;
-import at.gv.egiz.stal.SignRequest;
-import at.gv.egiz.stal.SignResponse;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
@@ -33,7 +10,7 @@ import javax.xml.namespace.QName;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the at.gv.egiz.stal package. 
+ * generated in the at.gv.egiz.stal.service.types package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -52,9 +29,10 @@ public class ObjectFactory {
     private final static QName _GetNextRequestResponse_QNAME = new QName("http://www.egiz.gv.at/stal", "GetNextRequestResponse");
     private final static QName _GetHashDataInputResponse_QNAME = new QName("http://www.egiz.gv.at/stal", "GetHashDataInputResponse");
     private final static QName _GetNextRequest_QNAME = new QName("http://www.egiz.gv.at/stal", "GetNextRequest");
+    private final static QName _SessionId_QNAME = new QName("http://www.egiz.gv.at/stal", "SessionId");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: at.gv.egiz.stal
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: at.gv.egiz.stal.service.types
      * 
      */
     public ObjectFactory() {
@@ -69,75 +47,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SignRequest }
+     * Create an instance of {@link InfoboxReadRequestType }
      * 
      */
-    public SignRequest createSignRequest() {
-        return new SignRequest();
+    public InfoboxReadRequestType createInfoboxReadRequestType() {
+        return new InfoboxReadRequestType();
     }
 
     /**
-     * Create an instance of {@link GetHashDataInputResponseType }
+     * Create an instance of {@link GetHashDataInputResponseType.Reference }
      * 
      */
-    public GetHashDataInputResponseType createGetHashDataInputResponseType() {
-        return new GetHashDataInputResponseType();
+    public GetHashDataInputResponseType.Reference createGetHashDataInputResponseTypeReference() {
+        return new GetHashDataInputResponseType.Reference();
     }
 
     /**
-     * Create an instance of {@link InfoboxReadResponse }
+     * Create an instance of {@link ErrorResponseType }
      * 
      */
-    public InfoboxReadResponse createInfoboxReadResponse() {
-        return new InfoboxReadResponse();
-    }
-
-    /**
-     * Create an instance of {@link ErrorResponse }
-     * 
-     */
-    public ErrorResponse createErrorResponse() {
-        return new ErrorResponse();
-    }
-
-    /**
-     * Create an instance of {@link GetHashDataInputFaultType }
-     * 
-     */
-    public GetHashDataInputFaultType createGetHashDataInputFaultType() {
-        return new GetHashDataInputFaultType();
-    }
-
-    /**
-     * Create an instance of {@link GetHashDataInputType.Reference }
-     * 
-     */
-    public GetHashDataInputType.Reference createGetHashDataInputTypeReference() {
-        return new GetHashDataInputType.Reference();
-    }
-
-    /**
-     * Create an instance of {@link InfoboxReadRequest }
-     * 
-     */
-    public InfoboxReadRequest createInfoboxReadRequest() {
-        return new InfoboxReadRequest();
-    }
-
-    /**
-     * Create an instance of {@link SignResponse }
-     * 
-     */
-    public SignResponse createSignResponse() {
-        return new SignResponse();
-    }
-
-    /**
-     * Create an instance of {@link GetNextRequestResponseType }
-     * 
-     */
-    public GetNextRequestResponseType createGetNextRequestResponseType() {
-        return new GetNextRequestResponseType();
+    public ErrorResponseType createErrorResponseType() {
+        return new ErrorResponseType();
     }
 
     /**
@@ -149,19 +79,67 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link QuitRequest }
+     * Create an instance of {@link SignRequestType }
      * 
      */
-    public QuitRequest createQuitRequest() {
-        return new QuitRequest();
+    public SignRequestType createSignRequestType() {
+        return new SignRequestType();
     }
 
     /**
-     * Create an instance of {@link GetHashDataInputResponseType.Reference }
+     * Create an instance of {@link GetHashDataInputFaultType }
      * 
      */
-    public GetHashDataInputResponseType.Reference createGetHashDataInputResponseTypeReference() {
-        return new GetHashDataInputResponseType.Reference();
+    public GetHashDataInputFaultType createGetHashDataInputFaultType() {
+        return new GetHashDataInputFaultType();
+    }
+
+    /**
+     * Create an instance of {@link SignResponseType }
+     * 
+     */
+    public SignResponseType createSignResponseType() {
+        return new SignResponseType();
+    }
+
+    /**
+     * Create an instance of {@link GetHashDataInputType.Reference }
+     * 
+     */
+    public GetHashDataInputType.Reference createGetHashDataInputTypeReference() {
+        return new GetHashDataInputType.Reference();
+    }
+
+    /**
+     * Create an instance of {@link GetHashDataInputResponseType }
+     * 
+     */
+    public GetHashDataInputResponseType createGetHashDataInputResponseType() {
+        return new GetHashDataInputResponseType();
+    }
+
+    /**
+     * Create an instance of {@link InfoboxReadResponseType }
+     * 
+     */
+    public InfoboxReadResponseType createInfoboxReadResponseType() {
+        return new InfoboxReadResponseType();
+    }
+
+    /**
+     * Create an instance of {@link QuitRequestType }
+     * 
+     */
+    public QuitRequestType createQuitRequestType() {
+        return new QuitRequestType();
+    }
+
+    /**
+     * Create an instance of {@link GetNextRequestResponseType }
+     * 
+     */
+    public GetNextRequestResponseType createGetNextRequestResponseType() {
+        return new GetNextRequestResponseType();
     }
 
     /**
@@ -207,6 +185,15 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "GetNextRequest")
     public JAXBElement<GetNextRequestType> createGetNextRequest(GetNextRequestType value) {
         return new JAXBElement<GetNextRequestType>(_GetNextRequest_QNAME, GetNextRequestType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "SessionId")
+    public JAXBElement<String> createSessionId(String value) {
+        return new JAXBElement<String>(_SessionId_QNAME, String.class, null, value);
     }
 
 }

@@ -42,6 +42,20 @@
     </bindings>
     
     <!-- wsdl:portType operation customization -->
+    <bindings node="wsdl:definitions/wsdl:portType[@name='STALPortType']/wsdl:operation[@name='connect']">
+        <!-- rename method name -->
+        <method name="connect">
+            <javadoc>Initial connection, get the first request.</javadoc>
+        </method>
+        
+        <!-- rename method params -->
+        <parameter part="wsdl:definitions/wsdl:message[@name='ConnectRequest']/wsdl:part[@name='part1']" name="sessionId" />
+        
+        <!-- override default settings -->
+        <enableWrapperStyle>true</enableWrapperStyle>
+        <enableAsyncMapping>false</enableAsyncMapping>
+    </bindings>
+    
     <bindings node="wsdl:definitions/wsdl:portType[@name='STALPortType']/wsdl:operation[@name='nextRequest']">
         <!-- rename method name -->
         <method name="getNextRequest">

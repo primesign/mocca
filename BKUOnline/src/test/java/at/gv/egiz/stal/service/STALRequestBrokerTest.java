@@ -32,6 +32,13 @@ import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignResponse;
 import at.gv.egiz.stal.SignRequest;
+import at.gv.egiz.stal.service.types.InfoboxReadRequestType;
+import at.gv.egiz.stal.service.types.InfoboxReadResponseType;
+import at.gv.egiz.stal.service.types.QuitRequestType;
+import at.gv.egiz.stal.service.types.RequestType;
+import at.gv.egiz.stal.service.types.ResponseType;
+import at.gv.egiz.stal.service.types.SignRequestType;
+import at.gv.egiz.stal.service.types.SignResponseType;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -277,19 +284,19 @@ public class STALRequestBrokerTest {
         public void run() {
             try {
                 log.debug("calling stal.nextRequest(oldResponse)");
-                STALResponse oldResp = new InfoboxReadResponse();
-                List<STALRequest> requests = stal.nextRequest(Collections.singletonList(oldResp));
+                ResponseType oldResp = new InfoboxReadResponseType();
+                List<RequestType> requests = stal.nextRequest(Collections.singletonList(oldResp));
                 log.debug("got " + requests.size() + " requests. processing...");
                 Thread.sleep(1);
-                List<STALResponse> responses = new ArrayList<STALResponse>();
-                for (STALRequest request : requests) {
-                    if (request instanceof InfoboxReadRequest) {
+                List<ResponseType> responses = new ArrayList<ResponseType>();
+                for (RequestType request : requests) {
+                    if (request instanceof InfoboxReadRequestType) {
                       log.debug("received UNEXPECTED READINFOBOX request");
                       
-                        InfoboxReadResponse r = new InfoboxReadResponse();
+                        InfoboxReadResponseType r = new InfoboxReadResponseType();
                         r.setInfoboxValue("dummyInfobox".getBytes());
                         responses.add(r);
-                    } else if (request instanceof SignRequest) {
+                    } else if (request instanceof SignRequestType) {
 
                       log.debug("received UNEXPECTED SIGN request");
                       
@@ -304,10 +311,10 @@ public class STALRequestBrokerTest {
                         log.debug("got HashDataInput " + new String(data));
 
 
-                        SignResponse r = new SignResponse();
+                        SignResponseType r = new SignResponseType();
                         r.setSignatureValue("dummySignature".getBytes());
                         responses.add(r);
-                    } else if (request instanceof QuitRequest) {
+                    } else if (request instanceof QuitRequestType) {
                         log.debug("received EXPECTED QUIT request");
                         return;
                     }
@@ -319,8 +326,8 @@ public class STALRequestBrokerTest {
 //                }
                 log.debug("calling stal.nextRequest with " + responses.size() + " responses");
                 requests = stal.nextRequest(responses);
-                for (STALRequest request : requests) {
-                    if (request instanceof QuitRequest) {
+                for (RequestType request : requests) {
+                    if (request instanceof QuitRequestType) {
                         log.debug("got QUIT request");
                     } else {
                         log.debug("expected QUIT request, got " + request.getClass().getName());
@@ -342,16 +349,16 @@ public class STALRequestBrokerTest {
             try {
                 // first call w/ empty response list
                 log.debug("calling stal.nextRequest");
-                List<STALRequest> requests = stal.nextRequest(null); //new ArrayList<ResponseType>());
+                List<RequestType> requests = stal.nextRequest(null); //new ArrayList<ResponseType>());
                 log.debug("got " + requests.size() + " requests. processing...");
                 Thread.sleep(1);
-                List<STALResponse> responses = new ArrayList<STALResponse>();
-                for (STALRequest request : requests) {
-                    if (request instanceof InfoboxReadRequest) {
-                        InfoboxReadResponse r = new InfoboxReadResponse();
+                List<ResponseType> responses = new ArrayList<ResponseType>();
+                for (RequestType request : requests) {
+                    if (request instanceof InfoboxReadRequestType) {
+                        InfoboxReadResponseType r = new InfoboxReadResponseType();
                         r.setInfoboxValue("dummyInfobox".getBytes());
                         responses.add(r);
-                    } else if (request instanceof SignRequest) {
+                    } else if (request instanceof SignRequestType) {
 
                         log.debug("calling stal.getCurrentHashDataInputCallback");
                         List<HashDataInput> hdis = stal.getHashDataInput();
@@ -364,10 +371,10 @@ public class STALRequestBrokerTest {
                         log.debug("got HashDataInput " + new String(data));
 
 
-                        SignResponse r = new SignResponse();
+                        SignResponseType r = new SignResponseType();
                         r.setSignatureValue("dummySignature".getBytes());
                         responses.add(r);
-                    } else if (request instanceof QuitRequest) {
+                    } else if (request instanceof QuitRequestType) {
                         log.debug("received UNEXPECTED QUIT request");
                         return;
                     }
@@ -379,8 +386,8 @@ public class STALRequestBrokerTest {
 //                }
                 log.debug("calling stal.nextRequest with " + responses.size() + " responses");
                 requests = stal.nextRequest(responses);
-                for (STALRequest request : requests) {
-                    if (request instanceof QuitRequest) {
+                for (RequestType request : requests) {
+                    if (request instanceof QuitRequestType) {
                         log.debug("got QUIT request");
                     } else {
                         log.debug("expected QUIT request, got " + request.getClass().getName());
@@ -401,12 +408,12 @@ public class STALRequestBrokerTest {
             try {
                 // first call w/ empty response list
                 log.debug("calling stal.nextRequest");
-                List<STALRequest> requests = stal.nextRequest(null); //new ArrayList<ResponseType>());
+                List<RequestType> requests = stal.nextRequest(null); //new ArrayList<ResponseType>());
                 log.debug("got " + requests.size() + " requests. processing...");
                 Thread.sleep(1);
-                for (STALRequest request : requests) {
+                for (RequestType request : requests) {
 //                    if (request instanceof InfoboxReadRequest) {
-                    if (request instanceof SignRequest) {
+                    if (request instanceof SignRequestType) {
                         log.debug("calling stal.getCurrentHashDataInputCallback");
                         List<HashDataInput> hdis = stal.getHashDataInput();
                         assertNotNull(hdis);
@@ -416,7 +423,7 @@ public class STALRequestBrokerTest {
                         byte[] data = new byte[hd.available()];
                         hd.read(data);
                         log.debug("got HashDataInput " + new String(data));
-                    } else if (request instanceof QuitRequest) {
+                    } else if (request instanceof QuitRequestType) {
                         log.debug("received UNEXPECTED QUIT requests");
                         return;
                     }

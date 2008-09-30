@@ -22,8 +22,8 @@ package at.gv.egiz.stal.service.impl;
 
 import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.STAL;
-import at.gv.egiz.stal.STALRequest;
-import at.gv.egiz.stal.STALResponse;
+import at.gv.egiz.stal.service.types.RequestType;
+import at.gv.egiz.stal.service.types.ResponseType;
 import java.util.List;
 
 /**
@@ -35,7 +35,9 @@ public interface STALRequestBroker extends STAL {
     public static final int ERR_6000 = 6000;
     public static final long DEFAULT_TIMEOUT_MS = 1000*60*5; //5mn
 
-    public List<STALRequest> nextRequest(List<STALResponse> response);
+    public List<RequestType> connect();
+    
+    public List<RequestType> nextRequest(List<ResponseType> response);
 
     public List<HashDataInput> getHashDataInput();
 }
