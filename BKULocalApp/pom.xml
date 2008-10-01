@@ -28,76 +28,41 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
+		 <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>at.gv.egiz.bku.local.app.BKULauncher</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
 			<plugin>
-				<artifactId>maven-dependency-plugin
-				</artifactId>
-				<executions>
-					<execution>
-						<id>copywar</id>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>at.gv.egiz</groupId>
-									<artifactId>BKULocal</artifactId>
-									<version>1.0-SNAPSHOT</version>
-									<type>war</type>
-								</artifactItem>
-							</artifactItems>
-							<outputDirectory>
-								${project.build.directory}/classes
-							</outputDirectory>
-						</configuration>
-					</execution>
-					<execution>
-						<id>unpack-dependencies</id>
-						<goals>
-							<goal>unpack-dependencies</goal>
-						</goals>
-						<configuration>
-							<excludes>javax/xml/crypto/**, demo/**,
-								junit/**, w3/**, org/etsi/**, META-INF/**</excludes>
-							<outputDirectory>${project.build.directory}/classes</outputDirectory>
-							<overWriteReleases>true</overWriteReleases>
-							<overWriteSnapshots>true</overWriteSnapshots>
-						</configuration>
-					</execution>
-
-				</executions>
+				<artifactId>maven-dependency-plugin</artifactId>
+				 <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>false</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution>
+        </executions>
 			</plugin>
-
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<archive>
-						<addMavenDescriptor>false</addMavenDescriptor>
-						<index>false</index>
-						<manifest>
-							<addClasspath>false</addClasspath>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-						</manifest>
-					</archive>
-					<alias>test-applet signer</alias>
-					<keystore>./keystore.ks</keystore>
-					<storepass>storepass</storepass>
-					<keypass>keypass</keypass>
-					<verify>true</verify>
-				</configuration>
-			</plugin>
-
 		</plugins>
+
+
 	</build>
 	<dependencies>
-	
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>

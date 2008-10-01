@@ -150,7 +150,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
 //                    reqMon.setHashDataInput(null);
                     requests.clear(); //TODO sync on requests?
                     hashDataInputs.clear();
-                    return Collections.singletonList((STALResponse) new ErrorResponse(ERR_6000));
+                    return Collections.singletonList((STALResponse) new ErrorResponse(ERR_4500));
                 }
             }
             log.trace("consuming responses");

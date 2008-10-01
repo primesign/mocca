@@ -2,6 +2,8 @@ package at.gv.egiz.bku.local.app;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,7 +14,6 @@ import org.mortbay.jetty.handler.DefaultHandler;
 import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.security.SslSocketConnector;
-import org.mortbay.jetty.webapp.WebAppClassLoader;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.mortbay.thread.QueuedThreadPool;
 
@@ -26,8 +27,6 @@ public class Container {
   }
 
   public void init() {
-    Thread.currentThread().setContextClassLoader(ClassLoader.getSystemClassLoader());
-   log.debug("-----------------> "+ClassLoader.getSystemClassLoader());
     server = new Server();
     QueuedThreadPool qtp = new QueuedThreadPool();
     qtp.setMaxThreads(5);
@@ -56,21 +55,9 @@ public class Container {
     WebAppContext webappcontext = new WebAppContext();
     webappcontext.setContextPath("/");
     webappcontext.setExtractWAR(false);
-    
-    File tmpDir = new File(System.getProperty("user.home") + "/.mocca/tmp");
-    // tmpDir.mkdirs();
-    // webappcontext.setTempDirectory(tmpDir);
-    try {
-      File f = new File(System.getProperty("user.home")
-          + "/.mocca/war/mocca.war");
-      log.debug("Deploying war: " + f.getCanonicalPath());
-      if (!f.exists()) {
-        log.error("WAR file does not exist, cannot run MOCCA");
-      }
-      webappcontext.setWar(f.getParent());
-    } catch (IOException e) {
-      log.error(e);
-    }
+    System.out.println(getClass().getClassLoader().getResource("log4j.properties"));
+    webappcontext.setWar("BKULocal-1.0-SNAPSHOT.war");
+
     handlers.setHandlers(new Handler[] { webappcontext, new DefaultHandler() });
 
     server.setHandler(handlers);

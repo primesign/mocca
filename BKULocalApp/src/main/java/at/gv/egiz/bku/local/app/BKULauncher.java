@@ -168,20 +168,6 @@ public class BKULauncher implements BKUControllerInterface {
     }
   }
 
-  public void jwsHack() {
-    InputStream is = getClass().getClassLoader().getResourceAsStream(
-        "BKULocal-1.0-SNAPSHOT.war");
-    File f = new File(System.getProperty("user.home") + "/.mocca/war");
-    f.mkdirs();
-    try {
-      OutputStream os = new FileOutputStream(new File(f, "mocca.war"));
-      StreamUtil.copyStream(is, os);
-      os.close();
-    } catch (Exception e) {
-      log.error(e);
-    }
-  }
-
   /**
    * @param args
    */
@@ -189,7 +175,6 @@ public class BKULauncher implements BKUControllerInterface {
 
     try {
       BKULauncher launcher = new BKULauncher();
-      //launcher.jwsHack();
       launcher.checkConfig(args);
       launcher.startUpServer();
       launcher.initTrayIcon();

@@ -32,7 +32,7 @@ import at.gv.egiz.stal.STALFactory;
  */
 public class RequestBrokerSTALFactory implements STALFactory {
 
-  private static long timeout;
+  private static long timeout = -1;
   
     @Override
     public STAL createSTAL() {

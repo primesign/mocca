@@ -60,6 +60,7 @@ public class SpringConfigurator extends Configurator implements
     if ((appletTimeout != null)) {
       try {
         long ato = Long.parseLong(appletTimeout);
+        log.debug("Setting applet timeout to:"+ato);
         RequestBrokerSTALFactory.setTimeout(ato);
       } catch (NumberFormatException nfe) {
         log.error("Cannot set Applettimeout", nfe);
