@@ -25,7 +25,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import at.gv.egiz.bku.accesscontroller.SecurityManagerFacade;
-import at.gv.egiz.bku.online.conf.Configurator;
+import at.gv.egiz.bku.conf.Configurator;
 
 public class SpringSecurityManager extends SecurityManagerFacade implements
 		ResourceLoaderAware {
@@ -60,5 +60,4 @@ public class SpringSecurityManager extends SecurityManagerFacade implements
 	public void setResourceLoader(ResourceLoader loader) {
 		this.resourceLoader = loader;
 	}
-
 }

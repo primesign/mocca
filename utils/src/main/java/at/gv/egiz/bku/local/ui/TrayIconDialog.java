@@ -107,7 +107,7 @@ public class TrayIconDialog implements TrayIconDialogInterface {
       if (isSupported) {
         SystemTray tray = SystemTray.getSystemTray();
         Image image = ImageIO.read(getClass().getClassLoader()
-            .getResourceAsStream("at/gv/egiz/bku/local/ui/chipperling.png"));
+            .getResourceAsStream("at/gv/egiz/bku/local/ui/favicon.png"));
         PopupMenu popup = new PopupMenu();
         MenuItem exitItem = new MenuItem(resourceBundel
             .getString("TrayMenu.Shutdown"));

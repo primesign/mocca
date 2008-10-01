@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import at.gv.egiz.bku.binding.HTTPBindingProcessor;
 import at.gv.egiz.bku.binding.HttpUtil;
 import at.gv.egiz.bku.binding.IdFactory;
-import at.gv.egiz.bku.online.conf.Configurator;
+import at.gv.egiz.bku.conf.Configurator;
 
 /**
  * Delivers the result to the browser
@@ -108,8 +108,8 @@ public class ResultServlet extends SpringBKUServlet {
     resp.setHeader("Cache-Control", "no-store"); // HTTP 1.1
     resp.setHeader("Pragma", "no-cache"); // HTTP 1.0
     resp.setDateHeader("Expires", 0);
-    if (Configurator.getInstance().getProperty(USER_AGENT_PROPERTY_KEY) != null) {
-      resp.setHeader(HttpUtil.HTTP_HEADER_USER_AGENT, Configurator.getInstance().getProperty(
+    if (configurator.getProperty(USER_AGENT_PROPERTY_KEY) != null) {
+      resp.setHeader(HttpUtil.HTTP_HEADER_USER_AGENT, configurator.getProperty(
           USER_AGENT_PROPERTY_KEY));
     } else {
       resp.setHeader(HttpUtil.HTTP_HEADER_USER_AGENT,

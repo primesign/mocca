@@ -21,6 +21,7 @@
   <bean id="STALFactory" class="at.gv.egiz.bku.local.stal.SMCCSTALFactory"
     scope="singleton" />
   
+   
   <bean id="bindingProcessorManager" class="at.gv.egiz.bku.binding.BindingProcessorManagerImpl"
     scope="singleton">
     <constructor-arg ref="STALFactory"></constructor-arg>
@@ -47,10 +48,11 @@
   </bean>
   
   <!-- Configure Configuration -->
-  <bean id="configurator" factory-method="getInstance" class="at.gv.egiz.bku.local.conf.SpringConfigurator"
+  
+  <bean id="configurator" class="at.gv.egiz.bku.local.conf.SpringConfigurator"
      init-method="configure">
     <!-- <property name="resource" value="classpath:at/gv/egiz/bku/local/conf/defaultConf.properties"/>  -->
-    <property name="resource" value="classpath:at/gv/egiz/bku/local/conf/defaultConf.properties"/>
+    <property name="resource" value="file:${user.home}/.mocca/conf/defaultConf.properties"/>
   </bean>
  
  

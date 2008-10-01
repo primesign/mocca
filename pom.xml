@@ -19,6 +19,7 @@
     <module>STALService</module>
     <module>BKUCommonGUI</module>
     <module>BKUViewer</module>
+    <module>BKULocalApp</module>
   </modules>
   <developers>
   	<developer>
