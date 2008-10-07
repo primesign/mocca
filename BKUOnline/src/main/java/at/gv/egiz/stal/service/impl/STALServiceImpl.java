@@ -191,7 +191,7 @@ public class STALServiceImpl implements STALPortType {
     if (TEST_SESSION_ID.equals(sessionId)) {
       log.debug("Received GetHashDataInput for session " + TEST_SESSION_ID + ", return DummyHashDataInput");
       GetHashDataInputResponseType.Reference ref = new GetHashDataInputResponseType.Reference();
-      ref.setID("Reference-" + TEST_SESSION_ID + "-001");
+      ref.setID("signed-data-reference-0-1214921968-27971781-24309"); //Reference-" + TEST_SESSION_ID + "-001");
       ref.setMimeType("text/plain");
       
       Charset charset;

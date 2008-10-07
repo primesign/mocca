@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -58,15 +59,18 @@ public class WSSignRequestHandler extends SignRequestHandler {
     GetHashDataInputType request = new GetHashDataInputType();
     request.setSessionId(sessId);
 
-    HashMap<String, ReferenceType> idRefMap = new HashMap<String, ReferenceType>();
-    for (ReferenceType reference : signedReferences) {
+    HashMap<String, ReferenceType> idSignedRefMap = new HashMap<String, ReferenceType>();
+    for (ReferenceType signedRef : signedReferences) {
       //don't get Manifest, QualifyingProperties, ...
-      if (reference.getType() == null) {
-        String referenceId = reference.getId();
-        if (referenceId != null) {
-          idRefMap.put(referenceId, reference);
+      if (signedRef.getType() == null) {
+        String signedRefId = signedRef.getId();
+        if (signedRefId != null) {
+          if (log.isTraceEnabled()) {
+            log.trace("requesting hashdata input for reference " + signedRefId);
+          }
+          idSignedRefMap.put(signedRefId, signedRef);
           GetHashDataInputType.Reference ref = new GetHashDataInputType.Reference();
-          ref.setID(referenceId);
+          ref.setID(signedRefId);
           request.getReference().add(ref);
 
         } else {
@@ -76,31 +80,52 @@ public class WSSignRequestHandler extends SignRequestHandler {
     }
 
     if (log.isDebugEnabled()) {
-      log.debug("Calling GetHashDataInput for session " + sessId);
+      log.debug("Calling GetHashDataInput for " + request.getReference().size() + " references in session " + sessId);
     }
     GetHashDataInputResponseType response = stalPort.getHashDataInput(request);
     ArrayList<HashDataInput> hashDataInputs = new ArrayList<HashDataInput>();
 
+    //hashdata inputs returned from service
+    HashMap<String, GetHashDataInputResponseType.Reference> idRefMap = new HashMap<String, GetHashDataInputResponseType.Reference>();
     for (GetHashDataInputResponseType.Reference reference : response.getReference()) {
-
       String id = reference.getID();
       byte[] hdi = reference.getValue();
       if (hdi == null) {
-        throw new Exception("Failed to resolve digest value for reference " + id);
+        throw new Exception("Did not receive hashdata input for reference " + id);
       }
+      idRefMap.put(id, reference);
+    }
+    
+    for (String signedRefId : idSignedRefMap.keySet()) {
+      log.info("validating hashdata input for reference " + signedRefId);
+      
+      GetHashDataInputResponseType.Reference reference = idRefMap.get(signedRefId);
+      if (reference == null) {
+        throw new Exception("No hashdata input for reference " + signedRefId + " returned by service");
+      }
+      
+//    }
+//    
+//    for (GetHashDataInputResponseType.Reference reference : response.getReference()) {
+//
+//      String id = reference.getID();
+      byte[] hdi = reference.getValue();
       String mimeType = reference.getMimeType();
       String encoding = reference.getEncoding();
 
+      if (hdi == null) {
+        throw new Exception("No hashdata input provided for reference " + signedRefId);
+      }
       if (log.isDebugEnabled()) {
-        log.debug("Got HashDataInput " + id + " (" + mimeType + ";" + encoding + ")");
+        log.debug("Got HashDataInput " + signedRefId + " (" + mimeType + ";" + encoding + ")");
       }
 
-      ReferenceType dsigRef = idRefMap.get(id);
+      ReferenceType dsigRef = idSignedRefMap.get(signedRefId);
       DigestMethodType dm = dsigRef.getDigestMethod();
+      
       if (dm == null) {
-        throw new Exception("Failed to verify digest value for reference " + id + ": no digest algorithm");
+        throw new Exception("Failed to verify digest value for reference " + signedRefId + ": no digest algorithm");
       }
-      //TODO 
       String mdAlg = dm.getAlgorithm();
       if ("http://www.w3.org/2000/09/xmldsig#sha1".equals(mdAlg))
         mdAlg = "SHA-1";
@@ -120,15 +145,18 @@ public class WSSignRequestHandler extends SignRequestHandler {
         mdAlg = "MD5";
       else if ("http://www.w3.org/2001/04/xmlenc#ripemd160 ".equals(mdAlg))
         mdAlg = "RipeMD-160";
+      else {
+        throw new Exception("Failed to verify digest value for reference " + signedRefId + ": unsupported digest algorithm " + mdAlg);
+      }
       MessageDigest md = MessageDigest.getInstance(mdAlg);
       byte[] hdiDigest = md.digest(hdi);
       if (log.isDebugEnabled())
         log.debug("Comparing digest values... "); 
       if (!Arrays.equals(hdiDigest, dsigRef.getDigestValue())) {
         log.error("digest values differ: " + new String(hdiDigest) + ", " + new String(dsigRef.getDigestValue()));
-        throw new DigestException("Bad digest value for reference " + id + ": " + dsigRef.getDigestValue());
+        throw new DigestException("Bad digest value for reference " + signedRefId + ": " + new String(dsigRef.getDigestValue()));
       }
-      hashDataInputs.add(new ByteArrayHashDataInput(hdi, id, mimeType, encoding));
+      hashDataInputs.add(new ByteArrayHashDataInput(hdi, signedRefId, mimeType, encoding));
     }
     return hashDataInputs;
   }
