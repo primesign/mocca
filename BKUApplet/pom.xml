@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>bku</artifactId>
     <groupId>at.gv.egiz</groupId>
@@ -11,7 +10,6 @@
   <artifactId>BKUApplet</artifactId>
   <name>BKU Applet</name>
   <version>1.0-SNAPSHOT</version>
-  <description />
   <build>
     <plugins>
       <plugin>
@@ -81,6 +79,30 @@
           <verify>true</verify>
         </configuration>
       </plugin>
+      <plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copytestlibs</id>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>commons-logging</groupId>
+									<artifactId>commons-logging</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>iaik</groupId>
+									<artifactId>iaik_jce_me4se</artifactId>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${project.build.directory}/test-libs</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
     </plugins>
   </build>
   <dependencies>

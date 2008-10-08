@@ -19,12 +19,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>MOCCA Appletpage</title>
-<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>MOCCA Appletpage</title>
+        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+  	<script type="text/javascript" src="js/deployJava.js"></script>
 </head>
 <body>
-<script src="./js/deployJava.js"></script>
 <script>
 	if (!deployJava.versionCheck('1.6.0_04+')) {
 		document
@@ -34,8 +34,8 @@
 			codebase :'applet',
 			code :'at.gv.egiz.bku.online.applet.BKUApplet.class',
 			archive :'BKUApplet-1.0-SNAPSHOT.jar, commons-logging-1.1.1.jar, iaik_jce_me4se-3.04.jar',
-			width :400,
-			height :200
+			width :190,
+			height :130
 		};
 		var parameters = {
 			WSDL_URL :'../stal?wsdl',
@@ -46,8 +46,8 @@
 		deployJava.runApplet(attributes, parameters, version);
 	}
 </script>
-<br />
+<!--br />
 <hr/>
-Powered by <img src="img/mocca-t_s.png" alt="mocca-logo" width="100">
+Powered by <img src="img/mocca-t_s.png" alt="mocca-logo" width="100"-->
 </body>
 </html>

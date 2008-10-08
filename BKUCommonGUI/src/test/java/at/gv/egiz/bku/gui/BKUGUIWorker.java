@@ -168,9 +168,9 @@ public class BKUGUIWorker implements Runnable {
         //
         List<HashDataInput> signedRefs = new ArrayList();
         signedRefs.add(signedRef1);
-                    signedRefs.add(signedRef2);
-                    signedRefs.add(signedRef3);
-                    signedRefs.add(signedRef4);
+//                    signedRefs.add(signedRef2);
+//                    signedRefs.add(signedRef3);
+//                    signedRefs.add(signedRef4);
 //                    signedRefs.add(signedRef4);
 //                    signedRefs.add(signedRef4);
 //                    signedRefs.add(signedRef4);
@@ -182,62 +182,61 @@ public class BKUGUIWorker implements Runnable {
 
 
 
-//        gui.showWelcomeDialog();
-//
-//        Thread.sleep(2000);
+        gui.showWelcomeDialog();
+
+        Thread.sleep(2000);
         
-//        gui.showWaitDialog(null);
-//        
-//        Thread.sleep(1000);
-//        
-//        gui.showWaitDialog("test");
-//        
-//        Thread.sleep(1000);
+        gui.showWaitDialog(null);
+        
+        Thread.sleep(1000);
+        
+        gui.showWaitDialog("test");
+        
+        Thread.sleep(1000);
           
 
-//            gui.showInsertCardDialog(cancelListener, "cancel");
-//
-//            Thread.sleep(2000);
-//            
-//            gui.showCardNotSupportedDialog(cancelListener, "cancel");
-//            
-//            Thread.sleep(2000);
+            gui.showInsertCardDialog(cancelListener, "cancel");
 
-//            PINSpec cardPinSpec = new PINSpec(4, 4, "[0-9]", "Karten-PIN");
-////            
-//            gui.showCardPINDialog(cardPinSpec, okListener, "ok", cancelListener, "cancel");
-//            
-//            Thread.sleep(2000);
-//
+            Thread.sleep(2000);
+            
+            gui.showCardNotSupportedDialog(cancelListener, "cancel");
+            
+            Thread.sleep(2000);
 
-//    gui.showSignaturePINDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
+            PINSpec cardPinSpec = new PINSpec(4, 4, "[0-9]", "Karten-PIN");
+            
+            gui.showCardPINDialog(cardPinSpec, okListener, "ok", cancelListener, "cancel");
+            
+            Thread.sleep(2000);
 
-//            Thread.sleep(2000);
+            gui.showSignaturePINDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
 
-//            gui.showSignaturePINRetryDialog(signPinSpec, 2, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
-//
-//            Thread.sleep(2000);
-////            
-//            gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, new Object[] {"Testfehler"}, null, null);
-//            
-//            Thread.sleep(2000);
-//            
+            Thread.sleep(4000);
+
+            gui.showSignaturePINRetryDialog(signPinSpec, 2, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
+
+            Thread.sleep(2000);
+            
+            gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, new Object[] {"Testfehler"}, null, null);
+            
+            Thread.sleep(2000);
               
             gui.showErrorDialog("error.test", new Object[] {"Testfehler", "noch ein TestFehler"}); 
 
             Thread.sleep(2000);
-//            
+            
             gui.showErrorDialog("error.no.hashdata", null); 
             
             Thread.sleep(2000);
-//          
+          
             gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, new Object[] {"Testfehler"}); 
 
             Thread.sleep(2000);
-//          
+          
             gui.showErrorDialog("error.unknown", null); 
 
 
+//            gui.showTextPlainHashDataInput("hallo,\n welt!", "12345", null, "cancel", null, "save");
 //            gui.showTextPlainHashDataInput("hallo,\n welt!", "12345", null, "cancel", null, "save");
 //            Thread.sleep(2000);
 

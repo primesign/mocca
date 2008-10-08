@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>bkuiframe</title>
+    <link rel="stylesheet" type="text/css" href="FinanzOnlineLogin/fon.css">
+    <link rel="stylesheet" type="text/css" href="FinanzOnlineLogin/index.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body>
+    <div id="tab" align="center">
+      <img src="FinanzOnlineLogin/buergerkarte.gif" alt="Logo" onMouseOver="document.slform.submit();">
+      </img>
+      <FORM action="https://moa.brz.gv.at:443/moa-id-auth/StartAuthentication?Target=SA&OA=https://moa.brz.gv.at/finon-prod/fon/buergerkartenlogin&Template=http://moa.brz.gv.at/oa/MOAFinanzOnlineAuthentication.htm" method="POST" name="slform">
+        <input type="hidden" name="show" value="false">
+        <input type="hidden" name="bkuURI" value="https://127.0.0.1:3496/BKUOnline-1.0-SNAPSHOT/https-security-layer-request">
+      </FORM>
+    </div>
+    <div id="tab">
+      <a href="https://finanzonline.bmf.gv.at/fon/html/BK_Info.htm" class="link_nav" target="_parent">Informationen zur Bürgerkarte</a>
+    </div>
+  </body>
+</html>
