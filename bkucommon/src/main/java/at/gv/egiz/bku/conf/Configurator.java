@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
@@ -18,27 +19,18 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.LDAPCertStoreParameters;
-import java.security.cert.PKIXBuilderParameters;
-import java.security.cert.TrustAnchor;
-import java.security.cert.X509CertSelector;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
-import javax.net.ssl.CertPathTrustManagerParameters;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManager;
-import javax.net.ssl.ManagerFactoryParameters;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.logging.Log;
@@ -55,6 +47,8 @@ public abstract class Configurator {
 
   protected Properties properties;
 
+  protected CertValidator certValidator;
+
   protected Configurator() {
   }
 
@@ -64,9 +58,9 @@ public abstract class Configurator {
 
   protected abstract InputStream getManifest();
 
-  private Set<TrustAnchor> getCACerts() throws IOException,
+  private X509Certificate[] getCACerts() throws IOException,
       CertificateException {
-    Set<TrustAnchor> caCerts = new HashSet<TrustAnchor>();
+    List<X509Certificate> caCerts = new ArrayList<X509Certificate>();
     File caDir = getCADir();
     if (caDir != null) {
       if (!caDir.isDirectory()) {
@@ -81,13 +75,12 @@ public abstract class Configurator {
           X509Certificate cert = (X509Certificate) cf.generateCertificate(fis);
           fis.close();
           log.debug("Adding trusted cert " + cert.getSubjectDN());
-          caCerts.add(new TrustAnchor(cert, null));
+          caCerts.add(cert);
         } catch (Exception e) {
           log.error("Cannot add trusted ca", e);
         }
       }
-      return caCerts;
-
+      return  caCerts.toArray(new X509Certificate[caCerts.size()]);
     } else {
       log.warn("No CA certificates configured");
     }
@@ -239,69 +232,33 @@ public abstract class Configurator {
   }
 
   public void configureSSL() {
-    Set<TrustAnchor> caCerts = null;
+    X509Certificate[] caCerts = null;
     try {
       caCerts = getCACerts();
     } catch (Exception e1) {
       log.error("Cannot load CA certificates", e1);
     }
-    List<CertStore> certStoreList = null;
+    String disableAll = getProperty("SSL.disableAllChecks");
     try {
-      certStoreList = getCertstore();
-    } catch (Exception e1) {
-      log.error("Cannot load certstore certificates", e1);
-    }
-    String aia = getProperty("SSL.useAIA");
-    if ((aia == null) || (aia.equals(""))) {
-      System.setProperty("com.sun.security.enableAIAcaIssuers", "true");
-    } else {
-      System.setProperty("com.sun.security.enableAIAcaIssuers", aia);
-    }
-    String lifetime = getProperty("SSL.cache.lifetime");
-    if ((lifetime == null) || (lifetime.equals(""))) {
-      System.setProperty("sun.security.certpath.ldap.cache.lifetime", "0");
-    } else {
-      System.setProperty("sun.security.certpath.ldap.cache.lifetime", lifetime);
-    }
-    X509CertSelector selector = new X509CertSelector();
-    PKIXBuilderParameters pkixParams;
-    try {
-      pkixParams = new PKIXBuilderParameters(caCerts, selector);
-      if ((getProperty("SSL.doRevocationChecking") != null)
-          && (Boolean.valueOf(getProperty("SSL.doRevocationChecking")))) {
-        log.info("Enable revocation checking");
-        System.setProperty("com.sun.security.enableCRLDP", "true");
-        Security.setProperty("ocsp.enable", "true");
-      } else {
-        log.warn("Revocation checking disabled");
-      }
-      for (CertStore cs : certStoreList) {
-        pkixParams.addCertStore(cs);
-      }
-      ManagerFactoryParameters trustParams = new CertPathTrustManagerParameters(
-          pkixParams);
-      TrustManagerFactory trustFab;
-      trustFab = TrustManagerFactory.getInstance("PKIX");
-      trustFab.init(trustParams);
       KeyManager[] km = null;
       SSLContext sslCtx = SSLContext
           .getInstance(getProperty("SSL.sslProtocol"));
-      String disableAll = getProperty("SSL.disableAllChecks");
       if ((disableAll != null) && (Boolean.parseBoolean(disableAll))) {
         log.warn("--------------------------------------");
         log.warn(" Disabling SSL Certificate Validation ");
         log.warn("--------------------------------------");
 
-        sslCtx.init(km, new TrustManager[] { new MyTrustManager(caCerts,
-            certStoreList) }, null);
+        sslCtx.init(km,
+            new TrustManager[] { new MyAlwaysTrustManager(caCerts) }, null);
       } else {
-        sslCtx.init(km, trustFab.getTrustManagers(), null);
+        MyPKITrustManager pkixTM = new MyPKITrustManager(certValidator,
+            getCertDir(), getCADir(), caCerts);
+        sslCtx.init(km, new TrustManager[] { pkixTM }, null);
       }
       HttpsURLConnection.setDefaultSSLSocketFactory(sslCtx.getSocketFactory());
     } catch (Exception e) {
       log.error("Cannot configure SSL", e);
     }
-    String disableAll = getProperty("SSL.disableAllChecks");
     if ((disableAll != null) && (Boolean.parseBoolean(disableAll))) {
       log.warn("---------------------------------");
       log.warn(" Disabling Hostname Verification ");
@@ -315,17 +272,72 @@ public abstract class Configurator {
     }
   }
 
-  private static class MyTrustManager implements X509TrustManager {
-    private static Log log = LogFactory.getLog(MyTrustManager.class);
+  
+  
+  public void setCertValidator(CertValidator certValidator) {
+    this.certValidator = certValidator;
+  }
+
+  private static class MyPKITrustManager implements X509TrustManager {
+    private static Log log = LogFactory.getLog(MyPKITrustManager.class);
+
+    private CertValidator certValidator;
     private X509Certificate[] trustedCerts;
 
-    public MyTrustManager(Set<TrustAnchor> caCerts, List<CertStore> cs) {
-      trustedCerts = new X509Certificate[caCerts.size()];
+    public MyPKITrustManager(CertValidator cv, File certStore, File trustStore,
+        X509Certificate[] trustedCerts) {
+      certValidator = cv;
+      certValidator.init(certStore, trustStore);
+      this.trustedCerts = trustedCerts;
+    }
+
+    @Override
+    public void checkClientTrusted(X509Certificate[] chain, String authType)
+        throws CertificateException {
+      log.error("Did not expect this method to get called");
+      throw new CertificateException("Method not implemented");
+    }
+
+    private static iaik.x509.X509Certificate[] convertCerts(
+        X509Certificate[] certs) throws GeneralSecurityException {
+      iaik.x509.X509Certificate[] retVal = new iaik.x509.X509Certificate[certs.length];
       int i = 0;
-      for (Iterator<TrustAnchor> it = caCerts.iterator(); it.hasNext();) {
-        TrustAnchor ta = it.next();
-        trustedCerts[i++] = ta.getTrustedCert();
+      for (X509Certificate cert : certs) {
+        if (cert instanceof iaik.x509.X509Certificate) {
+          retVal[i++] = (iaik.x509.X509Certificate) cert;
+        } else {
+          retVal[i++] = new iaik.x509.X509Certificate(cert.getEncoded());
+        }
       }
+      return retVal;
+    }
+
+    @Override
+    public void checkServerTrusted(X509Certificate[] chain, String authType)
+        throws CertificateException {
+      try {
+        boolean valid = certValidator.isCertificateValid(Thread.currentThread()
+            .getName(), convertCerts(chain));
+        if (!valid) {
+          throw new CertificateException("Certificate not valid");
+        }
+      } catch (GeneralSecurityException e) {
+        throw new CertificateException(e);
+      }
+    }
+
+    @Override
+    public X509Certificate[] getAcceptedIssuers() {
+      return trustedCerts;
+    }
+  }
+
+  private static class MyAlwaysTrustManager implements X509TrustManager {
+    private static Log log = LogFactory.getLog(MyAlwaysTrustManager.class);
+    private X509Certificate[] trustedCerts;
+
+    public MyAlwaysTrustManager(X509Certificate[] trustedCerts) {
+      this.trustedCerts = trustedCerts;
     }
 
     @Override

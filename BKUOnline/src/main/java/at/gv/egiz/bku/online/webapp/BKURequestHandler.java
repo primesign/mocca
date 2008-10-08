@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.bku.binding.HTTPBindingProcessor;
 import at.gv.egiz.bku.binding.HttpUtil;
+import at.gv.egiz.bku.binding.IdFactory;
 import at.gv.egiz.org.apache.tomcat.util.http.AcceptLanguage;
 
 /**
@@ -51,7 +52,8 @@ public class BKURequestHandler extends SpringBKUServlet {
 		log.debug("Using locale: " + locale);
 		HttpSession session = req.getSession();
 		if (session != null) {
-			session.invalidate();
+		  log.warn("Already a session with id: "+session.getId()+ " active, deleting this one");
+		  getBindingProcessorManager().removeBindingProcessor(IdFactory.getInstance().createId(session.getId()));
 		}
 		String id = req.getSession(true).getId();
 		log.debug("Using session id: " + id);

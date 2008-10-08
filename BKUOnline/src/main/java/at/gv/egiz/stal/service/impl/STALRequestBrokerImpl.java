@@ -32,6 +32,7 @@ import at.gv.egiz.stal.service.types.QuitRequestType;
 import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
 import at.gv.egiz.stal.service.types.SignRequestType;
+import at.gv.egiz.stal.util.HashDataInputProxy;
 import at.gv.egiz.stal.util.STALTranslator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -108,7 +109,10 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                   req.setKeyIdentifier(((SignRequest) stalRequest).getKeyIdentifier());
                   req.setSignedInfo(((SignRequest) stalRequest).getSignedInfo());
                   requests.add(req);
-                  hashDataInputs.addAll(((SignRequest) stalRequest).getHashDataInput());
+                  for (HashDataInput hdi : ((SignRequest) stalRequest).getHashDataInput()) {
+                    hashDataInputs.add(new HashDataInputProxy(hdi));
+                  }
+                  //hashDataInputs.addAll(((SignRequest) stalRequest).getHashDataInput());
                   break;
                 } else if (stalRequest instanceof InfoboxReadRequest) {
                   log.trace("Received InfoboxReadRequest");

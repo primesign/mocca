@@ -45,9 +45,13 @@
 	</bean>
 
 	<!-- Configure Configuration -->
+	<bean id="certValidator" class="at.gv.egiz.bku.conf.CertValidatorImpl"></bean>
+	
+	
 	<bean id="configurator" class="at.gv.egiz.bku.online.conf.SpringConfigurator"
 		 init-method="configure" scope="singleton">
 		<property name="resource" value="classpath:at/gv/egiz/bku/online/conf/defaultConf.properties"/>
+		<property name="certValidator" ref="certValidator"></property>
 	</bean>
 	
 	<!-- Shutdown Event handler -->
