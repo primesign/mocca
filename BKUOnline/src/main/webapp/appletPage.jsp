@@ -25,6 +25,10 @@
   	<script type="text/javascript" src="js/deployJava.js"></script>
 </head>
 <body>
+<% int width= session.getAttribute("appletWidth") == null ? 190 : (Integer)session.getAttribute("appletWidth");
+   int height=session.getAttribute("appletHeight") == null ? 130 : (Integer)session.getAttribute("appletHeight");
+   String backgroundImg = (String) session.getAttribute("appletBackground");
+%>
 <script>
 	if (!deployJava.versionCheck('1.6.0_04+')) {
 		document
@@ -34,10 +38,11 @@
 			codebase :'applet',
 			code :'at.gv.egiz.bku.online.applet.BKUApplet.class',
 			archive :'BKUApplet-1.0-SNAPSHOT.jar, commons-logging-1.1.1.jar, iaik_jce_me4se-3.04.jar',
-			width :190,
-			height :130
+			width : <%= width %>,
+			height :<%= height %>
 		};
 		var parameters = {
+			background : <%= backgroundImg %>,
 			WSDL_URL :'../stal?wsdl',
 			SessionID : '<%= session.getId() %>',
 			redirectURL : '../bkuResult'
