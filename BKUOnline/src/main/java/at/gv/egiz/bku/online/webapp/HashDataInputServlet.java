@@ -5,11 +5,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,10 +21,12 @@ import org.apache.commons.logging.LogFactory;
 import at.gv.egiz.bku.binding.BindingProcessor;
 import at.gv.egiz.bku.binding.Id;
 import at.gv.egiz.bku.binding.IdFactory;
+import at.gv.egiz.bku.online.applet.BKUApplet;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 import at.gv.egiz.bku.utils.StreamUtil;
 import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.STAL;
+import at.gv.egiz.stal.service.STALService;
 import at.gv.egiz.stal.service.impl.STALRequestBroker;
 import at.gv.egiz.stal.service.impl.STALRequestBrokerImpl;
 import at.gv.egiz.stal.service.impl.STALServiceImpl;
@@ -30,6 +36,7 @@ public class HashDataInputServlet extends SpringBKUServlet {
   private static Log log = LogFactory.getLog(HashDataInputServlet.class);
 
   public HashDataInputServlet() {
+
   }
 
   private STALRequestBroker getSTAL(Id id) {
@@ -64,12 +71,16 @@ public class HashDataInputServlet extends SpringBKUServlet {
     List<HashDataInput> hdi = rb.getHashDataInput();
     log.debug("Got hashdata list with " + hdi.size() + " entries");
     String param = req.getParameter("number");
+    if ((param == null) && (hdi.size() > 1)) {
+      resp.sendRedirect("multiHashDataInput.html");
+      return;
+    }
     int num = 0;
     if (param != null) {
       log.debug("Got request for hashdata#" + num);
       num = Integer.parseInt(param);
     }
-    if ((hdi.size()  <= num) || (num < 0)){
+    if ((hdi.size() <= num) || (num < 0)) {
       log.warn("Requested hashdatainput exceeds listsize");
       resp.sendError(-1);
       return;

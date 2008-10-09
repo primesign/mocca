@@ -1,19 +1,19 @@
 /*
-* Copyright 2008 Federal Chancellery Austria and
-* Graz University of Technology
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright 2008 Federal Chancellery Austria and
+ * Graz University of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package at.gv.egiz.bku.smccstal;
 
 import java.util.ArrayList;
@@ -37,15 +37,19 @@ import at.gv.egiz.stal.SignRequest;
 
 public abstract class AbstractSMCCSTAL implements STAL {
   private static Log log = LogFactory.getLog(AbstractSMCCSTAL.class);
+  
+  public final static int DEFAULT_MAX_RETRIES = 3;
 
   protected Locale locale = Locale.getDefault();
-//  protected SMCCHelper smccHelper = new SMCCHelper();
+  // protected SMCCHelper smccHelper = new SMCCHelper();
   protected SignatureCard signatureCard = null;
   protected static Map<String, SMCCSTALRequestHandler> handlerMap = new HashMap<String, SMCCSTALRequestHandler>();
+  
+  protected int maxRetries = DEFAULT_MAX_RETRIES;
 
   static {
     addRequestHandler(InfoboxReadRequest.class, new InfoBoxReadRequestHandler());
-//    addRequestHandler(SignRequest.class, new SignRequestHandler());
+    // addRequestHandler(SignRequest.class, new SignRequestHandler());
   }
 
   /**
@@ -58,37 +62,61 @@ public abstract class AbstractSMCCSTAL implements STAL {
   protected abstract BKUGUIFacade getGUI();
 
   @Override
-  public List<STALResponse> handleRequest(
-      List<STALRequest> requestList) {
+  public List<STALResponse> handleRequest(List<STALRequest> requestList) {
     log.debug("Got request list containing " + requestList.size()
         + " STAL requests");
     List<STALResponse> responseList = new ArrayList<STALResponse>(requestList
         .size());
+
     for (STALRequest request : requestList) {
       log.info("Processing: " + request.getClass());
-      SMCCSTALRequestHandler handler = null;
-      handler = handlerMap.get(request.getClass().getSimpleName());
-      if (handler != null) {
-        if (handler.requireCard()) {
-          if (waitForCard()) {
-            responseList.add(new ErrorResponse(6001));
-            break;
+      int retryCounter = 0;
+      while (retryCounter < maxRetries) {
+        log.info("Number of retries: "+retryCounter);
+        SMCCSTALRequestHandler handler = null;
+        handler = handlerMap.get(request.getClass().getSimpleName());
+        if (handler != null) {
+          if (handler.requireCard()) {
+            if (waitForCard()) {
+              responseList.add(new ErrorResponse(6001));
+              break;
+            }
           }
-        }
-        try {
-          handler = handler.newInstance();
-          handler.init(signatureCard, getGUI());
-          STALResponse response = handler.handleRequest(request);
-          if (response != null) {
-            responseList.add(response);
+          try {
+            handler = handler.newInstance();
+            handler.init(signatureCard, getGUI());
+            STALResponse response = handler.handleRequest(request);
+            if (response != null) {
+              if (response instanceof ErrorResponse) {
+                log.info("Got an error response");
+                if (++retryCounter < maxRetries) {
+                  log.info("Retrying");
+                  signatureCard = null;
+                } else {
+                  responseList.add(response);
+                }
+              } else {
+                responseList.add(response);
+                retryCounter = Integer.MAX_VALUE;
+                break;
+              }
+            } else {
+              log.info("Got null response from handler, assuming quit");
+              retryCounter = Integer.MAX_VALUE;
+            }
+          } catch (Exception e) {
+            log.info("Error while handling STAL request:" + e);
+            if (++retryCounter < maxRetries) {
+              log.info("Retrying");
+              signatureCard = null;
+            } else {
+              responseList.add(new ErrorResponse(6000));
+            }
           }
-        } catch (Exception e) {
-          log.info("Error while handling STAL request:" + e);
-          responseList.add(new ErrorResponse(6000));
+        } else {
+          log.error("Cannot find a handler for STAL request: " + request);
+          responseList.add(new ErrorResponse());
         }
-      } else {
-        log.error("Cannot find a handler for STAL request: " + request);
-        responseList.add(new ErrorResponse());
       }
     }
     return responseList;
@@ -112,4 +140,9 @@ public abstract class AbstractSMCCSTAL implements STAL {
     }
     this.locale = locale;
   }
+
+  public void setMaxRetries(int maxRetries) {
+    this.maxRetries = maxRetries;
+  }
+  
 }
