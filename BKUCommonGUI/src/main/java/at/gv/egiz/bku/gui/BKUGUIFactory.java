@@ -23,7 +23,7 @@ public class BKUGUIFactory {
   }
 
   protected BKUGUIFacade createNewGUI() {
-    return new BKUGUI();
+    return new SimpleGUI();
   }
 
   public static BKUGUIFacade createGUI() {

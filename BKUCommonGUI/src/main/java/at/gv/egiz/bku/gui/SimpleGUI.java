@@ -62,9 +62,9 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author clemens
  */
-public class BKUGUI implements BKUGUIFacade {
+public class SimpleGUI implements BKUGUIFacade {
     
-    private static final Log log = LogFactory.getLog(BKUGUI.class);
+    private static final Log log = LogFactory.getLog(SimpleGUI.class);
     public static final String MESSAGES_BUNDLE = "at/gv/egiz/bku/gui/Messages";
     public static final String LOGO_RESOURCE = "/images/logo.png";
     public static final String HASHDATA_FONT = "Monospaced";
@@ -206,9 +206,9 @@ public class BKUGUI implements BKUGUIFacade {
 //          java.awt.Font.BOLD, titleLabel.getFont().getSize() + 2));
         
         JButton b = new JButton();
-        b.setText(messages.getString(BUTTON_CANCEL));
-        if (b.getPreferredSize().width > buttonSize)
-            buttonSize = b.getPreferredSize().width;
+//        b.setText(messages.getString(BUTTON_CANCEL));
+//        if (b.getPreferredSize().width > buttonSize)
+//            buttonSize = b.getPreferredSize().width;
         b.setText(messages.getString(BUTTON_OK));
         if (b.getPreferredSize().width > buttonSize)
             buttonSize = b.getPreferredSize().width;
@@ -218,9 +218,9 @@ public class BKUGUI implements BKUGUIFacade {
         b.setText(messages.getString(BUTTON_BACK));
         if (b.getPreferredSize().width > buttonSize)
             buttonSize = b.getPreferredSize().width;
-        b.setText(messages.getString(BUTTON_SAVE));
-        if (b.getPreferredSize().width > buttonSize)
-            buttonSize = b.getPreferredSize().width;
+//        b.setText(messages.getString(BUTTON_SAVE));
+//        if (b.getPreferredSize().width > buttonSize)
+//            buttonSize = b.getPreferredSize().width;
         
 //        if (cancelButton.getPreferredSize().width > buttonSize)
 //            buttonSize = cancelButton.getPreferredSize().width;
@@ -380,25 +380,21 @@ public class BKUGUI implements BKUGUIFacade {
 //                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(insertCardMsgLabel));
                 
-                JButton cancelButton = new JButton();
-                cancelButton.setText(messages.getString(BUTTON_CANCEL));
-                cancelButton.addActionListener(cancelListener);
-                cancelButton.setActionCommand(cancelCommand);
-
-                GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
-                buttonPanel.setLayout(buttonPanelLayout);
-
-//                buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
-                buttonPanelLayout.setHorizontalGroup(
-                  buttonPanelLayout.createSequentialGroup()
-//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//                    .addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
-                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
-                buttonPanelLayout.setVerticalGroup(
-                  buttonPanelLayout.createSequentialGroup()
-//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(cancelButton));
+//                JButton cancelButton = new JButton();
+//                cancelButton.setText(messages.getString(BUTTON_CANCEL));
+//                cancelButton.addActionListener(cancelListener);
+//                cancelButton.setActionCommand(cancelCommand);
+//
+//                GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+//                buttonPanel.setLayout(buttonPanelLayout);
+//
+//                buttonPanelLayout.setHorizontalGroup(
+//                  buttonPanelLayout.createSequentialGroup()
+//                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//                        .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
+//                buttonPanelLayout.setVerticalGroup(
+//                  buttonPanelLayout.createSequentialGroup()
+//                    .addComponent(cancelButton));
 
                 contentPanel.validate();
             }
@@ -443,25 +439,21 @@ public class BKUGUI implements BKUGUIFacade {
 //                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(insertCardMsgLabel));
 
-                JButton cancelButton = new JButton();
-                cancelButton.setText(messages.getString(BUTTON_CANCEL));
-                cancelButton.addActionListener(cancelListener);
-                cancelButton.setActionCommand(cancelCommand);
-
-                GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
-                buttonPanel.setLayout(buttonPanelLayout);
-
-//                buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
-                buttonPanelLayout.setHorizontalGroup(
-                  buttonPanelLayout.createSequentialGroup()
-//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//                    .addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
-                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
-                buttonPanelLayout.setVerticalGroup(
-                  buttonPanelLayout.createSequentialGroup()
-//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(cancelButton));
+//                JButton cancelButton = new JButton();
+//                cancelButton.setText(messages.getString(BUTTON_CANCEL));
+//                cancelButton.addActionListener(cancelListener);
+//                cancelButton.setActionCommand(cancelCommand);
+//
+//                GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+//                buttonPanel.setLayout(buttonPanelLayout);
+//
+//                buttonPanelLayout.setHorizontalGroup(
+//                  buttonPanelLayout.createSequentialGroup()
+//                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//                        .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
+//                buttonPanelLayout.setVerticalGroup(
+//                  buttonPanelLayout.createSequentialGroup()
+//                    .addComponent(cancelButton));
                 
                 contentPanel.validate();
             }
@@ -489,10 +481,10 @@ public class BKUGUI implements BKUGUIFacade {
 //                    titleLabel.setText(messages.getString(TITLE_RETRY));
 //                }
 
-                JButton cancelButton = new JButton();
-                cancelButton.setText(messages.getString(BUTTON_CANCEL));
-                cancelButton.setActionCommand(cancelCommand);
-                cancelButton.addActionListener(cancelListener);
+//                JButton cancelButton = new JButton();
+//                cancelButton.setText(messages.getString(BUTTON_CANCEL));
+//                cancelButton.setActionCommand(cancelCommand);
+//                cancelButton.addActionListener(cancelListener);
 
                 JButton okButton = new JButton();
                 okButton.setText(messages.getString(BUTTON_OK));
@@ -568,15 +560,13 @@ public class BKUGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createSequentialGroup()
-//                        .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//                            .addComponent(hashDataLabel)
-//                        .addGroup(GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
                         .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) //))
-                            .addComponent(infoLabel)));
+//                        .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                        .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)) //))
+                    .addComponent(infoLabel));
 
                 mainPanelLayout.setVerticalGroup(
                   mainPanelLayout.createSequentialGroup()
@@ -589,20 +579,31 @@ public class BKUGUI implements BKUGUIFacade {
                         .addComponent(infoLabel));
 //                        .addGap(signPinLabel.getFont().getSize())); 
 
+                
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
 
-//                buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
                 buttonPanelLayout.setHorizontalGroup(
                   buttonPanelLayout.createSequentialGroup()
                         .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(okButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
+                        .addComponent(okButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
                 buttonPanelLayout.setVerticalGroup(
-                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) 
-                        .addComponent(okButton)
-                        .addComponent(cancelButton)); 
+                  buttonPanelLayout.createSequentialGroup()
+                    .addComponent(okButton));
+
+//                GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+//                buttonPanel.setLayout(buttonPanelLayout);
+//
+//                buttonPanelLayout.setHorizontalGroup(
+//                  buttonPanelLayout.createSequentialGroup()
+//                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//                        .addComponent(okButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+//                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+//                        .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
+//                buttonPanelLayout.setVerticalGroup(
+//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) 
+//                        .addComponent(okButton)
+//                        .addComponent(cancelButton)); 
 
                 pinField.requestFocusInWindow();
                 contentPanel.validate();
@@ -651,10 +652,10 @@ public class BKUGUI implements BKUGUIFacade {
 //                    titleLabel.setText(messages.getString(TITLE_RETRY));
 //                }
 
-                JButton cancelButton = new JButton();
-                cancelButton.setText(messages.getString(BUTTON_CANCEL));
-                cancelButton.setActionCommand(cancelCommand);
-                cancelButton.addActionListener(cancelListener);
+//                JButton cancelButton = new JButton();
+//                cancelButton.setText(messages.getString(BUTTON_CANCEL));
+//                cancelButton.setActionCommand(cancelCommand);
+//                cancelButton.addActionListener(cancelListener);
 
                 JButton signButton = new JButton();
                 signButton.setText(messages.getString(BUTTON_SIGN));
@@ -719,9 +720,9 @@ public class BKUGUI implements BKUGUIFacade {
                       .addGroup(GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
                           .addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                              .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                              .addComponent(infoLabel))));
+//                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                          .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                      .addComponent(infoLabel));
 
                 mainPanelLayout.setVerticalGroup(
                   mainPanelLayout.createSequentialGroup()
@@ -737,17 +738,27 @@ public class BKUGUI implements BKUGUIFacade {
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
 
-//                buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
                 buttonPanelLayout.setHorizontalGroup(
                   buttonPanelLayout.createSequentialGroup()
                         .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(signButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
+                        .addComponent(signButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
                 buttonPanelLayout.setVerticalGroup(
-                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) 
-                        .addComponent(signButton)
-                        .addComponent(cancelButton)); 
+                  buttonPanelLayout.createSequentialGroup()
+                    .addComponent(signButton));
+
+//                GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+//                buttonPanel.setLayout(buttonPanelLayout);
+//
+//                buttonPanelLayout.setHorizontalGroup(
+//                  buttonPanelLayout.createSequentialGroup()
+//                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//                        .addComponent(signButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+//                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+//                        .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
+//                buttonPanelLayout.setVerticalGroup(
+//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) 
+//                        .addComponent(signButton)
+//                        .addComponent(cancelButton)); 
 
                 pinField.requestFocusInWindow();
                 contentPanel.validate();
@@ -843,16 +854,12 @@ public class BKUGUI implements BKUGUIFacade {
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
 
-//                buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
                 buttonPanelLayout.setHorizontalGroup(
                   buttonPanelLayout.createSequentialGroup()
-//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//                    .addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
                         .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(okButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
                 buttonPanelLayout.setVerticalGroup(
                   buttonPanelLayout.createSequentialGroup()
-//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(okButton));
 
                 contentPanel.validate();
@@ -1059,25 +1066,35 @@ public class BKUGUI implements BKUGUIFacade {
           backButton.setActionCommand(cancelCommand);
           backButton.addActionListener(cancelListener);
 
-          JButton saveButton = new JButton();
-          saveButton.setText(messages.getString(BUTTON_SAVE));
-          saveButton.setActionCommand(saveCommand);
-          saveButton.addActionListener(saveListener);
+//          JButton saveButton = new JButton();
+//          saveButton.setText(messages.getString(BUTTON_SAVE));
+//          saveButton.setActionCommand(saveCommand);
+//          saveButton.addActionListener(saveListener);
 
-          GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
-          buttonPanel.setLayout(buttonPanelLayout);
+                GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+                buttonPanel.setLayout(buttonPanelLayout);
 
-  //        buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
-          buttonPanelLayout.setHorizontalGroup(
-            buttonPanelLayout.createSequentialGroup()
-                  .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(saveButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
-                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(backButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
-          buttonPanelLayout.setVerticalGroup(
-            buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) 
-                  .addComponent(saveButton)
-                  .addComponent(backButton)); 
+                buttonPanelLayout.setHorizontalGroup(
+                  buttonPanelLayout.createSequentialGroup()
+                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(backButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
+                buttonPanelLayout.setVerticalGroup(
+                  buttonPanelLayout.createSequentialGroup()
+                    .addComponent(backButton));
+
+//          GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+//          buttonPanel.setLayout(buttonPanelLayout);
+//
+//          buttonPanelLayout.setHorizontalGroup(
+//            buttonPanelLayout.createSequentialGroup()
+//                  .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//                  .addComponent(saveButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+//                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+//                  .addComponent(backButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
+//          buttonPanelLayout.setVerticalGroup(
+//            buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) 
+//                  .addComponent(saveButton)
+//                  .addComponent(backButton)); 
 
 
   //        GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
@@ -1202,25 +1219,36 @@ public class BKUGUI implements BKUGUIFacade {
           backButton.setActionCommand(cancelCommand);
           backButton.addActionListener(cancelListener);
 
-          JButton saveButton = new JButton();
-          saveButton.setText(messages.getString(BUTTON_SAVE));
-          saveButton.setActionCommand(saveCommand);
-          saveButton.addActionListener(saveListener);
+//          JButton saveButton = new JButton();
+//          saveButton.setText(messages.getString(BUTTON_SAVE));
+//          saveButton.setActionCommand(saveCommand);
+//          saveButton.addActionListener(saveListener);
 
-          GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
-          buttonPanel.setLayout(buttonPanelLayout);
+                GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+                buttonPanel.setLayout(buttonPanelLayout);
 
-  //        buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
-          buttonPanelLayout.setHorizontalGroup(
-            buttonPanelLayout.createSequentialGroup()
-                  .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(saveButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
-                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(backButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
-          buttonPanelLayout.setVerticalGroup(
-            buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) 
-                  .addComponent(saveButton)
-                  .addComponent(backButton)); 
+                buttonPanelLayout.setHorizontalGroup(
+                  buttonPanelLayout.createSequentialGroup()
+                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(backButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
+                buttonPanelLayout.setVerticalGroup(
+                  buttonPanelLayout.createSequentialGroup()
+                    .addComponent(backButton));
+          
+          
+//          GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+//          buttonPanel.setLayout(buttonPanelLayout);
+//
+//          buttonPanelLayout.setHorizontalGroup(
+//            buttonPanelLayout.createSequentialGroup()
+//                  .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//                  .addComponent(saveButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+//                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+//                  .addComponent(backButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
+//          buttonPanelLayout.setVerticalGroup(
+//            buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE) 
+//                  .addComponent(saveButton)
+//                  .addComponent(backButton)); 
 
           contentPanel.validate();
         }
