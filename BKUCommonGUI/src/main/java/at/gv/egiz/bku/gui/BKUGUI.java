@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
@@ -127,7 +128,7 @@ public class BKUGUI implements BKUGUIFacade {
      * @param localeString may be null
      */
     @Override
-    public void init(final Container contentPane, String localeString) {
+    public void init(final Container contentPane, String localeString, final URL background) {
 
         if (localeString != null) {
             messages = ResourceBundle.getBundle(MESSAGES_BUNDLE, new Locale(localeString));
@@ -149,7 +150,7 @@ public class BKUGUI implements BKUGUIFacade {
                   log.debug("initializing gui");
 
 //                    initIconPanel();
-                    initContentPanel();
+                    initContentPanel(background);
 
                     GroupLayout layout = new GroupLayout(contentPane);
                     contentPane.setLayout(layout);
@@ -189,7 +190,7 @@ public class BKUGUI implements BKUGUIFacade {
 //                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)); //);
 //    }
 
-    protected void initContentPanel() {
+    protected void initContentPanel(URL background) {
 
         contentPanel = new JPanel();
 

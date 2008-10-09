@@ -42,7 +42,7 @@
 			height :<%= height %>
 		};
 		var parameters = {
-			background : <%= backgroundImg %>,
+			background : '<%= backgroundImg %>',
 			WSDL_URL :'../stal?wsdl',
 			SessionID : '<%= session.getId() %>',
 			redirectURL : '../bkuResult'

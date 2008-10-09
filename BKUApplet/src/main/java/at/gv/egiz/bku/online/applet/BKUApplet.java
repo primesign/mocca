@@ -16,9 +16,12 @@
  */
 package at.gv.egiz.bku.online.applet;
 
+import java.net.MalformedURLException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 import javax.swing.JApplet;
 
@@ -27,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUGUIFactory;
+import java.net.URL;
 
 /**
  * Note: all swing code is executed by the event dispatch thread (see
@@ -40,6 +44,8 @@ public class BKUApplet extends JApplet {
     public final static String LOGO_URL_KEY = "LogoURL";
     public final static String WSDL_URL = "WSDL_URL";
     public final static String SESSION_ID = "SessionID";
+    public static final String BACKGROUND_PARAM = "background";
+    
     protected ResourceBundle resourceBundle;
     protected BKUWorker worker;
     protected Thread workerThread;
@@ -58,8 +64,17 @@ public class BKUApplet extends JApplet {
         } else {
             resourceBundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_BASE);
         }
+        String backgroundString = getMyAppletParameter(BACKGROUND_PARAM);
+        URL background = null;
+        if (backgroundString != null) {
+          try {
+            background = new URL(backgroundString);
+          } catch (MalformedURLException ex) {
+            log.warn(ex.getMessage() + ", using default background");
+          }
+        }
         BKUGUIFacade gui = BKUGUIFactory.createGUI();
-        gui.init(getContentPane(), localeString);
+        gui.init(getContentPane(), localeString, background);
         worker = new BKUWorker(gui, this, resourceBundle);
     }
 

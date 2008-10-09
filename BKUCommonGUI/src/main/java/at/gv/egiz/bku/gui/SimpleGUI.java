@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
@@ -53,6 +54,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingUtilities;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import org.apache.commons.logging.Log;
@@ -66,7 +68,7 @@ public class SimpleGUI implements BKUGUIFacade {
     
     private static final Log log = LogFactory.getLog(SimpleGUI.class);
     public static final String MESSAGES_BUNDLE = "at/gv/egiz/bku/gui/Messages";
-    public static final String LOGO_RESOURCE = "/images/logo.png";
+    public static final String DEFAULT_BACKGROUND = "/images/mocca_default.png"; //logo.png";
     public static final String HASHDATA_FONT = "Monospaced";
     public static final Color ERROR_COLOR = Color.RED;
     public static final Color HYPERLINK_COLOR = Color.BLUE;
@@ -121,13 +123,13 @@ public class SimpleGUI implements BKUGUIFacade {
     protected int buttonSize;
     
     private static final int CHECKBOX_WIDTH = new JCheckBox().getPreferredSize().width;
-    
+
     /**
      * @param contentPane
      * @param localeString may be null
      */
     @Override
-    public void init(final Container contentPane, String localeString) {
+    public void init(final Container contentPane, String localeString, final URL background) {
 
         if (localeString != null) {
             messages = ResourceBundle.getBundle(MESSAGES_BUNDLE, new Locale(localeString));
@@ -149,7 +151,7 @@ public class SimpleGUI implements BKUGUIFacade {
                   log.debug("initializing gui");
 
 //                    initIconPanel();
-                    initContentPanel();
+                    initContentPanel(background);
 
                     GroupLayout layout = new GroupLayout(contentPane);
                     contentPane.setLayout(layout);
@@ -189,13 +191,20 @@ public class SimpleGUI implements BKUGUIFacade {
 //                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)); //);
 //    }
 
-    protected void initContentPanel() {
+    protected void initContentPanel(URL background) {
 
-        contentPanel = new JPanel();
+      if (background == null) {
+        background = this.getClass().getResource(DEFAULT_BACKGROUND);
+      }
+        contentPanel = new ImagePanel(background);
 
+//        contentPanel.setBorder(new TitledBorder("content"));
+        
 //        headerPanel = new JPanel();
         mainPanel = new JPanel();
-        buttonPanel = new JPanel();
+        mainPanel.setOpaque(false);
+        buttonPanel = new JPanel(); // new ImagePanel(LOGO_RESOURCE); //new JPanel();
+        buttonPanel.setOpaque(false);
 
 //        headerPanel.setBorder(new TitledBorder("header"));
 //        mainPanel.setBorder(new TitledBorder("main"));
@@ -487,13 +496,14 @@ public class SimpleGUI implements BKUGUIFacade {
 //                cancelButton.addActionListener(cancelListener);
 
                 JButton okButton = new JButton();
+                okButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle() & ~java.awt.Font.BOLD));
                 okButton.setText(messages.getString(BUTTON_OK));
                 okButton.setEnabled(false);
                 okButton.setActionCommand(okCommand);
                 okButton.addActionListener(okListener);
 
                 JLabel cardPinLabel = new JLabel();
-                cardPinLabel.setFont(cardPinLabel.getFont().deriveFont(cardPinLabel.getFont().getStyle() | java.awt.Font.BOLD));
+                cardPinLabel.setFont(cardPinLabel.getFont().deriveFont(cardPinLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                 String pinLabel = messages.getString(LABEL_PIN);
                 cardPinLabel.setText(MessageFormat.format(pinLabel, new Object[]{pinSpec.getLocalizedName()}));
 
@@ -513,8 +523,8 @@ public class SimpleGUI implements BKUGUIFacade {
                 });
 
                 JLabel infoLabel = new JLabel();
+                infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD, infoLabel.getFont().getSize()-2));
                 if (numRetries < 0) {
-                    infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                     String pinsizePattern = messages.getString(LABEL_PINSIZE);
                     String pinSize = String.valueOf(pinSpec.getMinLength());
                     if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
@@ -658,13 +668,14 @@ public class SimpleGUI implements BKUGUIFacade {
 //                cancelButton.addActionListener(cancelListener);
 
                 JButton signButton = new JButton();
+                signButton.setFont(signButton.getFont().deriveFont(signButton.getFont().getStyle() & ~java.awt.Font.BOLD));
                 signButton.setText(messages.getString(BUTTON_SIGN));
                 signButton.setEnabled(false);
                 signButton.setActionCommand(signCommand);
                 signButton.addActionListener(signListener);
 
                 JLabel signPinLabel = new JLabel();
-                signPinLabel.setFont(signPinLabel.getFont().deriveFont(signPinLabel.getFont().getStyle() | java.awt.Font.BOLD));
+                signPinLabel.setFont(signPinLabel.getFont().deriveFont(signPinLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                 String pinLabel = messages.getString(LABEL_PIN);
                 signPinLabel.setText(MessageFormat.format(pinLabel, new Object[]{pinSpec.getLocalizedName()}));
 
@@ -684,7 +695,7 @@ public class SimpleGUI implements BKUGUIFacade {
 
                 //pinsize or error label
                 JLabel infoLabel = new JLabel();
-                infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+                infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD, infoLabel.getFont().getSize()-2));
                 if (numRetries < 0) {
                     String pinsizePattern = messages.getString(LABEL_PINSIZE);
                     String pinSize = String.valueOf(pinSpec.getMinLength());
@@ -721,7 +732,7 @@ public class SimpleGUI implements BKUGUIFacade {
                           .addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 //                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                          .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                       .addComponent(infoLabel));
 
                 mainPanelLayout.setVerticalGroup(
@@ -847,6 +858,7 @@ public class SimpleGUI implements BKUGUIFacade {
                   .addComponent(errorMsgLabel));
 
                 JButton okButton = new JButton();
+                okButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle() & ~java.awt.Font.BOLD));
                 okButton.setText(messages.getString(BUTTON_OK));
                 okButton.setActionCommand(okCommand);
                 okButton.addActionListener(okListener);
@@ -1062,6 +1074,7 @@ public class SimpleGUI implements BKUGUIFacade {
   //          mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(mainPanelLayout.createSequentialGroup().addComponent(refIdLabel).addGap(refIdLabel.getFont().getSize()).addComponent(hashDataScrollPane).addGap(refIdLabel.getFont().getSize())));
 
           JButton backButton = new JButton();
+          backButton.setFont(backButton.getFont().deriveFont(backButton.getFont().getStyle() & ~java.awt.Font.BOLD));
           backButton.setText(messages.getString(BUTTON_BACK));
           backButton.setActionCommand(cancelCommand);
           backButton.addActionListener(cancelListener);
@@ -1215,6 +1228,7 @@ public class SimpleGUI implements BKUGUIFacade {
 
 
           JButton backButton = new JButton();
+          backButton.setFont(backButton.getFont().deriveFont(backButton.getFont().getStyle() & ~java.awt.Font.BOLD));
           backButton.setText(messages.getString(BUTTON_BACK));
           backButton.setActionCommand(cancelCommand);
           backButton.addActionListener(cancelListener);

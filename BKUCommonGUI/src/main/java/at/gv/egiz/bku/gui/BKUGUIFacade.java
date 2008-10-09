@@ -20,6 +20,7 @@ import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.smcc.PINSpec;
 import java.awt.Container;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.List;
 
 public interface BKUGUIFacade {
@@ -32,7 +33,7 @@ public interface BKUGUIFacade {
   public static final String ERR_WRITE_HASHDATA = "error.write.hashdata";
   public static final String ERR_INVALID_HASH = "error.invalid.hash";
   
-    public void init(Container contentPane, String localeString);
+    public void init(Container contentPane, String localeString, URL background);
     
     public void showWelcomeDialog(); 
     
