@@ -30,6 +30,9 @@ import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUGUIFactory;
+import at.gv.egiz.bku.smccstal.AbstractSMCCSTAL;
+import at.gv.egiz.stal.QuitRequest;
+
 import java.net.URL;
 
 /**
@@ -56,6 +59,7 @@ public class BKUApplet extends JApplet {
     public void init() {
       log.info("Welcome to MOCCA\n");
         log.debug("Called init()");
+        AbstractSMCCSTAL.addRequestHandler(QuitRequest.class, QuitHandler.getInstance());
         HttpsURLConnection.setDefaultSSLSocketFactory(InternalSSLSocketFactory.getInstance());
         String localeString = getMyAppletParameter(LOCALE_PARAM_KEY);
         if (localeString != null) {

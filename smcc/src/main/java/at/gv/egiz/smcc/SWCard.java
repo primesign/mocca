@@ -320,9 +320,7 @@ public class SWCard implements SignatureCard {
   }
 
   @Override
-  public void reset() {
-    // TODO Auto-generated method stub
-    
+  public void disconnect(boolean reset) {    
   }
 
 }

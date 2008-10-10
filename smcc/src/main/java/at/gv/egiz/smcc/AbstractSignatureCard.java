@@ -262,11 +262,11 @@ public abstract class AbstractSignatureCard implements SignatureCard {
   }
 
   @Override
-  public void reset() {
-    log.debug("Resetting card");
+  public void disconnect(boolean reset) {
+    log.debug("Disconnect called");
     if (card_ != null) {
       try {
-        card_.disconnect(true);
+        card_.disconnect(reset);
       } catch (CardException e) {
         log.info("Error while resetting card", e);
       }

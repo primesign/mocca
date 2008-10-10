@@ -48,7 +48,7 @@ import at.gv.egiz.stal.service.types.ResponseType;
 import at.gv.egiz.stal.util.STALTranslator;
 
 public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
-  ActionListener, SMCCSTALRequestHandler {
+    ActionListener, SMCCSTALRequestHandler {
 
   private static Log log = LogFactory.getLog(BKUWorker.class);
   protected BKUGUIFacade gui;
@@ -65,15 +65,15 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
    *          must not be null
    */
   public BKUWorker(BKUGUIFacade gui, BKUApplet parent,
-    ResourceBundle errorMessageBundle) {
+      ResourceBundle errorMessageBundle) {
     if ((gui == null) || (parent == null) || (errorMessageBundle == null)) {
       throw new NullPointerException("Parameter must not be set to null");
     }
     this.gui = gui;
     this.parent = parent;
     this.errorMessages = errorMessageBundle;
-    addRequestHandler(QuitRequest.class, this);
-  // register SignRequestHandler once we have a webservice port
+    QuitHandler.getInstance().registerHandlerInstance(this);
+    // register SignRequestHandler once we have a webservice port
   }
 
   /**
@@ -85,7 +85,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
   protected BKUWorker(BKUGUIFacade gui, ResourceBundle errorMessageBundle) {
     this.gui = gui;
     this.errorMessages = errorMessageBundle;
-    addRequestHandler(QuitRequest.class, this);
+    QuitHandler.getInstance().registerHandlerInstance(this);
   }
 
   private STALPortType getSTALPort() throws MalformedURLException {
@@ -111,7 +111,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     }
     log.debug("Found WSDL url: " + wsdlURL);
     QName endpointName = new QName("http://www.egiz.gv.at/wsdl/stal",
-      "STALService");
+        "STALService");
     STALService stal = new STALService(wsdlURL, endpointName);
     return stal.getSTALPort();
   }
@@ -126,7 +126,8 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
       log.fatal("Failed to call STAL service.", e);
       actionCommandList.clear();
       actionCommandList.add("ok");
-      gui.showErrorDialog(BKUGUIFacade.ERR_SERVICE_UNREACHABLE, new Object[] {e.getMessage()});
+      gui.showErrorDialog(BKUGUIFacade.ERR_SERVICE_UNREACHABLE,
+          new Object[] { e.getMessage() });
       try {
         waitForAction();
       } catch (InterruptedException e1) {
@@ -140,13 +141,16 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
         // use the testsession for testing
         sessionId = "TestSession";
       }
-      addRequestHandler(at.gv.egiz.stal.SignRequest.class, new WSSignRequestHandler(sessionId, stalPort));
+      addRequestHandler(at.gv.egiz.stal.SignRequest.class,
+          new WSSignRequestHandler(sessionId, stalPort));
 
       ObjectFactory of = new ObjectFactory();
       GetNextRequestResponseType nextRequestResp = stalPort.connect(sessionId);
       do {
-        List<RequestType> requests = nextRequestResp.getInfoboxReadRequestOrSignRequestOrQuitRequest();
-        List<STALRequest> stalRequests = STALTranslator.translateRequests(requests);
+        List<RequestType> requests = nextRequestResp
+            .getInfoboxReadRequestOrSignRequestOrQuitRequest();
+        List<STALRequest> stalRequests = STALTranslator
+            .translateRequests(requests);
 
         if (log.isInfoEnabled()) {
           StringBuilder sb = new StringBuilder("Received ");
@@ -190,27 +194,33 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
           responses = new ArrayList<ResponseType>(1);
           ErrorResponseType err = new ErrorResponseType();
           err.setErrorCode(6002);
-//        err.setErrorMessage();
+          // err.setErrorMessage();
           responses.add(err);
         }
 
         if (!finished) {
+          log.info("Not finished yet (BKUWorker: " + this
+              + "), sending responses");
           GetNextRequestType nextRequest = of.createGetNextRequestType();
           nextRequest.setSessionId(sessionId);
-          nextRequest.getInfoboxReadResponseOrSignResponseOrErrorResponse().addAll(responses);
+          nextRequest.getInfoboxReadResponseOrSignResponseOrErrorResponse()
+              .addAll(responses);
           nextRequestResp = stalPort.getNextRequest(nextRequest);
         }
       } while (!finished);
       log.info("Done " + Thread.currentThread().getName());
     } catch (Exception ex) {
       log.error(ex.getMessage(), ex);
-      gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, new Object[] {ex.getMessage()}); 
+      gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, new Object[] { ex
+          .getMessage() });
       try {
         waitForAction();
       } catch (InterruptedException e) {
         log.error(e);
       }
     }
+    signatureCard.disconnect(false);
+    QuitHandler.getInstance().unregisterHandlerInstance(this);
     sendRedirect();
   }
 
@@ -222,17 +232,20 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     URL url = null;
     if (redirectURL != null) {
       try {
-        url = new URL(parent.getCodeBase(), redirectURL + ";jsessionid=" + parent.getMyAppletParameter(BKUApplet.SESSION_ID));
+        url = new URL(parent.getCodeBase(), redirectURL + ";jsessionid="
+            + parent.getMyAppletParameter(BKUApplet.SESSION_ID));
       } catch (MalformedURLException ex) {
-        log.warn("Parameter 'redirectURL': " + redirectURL + " not a valid URL.", ex);
-      // gui.showErrorDialog(errorMsg, okListener, actionCommand)
+        log.warn("Parameter 'redirectURL': " + redirectURL
+            + " not a valid URL.", ex);
+        // gui.showErrorDialog(errorMsg, okListener, actionCommand)
       }
       if (url != null) {
         if (redirectTarget == null) {
           log.info("Done. Trying to redirect to " + url + " ...");
           parent.getAppletContext().showDocument(url);
         } else {
-          log.info("Done. Trying to redirect to " + url + " (target=" + redirectTarget + ") ...");
+          log.info("Done. Trying to redirect to " + url + " (target="
+              + redirectTarget + ") ...");
           parent.getAppletContext().showDocument(url, redirectTarget);
         }
       }
@@ -276,46 +289,46 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     int oldValue = SMCCHelper.PC_SC_NOT_SUPPORTED; // this is a save default
     while ((signatureCard == null) && (!actionPerformed)) {
       switch (smccHelper.getResultCode()) {
-        case SMCCHelper.PC_SC_NOT_SUPPORTED:
+      case SMCCHelper.PC_SC_NOT_SUPPORTED:
+        actionCommandList.clear();
+        actionCommandList.add("ok");
+        gui.showErrorDialog(BKUGUIFacade.ERR_NO_PCSC, null, this, "ok");
+        try {
+          waitForAction();
+        } catch (InterruptedException e) {
+          log.error(e);
+        }
+        return true;
+      case SMCCHelper.TERMINAL_NOT_PRESENT:
+        actionCommandList.clear();
+        actionCommandList.add("ok");
+        gui.showErrorDialog(BKUGUIFacade.ERR_NO_CARDTERMINAL, null, this, "ok");
+        try {
+          waitForAction();
+        } catch (InterruptedException e) {
+          log.error(e);
+        }
+        return true;
+      case SMCCHelper.CARD_NOT_SUPPORTED:
+        if (oldValue != SMCCHelper.CARD_NOT_SUPPORTED) {
           actionCommandList.clear();
-          actionCommandList.add("ok");
-          gui.showErrorDialog(BKUGUIFacade.ERR_NO_PCSC, null, this, "ok");
-          try {
-            waitForAction();
-          } catch (InterruptedException e) {
-            log.error(e);
-          }
-          return true;
-        case SMCCHelper.TERMINAL_NOT_PRESENT:
+          actionCommandList.add("cancel");
+          gui.showCardNotSupportedDialog(this, "cancel");
+          oldValue = SMCCHelper.CARD_NOT_SUPPORTED;
+        }
+        break;
+      case SMCCHelper.NO_CARD:
+        if (oldValue != SMCCHelper.NO_CARD) {
           actionCommandList.clear();
-          actionCommandList.add("ok");
-          gui.showErrorDialog(BKUGUIFacade.ERR_NO_CARDTERMINAL,null,this,"ok");
-          try {
-            waitForAction();
-          } catch (InterruptedException e) {
-            log.error(e);
-          }
-          return true;
-        case SMCCHelper.CARD_NOT_SUPPORTED:
-          if (oldValue != SMCCHelper.CARD_NOT_SUPPORTED) {
-            actionCommandList.clear();
-            actionCommandList.add("cancel");
-            gui.showCardNotSupportedDialog(this, "cancel");
-            oldValue = SMCCHelper.CARD_NOT_SUPPORTED;
-          }
-          break;
-        case SMCCHelper.NO_CARD:
-          if (oldValue != SMCCHelper.NO_CARD) {
-            actionCommandList.clear();
-            actionCommandList.add("cancel");
-            gui.showInsertCardDialog(this, "cancel");
-            oldValue = SMCCHelper.NO_CARD;
-          }
-          break;
-        case SMCCHelper.CARD_FOUND:
-          // gui.showWaitDialog(null);
-          signatureCard = smccHelper.getSignatureCard(errorMessages.getLocale());
-          return false;
+          actionCommandList.add("cancel");
+          gui.showInsertCardDialog(this, "cancel");
+          oldValue = SMCCHelper.NO_CARD;
+        }
+        break;
+      case SMCCHelper.CARD_FOUND:
+        // gui.showWaitDialog(null);
+        signatureCard = smccHelper.getSignatureCard(errorMessages.getLocale());
+        return false;
       }
       smccHelper.update(3000);
     }
@@ -325,6 +338,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
   @Override
   public STALResponse handleRequest(STALRequest request) {
     if (request instanceof QuitRequest) {
+      log.info("Setting state to: finished for BKUWorker " + this);
       finished = true;
     } else {
       log.error("Unexpected request to handle: " + request);
@@ -350,4 +364,5 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
   protected BKUGUIFacade getGUI() {
     return gui;
   }
+
 }
