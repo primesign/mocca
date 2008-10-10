@@ -19,15 +19,24 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>MOCCA Appletpage</title>
-        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
-  	<script type="text/javascript" src="js/deployJava.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>MOCCA Appletpage</title>
+<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+<script type="text/javascript" src="js/deployJava.js"></script>
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+<META HTTP-EQUIV="EXPIRES" CONTENT="Mon, 22 Jul 2002 11:12:01 GMT">
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 </head>
 <body>
-<% int width= session.getAttribute("appletWidth") == null ? 190 : (Integer)session.getAttribute("appletWidth");
-   int height=session.getAttribute("appletHeight") == null ? 130 : (Integer)session.getAttribute("appletHeight");
-   String backgroundImg = (String) session.getAttribute("appletBackground");
+<%
+  int width = session.getAttribute("appletWidth") == null
+					? 190
+					: (Integer) session.getAttribute("appletWidth");
+			int height = session.getAttribute("appletHeight") == null
+					? 130
+					: (Integer) session.getAttribute("appletHeight");
+			String backgroundImg = (String) session
+					.getAttribute("appletBackground");
 %>
 <script>
 	if (!deployJava.versionCheck('1.6.0_04+')) {
@@ -38,13 +47,13 @@
 			codebase :'applet',
 			code :'at.gv.egiz.bku.online.applet.BKUApplet.class',
 			archive :'BKUApplet-1.0-SNAPSHOT.jar, commons-logging-1.1.1.jar, iaik_jce_me4se-3.04.jar',
-			width : <%= width %>,
-			height :<%= height %>
+			width : <%=width%>,
+			height :<%=height%>
 		};
 		var parameters = {
-			background : '<%= backgroundImg %>',
+			background : '<%=backgroundImg%>',
 			WSDL_URL :'../stal?wsdl',
-			SessionID : '<%= session.getId() %>',
+			SessionID : '<%=session.getId()%>',
 			redirectURL : '../bkuResult'
 		};
 		var version = '1.6.0_02';

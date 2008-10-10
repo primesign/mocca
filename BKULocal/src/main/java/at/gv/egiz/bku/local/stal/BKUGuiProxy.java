@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.WindowEvent;
+import java.net.URL;
 import java.util.List;
 
 import javax.swing.JDialog;
@@ -36,8 +37,8 @@ public class BKUGuiProxy implements BKUGUIFacade {
   }
 
   @Override
-  public void init(Container contentPane, String localeString) {
-    delegate.init(contentPane, localeString);
+  public void init(Container contentPane, String localeString, URL bgImage) {
+    delegate.init(contentPane, localeString, bgImage);
   }
 
   @Override
