@@ -190,12 +190,14 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                     return Collections.singletonList((RequestType) new QuitRequestType());
                 }
             }
-            log.trace("consume request");
-            List<RequestType> reqs = new ArrayList<RequestType>(); 
-            reqs.addAll(requests);
             
-            requests.clear();
-            return reqs;
+//            log.trace("consume request");
+//            List<RequestType> reqs = new ArrayList<RequestType>(); 
+//            reqs.addAll(requests);
+//            requests.clear();
+//            return reqs;
+            log.trace("don't consume request now, leave for further connect calls");
+            return requests;
           }
         } catch (InterruptedException ex) {
             log.warn("interrupt in nextRequest(): " + ex.getMessage());
@@ -221,6 +223,16 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
         return null;
       }
         try {
+          synchronized (requests) {
+            log.trace("received responses, now consume request");
+            if (requests.size() != 0) {
+              requests.clear();
+            } else {
+              log.warn("requests queue is empty, response might have already been produced previously ");
+              // return QUIT?
+            }
+          }
+          
           synchronized (responses) { //respMon) {
             if (resps != null && resps.size() > 0) {
 //                if (!expectingResponse) {
@@ -274,16 +286,18 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                     return Collections.singletonList((RequestType) new QuitRequestType());
                 }
             }
-            log.trace("consume request");
-            List<RequestType> reqs = new ArrayList<RequestType>(); // reqMon.consume();
-            reqs.addAll(requests);
-            
-//            if (requests.size() > 0 && requests.get(0) instanceof QuitRequestType) {
-//                log.trace("expecting no response in next nextRequest()");
-//                expectingResponse = false;
-//            }
-            requests.clear();
-            return reqs;
+//            log.trace("consume request");
+//            List<RequestType> reqs = new ArrayList<RequestType>(); // reqMon.consume();
+//            reqs.addAll(requests);
+//            
+////            if (requests.size() > 0 && requests.get(0) instanceof QuitRequestType) {
+////                log.trace("expecting no response in next nextRequest()");
+////                expectingResponse = false;
+////            }
+//            requests.clear();
+//            return reqs;
+            log.trace("don't consume request now, but on next response delivery");
+            return requests;
           }
         } catch (InterruptedException ex) {
             log.warn("interrupt in nextRequest(): " + ex.getMessage());
