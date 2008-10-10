@@ -91,6 +91,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
                 log.info("Got an error response");
                 if (++retryCounter < maxRetries) {
                   log.info("Retrying");
+                  signatureCard.reset();
                   signatureCard = null;
                 } else {
                   responseList.add(response);
@@ -108,6 +109,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
             log.info("Error while handling STAL request:" + e);
             if (++retryCounter < maxRetries) {
               log.info("Retrying");
+              signatureCard.reset();
               signatureCard = null;
             } else {
               responseList.add(new ErrorResponse(6000));
