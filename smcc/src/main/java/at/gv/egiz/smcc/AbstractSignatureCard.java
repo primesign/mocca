@@ -40,40 +40,45 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public abstract class AbstractSignatureCard implements SignatureCard {
 
-  static Logger logger = Logger.getLogger(AbstractSignatureCard.class.getName());
-  
+  private static Log log = LogFactory.getLog(AbstractSignatureCard.class);
+
   private ResourceBundle i18n;
   private String resourceBundleName;
 
   private Locale locale = Locale.getDefault();
-  
+
   int ifs_ = 254;
-  
+
   Card card_;
-  
+
   protected AbstractSignatureCard(String resourceBundleName) {
     this.resourceBundleName = resourceBundleName;
   }
-  
+
   String toString(byte[] b) {
     StringBuffer sb = new StringBuffer();
     if (b != null && b.length > 0) {
       sb.append(Integer.toHexString((b[0] & 240) >> 4));
       sb.append(Integer.toHexString(b[0] & 15));
     }
-    for(int i = 1; i < b.length; i++) {
+    for (int i = 1; i < b.length; i++) {
       sb.append(':');
       sb.append(Integer.toHexString((b[i] & 240) >> 4));
       sb.append(Integer.toHexString(b[i] & 15));
     }
     return sb.toString();
   }
-  
-    abstract byte[] selectFileAID(byte[] fid) throws CardException, SignatureCardException;
 
-    abstract byte[] selectFileFID(byte[] fid) throws CardException, SignatureCardException;
+  abstract byte[] selectFileAID(byte[] fid) throws CardException,
+      SignatureCardException;
+
+  abstract byte[] selectFileFID(byte[] fid) throws CardException,
+      SignatureCardException;
 
   byte[] readBinary(CardChannel channel, int offset, int len)
       throws CardException, SignatureCardException {
@@ -88,31 +93,32 @@ public abstract class AbstractSignatureCard implements SignatureCard {
     }
 
   }
-  
-    int readBinary(int offset, int len, byte[] b)
-        throws CardException, SignatureCardException {
 
-        if (b.length < len) {
-            throw new IllegalArgumentException(
-                "Length of b must not be less than len.");
-        }
+  int readBinary(int offset, int len, byte[] b) throws CardException,
+      SignatureCardException {
 
-        CardChannel channel = getCardChannel();
-        
-        ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0xB0,
-            0x7F & (offset >> 8), offset & 0xFF, len));
-        if (resp.getSW() == 0x9000) {
-            System.arraycopy(resp.getData(), 0, b, 0, len);
-        }
-        
-        return resp.getSW();
-
+    if (b.length < len) {
+      throw new IllegalArgumentException(
+          "Length of b must not be less than len.");
     }
 
-  byte[] readBinaryTLV(int maxSize, byte expectedType) throws CardException, SignatureCardException {
+    CardChannel channel = getCardChannel();
+
+    ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0xB0,
+        0x7F & (offset >> 8), offset & 0xFF, len));
+    if (resp.getSW() == 0x9000) {
+      System.arraycopy(resp.getData(), 0, b, 0, len);
+    }
+
+    return resp.getSW();
+
+  }
+
+  byte[] readBinaryTLV(int maxSize, byte expectedType) throws CardException,
+      SignatureCardException {
 
     CardChannel channel = getCardChannel();
-    
+
     // read first chunk
     int len = Math.min(maxSize, ifs_);
     byte[] chunk = readBinary(channel, 0, len);
@@ -141,89 +147,88 @@ public abstract class AbstractSignatureCard implements SignatureCard {
       offset += chunk.length;
     }
     return buffer.array();
-    
+
   }
-  
-    abstract int verifyPIN(PINProvider pinProvider, PINSpec spec, byte kid, int kfpc) throws CardException, SignatureCardException;
 
-    public byte[] readTLVFile(byte[] aid, byte[] ef, int maxLength) throws SignatureCardException {
-        return readTLVFilePIN(aid, ef, (byte) 0, null, null, maxLength);
-    }
-    
-    public byte[] readTLVFilePIN(byte[] aid, byte[] ef, byte kid, 
-        PINProvider provider, PINSpec spec, int maxLength) throws SignatureCardException {
+  abstract int verifyPIN(PINProvider pinProvider, PINSpec spec, byte kid,
+      int kfpc) throws CardException, SignatureCardException;
 
-        try {
+  public byte[] readTLVFile(byte[] aid, byte[] ef, int maxLength)
+      throws SignatureCardException {
+    return readTLVFilePIN(aid, ef, (byte) 0, null, null, maxLength);
+  }
 
-            // SELECT FILE (AID)
-            byte[] rb = selectFileAID(aid);
-            if (rb[rb.length - 2] != (byte) 0x90 || 
-                rb[rb.length - 1] != (byte) 0x00) {
-                
-                throw new SignatureCardException(
-                    "SELECT FILE with " +
-                    "AID=" + toString(aid) + " failed (" +
-                    "SW=" +
-                    Integer.toHexString(
-                    (0xFF & (int) rb[rb.length - 1]) |
-                    (0xFF & (int) rb[rb.length - 2]) << 8) +
-                    ").");
-                
-            }
+  public byte[] readTLVFilePIN(byte[] aid, byte[] ef, byte kid,
+      PINProvider provider, PINSpec spec, int maxLength)
+      throws SignatureCardException {
 
-            // SELECT FILE (EF)
-            rb = selectFileFID(ef);
-            if (rb[rb.length - 2] != (byte) 0x90 || 
-                rb[rb.length - 1] != (byte) 0x00) {
-                
-                throw new SignatureCardException(
-                    "SELECT FILE with " +
-                    "FID=" + toString(ef) + " failed (" +
-                    "SW=" +
-                    Integer.toHexString(
-                    (0xFF & (int) rb[rb.length - 1]) |
-                    (0xFF & (int) rb[rb.length - 2]) << 8) +
-                    ").");
-            }
+    try {
 
-            // try to READ BINARY
-            int sw = readBinary(0, 1, new byte[1]);
-            if (provider != null && sw == 0x6982) {
-                
-                // VERIFY
-                int kfpc = -1; // unknown
-                while (true) {
-                    kfpc = verifyPIN(provider, spec, kid, kfpc);
-                    if (kfpc < -1) {
-                        return null;
-                    } else if (kfpc < 0) {
-                        break;
-                    }
-                }
-            } else if (sw != 0x9000) {
-                throw new SignatureCardException("READ BINARY failed (SW=" +
-                    Integer.toHexString(sw) + ").");
-            }
+      // SELECT FILE (AID)
+      byte[] rb = selectFileAID(aid);
+      if (rb[rb.length - 2] != (byte) 0x90 || rb[rb.length - 1] != (byte) 0x00) {
 
-            // READ BINARY
-            byte[] data = readBinaryTLV(maxLength, (byte) 0x30);
+        throw new SignatureCardException("SELECT FILE with "
+            + "AID="
+            + toString(aid)
+            + " failed ("
+            + "SW="
+            + Integer.toHexString((0xFF & (int) rb[rb.length - 1])
+                | (0xFF & (int) rb[rb.length - 2]) << 8) + ").");
 
-            return data;
-            
-            
-        } catch (CardException e) {
-            throw new SignatureCardException("Failed to acces card.", e);
+      }
+
+      // SELECT FILE (EF)
+      rb = selectFileFID(ef);
+      if (rb[rb.length - 2] != (byte) 0x90 || rb[rb.length - 1] != (byte) 0x00) {
+
+        throw new SignatureCardException("SELECT FILE with "
+            + "FID="
+            + toString(ef)
+            + " failed ("
+            + "SW="
+            + Integer.toHexString((0xFF & (int) rb[rb.length - 1])
+                | (0xFF & (int) rb[rb.length - 2]) << 8) + ").");
+      }
+
+      // try to READ BINARY
+      int sw = readBinary(0, 1, new byte[1]);
+      if (provider != null && sw == 0x6982) {
+
+        // VERIFY
+        int kfpc = -1; // unknown
+        while (true) {
+          kfpc = verifyPIN(provider, spec, kid, kfpc);
+          if (kfpc < -1) {
+            return null;
+          } else if (kfpc < 0) {
+            break;
+          }
         }
+      } else if (sw != 0x9000) {
+        throw new SignatureCardException("READ BINARY failed (SW="
+            + Integer.toHexString(sw) + ").");
+      }
 
+      // READ BINARY
+      byte[] data = readBinaryTLV(maxLength, (byte) 0x30);
+
+      return data;
+
+    } catch (CardException e) {
+      throw new SignatureCardException("Failed to acces card.", e);
     }
 
-  
-  ResponseAPDU transmit(CardChannel channel, CommandAPDU commandAPDU) throws CardException {
-    logger.fine(commandAPDU + "\n" + toString(commandAPDU.getBytes()));
+  }
+
+  ResponseAPDU transmit(CardChannel channel, CommandAPDU commandAPDU)
+      throws CardException {
+    log.trace(commandAPDU + "\n" + toString(commandAPDU.getBytes()));
     long t0 = System.currentTimeMillis();
     ResponseAPDU responseAPDU = channel.transmit(commandAPDU);
     long t1 = System.currentTimeMillis();
-    logger.fine(responseAPDU + "\n[" + (t1 - t0) + "ms] " + toString(responseAPDU.getBytes()));
+    log.trace(responseAPDU + "\n[" + (t1 - t0) + "ms] "
+        + toString(responseAPDU.getBytes()));
     return responseAPDU;
   }
 
@@ -233,15 +238,14 @@ public abstract class AbstractSignatureCard implements SignatureCard {
     byte[] atrBytes = atr.getBytes();
     if (atrBytes.length >= 6) {
       ifs_ = 0xFF & atr.getBytes()[6];
-      logger.finer("Setting IFS (information field size) to " + ifs_);
+      log.trace("Setting IFS (information field size) to " + ifs_);
     }
   }
 
   CardChannel getCardChannel() {
     return card_.getBasicChannel();
   }
-  
-  
+
   @Override
   public void setLocale(Locale locale) {
     if (locale == null) {
@@ -249,11 +253,24 @@ public abstract class AbstractSignatureCard implements SignatureCard {
     }
     this.locale = locale;
   }
-  
+
   protected ResourceBundle getResourceBundle() {
     if (i18n == null) {
       i18n = ResourceBundle.getBundle(resourceBundleName, locale);
     }
     return i18n;
   }
+
+  @Override
+  public void reset() {
+    log.debug("Resetting card");
+    if (card_ != null) {
+      try {
+        card_.disconnect(true);
+      } catch (CardException e) {
+        log.info("Error while resetting card", e);
+      }
+    }
+  }
+
 }

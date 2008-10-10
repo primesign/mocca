@@ -78,6 +78,8 @@ public interface SignatureCard {
 
   public byte[] getCertificate(KeyboxName keyboxName)
       throws SignatureCardException;
+  
+  public void reset();
 
   /**
    * 

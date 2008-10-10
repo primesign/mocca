@@ -153,8 +153,6 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
       return -2;
     }
 
-    logger.finest("PIN=" + pin);
-
     byte[] asciiPIN = pin.getBytes(Charset.forName("ASCII"));
     byte[] encodedPIN = new byte[8];
     System.arraycopy(asciiPIN, 0, encodedPIN, 0, Math.min(asciiPIN.length,

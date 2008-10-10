@@ -319,4 +319,10 @@ public class SWCard implements SignatureCard {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
+  @Override
+  public void reset() {
+    // TODO Auto-generated method stub
+    
+  }
+
 }
