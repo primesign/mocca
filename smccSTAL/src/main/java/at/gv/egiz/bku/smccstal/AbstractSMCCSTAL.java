@@ -89,6 +89,10 @@ public abstract class AbstractSMCCSTAL implements STAL {
             if (response != null) {
               if (response instanceof ErrorResponse) {
                 log.info("Got an error response");
+                ErrorResponse err = (ErrorResponse) response;
+                if (err.getErrorCode() == 6001) {
+                  retryCounter = Integer.MAX_VALUE-1;
+                }
                 if (++retryCounter < maxRetries) {
                   log.info("Retrying");
                   signatureCard.disconnect(true);
