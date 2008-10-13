@@ -54,7 +54,6 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingUtilities;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import org.apache.commons.logging.Log;
@@ -196,14 +195,15 @@ public class SimpleGUI implements BKUGUIFacade {
       if (background == null) {
         background = this.getClass().getResource(DEFAULT_BACKGROUND);
       }
-        contentPanel = new ImagePanel(background);
+      contentPanel = new ImagePanel(background);
 
 //        contentPanel.setBorder(new TitledBorder("content"));
         
 //        headerPanel = new JPanel();
+//        headerPanel.setOpaque(false);
         mainPanel = new JPanel();
         mainPanel.setOpaque(false);
-        buttonPanel = new JPanel(); // new ImagePanel(LOGO_RESOURCE); //new JPanel();
+        buttonPanel = new JPanel(); 
         buttonPanel.setOpaque(false);
 
 //        headerPanel.setBorder(new TitledBorder("header"));
@@ -570,13 +570,12 @@ public class SimpleGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                    .addGroup(mainPanelLayout.createSequentialGroup()
-                        .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-//                        .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                        .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)) //))
-                    .addComponent(infoLabel));
+                  mainPanelLayout.createSequentialGroup()
+                    .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                       .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) //))
+                       .addComponent(infoLabel)));
 
                 mainPanelLayout.setVerticalGroup(
                   mainPanelLayout.createSequentialGroup()
@@ -589,7 +588,6 @@ public class SimpleGUI implements BKUGUIFacade {
                         .addComponent(infoLabel));
 //                        .addGap(signPinLabel.getFont().getSize())); 
 
-                
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
 
@@ -731,9 +729,9 @@ public class SimpleGUI implements BKUGUIFacade {
                       .addGroup(GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
                           .addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-//                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                      .addComponent(infoLabel));
+                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(infoLabel))));
 
                 mainPanelLayout.setVerticalGroup(
                   mainPanelLayout.createSequentialGroup()
@@ -1384,82 +1382,4 @@ public class SimpleGUI implements BKUGUIFacade {
           }
       }
     }
-    
-//    private String parseToken(final char[] terminators) {
-//        char ch;
-//        i1 = pos;
-//        i2 = pos;
-//        while (hasChar()) {
-//            ch = chars[pos];
-//            if (isOneOf(ch, terminators)) {
-//                break;
-//            }
-//            i2++;
-//            pos++;
-//        }
-//        return getToken(false);
-//    }
-    
-//     private static String getCharset(String contentType) {
-//       
-//       StringTokenizer t = new StringTokenizer
-//       
-//       if (contentType == null) {
-//         return "UTF-8";
-//       }
-//       
-//       int pos = 0;
-//       int len = contentType.length();
-//       
-//       while (pos < len) {
-//         pos++;
-//         String paramName = parseToken(new char[] {
-//                    '=', separator });
-//       }
-//       
-//        HashMap params = new HashMap();
-//        this.chars = chars;
-//        this.pos = offset;
-//        this.len = length;
-//
-//        String paramName = null;
-//        String paramValue = null;
-//        while (hasChar()) {
-//            paramName = parseToken(new char[] {
-//                    '=', separator });
-//            paramValue = null;
-//            if (hasChar() && (chars[pos] == '=')) {
-//                pos++; // skip '='
-//                paramValue = parseQuotedToken(new char[] {
-//                        separator });
-//            }
-//            if (hasChar() && (chars[pos] == separator)) {
-//                pos++; // skip separator
-//            }
-//            if ((paramName != null) && (paramName.length() > 0)) {
-//                if (this.lowerCaseNames) {
-//                    paramName = paramName.toLowerCase();
-//                }
-//                params.put(paramName, paramValue);
-//            }
-//        }
-//        return params;
-//       
-//       
-//       
-//       Parser
-//      ParameterParser pf = new ParameterParser();
-//    pf.setLowerCaseNames(true);
-//    Map map = pf.parse(contentType, SEPERATOR);
-//    String retVal = (String) map.get(CHAR_SET);
-//    if ((retVal == null) && (replaceNullWithDefault)) {
-//      if (map.containsKey(APPLICATION_URL_ENCODED)) {
-//        // default charset for url encoded data
-//        return "UTF-8";
-//      }
-//      retVal = getDefaultCharset();
-//    }
-//    return retVal;
-//  }
-    
 }

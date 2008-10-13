@@ -67,7 +67,7 @@ public class BKUGUI implements BKUGUIFacade {
     
     private static final Log log = LogFactory.getLog(BKUGUI.class);
     public static final String MESSAGES_BUNDLE = "at/gv/egiz/bku/gui/Messages";
-    public static final String LOGO_RESOURCE = "/images/logo.png";
+    public static final String DEFAULT_BACKGROUND = "/images/mocca_default.png"; //logo.png";
     public static final String HASHDATA_FONT = "Monospaced";
     public static final Color ERROR_COLOR = Color.RED;
     public static final Color HYPERLINK_COLOR = Color.BLUE;
@@ -192,11 +192,19 @@ public class BKUGUI implements BKUGUIFacade {
 
     protected void initContentPanel(URL background) {
 
-        contentPanel = new JPanel();
+      if (background == null) {
+        background = this.getClass().getResource(DEFAULT_BACKGROUND);
+      }
+      contentPanel = new ImagePanel(background);
 
+//        contentPanel.setBorder(new TitledBorder("content"));
+        
 //        headerPanel = new JPanel();
-        mainPanel = new JPanel();
-        buttonPanel = new JPanel();
+//        headerPanel.setOpaque(false);
+//        mainPanel = new JPanel();
+//        mainPanel.setOpaque(false);
+//        buttonPanel = new JPanel(); 
+//        buttonPanel.setOpaque(false);
 
 //        headerPanel.setBorder(new TitledBorder("header"));
 //        mainPanel.setBorder(new TitledBorder("main"));
@@ -389,16 +397,12 @@ public class BKUGUI implements BKUGUIFacade {
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
 
-//                buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
                 buttonPanelLayout.setHorizontalGroup(
                   buttonPanelLayout.createSequentialGroup()
-//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//                    .addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
                         .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
                 buttonPanelLayout.setVerticalGroup(
                   buttonPanelLayout.createSequentialGroup()
-//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(cancelButton));
 
                 contentPanel.validate();
@@ -452,16 +456,12 @@ public class BKUGUI implements BKUGUIFacade {
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
 
-//                buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
                 buttonPanelLayout.setHorizontalGroup(
                   buttonPanelLayout.createSequentialGroup()
-//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//                    .addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
                         .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
                 buttonPanelLayout.setVerticalGroup(
                   buttonPanelLayout.createSequentialGroup()
-//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(cancelButton));
                 
                 contentPanel.validate();
@@ -522,8 +522,8 @@ public class BKUGUI implements BKUGUIFacade {
                 });
 
                 JLabel infoLabel = new JLabel();
+                infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                 if (numRetries < 0) {
-                    infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                     String pinsizePattern = messages.getString(LABEL_PINSIZE);
                     String pinSize = String.valueOf(pinSpec.getMinLength());
                     if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
@@ -593,7 +593,6 @@ public class BKUGUI implements BKUGUIFacade {
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
 
-//                buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
                 buttonPanelLayout.setHorizontalGroup(
                   buttonPanelLayout.createSequentialGroup()
                         .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -738,7 +737,6 @@ public class BKUGUI implements BKUGUIFacade {
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
 
-//                buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
                 buttonPanelLayout.setHorizontalGroup(
                   buttonPanelLayout.createSequentialGroup()
                         .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -844,16 +842,12 @@ public class BKUGUI implements BKUGUIFacade {
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
 
-//                buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
                 buttonPanelLayout.setHorizontalGroup(
                   buttonPanelLayout.createSequentialGroup()
-//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//                    .addGroup(GroupLayout.Alignment.TRAILING, buttonPanelLayout.createSequentialGroup()
                         .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(okButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
                 buttonPanelLayout.setVerticalGroup(
                   buttonPanelLayout.createSequentialGroup()
-//                  buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(okButton));
 
                 contentPanel.validate();
@@ -1068,7 +1062,6 @@ public class BKUGUI implements BKUGUIFacade {
           GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
           buttonPanel.setLayout(buttonPanelLayout);
 
-  //        buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
           buttonPanelLayout.setHorizontalGroup(
             buttonPanelLayout.createSequentialGroup()
                   .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1211,7 +1204,6 @@ public class BKUGUI implements BKUGUIFacade {
           GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
           buttonPanel.setLayout(buttonPanelLayout);
 
-  //        buttonPanelLayout.linkSize(cancelButton, okButton, signButton, backButton, saveButton);        
           buttonPanelLayout.setHorizontalGroup(
             buttonPanelLayout.createSequentialGroup()
                   .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1343,82 +1335,4 @@ public class BKUGUI implements BKUGUIFacade {
           }
       }
     }
-    
-//    private String parseToken(final char[] terminators) {
-//        char ch;
-//        i1 = pos;
-//        i2 = pos;
-//        while (hasChar()) {
-//            ch = chars[pos];
-//            if (isOneOf(ch, terminators)) {
-//                break;
-//            }
-//            i2++;
-//            pos++;
-//        }
-//        return getToken(false);
-//    }
-    
-//     private static String getCharset(String contentType) {
-//       
-//       StringTokenizer t = new StringTokenizer
-//       
-//       if (contentType == null) {
-//         return "UTF-8";
-//       }
-//       
-//       int pos = 0;
-//       int len = contentType.length();
-//       
-//       while (pos < len) {
-//         pos++;
-//         String paramName = parseToken(new char[] {
-//                    '=', separator });
-//       }
-//       
-//        HashMap params = new HashMap();
-//        this.chars = chars;
-//        this.pos = offset;
-//        this.len = length;
-//
-//        String paramName = null;
-//        String paramValue = null;
-//        while (hasChar()) {
-//            paramName = parseToken(new char[] {
-//                    '=', separator });
-//            paramValue = null;
-//            if (hasChar() && (chars[pos] == '=')) {
-//                pos++; // skip '='
-//                paramValue = parseQuotedToken(new char[] {
-//                        separator });
-//            }
-//            if (hasChar() && (chars[pos] == separator)) {
-//                pos++; // skip separator
-//            }
-//            if ((paramName != null) && (paramName.length() > 0)) {
-//                if (this.lowerCaseNames) {
-//                    paramName = paramName.toLowerCase();
-//                }
-//                params.put(paramName, paramValue);
-//            }
-//        }
-//        return params;
-//       
-//       
-//       
-//       Parser
-//      ParameterParser pf = new ParameterParser();
-//    pf.setLowerCaseNames(true);
-//    Map map = pf.parse(contentType, SEPERATOR);
-//    String retVal = (String) map.get(CHAR_SET);
-//    if ((retVal == null) && (replaceNullWithDefault)) {
-//      if (map.containsKey(APPLICATION_URL_ENCODED)) {
-//        // default charset for url encoded data
-//        return "UTF-8";
-//      }
-//      retVal = getDefaultCharset();
-//    }
-//    return retVal;
-//  }
-    
 }
