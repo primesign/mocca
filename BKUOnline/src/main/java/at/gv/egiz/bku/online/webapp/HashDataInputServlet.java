@@ -70,31 +70,35 @@ public class HashDataInputServlet extends SpringBKUServlet {
     }
     List<HashDataInput> hdi = rb.getHashDataInput();
     log.debug("Got hashdata list with " + hdi.size() + " entries");
-    String param = req.getParameter("number");
+    String param = req.getParameter("refId");
+    log.debug("Got request for refId:" + param);
     if ((param == null) && (hdi.size() > 1)) {
       resp.sendRedirect("multiHashDataInput.html");
       return;
     }
-    int num = 0;
-    if (param != null) {
-      log.debug("Got request for hashdata#" + num);
-      num = Integer.parseInt(param);
+    if ((param == null) && (hdi.size() == 1)) {
+      param = hdi.get(0).getReferenceId();
+      log.debug("Request parameter not set, setting to: "+param);
     }
-    if ((hdi.size() <= num) || (num < 0)) {
-      log.warn("Requested hashdatainput exceeds listsize");
-      resp.sendError(-1);
-      return;
+    for (HashDataInput hd : hdi) {
+      if (hd.getReferenceId().equals(param)) {
+        log.debug("Found hashdatainput for refId:" + param);
+        resp.setCharacterEncoding(hd.getEncoding());
+        resp.setContentType(hd.getMimeType());
+        String charSet = hd.getEncoding();
+        if (charSet == null) {
+          charSet = "UTF-8";
+        }
+        Reader r = new InputStreamReader(hd.getHashDataInput(), charSet);
+        Writer w = new OutputStreamWriter(resp.getOutputStream(), charSet);
+        StreamUtil.copyStream(r, w);
+        w.close();
+        return;
+
+      }
     }
-    resp.setCharacterEncoding(req.getCharacterEncoding());
-    resp.setContentType(hdi.get(num).getMimeType());
-    String charSet = req.getCharacterEncoding();
-    if (charSet == null) {
-      charSet = "UTF-8";
-    }
-    Reader r = new InputStreamReader(hdi.get(num).getHashDataInput(), charSet);
-    Writer w = new OutputStreamWriter(resp.getOutputStream(), charSet);
-    StreamUtil.copyStream(r, w);
-    w.close();
+    log.error("Cannot find hashdata for id:" + param);
+    resp.sendError(404);
     return;
   }
 

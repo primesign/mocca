@@ -27,6 +27,9 @@ import javax.swing.WindowConstants;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUGUIFactory;
 import at.gv.egiz.bku.online.applet.BKUApplet;
+import at.gv.egiz.bku.online.applet.QuitHandler;
+import at.gv.egiz.bku.smccstal.AbstractSMCCSTAL;
+import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
 
@@ -36,6 +39,7 @@ public class SMCCSTALFactory implements STALFactory {
 
   @Override
   public STAL createSTAL() {
+    AbstractSMCCSTAL.addRequestHandler(QuitRequest.class, QuitHandler.getInstance());
     SMCCSTAL stal;
     JDialog dialog;
     ResourceBundle resourceBundle;
@@ -51,6 +55,7 @@ public class SMCCSTALFactory implements STALFactory {
     stal = new SMCCSTAL(new BKUGuiProxy(dialog, gui), dialog, resourceBundle);
     dialog.setPreferredSize(new Dimension(400, 200));
     dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+    dialog.setTitle("MOCCA");
     dialog.pack();
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     Dimension frameSize = dialog.getSize();
