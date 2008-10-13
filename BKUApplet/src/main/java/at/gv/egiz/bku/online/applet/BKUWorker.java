@@ -245,7 +245,9 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
         log.error(e);
       }
     }
-    signatureCard.disconnect(false);
+    if (signatureCard != null) {
+      signatureCard.disconnect(false);
+    }
     QuitHandler.getInstance().unregisterHandlerInstance(this);
     sendRedirect();
   }
