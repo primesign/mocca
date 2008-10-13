@@ -30,6 +30,7 @@ public interface BKUGUIFacade {
   public static final String ERR_NO_PCSC = "error.pcsc";
   public static final String ERR_NO_CARDTERMINAL = "error.cardterminal";
   public static final String ERR_NO_HASHDATA = "error.no.hashdata";
+  public static final String ERR_DISPLAY_HASHDATA = "error.display.hashdata";
   public static final String ERR_WRITE_HASHDATA = "error.write.hashdata";
   public static final String ERR_INVALID_HASH = "error.invalid.hash";
   

@@ -53,6 +53,7 @@
 		var parameters = {
 			background : '<%=backgroundImg%>',
 			WSDL_URL :'../stal?wsdl',
+                        HashDataURL : '../hashDataInput',
 			SessionID : '<%=session.getId()%>',
 			redirectURL : '../bkuResult'
 		};

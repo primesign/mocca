@@ -17,6 +17,7 @@
 package at.gv.egiz.bku.local.stal;
 
 import at.gv.egiz.bku.slcommands.impl.DataObjectHashDataInput;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,68 +42,92 @@ import java.io.InputStream;
  */
 public class LocalSignRequestHandler extends SignRequestHandler {
 
-  private static final Log log = LogFactory
-      .getLog(LocalSignRequestHandler.class);
-  private List<HashDataInput> hashDataInput = Collections.EMPTY_LIST;
+  private static final Log log = LogFactory.getLog(LocalSignRequestHandler.class);
+  private List<HashDataInput> hashDataInputs = Collections.EMPTY_LIST;
 
-  public LocalSignRequestHandler() {
-  }
-
+  /**
+   * If the request is a SIGN request, it contains a list of DataObjectHashDataInput 
+   * providing the pre-digested input stream (that can be obtained repeatedly) if 
+   * reference caching is enabled (or null otherwise).
+   * @param request
+   * @return
+   */
   @SuppressWarnings("unchecked")
   @Override
   public STALResponse handleRequest(STALRequest request) {
     if (request instanceof SignRequest) {
       SignRequest signReq = (SignRequest) request;
-      hashDataInput = signReq.getHashDataInput();
+      hashDataInputs = signReq.getHashDataInput();
     }
     return super.handleRequest(request);
   }
 
+  /**
+   * 
+   * @param dsigReferences
+   * @throws java.lang.Exception
+   */
   @Override
-  public List<HashDataInput> getCashedHashDataInputs(
-      List<ReferenceType> dsigReferences) throws Exception {
-    ArrayList<HashDataInput> result = new ArrayList<HashDataInput>();
+  public void displayHashDataInputs(List<ReferenceType> dsigReferences) throws Exception {
+    if (dsigReferences == null || dsigReferences.size() < 1) {
+      log.error("No hashdata input selected to be displayed: null");
+      throw new Exception("No HashData Input selected to be displayed");
+    }
+
+    ArrayList<HashDataInput> selectedHashDataInputs = new ArrayList<HashDataInput>();
     for (ReferenceType dsigRef : dsigReferences) {
       // don't get Manifest, QualifyingProperties, ...
       if (dsigRef.getType() == null) {
         String dsigRefId = dsigRef.getId();
         if (dsigRefId != null) {
-          for (HashDataInput hdi : hashDataInput) {
-            if (hdi.getReferenceId().equals(dsigRefId)) {
-              if (hdi instanceof DataObjectHashDataInput) {
-                if (log.isTraceEnabled())
-                  log.trace("adding DataObjectHashDataInput");
-                result.add(hdi);
-              } else if (hdi instanceof ByteArrayHashDataInput) {
-                if (log.isTraceEnabled())
-                  log.trace("adding ByteArrayHashDataInput");
-                result.add(hdi);
-              } else {
-                if (log.isDebugEnabled())
-                  log.debug("provided HashDataInput not chaching enabled, creating ByteArrayHashDataInput");
-                
-                InputStream hdIs = hdi.getHashDataInput();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream(hdIs.available());
-                int b;
-                while ((b = hdIs.read()) != -1) {
-                  baos.write(b);
-                }
-                ByteArrayHashDataInput baHdi = new ByteArrayHashDataInput(baos.toByteArray(), hdi.getReferenceId(), hdi.getMimeType(), hdi.getEncoding());
-                result.add(baHdi);
+          boolean hdiAvailable = false;
+          for (HashDataInput hashDataInput : hashDataInputs) {
+            if (dsigRefId.equals(hashDataInput.getReferenceId())) {
+              log.debug("display hashdata input for dsig:SignedReference " + dsigRefId);
+              if (!(hashDataInput instanceof DataObjectHashDataInput)) {
+                log.warn(
+                  "expected DataObjectHashDataInput for LocalSignRequestHandler, got " + hashDataInput.getClass().getName());
+                hashDataInput = getByteArrayHashDataInput(hashDataInput);
               }
+              selectedHashDataInputs.add(hashDataInput);
+              hdiAvailable = true;
+              break;
             }
+          }
+          if (!hdiAvailable) {
+            log.error("no hashdata input for dsig:SignedReference " + dsigRefId);
+            throw new Exception(
+              "No HashDataInput available for dsig:SignedReference " + dsigRefId);
           }
         } else {
           throw new Exception(
-              "Cannot get HashDataInput for dsig:Reference without Id attribute");
+            "Cannot get HashDataInput for dsig:Reference without Id attribute");
         }
       }
     }
-    return result;
+
+    if (selectedHashDataInputs.size() < 1) {
+      log.error("dsig:SignedInfo does not contain a data reference");
+      throw new Exception("dsig:SignedInfo does not contain a data reference");
+    }
+    gui.showHashDataInputDialog(selectedHashDataInputs, this, "ok");
   }
 
   @Override
   public SMCCSTALRequestHandler newInstance() {
     return new LocalSignRequestHandler();
+  }
+
+  private ByteArrayHashDataInput getByteArrayHashDataInput(HashDataInput hashDataInput) throws IOException {
+
+    InputStream hdIs = hashDataInput.getHashDataInput();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream(hdIs.available());
+    int b;
+    while ((b = hdIs.read()) != -1) {
+      baos.write(b);
+    }
+    ByteArrayHashDataInput hdi = new ByteArrayHashDataInput(baos.toByteArray(), hashDataInput.getReferenceId(), hashDataInput.getMimeType(), hashDataInput.getEncoding());
+
+    return hdi;
   }
 }

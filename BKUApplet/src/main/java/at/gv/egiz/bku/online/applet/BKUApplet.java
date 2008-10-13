@@ -46,6 +46,7 @@ public class BKUApplet extends JApplet {
     public final static String LOCALE_PARAM_KEY = "Locale";
     public final static String LOGO_URL_KEY = "LogoURL";
     public final static String WSDL_URL = "WSDL_URL";
+    public final static String HASHDATA_URL = "HashDataURL";
     public final static String SESSION_ID = "SessionID";
     public static final String BACKGROUND_PARAM = "background";
     

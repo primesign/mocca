@@ -17,6 +17,7 @@
 package at.gv.egiz.bku.smccstal;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
+import java.awt.event.ActionEvent;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -42,31 +43,18 @@ import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.SignResponse;
-import at.gv.egiz.stal.impl.ByteArrayHashDataInput;
 import at.gv.egiz.stal.signedinfo.ObjectFactory;
-import at.gv.egiz.stal.signedinfo.ReferenceType;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
 import at.gv.egiz.stal.util.JCEAlgorithmNames;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.awt.event.ActionListener;
 import java.security.DigestException;
-import java.security.DigestInputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
-/**
- * This class is NOT thread-safe. 
- * handleRequest() sets the SignedInfo which is used in providePIN.
- */
-public abstract class SignRequestHandler extends AbstractRequestHandler implements
-  CashedHashDataInputResolver {
+public abstract class SignRequestHandler extends AbstractRequestHandler implements HashDataInputDisplay {
 
     private static Log log = LogFactory.getLog(SignRequestHandler.class);
     private static JAXBContext jaxbContext;
     
-
     static {
         try {
             jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
@@ -74,11 +62,6 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
             log.fatal("Cannot init jaxbContext", e);
         }
     }
-    /** the SignedInfo of the current SignRequest */
-//    protected SignedInfoType signedInfo;
-//    protected List<ByteArrayHashDataInput> hashDataInputs;
-    
-//    private int retryCounter = 0;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -192,99 +175,10 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
 //        return new SignRequestHandler();
 //    }
 
-    /**
-     * implementations may verify the hashvalue 
-     * @post-condition returned list != null
-     * @return
-     */
-    @Override
-    public abstract List<HashDataInput> getCashedHashDataInputs(List<ReferenceType> signedReferences) throws Exception; 
-//    {
-//        //TODO
-//        log.warn("Return empty HashDataInput");
-//        return new ArrayList<HashDataInput>();
-//    }
+    
 
     
-    
-//    protected void validateHashDataInputs(List<ReferenceType> signedReferences, List<HashDataInput> hashDataInputs) {
-//      if (hashDataInputs != null) {
-//
-//          Map<String, HashDataInput> hashDataIdMap = new HashMap<String, HashDataInput>();
-//          for (HashDataInput hdi : hashDataInputs) {
-//            if (log.isTraceEnabled()) {
-//              log.trace("Provided HashDataInput for reference " + hdi.getReferenceId());
-//            }
-//            hashDataIdMap.put(hdi.getReferenceId(), hdi);
-//          }
-//
-//          List<GetHashDataInputType.Reference> reqRefs = request.getReference();
-//          for (GetHashDataInputType.Reference reqRef : reqRefs) {
-//            String reqRefId = reqRef.getID();
-//            HashDataInput reqHdi = hashDataIdMap.get(reqRefId);
-//            if (reqHdi == null) {
-//              String msg = "Failed to resolve HashDataInput for reference " + reqRefId;
-//              log.error(msg);
-//              GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
-//              faultInfo.setErrorCode(1);
-//              faultInfo.setErrorMessage(msg);
-//              throw new GetHashDataInputFault(msg, faultInfo);
-//            }
-//
-//            InputStream hashDataIS = reqHdi.getHashDataInput();
-//            if (hashDataIS == null) {
-//              //HashDataInput not cached?
-//              String msg = "Failed to obtain HashDataInput for reference " + reqRefId + ", reference not cached";
-//              log.error(msg);
-//              GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
-//              faultInfo.setErrorCode(1);
-//              faultInfo.setErrorMessage(msg);
-//              throw new GetHashDataInputFault(msg, faultInfo);
-//            }
-//            ByteArrayOutputStream baos = null;
-//            try {
-//              if (log.isDebugEnabled()) {
-//                log.debug("Resolved HashDataInput " + reqRefId + " (" + reqHdi.getMimeType() + ";charset=" + reqHdi.getEncoding() + ")");
-//              }
-//              baos = new ByteArrayOutputStream(hashDataIS.available());
-//              int c;
-//              while ((c = hashDataIS.read()) != -1) {
-//                baos.write(c);
-//              }
-//              GetHashDataInputResponseType.Reference ref = new GetHashDataInputResponseType.Reference();
-//              ref.setID(reqRefId);
-//              ref.setMimeType(reqHdi.getMimeType());
-//              ref.setEncoding(reqHdi.getEncoding());
-//              ref.setValue(baos.toByteArray());
-//              response.getReference().add(ref);
-//            } catch (IOException ex) {
-//              String msg = "Failed to get HashDataInput for reference " + reqRefId;
-//              log.error(msg, ex);
-//              GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
-//              faultInfo.setErrorCode(1);
-//              faultInfo.setErrorMessage(msg);
-//              throw new GetHashDataInputFault(msg, faultInfo, ex);
-//            } finally {
-//              try {
-//                baos.close();
-//              } catch (IOException ex) {
-//              }
-//            }
-//          }
-//          return response;
-//        }
-//      for (ReferenceType reference : signedReferences) {
-//        String algorithm = reference.getDigestMethod().getAlgorithm();
-//        
-//      }
-//    }
-  
-  
-  /**
-   * cashes the HashDataInputs provided by SignRequestHandler.this.getHashDataInputs()
-   * (don't know whether outer class is LocalSignRequestHandler or WSSignRequestHandler, providing DataObjectHDI or ByteArrayHDI, resp)
-   */
-  class STALPinProvider implements PINProvider {
+  class STALPinProvider implements PINProvider, ActionListener {
     
     protected SignedInfoType signedInfo;
     protected List<HashDataInput> hashDataInputs;
@@ -293,49 +187,73 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
     public STALPinProvider(SignedInfoType signedInfo) {
       this.signedInfo = signedInfo;
     }
+    
+    private void showSignaturePINDialog(PINSpec spec, int retries) {
+      if (retryCounter > 0) {
+          gui.showSignaturePINRetryDialog(spec, retries, SignRequestHandler.this, "sign", SignRequestHandler.this,
+            "cancel", SignRequestHandler.this, "hashData");
+        } else {
+          gui.showSignaturePINDialog(spec, SignRequestHandler.this, "sign", SignRequestHandler.this, "cancel", SignRequestHandler.this,
+            "hashData");
+        }
+    }
   
     @Override
     public String providePIN(PINSpec spec, int retries) {
-    if (retryCounter++ > 0) {
-      log.info("PIN wrong retrying ...");
-      gui.showSignaturePINRetryDialog(spec, retries, SignRequestHandler.this, "sign", SignRequestHandler.this,
-        "cancel", SignRequestHandler.this, "hashData");
-    } else {
-      gui.showSignaturePINDialog(spec, SignRequestHandler.this, "sign", SignRequestHandler.this, "cancel", SignRequestHandler.this,
-        "hashData");
-    }
+    
+      showSignaturePINDialog(spec, retries);
+      
     do {
       waitForAction();
       gui.showWaitDialog(null);
       if (actionCommand.equals("cancel")) {
         return null;
       } else if (actionCommand.equals("hashData")) {
-        if (signedInfo != null) {
+        
+        showSignaturePINDialog(spec, retries);
+          
           try {
-//            gui.showWaitDialog(null);
-            if (hashDataInputs == null || hashDataInputs.size() == 0) {
-              hashDataInputs = getCashedHashDataInputs(signedInfo.getReference());
-            }
-            gui.showHashDataInputDialog(hashDataInputs, SignRequestHandler.this, "ok");
+            displayHashDataInputs(signedInfo.getReference());
           } catch (DigestException ex) { 
             log.error("Bad digest value: " + ex.getMessage());
             gui.showErrorDialog(BKUGUIFacade.ERR_INVALID_HASH, new Object[] {ex.getMessage()});
           } catch (Exception ex) {
-            //FIXME localize messages
-            log.error("Failed to obtain HashDataInputs: " + ex.getMessage());
-            gui.showErrorDialog(BKUGUIFacade.ERR_NO_HASHDATA, new Object[] {ex.getMessage()}, SignRequestHandler.this, "ok");
+            log.error("Could not display hashdata inputs: " + ex.getMessage());
+            gui.showErrorDialog(BKUGUIFacade.ERR_DISPLAY_HASHDATA, new Object[] {ex.getMessage()}, SignRequestHandler.this, "ok");
           }
-        } else {
-          //FIXME get all hashdatainputs
-          gui.showErrorDialog(BKUGUIFacade.ERR_NO_HASHDATA, new Object[] {"No dsig:SignedInfo provided"}, SignRequestHandler.this, "ok");
-        }
+        
+        // OLD HASHDATA DISPLAY (in applet), 
+        // register SignRequestHandler.this as hashdataListener to use
+//        if (signedInfo != null) {
+//          try {
+//            if (hashDataInputs == null || hashDataInputs.size() == 0) {
+//              hashDataInputs = getCashedHashDataInputs(signedInfo.getReference());
+//            }
+//            gui.showHashDataInputDialog(hashDataInputs, SignRequestHandler.this, "ok");
+//          } catch (DigestException ex) { 
+//            log.error("Bad digest value: " + ex.getMessage());
+//            gui.showErrorDialog(BKUGUIFacade.ERR_INVALID_HASH, new Object[] {ex.getMessage()});
+//          } catch (Exception ex) {
+//            //FIXME localize messages
+//            log.error("Failed to obtain HashDataInputs: " + ex.getMessage());
+//            gui.showErrorDialog(BKUGUIFacade.ERR_NO_HASHDATA, new Object[] {ex.getMessage()}, SignRequestHandler.this, "ok");
+//          }
+//        } else {
+//          //FIXME get all hashdatainputs
+//          gui.showErrorDialog(BKUGUIFacade.ERR_NO_HASHDATA, new Object[] {"No dsig:SignedInfo provided"}, SignRequestHandler.this, "ok");
+//        }
       } else if (actionCommand.equals("sign")) {
+        retryCounter++;
         return new String(gui.getPin());
       } else if (actionCommand.equals("ok")) {
-        gui.showSignaturePINDialog(spec, SignRequestHandler.this, "sign", SignRequestHandler.this, "cancel", SignRequestHandler.this,
-          "hashData");
+        showSignaturePINDialog(spec, retries);
       }
     } while (true);
   }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      throw new UnsupportedOperationException("Not supported yet.");
+    }
   }
 }

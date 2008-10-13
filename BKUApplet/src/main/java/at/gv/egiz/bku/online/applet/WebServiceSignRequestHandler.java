@@ -31,21 +31,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *
  * @author clemens
  */
-public class WSSignRequestHandler extends SignRequestHandler {
+public class WebServiceSignRequestHandler extends SignRequestHandler {
 
-  private static final Log log = LogFactory.getLog(WSSignRequestHandler.class);
+  private static final Log log = LogFactory.getLog(WebServiceSignRequestHandler.class);
   STALPortType stalPort;
   String sessId;
 
-  public WSSignRequestHandler(String sessId, STALPortType stalPort) {
+    public WebServiceSignRequestHandler(String sessId, STALPortType stalPort) {
     if (stalPort == null || sessId == null) {
       throw new NullPointerException("STAL port must not be null");
     }
@@ -54,8 +52,8 @@ public class WSSignRequestHandler extends SignRequestHandler {
   }
 
   @Override
-  public List<HashDataInput> getCashedHashDataInputs(List<ReferenceType> signedReferences) throws Exception {
-
+  public void displayHashDataInputs(List<ReferenceType> signedReferences) throws Exception {
+  
     GetHashDataInputType request = new GetHashDataInputType();
     request.setSessionId(sessId);
 
@@ -158,11 +156,12 @@ public class WSSignRequestHandler extends SignRequestHandler {
       }
       hashDataInputs.add(new ByteArrayHashDataInput(hdi, signedRefId, mimeType, encoding));
     }
-    return hashDataInputs;
+    
+    gui.showHashDataInputDialog(hashDataInputs, this, "ok");
   }
 
   @Override
   public SMCCSTALRequestHandler newInstance() {
-    return new WSSignRequestHandler(this.sessId, this.stalPort);
+    return new WebServiceSignRequestHandler(this.sessId, this.stalPort);
   }
 }

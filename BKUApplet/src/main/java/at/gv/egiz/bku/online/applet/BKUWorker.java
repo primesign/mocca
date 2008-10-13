@@ -46,6 +46,7 @@ import at.gv.egiz.stal.service.types.ErrorResponseType;
 import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
 import at.gv.egiz.stal.util.STALTranslator;
+import java.applet.AppletContext;
 
 public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     ActionListener, SMCCSTALRequestHandler {
@@ -54,6 +55,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
   protected BKUGUIFacade gui;
   protected BKUApplet parent;
   private STALPortType stalPort;
+  private URL hashDataURL;
   protected List<String> actionCommandList = new ArrayList<String>();
   protected Boolean actionPerformed = false;
   protected boolean finished = false;
@@ -115,13 +117,30 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     STALService stal = new STALService(wsdlURL, endpointName);
     return stal.getSTALPort();
   }
+  
+  private URL getHashDataURL() throws MalformedURLException {
+    String hashDataParam = parent.getMyAppletParameter(BKUApplet.HASHDATA_URL);
+    URL codebase = parent.getCodeBase();
+    if (hashDataParam != null) {
+      try {
+        return new URL(codebase, hashDataParam);
+//        log.debug("Found HashDataInputServlet URL: " + hashDataURL);
+      } catch (MalformedURLException ex) {
+        log.fatal("Paremeter " + BKUApplet.HASHDATA_URL + " is not a vailid URL.", ex);
+        throw new MalformedURLException(ex.getMessage());
+      }
+    } else {
+      log.fatal("Paremeter " + BKUApplet.HASHDATA_URL + " not set");
+      throw new MalformedURLException(BKUApplet.HASHDATA_URL + " not set");
+    }
+  }
 
   @Override
   public void run() {
     gui.showWelcomeDialog();
     try {
       stalPort = getSTALPort();
-
+      hashDataURL = getHashDataURL();
     } catch (Exception e) {
       log.fatal("Failed to call STAL service.", e);
       actionCommandList.clear();
@@ -135,14 +154,21 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
       }
       return;
     }
+    
+    //TODO factory for SignRequestHandler providing either WebServiceHDISignRequestHandler or ExternalHDIDisplaySignRequestHandler
+    AppletContext ctx = parent.getAppletContext();
+    log.debug("register SignRequestHandler for HashDataURL " + hashDataURL);
+    addRequestHandler(at.gv.egiz.stal.SignRequest.class, new ExternalDisplaySignRequestHandler(ctx, hashDataURL));
+    
     try {
       String sessionId = parent.getMyAppletParameter(BKUApplet.SESSION_ID);
       if (sessionId == null) {
         // use the testsession for testing
         sessionId = "TestSession";
       }
-      addRequestHandler(at.gv.egiz.stal.SignRequest.class,
-          new WSSignRequestHandler(sessionId, stalPort));
+      
+//      log.debug("register SignRequestHandler for STAL port " + BKUApplet.WSDL_URL);
+//      addRequestHandler(at.gv.egiz.stal.SignRequest.class, new WebServiceSignRequestHandler(sessionId, stalPort));
 
       ObjectFactory of = new ObjectFactory();
       GetNextRequestResponseType nextRequestResp = stalPort.connect(sessionId);
