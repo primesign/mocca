@@ -51,11 +51,13 @@
 			height :<%=height%>
 		};
 		var parameters = {
-			background : '<%=backgroundImg%>',
+                        GuiStyle : 'simple',
+			Background : '<%=backgroundImg%>',
 			WSDL_URL :'../stal?wsdl',
+                        HashDataDisplay : 'external',
                         HashDataURL : '../hashDataInput',
 			SessionID : '<%=session.getId()%>',
-			redirectURL : '../bkuResult'
+			RedirectURL : '../bkuResult'
 		};
 		var version = '1.6.0_02';
 		deployJava.runApplet(attributes, parameters, version);

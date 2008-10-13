@@ -55,7 +55,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
   protected BKUGUIFacade gui;
   protected BKUApplet parent;
   private STALPortType stalPort;
-  private URL hashDataURL;
+//  private URL hashDataURL;
   protected List<String> actionCommandList = new ArrayList<String>();
   protected Boolean actionPerformed = false;
   protected boolean finished = false;
@@ -140,7 +140,6 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     gui.showWelcomeDialog();
     try {
       stalPort = getSTALPort();
-      hashDataURL = getHashDataURL();
     } catch (Exception e) {
       log.fatal("Failed to call STAL service.", e);
       actionCommandList.clear();
@@ -155,16 +154,26 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
       return;
     }
     
-    //TODO factory for SignRequestHandler providing either WebServiceHDISignRequestHandler or ExternalHDIDisplaySignRequestHandler
-    AppletContext ctx = parent.getAppletContext();
-    log.debug("register SignRequestHandler for HashDataURL " + hashDataURL);
-    addRequestHandler(at.gv.egiz.stal.SignRequest.class, new ExternalDisplaySignRequestHandler(ctx, hashDataURL));
+//    //TODO factory for SignRequestHandler providing either WebServiceHDISignRequestHandler or ExternalHDIDisplaySignRequestHandler
+//    AppletContext ctx = parent.getAppletContext();
+//    log.debug("register SignRequestHandler for HashDataURL " + hashDataURL);
+//    addRequestHandler(at.gv.egiz.stal.SignRequest.class, new ExternalDisplaySignRequestHandler(ctx, hashDataURL));
     
     try {
       String sessionId = parent.getMyAppletParameter(BKUApplet.SESSION_ID);
       if (sessionId == null) {
         // use the testsession for testing
         sessionId = "TestSession";
+      }
+      
+      String hashDataDisplayStyle = parent.getMyAppletParameter(BKUApplet.HASHDATA_DISPLAY);
+      if (BKUApplet.HASHDATA_DISPLAY_INTERNAL.equals(hashDataDisplayStyle)) {
+        log.debug("register SignRequestHandler for STAL port " + BKUApplet.WSDL_URL);
+        addRequestHandler(at.gv.egiz.stal.SignRequest.class, new WebServiceSignRequestHandler(sessionId, stalPort));
+      } else { //if (HASHDATADISPLAY_EXTERNAL.equals(displayStyle)) {
+        URL hashDataURL = getHashDataURL();
+        log.debug("register SignRequestHandler for HashDataURL " + hashDataURL);
+        addRequestHandler(at.gv.egiz.stal.SignRequest.class, new ExternalDisplaySignRequestHandler(parent.getAppletContext(), hashDataURL));
       }
       
 //      log.debug("register SignRequestHandler for STAL port " + BKUApplet.WSDL_URL);
@@ -254,8 +263,8 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
 
   protected void sendRedirect() {
     log.info("Done, sending redirect to get BKU response");
-    String redirectURL = parent.getMyAppletParameter("redirectURL");
-    String redirectTarget = parent.getMyAppletParameter("redirectTarget");
+    String redirectURL = parent.getMyAppletParameter(BKUApplet.REDIRECT_URL);
+    String redirectTarget = parent.getMyAppletParameter(BKUApplet.REDIRECT_TARGET);
     log.info("Redirecting to: " + redirectURL + " target: " + redirectTarget);
     URL url = null;
     if (redirectURL != null) {

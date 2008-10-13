@@ -42,13 +42,19 @@ import java.net.URL;
 public class BKUApplet extends JApplet {
 
     private static Log log = LogFactory.getLog(BKUApplet.class);
+    public static final String GUI_STYLE = "GuiStyle";
     public final static String RESOURCE_BUNDLE_BASE = "at/gv/egiz/bku/online/applet/Messages";
     public final static String LOCALE_PARAM_KEY = "Locale";
     public final static String LOGO_URL_KEY = "LogoURL";
     public final static String WSDL_URL = "WSDL_URL";
+    public static final String HASHDATA_DISPLAY = "HashDataDisplay";
     public final static String HASHDATA_URL = "HashDataURL";
     public final static String SESSION_ID = "SessionID";
-    public static final String BACKGROUND_PARAM = "background";
+    public static final String BACKGROUND_PARAM = "Background";
+    public static final String REDIRECT_URL = "RedirectURL";
+    public static final String REDIRECT_TARGET = "RedirectTarget";
+    
+    public static final String HASHDATA_DISPLAY_INTERNAL = "internal";
     
     protected ResourceBundle resourceBundle;
     protected BKUWorker worker;
@@ -78,7 +84,8 @@ public class BKUApplet extends JApplet {
             log.warn(ex.getMessage() + ", using default background");
           }
         }
-        BKUGUIFacade gui = BKUGUIFactory.createGUI();
+        String guiStyle = getMyAppletParameter(GUI_STYLE);
+        BKUGUIFacade gui = BKUGUIFactory.createGUI(guiStyle);
         gui.init(getContentPane(), localeString, background);
         worker = new BKUWorker(gui, this, resourceBundle);
     }

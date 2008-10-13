@@ -17,16 +17,23 @@
 package at.gv.egiz.bku.gui;
 
 public class BKUGUIFactory {
+  
+  public static final String SIMPLE_GUI = "simple";
+  public static final String ADVANCED_GUI = "advanced";
+  
   private static BKUGUIFactory instance = new BKUGUIFactory();
 
   private BKUGUIFactory() {
   }
 
-  protected BKUGUIFacade createNewGUI() {
+  protected BKUGUIFacade createNewGUI(String style) {
+    if (ADVANCED_GUI.equals(style)) {
+      return new BKUGUI();
+    }
     return new SimpleGUI();
   }
 
-  public static BKUGUIFacade createGUI() {
-    return instance.createNewGUI();
+  public static BKUGUIFacade createGUI(String style) {
+    return instance.createNewGUI(style);
   }
 }
