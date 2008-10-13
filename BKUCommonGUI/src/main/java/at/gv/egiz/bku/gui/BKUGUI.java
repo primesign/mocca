@@ -106,7 +106,7 @@ public class BKUGUI implements BKUGUIFacade {
 //    protected JPanel iconPanel;
     protected JPanel contentPanel;
     /** right side content panels and layouts */
-    protected JPanel headerPanel;
+//    protected JPanel headerPanel;
     protected JPanel mainPanel;
     protected JPanel buttonPanel;
     /** right side fixed labels  */
@@ -199,8 +199,8 @@ public class BKUGUI implements BKUGUIFacade {
 
 //        contentPanel.setBorder(new TitledBorder("content"));
         
-        headerPanel = new JPanel();
-        headerPanel.setOpaque(false);
+//        headerPanel = new JPanel();
+//        headerPanel.setOpaque(false);
         mainPanel = new JPanel();
         mainPanel.setOpaque(false);
         buttonPanel = new JPanel(); 
