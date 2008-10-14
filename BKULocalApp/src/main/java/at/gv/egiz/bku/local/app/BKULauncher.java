@@ -1,5 +1,6 @@
 package at.gv.egiz.bku.local.app;
 
+import java.awt.SplashScreen;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -32,6 +33,7 @@ public class BKULauncher implements BKUControllerInterface {
 
   private ResourceBundle resourceBundle = null;
   private Container server;
+  private SplashScreen splash = SplashScreen.getSplashScreen();
 
   private void startUpServer() throws Exception {
     server = new Container();
@@ -57,8 +59,15 @@ public class BKULauncher implements BKUControllerInterface {
         "Greetings.Message");
   }
 
+  private void initStart() {
+
+  }
+
   private void initFinished() {
     try {
+      if (splash != null) {
+        splash.close();
+      }
       server.join();
     } catch (InterruptedException e) {
       log.info(e);
@@ -174,7 +183,9 @@ public class BKULauncher implements BKUControllerInterface {
   public static void main(String[] args) {
 
     try {
+
       BKULauncher launcher = new BKULauncher();
+      launcher.initStart();
       launcher.checkConfig(args);
       launcher.startUpServer();
       launcher.initTrayIcon();
