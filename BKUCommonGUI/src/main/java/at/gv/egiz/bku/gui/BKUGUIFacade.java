@@ -18,6 +18,7 @@ package at.gv.egiz.bku.gui;
 
 import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.smcc.PINSpec;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.ActionListener;
 import java.net.URL;
@@ -34,6 +35,43 @@ public interface BKUGUIFacade {
   public static final String ERR_WRITE_HASHDATA = "error.write.hashdata";
   public static final String ERR_INVALID_HASH = "error.invalid.hash";
   
+    public static final String MESSAGES_BUNDLE = "at/gv/egiz/bku/gui/Messages";
+    public static final String DEFAULT_BACKGROUND = "/images/mocca_default.png"; //logo.png";
+    public static final String HASHDATA_FONT = "Monospaced";
+    public static final Color ERROR_COLOR = Color.RED;
+    public static final Color HYPERLINK_COLOR = Color.BLUE;
+    public static final String TITLE_WELCOME = "title.welcome";
+    public static final String TITLE_INSERTCARD = "title.insertcard";
+    public static final String TITLE_CARD_NOT_SUPPORTED = "title.cardnotsupported";
+    public static final String TITLE_CARDPIN = "title.cardpin";
+    public static final String TITLE_SIGN = "title.sign";
+    public static final String TITLE_ERROR = "title.error";
+    public static final String TITLE_RETRY = "title.retry";
+    public static final String TITLE_WAIT = "title.wait";
+    public static final String TITLE_HASHDATA = "title.hashdata";
+    public static final String WINDOWTITLE_SAVE = "windowtitle.save";
+    public static final String WINDOWTITLE_SAVEDIR = "windowtitle.savedir";
+    public static final String WINDOWTITLE_OVERWRITE = "windowtitle.overwrite";
+    public static final String MESSAGE_WAIT = "message.wait";
+    public static final String MESSAGE_INSERTCARD = "message.insertcard";
+    public static final String MESSAGE_ENTERPIN = "message.enterpin";
+    public static final String MESSAGE_HASHDATALINK = "message.hashdatalink";
+    public static final String MESSAGE_HASHDATA = "message.hashdata";
+    public static final String MESSAGE_HASHDATALIST = "message.hashdatalist";
+    public static final String MESSAGE_RETRIES = "message.retries";
+    public static final String MESSAGE_OVERWRITE = "message.overwrite";
+    public static final String LABEL_PIN = "label.pin";
+    public static final String LABEL_PINSIZE = "label.pinsize";
+//    public static final String ERROR_NO_HASHDATA = "error.no.hashdata";
+    
+    public static final String BUTTON_OK = "button.ok";
+    public static final String BUTTON_CANCEL = "button.cancel";
+    public static final String BUTTON_BACK = "button.back";
+    public static final String BUTTON_SIGN = "button.sign";
+    public static final String BUTTON_SAVE = "button.save";
+    public static final String SAVE_HASHDATAINPUT_PREFIX = "save.hashdatainput.prefix";
+    
+    
     public void init(Container contentPane, String localeString, URL background);
     
     public void showWelcomeDialog(); 

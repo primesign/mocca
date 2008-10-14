@@ -22,7 +22,6 @@ package at.gv.egiz.bku.gui;
 
 import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.stal.HashDataInput;
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Font;
@@ -66,40 +65,7 @@ import org.apache.commons.logging.LogFactory;
 public class BKUGUI implements BKUGUIFacade {
     
     private static final Log log = LogFactory.getLog(BKUGUI.class);
-    public static final String MESSAGES_BUNDLE = "at/gv/egiz/bku/gui/Messages";
-    public static final String DEFAULT_BACKGROUND = "/images/mocca_default.png"; //logo.png";
-    public static final String HASHDATA_FONT = "Monospaced";
-    public static final Color ERROR_COLOR = Color.RED;
-    public static final Color HYPERLINK_COLOR = Color.BLUE;
-    private static final String TITLE_WELCOME = "title.welcome";
-    private static final String TITLE_INSERTCARD = "title.insertcard";
-    private static final String TITLE_CARD_NOT_SUPPORTED = "title.cardnotsupported";
-    private static final String TITLE_CARDPIN = "title.cardpin";
-    private static final String TITLE_SIGN = "title.sign";
-    private static final String TITLE_ERROR = "title.error";
-    private static final String TITLE_RETRY = "title.retry";
-    private static final String TITLE_WAIT = "title.wait";
-    private static final String TITLE_HASHDATA = "title.hashdata";
-    private static final String WINDOWTITLE_SAVE = "windowtitle.save";
-    private static final String WINDOWTITLE_SAVEDIR = "windowtitle.savedir";
-    private static final String WINDOWTITLE_OVERWRITE = "windowtitle.overwrite";
-    private static final String MESSAGE_WAIT = "message.wait";
-    private static final String MESSAGE_INSERTCARD = "message.insertcard";
-    private static final String MESSAGE_HASHDATALINK = "message.hashdatalink";
-    private static final String MESSAGE_HASHDATA = "message.hashdata";
-    private static final String MESSAGE_HASHDATALIST = "message.hashdatalist";
-    private static final String MESSAGE_RETRIES = "message.retries";
-    private static final String MESSAGE_OVERWRITE = "message.overwrite";
-    private static final String LABEL_PIN = "label.pin";
-    private static final String LABEL_PINSIZE = "label.pinsize";
-//    private static final String ERROR_NO_HASHDATA = "error.no.hashdata";
     
-    private static final String BUTTON_OK = "button.ok";
-    private static final String BUTTON_CANCEL = "button.cancel";
-    private static final String BUTTON_BACK = "button.back";
-    private static final String BUTTON_SIGN = "button.sign";
-    private static final String BUTTON_SAVE = "button.save";
-    private static final String SAVE_HASHDATAINPUT_PREFIX = "save.hashdatainput.prefix";
     protected Container contentPane;
     protected ResourceBundle messages;
     /** left and right side main panels */
@@ -506,42 +472,47 @@ public class BKUGUI implements BKUGUIFacade {
                 });
 
                 JLabel infoLabel = new JLabel();
-                infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                 if (numRetries < 0) {
-                    String pinsizePattern = messages.getString(LABEL_PINSIZE);
-                    String pinSize = String.valueOf(pinSpec.getMinLength());
-                    if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
-                        pinSize += "-" + pinSpec.getMaxLength();
-                    }
-                    infoLabel.setText(MessageFormat.format(pinsizePattern, new Object[]{pinSize}));
+                  infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+                  String infoPattern = messages.getString(MESSAGE_ENTERPIN);
+                  infoLabel.setText(MessageFormat.format(infoPattern, new Object[] {pinSpec.getLocalizedName()}));
                 } else {
-                    infoLabel.setText(MessageFormat.format(messages.getString(MESSAGE_RETRIES), new Object[]{String.valueOf(numRetries)}));
-                    infoLabel.setForeground(ERROR_COLOR);
+                  infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() | java.awt.Font.BOLD));
+                  infoLabel.setText(MessageFormat.format(messages.getString(MESSAGE_RETRIES), new Object[]{String.valueOf(numRetries)}));
+                  infoLabel.setForeground(ERROR_COLOR);
                 }
+                
+                JLabel pinsizeLabel = new JLabel();
+                pinsizeLabel.setFont(pinsizeLabel.getFont().deriveFont(pinsizeLabel.getFont().getStyle() & ~java.awt.Font.BOLD, pinsizeLabel.getFont().getSize()-2));
+                String pinsizePattern = messages.getString(LABEL_PINSIZE);
+                String pinSize = String.valueOf(pinSpec.getMinLength());
+                if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
+                    pinSize += "-" + pinSpec.getMaxLength();
+                }
+                pinsizeLabel.setText(MessageFormat.format(pinsizePattern, new Object[]{pinSize}));
                 
                 GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createSequentialGroup()
-//                        .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-//                            .addComponent(hashDataLabel)
-//                        .addGroup(GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                        .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) //))
-                            .addComponent(infoLabel)));
+                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(infoLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                      .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                      .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                      .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                        .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) //))
+                        .addComponent(pinsizeLabel))));
 
                 mainPanelLayout.setVerticalGroup(
                   mainPanelLayout.createSequentialGroup()
-//                        .addComponent(hashDataLabel)
-//                        .addGap(hashDataLabel.getFont().getSize())
+                        .addComponent(infoLabel)
+                        .addGap(infoLabel.getFont().getSize())
                         .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                             .addComponent(cardPinLabel)
                             .addComponent(pinField))
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(infoLabel));
+                        .addComponent(pinsizeLabel));
 
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
@@ -634,57 +605,57 @@ public class BKUGUI implements BKUGUIFacade {
                     }
                 });
 
-                //pinsize or error label
-                JLabel infoLabel = new JLabel();
-                infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                if (numRetries < 0) {
-                    String pinsizePattern = messages.getString(LABEL_PINSIZE);
-                    String pinSize = String.valueOf(pinSpec.getMinLength());
-                    if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
-                        pinSize += "-" + pinSpec.getMaxLength();
-                    }
-                    infoLabel.setText(MessageFormat.format(pinsizePattern, new Object[]{pinSize}));
-                } else {
-                    infoLabel.setText(MessageFormat.format(messages.getString(MESSAGE_RETRIES), new Object[]{String.valueOf(numRetries)}));
-                    infoLabel.setForeground(ERROR_COLOR);
+                JLabel pinsizeLabel = new JLabel();
+                pinsizeLabel.setFont(pinsizeLabel.getFont().deriveFont(pinsizeLabel.getFont().getStyle() & ~java.awt.Font.BOLD, pinsizeLabel.getFont().getSize()-2));
+                String pinsizePattern = messages.getString(LABEL_PINSIZE);
+                String pinSize = String.valueOf(pinSpec.getMinLength());
+                if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
+                    pinSize += "-" + pinSpec.getMaxLength();
                 }
+                pinsizeLabel.setText(MessageFormat.format(pinsizePattern, new Object[]{pinSize}));
+                
+                JLabel infoLabel = new JLabel();
+                if (numRetries < 0) {
+                  infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+                  infoLabel.setText(messages.getString(MESSAGE_HASHDATALINK));
+                  infoLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                  infoLabel.setForeground(HYPERLINK_COLOR);
+                  infoLabel.addMouseListener(new MouseAdapter() {
 
-                JLabel hashDataLabel = new JLabel();
-                hashDataLabel.setFont(hashDataLabel.getFont().deriveFont(hashDataLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                hashDataLabel.setText(messages.getString(MESSAGE_HASHDATALINK));
-                hashDataLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                hashDataLabel.setForeground(HYPERLINK_COLOR);
-                hashDataLabel.addMouseListener(new MouseAdapter() {
-
-                    @Override
-                    public void mouseClicked(MouseEvent me) {
-                        ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, hashdataCommand);
-                        hashdataListener.actionPerformed(e);
-                    }
-                });
+                      @Override
+                      public void mouseClicked(MouseEvent me) {
+                          ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, hashdataCommand);
+                          hashdataListener.actionPerformed(e);
+                      }
+                  });
+                } else {
+                  infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() | java.awt.Font.BOLD));
+                  infoLabel.setText(MessageFormat.format(messages.getString(MESSAGE_RETRIES), new Object[]{String.valueOf(numRetries)}));
+                  infoLabel.setForeground(ERROR_COLOR);
+                }
 
                 GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
                   mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                      .addComponent(hashDataLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                      .addGroup(GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                      .addComponent(infoLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                      .addGroup(mainPanelLayout.createSequentialGroup()
                           .addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                           .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                              .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                              .addComponent(infoLabel))));
+                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pinsizeLabel))));
 
                 mainPanelLayout.setVerticalGroup(
                   mainPanelLayout.createSequentialGroup()
-                        .addComponent(hashDataLabel)
-                        .addGap(hashDataLabel.getFont().getSize())
+                        .addComponent(infoLabel)
+                        .addGap(infoLabel.getFont().getSize())
                         .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                             .addComponent(signPinLabel)
                             .addComponent(pinField))
                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(infoLabel));
+                        .addComponent(pinsizeLabel));
 
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
