@@ -83,12 +83,12 @@ public class HashDataInputServlet extends SpringBKUServlet {
     for (HashDataInput hd : hdi) {
       if (hd.getReferenceId().equals(param)) {
         log.debug("Found hashdatainput for refId:" + param);
-        resp.setCharacterEncoding(hd.getEncoding());
         resp.setContentType(hd.getMimeType());
         String charSet = hd.getEncoding();
         if (charSet == null) {
           charSet = "UTF-8";
         }
+        resp.setCharacterEncoding(charSet);
         Reader r = new InputStreamReader(hd.getHashDataInput(), charSet);
         Writer w = new OutputStreamWriter(resp.getOutputStream(), charSet);
         StreamUtil.copyStream(r, w);
