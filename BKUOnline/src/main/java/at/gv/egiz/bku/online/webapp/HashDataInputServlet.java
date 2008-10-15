@@ -74,6 +74,7 @@ public class HashDataInputServlet extends SpringBKUServlet {
       resp.sendRedirect("multiHashDataInput.html");
       return;
     }
+
     if ((param == null) && (hdi.size() == 1)) {
       param = hdi.get(0).getReferenceId();
       log.debug("Request parameter not set, setting to: " + param);
@@ -82,6 +83,7 @@ public class HashDataInputServlet extends SpringBKUServlet {
       if (hd.getReferenceId().equals(param)) {
         log.debug("Found hashdatainput for refId:" + param);
         resp.setContentType(hd.getMimeType());
+
         String charSet = hd.getEncoding();
         if (charSet == null) {
           charSet = "UTF-8";
@@ -91,8 +93,16 @@ public class HashDataInputServlet extends SpringBKUServlet {
           String fileExt = hd.getMimeType().equalsIgnoreCase("text/plain") ? ".txt"
               : ".xhtml";
           if (fileExt.equals(".xhtml")) {
-            resp.addHeader("content-disposition", "attachment; filename="
-                + param + fileExt);
+            if (req.getParameter("ieCType") == null) {
+              resp.sendRedirect("ieView.html");
+              return;
+            } else {
+              resp.setContentType(req.getParameter("ieCType"));
+              if (req.getParameter("ieCType").equals("application/xhtml+xml")) {
+                resp.addHeader("content-disposition", "attachment; filename="
+                    + param + ".xhtml");
+              }
+            }
           }
         }
         Reader r = new InputStreamReader(hd.getHashDataInput(), charSet);
