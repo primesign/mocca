@@ -90,8 +90,10 @@ public class HashDataInputServlet extends SpringBKUServlet {
         if (isMSIE(req)) {
           String fileExt = hd.getMimeType().equalsIgnoreCase("text/plain") ? ".txt"
               : ".xhtml";
-          resp.addHeader("content-disposition", "attachment; filename=" + param
-              + fileExt);
+          if (fileExt.equals(".xhtml")) {
+            resp.addHeader("content-disposition", "attachment; filename="
+                + param + fileExt);
+          }
         }
         Reader r = new InputStreamReader(hd.getHashDataInput(), charSet);
         Writer w = new OutputStreamWriter(resp.getOutputStream(), charSet);
