@@ -5,15 +5,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,15 +17,11 @@ import org.apache.commons.logging.LogFactory;
 import at.gv.egiz.bku.binding.BindingProcessor;
 import at.gv.egiz.bku.binding.Id;
 import at.gv.egiz.bku.binding.IdFactory;
-import at.gv.egiz.bku.online.applet.BKUApplet;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 import at.gv.egiz.bku.utils.StreamUtil;
 import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.STAL;
-import at.gv.egiz.stal.service.STALService;
 import at.gv.egiz.stal.service.impl.STALRequestBroker;
-import at.gv.egiz.stal.service.impl.STALRequestBrokerImpl;
-import at.gv.egiz.stal.service.impl.STALServiceImpl;
 
 public class HashDataInputServlet extends SpringBKUServlet {
 
@@ -50,6 +42,12 @@ public class HashDataInputServlet extends SpringBKUServlet {
     } else {
       throw new SLRuntimeException("Unexpected STAL type");
     }
+  }
+
+  private static boolean isMSIE(HttpServletRequest req) {
+    String useragent = req.getHeader("User-Agent");
+    String user = useragent.toLowerCase();
+    return (user.indexOf("msie") != -1);
   }
 
   @Override
@@ -78,7 +76,7 @@ public class HashDataInputServlet extends SpringBKUServlet {
     }
     if ((param == null) && (hdi.size() == 1)) {
       param = hdi.get(0).getReferenceId();
-      log.debug("Request parameter not set, setting to: "+param);
+      log.debug("Request parameter not set, setting to: " + param);
     }
     for (HashDataInput hd : hdi) {
       if (hd.getReferenceId().equals(param)) {
@@ -89,10 +87,16 @@ public class HashDataInputServlet extends SpringBKUServlet {
           charSet = "UTF-8";
         }
         resp.setCharacterEncoding(charSet);
+        if (isMSIE(req)) {
+          String fileExt = hd.getMimeType().equalsIgnoreCase("text/plain") ? ".txt"
+              : ".xhtml";
+          resp.addHeader("content-disposition", "attachment; filename=" + param
+              + fileExt);
+        }
         Reader r = new InputStreamReader(hd.getHashDataInput(), charSet);
         Writer w = new OutputStreamWriter(resp.getOutputStream(), charSet);
         StreamUtil.copyStream(r, w);
-        w.close();
+        w.flush();
         return;
 
       }
