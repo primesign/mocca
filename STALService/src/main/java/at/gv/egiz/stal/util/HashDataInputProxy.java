@@ -13,7 +13,7 @@ import at.gv.egiz.stal.HashDataInput;
 
 /**
  * Enables multiple read requests.
- * 
+ * @deprecated use at.gv.egiz.stal.impl.ByteArrayHashDataInput
  */
 public class HashDataInputProxy implements HashDataInput {
 

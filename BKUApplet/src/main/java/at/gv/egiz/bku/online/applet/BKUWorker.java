@@ -154,11 +154,6 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
       return;
     }
     
-//    //TODO factory for SignRequestHandler providing either WebServiceHDISignRequestHandler or ExternalHDIDisplaySignRequestHandler
-//    AppletContext ctx = parent.getAppletContext();
-//    log.debug("register SignRequestHandler for HashDataURL " + hashDataURL);
-//    addRequestHandler(at.gv.egiz.stal.SignRequest.class, new ExternalDisplaySignRequestHandler(ctx, hashDataURL));
-    
     try {
       String sessionId = parent.getMyAppletParameter(BKUApplet.SESSION_ID);
       if (sessionId == null) {

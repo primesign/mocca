@@ -32,7 +32,6 @@ import at.gv.egiz.stal.service.types.QuitRequestType;
 import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
 import at.gv.egiz.stal.service.types.SignRequestType;
-import at.gv.egiz.stal.util.HashDataInputProxy;
 import at.gv.egiz.stal.util.STALTranslator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,7 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * An instance of STALRequestBroker is shared between a producer threads (SLCommand)
+ * An instance of STALRequestBroker is shared between a producer thread (SLCommand)
  * and multiple consumer threads (STALService).
  * This implementation assures that handleRequest is executed only once the previous invocation returned.
  * The BindingProcessor assures that a new SLCommand calls handleRequest() only once
@@ -109,10 +108,8 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                   req.setKeyIdentifier(((SignRequest) stalRequest).getKeyIdentifier());
                   req.setSignedInfo(((SignRequest) stalRequest).getSignedInfo());
                   requests.add(req);
-                  for (HashDataInput hdi : ((SignRequest) stalRequest).getHashDataInput()) {
-                    hashDataInputs.add(new HashDataInputProxy(hdi));
-                  }
-                  //hashDataInputs.addAll(((SignRequest) stalRequest).getHashDataInput());
+                  //DataObjectHashDataInput with reference caching enabled DataObject 
+                  hashDataInputs.addAll(((SignRequest) stalRequest).getHashDataInput());
                   break;
                 } else if (stalRequest instanceof InfoboxReadRequest) {
                   log.trace("Received InfoboxReadRequest");
