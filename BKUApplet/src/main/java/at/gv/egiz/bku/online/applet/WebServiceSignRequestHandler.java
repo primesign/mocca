@@ -16,7 +16,16 @@
  */
 package at.gv.egiz.bku.online.applet;
 
-import at.gv.egiz.bku.smccstal.SMCCSTALRequestHandler;
+import java.security.DigestException;
+import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import at.gv.egiz.bku.smccstal.SignRequestHandler;
 import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.impl.ByteArrayHashDataInput;
@@ -25,14 +34,6 @@ import at.gv.egiz.stal.service.types.GetHashDataInputResponseType;
 import at.gv.egiz.stal.service.types.GetHashDataInputType;
 import at.gv.egiz.stal.signedinfo.DigestMethodType;
 import at.gv.egiz.stal.signedinfo.ReferenceType;
-import java.security.DigestException;
-import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author clemens
@@ -158,10 +159,5 @@ public class WebServiceSignRequestHandler extends SignRequestHandler {
     }
     
     gui.showHashDataInputDialog(hashDataInputs, this, "ok");
-  }
-
-  @Override
-  public SMCCSTALRequestHandler newInstance() {
-    return new WebServiceSignRequestHandler(this.sessId, this.stalPort);
   }
 }

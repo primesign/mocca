@@ -49,11 +49,11 @@ public class SMCCHelper {
     update();
   }
 
-  public void update() {
+  public synchronized void update() {
     update(-1);
   }
 
-  public void update(int sleep) {
+  public synchronized void update(int sleep) {
     SignatureCardFactory factory = SignatureCardFactory.getInstance();
     if (useSWCard) {
       try {
@@ -113,7 +113,7 @@ public class SMCCHelper {
     }
   }
 
-  public SignatureCard getSignatureCard(Locale locale) {
+  public synchronized SignatureCard getSignatureCard(Locale locale) {
     if (signatureCard != null) {
       signatureCard.setLocale(locale);
     }

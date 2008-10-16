@@ -37,19 +37,17 @@ import at.gv.egiz.stal.SignRequest;
 
 public abstract class AbstractSMCCSTAL implements STAL {
   private static Log log = LogFactory.getLog(AbstractSMCCSTAL.class);
-  
+
   public final static int DEFAULT_MAX_RETRIES = 3;
 
   protected Locale locale = Locale.getDefault();
-  // protected SMCCHelper smccHelper = new SMCCHelper();
   protected SignatureCard signatureCard = null;
-  protected static Map<String, SMCCSTALRequestHandler> handlerMap = new HashMap<String, SMCCSTALRequestHandler>();
-  
+  protected Map<String, SMCCSTALRequestHandler> handlerMap = new HashMap<String, SMCCSTALRequestHandler>();
+
   protected int maxRetries = DEFAULT_MAX_RETRIES;
 
-  static {
+  protected AbstractSMCCSTAL() {
     addRequestHandler(InfoboxReadRequest.class, new InfoBoxReadRequestHandler());
-    // addRequestHandler(SignRequest.class, new SignRequestHandler());
   }
 
   /**
@@ -72,7 +70,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
       log.info("Processing: " + request.getClass());
       int retryCounter = 0;
       while (retryCounter < maxRetries) {
-        log.info("Number of retries: "+retryCounter);
+        log.info("Number of retries: " + retryCounter);
         SMCCSTALRequestHandler handler = null;
         handler = handlerMap.get(request.getClass().getSimpleName());
         if (handler != null) {
@@ -83,7 +81,6 @@ public abstract class AbstractSMCCSTAL implements STAL {
             }
           }
           try {
-            handler = handler.newInstance();
             handler.init(signatureCard, getGUI());
             STALResponse response = handler.handleRequest(request);
             if (response != null) {
@@ -91,7 +88,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
                 log.info("Got an error response");
                 ErrorResponse err = (ErrorResponse) response;
                 if (err.getErrorCode() == 6001) {
-                  retryCounter = Integer.MAX_VALUE-1;
+                  retryCounter = Integer.MAX_VALUE - 1;
                 }
                 if (++retryCounter < maxRetries) {
                   log.info("Retrying");
@@ -128,13 +125,13 @@ public abstract class AbstractSMCCSTAL implements STAL {
     return responseList;
   }
 
-  public static void addRequestHandler(Class<? extends STALRequest> id,
+  public void addRequestHandler(Class<? extends STALRequest> id,
       SMCCSTALRequestHandler handler) {
     log.debug("Registering STAL request handler: " + id.getSimpleName());
     handlerMap.put(id.getSimpleName(), handler);
   }
 
-  public static SMCCSTALRequestHandler getRequestHandler(
+  public SMCCSTALRequestHandler getRequestHandler(
       Class<? extends STALRequest> request) {
     return handlerMap.get(request.getSimpleName());
   }
@@ -150,5 +147,5 @@ public abstract class AbstractSMCCSTAL implements STAL {
   public void setMaxRetries(int maxRetries) {
     this.maxRetries = maxRetries;
   }
-  
+
 }

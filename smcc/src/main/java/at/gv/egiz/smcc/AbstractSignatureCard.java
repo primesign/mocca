@@ -267,7 +267,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
     if (card_ != null) {
       try {
         card_.disconnect(reset);
-      } catch (CardException e) {
+      } catch (Exception e) {
         log.info("Error while resetting card", e);
       }
     }

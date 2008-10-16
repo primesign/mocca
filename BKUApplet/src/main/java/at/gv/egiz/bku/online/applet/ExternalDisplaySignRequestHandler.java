@@ -5,14 +5,15 @@
 
 package at.gv.egiz.bku.online.applet;
 
-import at.gv.egiz.bku.smccstal.SMCCSTALRequestHandler;
-import at.gv.egiz.bku.smccstal.SignRequestHandler;
-import at.gv.egiz.stal.signedinfo.ReferenceType;
 import java.applet.AppletContext;
 import java.net.URL;
 import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import at.gv.egiz.bku.smccstal.SignRequestHandler;
+import at.gv.egiz.stal.signedinfo.ReferenceType;
 
 /**
  *
@@ -28,11 +29,6 @@ public class ExternalDisplaySignRequestHandler extends SignRequestHandler {
   public ExternalDisplaySignRequestHandler(AppletContext ctx, URL hashDataURL) {
     this.ctx = ctx;
     this.hashDataURL = hashDataURL;
-  }
-
-  @Override
-  public SMCCSTALRequestHandler newInstance() {
-    return new ExternalDisplaySignRequestHandler(ctx, hashDataURL);
   }
 
   @Override

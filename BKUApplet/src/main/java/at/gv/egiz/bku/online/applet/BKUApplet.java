@@ -17,11 +17,10 @@
 package at.gv.egiz.bku.online.applet;
 
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 import javax.swing.JApplet;
 
@@ -30,10 +29,6 @@ import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUGUIFactory;
-import at.gv.egiz.bku.smccstal.AbstractSMCCSTAL;
-import at.gv.egiz.stal.QuitRequest;
-
-import java.net.URL;
 
 /**
  * Note: all swing code is executed by the event dispatch thread (see
@@ -66,7 +61,6 @@ public class BKUApplet extends JApplet {
     public void init() {
       log.info("Welcome to MOCCA\n");
         log.debug("Called init()");
-        AbstractSMCCSTAL.addRequestHandler(QuitRequest.class, QuitHandler.getInstance());
         HttpsURLConnection.setDefaultSSLSocketFactory(InternalSSLSocketFactory.getInstance());
         String localeString = getMyAppletParameter(LOCALE_PARAM_KEY);
         if (localeString != null) {

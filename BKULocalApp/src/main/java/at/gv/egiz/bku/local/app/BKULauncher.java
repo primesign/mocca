@@ -181,9 +181,7 @@ public class BKULauncher implements BKUControllerInterface {
    * @param args
    */
   public static void main(String[] args) {
-
     try {
-
       BKULauncher launcher = new BKULauncher();
       launcher.initStart();
       launcher.checkConfig(args);

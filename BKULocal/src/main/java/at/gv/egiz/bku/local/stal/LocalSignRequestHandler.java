@@ -113,11 +113,6 @@ public class LocalSignRequestHandler extends SignRequestHandler {
     gui.showHashDataInputDialog(selectedHashDataInputs, this, "ok");
   }
 
-  @Override
-  public SMCCSTALRequestHandler newInstance() {
-    return new LocalSignRequestHandler();
-  }
-
   private ByteArrayHashDataInput getByteArrayHashDataInput(HashDataInput hashDataInput) throws IOException {
 
     InputStream hdIs = hashDataInput.getHashDataInput();

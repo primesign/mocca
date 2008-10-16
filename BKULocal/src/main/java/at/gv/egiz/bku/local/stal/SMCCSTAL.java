@@ -27,7 +27,7 @@ public class SMCCSTAL extends BKUWorker {
   public List<STALResponse> handleRequest(List<STALRequest> requestList) {
     signatureCard = null;
     List<STALResponse> responses = super.handleRequest(requestList);
-    //container.setVisible(false);
+    // container.setVisible(false);
     return responses;
   }
 

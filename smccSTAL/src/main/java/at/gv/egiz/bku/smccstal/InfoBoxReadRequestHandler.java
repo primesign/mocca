@@ -133,9 +133,4 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler implements
     }
     return new String(gui.getPin());
   }
-
-  @Override
-  public SMCCSTALRequestHandler newInstance() {
-    return new InfoBoxReadRequestHandler();
-  }
 }

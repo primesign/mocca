@@ -30,6 +30,4 @@ public interface SMCCSTALRequestHandler {
   
   public boolean requireCard();
   
-  public SMCCSTALRequestHandler newInstance();
-
 }

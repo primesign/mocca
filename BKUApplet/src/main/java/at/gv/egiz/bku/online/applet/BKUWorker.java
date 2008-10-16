@@ -37,16 +37,15 @@ import at.gv.egiz.smcc.util.SMCCHelper;
 import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
-import at.gv.egiz.stal.service.types.GetNextRequestResponseType;
-import at.gv.egiz.stal.service.types.GetNextRequestType;
-import at.gv.egiz.stal.service.types.ObjectFactory;
 import at.gv.egiz.stal.service.STALPortType;
 import at.gv.egiz.stal.service.STALService;
 import at.gv.egiz.stal.service.types.ErrorResponseType;
+import at.gv.egiz.stal.service.types.GetNextRequestResponseType;
+import at.gv.egiz.stal.service.types.GetNextRequestType;
+import at.gv.egiz.stal.service.types.ObjectFactory;
 import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
 import at.gv.egiz.stal.util.STALTranslator;
-import java.applet.AppletContext;
 
 public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     ActionListener, SMCCSTALRequestHandler {
@@ -74,7 +73,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     this.gui = gui;
     this.parent = parent;
     this.errorMessages = errorMessageBundle;
-    QuitHandler.getInstance().registerHandlerInstance(this);
+    addRequestHandler(QuitRequest.class, this);
     // register SignRequestHandler once we have a webservice port
   }
 
@@ -87,7 +86,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
   protected BKUWorker(BKUGUIFacade gui, ResourceBundle errorMessageBundle) {
     this.gui = gui;
     this.errorMessages = errorMessageBundle;
-    QuitHandler.getInstance().registerHandlerInstance(this);
+    addRequestHandler(QuitRequest.class, this);
   }
 
   private STALPortType getSTALPort() throws MalformedURLException {
@@ -252,7 +251,6 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     if (signatureCard != null) {
       signatureCard.disconnect(false);
     }
-    QuitHandler.getInstance().unregisterHandlerInstance(this);
     sendRedirect();
   }
 
@@ -380,11 +378,6 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
 
   @Override
   public void init(SignatureCard sc, BKUGUIFacade gui) {
-  }
-
-  @Override
-  public SMCCSTALRequestHandler newInstance() {
-    return this;
   }
 
   @Override

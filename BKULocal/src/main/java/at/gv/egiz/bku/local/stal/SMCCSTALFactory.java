@@ -27,9 +27,6 @@ import javax.swing.WindowConstants;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUGUIFactory;
 import at.gv.egiz.bku.online.applet.BKUApplet;
-import at.gv.egiz.bku.online.applet.QuitHandler;
-import at.gv.egiz.bku.smccstal.AbstractSMCCSTAL;
-import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
 
@@ -39,7 +36,7 @@ public class SMCCSTALFactory implements STALFactory {
 
   @Override
   public STAL createSTAL() {
-    AbstractSMCCSTAL.addRequestHandler(QuitRequest.class, QuitHandler.getInstance());
+    
     SMCCSTAL stal;
     JDialog dialog;
     ResourceBundle resourceBundle;
