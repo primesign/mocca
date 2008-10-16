@@ -36,7 +36,7 @@ public interface BKUGUIFacade {
   public static final String ERR_INVALID_HASH = "error.invalid.hash";
   
     public static final String MESSAGES_BUNDLE = "at/gv/egiz/bku/gui/Messages";
-    public static final String DEFAULT_BACKGROUND = "/images/mocca_default.png"; //logo.png";
+    public static final String DEFAULT_BACKGROUND = "/images/BackgroundChipperling.png";
     public static final String HASHDATA_FONT = "Monospaced";
     public static final Color ERROR_COLOR = Color.RED;
     public static final Color HYPERLINK_COLOR = Color.BLUE;
