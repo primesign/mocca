@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -416,10 +417,21 @@ public class InfoboxReadCommandImpl extends SLCommandImpl<InfoboxReadRequestType
     try {
       log.trace("Trying to transform identitylink");
       identityLinkTransformer.transformIdLink(issuerTemplate, new DOMSource(document), xmlResult);
+    } catch (MalformedURLException e) {
+      log.warn("Malformed issuer template URL '" + issuerTemplate + "'.");
+      throw new SLCommandException(4000,
+          SLExceptionMessages.EC4000_UNCLASSIFIED_IDLINK_TRANSFORMATION_FAILED,
+          new Object[] { issuerTemplate });
     } catch (IOException e) {
-      // we should not get an IOException as we are writing into a DOMResult
-      log.warn("Failed to transform idlink",e);
-      throw new SLRuntimeException(e);
+      log.warn("Failed to dereferene issuer template URL '" + issuerTemplate + "'." ,e);
+      throw new SLCommandException(4000,
+          SLExceptionMessages.EC4000_UNCLASSIFIED_IDLINK_TRANSFORMATION_FAILED,
+          new Object[] { issuerTemplate });
+    } catch (TransformerConfigurationException e) {
+      log.warn("Failed to create transformation template from issuer template URL '" + issuerTemplate + "'", e);
+      throw new SLCommandException(4000,
+          SLExceptionMessages.EC4000_UNCLASSIFIED_IDLINK_TRANSFORMATION_FAILED,
+          new Object[] { issuerTemplate });
     } catch (TransformerException e) {
       log.info("Faild to transform CompressedIdentityLink.", e);
       throw new SLCommandException(4000,

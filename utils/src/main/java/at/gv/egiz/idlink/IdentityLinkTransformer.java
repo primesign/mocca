@@ -19,11 +19,7 @@ package at.gv.egiz.idlink;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.transform.Result;
@@ -50,114 +46,8 @@ public class IdentityLinkTransformer {
   
   protected static Log log = LogFactory.getLog(IdentityLinkTransformer.class);
 
-  private class IdLTransformer {
-    
-    /**
-     * Is transformer in use?
-     */
-    private boolean inUse = false;
-    
-    /**
-     * How often has this transformer been used?
-     */
-    private int timesUsed = 0;
-    
-    /**
-     * The time this transformer has been created.
-     */
-    private long created;
-    
-    /**
-     * When has this transformer been used the last time?
-     */
-    private long lastTimeUsed;
-    
-    /**
-     * Average performance in milliseconds. 
-     */
-    private long time;
-    
-    /**
-     * Time used for initialization.
-     */
-    private long initTime;
-    
-    /**
-     * The stylesheet transformer.
-     */
-    private Templates templates;
-    
-    /**
-     * Stylesheet URL.
-     */
-    private String stylesheetURL;
-
-    /**
-     * 
-     * @param stylesheetURL
-     * @throws IOException
-     * @throws TransformerConfigurationException
-     */
-    public IdLTransformer(String stylesheetURL) throws IOException, TransformerConfigurationException {
-      
-      created = System.currentTimeMillis();
-      
-      // TODO: implement stylesheet cache
-      this.stylesheetURL = stylesheetURL;
-      URL url = new URL(stylesheetURL);
-
-      if (!"http".equalsIgnoreCase(url.getProtocol()) && !"https".equalsIgnoreCase(url.getProtocol())) {
-        throw new MalformedURLException("Protocol " + url.getProtocol() + " not supported for IssuerTemplate URL.");
-      }
-      
-      URLDereferencer dereferencer = URLDereferencer.getInstance();
-      StreamData data = dereferencer.dereference(url.toExternalForm(), null);
-      
-      StreamSource source = new StreamSource(data.getStream());
-      log.trace("Trying to creating template from stylesheet");
-      templates = factory.newTemplates(source);
-      log.trace("Successfully created stylesheet template");
-      initTime = System.currentTimeMillis() - created;
-      
-    }
-    
-    public void transform(Source xmlSource, Result outputTarget) throws TransformerException {
-      long t0 = System.currentTimeMillis();
-      try {
-        Transformer transformer = templates.newTransformer();
-        transformer.transform(xmlSource, outputTarget);
-      } catch (TransformerException e) {
-        throw e;
-      } finally {
-        inUse = false;
-        long t1 = System.currentTimeMillis();
-        time += (t1 - t0);
-        timesUsed++;
-        lastTimeUsed = System.currentTimeMillis();
-      }
-    }
-    
-    /**
-     * @return <code>true</code> if this transformer is in use, or <code>false</code> otherwise
-     */
-    public boolean isInUse() {
-      return inUse;
-    }
-
-    @Override
-    public String toString() {
-      StringBuffer str = new StringBuffer();
-      str.append("Transformer ").append(stylesheetURL)
-        .append("\n    created ").append(new Date(created)).append(" used ").append(
-          timesUsed).append(" times, (init ").append(initTime).append("ms / ")
-        .append(((float) time) / timesUsed).append("ms avg) last time ").append(new Date(lastTimeUsed));
-      return str.toString();
-    }
-    
-  }
-  
   /**
-   * The transfomer factory.
+   * The transformer factory.
    */
   private static SAXTransformerFactory factory;
 
@@ -233,69 +123,66 @@ public class IdentityLinkTransformer {
   }
   
   /**
-   * The pool of <code>Transformer</code>.
+   * Mapping of issuer template URIs to transformation templates.
    */
-  private Map<String, List<IdLTransformer>> pool;
+  private Map<String, Templates> templates = new HashMap<String, Templates>();
   
   /**
    * Private constructor.
    */
   private IdentityLinkTransformer() {
-    pool = new HashMap<String, List<IdLTransformer>>();
   }
-  
-  private IdLTransformer getFreeTransfomer(String stylesheetURL) throws TransformerConfigurationException, IOException {
-    
-    IdLTransformer transformer = null;
-    
-    List<IdLTransformer> transfomerList = pool.get(stylesheetURL);
-    if (transfomerList == null) {
-      transfomerList = new ArrayList<IdLTransformer>();
-      pool.put(stylesheetURL, transfomerList);
-    }
-    
-    for (IdLTransformer candTransformer : transfomerList) {
-      if (!candTransformer.inUse) {
-        transformer = candTransformer;
-        break;
-      }
-    }
-    
-    if (transformer == null) {
-      transformer = new IdLTransformer(stylesheetURL);
-      transfomerList.add(transformer);
-    }
-    
-    transformer.inUse = true;
-    return transformer;
-    
-  }
-  
+
+  /**
+   * Transforms an identity link <code>source</code> to <code>result</code> with
+   * the given issuer template from the <code>stylesheetURL</code>.
+   * 
+   * @param stylesheetURL
+   *          the URL of the issuer template to be used for transformation
+   * @param source
+   *          the compressed identity link source
+   * @param result
+   *          the transformed identity link result
+   * 
+   * @throws MalformedURLException
+   *           if the given <code>stylesheetURL</code> is not a valid
+   *           <code>http</code> or <code>https</code> URL.
+   * @throws IOException
+   *           if dereferencing the <code>stylesheetURL</code> fails.
+   * @throws TransformerConfigurationException
+   *           if creating a transformation template from the dereferenced
+   *           stylesheet fails.
+   * @throws TransformerException
+   *           if transforming the identity link fails.
+   */
   public void transformIdLink(String stylesheetURL, Source source, Result result) throws IOException, TransformerException {
-    log.trace("Trying to get free IdentityLinkTransformer for issuer template '" + stylesheetURL + "'.");
-    IdLTransformer transformer = getFreeTransfomer(stylesheetURL);
-    log.trace("Trying to transform IdentityLink.");
-    transformer.transform(source, result);
-    log.trace("IdentityLink transformed successfully. " + getStatistics());
-  }
-  
-  public String getStatistics() {
+
+    Templates templ = templates.get(stylesheetURL);
     
-    StringBuffer str = new StringBuffer();
-    Iterator<String> keys = pool.keySet().iterator();
-    int count = 0;
-    while (keys.hasNext()) {
-      String stylesheetURL = (String) keys.next();
-      str.append("Stylesheet URL: ").append(stylesheetURL);
-      Iterator<IdLTransformer> transformer = pool.get(stylesheetURL).iterator();
-      while (transformer.hasNext()) {
-        IdLTransformer idLTransformer = (IdLTransformer) transformer.next();
-        str.append("\n  ").append(idLTransformer);
-        count++;
+    if (templ == null) {
+
+      // TODO: implement stylesheet cache
+      URL url = new URL(stylesheetURL);
+
+      if (!"http".equalsIgnoreCase(url.getProtocol()) && !"https".equalsIgnoreCase(url.getProtocol())) {
+        throw new MalformedURLException("Protocol " + url.getProtocol() + " not supported for IssuerTemplate URL.");
       }
+      
+      URLDereferencer dereferencer = URLDereferencer.getInstance();
+      StreamData data = dereferencer.dereference(url.toExternalForm(), null);
+      
+      log.trace("Trying to create issuer template.");
+      templ = factory.newTemplates(new StreamSource(data.getStream()));
+      log.trace("Successfully created issuer template");
+
+      templates.put(stylesheetURL, templ);
+
     }
-    str.append("\n(").append(count).append(" transformer)");
-    return str.toString();
+    
+    Transformer transformer = templ.newTransformer();
+    
+    transformer.transform(source, result);
+    
   }
   
 }
