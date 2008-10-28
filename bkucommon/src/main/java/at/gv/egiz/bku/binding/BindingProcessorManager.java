@@ -81,11 +81,13 @@ public interface BindingProcessorManager {
   public void setSLCommandInvoker(SLCommandInvoker invoker);
 
   /**
-   * Schedules the provided binding processor for processing and immediately returns.
+   * Creates a processing context,
+   * schedules the provided binding processor for processing and 
+   * immediately returns the context.
    * 
    * @param aBindingProcessor
    */
-  public void process(BindingProcessor aBindingProcessor);
+  public ProcessingContext process(BindingProcessor aBindingProcessor);
   
   /**
    * Removes a formerly added (by calling the process method) binding processor.

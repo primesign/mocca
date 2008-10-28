@@ -53,8 +53,9 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
   private STALFactory stalFactory;
   private SLCommandInvoker commandInvokerClass;
   private ExecutorService executorService;
-  private Map<Id, MapEntityWrapper> bindingProcessorMap = Collections
-      .synchronizedMap(new HashMap<Id, MapEntityWrapper>());
+  private Map<Id, ProcessingContext> contextMap = Collections.synchronizedMap(new HashMap<Id, ProcessingContext>());
+//  private Map<Id, MapEntityWrapper> bindingProcessorMap = Collections
+//      .synchronizedMap(new HashMap<Id, MapEntityWrapper>());
 
   /**
    * Container to hold a Future and Bindingprocessor object as map value.
@@ -62,39 +63,39 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
    * @author wbauer
    * @see BindingProcessorManagerImpl#bindingProcessorMap
    */
-  static class MapEntityWrapper {
-    private Future<?> future;
-    private BindingProcessor bindingProcessor;
-
-    public MapEntityWrapper(Future<?> future, BindingProcessor bindingProcessor) {
-      if ((bindingProcessor == null) || (future == null)) {
-        throw new NullPointerException("Argument must not be null");
-      }
-      this.bindingProcessor = bindingProcessor;
-      this.future = future;
-    }
-
-    public Future<?> getFuture() {
-      return future;
-    }
-
-    public BindingProcessor getBindingProcessor() {
-      return bindingProcessor;
-    }
-
-    public int hashCode() {
-      return bindingProcessor.getId().hashCode();
-    }
-
-    public boolean equals(Object other) {
-      if (other instanceof MapEntityWrapper) {
-        MapEntityWrapper o = (MapEntityWrapper) other;
-        return (o.bindingProcessor.getId().equals(bindingProcessor.getId()));
-      } else {
-        return false;
-      }
-    }
-  }
+//  static class MapEntityWrapper {
+//    private Future<?> future;
+//    private BindingProcessor bindingProcessor;
+//
+//    public MapEntityWrapper(Future<?> future, BindingProcessor bindingProcessor) {
+//      if ((bindingProcessor == null) || (future == null)) {
+//        throw new NullPointerException("Argument must not be null");
+//      }
+//      this.bindingProcessor = bindingProcessor;
+//      this.future = future;
+//    }
+//
+//    public Future<?> getFuture() {
+//      return future;
+//    }
+//
+//    public BindingProcessor getBindingProcessor() {
+//      return bindingProcessor;
+//    }
+//
+//    public int hashCode() {
+//      return bindingProcessor.getId().hashCode();
+//    }
+//
+//    public boolean equals(Object other) {
+//      if (other instanceof MapEntityWrapper) {
+//        MapEntityWrapper o = (MapEntityWrapper) other;
+//        return (o.bindingProcessor.getId().equals(bindingProcessor.getId()));
+//      } else {
+//        return false;
+//      }
+//    }
+//  }
 
   /**
    * 
@@ -157,17 +158,24 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
   public void shutdownNow() {
     log.info("Shutting down the BindingProcessorManager NOW!");
     executorService.shutdownNow();
-    log.debug("Number of binding prcessors currently managed: "
-        + bindingProcessorMap.size());
+    log.debug("Number of binding contexts currently managed: "
+      + contextMap.size());
+//        + bindingProcessorMap.size());
     if (log.isDebugEnabled()) {
-      for (Iterator<MapEntityWrapper> it = bindingProcessorMap.values()
-          .iterator(); it.hasNext();) {
-        MapEntityWrapper entry = it.next();
-        log.debug(entry.getBindingProcessor().getId() + ": isDone: "
-            + entry.getFuture().isDone());
-        log.debug(entry.getBindingProcessor().getId() + ": isCanceled: "
-            + entry.getFuture().isCancelled());
+      for (ProcessingContext ctx : contextMap.values()) {
+        Id bpId = ctx.getBindingProcessor().getId();
+        Future future = ctx.getFuture();
+        log.debug(bpId + " cancelled: " + future.isCancelled());
+        log.debug(bpId + " done: " + future.isDone());
       }
+//      for (Iterator<MapEntityWrapper> it = bindingProcessorMap.values()
+//          .iterator(); it.hasNext();) {
+//        MapEntityWrapper entry = it.next();
+//        log.debug(entry.getBindingProcessor().getId() + ": isDone: "
+//            + entry.getFuture().isDone());
+//        log.debug(entry.getBindingProcessor().getId() + ": isCanceled: "
+//            + entry.getFuture().isCancelled());
+//      }
     }
   }
 
@@ -216,9 +224,13 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
    * @return the bindingprocessor object for this id or null if no
    *         bindingprocessor was found.
    */
+    @Override
   public BindingProcessor getBindingProcessor(Id aId) {
-    if (bindingProcessorMap.get(aId) != null) {
-      return bindingProcessorMap.get(aId).getBindingProcessor();
+//    if (bindingProcessorMap.get(aId) != null) {
+//      return bindingProcessorMap.get(aId).getBindingProcessor();
+    ProcessingContext ctx = contextMap.get(aId);
+    if (ctx != null) {
+      return ctx.getBindingProcessor();
     } else {
       return null;
     }
@@ -227,6 +239,7 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
   /**
    * 
    */
+    @Override
   public void setSTALFactory(STALFactory aStalFactory) {
     if (aStalFactory == null) {
       throw new NullPointerException("Cannot set STALFactory to null");
@@ -236,12 +249,17 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
 
   /**
    * Causes the BindingProcessorManager to manage the provided BindingProcessor
+   * Creates a processing context,
+   * schedules the provided binding processor for processing and 
+   * immediately returns the context.
    * 
    * @param aBindingProcessor
    *          must not be null
    */
-  public void process(BindingProcessor aBindingProcessor) {
-    if (bindingProcessorMap.containsKey(aBindingProcessor.getId())) {
+  @Override
+  public ProcessingContext process(BindingProcessor aBindingProcessor) {
+    if (contextMap.containsKey(aBindingProcessor.getId())) {
+//    if (bindingProcessorMap.containsKey(aBindingProcessor.getId())) {
       log.fatal("Clashing ids, cannot process bindingprocessor with id:"
           + aBindingProcessor.getId());
       throw new SLRuntimeException(
@@ -250,8 +268,11 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
     }
     log.debug("processing bindingprocessor: " + aBindingProcessor.getId());
     Future<?> f = executorService.submit(aBindingProcessor);
-    bindingProcessorMap.put(aBindingProcessor.getId(), new MapEntityWrapper(f,
-        aBindingProcessor));
+    ProcessingContext ctx = new ProcessingContext(aBindingProcessor, f);
+    contextMap.put(aBindingProcessor.getId(), ctx);
+//    bindingProcessorMap.put(aBindingProcessor.getId(), new MapEntityWrapper(f,
+//        aBindingProcessor));
+    return ctx;
   }
 
   @Override
@@ -262,26 +283,38 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
   @Override
   public void removeBindingProcessor(Id sessionId) {
     log.debug("Removing binding processor: " + sessionId);
-    MapEntityWrapper wrapper = bindingProcessorMap.get(sessionId);
-    if (wrapper == null) {
+    ProcessingContext ctx = contextMap.get(sessionId);
+    if (ctx == null) {
       return;
     }
-    Future<?> f = wrapper.getFuture();
+    Future f = ctx.getFuture();
+      
+//    MapEntityWrapper wrapper = bindingProcessorMap.get(sessionId);
+//    if (wrapper == null) {
+//      return;
+//    }
+//    Future<?> f = wrapper.getFuture();
     if (!f.isDone()) {
       f.cancel(true);
     }
-    bindingProcessorMap.remove(sessionId);
+    contextMap.remove(sessionId);
+//    bindingProcessorMap.remove(sessionId);
   }
 
   @Override
   public Set<Id> getManagedIds() {
     Set<Id> result = new HashSet<Id>();
-    synchronized (bindingProcessorMap) {
-      for (Iterator<Id> it = bindingProcessorMap.keySet().iterator(); it
-          .hasNext();) {
-        result.add(it.next());
+    synchronized (contextMap) {
+      for (Id id : contextMap.keySet()) {
+        result.add(id);
       }
     }
+//    synchronized (bindingProcessorMap) {
+//      for (Iterator<Id> it = bindingProcessorMap.keySet().iterator(); it
+//          .hasNext();) {
+//        result.add(it.next());
+//      }
+//    }
     return result;
   }
 }
