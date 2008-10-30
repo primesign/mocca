@@ -52,9 +52,10 @@
 		var parameters = {
             GuiStyle : '<%=guiStyle%>',
 			Background : '<%=backgroundImg%>',
-			WSDL_URL : '../stal?wsdl',
-            HashDataDisplay : '<%=hashDataDisplay%>',
-            HashDataURL : '../hashDataInput',
+			WSDL_URL :'../stal?wsdl',
+                        HelpURL : '../help',
+                        HashDataDisplay : 'external',
+                        HashDataURL : '../hashDataInput',
 			SessionID : '<%=session.getId()%>',
 			RedirectURL : '../bkuResult'
 		};

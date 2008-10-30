@@ -21,6 +21,8 @@ import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 import javax.swing.JApplet;
 
@@ -36,79 +38,105 @@ import at.gv.egiz.bku.gui.BKUGUIFactory;
  */
 public class BKUApplet extends JApplet {
 
-    private static Log log = LogFactory.getLog(BKUApplet.class);
-    public static final String GUI_STYLE = "GuiStyle";
-    public final static String RESOURCE_BUNDLE_BASE = "at/gv/egiz/bku/online/applet/Messages";
-    public final static String LOCALE_PARAM_KEY = "Locale";
-    public final static String LOGO_URL_KEY = "LogoURL";
-    public final static String WSDL_URL = "WSDL_URL";
-    public static final String HASHDATA_DISPLAY = "HashDataDisplay";
-    public final static String HASHDATA_URL = "HashDataURL";
-    public final static String SESSION_ID = "SessionID";
-    public static final String BACKGROUND_PARAM = "Background";
-    public static final String REDIRECT_URL = "RedirectURL";
-    public static final String REDIRECT_TARGET = "RedirectTarget";
-    
-    public static final String HASHDATA_DISPLAY_INTERNAL = "internal";
-    
-    protected ResourceBundle resourceBundle;
-    protected BKUWorker worker;
-    protected Thread workerThread;
+  private static Log log = LogFactory.getLog(BKUApplet.class);
+  public static final String GUI_STYLE = "GuiStyle";
+  public final static String RESOURCE_BUNDLE_BASE = "at/gv/egiz/bku/online/applet/Messages";
+  public final static String LOCALE_PARAM_KEY = "Locale";
+  public final static String LOGO_URL_KEY = "LogoURL";
+  public final static String WSDL_URL = "WSDL_URL";
+  public static final String HASHDATA_DISPLAY = "HashDataDisplay";
+  public final static String HASHDATA_URL = "HashDataURL";
+  public final static String HELP_URL = "HelpURL";
+  public final static String SESSION_ID = "SessionID";
+  public static final String BACKGROUND_PARAM = "Background";
+  public static final String REDIRECT_URL = "RedirectURL";
+  public static final String REDIRECT_TARGET = "RedirectTarget";
+  public static final String HASHDATA_DISPLAY_INTERNAL = "internal";
+  protected ResourceBundle resourceBundle;
+  protected BKUWorker worker;
+  protected Thread workerThread;
 
-    public BKUApplet() {
-    }
+  public BKUApplet() {
+  }
 
-    public void init() {
-      log.info("Welcome to MOCCA\n");
-        log.debug("Called init()");
-        HttpsURLConnection.setDefaultSSLSocketFactory(InternalSSLSocketFactory.getInstance());
-        String localeString = getMyAppletParameter(LOCALE_PARAM_KEY);
-        if (localeString != null) {
-            resourceBundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_BASE,
+  @Override
+  public void init() {
+    log.info("Welcome to MOCCA\n");
+    log.debug("Called init()");
+    HttpsURLConnection.setDefaultSSLSocketFactory(InternalSSLSocketFactory.getInstance());
+    String localeString = getMyAppletParameter(LOCALE_PARAM_KEY);
+    if (localeString != null) {
+      resourceBundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_BASE,
               new Locale(localeString));
-        } else {
-            resourceBundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_BASE);
-        }
-        String backgroundString = getMyAppletParameter(BACKGROUND_PARAM);
-        URL background = null;
-        if (backgroundString != null) {
-          try {
-            background = new URL(backgroundString);
-          } catch (MalformedURLException ex) {
-            log.warn(ex.getMessage() + ", using default background");
-          }
-        }
-        String guiStyle = getMyAppletParameter(GUI_STYLE);
-        BKUGUIFacade gui = BKUGUIFactory.createGUI(guiStyle);
-        gui.init(getContentPane(), localeString, background);
-        worker = new BKUWorker(gui, this, resourceBundle);
+    } else {
+      resourceBundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_BASE);
     }
+    String backgroundString = getMyAppletParameter(BACKGROUND_PARAM);
+    URL background = null;
+    if (backgroundString != null) {
+      try {
+        background = new URL(backgroundString);
+      } catch (MalformedURLException ex) {
+        log.warn(ex.getMessage() + ", using default background");
+      }
+    }
+    String guiStyle = getMyAppletParameter(GUI_STYLE);
+    BKUGUIFacade gui = BKUGUIFactory.createGUI(guiStyle);
+    ExternalHelpListener helpListener = null;
+    try {
+      URL helpURL = getMyAppletParameterURL(HELP_URL);
+      helpListener = new ExternalHelpListener(getAppletContext(), helpURL, localeString);
+    } catch (MalformedURLException ex) {
+      log.error("invalid help URL: " + ex.getMessage());
+    }
+    gui.init(getContentPane(), localeString, background, helpListener);
+    worker = new BKUWorker(gui, this, resourceBundle);
+  }
 
-    public void start() {
-        log.debug("Called start()");
-        workerThread = new Thread(worker);
-        workerThread.start();
-    }
+  @Override
+  public void start() {
+    log.debug("Called start()");
+    workerThread = new Thread(worker);
+    workerThread.start();
+  }
 
-    public void stop() {
-        log.debug("Called stop()");
-        if ((workerThread != null) && (workerThread.isAlive())) {
-            workerThread.interrupt();
-        }
+  @Override
+  public void stop() {
+    log.debug("Called stop()");
+    if ((workerThread != null) && (workerThread.isAlive())) {
+      workerThread.interrupt();
     }
+  }
 
-    public void destroy() {
-        log.debug("Called destroy()");
-    }
+  @Override
+  public void destroy() {
+    log.debug("Called destroy()");
+  }
 
-    /**
-     * Applet configuration parameters
-     * 
-     * @param paramKey
-     * @return
-     */
-    public String getMyAppletParameter(String paramKey) {
-        log.info("Getting parameter: " + paramKey + ": " + getParameter(paramKey));
-        return getParameter(paramKey);
+  /**
+   * Applet configuration parameters
+   * 
+   * @param paramKey
+   * @return
+   */
+  String getMyAppletParameter(String paramKey) {
+    log.info("Getting parameter: " + paramKey + ": " + getParameter(paramKey));
+    return getParameter(paramKey);
+  }
+
+  URL getMyAppletParameterURL(String param) throws MalformedURLException {
+    String hashDataParam = getMyAppletParameter(param); //BKUApplet.HASHDATA_URL);
+    if (hashDataParam != null) {
+      URL codebase = getCodeBase();
+      try {
+        return new URL(codebase, hashDataParam);
+      } catch (MalformedURLException ex) {
+        log.error("Paremeter " + param + " is not a valid URL.", ex);
+        throw new MalformedURLException(ex.getMessage());
+      }
+    } else {
+      log.error("Paremeter " + param + " not set");
+      throw new MalformedURLException(param + " not set");
     }
+  }
 }

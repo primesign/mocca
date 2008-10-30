@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.logging.Log;
@@ -46,6 +48,7 @@ import at.gv.egiz.stal.service.types.ObjectFactory;
 import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
 import at.gv.egiz.stal.util.STALTranslator;
+import javax.naming.ConfigurationException;
 
 public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     ActionListener, SMCCSTALRequestHandler {
@@ -68,7 +71,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
   public BKUWorker(BKUGUIFacade gui, BKUApplet parent,
       ResourceBundle errorMessageBundle) {
     if ((gui == null) || (parent == null) || (errorMessageBundle == null)) {
-      throw new NullPointerException("Parameter must not be set to null");
+        throw new NullPointerException("Parameter must not be set to null");
     }
     this.gui = gui;
     this.parent = parent;
@@ -117,23 +120,6 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     return stal.getSTALPort();
   }
   
-  private URL getHashDataURL() throws MalformedURLException {
-    String hashDataParam = parent.getMyAppletParameter(BKUApplet.HASHDATA_URL);
-    URL codebase = parent.getCodeBase();
-    if (hashDataParam != null) {
-      try {
-        return new URL(codebase, hashDataParam);
-//        log.debug("Found HashDataInputServlet URL: " + hashDataURL);
-      } catch (MalformedURLException ex) {
-        log.fatal("Paremeter " + BKUApplet.HASHDATA_URL + " is not a vailid URL.", ex);
-        throw new MalformedURLException(ex.getMessage());
-      }
-    } else {
-      log.fatal("Paremeter " + BKUApplet.HASHDATA_URL + " not set");
-      throw new MalformedURLException(BKUApplet.HASHDATA_URL + " not set");
-    }
-  }
-
   @Override
   public void run() {
     gui.showWelcomeDialog();
@@ -165,7 +151,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
         log.debug("register SignRequestHandler for STAL port " + BKUApplet.WSDL_URL);
         addRequestHandler(at.gv.egiz.stal.SignRequest.class, new WebServiceSignRequestHandler(sessionId, stalPort));
       } else { //if (HASHDATADISPLAY_EXTERNAL.equals(displayStyle)) {
-        URL hashDataURL = getHashDataURL();
+        URL hashDataURL = parent.getMyAppletParameterURL(BKUApplet.HASHDATA_URL);
         log.debug("register SignRequestHandler for HashDataURL " + hashDataURL);
         addRequestHandler(at.gv.egiz.stal.SignRequest.class, new ExternalDisplaySignRequestHandler(parent.getAppletContext(), hashDataURL));
       }

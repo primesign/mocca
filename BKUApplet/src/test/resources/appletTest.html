@@ -19,14 +19,15 @@
     <center>
       <applet code="at.gv.egiz.bku.online.applet.BKUApplet.class"
               archive="../BKUApplet-1.0-SNAPSHOT.jar, ../test-libs/commons-logging-1.1.1.jar , ../test-libs/iaik_jce_me4se-3.04.jar"
-              width=190 height=130>
-              <param name="GuiStyle" value="simple"/>
+              width=300 height=200>
+              <param name="GuiStyle" value="advanced"/>
               <param name="Background" value="http://localhost:3495/DemoIntegration/mocca_background.png"/>
-              <param name="WSDL_URL" value="http://localhost:3495/BKUOnline-1.0-SNAPSHOT/stal?wsdl"/>
+              <param name="WSDL_URL" value="http://localhost:3495/stal?wsdl"/>
+              <param name="HelpURL" value="http://localhost:3495/help"/>
               <param name="HashDataDisplay" value="internal"/>
               <!--param name="HashDataURL" value="http://localhost:3495/BKUOnline-1.0-SNAPSHOT/hashDataInput"/-->
               <param name="SessionId" value="TestSession"/>
-              <param name="RedirectURL" value="http://localhost:3495/BKUOnline-1.0-SNAPSHOT/bkuResult"/>
+              <param name="RedirectURL" value="http://localhost:3495/bkuResult"/>
       </applet>
     </center>
   </body>

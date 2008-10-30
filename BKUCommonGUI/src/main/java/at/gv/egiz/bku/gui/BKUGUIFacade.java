@@ -37,6 +37,7 @@ public interface BKUGUIFacade {
   
     public static final String MESSAGES_BUNDLE = "at/gv/egiz/bku/gui/Messages";
     public static final String DEFAULT_BACKGROUND = "/images/BackgroundChipperling.png";
+    public static final String HELP_IMG = "/images/help.png";
     public static final String HASHDATA_FONT = "Monospaced";
     public static final Color ERROR_COLOR = Color.RED;
     public static final Color HYPERLINK_COLOR = Color.BLUE;
@@ -63,6 +64,15 @@ public interface BKUGUIFacade {
     public static final String LABEL_PIN = "label.pin";
     public static final String LABEL_PINSIZE = "label.pinsize";
 //    public static final String ERROR_NO_HASHDATA = "error.no.hashdata";
+    public static final String HELP_WELCOME = "help.welcome";
+    public static final String HELP_WAIT = "help.wait";
+    public static final String HELP_CARDNOTSUPPORTED = "help.cardnotsupported";
+    public static final String HELP_INSERTCARD = "help.insertcard";
+    public static final String HELP_CARDPIN = "help.cardpin";
+    public static final String HELP_SIGNPIN = "help.signpin";
+    public static final String HELP_RETRY = "help.retry";
+    public static final String HELP_HASHDATA = "help.hashdata";
+    public static final String HELP_HASHDATALIST = "help.hashdatalist";
     
     public static final String BUTTON_OK = "button.ok";
     public static final String BUTTON_CANCEL = "button.cancel";
@@ -72,9 +82,9 @@ public interface BKUGUIFacade {
     public static final String SAVE_HASHDATAINPUT_PREFIX = "save.hashdatainput.prefix";
     
     
-    public void init(Container contentPane, String localeString, URL background);
+    public void init(Container contentPane, String localeString, URL background, ActionListener helpListener);
     
-    public void showWelcomeDialog(); 
+    public void showWelcomeDialog();
     
     /**
      * MOA-ID only

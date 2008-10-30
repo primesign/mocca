@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.swing.GroupLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
@@ -65,6 +66,8 @@ import org.apache.commons.logging.LogFactory;
 public class SimpleGUI implements BKUGUIFacade {
     
     private static final Log log = LogFactory.getLog(SimpleGUI.class);
+
+    protected HelpMouseListener helpListener;
     
     protected Container contentPane;
     protected ResourceBundle messages;
@@ -77,6 +80,7 @@ public class SimpleGUI implements BKUGUIFacade {
     protected JPanel buttonPanel;
     /** right side fixed labels  */
 //    protected JLabel titleLabel;
+    protected JLabel helpLabel;
     /** remember the pinfield to return to worker */
     protected JPasswordField pinField;
 
@@ -89,7 +93,7 @@ public class SimpleGUI implements BKUGUIFacade {
      * @param localeString may be null
      */
     @Override
-    public void init(final Container contentPane, String localeString, final URL background) {
+    public void init(final Container contentPane, String localeString, final URL background, ActionListener helpListener) {
 
         if (localeString != null) {
             messages = ResourceBundle.getBundle(MESSAGES_BUNDLE, new Locale(localeString));
@@ -98,7 +102,8 @@ public class SimpleGUI implements BKUGUIFacade {
         }
 
         this.contentPane = contentPane;
-
+        registerHelpListener(helpListener);
+        
         try {
 
           log.debug("scheduling gui initialization");
@@ -131,7 +136,7 @@ public class SimpleGUI implements BKUGUIFacade {
             throw new RuntimeException("Failed to init GUI: " + ex.getMessage());
         }
     }
-
+    
 //    protected void initIconPanel() {
 //        iconPanel = new JPanel();
 //        JLabel iconLabel = new JLabel();
@@ -151,7 +156,7 @@ public class SimpleGUI implements BKUGUIFacade {
 //                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)); //);
 //    }
 
-    protected void initContentPanel(URL background) {
+    protected void initContentPanel(URL background) { 
 
       if (background == null) {
         background = this.getClass().getResource(DEFAULT_BACKGROUND);
@@ -174,6 +179,11 @@ public class SimpleGUI implements BKUGUIFacade {
 //        titleLabel = new JLabel();
 //        titleLabel.setFont(titleLabel.getFont().deriveFont(titleLabel.getFont().getStyle() |
 //          java.awt.Font.BOLD, titleLabel.getFont().getSize() + 2));
+        
+        helpLabel = new JLabel();
+        helpLabel.setIcon(new ImageIcon(getClass().getResource(HELP_IMG))); 
+        helpLabel.addMouseListener(helpListener);
+        helpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         
         JButton b = new JButton();
 //        b.setText(messages.getString(BUTTON_CANCEL));
@@ -207,8 +217,7 @@ public class SimpleGUI implements BKUGUIFacade {
 //
 //        headerPanelLayout.setHorizontalGroup(
 //          headerPanelLayout.createSequentialGroup()
-//            .addComponent(titleLabel, 0, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-//            .addContainerGap());
+//            .addComponent(titleLabel, 0, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
 //        headerPanelLayout.setVerticalGroup(
 //          headerPanelLayout.createSequentialGroup()
 //            .addComponent(titleLabel, 0, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE));
@@ -234,7 +243,7 @@ public class SimpleGUI implements BKUGUIFacade {
             .addComponent(mainPanel, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) 
             .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED) //, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(buttonPanel, 0, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-            .addContainerGap()); //);
+            .addContainerGap());
     }
 
     @Override
@@ -291,6 +300,8 @@ public class SimpleGUI implements BKUGUIFacade {
 
 //                titleLabel.setText(messages.getString(TITLE_WELCOME));
 
+                helpListener.setHelpTopic(HELP_WELCOME);
+                
                 JLabel welcomeMsgLabel = new JLabel();
                 welcomeMsgLabel.setFont(welcomeMsgLabel.getFont().deriveFont(welcomeMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                 welcomeMsgLabel.setText(messages.getString(TITLE_WELCOME)); 
@@ -299,12 +310,16 @@ public class SimpleGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createSequentialGroup()
-                  .addComponent(welcomeMsgLabel));
+                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                      .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                      .addComponent(helpLabel))
+                    .addComponent(welcomeMsgLabel));
                 mainPanelLayout.setVerticalGroup(
                   mainPanelLayout.createSequentialGroup()
-                  .addComponent(welcomeMsgLabel));
-
+                    .addComponent(helpLabel)
+                    .addComponent(welcomeMsgLabel));
+                
                 contentPanel.validate();
 
             }
@@ -328,6 +343,8 @@ public class SimpleGUI implements BKUGUIFacade {
 
 //                titleLabel.setText(messages.getString(TITLE_INSERTCARD));
 
+                helpListener.setHelpTopic(HELP_INSERTCARD);
+
                 JLabel insertCardMsgLabel = new JLabel();
                 insertCardMsgLabel.setFont(insertCardMsgLabel.getFont().deriveFont(insertCardMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                 insertCardMsgLabel.setText(messages.getString(MESSAGE_INSERTCARD));
@@ -336,10 +353,14 @@ public class SimpleGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createSequentialGroup()
+                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                      .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                      .addComponent(helpLabel))
                     .addComponent(insertCardMsgLabel));
                 mainPanelLayout.setVerticalGroup(
                   mainPanelLayout.createSequentialGroup()
+                    .addComponent(helpLabel)
                     .addComponent(insertCardMsgLabel));
                 
 //                JButton cancelButton = new JButton();
@@ -385,6 +406,8 @@ public class SimpleGUI implements BKUGUIFacade {
 
 //                titleLabel.setText(messages.getString(TITLE_CARD_NOT_SUPPORTED));
 
+              helpListener.setHelpTopic(HELP_CARDNOTSUPPORTED);
+              
                 JLabel insertCardMsgLabel = new JLabel();
                 insertCardMsgLabel.setFont(insertCardMsgLabel.getFont().deriveFont(insertCardMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                 insertCardMsgLabel.setText(messages.getString(TITLE_CARD_NOT_SUPPORTED)); 
@@ -393,12 +416,16 @@ public class SimpleGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createSequentialGroup()
+                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                      .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                      .addComponent(helpLabel))
                     .addComponent(insertCardMsgLabel));
                 mainPanelLayout.setVerticalGroup(
                   mainPanelLayout.createSequentialGroup()
+                    .addComponent(helpLabel)
                     .addComponent(insertCardMsgLabel));
-
+                
 //                JButton cancelButton = new JButton();
 //                cancelButton.setText(messages.getString(BUTTON_CANCEL));
 //                cancelButton.addActionListener(cancelListener);
@@ -477,10 +504,12 @@ public class SimpleGUI implements BKUGUIFacade {
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                   String infoPattern = messages.getString(MESSAGE_ENTERPIN);
                   infoLabel.setText(MessageFormat.format(infoPattern, new Object[] {pinSpec.getLocalizedName()}));
+                  helpListener.setHelpTopic(HELP_CARDPIN);
                 } else {
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() | java.awt.Font.BOLD));
                   infoLabel.setText(MessageFormat.format(messages.getString(MESSAGE_RETRIES), new Object[]{String.valueOf(numRetries)}));
                   infoLabel.setForeground(ERROR_COLOR);
+                  helpListener.setHelpTopic(HELP_RETRY);
                 }
                 
                 JLabel pinsizeLabel = new JLabel();
@@ -497,7 +526,10 @@ public class SimpleGUI implements BKUGUIFacade {
 
                 mainPanelLayout.setHorizontalGroup(
                   mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(infoLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                      .addComponent(infoLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                      .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                      .addComponent(helpLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                     .addGroup(mainPanelLayout.createSequentialGroup()
                       .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                       .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
@@ -507,13 +539,15 @@ public class SimpleGUI implements BKUGUIFacade {
 
                 mainPanelLayout.setVerticalGroup(
                   mainPanelLayout.createSequentialGroup()
-                        .addComponent(infoLabel)
-                        .addGap(infoLabel.getFont().getSize())
-                        .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                            .addComponent(cardPinLabel)
-                            .addComponent(pinField))
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pinsizeLabel));
+                    .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                      .addComponent(infoLabel)
+                      .addComponent(helpLabel))
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(cardPinLabel)
+                        .addComponent(pinField))
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(pinsizeLabel));
 
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
@@ -580,7 +614,7 @@ public class SimpleGUI implements BKUGUIFacade {
       
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
-
+                
 //                if (numRetries < 0) {
 //                    titleLabel.setText(messages.getString(TITLE_SIGN));
 //                } else {
@@ -626,7 +660,7 @@ public class SimpleGUI implements BKUGUIFacade {
                     pinSize += "-" + pinSpec.getMaxLength();
                 }
                 pinsizeLabel.setText(MessageFormat.format(pinsizePattern, new Object[]{pinSize}));
-                
+
                 JLabel infoLabel = new JLabel();
                 if (numRetries < 0) {
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
@@ -641,10 +675,12 @@ public class SimpleGUI implements BKUGUIFacade {
                           hashdataListener.actionPerformed(e);
                       }
                   });
+                  helpListener.setHelpTopic(HELP_SIGNPIN);
                 } else {
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() | java.awt.Font.BOLD));
                   infoLabel.setText(MessageFormat.format(messages.getString(MESSAGE_RETRIES), new Object[]{String.valueOf(numRetries)}));
                   infoLabel.setForeground(ERROR_COLOR);
+                  helpListener.setHelpTopic(HELP_RETRY);
                 }
 
                 GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
@@ -652,23 +688,28 @@ public class SimpleGUI implements BKUGUIFacade {
 
                 mainPanelLayout.setHorizontalGroup(
                   mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
                       .addComponent(infoLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                      .addGroup(mainPanelLayout.createSequentialGroup()
-                          .addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(pinsizeLabel))));
+                      .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                      .addComponent(helpLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                          .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                          .addComponent(pinsizeLabel))));
 
                 mainPanelLayout.setVerticalGroup(
                   mainPanelLayout.createSequentialGroup()
+                    .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addComponent(infoLabel)
-                        .addGap(infoLabel.getFont().getSize())
-                        .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                            .addComponent(signPinLabel)
-                            .addComponent(pinField))
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(pinsizeLabel));
+                        .addComponent(helpLabel))
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(signPinLabel)
+                        .addComponent(pinField))
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(pinsizeLabel));
 
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
@@ -719,6 +760,8 @@ public class SimpleGUI implements BKUGUIFacade {
 
 //                titleLabel.setText(messages.getString(TITLE_ERROR));
 
+                helpListener.setHelpTopic(errorMsgKey);
+                
                 String errorMsgPattern = messages.getString(errorMsgKey);
                 String errorMsg = MessageFormat.format(errorMsgPattern, errorMsgParams);
                 
@@ -731,12 +774,16 @@ public class SimpleGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createSequentialGroup()
-                  .addComponent(errorMsgLabel));
+                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                      .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                      .addComponent(helpLabel))
+                    .addComponent(errorMsgLabel));
                 mainPanelLayout.setVerticalGroup(
                   mainPanelLayout.createSequentialGroup()
-                  .addComponent(errorMsgLabel));
-
+                    .addComponent(helpLabel)
+                    .addComponent(errorMsgLabel));
+                
                 JButton okButton = new JButton();
                 okButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle() & ~java.awt.Font.BOLD));
                 okButton.setText(messages.getString(BUTTON_OK));
@@ -776,6 +823,8 @@ public class SimpleGUI implements BKUGUIFacade {
 
 //          titleLabel.setText(messages.getString(TITLE_ERROR));
 
+          helpListener.setHelpTopic(errorMsgKey);
+          
           String errorMsgPattern = messages.getString(errorMsgKey);
           String errorMsg = MessageFormat.format(errorMsgPattern, errorMsgParams);
 
@@ -788,11 +837,15 @@ public class SimpleGUI implements BKUGUIFacade {
           mainPanel.setLayout(mainPanelLayout);
 
           mainPanelLayout.setHorizontalGroup(
-            mainPanelLayout.createSequentialGroup()
-            .addComponent(errorMsgLabel));
+            mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+              .addGroup(mainPanelLayout.createSequentialGroup()
+                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                .addComponent(helpLabel))
+              .addComponent(errorMsgLabel));
           mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createSequentialGroup()
-            .addComponent(errorMsgLabel));
+              .addComponent(helpLabel)
+              .addComponent(errorMsgLabel));
 
           contentPanel.validate();
         }
@@ -816,6 +869,8 @@ public class SimpleGUI implements BKUGUIFacade {
 
 //                titleLabel.setText(messages.getString(TITLE_WAIT));
 
+                helpListener.setHelpTopic(HELP_WAIT);
+                
                 JLabel waitMsgLabel = new JLabel();
                 waitMsgLabel.setFont(waitMsgLabel.getFont().deriveFont(waitMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                 if (waitMessage != null) {
@@ -828,11 +883,15 @@ public class SimpleGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createSequentialGroup()
-                  .addComponent(waitMsgLabel));
+                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                      .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                      .addComponent(helpLabel))
+                    .addComponent(waitMsgLabel));
                 mainPanelLayout.setVerticalGroup(
                   mainPanelLayout.createSequentialGroup()
-                  .addComponent(waitMsgLabel));
+                    .addComponent(helpLabel)
+                    .addComponent(waitMsgLabel));
 
                 contentPanel.validate();
             }
@@ -907,6 +966,8 @@ public class SimpleGUI implements BKUGUIFacade {
           buttonPanel.removeAll();
 
 //          titleLabel.setText(messages.getString(TITLE_HASHDATA));
+          
+          helpListener.setHelpTopic(HELP_HASHDATA);
 
           JLabel refIdLabel = new JLabel();
           refIdLabel.setFont(refIdLabel.getFont().deriveFont(refIdLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
@@ -929,14 +990,19 @@ public class SimpleGUI implements BKUGUIFacade {
 
           mainPanelLayout.setHorizontalGroup(
              mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                      .addComponent(refIdLabel)
-                      .addComponent(hashDataScrollPane, 0, 0, Short.MAX_VALUE));
+              .addGroup(mainPanelLayout.createSequentialGroup()
+                .addComponent(refIdLabel)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                .addComponent(helpLabel))
+              .addComponent(hashDataScrollPane, 0, 0, Short.MAX_VALUE));
 
           mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createSequentialGroup()
-                  .addComponent(refIdLabel)
-                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(hashDataScrollPane, 0, 0, Short.MAX_VALUE));
+              .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(refIdLabel)
+                .addComponent(helpLabel))
+              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+              .addComponent(hashDataScrollPane, 0, 0, Short.MAX_VALUE));
 
           JButton backButton = new JButton();
           backButton.setFont(backButton.getFont().deriveFont(backButton.getFont().getStyle() & ~java.awt.Font.BOLD));
@@ -995,6 +1061,8 @@ public class SimpleGUI implements BKUGUIFacade {
 
 //          titleLabel.setText(messages.getString(TITLE_HASHDATA));
 
+          helpListener.setHelpTopic(HELP_HASHDATALIST);
+          
           JLabel refIdLabel = new JLabel();
           refIdLabel.setFont(refIdLabel.getFont().deriveFont(refIdLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
           String refIdLabelPattern = messages.getString(MESSAGE_HASHDATALIST);
@@ -1019,14 +1087,19 @@ public class SimpleGUI implements BKUGUIFacade {
 
           mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                      .addComponent(refIdLabel)
-                      .addComponent(hashDataScrollPane, 0, 0, Short.MAX_VALUE));
+              .addGroup(mainPanelLayout.createSequentialGroup()
+                .addComponent(refIdLabel)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                .addComponent(helpLabel))
+              .addComponent(hashDataScrollPane, 0, 0, Short.MAX_VALUE));
 
           mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createSequentialGroup()
-                  .addComponent(refIdLabel)
-                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(hashDataScrollPane, 0, 0, hashDataTable.getPreferredSize().height+3));
+              .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(refIdLabel)
+                .addComponent(helpLabel))
+              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+              .addComponent(hashDataScrollPane, 0, 0, hashDataTable.getPreferredSize().height+3));
 
           JButton backButton = new JButton();
           backButton.setFont(backButton.getFont().deriveFont(backButton.getFont().getStyle() & ~java.awt.Font.BOLD));
@@ -1181,6 +1254,21 @@ public class SimpleGUI implements BKUGUIFacade {
               baos.close();
           } catch (IOException ex) {
           }
+      }
+    }
+    
+    private void registerHelpListener(ActionListener helpListener) {
+      if (helpListener != null) {
+        this.helpListener = new HelpMouseListener(helpListener);
+      } else {
+        log.error("no help listener provided, will not be able to display help");
+        this.helpListener = new HelpMouseListener(new ActionListener() {
+
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            log.error("no help listener registered (requested help topic: " + e.getActionCommand() + ")");
+          }
+        });
       }
     }
 }
