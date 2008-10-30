@@ -20,6 +20,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.smcc.CancelledException;
+import at.gv.egiz.smcc.LockedException;
+import at.gv.egiz.smcc.NotActivatedException;
 import at.gv.egiz.smcc.PINProvider;
 import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.smcc.SignatureCard;
@@ -100,6 +102,12 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler implements
           stalResp.setInfoboxValue(resp);
           return stalResp;
         }
+      } catch (NotActivatedException e) {
+        log.info("Citizen card not activated.", e);
+        return new ErrorResponse(6001);
+      } catch (LockedException e) {
+        log.info("Citizen card locked.", e);
+        return new ErrorResponse(6001);
       } catch (CancelledException cx) {
         log.debug("User cancelled request", cx);
         return new ErrorResponse(6001);

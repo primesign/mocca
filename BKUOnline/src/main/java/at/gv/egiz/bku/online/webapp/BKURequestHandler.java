@@ -44,6 +44,8 @@ import at.gv.egiz.org.apache.tomcat.util.http.AcceptLanguage;
  */
 public class BKURequestHandler extends SpringBKUServlet {
 
+  private static final long serialVersionUID = 1L;
+
   public final static String REDIRECT_URL = "appletPage.jsp";
 
   protected Log log = LogFactory.getLog(BKURequestHandler.class);
@@ -105,6 +107,8 @@ public class BKURequestHandler extends SpringBKUServlet {
     String width = getStringFromStream(bindingProcessor.getFormData("appletWidth"), charset);
     String height = getStringFromStream(bindingProcessor.getFormData("appletHeight"), charset);
     String background = getStringFromStream(bindingProcessor.getFormData("appletBackground"), charset);
+    String guiStyle = getStringFromStream(bindingProcessor.getFormData("appletGuiStyle"), charset);
+    String hashDataDisplay = getStringFromStream(bindingProcessor.getFormData("appletHashDataDisplay"), charset);
     if (width != null) {
       try {
         log.trace("Found applet width parameter: " + width);
@@ -124,12 +128,16 @@ public class BKURequestHandler extends SpringBKUServlet {
       }
     }
     if (background != null) {
-      try {
-        log.trace("Found applet background parameter: " + background);
-        session.setAttribute("appletBackground", background);
-      } catch (NumberFormatException nfe) {
-        log.warn(nfe);
-      }
+      log.trace("Found applet background parameter: " + background);
+      session.setAttribute("appletBackground", background);
+    }
+    if (guiStyle != null) {
+      log.trace("Found applet GUI style parameter: " + guiStyle);
+      session.setAttribute("appletGuiStyle", guiStyle);
+    }
+    if (hashDataDisplay != null) {
+      log.trace("Found applet hash data display parameter: " + hashDataDisplay);
+      session.setAttribute("appletHashDataDisplay", hashDataDisplay);
     }
 
     resp.sendRedirect(REDIRECT_URL);

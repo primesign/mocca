@@ -217,7 +217,7 @@ public class CreateXMLSignatureCommandImpl extends SLCommandImpl<CreateXMLSignat
       return new CreateXMLSignatureResultImpl(signature.getDocument());
       
     } catch (SLException e) {
-      return new ErrorResultImpl(e);
+      return new ErrorResultImpl(e, cmdCtx.getLocale());
     } 
   }
 

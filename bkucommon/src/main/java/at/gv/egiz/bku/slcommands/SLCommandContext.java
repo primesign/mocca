@@ -16,6 +16,8 @@
 */
 package at.gv.egiz.bku.slcommands;
 
+import java.util.Locale;
+
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencerContext;
 import at.gv.egiz.stal.STAL;
 
@@ -23,6 +25,8 @@ public class SLCommandContext {
   
   private STAL stal;
   private URLDereferencerContext urlDerefCtx;
+  
+  private Locale locale;
 
   public void setSTAL(STAL aStal) {
     this.stal = aStal;
@@ -39,4 +43,13 @@ public class SLCommandContext {
   public URLDereferencerContext getURLDereferencerContext() {
     return urlDerefCtx;
   }
+
+  public Locale getLocale() {
+    return locale;
+  }
+
+  public void setLocale(Locale locale) {
+    this.locale = locale;
+  }
+  
 }

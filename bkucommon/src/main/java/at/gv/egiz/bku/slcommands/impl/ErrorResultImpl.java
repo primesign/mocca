@@ -16,6 +16,8 @@
 */
 package at.gv.egiz.bku.slcommands.impl;
 
+import java.util.Locale;
+
 import javax.xml.transform.Result;
 import javax.xml.transform.Templates;
 
@@ -33,21 +35,33 @@ public class ErrorResultImpl extends SLResultImpl implements ErrorResult {
    * The exception containing information provided in the <code>ErrorResponse</code>.
    */
   protected SLException slException;
-
+  
+  /**
+   * The locale to be used for rendering an <code>ErrorResponse</code>.
+   */
+  protected Locale locale;
+  
   /**
    * Creates a new instance of this ErrorResultImpl with the given
    * <code>slException</code> containing information provided in the
-   * <code>ErrorResponse</code>.
+   * <code>ErrorResponse</code> and the <code>locale</code> for rendering
+   * the <code>ErrorResponse</code>.
    * 
-   * @param slException the exception 
+   * @param slException the exception
+   * @param locale the locale
    */
-  public ErrorResultImpl(SLException slException) {
+  public ErrorResultImpl(SLException slException, Locale locale) {
     this.slException = slException;
+    this.locale = locale;
   }
 
   @Override
   public void writeTo(Result result, Templates templates) {
-    writeErrorTo(slException, result, templates);
+    if (locale == null) {
+      writeErrorTo(slException, result, templates);
+    } else {
+      writeErrorTo(slException, result, templates, locale);
+    }
   }
   
 }

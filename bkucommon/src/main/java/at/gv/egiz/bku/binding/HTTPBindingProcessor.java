@@ -564,6 +564,7 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 		SLCommandContext commandCtx = new SLCommandContext();
 		commandCtx.setSTAL(getSTAL());
 		commandCtx.setURLDereferencerContext(new SimpleFormDataContextImpl(this));
+		commandCtx.setLocale(locale);
 		slCommand = SLCommandFactory.getInstance().createSLCommand(source,
 				commandCtx);
 		log.debug("Created new command: " + slCommand);
@@ -731,7 +732,7 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 	protected void handleBindingProcessorError(OutputStream os, String encoding,
 			Templates templates) throws IOException {
 		log.debug("Writing error as result");
-		ErrorResultImpl error = new ErrorResultImpl(bindingProcessorError);
+		ErrorResultImpl error = new ErrorResultImpl(bindingProcessorError, locale);
 		error.writeTo(new StreamResult(new OutputStreamWriter(os, encoding)), templates);
 	}
 

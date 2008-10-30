@@ -279,7 +279,7 @@ public class InfoboxReadCommandImpl extends SLCommandImpl<InfoboxReadRequestType
         throw new SLCommandException(4000);
       }
     } catch (SLCommandException e) {
-      return new ErrorResultImpl(e);
+      return new ErrorResultImpl(e, cmdCtx.getLocale());
     }
   }
  

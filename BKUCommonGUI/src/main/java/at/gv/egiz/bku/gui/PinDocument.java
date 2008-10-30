@@ -46,7 +46,7 @@ class PINDocument extends PlainDocument {
 
         @Override
         public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
-            if (pinSpec.getMaxLength() >= (getLength() + str.length())) {
+            if (pinSpec.getMaxLength() < 0 || pinSpec.getMaxLength() >= (getLength() + str.length())) {
                 boolean matches = true;
                 for (int i = 0; i < str.length(); i++) {
                     Matcher m = pinPattern.matcher(str.substring(i, i + 1));

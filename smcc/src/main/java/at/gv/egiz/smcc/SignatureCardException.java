@@ -34,7 +34,7 @@ public class SignatureCardException extends Exception {
    * 
    */
   private static final long serialVersionUID = 1L;
-
+  
   /**
    * Creates a new instance of this <code>SignatureCardException</code>.
    * 

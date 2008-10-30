@@ -32,6 +32,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.smcc.CancelledException;
+import at.gv.egiz.smcc.LockedException;
+import at.gv.egiz.smcc.NotActivatedException;
 import at.gv.egiz.smcc.PINProvider;
 import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.smcc.SignatureCard;
@@ -78,7 +80,7 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
                 String jceName = JCEAlgorithmNames.getJCEHashName(signatureMethod);
                 if (jceName == null) {
                     log.error("Hash algorithm not supported:");
-                    return new ErrorResponse(1000);
+                    return new ErrorResponse(4006);
                 }
                 MessageDigest md = MessageDigest.getInstance(jceName);
                 md.update(signReq.getSignedInfo());
@@ -90,6 +92,12 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
                 SignResponse stalResp = new SignResponse();
                 stalResp.setSignatureValue(resp);
                 return stalResp;
+            } catch (NotActivatedException e) {
+              log.info("Citizen card not activated.", e);
+              return new ErrorResponse(6001);
+            } catch (LockedException e) {
+              log.info("Citizen card locked.", e);
+              return new ErrorResponse(6001);
             } catch (CancelledException cx) {
                 log.debug("User cancelled request");
                 return new ErrorResponse(6001);

@@ -16,6 +16,8 @@
 */
 package at.gv.egiz.bku.slcommands.impl;
 
+import java.util.Locale;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -181,6 +183,10 @@ public abstract class SLResultImpl implements SLResult {
   }
   
   protected void writeErrorTo(SLException slException, Result result, Templates templates) {
+    writeErrorTo(slException, result, templates, Locale.getDefault());
+  }
+  
+  protected void writeErrorTo(SLException slException, Result result, Templates templates, Locale locale) {
     
     TransformerHandler transformerHandler = null;
     if (templates != null) {
@@ -195,7 +201,7 @@ public abstract class SLResultImpl implements SLResult {
     ObjectFactory factory = new ObjectFactory();
     ErrorResponseType responseType = factory.createErrorResponseType();
     responseType.setErrorCode(slException.getErrorCode());
-    responseType.setInfo(slException.getDetailedMsg());
+    responseType.setInfo(slException.getLocalizedMessage(locale));
     JAXBElement<ErrorResponseType> response = factory.createErrorResponse(responseType);
     
     Marshaller marshaller = getMarshaller();

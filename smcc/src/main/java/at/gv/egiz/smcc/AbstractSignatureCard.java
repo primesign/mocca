@@ -31,7 +31,6 @@ package at.gv.egiz.smcc;
 import java.nio.ByteBuffer;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 import javax.smartcardio.ATR;
 import javax.smartcardio.Card;
@@ -60,7 +59,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
     this.resourceBundleName = resourceBundleName;
   }
 
-  String toString(byte[] b) {
+  protected String toString(byte[] b) {
     StringBuffer sb = new StringBuffer();
     if (b != null && b.length > 0) {
       sb.append(Integer.toHexString((b[0] & 240) >> 4));
@@ -74,13 +73,46 @@ public abstract class AbstractSignatureCard implements SignatureCard {
     return sb.toString();
   }
 
-  abstract byte[] selectFileAID(byte[] fid) throws CardException,
+  protected abstract byte[] selectFileAID(byte[] fid) throws CardException,
       SignatureCardException;
 
-  abstract byte[] selectFileFID(byte[] fid) throws CardException,
+  protected abstract ResponseAPDU selectFileFID(byte[] fid) throws CardException,
       SignatureCardException;
 
-  byte[] readBinary(CardChannel channel, int offset, int len)
+  /**
+   * VERIFY PIN
+   * 
+   * <p>
+   * Implementations of this method should call
+   * {@link PINProvider#providePIN(PINSpec, int)} to retrieve the PIN entered by
+   * the user and VERIFY PIN on the smart card until the PIN has been
+   * successfully verified.
+   * </p>
+   * 
+   * @param pinProvider
+   *          the PINProvider
+   * @param spec
+   *          the PINSpec
+   * @param kid
+   *          the key ID (KID) of the PIN to verify
+   * 
+   * @throws CardException
+   *           if smart card communication fails
+   * 
+   * @throws CancelledException
+   *           if the PINProvider indicated that the user canceled the PIN entry
+   * @throws NotActivatedException
+   *           if the card application has not been activated
+   * @throws LockedException
+   *           if the card application is locked
+   * 
+   * @throws SignatureCardException
+   *           if VERIFY PIN fails
+   */
+  protected abstract void verifyPIN(PINProvider pinProvider, PINSpec spec,
+      byte kid) throws CardException, SignatureCardException;
+
+  protected byte[] readBinary(CardChannel channel, int offset, int len)
       throws CardException, SignatureCardException {
 
     ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0xB0,
@@ -94,7 +126,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
 
   }
 
-  int readBinary(int offset, int len, byte[] b) throws CardException,
+  protected int readBinary(int offset, int len, byte[] b) throws CardException,
       SignatureCardException {
 
     if (b.length < len) {
@@ -114,7 +146,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
 
   }
 
-  byte[] readBinaryTLV(int maxSize, byte expectedType) throws CardException,
+  protected byte[] readBinaryTLV(int maxSize, byte expectedType) throws CardException,
       SignatureCardException {
 
     CardChannel channel = getCardChannel();
@@ -150,15 +182,38 @@ public abstract class AbstractSignatureCard implements SignatureCard {
 
   }
 
-  abstract int verifyPIN(PINProvider pinProvider, PINSpec spec, byte kid,
-      int kfpc) throws CardException, SignatureCardException;
-
-  public byte[] readTLVFile(byte[] aid, byte[] ef, int maxLength)
+  /**
+   * Read the content of a TLV file.
+   * 
+   * @param aid the application ID (AID)
+   * @param ef the elementary file (EF)
+   * @param maxLength the maximum length of the file
+   * 
+   * @return the content of the file
+   * 
+   * @throws SignatureCardException
+   */
+  protected byte[] readTLVFile(byte[] aid, byte[] ef, int maxLength)
       throws SignatureCardException {
     return readTLVFilePIN(aid, ef, (byte) 0, null, null, maxLength);
   }
 
-  public byte[] readTLVFilePIN(byte[] aid, byte[] ef, byte kid,
+  
+  /**
+   * Read the content of a TLV file wich may require a PIN.
+   * 
+   * @param aid the application ID (AID)
+   * @param ef the elementary file (EF)
+   * @param kid the key ID (KID) of the corresponding PIN
+   * @param provider the PINProvider
+   * @param spec the PINSpec
+   * @param maxLength the maximum length of the file
+   * 
+   * @return the content of the file
+   * 
+   * @throws SignatureCardException
+   */
+  protected byte[] readTLVFilePIN(byte[] aid, byte[] ef, byte kid,
       PINProvider provider, PINSpec spec, int maxLength)
       throws SignatureCardException {
 
@@ -179,33 +234,38 @@ public abstract class AbstractSignatureCard implements SignatureCard {
       }
 
       // SELECT FILE (EF)
-      rb = selectFileFID(ef);
-      if (rb[rb.length - 2] != (byte) 0x90 || rb[rb.length - 1] != (byte) 0x00) {
+      ResponseAPDU resp = selectFileFID(ef);
+      if (resp.getSW() == 0x6a82) {
+        
+        // EF not found
+        throw new FileNotFoundException("EF " + toString(ef) + " not found.");
+        
+      } else if (resp.getSW() != 0x9000) {
 
         throw new SignatureCardException("SELECT FILE with "
             + "FID="
             + toString(ef)
             + " failed ("
             + "SW="
-            + Integer.toHexString((0xFF & (int) rb[rb.length - 1])
-                | (0xFF & (int) rb[rb.length - 2]) << 8) + ").");
+            + Integer.toHexString(resp.getSW()) + ").");
+        
       }
 
       // try to READ BINARY
-      int sw = readBinary(0, 1, new byte[1]);
+      byte[] b = new byte[1];
+      int sw = readBinary(0, 1, b);
+      
       if (provider != null && sw == 0x6982) {
 
         // VERIFY
-        int kfpc = -1; // unknown
-        while (true) {
-          kfpc = verifyPIN(provider, spec, kid, kfpc);
-          if (kfpc < -1) {
-            return null;
-          } else if (kfpc < 0) {
-            break;
-          }
+        verifyPIN(provider, spec, kid);
+        
+      } else if (sw == 0x9000) {
+        // not expected type
+        if (b[0] != 0x30) {
+          throw new NotActivatedException();
         }
-      } else if (sw != 0x9000) {
+      } else {
         throw new SignatureCardException("READ BINARY failed (SW="
             + Integer.toHexString(sw) + ").");
       }
@@ -221,17 +281,56 @@ public abstract class AbstractSignatureCard implements SignatureCard {
 
   }
 
-  ResponseAPDU transmit(CardChannel channel, CommandAPDU commandAPDU)
+  /**
+   * Transmit the given command APDU using the given card channel.
+   * 
+   * @param channel
+   *          the card channel
+   * @param commandAPDU
+   *          the command APDU
+   * @param logData
+   *          <code>true</code> if command APDU data may be logged, or
+   *          <code>false</code> otherwise
+   * 
+   * @return the corresponding response APDU
+   * 
+   * @throws CardException
+   *           if smart card communication fails
+   */
+  protected ResponseAPDU transmit(CardChannel channel, CommandAPDU commandAPDU, boolean logData)
       throws CardException {
-    log.trace(commandAPDU + "\n" + toString(commandAPDU.getBytes()));
-    long t0 = System.currentTimeMillis();
-    ResponseAPDU responseAPDU = channel.transmit(commandAPDU);
-    long t1 = System.currentTimeMillis();
-    log.trace(responseAPDU + "\n[" + (t1 - t0) + "ms] "
-        + toString(responseAPDU.getBytes()));
-    return responseAPDU;
+    
+    if (log.isTraceEnabled()) {
+      log.trace(commandAPDU 
+          + (logData ? "\n" + toString(commandAPDU.getBytes()) : ""));
+      long t0 = System.currentTimeMillis();
+      ResponseAPDU responseAPDU = channel.transmit(commandAPDU);
+      long t1 = System.currentTimeMillis();
+      log.trace(responseAPDU + "\n[" + (t1 - t0) + "ms] "
+          + (logData ? "\n" + toString(responseAPDU.getBytes()) : ""));
+      return responseAPDU;
+    } else {
+      return channel.transmit(commandAPDU);
+    }
+    
   }
 
+  /**
+   * Transmit the given command APDU using the given card channel.
+   * 
+   * @param channel the card channel
+   * @param commandAPDU the command APDU
+   * 
+   * @return the corresponding response APDU
+   * 
+   * @throws CardException if smart card communication fails
+   */
+  protected ResponseAPDU transmit(CardChannel channel, CommandAPDU commandAPDU)
+      throws CardException {
+    return transmit(channel, commandAPDU, true);
+  }
+
+  
   public void init(Card card) {
     card_ = card;
     ATR atr = card.getATR();
@@ -242,7 +341,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
     }
   }
 
-  CardChannel getCardChannel() {
+  protected CardChannel getCardChannel() {
     return card_.getBasicChannel();
   }
 

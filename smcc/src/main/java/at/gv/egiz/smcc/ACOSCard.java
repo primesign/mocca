@@ -30,12 +30,18 @@ package at.gv.egiz.smcc;
 
 import java.nio.charset.Charset;
 
+import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
+  
+  private static Log log = LogFactory.getLog(ACOSCard.class);
 
   public static final byte[] AID_DEC = new byte[] { (byte) 0xA0, (byte) 0x00,
       (byte) 0x00, (byte) 0x01, (byte) 0x18, (byte) 0x45, (byte) 0x4E };
@@ -97,7 +103,145 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
     super("at/gv/egiz/smcc/ACOSCard");
   }
 
-  byte[] selectFileAID(byte[] fid) throws CardException, SignatureCardException {
+  /* (non-Javadoc)
+   * @see at.gv.egiz.smcc.SignatureCard#getCertificate(at.gv.egiz.smcc.SignatureCard.KeyboxName)
+   */
+  public byte[] getCertificate(KeyboxName keyboxName)
+      throws SignatureCardException {
+  
+    byte[] aid;
+    byte[] efc;
+    int maxsize;
+    if (keyboxName == KeyboxName.SECURE_SIGNATURE_KEYPAIR) {
+      aid = AID_SIG;
+      efc = EF_C_CH_DS;
+      maxsize = EF_C_CH_DS_MAX_SIZE;
+    } else if (keyboxName == KeyboxName.CERITIFIED_KEYPAIR) {
+      aid = AID_DEC;
+      efc = EF_C_CH_EKEY;
+      maxsize = EF_C_CH_EKEY_MAX_SIZE;
+    } else {
+      throw new IllegalArgumentException("Keybox " + keyboxName
+          + " not supported.");
+    }
+
+    log.debug("Get certificate for keybox '" + keyboxName.getKeyboxName() + "'" +
+        " (AID=" + toString(aid) + " EF=" + toString(efc) + ").");
+    
+    try {
+      Card card = getCardChannel().getCard();
+      try {
+        card.beginExclusive();
+        return readTLVFile(aid, efc, maxsize + 15000);
+      } catch (FileNotFoundException e) {
+        // if certificate is not present, 
+        // the citizen card application has not been activated
+        throw new NotActivatedException();
+      } finally {
+        card.endExclusive();
+      }
+    } catch (CardException e) {
+      throw new SignatureCardException("Failed to get exclusive card access.");
+    }
+
+    
+  }
+
+  /* (non-Javadoc)
+   * @see at.gv.egiz.smcc.SignatureCard#getInfobox(java.lang.String, at.gv.egiz.smcc.PINProvider, java.lang.String)
+   */
+  public byte[] getInfobox(String infobox, PINProvider provider, String domainId)
+      throws SignatureCardException {
+  
+    if ("IdentityLink".equals(infobox)) {
+  
+      PINSpec spec = new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("inf.pin.name"));
+      
+      try {
+        Card card = getCardChannel().getCard();
+        try {
+          card.beginExclusive();
+          return readTLVFilePIN(AID_DEC, EF_INFOBOX, KID_PIN_INF, provider,
+              spec, EF_INFOBOX_MAX_SIZE);
+        } catch (FileNotFoundException e) {
+          // if certificate is not present, 
+          // the citizen card application has not been activated
+          throw new NotActivatedException();
+        } finally {
+          card.endExclusive();
+        }
+      } catch (CardException e) {
+        throw new SignatureCardException("Failed to get exclusive card access.");
+      }
+  
+    } else {
+      throw new IllegalArgumentException("Infobox '" + infobox
+          + "' not supported.");
+    }
+  
+  }
+
+  public byte[] createSignature(byte[] hash, KeyboxName keyboxName,
+      PINProvider provider) throws SignatureCardException {
+  
+    if (hash.length != 20) {
+      throw new IllegalArgumentException("Hash value must be of length 20.");
+    }
+  
+    try {
+      Card card = getCardChannel().getCard();
+      try {
+        card.beginExclusive();
+        
+        if (KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(keyboxName)) {
+
+          // SELECT DF
+          selectFileFID(DF_SIG);
+          // VERIFY
+          verifyPIN(provider, new PINSpec(6, 10, "[0-9]", getResourceBundle()
+              .getString("sig.pin.name")), KID_PIN_SIG);
+          // MSE: SET DST
+          mseSetDST(0x81, 0xb6, DST_SIG);
+          // PSO: HASH
+          psoHash(hash);
+          // PSO: COMPUTE DIGITAL SIGNATURE
+          return psoComputDigitalSiganture();
+      
+        } else if (KeyboxName.CERITIFIED_KEYPAIR.equals(keyboxName)) {
+
+          // SELECT DF
+          selectFileFID(DF_DEC);
+          // VERIFY
+          verifyPIN(provider, new PINSpec(4, 4, "[0-9]", getResourceBundle()
+              .getString("dec.pin.name")), KID_PIN_DEC);
+          // MSE: SET DST
+          mseSetDST(0x41, 0xa4, DST_DEC);
+          // INTERNAL AUTHENTICATE
+          return internalAuthenticate(hash);
+
+          
+          // 00 88 10 00 23 30 21 30 09 06 05 2B 0E 03 02 1A 05 00 04 14 54 26 F0 EA  AF EA F0 4E D4 A1 AD BF 66 D4 A5 9B 45 6F AF 79 00
+          // 00 88 10 00 23 30 21 30 09 06 05 2B 0E 03 02 1A 05 00 04 14 DF 8C AB 8F E2 AD AC 7B 5A AF BE E9 44 5E 95 99 FA AF 2F 48 00
+          
+        } else {
+          throw new IllegalArgumentException("KeyboxName '" + keyboxName
+              + "' not supported.");
+        }
+        
+      } catch (FileNotFoundException e) {
+        // if certificate is not present, 
+        // the citizen card application has not been activated
+        throw new NotActivatedException();
+      } finally {
+        card.endExclusive();
+      }
+    } catch (CardException e) {
+      throw new SignatureCardException("Failed to get exclusive card access.");
+    }
+
+  }
+
+  protected byte[] selectFileAID(byte[] fid) throws CardException, SignatureCardException {
     CardChannel channel = getCardChannel();
     ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0xA4, 0x04,
         0x00, fid, 256));
@@ -109,49 +253,15 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
     }
   }
 
-  byte[] selectFileFID(byte[] fid) throws CardException, SignatureCardException {
+  protected ResponseAPDU selectFileFID(byte[] fid) throws CardException, SignatureCardException {
     CardChannel channel = getCardChannel();
-    ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0xA4, 0x00,
+    return transmit(channel, new CommandAPDU(0x00, 0xA4, 0x00,
         0x00, fid, 256));
-    if (resp.getSW() == 0x6a82) {
-      throw new SignatureCardException("Failed to select file (FID="
-          + toString(fid) + "): SW=" + Integer.toHexString(resp.getSW()) + ")");
-    } else {
-      return resp.getBytes();
-    }
   }
 
-  /**
-   * 
-   * @param pinProvider
-   * @param spec
-   *          the PIN spec to be given to the pinProvider
-   * @param kid
-   *          the KID (key identifier) of the PIN to be verified
-   * @param kfpc
-   *          acutal value of the KFCP (key fault presentation counter) or less
-   *          than 0 if actual value is unknown
-   * 
-   * @return -1 if the PIN has been verifyed successfully, or else the new value
-   *         of the KFCP (key fault presentation counter)
-   * 
-   * @throws CancelledException
-   *           if the user canceld the operation
-   * @throws javax.smartcardio.CardException
-   * @throws at.gv.egiz.smcc.SignatureCardException
-   */
-  int verifyPIN(PINProvider pinProvider, PINSpec spec, byte kid, int kfpc)
-      throws CardException, CancelledException, SignatureCardException {
-
+  protected int verifyPIN(String pin, byte kid) throws CardException, SignatureCardException {
+    
     CardChannel channel = getCardChannel();
-
-    // get PIN
-    String pin = pinProvider.providePIN(spec, kfpc);
-    if (pin == null) {
-      // User canceld operation
-      // throw new CancelledException("User canceld PIN entry");
-      return -2;
-    }
 
     byte[] asciiPIN = pin.getBytes(Charset.forName("ASCII"));
     byte[] encodedPIN = new byte[8];
@@ -159,25 +269,55 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
         encodedPIN.length));
 
     ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0x20, 0x00,
-        kid, encodedPIN));
-    if (resp.getSW1() == (byte) 0x63 && resp.getSW2() >> 4 == (byte) 0xc) {
-      return resp.getSW2() & (byte) 0x0f;
+        kid, encodedPIN), false);
+    
+    if (resp.getSW() == 0x63c0) {
+      throw new LockedException("PIN locked.");
+    } else if (resp.getSW1() == 0x63 && resp.getSW2() >> 4 == 0xc) {
+      // return number of possible retries
+      return resp.getSW2() & 0x0f;
     } else if (resp.getSW() == 0x6983) {
-      // PIN blocked
-      throw new SignatureCardException(spec.getLocalizedName() + " blocked.");
-    } else if (resp.getSW() != 0x9000) {
+      throw new NotActivatedException();
+    } else if (resp.getSW() == 0x9000) {
+      return -1;
+    } else {
       throw new SignatureCardException("Failed to verify pin: SW="
           + Integer.toHexString(resp.getSW()) + ".");
-    } else {
-      return -1;
     }
 
   }
+  
+  /**
+   * 
+   * @param pinProvider
+   * @param spec
+   *          the PIN spec to be given to the pinProvider
+   * @param kid
+   *          the KID (key identifier) of the PIN to be verified
+   * @throws CancelledException
+   *           if the user canceld the operation
+   * @throws javax.smartcardio.CardException
+   * @throws at.gv.egiz.smcc.SignatureCardException
+   */
+  protected void verifyPIN(PINProvider pinProvider, PINSpec spec, byte kid)
+      throws CardException, CancelledException, SignatureCardException {
 
-  void mseSetDST(byte[] dst) throws CardException, SignatureCardException {
+    int retries = -1;
+    do {
+      String pin = pinProvider.providePIN(spec, retries);
+      if (pin == null) {
+        // user canceled operation
+        throw new CancelledException("User canceled operation");
+      } 
+      retries = verifyPIN(pin, kid);
+    } while (retries > 0);
+      
+  }
+    
+  void mseSetDST(int p1, int p2, byte[] dst) throws CardException, SignatureCardException {
     CardChannel channel = getCardChannel();
-    ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0x22, 0x81,
-        0xB6, dst));
+    ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0x22, p1,
+        p2, dst));
     if (resp.getSW() != 0x9000) {
       throw new SignatureCardException("MSE:SET DST failed: SW="
           + Integer.toHexString(resp.getSW()));
@@ -207,102 +347,30 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
       return resp.getData();
     }
   }
-
-  public byte[] getCertificate(KeyboxName keyboxName)
-      throws SignatureCardException {
-
-    if (keyboxName == KeyboxName.SECURE_SIGNATURE_KEYPAIR) {
-      return readTLVFile(AID_SIG, EF_C_CH_DS, EF_C_CH_DS_MAX_SIZE);
-    } else if (keyboxName == KeyboxName.CERITIFIED_KEYPAIR) {
-      return readTLVFile(AID_DEC, EF_C_CH_EKEY, EF_C_CH_EKEY_MAX_SIZE);
+  
+  byte[] internalAuthenticate(byte[] hash) throws CardException, SignatureCardException {
+    byte[] digestInfo = new byte[] {
+        (byte) 0x30, (byte) 0x21, (byte) 0x30, (byte) 0x09, (byte) 0x06, (byte) 0x05, (byte) 0x2B, (byte) 0x0E, 
+        (byte) 0x03, (byte) 0x02, (byte) 0x1A, (byte) 0x05, (byte) 0x00, (byte) 0x04
+    };
+    
+    byte[] data = new byte[digestInfo.length + hash.length + 1];
+    
+    System.arraycopy(digestInfo, 0, data, 0, digestInfo.length);
+    data[digestInfo.length] = (byte) hash.length;
+    System.arraycopy(hash, 0, data, digestInfo.length + 1, hash.length);
+    
+    CardChannel channel = getCardChannel();
+    
+    ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0x88, 0x10, 0x00, data, 256));
+    if (resp.getSW() != 0x9000) {
+      throw new SignatureCardException("INTERNAL AUTHENTICATE failed: SW=" + Integer.toHexString(resp.getSW()));
     } else {
-      throw new IllegalArgumentException("Keybox " + keyboxName
-          + " not supported.");
+      return resp.getData();
     }
-
-  }
-
-  public byte[] getInfobox(String infobox, PINProvider provider, String domainId)
-      throws SignatureCardException {
-
-    if ("IdentityLink".equals(infobox)) {
-
-      PINSpec spec = new PINSpec(4, 4, "[0-9]", getResourceBundle().getString(
-          "inf.pin.name"));
-      try {
-        byte[] res = readTLVFilePIN(AID_DEC, EF_INFOBOX, KID_PIN_INF, provider,
-            spec, EF_INFOBOX_MAX_SIZE);
-        return res;
-      } catch (Exception e) {
-        throw new SecurityException(e);
-      }
-
-    } else {
-      throw new IllegalArgumentException("Infobox '" + infobox
-          + "' not supported.");
-    }
-
   }
 
   public String toString() {
     return "a-sign premium";
-  }
-
-  public byte[] createSignature(byte[] hash, KeyboxName keyboxName,
-      PINProvider provider) throws SignatureCardException {
-
-    if (hash.length != 20) {
-      throw new IllegalArgumentException("Hash value must be of length 20");
-    }
-
-    byte[] fid;
-    byte kid;
-    byte[] dst;
-    PINSpec spec;
-    if (KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(keyboxName)) {
-      fid = DF_SIG;
-      kid = KID_PIN_SIG;
-      dst = DST_SIG;
-      spec = new PINSpec(6, 10, "[0-9]", getResourceBundle().getString(
-          "sig.pin.name"));
-
-    } else if (KeyboxName.CERITIFIED_KEYPAIR.equals(keyboxName)) {
-      fid = DF_DEC;
-      kid = KID_PIN_DEC;
-      dst = DST_DEC;
-      spec = new PINSpec(6, 10, "[0-9]", getResourceBundle().getString(
-          "dec.pin.name"));
-
-    } else {
-      throw new IllegalArgumentException("KeyboxName '" + keyboxName
-          + "' not supported.");
-    }
-
-    try {
-
-      // SELECT DF
-      selectFileFID(fid);
-      // VERIFY
-      int kfpc = -1;
-      while (true) {
-        kfpc = verifyPIN(provider, spec, kid, kfpc);
-        if (kfpc < -1) {
-          return null;
-        } else if (kfpc < 0) {
-          break;
-        }
-      }
-      // MSE: SET DST
-      mseSetDST(dst);
-      // PSO: HASH
-      psoHash(hash);
-      // PSO: COMPUTE DIGITAL SIGNATURE
-      byte[] rs = psoComputDigitalSiganture();
-
-      return rs;
-
-    } catch (CardException e) {
-      throw new SignatureCardException("Failed to create signature.", e);
-    }
   }
 }

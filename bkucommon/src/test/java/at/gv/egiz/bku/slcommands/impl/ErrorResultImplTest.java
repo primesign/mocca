@@ -17,6 +17,7 @@
 package at.gv.egiz.bku.slcommands.impl;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Locale;
 
 import javax.xml.transform.stream.StreamResult;
 
@@ -31,7 +32,7 @@ public class ErrorResultImplTest {
   public void writeTo() {
     
     SLException slException = new SLException(0,"test.noerror", null);
-    ErrorResult errorResult = new ErrorResultImpl(slException);
+    ErrorResult errorResult = new ErrorResultImpl(slException, Locale.getDefault());
     
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
     StreamResult result = new StreamResult(stream);

@@ -25,6 +25,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyStore;
@@ -52,16 +54,20 @@ import org.apache.commons.logging.LogFactory;
  */
 public class SWCard implements SignatureCard {
   
-  private static final String BKU_USER_DIR = ".bku";
+  private static final String BKU_USER_DIR = ".mocca";
 
   private static final String SWCARD_DIR = "smcc";
   
   private static final String KEYSTORE_CERTIFIED_KEYPAIR = "certified.p12";
   
+  private static final String KEYSTORE_PASSWORD_CERTIFIED_KEYPAIR = "certified.pwd";
+  
   private static final String CERTIFICATE_CERTIFIED_KEYPAIR = "certified.cer";
   
   private static final String KEYSTORE_SECURE_KEYPAIR = "secure.p12";
   
+  private static final String KEYSTORE_PASSWORD_SECURE_KEYPAIR = "secure.pwd";
+
   private static final String CERTIFICATE_SECURE_KEYPAIR = "secure.cer";
   
   private static String swCardDir;
@@ -70,7 +76,11 @@ public class SWCard implements SignatureCard {
 
   private KeyStore certifiedKeyStore;
   
+  private String certifiedKeyStorePassword;
+  
   private KeyStore secureKeyStore;
+  
+  private String secureKeyStorePassword;
   
   private Certificate certifiedCertificate;
   
@@ -168,7 +178,7 @@ public class SWCard implements SignatureCard {
     }
     
     try {
-      keyStore.load(keyStoreFile, null);
+      keyStore.load(keyStoreFile, password);
     } catch (Exception e) {
       String msg = "Failed to load KeyStore from file '" + fileName + "'.";
       log.info(msg, e);
@@ -176,8 +186,31 @@ public class SWCard implements SignatureCard {
     } 
     
     return keyStore;
-
   
+  }
+  
+  private String loadKeyStorePassword(String passwordFileName) throws SignatureCardException {
+
+    String fileName = getFileName(passwordFileName);
+    FileInputStream keyStorePasswordFile;
+    try {
+      keyStorePasswordFile = new FileInputStream(fileName);
+    } catch (FileNotFoundException e) {
+      return null;
+    }
+    
+    try {
+      InputStreamReader reader = new InputStreamReader(keyStorePasswordFile, Charset.forName("UTF-8"));
+      StringBuilder sb = new StringBuilder();
+      char b[] = new char[16];
+      for (int l; (l = reader.read(b)) != -1;) {
+        sb.append(b, 0, l);
+      }
+      return sb.toString();
+    } catch (IOException e) {
+      throw new SignatureCardException("Failed to read file '" + passwordFileName + "'.");
+    }
+    
   }
   
   private KeyStore getKeyStore(KeyboxName keyboxName, char[] password) throws SignatureCardException {
@@ -198,6 +231,23 @@ public class SWCard implements SignatureCard {
     
   }
   
+  private String getPassword(KeyboxName keyboxName) throws SignatureCardException {
+    
+    if (keyboxName == KeyboxName.CERITIFIED_KEYPAIR) {
+      if (certifiedKeyStorePassword == null) {
+        certifiedKeyStorePassword = loadKeyStorePassword(KEYSTORE_PASSWORD_CERTIFIED_KEYPAIR);
+      }
+      return certifiedKeyStorePassword;
+    } else if (keyboxName == KeyboxName.SECURE_SIGNATURE_KEYPAIR) {
+      if (secureKeyStorePassword == null) {
+        secureKeyStorePassword = loadKeyStorePassword(KEYSTORE_PASSWORD_SECURE_KEYPAIR);
+      }
+      return secureKeyStorePassword;
+    } else {
+      throw new SignatureCardException("Keybox of type '" + keyboxName + "' not supported.");
+    }
+    
+  }
   
   public byte[] getCertificate(KeyboxName keyboxName)
       throws SignatureCardException {
@@ -254,9 +304,21 @@ public class SWCard implements SignatureCard {
   public byte[] createSignature(byte[] hash, KeyboxName keyboxName, PINProvider provider) throws SignatureCardException {
 
     // KeyStore password
-    PINSpec pinSpec = new PINSpec(0, -1, ".", "KeyStore-Password");
-    
-    KeyStore keyStore = getKeyStore(keyboxName, null);
+    String password = getPassword(keyboxName);
+
+    if (password == null) {
+
+      PINSpec pinSpec = new PINSpec(0, -1, ".", "KeyStore-Password");
+      
+      password = provider.providePIN(pinSpec, -1);
+      
+      if (password == null) {
+        return null;
+      }
+      
+    }
+
+    KeyStore keyStore = getKeyStore(keyboxName, password.toCharArray());
 
     PrivateKey privateKey = null;
     
@@ -269,8 +331,7 @@ public class SWCard implements SignatureCard {
           Key key = null;
           while (key == null) {
             try {
-              String pin = provider.providePIN(pinSpec, -1);
-              key = keyStore.getKey(alias, pin.toCharArray());
+              key = keyStore.getKey(alias, password.toCharArray());
             } catch (UnrecoverableKeyException e) {
               log.info("Failed to get Key from KeyStore. Wrong password?", e);
             }
@@ -315,8 +376,6 @@ public class SWCard implements SignatureCard {
 
   @Override
   public void setLocale(Locale locale) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override

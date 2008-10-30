@@ -31,7 +31,7 @@ public class JCEAlgorithmNames {
   
   public static String[] SHA_1_ALGORITMS = {
       "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1",
-      "http://www.w3.org/2000/09/xmldsig#sha1" };
+      "http://www.w3.org/2000/09/xmldsig#rsa-sha1" };
 
   private static JCEAlgorithmNames instance = new JCEAlgorithmNames();
 
@@ -42,7 +42,7 @@ public class JCEAlgorithmNames {
   }
 
   public static String getJCEHashName(String xmlAlgorithmURI) {
-    return instance.hashNameMap.get(xmlAlgorithmURI);
+     return instance.hashNameMap.get(xmlAlgorithmURI);
   }
 
   public void registerHash(String xmlAlgorithmURI, String jceName) {

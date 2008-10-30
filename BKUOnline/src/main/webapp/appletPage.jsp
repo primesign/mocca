@@ -20,7 +20,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>MOCCA Appletpage</title>
+<title>MOCCA Applet</title>
 <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
 <script type="text/javascript" src="js/deployJava.js"></script>
 <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
@@ -29,19 +29,18 @@
 </head>
 <body>
 <%
-  int width = session.getAttribute("appletWidth") == null
-					? 190
-					: (Integer) session.getAttribute("appletWidth");
-			int height = session.getAttribute("appletHeight") == null
-					? 130
-					: (Integer) session.getAttribute("appletHeight");
-			String backgroundImg = (String) session
-					.getAttribute("appletBackground");
+  int width = session.getAttribute("appletWidth") == null ? 190
+      : (Integer) session.getAttribute("appletWidth");
+  int height = session.getAttribute("appletHeight") == null ? 130
+      : (Integer) session.getAttribute("appletHeight");
+  String backgroundImg = (String) session.getAttribute("appletBackground");
+  String guiStyle = (String) session.getAttribute("appletGuiStyle");
+  String hashDataDisplay = (String) session.getAttribute("appletHashDataDisplay");
 %>
 <script>
 	if (!deployJava.versionCheck('1.6.0_04+')) {
 		document
-				.write('<b>Diese Anwendung benötigt die Java Platform Version 1.6.0 oder höher.</b>' + '<input type="submit" value="Java Platform 1.6.0_02 installieren" onclick="deployJava.installLatestJRE();">');
+				.write('<b>Diese Anwendung benötigt die Java Platform Version 1.6.0_04 oder höher.</b>' + '<input type="submit" value="Java Platform 1.6.0_02 installieren" onclick="deployJava.installLatestJRE();">');
 	} else {
 		var attributes = {
 			codebase :'applet',
@@ -51,15 +50,15 @@
 			height :<%=height%>
 		};
 		var parameters = {
-                        GuiStyle : 'simple',
+            GuiStyle : '<%=guiStyle%>',
 			Background : '<%=backgroundImg%>',
-			WSDL_URL :'../stal?wsdl',
-                        HashDataDisplay : 'external',
-                        HashDataURL : '../hashDataInput',
+			WSDL_URL : '../stal?wsdl',
+            HashDataDisplay : '<%=hashDataDisplay%>',
+            HashDataURL : '../hashDataInput',
 			SessionID : '<%=session.getId()%>',
 			RedirectURL : '../bkuResult'
 		};
-		var version = '1.6.0_02';
+		var version = '1.6.0_04';
 		deployJava.runApplet(attributes, parameters, version);
 	}
 </script>

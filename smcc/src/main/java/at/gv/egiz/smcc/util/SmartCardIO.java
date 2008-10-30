@@ -143,6 +143,7 @@ public class SmartCardIO {
 
         Card card = null;
         try {
+          log.trace("Trying to connect to card.");
           // try to connect to card
           card = terminal.connect("*");
         } catch (CardException e) {
