@@ -40,7 +40,7 @@ public class BKUGUITest {
         BKUGUI gui = new BKUGUI();
         Container contentPane = testFrame.getContentPane();
         contentPane.setPreferredSize(new Dimension(380, 150));
-        gui.init(contentPane, null, null);
+        gui.init(contentPane, null, null, null);
         BKUGUIWorker worker = new BKUGUIWorker();
         worker.init(gui);
         testFrame.pack();

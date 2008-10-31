@@ -37,8 +37,8 @@ public class BKUGuiProxy implements BKUGUIFacade {
   }
 
   @Override
-  public void init(Container contentPane, String localeString, URL bgImage) {
-    delegate.init(contentPane, localeString, bgImage);
+  public void init(Container contentPane, String localeString, URL bgImage, ActionListener helpListener) {
+    delegate.init(contentPane, localeString, bgImage, helpListener);
   }
 
   @Override

@@ -48,7 +48,7 @@ public class SMCCSTALFactory implements STALFactory {
     }
     dialog = new JDialog();
     BKUGUIFacade gui = BKUGUIFactory.createGUI(BKUGUIFactory.ADVANCED_GUI);
-    gui.init(dialog.getContentPane(), locale.toString(), null);
+    gui.init(dialog.getContentPane(), locale.toString(), null, null);
     stal = new SMCCSTAL(new BKUGuiProxy(dialog, gui), dialog, resourceBundle);
     dialog.setPreferredSize(new Dimension(400, 200));
     dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
