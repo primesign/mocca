@@ -18,6 +18,7 @@ package at.gv.egiz.bku.local.stal;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.net.MalformedURLException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -26,9 +27,11 @@ import javax.swing.WindowConstants;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUGUIFactory;
+import at.gv.egiz.bku.local.gui.LocalHelpListener;
 import at.gv.egiz.bku.online.applet.BKUApplet;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
+import java.net.URL;
 
 public class SMCCSTALFactory implements STALFactory {
 
@@ -48,7 +51,13 @@ public class SMCCSTALFactory implements STALFactory {
     }
     dialog = new JDialog();
     BKUGUIFacade gui = BKUGUIFactory.createGUI(BKUGUIFactory.ADVANCED_GUI);
-    gui.init(dialog.getContentPane(), locale.toString(), null, null);
+    LocalHelpListener helpListener =null;
+    try {
+      helpListener = new LocalHelpListener(new URL("http://localhost:3495/help"), "en");
+    } catch (MalformedURLException ex) {
+      ex.printStackTrace();
+    }
+    gui.init(dialog.getContentPane(), locale.toString(), null, helpListener);
     stal = new SMCCSTAL(new BKUGuiProxy(dialog, gui), dialog, resourceBundle);
     dialog.setPreferredSize(new Dimension(400, 200));
     dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);

@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package at.gv.egiz.bku.online.applet;
+package at.gv.egiz.bku.gui;
 
-import java.applet.AppletContext;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
@@ -27,24 +26,19 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  *
- * @author clemens
+ * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class ExternalHelpListener implements ActionListener {
+public abstract class AbstractHelpListener implements ActionListener {
 
-  protected final static Log log = LogFactory.getLog(ExternalHelpListener.class);
-  protected AppletContext ctx;
+  protected final static Log log = LogFactory.getLog(AbstractHelpListener.class);
   protected String helpURLBase;
   protected String locale;
 
-  public ExternalHelpListener(AppletContext ctx, URL helpURL, String locale) {
-    if (ctx == null) {
-      throw new RuntimeException("no applet context provided");
-    }
-    if (helpURL == null || "".equals(helpURL)) {
+  public AbstractHelpListener(URL baseURL, String locale) {
+    if (baseURL == null || "".equals(baseURL)) {
       throw new RuntimeException("no help URL provided");
     }
-    this.ctx = ctx;
-    this.helpURLBase = helpURL.toString();
+    this.helpURLBase = baseURL.toString();
     this.locale = locale;
   }
 
@@ -70,7 +64,11 @@ public class ExternalHelpListener implements ActionListener {
         return;
       }
     }
-    ctx.showDocument(helpURL, "_blank");
+    try {
+      showDocument(helpURL);
+    } catch (Exception ex) {
+      log.error("could not display help document " + helpURL + ": " + ex.getMessage());
+    }
   }
   
   private String appendParameter(String url, String paramName, String paramValue) {
@@ -80,4 +78,7 @@ public class ExternalHelpListener implements ActionListener {
       return url + "&" + paramName + "=" + paramValue;
     }
   }
+  
+  public abstract void showDocument(URL helpDocument) throws Exception;
+  
 }

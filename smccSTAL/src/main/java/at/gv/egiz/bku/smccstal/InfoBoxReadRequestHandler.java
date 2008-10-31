@@ -16,6 +16,7 @@
 */
 package at.gv.egiz.bku.smccstal;
 
+import at.gv.egiz.bku.gui.BKUGUIFacade;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -104,9 +105,15 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler implements
         }
       } catch (NotActivatedException e) {
         log.info("Citizen card not activated.", e);
+        gui.showErrorDialog(BKUGUIFacade.ERR_CARD_NOTACTIVATED, null, this, null);
+        waitForAction();
+        gui.showWaitDialog(null);
         return new ErrorResponse(6001);
       } catch (LockedException e) {
         log.info("Citizen card locked.", e);
+        gui.showErrorDialog(BKUGUIFacade.ERR_CARD_LOCKED, null, this, null);
+        waitForAction();
+        gui.showWaitDialog(null);
         return new ErrorResponse(6001);
       } catch (CancelledException cx) {
         log.debug("User cancelled request", cx);

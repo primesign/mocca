@@ -82,10 +82,10 @@ public class BKUApplet extends JApplet {
     }
     String guiStyle = getMyAppletParameter(GUI_STYLE);
     BKUGUIFacade gui = BKUGUIFactory.createGUI(guiStyle);
-    ExternalHelpListener helpListener = null;
+    AppletHelpListener helpListener = null;
     try {
       URL helpURL = getMyAppletParameterURL(HELP_URL);
-      helpListener = new ExternalHelpListener(getAppletContext(), helpURL, localeString);
+      helpListener = new AppletHelpListener(getAppletContext(), helpURL, localeString);
     } catch (MalformedURLException ex) {
       log.error("invalid help URL: " + ex.getMessage());
     }

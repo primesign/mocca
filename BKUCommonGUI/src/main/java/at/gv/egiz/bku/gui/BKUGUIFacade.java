@@ -35,6 +35,8 @@ public interface BKUGUIFacade {
   public static final String ERR_DISPLAY_HASHDATA = "error.display.hashdata";
   public static final String ERR_WRITE_HASHDATA = "error.write.hashdata";
   public static final String ERR_INVALID_HASH = "error.invalid.hash";
+  public static final String ERR_CARD_LOCKED = "error.card.locked";
+  public static final String ERR_CARD_NOTACTIVATED = "error.card.notactivated";
   
     public static final String MESSAGES_BUNDLE = "at/gv/egiz/bku/gui/Messages";
     public static final String DEFAULT_BACKGROUND = "/images/BackgroundChipperling.png";

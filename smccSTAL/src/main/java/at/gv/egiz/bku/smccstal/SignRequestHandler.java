@@ -94,9 +94,15 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
                 return stalResp;
             } catch (NotActivatedException e) {
               log.info("Citizen card not activated.", e);
+              gui.showErrorDialog(BKUGUIFacade.ERR_CARD_NOTACTIVATED, null, this, null);
+              waitForAction();
+              gui.showWaitDialog(null);
               return new ErrorResponse(6001);
             } catch (LockedException e) {
               log.info("Citizen card locked.", e);
+              gui.showErrorDialog(BKUGUIFacade.ERR_CARD_LOCKED, null, this, null);
+              waitForAction();
+              gui.showWaitDialog(null);
               return new ErrorResponse(6001);
             } catch (CancelledException cx) {
                 log.debug("User cancelled request");
