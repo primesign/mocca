@@ -16,9 +16,7 @@
 */
 package at.gv.egiz.idlink;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -27,7 +25,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import at.buergerkarte.namespaces.personenbindung._20020506_.CompressedIdentityLinkType;
-import at.gv.egiz.bku.utils.HexDump;
 import at.gv.egiz.idlink.ans1.IdentityLink;
 
 public class CompressIdentityLink {
