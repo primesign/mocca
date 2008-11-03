@@ -21,6 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Locale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -32,9 +33,9 @@ public abstract class AbstractHelpListener implements ActionListener {
 
   protected final static Log log = LogFactory.getLog(AbstractHelpListener.class);
   protected String helpURLBase;
-  protected String locale;
+  protected Locale locale;
 
-  public AbstractHelpListener(URL baseURL, String locale) {
+  public AbstractHelpListener(URL baseURL, Locale locale) {
     if (baseURL == null || "".equals(baseURL)) {
       throw new RuntimeException("no help URL provided");
     }
@@ -49,7 +50,7 @@ public abstract class AbstractHelpListener implements ActionListener {
     try {
       String urlString = helpURLBase;
       if (locale != null) {
-        urlString = appendParameter(urlString, "locale", locale);
+        urlString = appendParameter(urlString, "locale", locale.toString());
       } 
       if (e.getActionCommand() != null && !"".equals(e.getActionCommand())) {
         urlString = appendParameter(urlString, "topic", e.getActionCommand());

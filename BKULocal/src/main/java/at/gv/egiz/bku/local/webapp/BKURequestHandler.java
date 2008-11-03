@@ -16,7 +16,6 @@
  */
 package at.gv.egiz.bku.local.webapp;
 
-import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,12 +29,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.web.HttpRequestHandler;
 
 import at.gv.egiz.bku.binding.BindingProcessorManager;
 import at.gv.egiz.bku.binding.HTTPBindingProcessor;
 import at.gv.egiz.bku.binding.HttpUtil;
-import at.gv.egiz.bku.utils.StreamUtil;
 import at.gv.egiz.org.apache.tomcat.util.http.AcceptLanguage;
 
 public abstract class BKURequestHandler extends HttpServlet {

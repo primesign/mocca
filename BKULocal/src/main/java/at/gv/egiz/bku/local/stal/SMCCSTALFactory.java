@@ -32,30 +32,38 @@ import at.gv.egiz.bku.online.applet.BKUApplet;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
 import java.net.URL;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class SMCCSTALFactory implements STALFactory {
 
-  private Locale locale;
+  protected static final Log log = LogFactory.getLog(SMCCSTALFactory.class);
+  protected String helpURL;
+  protected Locale locale;
 
   @Override
   public STAL createSTAL() {
-    
+
     SMCCSTAL stal;
     JDialog dialog;
     ResourceBundle resourceBundle;
     if (locale != null) {
       resourceBundle = ResourceBundle.getBundle(BKUApplet.RESOURCE_BUNDLE_BASE,
-          locale);
+              locale);
     } else {
       resourceBundle = ResourceBundle.getBundle(BKUApplet.RESOURCE_BUNDLE_BASE);
     }
     dialog = new JDialog();
     BKUGUIFacade gui = BKUGUIFactory.createGUI(BKUGUIFactory.ADVANCED_GUI);
-    LocalHelpListener helpListener =null;
+    LocalHelpListener helpListener = null;
     try {
-      helpListener = new LocalHelpListener(new URL("http://localhost:3495/help"), "en");
+      if (helpURL != null) {
+        helpListener = new LocalHelpListener(new URL(helpURL), locale);
+      } else {
+        log.warn("no HELP URL configured, help system disabled");
+      }
     } catch (MalformedURLException ex) {
-      ex.printStackTrace();
+      log.error("failed to configure help listener: " + ex.getMessage(), ex);
     }
     gui.init(dialog.getContentPane(), locale.toString(), null, helpListener);
     stal = new SMCCSTAL(new BKUGuiProxy(dialog, gui), dialog, resourceBundle);
@@ -72,12 +80,20 @@ public class SMCCSTALFactory implements STALFactory {
       frameSize.width = screenSize.width;
     }
     dialog.setLocation((screenSize.width - frameSize.width) / 2,
-        (screenSize.height - frameSize.height) / 2);
+            (screenSize.height - frameSize.height) / 2);
     return stal;
   }
 
   @Override
   public void setLocale(Locale locale) {
     this.locale = locale;
+  }
+
+  public String getHelpURL() {
+    return helpURL;
+  }
+
+  public void setHelpURL(String helpURL) {
+    this.helpURL = helpURL;
   }
 }

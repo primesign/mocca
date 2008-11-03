@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package at.gv.egiz.bku.local.gui;
 
 import at.gv.egiz.bku.gui.AbstractHelpListener;
@@ -22,6 +21,7 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Locale;
 
 /**
  *
@@ -29,13 +29,25 @@ import java.net.URL;
  */
 public class LocalHelpListener extends AbstractHelpListener {
 
-  public LocalHelpListener(URL baseURL, String locale) {
+  protected Desktop desktop;
+
+  public LocalHelpListener(URL baseURL, Locale locale) {
     super(baseURL, locale);
+    if (Desktop.isDesktopSupported()) {
+      desktop = Desktop.getDesktop();
+    }
   }
 
   @Override
   public void showDocument(URL helpDocument) throws IOException, URISyntaxException {
-    Desktop.getDesktop().browse(helpDocument.toURI());
+    if (desktop == null) {
+      log.error("Failed to open default browser: Desktop API not available (libgnome installed?)");
+    } else {
+      if (!desktop.isSupported(Desktop.Action.BROWSE)) {
+        log.error("Failed to open default browser: The system provides the Desktop API, but does not support the BROWSE action");
+      } else {
+        Desktop.getDesktop().browse(helpDocument.toURI());
+      }
+    }
   }
-
 }

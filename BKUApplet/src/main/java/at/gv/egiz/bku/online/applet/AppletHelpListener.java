@@ -20,6 +20,7 @@ package at.gv.egiz.bku.online.applet;
 import at.gv.egiz.bku.gui.AbstractHelpListener;
 import java.applet.AppletContext;
 import java.net.URL;
+import java.util.Locale;
 
 /**
  *
@@ -29,7 +30,7 @@ public class AppletHelpListener extends AbstractHelpListener {
 
   protected AppletContext ctx;
 
-  public AppletHelpListener(AppletContext ctx, URL helpURL, String locale) {
+  public AppletHelpListener(AppletContext ctx, URL helpURL, Locale locale) {
     super(helpURL, locale);
     if (ctx == null) {
       throw new RuntimeException("no applet context provided");

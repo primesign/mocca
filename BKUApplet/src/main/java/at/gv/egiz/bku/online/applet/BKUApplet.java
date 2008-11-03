@@ -65,9 +65,11 @@ public class BKUApplet extends JApplet {
     log.debug("Called init()");
     HttpsURLConnection.setDefaultSSLSocketFactory(InternalSSLSocketFactory.getInstance());
     String localeString = getMyAppletParameter(LOCALE_PARAM_KEY);
+    Locale locale = null;
     if (localeString != null) {
+      locale = new Locale(localeString);
       resourceBundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_BASE,
-              new Locale(localeString));
+              locale);
     } else {
       resourceBundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_BASE);
     }
@@ -85,7 +87,7 @@ public class BKUApplet extends JApplet {
     AppletHelpListener helpListener = null;
     try {
       URL helpURL = getMyAppletParameterURL(HELP_URL);
-      helpListener = new AppletHelpListener(getAppletContext(), helpURL, localeString);
+      helpListener = new AppletHelpListener(getAppletContext(), helpURL, locale);
     } catch (MalformedURLException ex) {
       log.error("invalid help URL: " + ex.getMessage());
     }
