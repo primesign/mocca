@@ -10,6 +10,7 @@ import java.awt.event.WindowEvent;
 import java.net.URL;
 import java.util.List;
 
+import java.util.Locale;
 import javax.swing.JDialog;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
@@ -37,8 +38,13 @@ public class BKUGuiProxy implements BKUGUIFacade {
   }
 
   @Override
-  public void init(Container contentPane, String localeString, URL bgImage, ActionListener helpListener) {
-    delegate.init(contentPane, localeString, bgImage, helpListener);
+  public void init(Container contentPane, Locale locale, URL bgImage, ActionListener helpListener) {
+    delegate.init(contentPane, locale, bgImage, helpListener);
+  }
+
+  @Override
+  public Locale getLocale() {
+    return delegate.getLocale();
   }
 
   @Override

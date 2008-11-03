@@ -28,7 +28,6 @@ import javax.swing.WindowConstants;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUGUIFactory;
 import at.gv.egiz.bku.local.gui.LocalHelpListener;
-import at.gv.egiz.bku.online.applet.BKUApplet;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
 import java.net.URL;
@@ -45,28 +44,23 @@ public class SMCCSTALFactory implements STALFactory {
   public STAL createSTAL() {
 
     SMCCSTAL stal;
-    JDialog dialog;
-    ResourceBundle resourceBundle;
+    JDialog dialog = new JDialog();
     if (locale != null) {
-      resourceBundle = ResourceBundle.getBundle(BKUApplet.RESOURCE_BUNDLE_BASE,
-              locale);
-    } else {
-      resourceBundle = ResourceBundle.getBundle(BKUApplet.RESOURCE_BUNDLE_BASE);
+      dialog.setLocale(locale);
     }
-    dialog = new JDialog();
     BKUGUIFacade gui = BKUGUIFactory.createGUI(BKUGUIFactory.ADVANCED_GUI);
     LocalHelpListener helpListener = null;
     try {
       if (helpURL != null) {
-        helpListener = new LocalHelpListener(new URL(helpURL), locale);
+        helpListener = new LocalHelpListener(new URL(helpURL), dialog.getLocale());
       } else {
         log.warn("no HELP URL configured, help system disabled");
       }
     } catch (MalformedURLException ex) {
       log.error("failed to configure help listener: " + ex.getMessage(), ex);
     }
-    gui.init(dialog.getContentPane(), locale.toString(), null, helpListener);
-    stal = new SMCCSTAL(new BKUGuiProxy(dialog, gui), dialog, resourceBundle);
+    gui.init(dialog.getContentPane(), dialog.getLocale(), null, helpListener);
+    stal = new SMCCSTAL(new BKUGuiProxy(dialog, gui), dialog);
     dialog.setPreferredSize(new Dimension(400, 200));
     dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     dialog.setTitle("MOCCA");

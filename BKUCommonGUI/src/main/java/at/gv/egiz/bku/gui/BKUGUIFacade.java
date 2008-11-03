@@ -24,6 +24,7 @@ import java.awt.Container;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.List;
+import java.util.Locale;
 
 public interface BKUGUIFacade {
   
@@ -85,7 +86,13 @@ public interface BKUGUIFacade {
     public static final String SAVE_HASHDATAINPUT_PREFIX = "save.hashdatainput.prefix";
     
     
-    public void init(Container contentPane, String localeString, URL background, ActionListener helpListener);
+    public void init(Container contentPane, Locale locale, URL background, ActionListener helpListener);
+    
+    /**
+     * 
+     * @return the locale of the message bundle (what if no message bundle could be loaded for the requested locale?)
+     */
+    public Locale getLocale();
     
     public void showWelcomeDialog();
     

@@ -92,10 +92,10 @@ public class BKUGUI implements BKUGUIFacade {
      * @param localeString may be null
      */
     @Override
-    public void init(final Container contentPane, String localeString, final URL background, ActionListener helpListener) {
+    public void init(final Container contentPane, Locale locale, final URL background, ActionListener helpListener) {
 
-        if (localeString != null) {
-            messages = ResourceBundle.getBundle(MESSAGES_BUNDLE, new Locale(localeString));
+        if (locale != null) {
+            messages = ResourceBundle.getBundle(MESSAGES_BUNDLE, locale);
         } else {
             messages = ResourceBundle.getBundle(MESSAGES_BUNDLE);
         }
@@ -246,6 +246,11 @@ public class BKUGUI implements BKUGUIFacade {
             .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED) //, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(buttonPanel, 0, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
             .addContainerGap());
+    }
+
+    @Override
+    public Locale getLocale() {
+      return messages.getLocale();
     }
 
     @Override

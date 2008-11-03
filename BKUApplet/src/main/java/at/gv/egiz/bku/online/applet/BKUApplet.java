@@ -40,7 +40,6 @@ public class BKUApplet extends JApplet {
 
   private static Log log = LogFactory.getLog(BKUApplet.class);
   public static final String GUI_STYLE = "GuiStyle";
-  public final static String RESOURCE_BUNDLE_BASE = "at/gv/egiz/bku/online/applet/Messages";
   public final static String LOCALE_PARAM_KEY = "Locale";
   public final static String LOGO_URL_KEY = "LogoURL";
   public final static String WSDL_URL = "WSDL_URL";
@@ -52,7 +51,6 @@ public class BKUApplet extends JApplet {
   public static final String REDIRECT_URL = "RedirectURL";
   public static final String REDIRECT_TARGET = "RedirectTarget";
   public static final String HASHDATA_DISPLAY_INTERNAL = "internal";
-  protected ResourceBundle resourceBundle;
   protected BKUWorker worker;
   protected Thread workerThread;
 
@@ -64,14 +62,9 @@ public class BKUApplet extends JApplet {
     log.info("Welcome to MOCCA\n");
     log.debug("Called init()");
     HttpsURLConnection.setDefaultSSLSocketFactory(InternalSSLSocketFactory.getInstance());
-    String localeString = getMyAppletParameter(LOCALE_PARAM_KEY);
-    Locale locale = null;
-    if (localeString != null) {
-      locale = new Locale(localeString);
-      resourceBundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_BASE,
-              locale);
-    } else {
-      resourceBundle = ResourceBundle.getBundle(RESOURCE_BUNDLE_BASE);
+    String locale = getMyAppletParameter(LOCALE_PARAM_KEY);
+    if (locale != null) {
+      this.setLocale(new Locale(locale));
     }
     String backgroundString = getMyAppletParameter(BACKGROUND_PARAM);
     URL background = null;
@@ -84,15 +77,16 @@ public class BKUApplet extends JApplet {
     }
     String guiStyle = getMyAppletParameter(GUI_STYLE);
     BKUGUIFacade gui = BKUGUIFactory.createGUI(guiStyle);
+    log.debug("setting GUI locale to " + getLocale());
     AppletHelpListener helpListener = null;
     try {
       URL helpURL = getMyAppletParameterURL(HELP_URL);
-      helpListener = new AppletHelpListener(getAppletContext(), helpURL, locale);
+      helpListener = new AppletHelpListener(getAppletContext(), helpURL, getLocale());
     } catch (MalformedURLException ex) {
       log.error("invalid help URL: " + ex.getMessage());
     }
-    gui.init(getContentPane(), localeString, background, helpListener);
-    worker = new BKUWorker(gui, this, resourceBundle);
+    gui.init(getContentPane(), getLocale(), background, helpListener);
+    worker = new BKUWorker(gui, this);
   }
 
   @Override

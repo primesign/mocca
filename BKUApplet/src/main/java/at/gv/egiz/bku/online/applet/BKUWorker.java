@@ -48,7 +48,6 @@ import at.gv.egiz.stal.service.types.ObjectFactory;
 import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
 import at.gv.egiz.stal.util.STALTranslator;
-import javax.naming.ConfigurationException;
 
 public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
     ActionListener, SMCCSTALRequestHandler {
@@ -57,25 +56,22 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
   protected BKUGUIFacade gui;
   protected BKUApplet parent;
   private STALPortType stalPort;
-//  private URL hashDataURL;
   protected List<String> actionCommandList = new ArrayList<String>();
   protected Boolean actionPerformed = false;
   protected boolean finished = false;
-  protected ResourceBundle errorMessages;
 
   /**
    * 
    * @param gui
    *          must not be null
    */
-  public BKUWorker(BKUGUIFacade gui, BKUApplet parent,
-      ResourceBundle errorMessageBundle) {
-    if ((gui == null) || (parent == null) || (errorMessageBundle == null)) {
+  public BKUWorker(BKUGUIFacade gui, BKUApplet parent) {
+    if (gui == null || parent == null) {
         throw new NullPointerException("Parameter must not be set to null");
     }
     this.gui = gui;
+    this.locale = gui.getLocale();
     this.parent = parent;
-    this.errorMessages = errorMessageBundle;
     addRequestHandler(QuitRequest.class, this);
     // register SignRequestHandler once we have a webservice port
   }
@@ -86,9 +82,9 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
    * @param gui
    * @param errorMessageBundle
    */
-  protected BKUWorker(BKUGUIFacade gui, ResourceBundle errorMessageBundle) {
+  protected BKUWorker(BKUGUIFacade gui) {
     this.gui = gui;
-    this.errorMessages = errorMessageBundle;
+    this.locale = gui.getLocale();
     addRequestHandler(QuitRequest.class, this);
   }
 
@@ -342,8 +338,7 @@ public class BKUWorker extends AbstractSMCCSTAL implements Runnable,
         }
         break;
       case SMCCHelper.CARD_FOUND:
-        // gui.showWaitDialog(null);
-        signatureCard = smccHelper.getSignatureCard(errorMessages.getLocale());
+        signatureCard = smccHelper.getSignatureCard(locale);
         return false;
       }
       smccHelper.update(3000);

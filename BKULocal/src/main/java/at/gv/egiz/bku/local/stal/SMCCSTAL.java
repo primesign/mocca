@@ -1,7 +1,6 @@
 package at.gv.egiz.bku.local.stal;
 
 import java.util.List;
-import java.util.ResourceBundle;
 
 import javax.swing.JDialog;
 
@@ -16,9 +15,8 @@ public class SMCCSTAL extends BKUWorker {
 
   private JDialog container;
 
-  public SMCCSTAL(BKUGUIFacade gui, JDialog container,
-      ResourceBundle errorMessageBundle) {
-    super(gui, errorMessageBundle);
+  public SMCCSTAL(BKUGUIFacade gui, JDialog container) {
+    super(gui);
     this.container = container;
     addRequestHandler(SignRequest.class, new LocalSignRequestHandler());
   }
