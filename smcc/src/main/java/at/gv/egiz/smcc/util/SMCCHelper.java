@@ -87,7 +87,7 @@ public class SMCCHelper {
             ATR atr = newCards.get(cardTerminal).getATR();
             log.trace("Found supported card (" + signatureCard.toString() + ") "
                 + "in terminal '" + cardTerminal.getName() + "', ATR = "
-                + toString(atr.getHistoricalBytes()) + ".");
+                + toString(atr.getBytes()) + ".");
             resultCode = CARD_FOUND;
             break;
 
@@ -97,7 +97,7 @@ public class SMCCHelper {
               ATR atr = c.getATR();
               log.info("Found unsupported card" + " in terminal '"
                   + cardTerminal.getName() + "', ATR = "
-                  + toString(atr.getHistoricalBytes()) + ".");
+                  + toString(atr.getBytes()) + ".");
             } else {
               log.info("Found unsupported card in terminal '"
                   + cardTerminal.getName() + "' without ATR");
