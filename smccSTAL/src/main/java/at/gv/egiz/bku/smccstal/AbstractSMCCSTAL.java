@@ -18,22 +18,22 @@ package at.gv.egiz.bku.smccstal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.smcc.SignatureCard;
-import at.gv.egiz.smcc.util.SMCCHelper;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
-import at.gv.egiz.stal.SignRequest;
 
 public abstract class AbstractSMCCSTAL implements STAL {
   private static Log log = LogFactory.getLog(AbstractSMCCSTAL.class);
@@ -45,9 +45,11 @@ public abstract class AbstractSMCCSTAL implements STAL {
   protected Map<String, SMCCSTALRequestHandler> handlerMap = new HashMap<String, SMCCSTALRequestHandler>();
 
   protected int maxRetries = DEFAULT_MAX_RETRIES;
+  protected Set<Integer> unrecoverableErrors = new HashSet<Integer>();
 
   protected AbstractSMCCSTAL() {
     addRequestHandler(InfoboxReadRequest.class, new InfoBoxReadRequestHandler());
+    unrecoverableErrors.add(6001);
   }
 
   /**
@@ -59,66 +61,76 @@ public abstract class AbstractSMCCSTAL implements STAL {
 
   protected abstract BKUGUIFacade getGUI();
 
+  private STALResponse getRespone(STALRequest request) {
+    log.info("Processing: " + request.getClass());
+    int retryCounter = 0;
+    while (retryCounter < maxRetries) {
+      log.info("Retry #" + retryCounter + " of " + maxRetries);
+      SMCCSTALRequestHandler handler = null;
+      handler = handlerMap.get(request.getClass().getSimpleName());
+      if (handler != null) {
+        if (handler.requireCard()) {
+          if (waitForCard()) {
+            return new ErrorResponse(6001);
+          }
+        }
+        try {
+          handler.init(signatureCard, getGUI());
+          STALResponse response = handler.handleRequest(request);
+          if (response != null) {
+            if (response instanceof ErrorResponse) {
+              log.info("Got an error response");
+              ErrorResponse err = (ErrorResponse) response;
+              if (unrecoverableErrors.contains(err.getErrorCode())) {
+                return response;
+              }
+              if ((++retryCounter < maxRetries) && (handler.requireCard())) {
+                signatureCard.disconnect(true);
+                signatureCard = null;
+              } else {
+                log.info("Exceeded max retries, returning error "
+                    + err.getErrorMessage());
+                return response;
+              }
+            } else {
+              return response;
+            }
+          } else {
+            log.info("Got null response from handler, assuming quit");
+            return null;
+          }
+        } catch (Exception e) {
+          log.info("Error while handling STAL request:" + e);
+          if (++retryCounter < maxRetries) {
+            signatureCard.disconnect(true);
+            signatureCard = null;
+          } else {
+            log.info("Exceeded max retries, returning error.");
+            return new ErrorResponse(6000);
+          }
+        }
+      } else {
+        log.error("Cannot find a handler for STAL request: " + request);
+        return new ErrorResponse();
+      }
+    }
+    return new ErrorResponse(6000);
+  }
+
   @Override
   public List<STALResponse> handleRequest(List<STALRequest> requestList) {
     log.debug("Got request list containing " + requestList.size()
         + " STAL requests");
     List<STALResponse> responseList = new ArrayList<STALResponse>(requestList
         .size());
-
     for (STALRequest request : requestList) {
       log.info("Processing: " + request.getClass());
-      int retryCounter = 0;
-      while (retryCounter < maxRetries) {
-        log.info("Number of retries: " + retryCounter);
-        SMCCSTALRequestHandler handler = null;
-        handler = handlerMap.get(request.getClass().getSimpleName());
-        if (handler != null) {
-          if (handler.requireCard()) {
-            if (waitForCard()) {
-              responseList.add(new ErrorResponse(6001));
-              break;
-            }
-          }
-          try {
-            handler.init(signatureCard, getGUI());
-            STALResponse response = handler.handleRequest(request);
-            if (response != null) {
-              if (response instanceof ErrorResponse) {
-                log.info("Got an error response");
-                ErrorResponse err = (ErrorResponse) response;
-                if (err.getErrorCode() == 6001) {
-                  retryCounter = Integer.MAX_VALUE - 1;
-                }
-                if (++retryCounter < maxRetries) {
-                  log.info("Retrying");
-                  signatureCard.disconnect(true);
-                  signatureCard = null;
-                } else {
-                  responseList.add(response);
-                }
-              } else {
-                responseList.add(response);
-                retryCounter = Integer.MAX_VALUE;
-                break;
-              }
-            } else {
-              log.info("Got null response from handler, assuming quit");
-              retryCounter = Integer.MAX_VALUE;
-            }
-          } catch (Exception e) {
-            log.info("Error while handling STAL request:" + e);
-            if (++retryCounter < maxRetries) {
-              log.info("Retrying");
-              signatureCard.disconnect(true);
-              signatureCard = null;
-            } else {
-              responseList.add(new ErrorResponse(6000));
-            }
-          }
-        } else {
-          log.error("Cannot find a handler for STAL request: " + request);
-          responseList.add(new ErrorResponse());
+      STALResponse response = getRespone(request);
+      if (response != null) {
+        responseList.add(response);
+        if (response instanceof ErrorResponse) {
+          log.info("Got an error response, don't process remaining requests");
+          break;
         }
       }
     }
@@ -148,4 +160,11 @@ public abstract class AbstractSMCCSTAL implements STAL {
     this.maxRetries = maxRetries;
   }
 
+  public Set<Integer> getUnrecoverableErrors() {
+    return unrecoverableErrors;
+  }
+
+  public void setUnrecoverableErrors(Set<Integer> unrecoverableErrors) {
+    this.unrecoverableErrors = unrecoverableErrors;
+  }
 }
