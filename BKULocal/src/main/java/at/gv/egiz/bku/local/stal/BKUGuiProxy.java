@@ -100,13 +100,6 @@ public class BKUGuiProxy implements BKUGUIFacade {
   }
 
   @Override
-  public void showLoginDialog(ActionListener loginListener, String actionCommand) {
-    showDialog();
-
-    delegate.showLoginDialog(loginListener, actionCommand);
-  }
-
-  @Override
   public void showSignaturePINDialog(PINSpec pinSpec,
       ActionListener signListener, String signCommand,
       ActionListener cancelListener, String cancelCommand,
