@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>bku</artifactId>
     <groupId>at.gv.egiz</groupId>
@@ -15,36 +14,6 @@
   <url>http://bku.egiz.gv.at</url>
   <build>
     <plugins>
-      <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <archive>
-            <addMavenDescriptor>false</addMavenDescriptor>
-            <index>false</index>
-            <manifest>
-              <addClasspath>false</addClasspath>
-            </manifest>
-          </archive>
-          <alias>test-applet signer</alias>
-          <keystore>keystore.ks</keystore>
-          <storepass>storepass</storepass>
-          <keypass>keypass</keypass>
-          <verify>true</verify>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <configuration>

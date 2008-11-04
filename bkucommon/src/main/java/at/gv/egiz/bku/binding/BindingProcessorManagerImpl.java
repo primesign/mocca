@@ -285,16 +285,19 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
     log.debug("Removing binding processor: " + sessionId);
     ProcessingContext ctx = contextMap.get(sessionId);
     if (ctx == null) {
+      log.warn("no processing context to remove for session " + sessionId);
       return;
     }
     Future f = ctx.getFuture();
-      
+    
 //    MapEntityWrapper wrapper = bindingProcessorMap.get(sessionId);
 //    if (wrapper == null) {
 //      return;
 //    }
 //    Future<?> f = wrapper.getFuture();
+    
     if (!f.isDone()) {
+      log.trace("canceling " + sessionId);
       f.cancel(true);
     }
     contextMap.remove(sessionId);

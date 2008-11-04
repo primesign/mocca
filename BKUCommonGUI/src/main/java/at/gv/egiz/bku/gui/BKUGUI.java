@@ -14,10 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package at.gv.egiz.bku.gui;
 
 import at.gv.egiz.smcc.PINSpec;
@@ -819,7 +815,7 @@ public class BKUGUI implements BKUGUIFacade {
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
 
-//                titleLabel.setText(messages.getString(TITLE_WAIT));
+                titleLabel.setText(messages.getString(TITLE_WAIT));
 
                 helpListener.setHelpTopic(HELP_WAIT);
                 

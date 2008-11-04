@@ -312,15 +312,14 @@ public class SimpleGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addGroup(mainPanelLayout.createSequentialGroup()
+                    mainPanelLayout.createSequentialGroup()
+                      .addComponent(welcomeMsgLabel)
                       .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                      .addComponent(helpLabel))
-                    .addComponent(welcomeMsgLabel));
+                      .addComponent(helpLabel));
                 mainPanelLayout.setVerticalGroup(
-                  mainPanelLayout.createSequentialGroup()
-                    .addComponent(helpLabel)
-                    .addComponent(welcomeMsgLabel));
+                    mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                      .addComponent(welcomeMsgLabel)
+                      .addComponent(helpLabel));
                 
                 contentPanel.validate();
 
@@ -355,15 +354,14 @@ public class SimpleGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addGroup(mainPanelLayout.createSequentialGroup()
+                    mainPanelLayout.createSequentialGroup()
+                      .addComponent(insertCardMsgLabel)
                       .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                      .addComponent(helpLabel))
-                    .addComponent(insertCardMsgLabel));
+                      .addComponent(helpLabel));
                 mainPanelLayout.setVerticalGroup(
-                  mainPanelLayout.createSequentialGroup()
-                    .addComponent(helpLabel)
-                    .addComponent(insertCardMsgLabel));
+                    mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                      .addComponent(insertCardMsgLabel)
+                      .addComponent(helpLabel));
                 
 //                JButton cancelButton = new JButton();
 //                cancelButton.setText(messages.getString(BUTTON_CANCEL));
@@ -418,15 +416,14 @@ public class SimpleGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addGroup(mainPanelLayout.createSequentialGroup()
+                    mainPanelLayout.createSequentialGroup()
+                      .addComponent(insertCardMsgLabel)
                       .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                      .addComponent(helpLabel))
-                    .addComponent(insertCardMsgLabel));
+                      .addComponent(helpLabel));
                 mainPanelLayout.setVerticalGroup(
-                  mainPanelLayout.createSequentialGroup()
-                    .addComponent(helpLabel)
-                    .addComponent(insertCardMsgLabel));
+                    mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                      .addComponent(insertCardMsgLabel)
+                      .addComponent(helpLabel));
                 
 //                JButton cancelButton = new JButton();
 //                cancelButton.setText(messages.getString(BUTTON_CANCEL));
@@ -764,6 +761,11 @@ public class SimpleGUI implements BKUGUIFacade {
 
                 helpListener.setHelpTopic(errorMsgKey);
                 
+                JLabel errorTitleLabel = new JLabel();
+                errorTitleLabel.setFont(errorTitleLabel.getFont().deriveFont(errorTitleLabel.getFont().getStyle() | java.awt.Font.BOLD));
+                errorTitleLabel.setText(messages.getString(TITLE_ERROR));
+                errorTitleLabel.setForeground(ERROR_COLOR);
+                
                 String errorMsgPattern = messages.getString(errorMsgKey);
                 String errorMsg = MessageFormat.format(errorMsgPattern, errorMsgParams);
                 
@@ -778,12 +780,15 @@ public class SimpleGUI implements BKUGUIFacade {
                 mainPanelLayout.setHorizontalGroup(
                   mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addGroup(mainPanelLayout.createSequentialGroup()
+                      .addComponent(errorTitleLabel)
                       .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
                       .addComponent(helpLabel))
                     .addComponent(errorMsgLabel));
                 mainPanelLayout.setVerticalGroup(
                   mainPanelLayout.createSequentialGroup()
-                    .addComponent(helpLabel)
+                    .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                      .addComponent(errorTitleLabel)
+                      .addComponent(helpLabel))
                     .addComponent(errorMsgLabel));
                 
                 JButton okButton = new JButton();
@@ -827,27 +832,34 @@ public class SimpleGUI implements BKUGUIFacade {
 
           helpListener.setHelpTopic(errorMsgKey);
           
+          JLabel errorTitleLabel = new JLabel();
+          errorTitleLabel.setFont(errorTitleLabel.getFont().deriveFont(errorTitleLabel.getFont().getStyle() | java.awt.Font.BOLD));
+          errorTitleLabel.setText(messages.getString(TITLE_ERROR));
+          errorTitleLabel.setForeground(ERROR_COLOR);
+      
           String errorMsgPattern = messages.getString(errorMsgKey);
           String errorMsg = MessageFormat.format(errorMsgPattern, errorMsgParams);
 
           JLabel errorMsgLabel = new JLabel();
           errorMsgLabel.setFont(errorMsgLabel.getFont().deriveFont(errorMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
           errorMsgLabel.setText(errorMsg);
-          errorMsgLabel.setForeground(ERROR_COLOR);
-
+          
           GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
           mainPanel.setLayout(mainPanelLayout);
 
           mainPanelLayout.setHorizontalGroup(
-            mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-              .addGroup(mainPanelLayout.createSequentialGroup()
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                .addComponent(helpLabel))
-              .addComponent(errorMsgLabel));
-          mainPanelLayout.setVerticalGroup(
-            mainPanelLayout.createSequentialGroup()
-              .addComponent(helpLabel)
-              .addComponent(errorMsgLabel));
+                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                      .addComponent(errorTitleLabel)
+                      .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                      .addComponent(helpLabel))
+                    .addComponent(errorMsgLabel));
+                mainPanelLayout.setVerticalGroup(
+                  mainPanelLayout.createSequentialGroup()
+                    .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                      .addComponent(errorTitleLabel)
+                      .addComponent(helpLabel))
+                    .addComponent(errorMsgLabel));
 
           contentPanel.validate();
         }
@@ -885,16 +897,15 @@ public class SimpleGUI implements BKUGUIFacade {
                 mainPanel.setLayout(mainPanelLayout);
 
                 mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addGroup(mainPanelLayout.createSequentialGroup()
+                    mainPanelLayout.createSequentialGroup()
+                      .addComponent(waitMsgLabel)
                       .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                      .addComponent(helpLabel))
-                    .addComponent(waitMsgLabel));
+                      .addComponent(helpLabel));
                 mainPanelLayout.setVerticalGroup(
-                  mainPanelLayout.createSequentialGroup()
-                    .addComponent(helpLabel)
-                    .addComponent(waitMsgLabel));
-
+                    mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                      .addComponent(waitMsgLabel)
+                      .addComponent(helpLabel));
+                
                 contentPanel.validate();
             }
         });
