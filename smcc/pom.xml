@@ -12,16 +12,6 @@
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
   <url>http://bku.egiz.gv.at</url>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <configuration>
-          <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
   <dependencies>
     <dependency>
       <groupId>commons-logging</groupId>

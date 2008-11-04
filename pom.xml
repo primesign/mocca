@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project
+<project xmlns="http://maven.apache.org/POM/4.0.0"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
@@ -47,7 +47,7 @@
 		<name>E-Government Innovation Center (EGIZ)</name>
 		<url>http://www.egiz.gv.at</url>
 	</organization>
-	<build>
+    <build>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -63,8 +63,15 @@
 						<target>1.6</target>
 						<verbose>true</verbose>
 						<showWarnings>true</showWarnings>
+                        <encoding>UTF-8</encoding>
 					</configuration>
 				</plugin>
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
 				<plugin>
 					<artifactId>maven-assembly-plugin</artifactId>
 					<groupId>org.apache.maven.plugins</groupId>
