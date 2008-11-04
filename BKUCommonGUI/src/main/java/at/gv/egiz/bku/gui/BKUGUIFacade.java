@@ -97,12 +97,9 @@ public interface BKUGUIFacade {
     public void showWelcomeDialog();
     
     /**
-     * MOA-ID only
-     * @param loginListener
+     * 
+     * @param waitMessage if null, a simple 'wait' text is displayed
      */
-    public void showLoginDialog(ActionListener loginListener, String actionCommand);
-
-   /** optional wait message */
     public void showWaitDialog(String waitMessage);
 
     public void showInsertCardDialog(ActionListener cancelListener, String actionCommand);

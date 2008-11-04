@@ -249,43 +249,6 @@ public class SimpleGUI implements BKUGUIFacade {
     }
 
     @Override
-    public void showLoginDialog(ActionListener loginListener, String actionCommand) {
-      
-      log.debug("scheduling login dialog");
-        
-      SwingUtilities.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-              
-              log.debug("show login dialog");
-              
-                mainPanel.removeAll();
-                buttonPanel.removeAll();
-
-//                titleLabel.setText(messages.getString(TITLE_ERROR));
-
-                JLabel waitMsgLabel = new JLabel();
-                waitMsgLabel.setFont(waitMsgLabel.getFont().deriveFont(waitMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                waitMsgLabel.setText("<html>LoginDialog not supported yet.</html>");
-                waitMsgLabel.setForeground(ERROR_COLOR);
-
-                GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
-                mainPanel.setLayout(mainPanelLayout);
-
-                mainPanelLayout.setHorizontalGroup(
-                  mainPanelLayout.createSequentialGroup()
-                  .addComponent(waitMsgLabel));
-                mainPanelLayout.setVerticalGroup(
-                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                  .addComponent(waitMsgLabel));
-
-                contentPanel.validate();
-            }
-        });
-    }
-
-    @Override
     public void showWelcomeDialog() {
       
       log.debug("scheduling welcome dialog");
@@ -772,7 +735,6 @@ public class SimpleGUI implements BKUGUIFacade {
                 JLabel errorMsgLabel = new JLabel();
                 errorMsgLabel.setFont(errorMsgLabel.getFont().deriveFont(errorMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                 errorMsgLabel.setText(errorMsg);
-                errorMsgLabel.setForeground(ERROR_COLOR);
 
                 GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
                 mainPanel.setLayout(mainPanelLayout);
