@@ -199,7 +199,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
       //if (HASHDATADISPLAY_EXTERNAL.equals(displayStyle)) {
       URL hashDataURL = params.getURLParameter(BKUApplet.HASHDATA_URL, sessionId);
       log.debug("register SignRequestHandler for HashDataURL " + hashDataURL);
-      addRequestHandler(SignRequest.class, new ExternalDisplaySignRequestHandler(ctx, hashDataURL));
+      addRequestHandler(SignRequest.class, new ExternalDisplaySignRequestHandler(hashDataURL)); //
     }
   }
 }

@@ -16,14 +16,10 @@
  */
 package at.gv.egiz.bku.online.applet;
 
-import at.gv.egiz.bku.smccstal.AbstractBKUWorker;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 import javax.swing.JApplet;
 
@@ -105,7 +101,7 @@ public class BKUApplet extends JApplet implements AppletParameterProvider {
     log.debug("setting locale to " + getLocale());
 
     BKUGUIFacade gui = BKUGUIFactory.createGUI(guiStyle);
-    AppletHelpListener helpListener = new AppletHelpListener(getAppletContext(), helpURL, getLocale());
+    AppletHelpListener helpListener = new AppletHelpListener(helpURL, getLocale()); //getAppletContext(),
     gui.init(getContentPane(), getLocale(), backgroundImgURL, helpListener);
 
     worker = new AppletBKUWorker(gui, getAppletContext(), this);
