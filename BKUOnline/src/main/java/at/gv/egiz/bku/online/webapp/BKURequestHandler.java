@@ -139,8 +139,9 @@ public class BKURequestHandler extends SpringBKUServlet {
       log.trace("Found applet hash data display parameter: " + hashDataDisplay);
       session.setAttribute("appletHashDataDisplay", hashDataDisplay);
     }
-
-    resp.sendRedirect(REDIRECT_URL);
+    String redirectUrl = REDIRECT_URL+";jsessionid="+session.getId();
+    log.debug("Redirecting to: "+redirectUrl);
+    resp.sendRedirect(redirectUrl);
   }
 
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
