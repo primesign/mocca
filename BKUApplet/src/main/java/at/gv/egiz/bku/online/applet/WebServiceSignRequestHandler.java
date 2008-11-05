@@ -45,7 +45,7 @@ public class WebServiceSignRequestHandler extends SignRequestHandler {
   STALPortType stalPort;
   String sessId;
 
-    public WebServiceSignRequestHandler(String sessId, STALPortType stalPort) {
+    public WebServiceSignRequestHandler(STALPortType stalPort, String sessId) {
     if (stalPort == null || sessId == null) {
       throw new NullPointerException("STAL port must not be null");
     }
