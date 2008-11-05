@@ -89,7 +89,7 @@ public class BKUApplet extends JApplet implements AppletParameterProvider {
     URL backgroundImgURL = null;
     URL helpURL = null;
     try {
-      helpURL = getURLParameter(HELP_URL, getAppletParameter(SESSION_ID));
+      helpURL = getURLParameter(HELP_URL); //, getAppletParameter(SESSION_ID));
     } catch (MalformedURLException ex) {
       log.warn("failed to load help URL, disabling help: " + ex.getMessage());
     }

@@ -32,39 +32,22 @@ import org.apache.commons.logging.LogFactory;
 public abstract class AbstractHelpListener implements ActionListener {
 
   protected final static Log log = LogFactory.getLog(AbstractHelpListener.class);
-  protected String helpURLBase;
+//  protected String helpURLBase;
+  protected URL baseURL;
   protected Locale locale;
 
   public AbstractHelpListener(URL baseURL, Locale locale) {
     if (baseURL == null || "".equals(baseURL)) {
       throw new RuntimeException("no help URL provided");
     }
-    this.helpURLBase = baseURL.toString();
+    this.baseURL = baseURL;
     this.locale = locale;
   }
 
   @Override
   public void actionPerformed(ActionEvent e) {
     log.debug("received help action: " + e.getActionCommand());
-    URL helpURL;
-    try {
-      String urlString = helpURLBase;
-      if (locale != null) {
-        urlString = appendParameter(urlString, "locale", locale.toString());
-      } 
-      if (e.getActionCommand() != null && !"".equals(e.getActionCommand())) {
-        urlString = appendParameter(urlString, "topic", e.getActionCommand());
-      }
-      helpURL = new URL(urlString);
-    } catch (MalformedURLException ex) {
-      try {
-        log.error("failed to create help URL: " + ex.getMessage());
-        helpURL = new URL(helpURLBase);
-      } catch (MalformedURLException ex1) {
-        log.error("failed to create default help URL, requested help will not be displayed");
-        return;
-      }
-    }
+    URL helpURL = constructHelpURL(baseURL, e.getActionCommand());
     try {
       showDocument(helpURL);
     } catch (Exception ex) {
@@ -72,12 +55,22 @@ public abstract class AbstractHelpListener implements ActionListener {
     }
   }
   
-  private String appendParameter(String url, String paramName, String paramValue) {
-    if (url.indexOf('?') < 0) {
-      return url + "?" + paramName + "=" + paramValue;
-    } else {
-      return url + "&" + paramName + "=" + paramValue;
+  private URL constructHelpURL(URL baseURL, String helpItem) {
+    URL helpURL = baseURL;
+    log.trace("constructing help URL: " + helpURL);
+    try {
+      if (locale != null) {
+        helpURL = new URL(helpURL, locale.toString() + "/");
+        log.trace("constructing help URL: " + helpURL);
+      } 
+      if (helpItem != null && !"".equals(helpItem)) {
+        helpURL = new URL(helpURL, helpItem + ".html");
+        log.trace("constructing help URL: " + helpURL);
+      }
+    } catch (MalformedURLException ex) {
+      log.error("Failed to construct help URL for help item " + helpItem + ": " + ex.getMessage());
     }
+    return helpURL;
   }
   
   public abstract void showDocument(URL helpDocument) throws Exception;

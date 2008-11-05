@@ -53,7 +53,7 @@
             GuiStyle : '<%=guiStyle%>',
 			Background : '<%=backgroundImg%>',
 			WSDL_URL :'../stal?wsdl',
-                        HelpURL : '../help',
+                        HelpURL : '../help/',
                         HashDataDisplay : 'external',
                         HashDataURL : '../hashDataInput',
 			SessionID : '<%=session.getId()%>',

@@ -52,6 +52,10 @@
 		<servlet-name>HashDataInputServlet</servlet-name>
 		<servlet-class>at.gv.egiz.bku.online.webapp.HashDataInputServlet</servlet-class>
 	</servlet>
+    <servlet>
+      <servlet-name>help</servlet-name>
+      <jsp-file>/help.jsp</jsp-file>
+    </servlet>
 	<servlet-mapping>
 		<servlet-name>BKUServlet</servlet-name>
 		<url-pattern>/http-security-layer-request</url-pattern>
@@ -68,9 +72,10 @@
 		<servlet-name>HashDataInputServlet</servlet-name>
 		<url-pattern>/hashDataInput</url-pattern>
 	</servlet-mapping>
-
-
-
+    <servlet-mapping>
+      <servlet-name>help</servlet-name>
+      <url-pattern>/help/*</url-pattern>
+    </servlet-mapping>
 
 	<!--  End BKU Config -->
 
