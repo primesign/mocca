@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import at.gv.egiz.bku.smccstal.SMCCSTALRequestHandler;
 import at.gv.egiz.bku.smccstal.SignRequestHandler;
 import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.STALRequest;

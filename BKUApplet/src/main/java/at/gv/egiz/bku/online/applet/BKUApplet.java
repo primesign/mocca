@@ -83,9 +83,10 @@ public class BKUApplet extends JApplet implements AppletParameterProvider {
     String locale = getAppletParameter(LOCALE_PARAM_KEY);
     String guiStyle = getAppletParameter(GUI_STYLE);
     URL backgroundImgURL = null;
-    URL helpURL = null;
+    AppletHelpListener helpListener = null;
     try {
-      helpURL = getURLParameter(HELP_URL); //, getAppletParameter(SESSION_ID));
+      URL helpURL = getURLParameter(HELP_URL); //, getAppletParameter(SESSION_ID));
+      helpListener = new AppletHelpListener(helpURL, getLocale()); //getAppletContext(),
     } catch (MalformedURLException ex) {
       log.warn("failed to load help URL, disabling help: " + ex.getMessage());
     }
@@ -101,7 +102,6 @@ public class BKUApplet extends JApplet implements AppletParameterProvider {
     log.debug("setting locale to " + getLocale());
 
     BKUGUIFacade gui = BKUGUIFactory.createGUI(guiStyle);
-    AppletHelpListener helpListener = new AppletHelpListener(helpURL, getLocale()); //getAppletContext(),
     gui.init(getContentPane(), getLocale(), backgroundImgURL, helpListener);
 
     worker = new AppletBKUWorker(gui, getAppletContext(), this);
