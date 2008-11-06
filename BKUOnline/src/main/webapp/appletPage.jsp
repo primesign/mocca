@@ -54,7 +54,7 @@
 			Background : '<%=backgroundImg%>',
 			WSDL_URL :'../stal?wsdl',
                         HelpURL : '../help/',
-                        HashDataDisplay : 'external',
+                        HashDataDisplay : <%=hashDataDisplay%>,
                         HashDataURL : '../hashDataInput',
 			SessionID : '<%=session.getId()%>',
 			RedirectURL : '../bkuResult'
