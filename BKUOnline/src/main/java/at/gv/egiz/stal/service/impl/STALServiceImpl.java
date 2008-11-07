@@ -60,7 +60,16 @@ public class STALServiceImpl implements STALPortType {
 
   public static final String BINDING_PROCESSOR_MANAGER = "bindingProcessorManager";
   public static final Id TEST_SESSION_ID = IdFactory.getInstance().createId("TestSession");
+  
   protected static final Log log = LogFactory.getLog(STALServiceImpl.class);
+  
+  static {
+    if (log.isTraceEnabled()) {
+      log.trace("enabling webservice communication dump");
+      System.setProperty("com.sun.xml.ws.transport.http.HttpAdapter.dump", "true");
+    }
+  }
+  
   @Resource
   WebServiceContext wsContext;
   protected IdFactory idF = IdFactory.getInstance();
