@@ -26,7 +26,7 @@ public interface SMCCSTALRequestHandler {
   
   public void init(SignatureCard sc, BKUGUIFacade gui);
   
-  public STALResponse handleRequest(STALRequest request);
+  public STALResponse handleRequest(STALRequest request) throws InterruptedException;
   
   public boolean requireCard();
   

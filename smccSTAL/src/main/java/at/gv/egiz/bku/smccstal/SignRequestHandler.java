@@ -67,7 +67,7 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
 
     @SuppressWarnings("unchecked")
     @Override
-    public STALResponse handleRequest(STALRequest request) {
+    public STALResponse handleRequest(STALRequest request) throws InterruptedException {
         if (request instanceof SignRequest) {
             SignRequest signReq = (SignRequest) request;
             newSTALMessage("Message.RequestCaption", "Message.SignRequest");
@@ -213,7 +213,7 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
     }
   
     @Override
-    public String providePIN(PINSpec spec, int retries) {
+    public String providePIN(PINSpec spec, int retries) throws InterruptedException {
     
       showSignaturePINDialog(spec, retries);
       

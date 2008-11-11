@@ -33,7 +33,7 @@ public class SWCardTest implements PINProvider {
     
   }
   
-  public void test() throws SignatureCardException, NoSuchAlgorithmException {
+  public void test() throws SignatureCardException, NoSuchAlgorithmException, InterruptedException {
     
     swCard.getCertificate(KeyboxName.CERITIFIED_KEYPAIR);
     swCard.getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR);

@@ -57,6 +57,7 @@ public interface SignatureCard {
       }
     }
 
+    @Override
     public boolean equals(Object obj) {
       if (obj instanceof String) {
         return obj.equals(keyboxName_);
@@ -77,7 +78,7 @@ public interface SignatureCard {
   public void init(Card card);
 
   public byte[] getCertificate(KeyboxName keyboxName)
-      throws SignatureCardException;
+      throws SignatureCardException, InterruptedException;
   
   public void disconnect(boolean reset);
 
@@ -88,12 +89,22 @@ public interface SignatureCard {
    * @param domainId may be null.
    * @return
    * @throws SignatureCardException
+   * @throws InterruptedException if applet is destroyed while in pin dialog
    */
   public byte[] getInfobox(String infobox, PINProvider provider, String domainId)
-      throws SignatureCardException;
+      throws SignatureCardException, InterruptedException;
 
+  /**
+   * 
+   * @param hash
+   * @param keyboxName
+   * @param provider
+   * @return
+   * @throws at.gv.egiz.smcc.SignatureCardException
+   * @throws java.lang.InterruptedException if applet is destroyed while in pin dialog
+   */
   public byte[] createSignature(byte[] hash, KeyboxName keyboxName,
-      PINProvider provider) throws SignatureCardException;
+      PINProvider provider) throws SignatureCardException, InterruptedException;
   
   /**
    * Sets the local for evtl. required callbacks (e.g. PINSpec)

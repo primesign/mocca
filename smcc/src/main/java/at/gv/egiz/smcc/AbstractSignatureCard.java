@@ -110,7 +110,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
    *           if VERIFY PIN fails
    */
   protected abstract void verifyPIN(PINProvider pinProvider, PINSpec spec,
-      byte kid) throws CardException, SignatureCardException;
+      byte kid) throws CardException, SignatureCardException, InterruptedException;
 
   protected byte[] readBinary(CardChannel channel, int offset, int len)
       throws CardException, SignatureCardException {
@@ -194,7 +194,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
    * @throws SignatureCardException
    */
   protected byte[] readTLVFile(byte[] aid, byte[] ef, int maxLength)
-      throws SignatureCardException {
+      throws SignatureCardException, InterruptedException {
     return readTLVFilePIN(aid, ef, (byte) 0, null, null, maxLength);
   }
 
@@ -215,7 +215,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
    */
   protected byte[] readTLVFilePIN(byte[] aid, byte[] ef, byte kid,
       PINProvider provider, PINSpec spec, int maxLength)
-      throws SignatureCardException {
+      throws SignatureCardException, InterruptedException {
 
     try {
 

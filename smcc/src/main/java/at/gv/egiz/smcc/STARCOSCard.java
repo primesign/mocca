@@ -129,8 +129,9 @@ public class STARCOSCard extends AbstractSignatureCard implements SignatureCard 
   /* (non-Javadoc)
    * @see at.gv.egiz.smcc.SignatureCard#getCertificate(at.gv.egiz.smcc.SignatureCard.KeyboxName)
    */
+  @Override
   public byte[] getCertificate(KeyboxName keyboxName)
-      throws SignatureCardException {
+      throws SignatureCardException, InterruptedException {
 
     byte[] aid;
     byte[] efc;
@@ -169,8 +170,9 @@ public class STARCOSCard extends AbstractSignatureCard implements SignatureCard 
   /* (non-Javadoc)
    * @see at.gv.egiz.smcc.SignatureCard#getInfobox(java.lang.String, at.gv.egiz.smcc.PINProvider, java.lang.String)
    */
+  @Override
   public byte[] getInfobox(String infobox, PINProvider provider, String domainId)
-      throws SignatureCardException {
+      throws SignatureCardException, InterruptedException {
   
     if ("IdentityLink".equals(infobox)) {
   
@@ -204,7 +206,7 @@ public class STARCOSCard extends AbstractSignatureCard implements SignatureCard 
    * @see at.gv.egiz.smcc.SignatureCard#createSignature(byte[], at.gv.egiz.smcc.SignatureCard.KeyboxName, at.gv.egiz.smcc.PINProvider)
    */
   public byte[] createSignature(byte[] hash, KeyboxName keyboxName,
-      PINProvider provider) throws SignatureCardException {
+      PINProvider provider) throws SignatureCardException, InterruptedException {
   
     if (hash.length != 20) {
       throw new IllegalArgumentException("Hash value must be of length 20.");
@@ -399,7 +401,7 @@ public class STARCOSCard extends AbstractSignatureCard implements SignatureCard 
    * @see at.gv.egiz.smcc.AbstractSignatureCard#verifyPIN(at.gv.egiz.smcc.PINProvider, at.gv.egiz.smcc.PINSpec, byte, int)
    */
   protected void verifyPIN(PINProvider pinProvider, PINSpec spec, byte kid)
-      throws CardException, SignatureCardException {
+      throws CardException, SignatureCardException, InterruptedException {
 
     int retries = verifyPIN(null, kid);
     do {

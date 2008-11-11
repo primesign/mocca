@@ -24,6 +24,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -34,6 +36,7 @@ import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
+import java.util.Collections;
 
 public abstract class AbstractSMCCSTAL implements STAL {
   private static Log log = LogFactory.getLog(AbstractSMCCSTAL.class);
@@ -61,7 +64,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
 
   protected abstract BKUGUIFacade getGUI();
 
-  private STALResponse getRespone(STALRequest request) {
+  private STALResponse getRespone(STALRequest request) throws InterruptedException {
     log.info("Processing: " + request.getClass());
     int retryCounter = 0;
     while (retryCounter < maxRetries) {
@@ -99,6 +102,9 @@ public abstract class AbstractSMCCSTAL implements STAL {
             log.info("Got null response from handler, assuming quit");
             return null;
           }
+        } catch (InterruptedException e) {
+          log.info("Interrupt in handleRequest, do not retry");
+          throw e;
         } catch (Exception e) {
           log.info("Error while handling STAL request:" + e);
           if (++retryCounter < maxRetries) {
@@ -125,14 +131,22 @@ public abstract class AbstractSMCCSTAL implements STAL {
         .size());
     for (STALRequest request : requestList) {
       log.info("Processing: " + request.getClass());
-      STALResponse response = getRespone(request);
-      if (response != null) {
-        responseList.add(response);
-        if (response instanceof ErrorResponse) {
-          log.info("Got an error response, don't process remaining requests");
-          break;
+      STALResponse response;
+      try {
+        response = getRespone(request);
+        if (response != null) {
+          responseList.add(response);
+          if (response instanceof ErrorResponse) {
+            log.info("Got an error response, don't process remaining requests");
+            break;
+          }
         }
+      } catch (InterruptedException ex) {
+        log.error("got interrupted, return ErrorResponse 6001");
+        responseList = Collections.singletonList((STALResponse) new ErrorResponse(6001));
+        break;
       }
+      
     }
     return responseList;
   }

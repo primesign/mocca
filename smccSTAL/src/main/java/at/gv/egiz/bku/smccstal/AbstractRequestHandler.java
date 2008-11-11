@@ -39,8 +39,8 @@ public abstract class AbstractRequestHandler implements SMCCSTALRequestHandler,
   protected boolean actionPerformed = false;
 
   @Override
-  public abstract STALResponse handleRequest(STALRequest request);
-
+  public abstract STALResponse handleRequest(STALRequest request) throws InterruptedException;
+  
   @Override
   public void init(SignatureCard sc, BKUGUIFacade gui) {
     if ((sc == null) || (gui == null)) {
@@ -60,13 +60,14 @@ public abstract class AbstractRequestHandler implements SMCCSTALRequestHandler,
     }
   }
 
-  protected synchronized void waitForAction() {
+  protected synchronized void waitForAction() throws InterruptedException {
     try {
       while (!actionPerformed) {
         wait();
       }
     } catch (InterruptedException e) {
-      log.info(e);
+      log.error("interrupt in waitForAction");
+      throw e;
     }
     actionPerformed = false;
   }

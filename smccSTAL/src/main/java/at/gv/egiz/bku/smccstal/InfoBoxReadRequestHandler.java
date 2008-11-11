@@ -41,7 +41,7 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler implements
   private int retryCounter = 0;
 
   @Override
-  public STALResponse handleRequest(STALRequest request) {
+  public STALResponse handleRequest(STALRequest request) throws InterruptedException {
     if (request instanceof InfoboxReadRequest) {
       InfoboxReadRequest infoBox = (InfoboxReadRequest) request;
       try {
@@ -134,7 +134,7 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler implements
   }
 
   @Override
-  public String providePIN(PINSpec spec, int retries) {
+  public String providePIN(PINSpec spec, int retries) throws InterruptedException {
     if (retryCounter++ > 0) {
       log.info("PIN wrong retrying ...");
       gui.showCardPINRetryDialog(spec, retries, this, "ok", this, "cancel");

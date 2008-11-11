@@ -30,6 +30,6 @@ package at.gv.egiz.smcc;
 
 public interface PINProvider {
   
-  public String providePIN(PINSpec spec, int retries);
+  public String providePIN(PINSpec spec, int retries) throws InterruptedException;
 
 }

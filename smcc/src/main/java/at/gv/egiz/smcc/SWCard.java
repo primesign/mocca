@@ -297,7 +297,8 @@ public class SWCard implements SignatureCard {
     
   }
 
-  public byte[] createSignature(byte[] hash, KeyboxName keyboxName, PINProvider provider) throws SignatureCardException {
+  @Override
+  public byte[] createSignature(byte[] hash, KeyboxName keyboxName, PINProvider provider) throws SignatureCardException, InterruptedException {
 
     // KeyStore password
     String password = getPassword(keyboxName);

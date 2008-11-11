@@ -37,7 +37,7 @@ public class STARCOSCardTest {
    * @throws CardException 
    * @throws NoSuchAlgorithmException 
    */
-  public static void main(String[] args) throws CardException, NoSuchAlgorithmException {
+  public static void main(String[] args) throws CardException, NoSuchAlgorithmException, InterruptedException {
     
     SMCCHelper helper = new SMCCHelper();
     while (helper.getResultCode() != SMCCHelper.CARD_FOUND) {
