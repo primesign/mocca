@@ -25,7 +25,6 @@ import java.util.Locale;
 
 /**
  *
- * @deprecated see AppletHelpListener
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class LocalHelpListener extends AbstractHelpListener {

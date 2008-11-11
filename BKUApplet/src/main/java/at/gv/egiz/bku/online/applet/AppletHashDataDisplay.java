@@ -37,15 +37,18 @@ import at.gv.egiz.stal.signedinfo.DigestMethodType;
 import at.gv.egiz.stal.signedinfo.ReferenceType;
 
 /**
- * @author clemens
+ * A SignRequesthandler displaying hashdata inputs in the applet 
+ * (only plaintext data is displayed, other hashdata inputs may be saved to disk).
+ * 
+ * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class WebServiceSignRequestHandler extends SignRequestHandler {
+public class AppletHashDataDisplay extends SignRequestHandler {
 
-  private static final Log log = LogFactory.getLog(WebServiceSignRequestHandler.class);
+  private static final Log log = LogFactory.getLog(AppletHashDataDisplay.class);
   STALPortType stalPort;
   String sessId;
 
-    public WebServiceSignRequestHandler(STALPortType stalPort, String sessId) {
+    public AppletHashDataDisplay(STALPortType stalPort, String sessId) {
     if (stalPort == null || sessId == null) {
       throw new NullPointerException("STAL port must not be null");
     }
@@ -159,6 +162,6 @@ public class WebServiceSignRequestHandler extends SignRequestHandler {
       hashDataInputs.add(new ByteArrayHashDataInput(hdi, signedRefId, mimeType, encoding));
     }
     
-    gui.showHashDataInputDialog(hashDataInputs, this, "ok");
+    gui.showHashDataInputDialog(hashDataInputs, false, this, "ok");
   }
 }

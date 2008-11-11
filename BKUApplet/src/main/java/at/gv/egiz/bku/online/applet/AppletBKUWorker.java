@@ -31,6 +31,7 @@ import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
 import at.gv.egiz.stal.util.STALTranslator;
 import java.applet.AppletContext;
+import java.awt.Dimension;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -194,12 +195,15 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
     String hashDataDisplayStyle = params.getAppletParameter(BKUApplet.HASHDATA_DISPLAY);
     if (BKUApplet.HASHDATA_DISPLAY_INTERNAL.equals(hashDataDisplayStyle)) {
       log.debug("register SignRequestHandler for STAL port " + BKUApplet.WSDL_URL);
-      addRequestHandler(SignRequest.class, new WebServiceSignRequestHandler(stalPort, sessionId));
-    } else {
-      //if (HASHDATADISPLAY_EXTERNAL.equals(displayStyle)) {
+      addRequestHandler(SignRequest.class, new AppletHashDataDisplay(stalPort, sessionId));
+    } else if (BKUApplet.HASHDATA_DISPLAY_BROWSER.equals(hashDataDisplayStyle)) {
       URL hashDataURL = params.getURLParameter(BKUApplet.HASHDATA_URL, sessionId);
       log.debug("register SignRequestHandler for HashDataURL " + hashDataURL);
-      addRequestHandler(SignRequest.class, new ExternalDisplaySignRequestHandler(hashDataURL)); //
+      addRequestHandler(SignRequest.class, new BrowserHashDataDisplay(ctx, hashDataURL));
+    } else {
+      //BKUApplet.HASHDATA_DISPLAY_FRAME
+      log.debug("register SignRequestHandler for STAL port " + BKUApplet.WSDL_URL);
+      addRequestHandler(SignRequest.class, new JDialogHashDataDisplay(stalPort, sessionId, new Dimension(400, 300), locale));
     }
   }
 }

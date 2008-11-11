@@ -18,45 +18,28 @@
 package at.gv.egiz.bku.online.applet;
 
 import at.gv.egiz.bku.gui.AbstractHelpListener;
-import java.awt.Desktop;
+import java.applet.AppletContext;
 import java.net.URL;
 import java.util.Locale;
 
 /**
- * Now uses java.awt.Desktop, which deprecates 
- * the distinction between local and applet help listener
- * TODO: integrate in AbstractHelpListener
  * 
- * @deprecated 
- * @author clemens
+ * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class AppletHelpListener extends AbstractHelpListener {
 
-//  protected AppletContext ctx;
-  protected Desktop desktop;
+  protected AppletContext ctx;
 
-  public AppletHelpListener(URL helpURL, Locale locale) {
+  public AppletHelpListener(AppletContext ctx, URL helpURL, Locale locale) {
     super(helpURL, locale);
-//    if (ctx == null) {
-//      throw new RuntimeException("no applet context provided");
-//    }
-//    this.ctx = ctx;
-    if (Desktop.isDesktopSupported()) {
-      this.desktop = Desktop.getDesktop();
+    if (ctx == null) {
+      throw new RuntimeException("no applet context provided");
     }
+    this.ctx = ctx;
   }
 
   @Override
   public void showDocument(URL helpDocument) throws Exception {
-//    ctx.showDocument(helpDocument, "_blank");
-    if (desktop == null) {
-      log.error("Failed to open default browser: Desktop API not available (libgnome installed?)");
-    } else {
-      if (!desktop.isSupported(Desktop.Action.BROWSE)) {
-        log.error("Failed to open default browser: The system provides the Desktop API, but does not support the BROWSE action");
-      } else {
-        Desktop.getDesktop().browse(helpDocument.toURI());
-      }
-    }
+    ctx.showDocument(helpDocument, "_blank");
   }
 }

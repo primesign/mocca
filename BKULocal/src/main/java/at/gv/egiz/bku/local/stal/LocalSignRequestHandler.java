@@ -53,7 +53,7 @@ public class LocalSignRequestHandler extends SignRequestHandler {
    */
   @SuppressWarnings("unchecked")
   @Override
-  public STALResponse handleRequest(STALRequest request) {
+  public STALResponse handleRequest(STALRequest request) throws InterruptedException {
     if (request instanceof SignRequest) {
       SignRequest signReq = (SignRequest) request;
       hashDataInputs = signReq.getHashDataInput();
@@ -109,7 +109,7 @@ public class LocalSignRequestHandler extends SignRequestHandler {
       log.error("dsig:SignedInfo does not contain a data reference");
       throw new Exception("dsig:SignedInfo does not contain a data reference");
     }
-    gui.showHashDataInputDialog(selectedHashDataInputs, this, "ok");
+    gui.showHashDataInputDialog(selectedHashDataInputs, false, this, "ok");
   }
 
   private ByteArrayHashDataInput getByteArrayHashDataInput(HashDataInput hashDataInput) throws IOException {

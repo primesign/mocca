@@ -882,14 +882,25 @@ public class SimpleGUI implements BKUGUIFacade {
     }
     
     @Override
-    public void showHashDataInputDialog(final List<HashDataInput> signedReferences, final ActionListener okListener, final String okCommand) {
+    public void showHashDataInputDialog(final List<HashDataInput> signedReferences, boolean standalone, final ActionListener okListener, final String okCommand) {
       
       if (signedReferences == null) {
         showErrorDialog(messages.getString(ERR_NO_HASHDATA), new Object[] {"No SignedReferences provided"}, okListener, okCommand);
       }
       
       if (signedReferences.size() == 1) {
+        
+        if (standalone) {
+          ActionListener saveHashDataListener = new ActionListener() {
 
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                  showSaveHashDataInputDialog(signedReferences, okListener, okCommand);
+              }
+          };
+          showHashDataViewer(signedReferences, saveHashDataListener, "save");
+          
+        } else {
           if ("text/plain".equals(signedReferences.get(0).getMimeType())) {
             
             ActionListener saveHashDataListener = new ActionListener() {
@@ -910,7 +921,7 @@ public class SimpleGUI implements BKUGUIFacade {
           } else {
             showSaveHashDataInputDialog(signedReferences, okListener, okCommand);
           }
-          
+        }
       } else {
 
         final HashDataTableModel tableModel = new HashDataTableModel(signedReferences);
@@ -924,6 +935,27 @@ public class SimpleGUI implements BKUGUIFacade {
         };
         showMultipleHashDataInputDialog(tableModel, okListener, okCommand, saveHashDataListener, "save");
       }
+    }
+    
+    /**
+     * TODO 
+     * @param hashDataText
+     * @param saveListener
+     * @param saveCommand
+     */
+    private void showHashDataViewer(final List<HashDataInput> signedReferences, final ActionListener saveListener, final String saveCommand) {
+      log.debug("scheduling plaintext hashdatainput dialog");
+      
+      SwingUtilities.invokeLater(new Runnable() {
+
+        @Override
+        public void run() {
+          
+          log.debug("show plaintext hashdatainput dialog");
+      
+          HashDataViewer.showDialog(contentPane, signedReferences, messages, saveListener, saveCommand, helpListener);
+        }
+      });
     }
     
     private void showPlainTextHashDataInputDialog(final String hashDataText, final ActionListener saveListener, final String saveCommand, final ActionListener cancelListener, final String cancelCommand) {

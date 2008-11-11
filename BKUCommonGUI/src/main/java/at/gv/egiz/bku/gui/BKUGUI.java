@@ -814,7 +814,7 @@ public class BKUGUI implements BKUGUIFacade {
     }
     
     @Override
-    public void showHashDataInputDialog(final List<HashDataInput> signedReferences, final ActionListener okListener, final String okCommand) {
+    public void showHashDataInputDialog(final List<HashDataInput> signedReferences, boolean standalone, final ActionListener okListener, final String okCommand) {
       
       if (signedReferences == null) {
         showErrorDialog(messages.getString(ERR_NO_HASHDATA), new Object[] {"No SignedReferences provided"}, okListener, okCommand);

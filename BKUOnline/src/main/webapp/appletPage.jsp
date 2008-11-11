@@ -50,11 +50,11 @@
 			height :<%=height%>
 		};
 		var parameters = {
-            GuiStyle : '<%=guiStyle%>',
+                        GuiStyle : '<%=guiStyle%>',
 			Background : '<%=backgroundImg%>',
 			WSDL_URL :'../stal?wsdl',
                         HelpURL : '../help/',
-                        HashDataDisplay : <%=hashDataDisplay%>,
+                        HashDataDisplay : '<%=hashDataDisplay%>',
                         HashDataURL : '../hashDataInput',
 			SessionID : '<%=session.getId()%>',
 			RedirectURL : '../bkuResult'

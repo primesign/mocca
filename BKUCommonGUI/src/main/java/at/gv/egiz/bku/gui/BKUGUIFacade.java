@@ -57,6 +57,7 @@ public interface BKUGUIFacade {
     public static final String WINDOWTITLE_SAVE = "windowtitle.save";
     public static final String WINDOWTITLE_SAVEDIR = "windowtitle.savedir";
     public static final String WINDOWTITLE_OVERWRITE = "windowtitle.overwrite";
+    public static final String WINDOWTITLE_VIEWER = "windowtitle.viewer";
     public static final String MESSAGE_WAIT = "message.wait";
     public static final String MESSAGE_INSERTCARD = "message.insertcard";
     public static final String MESSAGE_ENTERPIN = "message.enterpin";
@@ -77,12 +78,14 @@ public interface BKUGUIFacade {
     public static final String HELP_RETRY = "help.retry";
     public static final String HELP_HASHDATA = "help.hashdata";
     public static final String HELP_HASHDATALIST = "help.hashdatalist";
+    public static final String HELP_HASHDATAVIEWER = "help.hashdataviewer";
     
     public static final String BUTTON_OK = "button.ok";
     public static final String BUTTON_CANCEL = "button.cancel";
     public static final String BUTTON_BACK = "button.back";
     public static final String BUTTON_SIGN = "button.sign";
     public static final String BUTTON_SAVE = "button.save";
+    public static final String BUTTON_CLOSE = "button.close";
     public static final String SAVE_HASHDATAINPUT_PREFIX = "save.hashdatainput.prefix";
     
     
@@ -116,7 +119,7 @@ public interface BKUGUIFacade {
     
     public char[] getPin();
     
-    public void showHashDataInputDialog(List<HashDataInput> signedReferences, ActionListener okListener, String actionCommand);
+    public void showHashDataInputDialog(List<HashDataInput> signedReferences, boolean standalone, ActionListener okListener, String actionCommand);
     
 //    public void showPlainTextHashDataInputDialog(String text, ActionListener saveListener, String saveCommand, ActionListener cancelListener, String cancelCommand);
     

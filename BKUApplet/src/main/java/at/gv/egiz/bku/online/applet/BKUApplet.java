@@ -52,6 +52,8 @@ public class BKUApplet extends JApplet implements AppletParameterProvider {
   public static final String REDIRECT_URL = "RedirectURL";
   public static final String REDIRECT_TARGET = "RedirectTarget";
   public static final String HASHDATA_DISPLAY_INTERNAL = "internal";
+  public static final String HASHDATA_DISPLAY_BROWSER = "browser";
+  public static final String HASHDATA_DISPLAY_FRAME = "frame";
   
   /**
    * STAL WSDL namespace and service name
@@ -86,7 +88,7 @@ public class BKUApplet extends JApplet implements AppletParameterProvider {
     AppletHelpListener helpListener = null;
     try {
       URL helpURL = getURLParameter(HELP_URL); //, getAppletParameter(SESSION_ID));
-      helpListener = new AppletHelpListener(helpURL, getLocale()); //getAppletContext(),
+      helpListener = new AppletHelpListener(getAppletContext(), helpURL, getLocale());
     } catch (MalformedURLException ex) {
       log.warn("failed to load help URL, disabling help: " + ex.getMessage());
     }
