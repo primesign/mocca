@@ -6,6 +6,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -21,6 +22,7 @@ public class SSLConfigTest {
 		
 	}
 	
+	@Ignore
 	@Test
 	public void testConnect() throws Exception {
 		String url = "https://apps.egiz.gv.at/exchange-moa-id-auth/VerifyIdentityLink?MOASessionID=8151862969943601574";
