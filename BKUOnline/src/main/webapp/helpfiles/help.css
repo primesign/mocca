@@ -39,7 +39,6 @@ body  {
 	width: 210px;
 	padding: 15px 0; /* top and bottom padding create visual space within this div */
 	background-color: #FFFFFF;
-	font-size: smaller;
 }
 .twoColElsLtHdr #sidebar1 h3, .twoColElsLtHdr #sidebar1 p {
 	margin-left: 10px; /* the left and right margin should be given to every element that will be placed in the side columns */
@@ -54,11 +53,11 @@ body  {
 */
 .twoColElsLtHdr #mainContent {
 	margin: 0 1.5em 0 15em; /* the right margin can be given in ems or pixels. It creates the space down the right side of the page. */
+	padding: 0 10px;
 } 
 .twoColElsLtHdr #footer { 
 	padding: 0 10px; /* this padding matches the left alignment of the elements in the divs that appear above it. */
 	background:#DDDDDD;
-	font-size: smaller;
 } 
 .twoColElsLtHdr #footer p {
 	margin: 0; /* zeroing the margins of the first element in the footer will avoid the possibility of margin collapse - a space between divs */
