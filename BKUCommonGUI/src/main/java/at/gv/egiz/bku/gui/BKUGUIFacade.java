@@ -38,6 +38,7 @@ public interface BKUGUIFacade {
   public static final String ERR_CARD_LOCKED = "error.card.locked";
   public static final String ERR_CARD_NOTACTIVATED = "error.card.notactivated";
   public static final String ERR_VIEWER = "error.viewer";
+  public static final String ERR_EXTERNAL_LINK = "error.external.link";
   
   public static final String MESSAGES_BUNDLE = "at/gv/egiz/bku/gui/Messages";
   public static final String DEFAULT_BACKGROUND = "/images/BackgroundChipperling.png";

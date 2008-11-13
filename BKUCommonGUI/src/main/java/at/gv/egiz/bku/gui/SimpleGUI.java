@@ -954,7 +954,8 @@ public class SimpleGUI implements BKUGUIFacade {
           
           log.debug("show plaintext hashdatainput dialog");
       
-          ViewerDialog.showHashDataInput(contentPane, signedReferences, messages, saveListener, saveCommand, helpListener);
+          ActionListener l = helpListener.getActionListener();
+          HashDataViewer.showHashDataInput(contentPane, signedReferences, messages, saveListener, saveCommand, l);
         }
       });
     }

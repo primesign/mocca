@@ -85,14 +85,6 @@ public class BKUGuiProxy implements BKUGUIFacade {
   }
 
   @Override
-  public void showHashDataInputDialog(List<HashDataInput> signedReferences,
-      ActionListener okListener, String actionCommand) {
-    showDialog();
-    delegate.showHashDataInputDialog(signedReferences, okListener,
-        actionCommand);
-  }
-
-  @Override
   public void showInsertCardDialog(ActionListener cancelListener,
       String actionCommand) {
     showDialog();
@@ -130,5 +122,15 @@ public class BKUGuiProxy implements BKUGUIFacade {
   public void showWelcomeDialog() {
     showDialog();
     delegate.showWelcomeDialog();
+  }
+
+  @Override
+  public void showHashDataInputDialog(List<HashDataInput> signedReferences, 
+          boolean externalDisplay, 
+          ActionListener okListener, 
+          String okCommand) {
+    showDialog();
+    delegate.showHashDataInputDialog(signedReferences, externalDisplay, okListener,
+        okCommand);
   }
 }

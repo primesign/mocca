@@ -39,7 +39,7 @@ public class LocalHelpListener extends AbstractHelpListener {
   }
 
   @Override
-  public void showDocument(URL helpDocument) throws IOException, URISyntaxException {
+  public void showDocument(URL helpDocument, String helpTopic) throws IOException, URISyntaxException {
     if (desktop == null) {
       log.error("Failed to open default browser: Desktop API not available (libgnome installed?)");
     } else {

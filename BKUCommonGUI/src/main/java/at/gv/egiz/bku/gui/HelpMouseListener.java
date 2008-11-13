@@ -28,23 +28,27 @@ public class HelpMouseListener extends MouseAdapter {
 
   protected static final Log log = LogFactory.getLog(HelpMouseListener.class);
   
-  protected ActionListener externalHelpListener;
+  protected ActionListener helpListener;
   protected String locale;
   protected String topic;
 
   public HelpMouseListener(ActionListener externalHelpListener) {
     super();
-    this.externalHelpListener = externalHelpListener;
+    this.helpListener = externalHelpListener;
   }
 
   public void setHelpTopic(String topic) {
     log.trace("setting help topic: " + topic);
     this.topic = topic;
   }
+  
+  public ActionListener getActionListener() {
+    return helpListener;
+  }
 
   @Override
   public void mouseClicked(MouseEvent arg0) {
     ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, topic);
-    externalHelpListener.actionPerformed(e);
+    helpListener.actionPerformed(e);
   }
 }

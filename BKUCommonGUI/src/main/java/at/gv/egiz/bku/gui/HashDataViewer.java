@@ -23,18 +23,14 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.List;
@@ -51,8 +47,6 @@ import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -60,102 +54,84 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class ViewerDialog extends JDialog
+public class HashDataViewer extends JDialog
         implements ActionListener {
 
   public static final String PLAINTEXT_FONT = "Monospaced";
-  protected static final Log log = LogFactory.getLog(ViewerDialog.class);
-//  private ViewerDialog dialog;
+  protected static final Log log = LogFactory.getLog(HashDataViewer.class);
+
+  private static HashDataViewer dialog;
   
   protected ResourceBundle messages;
   
   /**
    * 
-   * @param frameComp
    * @param signedReferences currently, only one hashdata input (the first in the list) is displayed
-   * @param messages
-   * @param saveListener
-   * @param saveCommand
-   * @param helpListener
+   */
+  public static void showHashDataInput(List<HashDataInput> hashDataInputs,
+          ResourceBundle messages,
+          ActionListener saveListener,
+          String saveCommand,
+          ActionListener helpListener) {
+    showHashDataInput(null, hashDataInputs, messages, saveListener, saveCommand, helpListener);
+  }
+  
+  /**
+   * 
+   * @param frameComp owner
    */
   public static void showHashDataInput(Component frameComp,
           List<HashDataInput> hashDataInputs,
           ResourceBundle messages,
           ActionListener saveListener,
           String saveCommand,
-          HelpMouseListener helpListener) {
+          ActionListener helpListener) {
     
     Frame frame = null;
     if (frameComp != null) {
       JOptionPane.getFrameForComponent(frameComp);
     }
-    ViewerDialog viewer = new ViewerDialog(frame, 
+    dialog = new HashDataViewer(frame, 
             messages,
             hashDataInputs, 
             saveListener, 
             saveCommand, 
             helpListener);
-    viewer.setVisible(true);
+    dialog.setVisible(true);
   }
 
-  public static void showHelp(Component frameComp,
-          String helpTopic,
-//          Reader helpDocument,
-          InputStream helpDocument,
-          String mimeType,
-          ResourceBundle messages) {
-    
-    Frame frame = null;
-    if (frameComp != null) {
-      JOptionPane.getFrameForComponent(frameComp);
-    }
-    ViewerDialog viewer = new ViewerDialog(frame, messages, helpTopic, helpDocument, mimeType);
-    viewer.setVisible(true);
-  }
-
-  /**
-   * TODO make encoding aware!
-   * @param frame
-   * @param title
-   * @param messages
-   * @param hashDataInputs
-   * @param saveListener
-   * @param saveCommand
-   * @param helpListener
-   */
-  private ViewerDialog(Frame frame,
+  private HashDataViewer(Frame frame,
           ResourceBundle messages,
           List<HashDataInput> hashDataInputs,
           ActionListener saveListener,
           String saveCommand,
-          HelpMouseListener helpListener) {
+          ActionListener helpListener) {
     super(frame, messages.getString(BKUGUIFacade.WINDOWTITLE_VIEWER), true);
     this.messages = messages;
 
     HashDataInput hashData = hashDataInputs.get(0);
     
-//    Charset cs;
-//    if (hashData.getEncoding() == null) {
-//      cs = Charset.forName("UTF-8");
-//    } else {
-//      try {
-//        cs = Charset.forName(hashData.getEncoding());
-//      } catch (Exception ex) {
-//        log.debug("charset " + hashData.getEncoding() + " not supported, assuming UTF-8: " + ex.getMessage());
-//        cs = Charset.forName("UTF-8");
-//      }  
-//    }
-    
-//    InputStreamReader isr = new InputStreamReader(hashData.getHashDataInput(), cs);
-//    Reader content = new BufferedReader(isr);
-    InputStream content = hashData.getHashDataInput();
-    String mimeType = hashData.getMimeType();
-    String encoding = hashData.getEncoding();
-    if (encoding == null) {
-      encoding = "UTF-8";
+    Charset cs;
+    if (hashData.getEncoding() == null) {
+      cs = Charset.forName("UTF-8");
+    } else {
+      try {
+        cs = Charset.forName(hashData.getEncoding());
+      } catch (Exception ex) {
+        log.debug("charset " + hashData.getEncoding() + " not supported, assuming UTF-8: " + ex.getMessage());
+        cs = Charset.forName("UTF-8");
+      }  
     }
-      
-    JPanel hashDataPanel = createViewerPanel(messages.getString(BKUGUIFacade.MESSAGE_HASHDATA), content, mimeType, encoding, helpListener);
+    
+    
+    InputStreamReader isr = new InputStreamReader(hashData.getHashDataInput(), cs);
+    Reader content = new BufferedReader(isr);
+  
+    JPanel hashDataPanel = createViewerPanel(
+            messages.getString(BKUGUIFacade.MESSAGE_HASHDATA), 
+            content, 
+            hashData.getMimeType(), 
+            helpListener);
     JPanel buttonPanel = createButtonPanel(saveListener, saveCommand);
     initContentPane(new Dimension(600, 400), hashDataPanel, buttonPanel);
 
@@ -167,31 +143,6 @@ public class ViewerDialog extends JDialog
     }
   }
 
-  private ViewerDialog(Frame frame,
-          ResourceBundle messages,
-          String helpTopic,
-//          Reader helpDocument,
-          InputStream helpDocument,
-          String mimeType) {
-    super(frame, messages.getString(BKUGUIFacade.WINDOWTITLE_HELP), true);
-    this.messages = messages;
-    
-    String p = messages.getString(BKUGUIFacade.MESSAGE_HELP);
-    String helpItem = messages.getString(helpTopic);
-    String viewerLabel = MessageFormat.format(p, new Object[] {helpItem});
-    
-    JPanel helpPanel = createViewerPanel(viewerLabel, helpDocument, mimeType, null, null);
-    JPanel buttonPanel = createButtonPanel();
-    
-    initContentPane(new Dimension(600, 400), helpPanel, buttonPanel);
-    pack();
-    if (frame != null) {
-      setLocationRelativeTo(frame);
-    } else {
-      setLocationByPlatform(true);
-    }
-  }
-  
   private void initContentPane(Dimension preferredSize, JPanel viewerPanel, JPanel buttonPanel) {
     Container contentPane = getContentPane();
     contentPane.setPreferredSize(preferredSize);
@@ -220,7 +171,10 @@ public class ViewerDialog extends JDialog
    * @param helpListener may be null
    * @return
    */
-  private JPanel createViewerPanel(String viewerLabelText, InputStream content, String mimeType, String encoding, HelpMouseListener helpListener) {
+  private JPanel createViewerPanel(String viewerLabelText, 
+          Reader content, 
+          String mimeType, 
+          final ActionListener helpListener) {
     log.debug("viewer dialog: " + mimeType);
 
     if (mimeType == null) {
@@ -241,15 +195,8 @@ public class ViewerDialog extends JDialog
 //    document.putProperty("IgnoreCharsetDirective", new Boolean(true));
     
     try {
-      if (encoding != null) {
-        BufferedReader contentReader = new BufferedReader(new InputStreamReader(content, encoding));
-        viewer.read(contentReader, document);
-        contentReader.close();
-      } else {
-        // charset declaration in content
         viewer.read(content, document);
         content.close();
-      }
     } catch (Exception ex) {
       log.error(ex.getMessage(), ex);
       String p = messages.getString(BKUGUIFacade.ERR_VIEWER);
@@ -272,9 +219,15 @@ public class ViewerDialog extends JDialog
 
     if (helpListener != null) {
       JLabel helpLabel = new JLabel();
-      helpListener.setHelpTopic(BKUGUIFacade.HELP_HASHDATAVIEWER);
       helpLabel.setIcon(new ImageIcon(getClass().getResource(BKUGUIFacade.HELP_IMG)));
-      helpLabel.addMouseListener(helpListener);
+      helpLabel.addMouseListener(new MouseAdapter() {
+
+        @Override
+        public void mouseClicked(MouseEvent arg0) {
+            ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, BKUGUIFacade.HELP_HASHDATAVIEWER);
+            helpListener.actionPerformed(e);
+        }
+      });
       helpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
       viewerPanelLayout.setHorizontalGroup(
             viewerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(viewerPanelLayout.createSequentialGroup().addComponent(viewerLabel).addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE).addComponent(helpLabel)).addComponent(scrollPane)); //, 0, 0, Short.MAX_VALUE));
@@ -299,25 +252,6 @@ public class ViewerDialog extends JDialog
     }
     
     return viewerPanel;
-  }
-
-  private JPanel createButtonPanel() {
-    JButton closeButton = new JButton();
-    closeButton.setText(messages.getString(BKUGUIFacade.BUTTON_CLOSE));
-    closeButton.addActionListener(this);
-
-    JPanel buttonPanel = new JPanel();
-    GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
-    buttonPanel.setLayout(buttonPanelLayout);
-
-    buttonPanelLayout.setHorizontalGroup(
-            buttonPanelLayout.createSequentialGroup()
-              .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(closeButton));
-    buttonPanelLayout.setVerticalGroup(
-            buttonPanelLayout.createSequentialGroup()
-              .addComponent(closeButton));
-    return buttonPanel;
   }
   
   private JPanel createButtonPanel(ActionListener saveListener, String saveCommand) {
@@ -349,9 +283,6 @@ public class ViewerDialog extends JDialog
 
   @Override
   public void actionPerformed(ActionEvent e) {
-//    if ("close".equals(e.getActionCommand())) {
-//    ViewerDialog.dialog.setVisible(false);
-//    HashDataViewer.dialog.dispose();
-    this.setVisible(false);
+    HashDataViewer.dialog.setVisible(false);
   }
 }
