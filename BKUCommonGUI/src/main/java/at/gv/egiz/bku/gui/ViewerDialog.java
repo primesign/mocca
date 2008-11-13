@@ -151,6 +151,9 @@ public class ViewerDialog extends JDialog
     InputStream content = hashData.getHashDataInput();
     String mimeType = hashData.getMimeType();
     String encoding = hashData.getEncoding();
+    if (encoding == null) {
+      encoding = "UTF-8";
+    }
       
     JPanel hashDataPanel = createViewerPanel(messages.getString(BKUGUIFacade.MESSAGE_HASHDATA), content, mimeType, encoding, helpListener);
     JPanel buttonPanel = createButtonPanel(saveListener, saveCommand);
