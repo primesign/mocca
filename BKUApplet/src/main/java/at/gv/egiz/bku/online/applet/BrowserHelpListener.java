@@ -26,11 +26,11 @@ import java.util.Locale;
  * 
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class AppletHelpListener extends AbstractHelpListener {
+public class BrowserHelpListener extends AbstractHelpListener {
 
   protected AppletContext ctx;
 
-  public AppletHelpListener(AppletContext ctx, URL helpURL, Locale locale) {
+  public BrowserHelpListener(AppletContext ctx, URL helpURL, Locale locale) {
     super(helpURL, locale);
     if (ctx == null) {
       throw new RuntimeException("no applet context provided");
@@ -39,7 +39,7 @@ public class AppletHelpListener extends AbstractHelpListener {
   }
 
   @Override
-  public void showDocument(URL helpDocument) throws Exception {
+  public void showDocument(URL helpDocument, String helpTopic) throws Exception {
     ctx.showDocument(helpDocument, "_blank");
   }
 }

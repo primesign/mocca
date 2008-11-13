@@ -16,6 +16,7 @@
  */
 package at.gv.egiz.bku.online.applet;
 
+import at.gv.egiz.bku.gui.AbstractHelpListener;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
@@ -85,10 +86,11 @@ public class BKUApplet extends JApplet implements AppletParameterProvider {
     String locale = getAppletParameter(LOCALE_PARAM_KEY);
     String guiStyle = getAppletParameter(GUI_STYLE);
     URL backgroundImgURL = null;
-    AppletHelpListener helpListener = null;
+    AbstractHelpListener helpListener = null;
     try {
       URL helpURL = getURLParameter(HELP_URL); //, getAppletParameter(SESSION_ID));
-      helpListener = new AppletHelpListener(getAppletContext(), helpURL, getLocale());
+//      helpListener = new BrowserHelpListener(getAppletContext(), helpURL, getLocale());
+      helpListener = new DefaultHelpListener(helpURL, getLocale());
     } catch (MalformedURLException ex) {
       log.warn("failed to load help URL, disabling help: " + ex.getMessage());
     }

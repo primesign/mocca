@@ -18,6 +18,7 @@
 package at.gv.egiz.bku.gui;
 
 import at.gv.egiz.stal.HashDataInput;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -27,20 +28,21 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author clemens
  */
-class HashDataTableModel extends DefaultTableModel {
+class SimpleHashDataTableModel extends DefaultTableModel {
 
   protected List<HashDataInput> signedReferences;
   
   protected Class[] types = new Class[]{
-    java.lang.String.class, java.lang.Boolean.class
+    java.lang.String.class
   };
 
-  public HashDataTableModel(List<HashDataInput> signedReferences) {
-    super(0, 2);
+  public SimpleHashDataTableModel(List<HashDataInput> signedReferences) {
+    super(0, 1);
     this.signedReferences = signedReferences;
     for (HashDataInput hashDataInput : signedReferences) {
-      String desc = hashDataInput.getReferenceId() + " (" + hashDataInput.getMimeType() + ")";
-      addRow(new Object[]{desc, new Boolean(true)});
+      
+//      String desc = hashDataInput.getReferenceId() + " (" + hashDataInput.getMimeType() + ")";
+      addRow(new Object[]{hashDataInput});
     }
   }
 
@@ -54,15 +56,5 @@ class HashDataTableModel extends DefaultTableModel {
     if (columnIndex == 1)
       return true;
     return false;
-  }
-
-  public List<HashDataInput> getSelectedHashData() {
-    ArrayList<HashDataInput> selection = new ArrayList<HashDataInput>();
-    for (int i = 0; i < dataVector.size(); i++) {
-      if ((Boolean) ((Vector) dataVector.get(i)).elementAt(1)) {
-        selection.add(signedReferences.get(i));
-      }
-    }
-    return selection;
   }
 }

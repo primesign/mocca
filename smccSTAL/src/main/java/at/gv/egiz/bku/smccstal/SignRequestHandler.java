@@ -192,7 +192,7 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
     
 
     
-  class STALPinProvider implements PINProvider, ActionListener {
+  class STALPinProvider implements PINProvider {
     
     protected SignedInfoType signedInfo;
     protected List<HashDataInput> hashDataInputs;
@@ -230,10 +230,10 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
             displayHashDataInputs(signedInfo.getReference());
           } catch (DigestException ex) { 
             log.error("Bad digest value: " + ex.getMessage());
-            gui.showErrorDialog(BKUGUIFacade.ERR_INVALID_HASH, new Object[] {ex.getMessage()});
+            gui.showErrorDialog(BKUGUIFacade.ERR_INVALID_HASH, new Object[] {ex.getMessage()}, SignRequestHandler.this, "error");
           } catch (Exception ex) {
             log.error("Could not display hashdata inputs: " + ex.getMessage());
-            gui.showErrorDialog(BKUGUIFacade.ERR_DISPLAY_HASHDATA, new Object[] {ex.getMessage()}, SignRequestHandler.this, "ok");
+            gui.showErrorDialog(BKUGUIFacade.ERR_DISPLAY_HASHDATA, new Object[] {ex.getMessage()}, SignRequestHandler.this, "error");
           }
         
         // OLD HASHDATA DISPLAY (in applet), 
@@ -261,13 +261,15 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
         return new String(gui.getPin());
       } else if (actionCommand.equals("ok")) {
         showSignaturePINDialog(spec, retries);
+      } else if (actionCommand.equals("error")) {
+        return null;
       }
     } while (true);
   }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      throw new UnsupportedOperationException("Not supported yet.");
-    }
+//    @Override
+//    public void actionPerformed(ActionEvent e) {
+//      throw new UnsupportedOperationException("Not supported yet.");
+//    }
   }
 }

@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+@Ignore
 public class SSLConfigTest {
 	
 	private SpringConfigurator cfg;
@@ -21,7 +22,7 @@ public class SSLConfigTest {
 		ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		
 	}
-	
+
 	@Ignore
 	@Test
 	public void testConnect() throws Exception {

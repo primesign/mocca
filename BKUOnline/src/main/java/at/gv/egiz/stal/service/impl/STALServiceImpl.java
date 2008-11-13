@@ -64,10 +64,14 @@ public class STALServiceImpl implements STALPortType {
   protected static final Log log = LogFactory.getLog(STALServiceImpl.class);
   
   static {
+    
     if (log.isTraceEnabled()) {
       log.trace("enabling webservice communication dump");
       System.setProperty("com.sun.xml.ws.transport.http.HttpAdapter.dump", "true");
+    } else {
+      System.setProperty("com.sun.xml.ws.fault.SOAPFaultBuilder.disableCaptureStackTrace", "false");
     }
+    
   }
   
   @Resource
@@ -291,8 +295,8 @@ public class STALServiceImpl implements STALPortType {
           throw new GetHashDataInputFault(msg, faultInfo);
         }
       } else {
-        String msg = "Failed to get STAL for session " + sessionId;
-        log.error(msg);
+        String msg = "Session timeout"; //Failed to get STAL for session " + sessionId;
+        log.error(msg + " " + sessionId);
         GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
         faultInfo.setErrorCode(1);
         faultInfo.setErrorMessage(msg);

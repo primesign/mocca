@@ -83,7 +83,7 @@ public class SimpleGUI implements BKUGUIFacade {
 
     protected int buttonSize;
     
-    private static final int CHECKBOX_WIDTH = new JCheckBox().getPreferredSize().width;
+//    private static final int CHECKBOX_WIDTH = new JCheckBox().getPreferredSize().width;
 
     /**
      * @param contentPane
@@ -924,16 +924,17 @@ public class SimpleGUI implements BKUGUIFacade {
         }
       } else {
 
-        final HashDataTableModel tableModel = new HashDataTableModel(signedReferences);
-
-        ActionListener saveHashDataListener = new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-              showSaveHashDataInputDialog(tableModel.getSelectedHashData(), okListener, okCommand);
-            }
-        };
-        showMultipleHashDataInputDialog(tableModel, okListener, okCommand, saveHashDataListener, "save");
+        SimpleHashDataTableModel tableModel = new SimpleHashDataTableModel(signedReferences);
+//        final HashDataTableModel tableModel = new HashDataTableModel(signedReferences);
+//
+//        ActionListener saveHashDataListener = new ActionListener() {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//              showSaveHashDataInputDialog(tableModel.getSelectedHashData(), okListener, okCommand);
+//            }
+//        };
+        showMultipleHashDataInputDialog(tableModel, okListener, okCommand);
       }
     }
     
@@ -953,7 +954,7 @@ public class SimpleGUI implements BKUGUIFacade {
           
           log.debug("show plaintext hashdatainput dialog");
       
-          HashDataViewer.showDialog(contentPane, signedReferences, messages, saveListener, saveCommand, helpListener);
+          ViewerDialog.showHashDataInput(contentPane, signedReferences, messages, saveListener, saveCommand, helpListener);
         }
       });
     }
@@ -1052,7 +1053,8 @@ public class SimpleGUI implements BKUGUIFacade {
       });
     }
 
-    private void showMultipleHashDataInputDialog(final TableModel signedReferences, final ActionListener cancelListener, final String cancelCommand, final ActionListener saveListener, final String saveCommand) {
+    private void showMultipleHashDataInputDialog(final TableModel signedReferences, final ActionListener cancelListener, final String cancelCommand) {
+//      , final ActionListener saveListener, final String saveCommand
       
       log.debug("scheduling multiple hashdatainput dialog");
       
@@ -1076,13 +1078,14 @@ public class SimpleGUI implements BKUGUIFacade {
           refIdLabel.setText(MessageFormat.format(refIdLabelPattern, new Object[]{signedReferences.getRowCount()}));
 
           JTable hashDataTable = new JTable();
+          hashDataTable.setDefaultRenderer(HashDataInput.class, new HyperLinkRenderer());
           hashDataTable.setModel(signedReferences);
           hashDataTable.setTableHeader(null);
   //        hashDataTable.setShowVerticalLines(false);
   //        hashDataTable.setRowSelectionAllowed(false);
-          TableColumn selectCol = hashDataTable.getColumnModel().getColumn(1);
-          selectCol.setMinWidth(CHECKBOX_WIDTH);
-          selectCol.setMaxWidth(CHECKBOX_WIDTH);
+//          TableColumn selectCol = hashDataTable.getColumnModel().getColumn(1);
+//          selectCol.setMinWidth(CHECKBOX_WIDTH);
+//          selectCol.setMaxWidth(CHECKBOX_WIDTH);
 
 
 //          hashDataTable.setPreferredScrollableViewportSize(mainPanel.getPreferredSize());
