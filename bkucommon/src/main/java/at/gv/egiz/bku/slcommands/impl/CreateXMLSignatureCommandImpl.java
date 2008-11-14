@@ -1,19 +1,19 @@
 /*
-* Copyright 2008 Federal Chancellery Austria and
-* Graz University of Technology
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright 2008 Federal Chancellery Austria and
+ * Graz University of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package at.gv.egiz.bku.slcommands.impl;
 
 import java.io.ByteArrayInputStream;
@@ -48,34 +48,38 @@ import at.gv.egiz.bku.slexceptions.SLException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLViewerException;
 import at.gv.egiz.dom.DOMUtils;
+import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.InfoboxReadResponse;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 
 /**
- * This class implements the security layer command <code>CreateXMLSignatureRequest</code>.
+ * This class implements the security layer command
+ * <code>CreateXMLSignatureRequest</code>.
  * 
  * @author mcentner
  */
-public class CreateXMLSignatureCommandImpl extends SLCommandImpl<CreateXMLSignatureRequestType> implements
+public class CreateXMLSignatureCommandImpl extends
+    SLCommandImpl<CreateXMLSignatureRequestType> implements
     CreateXMLSignatureCommand {
-  
+
   /**
    * Logging facility.
    */
-  protected static Log log = LogFactory.getLog(CreateXMLSignatureCommandImpl.class);
-  
+  protected static Log log = LogFactory
+      .getLog(CreateXMLSignatureCommandImpl.class);
+
   /**
    * The signing certificate.
    */
   protected X509Certificate signingCertificate;
-  
+
   /**
    * The keybox identifier of the key used for signing.
    */
   protected String keyboxIdentifier;
-  
+
   /**
    * The to-be signed signature.
    */
@@ -88,42 +92,45 @@ public class CreateXMLSignatureCommandImpl extends SLCommandImpl<CreateXMLSignat
   }
 
   @Override
-  public void prepareXMLSignature() throws SLCommandException, SLRequestException {
+  public void prepareXMLSignature() throws SLCommandException,
+      SLRequestException {
 
-   CreateXMLSignatureRequestType request = getRequestValue();
-    
+    CreateXMLSignatureRequestType request = getRequestValue();
+
     // TODO: make configurable?
     IdValueFactory idValueFactory = new IdValueFactoryImpl();
-    
+
     // TODO: make configurable?
     AlgorithmMethodFactory algorithmMethodFactory;
     try {
-      algorithmMethodFactory = new AlgorithmMethodFactoryImpl(signingCertificate);
+      algorithmMethodFactory = new AlgorithmMethodFactoryImpl(
+          signingCertificate);
     } catch (NoSuchAlgorithmException e) {
       log.error("Failed to get DigestMethod.", e);
       throw new SLCommandException(4006);
     }
-    
-    signature = new Signature(getCmdCtx().getURLDereferencerContext(), idValueFactory, algorithmMethodFactory);
+
+    signature = new Signature(getCmdCtx().getURLDereferencerContext(),
+        idValueFactory, algorithmMethodFactory);
 
     // SigningTime
     signature.setSigningTime(new Date());
-    
+
     // SigningCertificate
     signature.setSignerCeritifcate(signingCertificate);
-    
+
     // SignatureInfo
     if (request.getSignatureInfo() != null) {
       signature.setSignatureInfo(request.getSignatureInfo());
     }
-    
+
     // DataObjects
     for (DataObjectInfoType dataObjectInfo : request.getDataObjectInfo()) {
       signature.addDataObject(dataObjectInfo);
     }
-    
+
     signature.buildXMLSignature();
-    
+
   }
 
   /**
@@ -133,35 +140,41 @@ public class CreateXMLSignatureCommandImpl extends SLCommandImpl<CreateXMLSignat
    *           if getting the singing certificate fails
    */
   private void getSigningCertificate() throws SLCommandException {
-    
+
     CreateXMLSignatureRequestType request = getRequestValue();
     keyboxIdentifier = request.getKeyboxIdentifier();
-    
+
     InfoboxReadRequest stalRequest = new InfoboxReadRequest();
     stalRequest.setInfoboxIdentifier(keyboxIdentifier);
-    
+
     requestSTAL(Collections.singletonList((STALRequest) stalRequest));
-    
+
     STALResponse stalResponse = stalResponses.next();
-    
+
     if (stalResponse instanceof InfoboxReadResponse) {
       byte[] infobox = ((InfoboxReadResponse) stalResponse).getInfoboxValue();
-      
+
       try {
         CertificateFactory certFactory = CertificateFactory.getInstance("X509");
-        signingCertificate = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(infobox));
+        signingCertificate = (X509Certificate) certFactory
+            .generateCertificate(new ByteArrayInputStream(infobox));
       } catch (CertificateException e) {
         log.info("Failed to decode signing certificate.", e);
         // TODO: issue appropriate error
         throw new SLCommandException(4000);
       }
-      
+
+    } else if (stalResponse instanceof ErrorResponse) {
+      ErrorResponse err = (ErrorResponse) stalResponse;
+      log.info("Received an error response from STAL with code: "
+          + err.getErrorCode());
+      throw new SLCommandException(err.getErrorCode());
+
     } else {
       log.info("Failed to get signing certificate.");
-      // TODO: issue appropriate error
       throw new SLCommandException(4000);
     }
-    
+
   }
 
   /**
@@ -169,10 +182,10 @@ public class CreateXMLSignatureCommandImpl extends SLCommandImpl<CreateXMLSignat
    * 
    * @throws SLCommandException
    *           if signing the signature fails
-   * @throws SLViewerException 
+   * @throws SLViewerException
    */
   private void signXMLSignature() throws SLCommandException, SLViewerException {
-    
+
     try {
       signature.sign(getCmdCtx().getSTAL(), keyboxIdentifier);
     } catch (MarshalException e) {
@@ -180,7 +193,8 @@ public class CreateXMLSignatureCommandImpl extends SLCommandImpl<CreateXMLSignat
       throw new SLCommandException(4000);
     } catch (XMLSignatureException e) {
       if (e.getCause() instanceof URIReferenceException) {
-        URIReferenceException uriReferenceException = (URIReferenceException) e.getCause();
+        URIReferenceException uriReferenceException = (URIReferenceException) e
+            .getCause();
         if (uriReferenceException.getCause() instanceof SLCommandException) {
           throw (SLCommandException) uriReferenceException.getCause();
         }
@@ -188,43 +202,43 @@ public class CreateXMLSignatureCommandImpl extends SLCommandImpl<CreateXMLSignat
       log.error("Failed to sign XMLSignature.", e);
       throw new SLCommandException(4000);
     }
-    
+
   }
-  
+
   @Override
   public SLResult execute() {
     try {
-      
-      // get certificate in order to select appropriate algorithms for hashing and signing
+
+      // get certificate in order to select appropriate algorithms for hashing
+      // and signing
       getSigningCertificate();
-      
+
       // prepare the XMLSignature for signing
       prepareXMLSignature();
-      
+
       // sign the XMLSignature
       signXMLSignature();
-      
+
       if (log.isTraceEnabled()) {
-        
+
         DOMImplementationLS domImplLS = DOMUtils.getDOMImplementationLS();
         LSSerializer serializer = domImplLS.createLSSerializer();
         String debugString = serializer.writeToString(signature.getDocument());
 
         log.trace(debugString);
-        
+
       }
-      
+
       return new CreateXMLSignatureResultImpl(signature.getDocument());
-      
+
     } catch (SLException e) {
       return new ErrorResultImpl(e, cmdCtx.getLocale());
-    } 
+    }
   }
 
   @Override
   public String getName() {
     return "CreateXMLSignatureRequest";
   }
-  
-  
+
 }
