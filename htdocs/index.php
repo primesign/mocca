@@ -96,8 +96,8 @@ echo $contents; } ?>
 </span>
 </div>
 <p><a href="#news">News</a><br/>
-  <a href="#doc">Documentation</a><br />
-  <a href="#downloads">Downloads</a><br />
+  <a href="http://egovlabs.gv.at/docman/?group_id=13&amp;language_id=*">Documentation</a><br />
+  <a href="http://egovlabs.gv.at/frs/?group_id=13">Downloads</a><br />
   <a href="#licenses">Licence conditions</a>
 <p><strong>MOCCA - Modular Open Citizen Card Architecture</strong>
 <p>MOCCA is a project initiated by the <a href="http://www.egiz.gv.at">E-Government Innovation Center (EGIZ)</a> to implement a modular, open source <a href="http://www.buergerkarte.at">citizen card environment</a>.</p>
@@ -110,11 +110,7 @@ while (!feof($handle)) {
 fclose($handle);
 $contents=str_replace('href="/','href="http://'.$domain.'/',$contents);
 echo $contents; } ?>
-    <h3><a name="doc" id="doc"></a>Documentation</h3>
-    <a href="http://egovlabs.gv.at/docman/?group_id=13&amp;language_id=*">Documentation</a></p>
-<h3><a name="downloads" id="downloads"></a>Downloads</h3>
-<p>There are no releases for download so far.</p>
-<h3><a name="licenses" id="licenses"></a>License conditions</h3>
+    <h3><a name="licenses" id="licenses"></a>License conditions</h3>
     <p>The MOCCA  project as provided by the <a href="http://www.egiz.gv.at">E-Government Innovation Center (EGIZ)</a> is licensed according to the terms of the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License 2.0</a>.</p>
     <p>The MOCCA project includes software provided by third parties. This software is either <a href="http://www.opensource.org">open source software</a> or commercial software. The licensee is responsible for optaining appropriate licenses.</p>
 <p>The MOCCA project uses software provided by <a href="http://www.sic.st">Stiftung Secure Information and Communication Technologies (SIC)</a>. The uses of the software provided by Stiftung Secure Information and Communication Technologies (SIC) together with the unchanged software provided by the MOCCA project is free of charge. For details see <a href="http://jce.iaik.tugraz.at/sic/sales/licences/license_agreement_moa">License Agreement IAIK</a>.</p>
