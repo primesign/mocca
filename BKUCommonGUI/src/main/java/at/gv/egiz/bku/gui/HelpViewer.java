@@ -16,7 +16,6 @@
  */
 package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.bku.gui.*;
 import java.applet.AppletContext;
 import java.awt.Component;
 import java.awt.Container;
@@ -30,7 +29,6 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
@@ -136,6 +134,7 @@ public class HelpViewer extends JDialog
     final JEditorPane viewer = new JEditorPane();
     viewer.setEditable(false);
     try {
+      viewer.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       viewer.setPage(helpURL);
       viewer.addHyperlinkListener(new HyperlinkListener() {
 
@@ -165,7 +164,7 @@ public class HelpViewer extends JDialog
       String p = messages.getString(BKUGUIFacade.ERR_VIEWER);
       viewer.setText(MessageFormat.format(p, new Object[]{ex.getMessage()}));
     }
-
+    viewer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     JScrollPane scrollPane = new JScrollPane(viewer);
     scrollPane.setPreferredSize(viewer.getPreferredSize());
     scrollPane.setAlignmentX(LEFT_ALIGNMENT);

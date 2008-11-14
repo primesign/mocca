@@ -15,35 +15,35 @@
  * limitations under the License.
  */
 
-package at.gv.egiz.bku.gui;
+package at.gv.egiz.bku.gui.html;
 
-import java.awt.Graphics;
-import java.awt.Image;
-import java.net.URL;
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
+import javax.swing.text.Element;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.View;
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLEditorKit;
 
 /**
- * 
+ *
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class ImagePanel extends JPanel {
-
-  protected Image backgroundImg;
-
-  public ImagePanel(URL background) {
-    this(new ImageIcon(background).getImage());
-  }
+public class RestrictedHTMLEditorKit extends HTMLEditorKit {
   
-  public ImagePanel(Image img) {
-    this.backgroundImg = img;
-    this.setOpaque(false);
+ 
+  public static class RestrictedHTMLFactory extends HTMLFactory {
+
+    @Override
+    public View create(Element elem) {
+      Object o =
+        elem.getAttributes().getAttribute(StyleConstants.NameAttribute);
+      if (o instanceof HTML.Tag) {
+        HTML.Tag kind = (HTML.Tag) o;
+        if (kind == HTML.Tag.IMG)
+          return new RestrictedImageView(elem);
+      }
+      return super.create( elem );
+    }
+
   }
-  
-  @Override
-  public void paintComponent(Graphics g) {
-    super.paintComponent(g);
-    g.drawImage(backgroundImg, 0, this.getHeight() - backgroundImg.getHeight(null), null);
-  }
-    
+
 }

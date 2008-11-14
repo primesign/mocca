@@ -158,6 +158,11 @@ public class SimpleGUI implements BKUGUIFacade {
       if (background == null) {
         background = this.getClass().getResource(DEFAULT_BACKGROUND);
       }
+      if ("file".equals(background.getProtocol())) {
+        log.warn("local background image not allowed: " + background);
+        background = this.getClass().getResource(DEFAULT_BACKGROUND);
+      }
+      log.debug("loading background " + background);
       contentPanel = new ImagePanel(background);
 
 //        contentPanel.setBorder(new TitledBorder("content"));
@@ -179,6 +184,7 @@ public class SimpleGUI implements BKUGUIFacade {
         
         helpLabel = new JLabel();
         helpLabel.setIcon(new ImageIcon(getClass().getResource(HELP_IMG))); 
+        helpLabel.getAccessibleContext().setAccessibleName(messages.getString(ALT_HELP));
         helpLabel.addMouseListener(helpListener);
         helpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         

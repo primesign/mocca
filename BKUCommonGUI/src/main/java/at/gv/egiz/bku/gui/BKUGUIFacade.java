@@ -89,6 +89,7 @@ public interface BKUGUIFacade {
   public static final String BUTTON_SAVE = "button.save";
   public static final String BUTTON_CLOSE = "button.close";
   public static final String SAVE_HASHDATAINPUT_PREFIX = "save.hashdatainput.prefix";
+  public static final String ALT_HELP = "alt.help";
 
   public void init(Container contentPane, Locale locale, URL background, ActionListener helpListener);
 

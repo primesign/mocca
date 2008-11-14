@@ -16,6 +16,7 @@
  */
 package at.gv.egiz.bku.gui;
 
+import at.gv.egiz.bku.gui.html.RestrictedHTMLEditorKit;
 import at.gv.egiz.stal.HashDataInput;
 import java.awt.Component;
 import java.awt.Container;
@@ -23,6 +24,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -47,6 +49,11 @@ import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
+import javax.swing.text.Element;
+import javax.swing.text.ViewFactory;
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.ImageView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -184,11 +191,14 @@ public class HashDataViewer extends JDialog
     }
 
     JEditorPane viewer = new JEditorPane();
-    viewer.setEditable(false);
-    viewer.setContentType(mimeType);
+    
     if ("text/plain".equals(mimeType)) {
       viewer.setFont(new Font(PLAINTEXT_FONT, viewer.getFont().getStyle(), viewer.getFont().getSize()));
+//    } else if ("text/html".equals(mimeType)) {
+//      viewer.setEditorKitForContentType("text/html", new RestrictedHTMLEditorKit());
     }
+    viewer.setEditable(false);
+    viewer.setContentType(mimeType);
 
     EditorKit editorKit = viewer.getEditorKit();
     Document document = editorKit.createDefaultDocument();
@@ -220,6 +230,7 @@ public class HashDataViewer extends JDialog
     if (helpListener != null) {
       JLabel helpLabel = new JLabel();
       helpLabel.setIcon(new ImageIcon(getClass().getResource(BKUGUIFacade.HELP_IMG)));
+      helpLabel.getAccessibleContext().setAccessibleName(messages.getString(BKUGUIFacade.ALT_HELP));
       helpLabel.addMouseListener(new MouseAdapter() {
 
         @Override

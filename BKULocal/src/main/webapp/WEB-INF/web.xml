@@ -36,6 +36,10 @@
     <servlet-name>BKUServlet</servlet-name>
     <servlet-class>at.gv.egiz.bku.local.webapp.SpringBKUServlet</servlet-class>
   </servlet>
+  <servlet>
+      <servlet-name>help</servlet-name>
+      <jsp-file>/help.jsp</jsp-file>
+  </servlet>
   <servlet-mapping>
     <servlet-name>BKUServlet</servlet-name>
     <url-pattern>/http-security-layer-request</url-pattern>
@@ -43,6 +47,10 @@
   <servlet-mapping>
     <servlet-name>BKUServlet</servlet-name>
     <url-pattern>/https-security-layer-request</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+      <servlet-name>help</servlet-name>
+      <url-pattern>/help/*</url-pattern>
   </servlet-mapping>
   <!--  Begin BKU Config -->
   

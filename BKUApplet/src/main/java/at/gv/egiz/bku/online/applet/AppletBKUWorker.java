@@ -31,7 +31,6 @@ import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
 import at.gv.egiz.stal.util.STALTranslator;
 import java.applet.AppletContext;
-import java.awt.Dimension;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;

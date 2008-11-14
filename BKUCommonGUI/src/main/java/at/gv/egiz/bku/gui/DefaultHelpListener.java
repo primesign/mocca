@@ -14,10 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package at.gv.egiz.bku.online.applet;
+package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.bku.gui.HelpViewer;
-import at.gv.egiz.bku.gui.AbstractHelpListener;
 import java.applet.AppletContext;
 import java.net.URL;
 import java.util.Locale;
@@ -30,10 +28,15 @@ import javax.swing.SwingUtilities;
 public class DefaultHelpListener extends AbstractHelpListener {
 
   protected AppletContext ctx;
-  
+
   public DefaultHelpListener(AppletContext ctx, URL helpURL, Locale locale) {
     super(helpURL, locale);
     this.ctx = ctx;
+  }
+
+  public DefaultHelpListener(URL helpURL, Locale locale) {
+    super(helpURL, locale);
+    this.ctx = null;
   }
 
   @Override
@@ -47,8 +50,12 @@ public class DefaultHelpListener extends AbstractHelpListener {
           
           log.debug("show help dialog");
           
-          HelpViewer.showHelpDialog(ctx, helpURL, helpTopic, messages);
+          if (ctx == null) {
+            HelpViewer.showHelpDialog(helpURL, helpTopic, messages);
       
+          } else {
+            HelpViewer.showHelpDialog(ctx, helpURL, helpTopic, messages);
+          }
         }
       });
   }
