@@ -215,12 +215,16 @@
       <xs:documentation>
         SLXHTML 1.2: elements "map", "object" removed.
       </xs:documentation>
+      <xs:documentation>
+        MOCCA 1.0: element "img" removed
+      </xs:documentation>
     </xs:annotation>      
-    <xs:choice>
+    <!-- <xs:choice>
       <xs:element
         name="img"
         type="xhtml.img.type"/>
-    </xs:choice>
+    </xs:choice>-->
+    <xs:sequence/>
   </xs:group>
   <xs:group name="xhtml.InlForm.class">
     <xs:annotation>
