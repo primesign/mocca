@@ -6,7 +6,7 @@
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>bku</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>BKU</name>
 	<url>http://bku.egiz.gv.at</url>
 	<modules>

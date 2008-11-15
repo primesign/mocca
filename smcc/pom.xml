@@ -3,14 +3,14 @@
   <parent>
     <artifactId>bku</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>at.gv.egiz</groupId>
   <artifactId>smcc</artifactId>
   <name>smcc</name>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <url>http://bku.egiz.gv.at</url>
   <dependencies>
     <dependency>
