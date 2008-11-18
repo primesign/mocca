@@ -32,15 +32,16 @@ import org.junit.Test;
  *
  * @author clemens
  */
+@Ignore
 public class BKUGUITest {
 
-    @Ignore
+    @Test
     public void testBKUGUI() {
         JFrame testFrame = new JFrame("BKUGUITest");
         BKUGUI gui = new BKUGUI();
         Container contentPane = testFrame.getContentPane();
         contentPane.setPreferredSize(new Dimension(380, 150));
-        gui.init(contentPane, null, null, null);
+        gui.init(contentPane, null, BKUGUIFacade.Style.advanced, null, null);
         BKUGUIWorker worker = new BKUGUIWorker();
         worker.init(gui);
         testFrame.pack();

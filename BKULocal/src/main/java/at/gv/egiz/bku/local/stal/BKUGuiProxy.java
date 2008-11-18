@@ -37,10 +37,10 @@ public class BKUGuiProxy implements BKUGUIFacade {
     return delegate.getPin();
   }
 
-  @Override
-  public void init(Container contentPane, Locale locale, URL bgImage, ActionListener helpListener) {
-    delegate.init(contentPane, locale, bgImage, helpListener);
-  }
+//  @Override
+//  public void init(Container contentPane, Locale locale, URL bgImage, ActionListener helpListener) {
+//    delegate.init(contentPane, locale, bgImage, helpListener);
+//  }
 
   @Override
   public Locale getLocale() {
@@ -126,11 +126,9 @@ public class BKUGuiProxy implements BKUGUIFacade {
 
   @Override
   public void showHashDataInputDialog(List<HashDataInput> signedReferences, 
-          boolean externalDisplay, 
           ActionListener okListener, 
           String okCommand) {
     showDialog();
-    delegate.showHashDataInputDialog(signedReferences, externalDisplay, okListener,
-        okCommand);
+    delegate.showHashDataInputDialog(signedReferences, okListener, okCommand);
   }
 }

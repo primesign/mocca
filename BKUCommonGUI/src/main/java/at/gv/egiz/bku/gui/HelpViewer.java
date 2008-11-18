@@ -105,7 +105,7 @@ public class HelpViewer extends JDialog
     JPanel helpPanel = createViewerPanel(viewerLabel, helpURL);
     JPanel buttonPanel = createButtonPanel();
 
-    initContentPane(new Dimension(600, 400), helpPanel, buttonPanel);
+    initContentPane(new Dimension(600, 600), helpPanel, buttonPanel);
     pack();
     if (frame != null) {
       setLocationRelativeTo(frame);

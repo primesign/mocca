@@ -43,7 +43,7 @@ public class BKUGUIWorker implements Runnable {
 
   @Override
   public void run() {
-        try {
+//        try {
 
     final PINSpec signPinSpec = new PINSpec(6, 10, "[0-9]", "Signatur-PIN");
 
@@ -176,7 +176,7 @@ public class BKUGUIWorker implements Runnable {
 //                    signedRefs.add(signedRef4);
 //                    signedRefs.add(signedRef4);
 //                    signedRefs = Collections.singletonList(signedRef1);
-        gui.showHashDataInputDialog(signedRefs, true, returnListener, "return");
+        gui.showHashDataInputDialog(signedRefs, returnListener, "return");
       }
     };
 
@@ -184,64 +184,64 @@ public class BKUGUIWorker implements Runnable {
 
         gui.showWelcomeDialog();
 
-        Thread.sleep(2000);
-        
-        gui.showWaitDialog(null);
-        
-        Thread.sleep(1000);
-        
-        gui.showWaitDialog("test");
-        
-        Thread.sleep(1000);
-          
-
-            gui.showInsertCardDialog(cancelListener, "cancel");
-
-            Thread.sleep(2000);
-            
-            gui.showCardNotSupportedDialog(cancelListener, "cancel");
-            
-            Thread.sleep(2000);
-
-            PINSpec cardPinSpec = new PINSpec(4, 4, "[0-9]", "Karten-PIN");
-            
-            gui.showCardPINDialog(cardPinSpec, okListener, "ok", cancelListener, "cancel");
-            
-            Thread.sleep(2000);
-
-            gui.showSignaturePINDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
-
-            Thread.sleep(4000);
-
-            gui.showSignaturePINRetryDialog(signPinSpec, 2, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
-
-            Thread.sleep(2000);
-            
-            gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, new Object[] {"Testfehler"}, null, null);
-            
-            Thread.sleep(2000);
-              
-            gui.showErrorDialog("error.test", new Object[] {"Testfehler", "noch ein TestFehler"}); 
-
-            Thread.sleep(2000);
-            
-            gui.showErrorDialog("error.no.hashdata", null); 
-            
-            Thread.sleep(2000);
-          
-            gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, new Object[] {"Testfehler"}); 
-
-            Thread.sleep(2000);
-          
-            gui.showErrorDialog("error.unknown", null); 
+//        Thread.sleep(2000);
+//        
+//        gui.showWaitDialog(null);
+//        
+//        Thread.sleep(1000);
+//        
+//        gui.showWaitDialog("test");
+//        
+//        Thread.sleep(1000);
+//          
+//
+//            gui.showInsertCardDialog(cancelListener, "cancel");
+//
+//            Thread.sleep(2000);
+//            
+//            gui.showCardNotSupportedDialog(cancelListener, "cancel");
+//            
+//            Thread.sleep(2000);
+//
+//            PINSpec cardPinSpec = new PINSpec(4, 4, "[0-9]", "Karten-PIN");
+//            
+//            gui.showCardPINDialog(cardPinSpec, okListener, "ok", cancelListener, "cancel");
+//            
+//            Thread.sleep(2000);
+//
+//            gui.showSignaturePINDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
+//
+//            Thread.sleep(4000);
+//
+//            gui.showSignaturePINRetryDialog(signPinSpec, 2, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
+//
+//            Thread.sleep(2000);
+//            
+//            gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, new Object[] {"Testfehler"}, null, null);
+//            
+//            Thread.sleep(2000);
+//              
+//            gui.showErrorDialog("error.test", new Object[] {"Testfehler", "noch ein TestFehler"}); 
+//
+//            Thread.sleep(2000);
+//            
+//            gui.showErrorDialog("error.no.hashdata", null); 
+//            
+//            Thread.sleep(2000);
+//          
+//            gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, new Object[] {"Testfehler"}); 
+//
+//            Thread.sleep(2000);
+//          
+//            gui.showErrorDialog("error.unknown", null); 
 
 
 //            gui.showTextPlainHashDataInput("hallo,\n welt!", "12345", null, "cancel", null, "save");
 //            gui.showTextPlainHashDataInput("hallo,\n welt!", "12345", null, "cancel", null, "save");
 //            Thread.sleep(2000);
 
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
+//        } catch (InterruptedException ex) {
+//            ex.printStackTrace();
+//        }
   }
 }

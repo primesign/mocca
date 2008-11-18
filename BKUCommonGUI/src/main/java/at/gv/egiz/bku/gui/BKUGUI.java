@@ -87,8 +87,8 @@ public class BKUGUI implements BKUGUIFacade {
      * @param contentPane
      * @param localeString may be null
      */
-    @Override
-    public void init(final Container contentPane, Locale locale, final URL background, ActionListener helpListener) {
+//    @Override
+    public void init(final Container contentPane, Locale locale, Style guiStyle, final URL background, ActionListener helpListener) {
 
         if (locale != null) {
             messages = ResourceBundle.getBundle(MESSAGES_BUNDLE, locale);
@@ -814,7 +814,7 @@ public class BKUGUI implements BKUGUIFacade {
     }
     
     @Override
-    public void showHashDataInputDialog(final List<HashDataInput> signedReferences, boolean standalone, final ActionListener okListener, final String okCommand) {
+    public void showHashDataInputDialog(final List<HashDataInput> signedReferences, final ActionListener okListener, final String okCommand) {
       
       if (signedReferences == null) {
         showErrorDialog(messages.getString(ERR_NO_HASHDATA), new Object[] {"No SignedReferences provided"}, okListener, okCommand);

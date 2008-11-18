@@ -17,6 +17,7 @@
 package at.gv.egiz.bku.gui;
 
 import java.applet.AppletContext;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Locale;
 import javax.swing.SwingUtilities;
@@ -29,34 +30,56 @@ public class DefaultHelpListener extends AbstractHelpListener {
 
   protected AppletContext ctx;
 
+  /**
+   * 
+   * @param ctx open external links via applet context
+   * @param helpURL
+   * @param locale
+   */
   public DefaultHelpListener(AppletContext ctx, URL helpURL, Locale locale) {
     super(helpURL, locale);
     this.ctx = ctx;
   }
 
+  /**
+   * external links in help document are not opened
+   * @param helpURL
+   * @param locale
+   */
   public DefaultHelpListener(URL helpURL, Locale locale) {
     super(helpURL, locale);
     this.ctx = null;
   }
 
+  /**
+   * blocks until help viewer returns (is closed)
+   * @param helpURL
+   * @param helpTopic
+   */
   @Override
-  public void showDocument(final URL helpURL, final String helpTopic) throws Exception {
-    log.debug("schedule help dialog");
-    
-    SwingUtilities.invokeLater(new Runnable() {
+  public void showDocument(final URL helpURL, final String helpTopic)  { 
+//    try {
+      log.debug("schedule help dialog");
+
+//      SwingUtilities.invokeAndWait(new Runnable() {
+      SwingUtilities.invokeLater(new Runnable() {
 
         @Override
         public void run() {
-          
+
           log.debug("show help dialog");
-          
+
           if (ctx == null) {
             HelpViewer.showHelpDialog(helpURL, helpTopic, messages);
-      
           } else {
             HelpViewer.showHelpDialog(ctx, helpURL, helpTopic, messages);
           }
         }
       });
+//    } catch (InterruptedException ex) {
+//      log.error("Failed to display HelpViewer: " + ex.getMessage(), ex);
+//    } catch (InvocationTargetException ex) {
+//      log.error("Failed to display HelpViewer: " + ex.getMessage(), ex);
+//    }
   }
 }

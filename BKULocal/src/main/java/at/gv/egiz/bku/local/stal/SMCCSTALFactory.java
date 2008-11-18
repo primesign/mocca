@@ -48,7 +48,6 @@ public class SMCCSTALFactory implements STALFactory {
     if (locale != null) {
       dialog.setLocale(locale);
     }
-    BKUGUIFacade gui = BKUGUIFactory.createGUI(BKUGUIFactory.ADVANCED_GUI);
     DefaultHelpListener helpListener = null;
     try {
       if (helpURL != null) {
@@ -60,7 +59,11 @@ public class SMCCSTALFactory implements STALFactory {
     } catch (MalformedURLException ex) {
       log.error("failed to configure help listener: " + ex.getMessage(), ex);
     }
-    gui.init(dialog.getContentPane(), dialog.getLocale(), null, helpListener);
+    BKUGUIFacade gui = BKUGUIFactory.createGUI(dialog.getContentPane(), 
+            dialog.getLocale(),
+            BKUGUIFactory.ADVANCED_GUI,
+            null,
+            helpListener);
     stal = new SMCCSTAL(new BKUGuiProxy(dialog, gui), dialog);
     dialog.setPreferredSize(new Dimension(400, 200));
     dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);

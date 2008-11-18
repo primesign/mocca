@@ -53,7 +53,7 @@ public class BKUApplet extends JApplet implements AppletParameterProvider {
   public static final String BACKGROUND_PARAM = "Background";
   public static final String REDIRECT_URL = "RedirectURL";
   public static final String REDIRECT_TARGET = "RedirectTarget";
-  public static final String HASHDATA_DISPLAY_INTERNAL = "internal";
+//  public static final String HASHDATA_DISPLAY_INTERNAL = "internal";
   public static final String HASHDATA_DISPLAY_BROWSER = "browser";
   public static final String HASHDATA_DISPLAY_FRAME = "frame";
   
@@ -106,8 +106,8 @@ public class BKUApplet extends JApplet implements AppletParameterProvider {
     }
     log.debug("setting locale to " + getLocale());
 
-    BKUGUIFacade gui = BKUGUIFactory.createGUI(guiStyle);
-    gui.init(getContentPane(), getLocale(), backgroundImgURL, helpListener);
+    BKUGUIFacade gui = BKUGUIFactory.createGUI(getContentPane(), getLocale(), guiStyle, backgroundImgURL, helpListener);
+//    gui.init(getContentPane(), getLocale(), BKUGUIFacade.Style.advanced, backgroundImgURL, helpListener);
 
     worker = new AppletBKUWorker(gui, getAppletContext(), this);
   }

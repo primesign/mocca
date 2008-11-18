@@ -17,24 +17,29 @@
 
 package at.gv.egiz.bku.gui;
 
+import java.awt.Container;
+import java.awt.event.ActionListener;
+import java.net.URL;
+import java.util.Locale;
+
 public class BKUGUIFactory {
   
   public static final String SIMPLE_GUI = "simple";
   public static final String ADVANCED_GUI = "advanced";
   
-  private static BKUGUIFactory instance = new BKUGUIFactory();
+//  private static BKUGUIFactory instance = new BKUGUIFactory();
 
-  private BKUGUIFactory() {
-  }
+//  private BKUGUIFactory() {
+//  }
+//
+//  protected BKUGUIFacade createNewGUI(Container contentPane, Locale locale, String style, URL background, ActionListener helpListener) {
+//    
+//  }
 
-  protected BKUGUIFacade createNewGUI(String style) {
+  public static BKUGUIFacade createGUI(Container contentPane, Locale locale, String style, URL background, ActionListener helpListener) {
     if (ADVANCED_GUI.equals(style)) {
-      return new BKUGUI();
+      return new SimpleGUI(contentPane, locale, BKUGUIFacade.Style.advanced, background, helpListener);
     }
-    return new SimpleGUI();
-  }
-
-  public static BKUGUIFacade createGUI(String style) {
-    return instance.createNewGUI(style);
+    return new SimpleGUI(contentPane, locale, BKUGUIFacade.Style.simple, background, helpListener);
   }
 }

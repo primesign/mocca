@@ -16,7 +16,6 @@
  */
 package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.bku.gui.html.RestrictedHTMLEditorKit;
 import at.gv.egiz.stal.HashDataInput;
 import java.awt.Component;
 import java.awt.Container;
@@ -49,11 +48,6 @@ import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
-import javax.swing.text.Element;
-import javax.swing.text.ViewFactory;
-import javax.swing.text.html.HTML;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.ImageView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

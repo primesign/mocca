@@ -50,33 +50,32 @@ import java.security.NoSuchAlgorithmException;
  */
 public class AppletHashDataDisplay extends SignRequestHandler {
 
-  public static enum DISPLAY {
-    applet, frame
-  }
   private static final Log log = LogFactory.getLog(AppletHashDataDisplay.class);
   protected STALPortType stalPort;
   protected String sessId;
-  protected DISPLAY display;
 
-  public AppletHashDataDisplay(STALPortType stalPort, String sessId, DISPLAY display) {
+  public AppletHashDataDisplay(STALPortType stalPort, String sessId) {
     if (stalPort == null || sessId == null) {
       throw new NullPointerException("STAL port must not be null");
     }
     this.sessId = sessId;
     this.stalPort = stalPort;
-    this.display = display;
   }
 
+  /**
+   * TODO don't throw exceptions
+   * @param signedReferences
+   * @throws java.security.DigestException
+   * @throws java.lang.Exception
+   */
   @Override
   public void displayHashDataInputs(List<ReferenceType> signedReferences) throws DigestException, Exception {
 
     List<GetHashDataInputResponseType.Reference> hdi = getHashDataInput(signedReferences);
     List<HashDataInput> verifiedHashDataInputs = verifyHashDataInput(signedReferences, hdi);
 
-    if (verifiedHashDataInputs.size() > 1) {
-      gui.showHashDataInputDialog(verifiedHashDataInputs, false, this, "ok");
-    } else if (verifiedHashDataInputs.size() == 1) {
-      gui.showHashDataInputDialog(verifiedHashDataInputs, display==DISPLAY.frame, this, "ok");
+    if (verifiedHashDataInputs.size() > 0) {
+      gui.showHashDataInputDialog(verifiedHashDataInputs, this, "ok");
     } else {
       throw new Exception("No signature data (apart from any QualifyingProperties or a Manifest)");
     }
@@ -110,6 +109,11 @@ public class AppletHashDataDisplay extends SignRequestHandler {
           throw new Exception("Cannot resolve signature data for dsig:Reference without Id attribute");
         }
       }
+    }
+    
+    if (request.getReference().size() < 1) {
+      log.error("No signature data (apart from any QualifyingProperties or a Manifest) for session " + sessId);
+      throw new Exception("No signature data (apart from any QualifyingProperties or a Manifest)");
     }
 
     if (log.isDebugEnabled()) {

@@ -91,7 +91,9 @@ public interface BKUGUIFacade {
   public static final String SAVE_HASHDATAINPUT_PREFIX = "save.hashdatainput.prefix";
   public static final String ALT_HELP = "alt.help";
 
-  public void init(Container contentPane, Locale locale, URL background, ActionListener helpListener);
+  public enum Style { simple, advanced };
+    
+//  public void init(Container contentPane, Locale locale, Style guiStyle, URL background, ActionListener helpListener);
 
   /**
    * 
@@ -128,7 +130,7 @@ public interface BKUGUIFacade {
    * @param okListener
    * @param okCommand
    */
-  public void showHashDataInputDialog(List<HashDataInput> signedReferences, boolean externalDisplay, ActionListener okListener, String okCommand);
+  public void showHashDataInputDialog(List<HashDataInput> signedReferences, ActionListener okListener, String okCommand);
 
   /**
    * TODO pull out from BKUGUIFacade. (or make this strictly an applet internal version)
