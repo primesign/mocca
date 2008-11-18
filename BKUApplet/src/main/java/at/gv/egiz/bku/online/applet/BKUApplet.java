@@ -43,14 +43,13 @@ public class BKUApplet extends JApplet implements AppletParameterProvider {
    * Applet parameter keys
    */
   public static final String GUI_STYLE = "GuiStyle";
-  public final static String LOCALE_PARAM_KEY = "Locale";
-  public final static String LOGO_URL_KEY = "LogoURL";
+  public final static String LOCALE = "Locale";
   public final static String WSDL_URL = "WSDL_URL";
   public static final String HASHDATA_DISPLAY = "HashDataDisplay";
   public final static String HASHDATA_URL = "HashDataURL";
   public final static String HELP_URL = "HelpURL";
   public final static String SESSION_ID = "SessionID";
-  public static final String BACKGROUND_PARAM = "Background";
+  public static final String BACKGROUND_IMG = "Background";
   public static final String REDIRECT_URL = "RedirectURL";
   public static final String REDIRECT_TARGET = "RedirectTarget";
 //  public static final String HASHDATA_DISPLAY_INTERNAL = "internal";
@@ -76,6 +75,7 @@ public class BKUApplet extends JApplet implements AppletParameterProvider {
 
   /**
    * Factory method to create and wire HelpListener, GUI and BKUWorker.
+   * (Config via applet parameters as constants BKUApplet.*)
    */
   @Override
   public void init() {
@@ -84,30 +84,40 @@ public class BKUApplet extends JApplet implements AppletParameterProvider {
     
     HttpsURLConnection.setDefaultSSLSocketFactory(InternalSSLSocketFactory.getInstance());
     
-    String locale = getAppletParameter(LOCALE_PARAM_KEY);
-    String guiStyle = getAppletParameter(GUI_STYLE);
-    URL backgroundImgURL = null;
-    AbstractHelpListener helpListener = null;
-    try {
-      URL helpURL = getURLParameter(HELP_URL); //, getAppletParameter(SESSION_ID));
-//      helpListener = new BrowserHelpListener(getAppletContext(), helpURL, getLocale());
-      helpListener = new DefaultHelpListener(getAppletContext(), helpURL, getLocale());
-    } catch (MalformedURLException ex) {
-      log.warn("failed to load help URL: " + ex.getMessage() + ", disabling help");
-    }
-    try {
-      backgroundImgURL = getURLParameter(BACKGROUND_PARAM);
-    } catch (MalformedURLException ex) {
-      log.warn("failed to load applet background image: " + ex.getMessage() + ", using default");
-    }
-    
+    String locale = getAppletParameter(LOCALE);
     if (locale != null) {
       this.setLocale(new Locale(locale));
     }
     log.debug("setting locale to " + getLocale());
 
-    BKUGUIFacade gui = BKUGUIFactory.createGUI(getContentPane(), getLocale(), guiStyle, backgroundImgURL, helpListener);
-//    gui.init(getContentPane(), getLocale(), BKUGUIFacade.Style.advanced, backgroundImgURL, helpListener);
+    BKUGUIFacade.Style guiStyle;
+    if ("advanced".equals(getAppletParameter(GUI_STYLE))) { 
+      guiStyle = BKUGUIFacade.Style.advanced;
+    } else {
+      guiStyle = BKUGUIFacade.Style.simple;
+    }
+    
+    URL backgroundImgURL = null;
+    try {
+      backgroundImgURL = getURLParameter(BACKGROUND_IMG);
+    } catch (MalformedURLException ex) {
+      log.warn("failed to load applet background image: " + ex.getMessage() + ", using default");
+    }
+    
+    AbstractHelpListener helpListener = null;
+    try {
+      URL helpURL = getURLParameter(HELP_URL); 
+//      helpListener = new BrowserHelpListener(getAppletContext(), helpURL, getLocale());
+      helpListener = new DefaultHelpListener(getAppletContext(), helpURL, getLocale());
+    } catch (MalformedURLException ex) {
+      log.warn("failed to load help URL: " + ex.getMessage() + ", disabling help");
+    }
+    
+    BKUGUIFacade gui = BKUGUIFactory.createGUI(getContentPane(), 
+            getLocale(), 
+            guiStyle, 
+            backgroundImgURL, 
+            helpListener);
 
     worker = new AppletBKUWorker(gui, getAppletContext(), this);
   }

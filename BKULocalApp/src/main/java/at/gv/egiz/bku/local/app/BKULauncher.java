@@ -66,7 +66,11 @@ public class BKULauncher implements BKUControllerInterface {
   private void initFinished() {
     try {
       if (splash != null) {
-        splash.close();
+        try {
+          splash.close();
+        } catch (IllegalStateException ex) {
+          log.warn("Failed to close splash screen: " + ex.getMessage());
+        }
       }
       server.join();
     } catch (InterruptedException e) {

@@ -14,34 +14,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package at.gv.egiz.bku.gui;
 
 import at.gv.egiz.stal.HashDataInput;
-import java.util.ArrayList;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.List;
-import java.util.Vector;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- *
- * @author clemens
+ * 
+ * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 class HashDataTableModel extends DefaultTableModel {
 
-  protected List<HashDataInput> signedReferences;
+  protected static final Log log = LogFactory.getLog(HashDataTableModel.class);
   
-  protected Class[] types = new Class[]{
-    java.lang.String.class, java.lang.Boolean.class
-  };
-
-  public HashDataTableModel(List<HashDataInput> signedReferences) {
-    super(0, 2);
-    this.signedReferences = signedReferences;
-    for (HashDataInput hashDataInput : signedReferences) {
-      String desc = hashDataInput.getReferenceId() + " (" + hashDataInput.getMimeType() + ")";
-      addRow(new Object[]{desc, new Boolean(true)});
+  protected Class[] types = new Class[]{HashDataInput.class};
+  protected List<HashDataInput> hashDataInputs;
+  private HashDataLinkRenderer renderer;
+  
+  public HashDataTableModel(List<HashDataInput> hashDataInputs) {
+    super(0, 1);
+    this.hashDataInputs = hashDataInputs;
+    for (HashDataInput hdi : hashDataInputs) {
+      addRow(new Object[]{hdi});
     }
+    this.renderer = new HashDataLinkRenderer();
   }
 
   @Override
@@ -51,18 +63,49 @@ class HashDataTableModel extends DefaultTableModel {
 
   @Override
   public boolean isCellEditable(int rowIndex, int columnIndex) {
-    if (columnIndex == 1)
-      return true;
     return false;
   }
 
-  public List<HashDataInput> getSelectedHashData() {
-    ArrayList<HashDataInput> selection = new ArrayList<HashDataInput>();
-    for (int i = 0; i < dataVector.size(); i++) {
-      if ((Boolean) ((Vector) dataVector.get(i)).elementAt(1)) {
-        selection.add(signedReferences.get(i));
-      }
+  
+  
+  public HashDataLinkRenderer getRenderer() {
+    return renderer;
+  }
+
+  public class HashDataLinkRenderer extends JLabel
+          implements TableCellRenderer {
+//        extends DefaultTableCellRenderer {
+    
+//    protected ActionListener saveHashDataListener;
+//
+//    public HashDataLinkRenderer(ActionListener saveHashDataListener) {
+//      this.saveHashDataListener = saveHashDataListener;
+//    }
+    
+    @Override
+    public Component getTableCellRendererComponent(JTable table,
+            Object value,
+            boolean isSelected,
+            boolean hasFocus,
+            final int row,
+            int column) {
+      final HashDataInput hdi = (HashDataInput) value;
+      log.debug("render hashdatainput " + hdi.getReferenceId() + " - (" + row + "," + column + ") " + isSelected + hasFocus);
+      setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+      setFont(getFont().deriveFont(getFont().getStyle() & ~java.awt.Font.BOLD));
+      setText(hdi.getReferenceId() + " (" + hdi.getMimeType() + ")");
+      addMouseListener(new MouseAdapter() {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+          log.debug("received mouseclick on " + hdi.getReferenceId());
+//          saveHashDataListener.actionPerformed();
+          JOptionPane.showInputDialog(hashDataInputs.get(row).getReferenceId());
+        }
+        
+      });
+
+      return this;
     }
-    return selection;
   }
 }

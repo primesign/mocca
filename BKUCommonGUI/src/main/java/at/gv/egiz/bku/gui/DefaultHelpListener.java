@@ -17,7 +17,6 @@
 package at.gv.egiz.bku.gui;
 
 import java.applet.AppletContext;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Locale;
 import javax.swing.SwingUtilities;
@@ -61,7 +60,6 @@ public class DefaultHelpListener extends AbstractHelpListener {
 //    try {
       log.debug("schedule help dialog");
 
-//      SwingUtilities.invokeAndWait(new Runnable() {
       SwingUtilities.invokeLater(new Runnable() {
 
         @Override
@@ -76,10 +74,5 @@ public class DefaultHelpListener extends AbstractHelpListener {
           }
         }
       });
-//    } catch (InterruptedException ex) {
-//      log.error("Failed to display HelpViewer: " + ex.getMessage(), ex);
-//    } catch (InvocationTargetException ex) {
-//      log.error("Failed to display HelpViewer: " + ex.getMessage(), ex);
-//    }
   }
 }

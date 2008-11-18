@@ -61,7 +61,7 @@ public class SMCCSTALFactory implements STALFactory {
     }
     BKUGUIFacade gui = BKUGUIFactory.createGUI(dialog.getContentPane(), 
             dialog.getLocale(),
-            BKUGUIFactory.ADVANCED_GUI,
+            BKUGUIFacade.Style.advanced,
             null,
             helpListener);
     stal = new SMCCSTAL(new BKUGuiProxy(dialog, gui), dialog);

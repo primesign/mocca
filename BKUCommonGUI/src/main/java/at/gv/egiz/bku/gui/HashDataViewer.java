@@ -23,18 +23,15 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
-import java.util.List;
 import java.util.ResourceBundle;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -69,12 +66,12 @@ public class HashDataViewer extends JDialog
    * 
    * @param signedReferences currently, only one hashdata input (the first in the list) is displayed
    */
-  public static void showHashDataInput(List<HashDataInput> hashDataInputs,
+  public static void showHashDataInput(HashDataInput hashDataInput,
           ResourceBundle messages,
           ActionListener saveListener,
           String saveCommand,
           ActionListener helpListener) {
-    showHashDataInput(null, hashDataInputs, messages, saveListener, saveCommand, helpListener);
+    showHashDataInput(null, hashDataInput, messages, saveListener, saveCommand, helpListener);
   }
   
   /**
@@ -82,7 +79,7 @@ public class HashDataViewer extends JDialog
    * @param frameComp owner
    */
   public static void showHashDataInput(Component frameComp,
-          List<HashDataInput> hashDataInputs,
+          HashDataInput hashDataInput,
           ResourceBundle messages,
           ActionListener saveListener,
           String saveCommand,
@@ -94,7 +91,7 @@ public class HashDataViewer extends JDialog
     }
     dialog = new HashDataViewer(frame, 
             messages,
-            hashDataInputs, 
+            hashDataInput, 
             saveListener, 
             saveCommand, 
             helpListener);
@@ -103,35 +100,33 @@ public class HashDataViewer extends JDialog
 
   private HashDataViewer(Frame frame,
           ResourceBundle messages,
-          List<HashDataInput> hashDataInputs,
+          HashDataInput hashDataInput,
           ActionListener saveListener,
           String saveCommand,
           ActionListener helpListener) {
     super(frame, messages.getString(BKUGUIFacade.WINDOWTITLE_VIEWER), true);
     this.messages = messages;
 
-    HashDataInput hashData = hashDataInputs.get(0);
-    
     Charset cs;
-    if (hashData.getEncoding() == null) {
+    if (hashDataInput.getEncoding() == null) {
       cs = Charset.forName("UTF-8");
     } else {
       try {
-        cs = Charset.forName(hashData.getEncoding());
+        cs = Charset.forName(hashDataInput.getEncoding());
       } catch (Exception ex) {
-        log.debug("charset " + hashData.getEncoding() + " not supported, assuming UTF-8: " + ex.getMessage());
+        log.debug("charset " + hashDataInput.getEncoding() + " not supported, assuming UTF-8: " + ex.getMessage());
         cs = Charset.forName("UTF-8");
       }  
     }
     
     
-    InputStreamReader isr = new InputStreamReader(hashData.getHashDataInput(), cs);
+    InputStreamReader isr = new InputStreamReader(hashDataInput.getHashDataInput(), cs);
     Reader content = new BufferedReader(isr);
   
     JPanel hashDataPanel = createViewerPanel(
             messages.getString(BKUGUIFacade.MESSAGE_HASHDATA), 
             content, 
-            hashData.getMimeType(), 
+            hashDataInput.getMimeType(), 
             helpListener);
     JPanel buttonPanel = createButtonPanel(saveListener, saveCommand);
     initContentPane(new Dimension(600, 400), hashDataPanel, buttonPanel);

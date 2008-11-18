@@ -22,6 +22,7 @@ package at.gv.egiz.bku.gui;
 
 import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.stal.HashDataInput;
+import at.gv.egiz.stal.impl.ByteArrayHashDataInput;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayInputStream;
@@ -78,99 +79,36 @@ public class BKUGUIWorker implements Runnable {
             gui.showSignaturePINDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", null, "hashdata");
           }
         };
-        HashDataInput signedRef1 = new HashDataInput() {
+        HashDataInput signedRef1 = new ByteArrayHashDataInput(
+                "Ich bin ein einfacher Text mit Umlauten: öäüßéç@€\n123\n456\n\tHello, world!\n\nlkjsd\nnksdjf".getBytes(), 
+                "ref-id-000000001", 
+                "text/plain", 
+                "UTF-8");
+        
+        HashDataInput signedRef2 = new ByteArrayHashDataInput(
+                "<xml>HashDataInput_002</xml>".getBytes(), 
+                "ref-id-000000002", 
+                "application/xhtml+xml", 
+                "UTF-8");
+        
+        HashDataInput signedRef3 = new ByteArrayHashDataInput(
+                "<xml>HashDataInput_003</xml>".getBytes(), 
+                "ref-id-000000003", 
+                "application/xhtml+xml", 
+                "UTF-8");
 
-          @Override
-          public InputStream getHashDataInput() {
-            return new ByteArrayInputStream("Ich bin ein einfacher Text mit Umlauten: öäüßéç@€\n123\n456\n\tHello, world!\n\nlkjsd\nnksdjf".getBytes());
-          }
-
-          @Override
-          public String getMimeType() {
-            return "text/plain";
-          }
-
-          @Override
-          public String getReferenceId() {
-            return "Reference-ref1-00000000000000000000001";
-          }
-          @Override
-          public String getEncoding() {
-            return "UTF-8";
-          }
-        };
-        HashDataInput signedRef2 = new HashDataInput() {
-
-          @Override
-          public InputStream getHashDataInput() {
-            return new ByteArrayInputStream("<xml>HashDataInput_002</xml>".getBytes());
-          }
-
-          @Override
-          public String getMimeType() {
-            return "text/xml";
-          }
-
-          @Override
-          public String getReferenceId() {
-            return "Reference-ref2-00000000000000000000002";
-          }
-          @Override
-          public String getEncoding() {
-            return "UTF-8";
-          }
-        };
-        HashDataInput signedRef3 = new HashDataInput() {
-
-          @Override
-          public InputStream getHashDataInput() {
-            return new ByteArrayInputStream("<xml>HashDataInput_003</xml>".getBytes());
-          }
-
-          @Override
-          public String getMimeType() {
-            return "text/xml";
-          }
-
-          @Override
-          public String getReferenceId() {
-            return "Reference-ref3-00000000000000000000003";
-          }
-          
-          @Override
-          public String getEncoding() {
-            return "UTF-8";
-          }
-        };
-        HashDataInput signedRef4 = new HashDataInput() {
-
-          @Override
-          public InputStream getHashDataInput() {
-            return new ByteArrayInputStream("<xml>HashDataInput_004</xml>".getBytes());
-          }
-
-          @Override
-          public String getMimeType() {
-            return "text/xml";
-          }
-
-          @Override
-          public String getReferenceId() {
-            return "ref4";
-          }
-
-          @Override
-          public String getEncoding() {
-            return "UTF-8";
-          }
-        };
+        HashDataInput signedRef4 = new ByteArrayHashDataInput(
+                "<xml>HashDataInput_004</xml>".getBytes(), 
+                "ref-id-000000004", 
+                "text/xml", 
+                "UTF-8");
 
         //
         List<HashDataInput> signedRefs = new ArrayList();
         signedRefs.add(signedRef1);
-//                    signedRefs.add(signedRef2);
-//                    signedRefs.add(signedRef3);
-//                    signedRefs.add(signedRef4);
+                    signedRefs.add(signedRef2);
+                    signedRefs.add(signedRef3);
+                    signedRefs.add(signedRef4);
 //                    signedRefs.add(signedRef4);
 //                    signedRefs.add(signedRef4);
 //                    signedRefs.add(signedRef4);
@@ -182,8 +120,8 @@ public class BKUGUIWorker implements Runnable {
 
 
 
-        gui.showWelcomeDialog();
-
+//        gui.showWelcomeDialog();
+//
 //        Thread.sleep(2000);
 //        
 //        gui.showWaitDialog(null);
@@ -209,7 +147,7 @@ public class BKUGUIWorker implements Runnable {
 //            
 //            Thread.sleep(2000);
 //
-//            gui.showSignaturePINDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
+            gui.showSignaturePINDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
 //
 //            Thread.sleep(4000);
 //

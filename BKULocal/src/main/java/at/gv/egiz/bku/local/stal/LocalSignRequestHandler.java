@@ -109,7 +109,7 @@ public class LocalSignRequestHandler extends SignRequestHandler {
       log.error("dsig:SignedInfo does not contain a data reference");
       throw new Exception("dsig:SignedInfo does not contain a data reference");
     }
-    gui.showHashDataInputDialog(selectedHashDataInputs, this, "ok");
+    gui.showHashDataInputDialog(selectedHashDataInputs, this, "hashDataDone");
   }
 
   private ByteArrayHashDataInput getByteArrayHashDataInput(HashDataInput hashDataInput) throws IOException {

@@ -75,7 +75,7 @@ public class AppletHashDataDisplay extends SignRequestHandler {
     List<HashDataInput> verifiedHashDataInputs = verifyHashDataInput(signedReferences, hdi);
 
     if (verifiedHashDataInputs.size() > 0) {
-      gui.showHashDataInputDialog(verifiedHashDataInputs, this, "ok");
+      gui.showHashDataInputDialog(verifiedHashDataInputs, this, "hashDataDone");
     } else {
       throw new Exception("No signature data (apart from any QualifyingProperties or a Manifest)");
     }

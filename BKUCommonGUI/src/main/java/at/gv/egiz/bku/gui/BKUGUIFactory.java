@@ -24,22 +24,11 @@ import java.util.Locale;
 
 public class BKUGUIFactory {
   
-  public static final String SIMPLE_GUI = "simple";
-  public static final String ADVANCED_GUI = "advanced";
-  
-//  private static BKUGUIFactory instance = new BKUGUIFactory();
-
-//  private BKUGUIFactory() {
-//  }
-//
-//  protected BKUGUIFacade createNewGUI(Container contentPane, Locale locale, String style, URL background, ActionListener helpListener) {
-//    
-//  }
-
-  public static BKUGUIFacade createGUI(Container contentPane, Locale locale, String style, URL background, ActionListener helpListener) {
-    if (ADVANCED_GUI.equals(style)) {
-      return new SimpleGUI(contentPane, locale, BKUGUIFacade.Style.advanced, background, helpListener);
-    }
-    return new SimpleGUI(contentPane, locale, BKUGUIFacade.Style.simple, background, helpListener);
+  public static BKUGUIFacade createGUI(Container contentPane, 
+          Locale locale, 
+          BKUGUIFacade.Style style, 
+          URL background, 
+          ActionListener helpListener) {
+    return new BKUGUIImpl(contentPane, locale, style, background, helpListener);
   }
 }

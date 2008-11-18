@@ -24,6 +24,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 /**
+ * paints the background image in the lower left corner of the component
  * 
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
