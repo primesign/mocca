@@ -48,7 +48,6 @@ import at.gv.egiz.stal.SignResponse;
 import at.gv.egiz.stal.signedinfo.ObjectFactory;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
 import at.gv.egiz.stal.util.JCEAlgorithmNames;
-import java.awt.event.ActionListener;
 import java.security.DigestException;
 import java.util.List;
 
@@ -128,9 +127,6 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
         return true;
     }
 
-//    @Override
-//    public String providePIN(PINSpec spec, int retries) {
-    
   class STALPinProvider implements PINProvider {
     
     protected SignedInfoType signedInfo;
@@ -178,7 +174,7 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
       } else if (actionCommand.equals("sign")) {
         retryCounter++;
         return new String(gui.getPin());
-      } else if (actionCommand.equals("ok")) {
+      } else if (actionCommand.equals("hashDataDone")) {
         showSignaturePINDialog(spec, retries);
       } else if (actionCommand.equals("error")) {
         return null;

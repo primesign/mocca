@@ -16,6 +16,7 @@
  */
 package at.gv.egiz.bku.gui;
 
+import at.gv.egiz.bku.gui.html.RestrictedHTMLEditorKit;
 import at.gv.egiz.stal.HashDataInput;
 import java.awt.Component;
 import java.awt.Container;
@@ -45,6 +46,7 @@ import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
+import javax.swing.text.StyledEditorKit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -182,9 +184,11 @@ public class HashDataViewer extends JDialog
     JEditorPane viewer = new JEditorPane();
     
     if ("text/plain".equals(mimeType)) {
+      //line wrapping, etc.
+      viewer.setEditorKit(new StyledEditorKit());
       viewer.setFont(new Font(PLAINTEXT_FONT, viewer.getFont().getStyle(), viewer.getFont().getSize()));
 //    } else if ("text/html".equals(mimeType)) {
-//      viewer.setEditorKitForContentType("text/html", new RestrictedHTMLEditorKit());
+//      viewer.setEditorKit(new RestrictedHTMLEditorKit());
     }
     viewer.setEditable(false);
     viewer.setContentType(mimeType);

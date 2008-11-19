@@ -38,6 +38,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.CellRendererPane;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -50,8 +52,12 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.LayoutStyle;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1013,80 +1019,75 @@ public class BKUGUIImpl implements BKUGUIFacade {
       }
       
       if (signedReferences.size() == 1) {
-        ActionListener saveHashDataListener = new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            HashDataInput hdi = signedReferences.get(0);
-            showSaveHashDataInputDialog(Collections.singletonList(hdi), okListener, okCommand);
-          }
-        };
-        showHashDataViewer(signedReferences.get(0), saveHashDataListener, "save");
+        try {
+          log.debug("scheduling hashdata viewer");
+
+          SwingUtilities.invokeAndWait(new Runnable() {
+
+            @Override
+            public void run() {
+              ActionListener saveHashDataListener = new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                  HashDataInput hdi = signedReferences.get(0);
+                  showSaveHashDataInputDialog(Collections.singletonList(hdi), okListener, okCommand);
+                }
+              };
+              showHashDataViewer(signedReferences.get(0), saveHashDataListener, "save");
+            }
+          });
+       
+        } catch (InterruptedException ex) {
+          log.error("Failed to display HashDataViewer: " + ex.getMessage());
+        } catch (InvocationTargetException ex) {
+          log.error("Failed to display HashDataViewer: " + ex.getMessage());
+        }
       } else {
-        HashDataTableModel tableModel = new HashDataTableModel(signedReferences);
-        showSignedReferencesListDialog(tableModel, okListener, okCommand);
+        showSignedReferencesListDialog(signedReferences, okListener, okCommand);
       }
     }
     
     /**
      * Opens HashDataViewer on mouse clicked event
      */
-    public class HashDataMouseListener extends MouseAdapter {
-      
-      private HashDataInput hashData;
-
-      public void setHashData(HashDataInput hashData) {
-        this.hashData = hashData;
-      }
-
-      @Override
-      public void mouseClicked(MouseEvent e) {
-        ActionListener saveListener = new ActionListener() {
-
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            showSaveHashDataInputDialog(Collections.singletonList(hashData), null, null);
-          }
-        };
-        showHashDataViewer(hashData, saveListener, "save");
-        super.mouseClicked(e);
-      }
-
-      
-      
-    }
+//    public class HashDataMouseListener extends MouseAdapter {
+//      
+//      private HashDataInput hashData;
+//
+//      public void setHashData(HashDataInput hashData) {
+//        this.hashData = hashData;
+//      }
+//
+//      @Override
+//      public void mouseClicked(MouseEvent e) {
+//        ActionListener saveListener = new ActionListener() {
+//
+//          @Override
+//          public void actionPerformed(ActionEvent e) {
+//            showSaveHashDataInputDialog(Collections.singletonList(hashData), null, null);
+//          }
+//        };
+//        showHashDataViewer(hashData, saveListener, "save");
+//        super.mouseClicked(e);
+//      }
+//    }
     
     /**
-     * blocks until dialog returns (is closed)
+     * has to be called from event dispatcher thread
      * @param hashDataText
      * @param saveListener
      * @param saveCommand
      */
     private void showHashDataViewer(final HashDataInput hashDataInput, final ActionListener saveListener, final String saveCommand) {
       
-      try {
-        log.debug("scheduling plaintext hashdatainput dialog");
+      log.debug("show hashdata viewer");
 
-        // avoid double-clicks on hashdata link
-        SwingUtilities.invokeAndWait(new Runnable() {
-
-          @Override
-          public void run() {
-
-            log.debug("show plaintext hashdatainput dialog");
-
-            ActionListener l = helpListener.getActionListener();
-            HashDataViewer.showHashDataInput(contentPane, hashDataInput, messages, saveListener, saveCommand, l);
-          }
-        });
-        
-      } catch (InterruptedException ex) {
-        log.error("Failed to display HashDataViewer: " + ex.getMessage());
-      } catch (InvocationTargetException ex) {
-        log.error("Failed to display HashDataViewer: " + ex.getMessage());
-      }
+      ActionListener l = helpListener.getActionListener();
+      HashDataViewer.showHashDataInput(contentPane, hashDataInput, messages, saveListener, saveCommand, l);
     }
     
-    private void showSignedReferencesListDialog(final HashDataTableModel signedReferences, final ActionListener backListener, final String backCommand) {
+    private void showSignedReferencesListDialog(final List<HashDataInput> signedReferences, final ActionListener backListener, final String backCommand) {
       
       log.debug("scheduling signed references list dialog");
       
@@ -1109,21 +1110,40 @@ public class BKUGUIImpl implements BKUGUIFacade {
           JLabel refIdLabel = new JLabel();
           refIdLabel.setFont(refIdLabel.getFont().deriveFont(refIdLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
           String refIdLabelPattern = messages.getString(MESSAGE_HASHDATALIST);
-          refIdLabel.setText(MessageFormat.format(refIdLabelPattern, new Object[]{signedReferences.getRowCount()}));
+          refIdLabel.setText(MessageFormat.format(refIdLabelPattern, new Object[]{signedReferences.size()}));
 
-          JTable hashDataTable = new JTable(signedReferences);
-          hashDataTable.setDefaultRenderer(HashDataInput.class, signedReferences.getRenderer());
-          
+          HashDataTableModel tableModel = new HashDataTableModel(signedReferences);
+          JTable hashDataTable = new JTable(tableModel);
+//          hashDataTable.setDefaultRenderer(HashDataInput.class, signedReferences.getRenderer());
           hashDataTable.setTableHeader(null);
-  //        hashDataTable.setShowVerticalLines(false);
-          hashDataTable.setRowSelectionAllowed(true);
-//          TableColumn selectCol = hashDataTable.getColumnModel().getColumn(1);
-//          selectCol.setMinWidth(CHECKBOX_WIDTH);
-//          selectCol.setMaxWidth(CHECKBOX_WIDTH);
+          
+          hashDataTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+          hashDataTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
+            @Override
+            public void valueChanged(final ListSelectionEvent e) {
+              //invoke later to allow thread to paint selection background
+              SwingUtilities.invokeLater(new Runnable() {
 
-//          hashDataTable.setPreferredScrollableViewportSize(mainPanel.getPreferredSize());
+                @Override
+                public void run() {
+                  ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+                  int selectionIdx = lsm.getMinSelectionIndex();
+                  if (selectionIdx >= 0) {
+                    final HashDataInput selection = signedReferences.get(selectionIdx);
+                    showHashDataViewer(selection, new ActionListener() {
 
+                      @Override
+                      public void actionPerformed(ActionEvent e) {
+                        showSaveHashDataInputDialog(Collections.singletonList(selection), null, null);
+                      }
+                    }, "save");
+                  }
+                }
+              });
+            }
+          });
+          
           JScrollPane hashDataScrollPane = new JScrollPane(hashDataTable);
 
           GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
@@ -1174,6 +1194,12 @@ public class BKUGUIImpl implements BKUGUIFacade {
       });
     }
     
+    /**
+     * 
+     * @param signedRefs
+     * @param okListener may be null
+     * @param okCommand
+     */
     private void showSaveHashDataInputDialog(final List<HashDataInput> signedRefs, final ActionListener okListener, final String okCommand) {
       
       log.debug("scheduling save hashdatainput dialog");

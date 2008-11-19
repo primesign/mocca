@@ -81,7 +81,7 @@ public class BKUGUIWorker implements Runnable {
         };
         HashDataInput signedRef1 = new ByteArrayHashDataInput(
                 "Ich bin ein einfacher Text mit Umlauten: öäüßéç@€\n123\n456\n\tHello, world!\n\nlkjsd\nnksdjf".getBytes(), 
-                "ref-id-000000001", 
+                "ref-id-0000000000000000000000001", 
                 "text/plain", 
                 "UTF-8");
         
