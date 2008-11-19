@@ -184,7 +184,6 @@ public class HashDataViewer extends JDialog
     JEditorPane viewer = new JEditorPane();
     
     if ("text/plain".equals(mimeType)) {
-      //line wrapping, etc.
       viewer.setEditorKit(new StyledEditorKit());
       viewer.setFont(new Font(PLAINTEXT_FONT, viewer.getFont().getStyle(), viewer.getFont().getSize()));
 //    } else if ("text/html".equals(mimeType)) {

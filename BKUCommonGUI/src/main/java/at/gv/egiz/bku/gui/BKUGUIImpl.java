@@ -26,6 +26,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -554,44 +556,37 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
                 mainPanel.setLayout(mainPanelLayout);
 
-                GroupLayout.ParallelGroup mainHorizontal = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
-                GroupLayout.SequentialGroup pinHorizontal = mainPanelLayout.createSequentialGroup()
-                      .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                      .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                      .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                        .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) //))
-                        .addComponent(pinsizeLabel));
-                
-                GroupLayout.SequentialGroup mainVertical = mainPanelLayout.createSequentialGroup();
+                GroupLayout.SequentialGroup infoHorizontal = mainPanelLayout.createSequentialGroup()
+                          .addComponent(infoLabel);
+                GroupLayout.ParallelGroup infoVertical = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                          .addComponent(infoLabel);
                 
                 if (!renderHeaderPanel) {
-                  GroupLayout.SequentialGroup infoHorizontal = mainPanelLayout.createSequentialGroup()
-                          .addComponent(infoLabel) //, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE);
+                  infoHorizontal
                           .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                          .addComponent(helpLabel); //, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                  mainHorizontal
-                          .addGroup(infoHorizontal)
-                          .addGroup(pinHorizontal);
-                  GroupLayout.ParallelGroup infoVertical = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                          .addComponent(infoLabel)
                           .addComponent(helpLabel);
-                  mainVertical
-                          .addGroup(infoVertical)
-                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED);
-                } else {
-                  mainHorizontal
-                          .addGroup(pinHorizontal);
-                }
-
-                mainVertical
-                  .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(cardPinLabel)
-                    .addComponent(pinField))
-                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(pinsizeLabel);
+                  infoVertical
+                          .addComponent(helpLabel);
+                } 
                 
-                mainPanelLayout.setHorizontalGroup(mainHorizontal);
-                mainPanelLayout.setVerticalGroup(mainVertical);
+                mainPanelLayout.setHorizontalGroup(
+                        mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                          .addGroup(infoHorizontal)
+                          .addGroup(mainPanelLayout.createSequentialGroup()
+                            .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                              .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) //))
+                              .addComponent(pinsizeLabel))));
+                mainPanelLayout.setVerticalGroup(
+                        mainPanelLayout.createSequentialGroup()
+                          .addGroup(infoVertical)
+                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                            .addComponent(cardPinLabel)
+                            .addComponent(pinField))
+                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                          .addComponent(pinsizeLabel));
                 
                 
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
@@ -1049,31 +1044,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
     }
     
     /**
-     * Opens HashDataViewer on mouse clicked event
-     */
-//    public class HashDataMouseListener extends MouseAdapter {
-//      
-//      private HashDataInput hashData;
-//
-//      public void setHashData(HashDataInput hashData) {
-//        this.hashData = hashData;
-//      }
-//
-//      @Override
-//      public void mouseClicked(MouseEvent e) {
-//        ActionListener saveListener = new ActionListener() {
-//
-//          @Override
-//          public void actionPerformed(ActionEvent e) {
-//            showSaveHashDataInputDialog(Collections.singletonList(hashData), null, null);
-//          }
-//        };
-//        showHashDataViewer(hashData, saveListener, "save");
-//        super.mouseClicked(e);
-//      }
-//    }
-    
-    /**
      * has to be called from event dispatcher thread
      * @param hashDataText
      * @param saveListener
@@ -1113,9 +1083,22 @@ public class BKUGUIImpl implements BKUGUIFacade {
           refIdLabel.setText(MessageFormat.format(refIdLabelPattern, new Object[]{signedReferences.size()}));
 
           HashDataTableModel tableModel = new HashDataTableModel(signedReferences);
-          JTable hashDataTable = new JTable(tableModel);
-//          hashDataTable.setDefaultRenderer(HashDataInput.class, signedReferences.getRenderer());
+          final JTable hashDataTable = new JTable(tableModel);
+          hashDataTable.setDefaultRenderer(HashDataInput.class, new HyperlinkRenderer());
           hashDataTable.setTableHeader(null);
+          
+          // not possible to add mouse listener to TableCellRenderer
+          hashDataTable.addMouseMotionListener(new MouseMotionAdapter() {
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+              if (hashDataTable.columnAtPoint(e.getPoint()) == 0) {
+                hashDataTable.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+              } else {
+                hashDataTable.setCursor(Cursor.getDefaultCursor());
+              }
+            }
+          });
           
           hashDataTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
           hashDataTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {

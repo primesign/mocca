@@ -30,14 +30,15 @@ class HashDataTableModel extends DefaultTableModel {
 
   protected static final Log log = LogFactory.getLog(HashDataTableModel.class);
   
-  protected Class[] types = new Class[]{ String.class, String.class };
+  /** HashDataInput in first column, register hyperlinkrenderer only here */
+  protected Class[] types = new Class[]{ HashDataInput.class, String.class };
   protected List<HashDataInput> hashDataInputs;
   
   public HashDataTableModel(List<HashDataInput> hashDataInputs) {
     super(0, 2);
     this.hashDataInputs = hashDataInputs;
     for (HashDataInput hdi : hashDataInputs) {
-      addRow(new Object[]{hdi.getReferenceId(), hdi.getMimeType()});
+      addRow(new Object[]{ hdi, hdi.getMimeType()});
     }
   }
 
@@ -50,46 +51,4 @@ class HashDataTableModel extends DefaultTableModel {
   public boolean isCellEditable(int rowIndex, int columnIndex) {
     return false;
   }
-
-//  public HashDataInput getValue(int rowIndex) {
-//    return hashDataInputs.get(rowIndex);
-//  }
-//  
-
-//  public class HashDataLinkRenderer extends JLabel
-//          implements TableCellRenderer {
-////        extends DefaultTableCellRenderer {
-//    
-////    protected ActionListener saveHashDataListener;
-////
-////    public HashDataLinkRenderer(ActionListener saveHashDataListener) {
-////      this.saveHashDataListener = saveHashDataListener;
-////    }
-//    
-//    @Override
-//    public Component getTableCellRendererComponent(JTable table,
-//            Object value,
-//            boolean isSelected,
-//            boolean hasFocus,
-//            final int row,
-//            int column) {
-//      final HashDataInput hdi = (HashDataInput) value;
-//      log.debug("render hashdatainput " + hdi.getReferenceId() + " - (" + row + "," + column + ") " + isSelected + hasFocus);
-//      setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-//      setFont(getFont().deriveFont(getFont().getStyle() & ~java.awt.Font.BOLD));
-//      setText(hdi.getReferenceId() + " (" + hdi.getMimeType() + ")");
-//      addMouseListener(new MouseAdapter() {
-//
-//        @Override
-//        public void mouseClicked(MouseEvent e) {
-//          log.debug("received mouseclick on " + hdi.getReferenceId());
-////          saveHashDataListener.actionPerformed();
-//          JOptionPane.showInputDialog(hashDataInputs.get(row).getReferenceId());
-//        }
-//        
-//      });
-//
-//      return this;
-//    }
-//  }
 }

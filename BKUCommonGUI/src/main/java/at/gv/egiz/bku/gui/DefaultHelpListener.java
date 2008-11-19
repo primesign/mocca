@@ -27,6 +27,10 @@ import javax.swing.SwingUtilities;
  */
 public class DefaultHelpListener extends AbstractHelpListener {
 
+  /**
+   * applet context to open external links in help pages,
+   * if null, no external links will be opened
+   */
   protected AppletContext ctx;
 
   /**

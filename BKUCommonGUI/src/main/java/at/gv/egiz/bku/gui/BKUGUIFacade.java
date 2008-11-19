@@ -19,9 +19,7 @@ package at.gv.egiz.bku.gui;
 import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.smcc.PINSpec;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.event.ActionListener;
-import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
@@ -71,7 +69,6 @@ public interface BKUGUIFacade {
   public static final String MESSAGE_HELP = "message.help";
   public static final String LABEL_PIN = "label.pin";
   public static final String LABEL_PINSIZE = "label.pinsize";
-//    public static final String ERROR_NO_HASHDATA = "error.no.hashdata";
   public static final String HELP_WELCOME = "help.welcome";
   public static final String HELP_WAIT = "help.wait";
   public static final String HELP_CARDNOTSUPPORTED = "help.cardnotsupported";
@@ -95,17 +92,13 @@ public interface BKUGUIFacade {
     
 //  public void init(Container contentPane, Locale locale, Style guiStyle, URL background, ActionListener helpListener);
 
-  /**
-   * 
-   * @return the locale of the message bundle (what if no message bundle could be loaded for the requested locale?)
-   */
   public Locale getLocale();
 
   public void showWelcomeDialog();
 
   /**
    * 
-   * @param waitMessage if null, a simple 'wait' text is displayed
+   * @param waitMessage if null, a simple 'please wait' text is displayed
    */
   public void showWaitDialog(String waitMessage);
 
@@ -123,25 +116,8 @@ public interface BKUGUIFacade {
 
   public char[] getPin();
 
-  /**
-   * TODO move to HashDataDisplay implementations
-   * @param signedReferences
-   * @param externalDisplay
-   * @param okListener
-   * @param okCommand
-   */
   public void showHashDataInputDialog(List<HashDataInput> signedReferences, ActionListener okListener, String okCommand);
 
-  /**
-   * TODO pull out from BKUGUIFacade. (or make this strictly an applet internal version)
-   * Problem: if standalone flag is provided, we also need the actionlistener..
-   * @param helpDocument
-   * @param mimeType
-   * @param encoding
-   */
-//  public void showHelpDialog(InputStream helpDocument, String mimeType, String encoding); //, boolean standalone); //, ActionListener okListener, String okCommand); 
-
-//    public void showPlainTextHashDataInputDialog(String text, ActionListener saveListener, String saveCommand, ActionListener cancelListener, String cancelCommand);
   public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams, ActionListener okListener, String actionCommand);
 
   public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams);
