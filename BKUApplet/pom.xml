@@ -3,13 +3,13 @@
   <parent>
     <artifactId>bku</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.0</version>
+    <version>1.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>at.gv.egiz</groupId>
   <artifactId>BKUApplet</artifactId>
   <name>BKU Applet</name>
-  <version>1.0</version>
+  <version>1.0.0-SNAPSHOT</version>
   <build>
     <plugins>
       <plugin>
@@ -116,27 +116,27 @@
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>smcc</artifactId>
-      <version>1.0</version>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>STAL</artifactId>
-      <version>1.0</version>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>STALService</artifactId>
-      <version>1.0</version>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>smccSTAL</artifactId>
-      <version>1.0</version>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
      <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUCommonGUI</artifactId>
-      <version>1.0</version>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>

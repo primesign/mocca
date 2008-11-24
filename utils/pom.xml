@@ -4,14 +4,14 @@
 	<parent>
 		<artifactId>bku</artifactId>
 		<groupId>at.gv.egiz</groupId>
-		<version>1.0</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>utils</artifactId>
 	<name>BKU Utils</name>
 	<packaging>jar</packaging>
-	<version>1.0</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<url>http://bku.egiz.gv.at</url>
 	<build>
 		<plugins>
@@ -53,10 +53,10 @@
 		add dependencies to determine build order of BKU modules | (scope
 		provided -> don't include dependencies in assembly) <dependencies>
 		<dependency> <groupId>at.gv.egiz</groupId>
-		<artifactId>slbinding</artifactId> <version>1.0-SNAPSHOT</version>
+		<artifactId>slbinding</artifactId> <version>1.0.0-SNAPSHOTOT</version>
 		<scope>provided</scope> </dependency> <dependency>
 		<groupId>at.gv.egiz</groupId> <artifactId>idlink</artifactId>
-		<version>1.0-SNAPSHOT</version> <scope>provided</scope> </dependency>
+		<versio1.0.0-SNAPSHOTSHOT</version> <scope>provided</scope> </dependency>
 		</dependencies
 	-->
 	<!--

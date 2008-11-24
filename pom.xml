@@ -6,7 +6,7 @@
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>bku</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>BKU</name>
 	<url>http://bku.egiz.gv.at</url>
 	<modules>
@@ -97,7 +97,7 @@
 				<plugin>
 				  <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>2.0-beta-7</version>
+          <version>2.0-beta-8</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -211,7 +211,7 @@
 			<dependency>
 				<groupId>iaik</groupId>
 				<artifactId>iaik_pki</artifactId>
-				<version>1.0-SNAPSHOT</version>
+				<version>1.0-MOCCA</version>
 				<scope>compile</scope>
 			</dependency>
 			<dependency>
