@@ -18,11 +18,13 @@
           <execution>
             <id>unpack</id>
             <goals>
-              <goal>unpack</goal>
+              <goal>unpack-dependencies</goal>
             </goals>
             <configuration>
+              <includeGroupIds>at.gv.egiz</includeGroupIds>
+              <excludeTransitive>true</excludeTransitive>
               <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-              <excludes>META-INF\/</excludes>
+              <excludes>META-INF\/</excludes><!--
               <artifactItems>
                 <artifactItem>
                   <groupId>at.gv.egiz</groupId>
@@ -50,7 +52,7 @@
                   <type>jar</type>
                 </artifactItem>
               </artifactItems>
-            </configuration>
+            --></configuration>
           </execution>
         </executions>
       </plugin>
