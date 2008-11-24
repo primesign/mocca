@@ -69,7 +69,6 @@
           <groupId>at.gv.egiz</groupId>
           <artifactId>STALService</artifactId> 
           <version>1.0.0-SNAPSHOT</version>
-          <scope>provided</scope> 
         </dependency>
         
 		<!--
@@ -103,7 +102,7 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>copyapplet</id>
+						<id>copyapplet-dependencies</id>
 						<goals>
 							<goal>copy-dependencies</goal>
 						</goals>
@@ -129,6 +128,25 @@
               <excludeTransitive>true</excludeTransitive>
 						</configuration>
 					</execution>
+          <execution>
+            <id>copyapplet</id>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/${project.build.finalName}/applet</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>commons-logging</groupId>
+                  <artifactId>commons-logging</artifactId>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>iaik</groupId>
+                  <artifactId>iaik_jce_me4se</artifactId>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
 				</executions>
 			</plugin>
             <!--plugin>
