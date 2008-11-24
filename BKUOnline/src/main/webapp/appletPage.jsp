@@ -45,7 +45,7 @@
 		var attributes = {
 			codebase :'applet',
 			code :'at.gv.egiz.bku.online.applet.BKUApplet.class',
-			archive :'BKUApplet-1.0.0.jar, commons-logging-1.1.1.jar, iaik_jce_me4se-3.04.jar',
+			archive :'BKUApplet-1.0.0-SNAPSHOT.jar, commons-logging-1.1.1.jar, iaik_jce_me4se-3.04.jar',
 			width : <%=width%>,
 			height :<%=height%>
 		};
@@ -57,7 +57,8 @@
                         HashDataDisplay : '<%=hashDataDisplay%>',
                         HashDataURL : '../hashDataInput',
 			SessionID : '<%=session.getId()%>',
-			RedirectURL : '../bkuResult'
+			RedirectURL : '../bkuResult',
+            RedirectTarget: '_parent'
 		};
 		var version = '1.6.0_04';
 		deployJava.runApplet(attributes, parameters, version);
