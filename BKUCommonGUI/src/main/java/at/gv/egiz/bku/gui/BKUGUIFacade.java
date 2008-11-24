@@ -62,11 +62,12 @@ public interface BKUGUIFacade {
   public static final String MESSAGE_INSERTCARD = "message.insertcard";
   public static final String MESSAGE_ENTERPIN = "message.enterpin";
   public static final String MESSAGE_HASHDATALINK = "message.hashdatalink";
-  public static final String MESSAGE_HASHDATA = "message.hashdata";
+//  public static final String MESSAGE_HASHDATA = "message.hashdata";
   public static final String MESSAGE_HASHDATALIST = "message.hashdatalist";
   public static final String MESSAGE_RETRIES = "message.retries";
   public static final String MESSAGE_OVERWRITE = "message.overwrite";
   public static final String MESSAGE_HELP = "message.help";
+  public static final String WARNING_XHTML = "warning.xhtml";
   public static final String LABEL_PIN = "label.pin";
   public static final String LABEL_PINSIZE = "label.pinsize";
   public static final String HELP_WELCOME = "help.welcome";

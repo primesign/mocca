@@ -125,9 +125,7 @@ public class HashDataViewer extends JDialog
     InputStreamReader isr = new InputStreamReader(hashDataInput.getHashDataInput(), cs);
     Reader content = new BufferedReader(isr);
   
-    JPanel hashDataPanel = createViewerPanel(
-            messages.getString(BKUGUIFacade.MESSAGE_HASHDATA), 
-            content, 
+    JPanel hashDataPanel = createViewerPanel(content, 
             hashDataInput.getMimeType(), 
             helpListener);
     JPanel buttonPanel = createButtonPanel(saveListener, saveCommand);
@@ -169,29 +167,28 @@ public class HashDataViewer extends JDialog
    * @param helpListener may be null
    * @return
    */
-  private JPanel createViewerPanel(String viewerLabelText, 
-          Reader content, 
+  private JPanel createViewerPanel(Reader content, 
           String mimeType, 
           final ActionListener helpListener) {
-    log.debug("viewer dialog: " + mimeType);
 
     if (mimeType == null) {
       mimeType = "text/plain";
-    } else if ("application/xhtml+xml".equals(mimeType)) {
-      mimeType = "text/html";
     }
+    log.debug("viewer dialog: " + mimeType);
 
     JEditorPane viewer = new JEditorPane();
+    viewer.setEditable(false);
+    viewer.setContentType(mimeType);
     
     if ("text/plain".equals(mimeType)) {
       viewer.setEditorKit(new StyledEditorKit());
       viewer.setFont(new Font(PLAINTEXT_FONT, viewer.getFont().getStyle(), viewer.getFont().getSize()));
 //    } else if ("text/html".equals(mimeType)) {
 //      viewer.setEditorKit(new RestrictedHTMLEditorKit());
+    } else if ("application/xhtml+xml".equals(mimeType)) {
+      viewer.setContentType("text/html");
     }
-    viewer.setEditable(false);
-    viewer.setContentType(mimeType);
-
+    
     EditorKit editorKit = viewer.getEditorKit();
     Document document = editorKit.createDefaultDocument();
 //    document.putProperty("IgnoreCharsetDirective", new Boolean(true));
@@ -210,14 +207,22 @@ public class HashDataViewer extends JDialog
     scrollPane.setAlignmentX(LEFT_ALIGNMENT);
     viewer.setCaretPosition(0);
 
-    JLabel viewerLabel = new JLabel();
-    viewerLabel.setText(viewerLabelText);
-    viewerLabel.setFont(viewerLabel.getFont().deriveFont(viewerLabel.getFont().getStyle() | java.awt.Font.BOLD));
-    viewerLabel.setLabelFor(viewer);
-
     JPanel viewerPanel = new JPanel();
     GroupLayout viewerPanelLayout = new GroupLayout(viewerPanel);
     viewerPanel.setLayout(viewerPanelLayout);
+
+    GroupLayout.SequentialGroup infoHorizontal = viewerPanelLayout.createSequentialGroup();
+    GroupLayout.ParallelGroup infoVertical = viewerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
+
+    if ("application/xhtml+xml".equals(mimeType)) {
+      JLabel viewerLabel = new JLabel();
+      viewerLabel.setText(messages.getString(BKUGUIFacade.WARNING_XHTML));
+      viewerLabel.setFont(viewerLabel.getFont().deriveFont(viewerLabel.getFont().getStyle() | java.awt.Font.BOLD));
+      viewerLabel.setLabelFor(viewer);
+
+      infoHorizontal.addComponent(viewerLabel);
+      infoVertical.addComponent(viewerLabel);
+    }
 
     if (helpListener != null) {
       JLabel helpLabel = new JLabel();
@@ -232,27 +237,24 @@ public class HashDataViewer extends JDialog
         }
       });
       helpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-      viewerPanelLayout.setHorizontalGroup(
-            viewerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(viewerPanelLayout.createSequentialGroup().addComponent(viewerLabel).addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE).addComponent(helpLabel)).addComponent(scrollPane)); //, 0, 0, Short.MAX_VALUE));
-      viewerPanelLayout.setVerticalGroup(
-            viewerPanelLayout.createSequentialGroup()
-              .addGroup(viewerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                .addComponent(viewerLabel)
-                .addComponent(helpLabel))
-              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-              .addComponent(scrollPane)); 
-    } else {
-      viewerPanelLayout.setHorizontalGroup(
-            viewerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-              .addComponent(viewerLabel)
-              .addComponent(scrollPane)); 
-      viewerPanelLayout.setVerticalGroup(
-            viewerPanelLayout.createSequentialGroup()
-              .addComponent(viewerLabel)
-              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-              .addComponent(scrollPane)); 
 
+      infoHorizontal
+              .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+              .addComponent(helpLabel);
+      infoVertical
+              .addComponent(helpLabel);
     }
+
+    viewerPanelLayout.setHorizontalGroup(
+          viewerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(infoHorizontal)
+            .addComponent(scrollPane));
+    viewerPanelLayout.setVerticalGroup(
+          viewerPanelLayout.createSequentialGroup()
+            .addGroup(infoVertical)
+            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(scrollPane));
+
     
     return viewerPanel;
   }

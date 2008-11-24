@@ -208,13 +208,16 @@ public class BKUGUIImpl implements BKUGUIFacade {
       if (background == null) {
         background = getClass().getResource(DEFAULT_BACKGROUND);
       }
-      if ("file".equals(background.getProtocol())) {
-        log.warn("file:// background images not permitted: " + background);
-        background = getClass().getResource(DEFAULT_BACKGROUND);
+      if (background == null) {
+          contentPanel = new JPanel();
+      } else {
+          if ("file".equals(background.getProtocol())) {
+            log.warn("file:// background images not permitted: " + background);
+            background = getClass().getResource(DEFAULT_BACKGROUND);
+          }
+          log.debug("loading background " + background);
+          contentPanel = new ImagePanel(background);
       }
-      log.debug("loading background " + background);
-      contentPanel = new ImagePanel(background);
-
       mainPanel = new JPanel();
       mainPanel.setOpaque(false);
       buttonPanel = new JPanel(); 
