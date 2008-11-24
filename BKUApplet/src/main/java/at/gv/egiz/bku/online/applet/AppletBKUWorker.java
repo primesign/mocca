@@ -192,11 +192,6 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
 
   private void registerSignRequestHandler() throws MalformedURLException {
     String hashDataDisplayStyle = params.getAppletParameter(BKUApplet.HASHDATA_DISPLAY);
-//    if (BKUApplet.HASHDATA_DISPLAY_INTERNAL.equals(hashDataDisplayStyle)) {
-//      log.debug("register SignRequestHandler for STAL port " + BKUApplet.WSDL_URL);
-//      AppletHashDataDisplay handler = new AppletHashDataDisplay(stalPort, sessionId, AppletHashDataDisplay.DISPLAY.applet);
-//      addRequestHandler(SignRequest.class, handler);
-//    } else 
     if (BKUApplet.HASHDATA_DISPLAY_BROWSER.equals(hashDataDisplayStyle)) {
       URL hashDataURL = params.getURLParameter(BKUApplet.HASHDATA_URL, sessionId);
       log.debug("register SignRequestHandler for HashDataURL " + hashDataURL);
