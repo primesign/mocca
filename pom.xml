@@ -41,7 +41,9 @@
 		</developer>
 	</developers>
 	<scm>
-		<url>svn://svn.egovlabs.gv.at/svnroot/mocca</url>
+    <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.egovlabs.gv.at/svnroot/mocca/trunk</developerConnection>
+		<url>svn://svn.egovlabs.gv.at/svnroot/mocca/trunk</url>
 	</scm>
 	<organization>
 		<name>E-Government Innovation Center (EGIZ)</name>
@@ -91,6 +93,11 @@
 					<artifactId>jaxws-maven-plugin</artifactId>
 					<groupId>org.codehaus.mojo</groupId>
 					<version>1.10</version>
+				</plugin>
+				<plugin>
+				  <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.0-beta-7</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
