@@ -1,17 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>bku</artifactId>
 		<groupId>at.gv.egiz</groupId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.2</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>utils</artifactId>
 	<name>BKU Utils</name>
 	<packaging>jar</packaging>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<url>http://bku.egiz.gv.at</url>
 	<build>
 		<plugins>
@@ -27,8 +25,7 @@
 				<type>jar</type> </artifactItem> <artifactItem>
 				<groupId>at.gv.egiz</groupId> <artifactId>idlink</artifactId>
 				<type>jar</type> </artifactItem> </artifactItems> </configuration>
-				</execution> </executions> </plugin
-			-->
+				</execution> </executions> </plugin -->
 		</plugins>
 	</build>
 	<dependencies>
@@ -57,8 +54,7 @@
 		<scope>provided</scope> </dependency> <dependency>
 		<groupId>at.gv.egiz</groupId> <artifactId>idlink</artifactId>
 		<versio1.0.0-SNAPSHOTSHOT</version> <scope>provided</scope> </dependency>
-		</dependencies
-	-->
+		</dependencies -->
 	<!--
 		repositories> <repository> <id>maven2-repository.dev.java.net</id>
 		<name>Java.net Maven 2 Repository</name>
@@ -72,6 +68,5 @@
 		</pluginRepository> <pluginRepository>
 		<id>maven-repository.dev.java.net</id> <name>Java.net Maven 1
 		Repository (legacy)</name> <url>http://download.java.net/maven/1</url>
-		<layout>legacy</layout> </pluginRepository> </pluginRepositories
-	-->
+		<layout>legacy</layout> </pluginRepository> </pluginRepositories -->
 </project>

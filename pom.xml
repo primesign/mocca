@@ -1,12 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>bku</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<name>BKU</name>
 	<url>http://bku.egiz.gv.at</url>
 	<modules>
@@ -41,9 +38,9 @@
 		</developer>
 	</developers>
 	<scm>
-    <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.egovlabs.gv.at/svnroot/mocca/trunk</developerConnection>
-		<url>svn://svn.egovlabs.gv.at/svnroot/mocca/trunk</url>
+    <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.0.2</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.0.2</developerConnection>
+		<url>svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.0.2</url>
 	</scm>
 	<organization>
 		<name>E-Government Innovation Center (EGIZ)</name>
@@ -59,8 +56,7 @@
 					<configuration>
 						<!--
 							fork>true</fork> <executable>${java_6_sun}/bin/javac</executable>
-							<compilerVersion>1.6</compilerVersion
-						-->
+							<compilerVersion>1.6</compilerVersion -->
 						<source>1.6</source>
 						<target>1.6</target>
 						<verbose>true</verbose>
@@ -87,8 +83,7 @@
 				<!--
 					plugin> <artifactId>maven-jaxb2-plugin</artifactId>
 					<groupId>org.jvnet.jaxb2.maven2</groupId> <version>0.6.0</version>
-					</plugin
-				-->
+					</plugin -->
 				<plugin>
 					<artifactId>jaxws-maven-plugin</artifactId>
 					<groupId>org.codehaus.mojo</groupId>
@@ -110,8 +105,7 @@
 						<!--
 							descriptor>${basedir}/src/main/assemblies/assembly-online.xml</descriptor>
 							<descriptor>${basedir}/src/main/assemblies/assembly-local.xml</descriptor>
-							<descriptor>${basedir}/src/main/assemblies/assembly-server.xml</descriptor
-						-->
+							<descriptor>${basedir}/src/main/assemblies/assembly-server.xml</descriptor -->
 					</descriptors>
 				</configuration>
 				<!--
@@ -122,8 +116,7 @@
 					explicitly execute the package phase ahead of the assembly
 					invocation, to ensure all modules have been built. <executions>
 					<execution> <phase>package</phase> <goals> <goal>attached</goal>
-					</goals> </execution> </executions
-				-->
+					</goals> </execution> </executions -->
 			</plugin>
 		</plugins>
 	</build>
