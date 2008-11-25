@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>bku</artifactId>
 		<groupId>at.gv.egiz</groupId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>bkucommon</artifactId>
 	<name>BKU Common</name>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.1</version>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>utils</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>STAL</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -72,14 +71,12 @@
 				<wsdlFile>MOA-SPSS-1.3.wsdl</wsdlFile> </wsdlFiles>
 				<sourceDestDir>${project.build.directory}/generated-sources/moaspss</sourceDestDir>
 				<staleFile>${project.build.directory}/generated-sources/moaspss/.staleFlag</staleFile>
-				<xnocompile>true</xnocompile> </configuration> </plugin
-			-->
+				<xnocompile>true</xnocompile> </configuration> </plugin -->
 			<!--
 				skip tests temporarily <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId> <configuration>
-				<skip>true</skip> </configuration> </plugin
-			-->
+				<skip>true</skip> </configuration> </plugin -->
 		</plugins>
 	</build>
 </project>
