@@ -55,7 +55,7 @@
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>STALService</artifactId>
-			<version>1.0</version>
+			<version>1.0.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
         <!-- build BKUApplet prior to BKUOnline -->
