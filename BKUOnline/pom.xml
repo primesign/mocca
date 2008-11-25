@@ -1,17 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>bku</artifactId>
 		<groupId>at.gv.egiz</groupId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>BKUOnline</artifactId>
 	<packaging>war</packaging>
 	<name>BKU Online</name>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.1</version>
 
 	<pluginRepositories>
 		<pluginRepository>
@@ -25,12 +23,12 @@
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>bkucommon</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUViewer</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.0.1</version>
     </dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -55,20 +53,20 @@
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>STALService</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.1</version>
 			<scope>compile</scope>
 		</dependency>
         <!-- build BKUApplet prior to BKUOnline -->
         <dependency>
           <groupId>at.gv.egiz</groupId>
           <artifactId>BKUApplet</artifactId> 
-          <version>1.0.0-SNAPSHOT</version>
+          <version>1.0.1</version>
           <scope>provided</scope> 
         </dependency>
         <dependency>
           <groupId>at.gv.egiz</groupId>
           <artifactId>STALService</artifactId> 
-          <version>1.0.0-SNAPSHOT</version>
+          <version>1.0.1</version>
         </dependency>
         
 		<!--
@@ -84,17 +82,16 @@
 				<groupId>javax.xml.soap</groupId> <artifactId>saaj-api</artifactId>
 				</exclusion> <exclusion>
 				<groupId>com.sun.xml.messaging.saaj</groupId>
-				<artifactId>saaj-impl</artifactId> </exclusion> </exclusions
-			-->
+				<artifactId>saaj-impl</artifactId> </exclusion> </exclusions -->
 		</dependency>
 	</dependencies>
 	<properties>
 		<netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
 	</properties>
 	<scm>
-	  <developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKUOnline</developerConnection>
-		<connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKUOnline</connection>
-		<url>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKUOnline</url>
+	  <developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.0.1/BKUOnline</developerConnection>
+		<connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.0.1/BKUOnline</connection>
+		<url>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.0.1/BKUOnline</url>
 	</scm>
 	<build>
 		<plugins>
