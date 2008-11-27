@@ -40,7 +40,7 @@
  * http://java.com/js/deployJava.js.  
  * You are encouraged to link directly to the live copy of the file.
  *
- * @version @(#)deployJava.js	1.11 08/07/11
+ * @version @(#)deployJava.js	1.13 08/10/28
  */
 
 var deployJava = {
@@ -88,7 +88,7 @@ var deployJava = {
             }
         } else {
             var browser = deployJava.getBrowser();
-        
+
             if (browser == 'MSIE') {
                 if (deployJava.testUsingActiveX('1.8.0')) {
                     list[0] = '1.8.0';
@@ -319,10 +319,17 @@ var deployJava = {
         document.write(s);
     
         if (parameters != 'undefined' && parameters != null) {
+            var codebaseParam = false;
             for (var parameter in parameters) {
+                if (parameter == 'codebase_lookup') {
+                    codebaseParam = true;
+                }
                 s = '<param name="' + parameter + '" value="' + 
                     parameters[parameter] + '">';
                 document.write(s);
+            }
+            if (!codebaseParam) {
+              document.write('<param name="codebase_lookup" value="false">');
             }
         }
         document.write('<' + '/' + 'applet' + '>');
@@ -630,6 +637,10 @@ var deployJava = {
                 alert('We claim to have detected "IE".');
             }
             return 'MSIE';
+//        } else if ((browser.indexOf('konqueror') != -1)) {
+//            if  (deployJava.debug) {
+//                alert('We claim to have detected "Konqueror".');
+//            }
         } else if ((browser.indexOf('mozilla') != -1) || 
                    (browser.indexOf('firefox') != -1)) {
             if (deployJava.debug) {

@@ -48,10 +48,10 @@
 			<param-value>expired.html</param-value>
 		</init-param>
 	</servlet>
-	<servlet>
-		<servlet-name>HashDataInputServlet</servlet-name>
-		<servlet-class>at.gv.egiz.bku.online.webapp.HashDataInputServlet</servlet-class>
-	</servlet>
+    <servlet>
+        <servlet-name>BKUApplet</servlet-name>
+        <jsp-file>/appletPage.jsp</jsp-file>
+    </servlet>
     <servlet>
       <servlet-name>help</servlet-name>
       <jsp-file>/help.jsp</jsp-file>
@@ -67,10 +67,6 @@
 	<servlet-mapping>
 		<servlet-name>ResultServlet</servlet-name>
 		<url-pattern>/bkuResult</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>HashDataInputServlet</servlet-name>
-		<url-pattern>/hashDataInput</url-pattern>
 	</servlet-mapping>
     <servlet-mapping>
       <servlet-name>help</servlet-name>
