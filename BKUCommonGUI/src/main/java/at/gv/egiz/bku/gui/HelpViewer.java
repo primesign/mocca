@@ -32,7 +32,6 @@ import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -64,45 +63,44 @@ public class HelpViewer extends JDialog
    */
   public static void showHelpDialog(AppletContext ctx,
           URL helpURL,
-          String helpTopic,
+//          String helpTopic,
           ResourceBundle messages) {
-    showHelpDialog(null, ctx, helpURL, helpTopic, messages);
+    showHelpDialog(null, ctx, helpURL, messages); //helpTopic, messages);
   }
 
   public static void showHelpDialog(URL helpURL,
-          String helpTopic,
+//          String helpTopic,
           ResourceBundle messages) {
-    showHelpDialog(null, null, helpURL, helpTopic, messages);
+    showHelpDialog(null, null, helpURL, messages); // helpTopic, messages);
   }
 
   public static void showHelpDialog(Component owner,
           AppletContext ctx,
           URL helpURL,
-          String helpTopic,
+//          String helpTopic,
           ResourceBundle messages) {
 
     Frame frame = null;
     if (owner != null) {
       JOptionPane.getFrameForComponent(owner);
     }
-    dialog = new HelpViewer(frame, messages, ctx, helpURL, helpTopic);
+    dialog = new HelpViewer(frame, messages, ctx, helpURL); //, helpTopic);
     dialog.setVisible(true);
   }
 
   private HelpViewer(Frame frame,
           ResourceBundle messages,
           AppletContext ctx,
-          URL helpURL,
-          String helpTopic) {
+          URL helpURL) { //, String helpTopic) {
     super(frame, messages.getString(BKUGUIFacade.WINDOWTITLE_HELP), true);
     this.messages = messages;
     this.ctx = ctx;
 
-    String p = messages.getString(BKUGUIFacade.MESSAGE_HELP);
-    String helpItem = messages.getString(helpTopic);
-    String viewerLabel = MessageFormat.format(p, new Object[]{helpItem});
+//    String p = messages.getString(BKUGUIFacade.MESSAGE_HELP);
+//    String helpItem = messages.getString(helpTopic);
+//    String viewerLabel = MessageFormat.format(p, new Object[]{helpItem});
 
-    JPanel helpPanel = createViewerPanel(viewerLabel, helpURL);
+    JPanel helpPanel = createViewerPanel(helpURL); //viewerLabel, helpURL);
     JPanel buttonPanel = createButtonPanel();
 
     initContentPane(new Dimension(600, 600), helpPanel, buttonPanel);
@@ -128,7 +126,7 @@ public class HelpViewer extends JDialog
             mainLayout.createSequentialGroup().addContainerGap().addComponent(viewerPanel, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED).addComponent(buttonPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addContainerGap());
   }
 
-  private JPanel createViewerPanel(String viewerLabelText, URL helpURL) {
+  private JPanel createViewerPanel(URL helpURL) {  //String viewerLabelText, 
     log.debug("viewer dialog: " + helpURL.toString());
 
     final JEditorPane viewer = new JEditorPane();
@@ -170,19 +168,24 @@ public class HelpViewer extends JDialog
     scrollPane.setAlignmentX(LEFT_ALIGNMENT);
     viewer.setCaretPosition(0);
 
-    JLabel viewerLabel = new JLabel();
-    viewerLabel.setText(viewerLabelText);
-    viewerLabel.setFont(viewerLabel.getFont().deriveFont(viewerLabel.getFont().getStyle() | java.awt.Font.BOLD));
-    viewerLabel.setLabelFor(viewer);
+//    JLabel viewerLabel = new JLabel();
+//    viewerLabel.setText(viewerLabelText);
+//    viewerLabel.setFont(viewerLabel.getFont().deriveFont(viewerLabel.getFont().getStyle() | java.awt.Font.BOLD));
+//    viewerLabel.setLabelFor(viewer);
 
     JPanel viewerPanel = new JPanel();
     GroupLayout viewerPanelLayout = new GroupLayout(viewerPanel);
     viewerPanel.setLayout(viewerPanelLayout);
     
     viewerPanelLayout.setHorizontalGroup(
-            viewerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(viewerLabel).addComponent(scrollPane));
+            viewerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+//              .addComponent(viewerLabel)
+              .addComponent(scrollPane));
     viewerPanelLayout.setVerticalGroup(
-            viewerPanelLayout.createSequentialGroup().addComponent(viewerLabel).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addComponent(scrollPane));
+            viewerPanelLayout.createSequentialGroup()
+//            .addComponent(viewerLabel)
+//            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(scrollPane));
 
     return viewerPanel;
   }
