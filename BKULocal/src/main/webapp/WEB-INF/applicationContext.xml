@@ -18,7 +18,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
-  <bean id="STALFactory" class="at.gv.egiz.bku.local.stal.SMCCSTALFactory"
+  <bean id="STALFactory" class="at.gv.egiz.bku.local.stal.LocalSTALFactory"
     scope="singleton">
     <property name="helpURL" value="http://localhost:3495/help"/>
   </bean>

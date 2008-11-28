@@ -34,16 +34,16 @@ import java.net.URL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class SMCCSTALFactory implements STALFactory {
+public class LocalSTALFactory implements STALFactory {
 
-  protected static final Log log = LogFactory.getLog(SMCCSTALFactory.class);
+  protected static final Log log = LogFactory.getLog(LocalSTALFactory.class);
   protected String helpURL;
   protected Locale locale;
 
   @Override
   public STAL createSTAL() {
 
-    SMCCSTAL stal;
+    LocalBKUWorker stal;
     JDialog dialog = new JDialog();
     if (locale != null) {
       dialog.setLocale(locale);
@@ -64,7 +64,7 @@ public class SMCCSTALFactory implements STALFactory {
             BKUGUIFacade.Style.advanced,
             null,
             helpListener);
-    stal = new SMCCSTAL(new BKUGuiProxy(dialog, gui), dialog);
+    stal = new LocalBKUWorker(new BKUGuiProxy(dialog, gui), dialog);
     dialog.setPreferredSize(new Dimension(400, 200));
     dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     dialog.setTitle("MOCCA");

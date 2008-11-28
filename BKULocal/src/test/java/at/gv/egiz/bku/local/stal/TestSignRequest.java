@@ -39,7 +39,7 @@ public class TestSignRequest {
     sr.setKeyIdentifier(SignatureCard.KeyboxName.SECURE_SIGNATURE_KEYPAIR.getKeyboxName());
     List<STALRequest> reqList = new ArrayList<STALRequest>(1);
     reqList.add(sr);
-    System.out.println((new SMCCSTALFactory()).createSTAL().handleRequest(reqList));
+    System.out.println((new LocalSTALFactory()).createSTAL().handleRequest(reqList));
   }
   
   public static void main(String[] args) {
