@@ -75,9 +75,11 @@ public class BKURequestHandler extends SpringBKUServlet {
     HttpSession session = req.getSession(false);
     if (session != null) {
       log.warn("Already a session with id: " + session.getId()
-          + " active, deleting this one");
-      getBindingProcessorManager().removeBindingProcessor(
-          IdFactory.getInstance().createId(session.getId()));
+          + " active, continuing");
+      RequestDispatcher dispatcher = getServletContext().getNamedDispatcher(BKU_APPLET_JSP);
+      log.debug("forward to applet");
+      dispatcher.forward(req, resp);
+      return;
     }
     session = req.getSession(true);
     if (log.isDebugEnabled()) {
