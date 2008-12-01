@@ -75,7 +75,7 @@ public class BKUApplet extends JApplet implements AppletParameterProvider {
 
   /**
    * Factory method to create and wire HelpListener, GUI and BKUWorker.
-   * (Config via applet parameters as constants BKUApplet.*)
+   * (Config via applet parameters, see BKUApplet.* constants)
    */
   @Override
   public void init() {
@@ -83,7 +83,7 @@ public class BKUApplet extends JApplet implements AppletParameterProvider {
     log.debug("Called init()");
     
     HttpsURLConnection.setDefaultSSLSocketFactory(InternalSSLSocketFactory.getInstance());
-    
+
     String locale = getAppletParameter(LOCALE);
     if (locale != null) {
       this.setLocale(new Locale(locale));
