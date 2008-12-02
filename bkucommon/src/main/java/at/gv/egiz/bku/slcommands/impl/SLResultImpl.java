@@ -85,7 +85,7 @@ public abstract class SLResultImpl implements SLResult {
 
   private Marshaller getMarshaller() {
     try {
-      JAXBContext context  = SLCommandFactory.getJaxbContext();
+      JAXBContext context  = SLCommandFactory.getInstance().getJaxbContext();
       Marshaller marshaller = context.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
       return marshaller;

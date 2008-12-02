@@ -41,9 +41,6 @@ import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import at.gv.egiz.bku.slcommands.impl.CreateXMLSignatureCommandImpl;
-import at.gv.egiz.bku.slcommands.impl.InfoboxReadCommandImpl;
-import at.gv.egiz.bku.slcommands.impl.NullOperationCommandImpl;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLExceptionMessages;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
@@ -72,29 +69,30 @@ public class SLCommandFactory {
     /**
      * Schema for Security Layer command validation.
      */
-    private static Schema slSchema;
+    private Schema slSchema;
     /**
      * The JAXBContext.
      */
-    private static JAXBContext jaxbContext;
+    private JAXBContext jaxbContext;
     /**
      * The map of <namespaceURI>:<localName> to implementation class of the
      * corresponding {@link SLCommand}.
      */
-    private static Map<String, Class<? extends SLCommand>> slRequestTypeMap = new HashMap<String, Class<? extends SLCommand>>();
+    private Map<String, Class<? extends SLCommand>> slRequestTypeMap = new HashMap<String, Class<? extends SLCommand>>();
     
-
-    static {
-
-        // TODO: implement dynamic registration
-
-        // register all known implementation classes
-        putImplClass(SLCommand.NAMESPACE_URI, "NullOperationRequest",
-          NullOperationCommandImpl.class);
-        putImplClass(SLCommand.NAMESPACE_URI, "InfoboxReadRequest",
-          InfoboxReadCommandImpl.class);
-        putImplClass(SLCommand.NAMESPACE_URI, "CreateXMLSignatureRequest",
-          CreateXMLSignatureCommandImpl.class);
+    /**
+     * Configures the singleton instance with command implementations
+     * @param commandImplMap
+     * @throws ClassNotFoundException 
+     */
+    @SuppressWarnings("unchecked")
+    public void setCommandImpl(Map<String, String> commandImplMap) throws ClassNotFoundException {
+      ClassLoader cl = getClass().getClassLoader();
+      for (String key : commandImplMap.keySet()) {
+        Class<? extends SLCommand> impl =  (Class<? extends SLCommand>) cl.loadClass(commandImplMap.get(key));
+        log.debug("Registering sl command implementation for :"+key+ "; implementation class: "+impl.getCanonicalName());
+        slRequestTypeMap.put(key, impl);
+      }
     }
 
     /**
@@ -110,7 +108,7 @@ public class SLCommandFactory {
      *          the implementation class, or <code>null</code> to deregister a
      *          currently registered class
      */
-    public static void putImplClass(String namespaceUri, String localname,
+    public  void setImplClass(String namespaceUri, String localname,
       Class<? extends SLCommand> slCommandClass) {
         if (slCommandClass != null) {
             slRequestTypeMap.put(namespaceUri + ":" + localname, slCommandClass);
@@ -128,7 +126,7 @@ public class SLCommandFactory {
      * @return the implementation class, or <code>null</code> if no class is
      *         registered for the given <code>name</code>
      */
-    public static Class<? extends SLCommand> getImplClass(QName name) {
+    public Class<? extends SLCommand> getImplClass(QName name) {
         String namespaceURI = name.getNamespaceURI();
         String localPart = name.getLocalPart();
         return slRequestTypeMap.get(namespaceURI + ":" + localPart);
@@ -139,14 +137,14 @@ public class SLCommandFactory {
      * 
      * @param slSchema the schema to validate Security Layer commands with
      */
-    public static void setSLSchema(Schema slSchema) {
-        SLCommandFactory.slSchema = slSchema;
+    public void setSLSchema(Schema slSchema) {
+        this.slSchema = slSchema;
     }
 
     /**
      * @return the jaxbContext
      */
-    public static JAXBContext getJaxbContext() {
+    public JAXBContext getJaxbContext() {
         ensureJaxbContext();
         return jaxbContext;
     }
@@ -154,14 +152,14 @@ public class SLCommandFactory {
     /**
      * @param jaxbContext the jaxbContext to set
      */
-    public static void setJaxbContext(JAXBContext jaxbContext) {
-        SLCommandFactory.jaxbContext = jaxbContext;
+    public  void setJaxbContext(JAXBContext jaxbContext) {
+        this.jaxbContext = jaxbContext;
     }
 
     /**
      * Initialize the JAXBContext.
      */
-    private synchronized static void ensureJaxbContext() {
+    private synchronized void ensureJaxbContext() {
         if (jaxbContext == null) {
             try {
                 String slPkg = at.buergerkarte.namespaces.securitylayer._1.ObjectFactory.class.getPackage().getName();
@@ -177,7 +175,7 @@ public class SLCommandFactory {
     /**
      * Initialize the security layer schema.
      */
-    private synchronized static void ensureSchema() {
+    private synchronized void ensureSchema() {
         if (slSchema == null) {
             try {
                 SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -194,7 +192,7 @@ public class SLCommandFactory {
                 }
                 Schema schema = schemaFactory.newSchema(sources);
                 log.debug("Schema successfully created.");
-                SLCommandFactory.setSLSchema(schema);
+                setSLSchema(schema);
             } catch (SAXException e) {
                 log.error("Failed to load security layer schema.", e);
                 throw new SLRuntimeException("Failed to load security layer schema.", e);
@@ -211,9 +209,9 @@ public class SLCommandFactory {
      */
     public synchronized static SLCommandFactory getInstance() {
         if (instance == null) {
-            ensureJaxbContext();
-            ensureSchema();
-            instance = new SLCommandFactory();
+          instance = new SLCommandFactory();
+          instance.ensureJaxbContext();
+          instance.ensureSchema();
         }
         return instance;
     }

@@ -95,7 +95,7 @@ public class InfoboxReadResultFileImpl extends SLResultImpl implements
     
     JAXBElement<InfoboxReadResponseType> infoboxReadResponse = factory.createInfoboxReadResponse(infoboxReadResponseType);
     
-    JAXBContext context = SLCommandFactory.getJaxbContext();
+    JAXBContext context = SLCommandFactory.getInstance().getJaxbContext();
     try {
       Marshaller marshaller = context.createMarshaller();
       marshaller.marshal(infoboxReadResponse, doc);
