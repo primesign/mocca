@@ -65,5 +65,6 @@ public class DataUrl {
   
   public static void setConfiguration(Properties props) {
     configuration = props;
+    defaultDataUrlConnection.setConfiguration(configuration);
   }
 }

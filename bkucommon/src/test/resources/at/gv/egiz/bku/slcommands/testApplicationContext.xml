@@ -32,5 +32,22 @@
 			</map>
 		</property>
 	</bean>
+	
+	<bean id="infoboxFactory" class="at.gv.egiz.bku.slcommands.impl.InfoboxFactory"
+    factory-method="getInstance">
+    <property name="infoboxImpl">
+      <map>
+        <entry
+          key="Certificates"
+          value="at.gv.egiz.bku.slcommands.impl.InfoboxCertificatesImpl" />
+        <entry
+          key="IdentityLink"
+          value="at.gv.egiz.bku.slcommands.impl.InfoboxIdentityLink" />
+        <entry
+          key="CardChannel"
+          value="at.gv.egiz.bku.slcommands.impl.CardChannel" />
+      </map>
+    </property>
+  </bean>
 
 </beans>

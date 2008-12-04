@@ -23,8 +23,9 @@ import javax.xml.transform.Templates;
 import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadDataAssocArrayType;
 import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadResponseType;
 import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
+import at.gv.egiz.bku.slcommands.InfoboxReadResult;
 
-public class InfoboxReadResultImpl extends SLResultImpl {
+public class InfoboxReadResultImpl extends SLResultImpl implements InfoboxReadResult {
 
   /**
    * The <code>InfoboxReadResponse</code>

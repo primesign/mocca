@@ -16,13 +16,11 @@
  */
 package at.gv.egiz.bku.slcommands.impl;
 
-import java.io.ByteArrayInputStream;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.URIReferenceException;
@@ -48,11 +46,8 @@ import at.gv.egiz.bku.slexceptions.SLException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLViewerException;
 import at.gv.egiz.dom.DOMUtils;
-import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.InfoboxReadRequest;
-import at.gv.egiz.stal.InfoboxReadResponse;
 import at.gv.egiz.stal.STALRequest;
-import at.gv.egiz.stal.STALResponse;
 
 /**
  * This class implements the security layer command
@@ -147,33 +142,13 @@ public class CreateXMLSignatureCommandImpl extends
     InfoboxReadRequest stalRequest = new InfoboxReadRequest();
     stalRequest.setInfoboxIdentifier(keyboxIdentifier);
 
-    requestSTAL(Collections.singletonList((STALRequest) stalRequest));
-
-    STALResponse stalResponse = stalResponses.next();
-
-    if (stalResponse instanceof InfoboxReadResponse) {
-      byte[] infobox = ((InfoboxReadResponse) stalResponse).getInfoboxValue();
-
-      try {
-        CertificateFactory certFactory = CertificateFactory.getInstance("X509");
-        signingCertificate = (X509Certificate) certFactory
-            .generateCertificate(new ByteArrayInputStream(infobox));
-      } catch (CertificateException e) {
-        log.info("Failed to decode signing certificate.", e);
-        // TODO: issue appropriate error
-        throw new SLCommandException(4000);
-      }
-
-    } else if (stalResponse instanceof ErrorResponse) {
-      ErrorResponse err = (ErrorResponse) stalResponse;
-      log.info("Received an error response from STAL with code: "
-          + err.getErrorCode());
-      throw new SLCommandException(err.getErrorCode());
-
-    } else {
-      log.info("Failed to get signing certificate.");
+    stalHelper.transmitSTALRequest(Collections.singletonList((STALRequest) stalRequest));
+    List<X509Certificate> certificates = stalHelper.getCertificatesFromResponses();
+    if (certificates == null || certificates.size() != 1) {
+      log.info("Got an unexpected number of certificates from STAL.");
       throw new SLCommandException(4000);
     }
+    signingCertificate = certificates.get(0);
 
   }
 

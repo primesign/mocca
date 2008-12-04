@@ -187,28 +187,29 @@ public abstract class Configurator {
   }
 
   public void configureVersion() {
-    Properties p = new Properties();
-    try {
-      InputStream is = getManifest();
-      if (is != null) {
-        p.load(getManifest());
-        String version = p.getProperty("Implementation-Build");
-        properties.setProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY,
-            "citizen-card-environment/1.2 MOCCA " + version);
-        DataUrl.setConfiguration(properties);
-        log
-            .debug("Setting user agent to: "
-                + properties
-                    .getProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY));
-      } else {
-        log.warn("Cannot read manifest");
-        properties.setProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY,
-            "citizen-card-environment/1.2 MOCCA UNKNOWN");
-        DataUrl.setConfiguration(properties);
+    if (properties.getProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY) == null) {
+      Properties p = new Properties();
+      try {
+        InputStream is = getManifest();
+        if (is != null) {
+          p.load(getManifest());
+          String version = p.getProperty("Implementation-Build");
+          properties.setProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY,
+              "citizen-card-environment/1.2 MOCCA " + version);
+          log
+              .debug("Setting user agent to: "
+                  + properties
+                      .getProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY));
+        } else {
+          log.warn("Cannot read manifest");
+          properties.setProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY,
+              "citizen-card-environment/1.2 MOCCA UNKNOWN");
+        }
+      } catch (IOException e) {
+        log.error(e);
       }
-    } catch (IOException e) {
-      log.error(e);
     }
+    DataUrl.setConfiguration(properties);
   }
 
   public void configure() {

@@ -45,6 +45,23 @@
 		</property>
 	</bean>
 
+  <bean id="infoboxFactory" class="at.gv.egiz.bku.slcommands.impl.InfoboxFactory"
+    factory-method="getInstance">
+    <property name="infoboxImpl">
+      <map>
+        <entry
+          key="Certificates"
+          value="at.gv.egiz.bku.slcommands.impl.CertificatesInfoboxImpl" />
+        <entry
+          key="IdentityLink"
+          value="at.gv.egiz.bku.slcommands.impl.IdentityLinkInfoboxImpl" />
+<!--        <entry-->
+<!--          key="CardChannel"-->
+<!--          value="at.gv.egiz.bku.slcommands.impl.CardChannelInfoboxImpl" />-->
+      </map>
+    </property>
+  </bean>
+
 	<bean id="bindingProcessorManager" class="at.gv.egiz.bku.binding.BindingProcessorManagerImpl"
 		scope="singleton">
 		<constructor-arg ref="STALFactory"></constructor-arg>
