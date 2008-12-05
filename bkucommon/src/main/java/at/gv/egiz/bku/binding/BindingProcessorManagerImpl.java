@@ -49,9 +49,10 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
 
   private static Log log = LogFactory.getLog(BindingProcessorManagerImpl.class);
 
+  protected STALFactory stalFactory;
+  protected SLCommandInvoker commandInvokerClass;
+  
   private RemovalStrategy removalStrategy;
-  private STALFactory stalFactory;
-  private SLCommandInvoker commandInvokerClass;
   private ExecutorService executorService;
   private Map<Id, ProcessingContext> contextMap = Collections.synchronizedMap(new HashMap<Id, ProcessingContext>());
 //  private Map<Id, MapEntityWrapper> bindingProcessorMap = Collections
