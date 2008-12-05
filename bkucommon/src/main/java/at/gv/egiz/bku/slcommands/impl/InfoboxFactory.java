@@ -80,7 +80,7 @@ public class InfoboxFactory {
     for (String key : infoboxImplMap.keySet()) {
       Class<? extends Infobox> impl = (Class<? extends Infobox>) cl.loadClass(infoboxImplMap.get(key));
       log.debug("Registering infobox '" + key + "' implementation '" + impl.getCanonicalName() + "'.");
-      implementations.put(key, impl);
+      implMap.put(key, impl);
     }
     implementations = implMap;
   }
