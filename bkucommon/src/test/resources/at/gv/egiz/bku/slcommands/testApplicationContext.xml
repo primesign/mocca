@@ -39,14 +39,14 @@
       <map>
         <entry
           key="Certificates"
-          value="at.gv.egiz.bku.slcommands.impl.InfoboxCertificatesImpl" />
+          value="at.gv.egiz.bku.slcommands.impl.CertificatesInfoboxImpl" />
         <entry
           key="IdentityLink"
-          value="at.gv.egiz.bku.slcommands.impl.InfoboxIdentityLink" />
-        <entry
+          value="at.gv.egiz.bku.slcommands.impl.IdentityLinkInfoboxImpl" />
+        <!--<entry
           key="CardChannel"
           value="at.gv.egiz.bku.slcommands.impl.CardChannel" />
-      </map>
+      --></map>
     </property>
   </bean>
 

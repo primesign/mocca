@@ -80,7 +80,7 @@ public abstract class Configurator {
           log.error("Cannot add trusted ca", e);
         }
       }
-      return  caCerts.toArray(new X509Certificate[caCerts.size()]);
+      return caCerts.toArray(new X509Certificate[caCerts.size()]);
     } else {
       log.warn("No CA certificates configured");
     }
@@ -196,10 +196,9 @@ public abstract class Configurator {
           String version = p.getProperty("Implementation-Build");
           properties.setProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY,
               "citizen-card-environment/1.2 MOCCA " + version);
-          log
-              .debug("Setting user agent to: "
-                  + properties
-                      .getProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY));
+          log.debug("Setting user agent to: "
+              + properties
+                  .getProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY));
         } else {
           log.warn("Cannot read manifest");
           properties.setProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY,
@@ -256,7 +255,7 @@ public abstract class Configurator {
             getCertDir(), getCADir(), caCerts);
         sslCtx.init(km, new TrustManager[] { pkixTM }, null);
       }
-      HttpsURLConnection.setDefaultSSLSocketFactory(sslCtx.getSocketFactory());
+      DataUrl.setSSLSocketFactory(sslCtx.getSocketFactory());
     } catch (Exception e) {
       log.error("Cannot configure SSL", e);
     }
@@ -264,7 +263,7 @@ public abstract class Configurator {
       log.warn("---------------------------------");
       log.warn(" Disabling Hostname Verification ");
       log.warn("---------------------------------");
-      HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+      DataUrl.setHostNameVerifier(new HostnameVerifier() {
         @Override
         public boolean verify(String hostname, SSLSession session) {
           return true;
@@ -273,8 +272,6 @@ public abstract class Configurator {
     }
   }
 
-  
-  
   public void setCertValidator(CertValidator certValidator) {
     this.certValidator = certValidator;
   }

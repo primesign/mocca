@@ -19,7 +19,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
@@ -48,6 +50,8 @@ public class LegacyDataUrlConnectionImpl implements DataUrlConnectionSPI {
   protected Map<String, String> formParams;
   protected String boundary;
   protected Properties config = null;
+  protected SSLSocketFactory sslSocketFactory;
+  protected HostnameVerifier hostnameVerifier;
 
   protected DataUrlResponse result;
 
@@ -68,6 +72,16 @@ public class LegacyDataUrlConnectionImpl implements DataUrlConnectionSPI {
    */
   public void connect() throws SocketTimeoutException, IOException {
     connection = (HttpURLConnection) url.openConnection();
+    if (connection instanceof HttpsURLConnection) {
+      HttpsURLConnection https = (HttpsURLConnection) connection;
+      if (sslSocketFactory != null) {
+        log.debug("Setting custom ssl socket factory for ssl connection");
+        https.setSSLSocketFactory(sslSocketFactory);
+      }
+      if (hostnameVerifier != null) {
+        log.debug("Setting custom hostname verifier");
+      }
+    }
     connection.setDoOutput(true);
     Set<String> headers = requestHttpHeaders.keySet();
     Iterator<String> headerIt = headers.iterator();
@@ -226,5 +240,15 @@ public class LegacyDataUrlConnectionImpl implements DataUrlConnectionSPI {
   @Override
   public void setConfiguration(Properties config) {
     this.config = config;
+  }
+  
+  @Override
+  public void setSSLSocketFactory(SSLSocketFactory socketFactory) {
+    this.sslSocketFactory = socketFactory;
+  }
+  
+  @Override
+  public void setHostnameVerifier(HostnameVerifier hostnameVerifier) {
+    this.hostnameVerifier = hostnameVerifier;
   }
 }

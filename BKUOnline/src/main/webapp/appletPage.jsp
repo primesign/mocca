@@ -55,7 +55,7 @@
                     GuiStyle : '<%=guiStyle%>',
                     Locale : '<%=locale%>',
                     Background : '<%=backgroundImg%>',
-                    WSDL_URL :'../stal?wsdl',
+                    WSDL_URL :'../stal;jsessionid=<%=session.getId()%>?wsdl',
                     HelpURL : '../help/',
                     HashDataDisplay : '<%=hashDataDisplay%>',
                     HashDataURL : '../hashDataInput',

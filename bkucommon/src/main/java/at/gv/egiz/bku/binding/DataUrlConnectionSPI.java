@@ -19,6 +19,9 @@ package at.gv.egiz.bku.binding;
 import java.net.URL;
 import java.util.Properties;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSocketFactory;
+
 /**
  * Prototype of a DataurlconnectionSPI
  * @author wbauer
@@ -44,6 +47,18 @@ public interface DataUrlConnectionSPI extends DataUrlConnection {
    * @param config
    */
   public void setConfiguration(Properties config);
+  
+  /**
+   * Sets the socketfactory to be used for ssl connections.
+   * @param socketFactory if null the socket factory will not be set explicitly
+   */
+  public void setSSLSocketFactory(SSLSocketFactory socketFactory);
+  
+  /**
+   * Sets the hostname verifier to be used,
+   * @param hostnameVerifier if null the default hostname verifier will be used
+   */
+  public void setHostnameVerifier(HostnameVerifier hostnameVerifier);
 
 
 }

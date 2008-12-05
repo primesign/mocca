@@ -20,6 +20,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSocketFactory;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -33,6 +36,9 @@ public class DataUrl {
   private static DataUrlConnectionSPI defaultDataUrlConnection = new DataUrlConnectionImpl();
   private static Log log = LogFactory.getLog(DataUrl.class);
   private static Properties configuration;
+  private static SSLSocketFactory sslSocketFactory;
+  private static HostnameVerifier hostNameVerifier;
+  
   
   private URL url;
 
@@ -45,6 +51,9 @@ public class DataUrl {
       throw new NullPointerException("Default dataurlconnection must not be set to null");
     }
     defaultDataUrlConnection = dataUrlConnection;
+    defaultDataUrlConnection.setConfiguration(configuration);
+    defaultDataUrlConnection.setSSLSocketFactory(sslSocketFactory);
+    defaultDataUrlConnection.setHostnameVerifier(hostNameVerifier);
   }
 
   public DataUrl(String aUrlString) throws MalformedURLException {
@@ -67,4 +76,14 @@ public class DataUrl {
     configuration = props;
     defaultDataUrlConnection.setConfiguration(configuration);
   }
+  
+  public static void setSSLSocketFactory(SSLSocketFactory socketFactory) {
+    sslSocketFactory = socketFactory;
+    defaultDataUrlConnection.setSSLSocketFactory(socketFactory);
+  }
+
+  public static void setHostNameVerifier(HostnameVerifier hostNameVerifier) {
+    DataUrl.hostNameVerifier = hostNameVerifier;
+    defaultDataUrlConnection.setHostnameVerifier(hostNameVerifier);
+  } 
 }
