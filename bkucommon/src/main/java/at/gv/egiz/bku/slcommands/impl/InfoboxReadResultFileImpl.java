@@ -56,7 +56,7 @@ public class InfoboxReadResultFileImpl extends SLResultImpl implements
   /**
    * The XML document containing the infobox content.
    */
-  Document xmlDocument;
+  protected Document xmlDocument;
 
   /**
    * Creates the response document from the given <code>binaryContent</code>.
@@ -112,7 +112,7 @@ public class InfoboxReadResultFileImpl extends SLResultImpl implements
   /**
    * @return an XMLResult for marshalling the infobox to
    */
-  Result getXmlResult(boolean preserveSpace) {
+  public Result getXmlResult(boolean preserveSpace) {
     
     xmlDocument = createResponseDocument(null, preserveSpace);
     
@@ -127,7 +127,7 @@ public class InfoboxReadResultFileImpl extends SLResultImpl implements
    * 
    * @param resultBytes
    */
-  void setResultBytes(byte[] resultBytes) {
+  public void setResultBytes(byte[] resultBytes) {
     
     xmlDocument = createResponseDocument(resultBytes, false);
     
