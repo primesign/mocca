@@ -29,6 +29,7 @@ import javax.xml.transform.dom.DOMResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import at.buergerkarte.namespaces.securitylayer._1.Base64XMLContentType;
@@ -118,6 +119,23 @@ public class InfoboxReadResultFileImpl extends SLResultImpl implements
     
     NodeList nodeList = xmlDocument.getElementsByTagNameNS(SLCommand.NAMESPACE_URI, "XMLContent");
     return new DOMResult(nodeList.item(0));
+    
+  }
+
+  /**
+   * Creates a new <code>InfoboxReadResponse</code> document and appends
+   * the given <code>node</code> as child node of the <code>XMLContent</code> element.
+   * 
+   * @param node the node to be appended as child node of the <code>XMLContnet</code> element
+   * @param preserveSpace if <code>true</code> the value of the <code>XMLContent</code>'s <code>space</code> 
+   * attribute is set to <code>preserve</code>.  
+   */
+  public void setResultXMLContent(Node node, boolean preserveSpace) {
+    
+    xmlDocument = createResponseDocument(null, preserveSpace);
+    
+    NodeList nodeList = xmlDocument.getElementsByTagNameNS(SLCommand.NAMESPACE_URI, "XMLContent");
+    nodeList.item(0).appendChild(node);
     
   }
   
