@@ -20,6 +20,7 @@
 		<module>BKUCommonGUI</module>
 		<module>BKUViewer</module>
 		<module>BKULocalApp</module>
+		<module>STALExt</module>
 	</modules>
 	<developers>
 		<developer>
