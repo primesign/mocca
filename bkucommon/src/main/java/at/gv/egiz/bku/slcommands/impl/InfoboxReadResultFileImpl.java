@@ -135,6 +135,10 @@ public class InfoboxReadResultFileImpl extends SLResultImpl implements
     xmlDocument = createResponseDocument(null, preserveSpace);
     
     NodeList nodeList = xmlDocument.getElementsByTagNameNS(SLCommand.NAMESPACE_URI, "XMLContent");
+    if (node.getOwnerDocument() != xmlDocument.getOwnerDocument()) {
+      Document doc = xmlDocument.getOwnerDocument();
+      node = doc.importNode(node, true);
+    }
     nodeList.item(0).appendChild(node);
     
   }
