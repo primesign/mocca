@@ -85,7 +85,7 @@ public class STALHelper {
    * @param stalRequests
    * @throws SLCommandException
    */
-   public void transmitSTALRequest(List<STALRequest> stalRequests) throws SLCommandException {
+   public void transmitSTALRequest(List<? extends STALRequest> stalRequests) throws SLCommandException {
     List<STALResponse> responses = stal.handleRequest(stalRequests);
     if (responses == null) {
       Log log = LogFactory.getLog(this.getClass());

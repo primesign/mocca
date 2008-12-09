@@ -34,6 +34,7 @@ import java.util.List;
 
 import javax.smartcardio.ATR;
 import javax.smartcardio.Card;
+import javax.smartcardio.CardTerminal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -204,6 +205,7 @@ public class SignatureCardFactory {
    * @param card
    *          the smart card, or <code>null</code> if a software card should be
    *          created
+   * @param cardTerminal TODO
    * 
    * @return a SignatureCard instance
    * 
@@ -211,12 +213,12 @@ public class SignatureCardFactory {
    *           if no implementation of the given <code>card</code> could be
    *           found
    */
-  public SignatureCard createSignatureCard(Card card)
+  public SignatureCard createSignatureCard(Card card, CardTerminal cardTerminal)
       throws CardNotSupportedException {
     
     if(card == null) {
       SignatureCard sCard = new SWCard();
-      sCard.init(card);
+      sCard.init(card, cardTerminal);
       return sCard;
     }
 
@@ -231,7 +233,7 @@ public class SignatureCardFactory {
         try {
           Class<?> scClass = cl.loadClass(supportedCard.getImplementationClassName());
           sc = (SignatureCard) scClass.newInstance();
-          sc.init(card);
+          sc.init(card, cardTerminal);
           return sc;
 
         } catch (ClassNotFoundException e) {

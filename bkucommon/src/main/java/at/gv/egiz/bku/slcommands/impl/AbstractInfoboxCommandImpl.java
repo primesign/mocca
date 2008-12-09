@@ -52,4 +52,13 @@ public abstract class AbstractInfoboxCommandImpl<T> extends SLCommandImpl<T> {
    */
   protected abstract String getInfoboxIdentifier(T request);
 
+
+  public String getInfoboxIdentifier() {
+    if (infobox != null) {
+      return infobox.getIdentifier();
+    } else {
+      return null;
+    }
+  }
+  
 }

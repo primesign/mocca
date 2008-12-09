@@ -40,6 +40,7 @@ import java.util.Enumeration;
 import java.util.Locale;
 
 import javax.smartcardio.Card;
+import javax.smartcardio.CardTerminal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -102,7 +103,12 @@ public class SWCard implements SignatureCard {
     SWCard.swCardDir = swCardDir;
   }
 
-  public void init(Card card) {
+  public void init(Card card, CardTerminal cardTerminal) {
+  }
+  
+  @Override
+  public Card getCard() {
+    return null;
   }
 
   private String getFileName(String fileName) {
@@ -377,6 +383,10 @@ public class SWCard implements SignatureCard {
 
   @Override
   public void disconnect(boolean reset) {    
+  }
+
+  @Override
+  public void reset() throws SignatureCardException {
   }
 
 }

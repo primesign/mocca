@@ -16,6 +16,7 @@
 */
 package at.gv.egiz.smcc.util;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +55,13 @@ public class SmartCardIO {
   CardTerminals cardTerminals_;
 
   private void updateTerminalFactory() {
-    TerminalFactory terminalFactory = TerminalFactory.getDefault();
+    TerminalFactory terminalFactory;
+    try {
+      terminalFactory = TerminalFactory.getInstance("PC/SC", null);
+    } catch (NoSuchAlgorithmException e) {
+      log.info("Failed to get TerminalFactory of type 'PC/SC'.", e);
+      terminalFactory = TerminalFactory.getDefault();
+    }
     log.debug("TerminalFactory : " + terminalFactory);
     if ("PC/SC".equals(terminalFactory.getType())) {
       terminalFactory_ = terminalFactory;

@@ -17,6 +17,7 @@
 package at.gv.egiz.bku.slcommands;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,10 +42,12 @@ import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import at.buergerkarte.namespaces.cardchannel.ObjectFactory;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLExceptionMessages;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
+import at.gv.egiz.bku.utils.DebugReader;
 import at.gv.egiz.slbinding.RedirectEventFilter;
 import at.gv.egiz.slbinding.RedirectUnmarshallerListener;
 
@@ -164,7 +167,8 @@ public class SLCommandFactory {
             try {
                 String slPkg = at.buergerkarte.namespaces.securitylayer._1.ObjectFactory.class.getPackage().getName();
                 String xmldsigPkg = org.w3._2000._09.xmldsig_.ObjectFactory.class.getPackage().getName();
-                setJaxbContext(JAXBContext.newInstance(slPkg + ":" + xmldsigPkg));
+                String cardChannelPkg = at.buergerkarte.namespaces.cardchannel.ObjectFactory.class.getPackage().getName();
+                setJaxbContext(JAXBContext.newInstance(slPkg + ":" + xmldsigPkg + ":" + cardChannelPkg));
             } catch (JAXBException e) {
                 log.error("Failed to setup JAXBContext security layer request.", e);
                 throw new SLRuntimeException(e);
@@ -326,8 +330,27 @@ public class SLCommandFactory {
     @SuppressWarnings("unchecked")
     public SLCommand createSLCommand(Source source, SLCommandContext context)
       throws SLCommandException, SLRuntimeException, SLRequestException {
+      
+        DebugReader dr = null;
+        if (log.isTraceEnabled() && source instanceof StreamSource) {
+          StreamSource streamSource = (StreamSource) source;
+          if (streamSource.getReader() != null) {
+            dr = new DebugReader(streamSource.getReader(), "SLCommand unmarshalled from:\n");
+            streamSource.setReader(dr);
+          }
+        }
 
-        Object object = unmarshal(source);
+        Object object;
+        try {
+          object = unmarshal(source);
+        } catch (SLRequestException e) {
+          throw e;
+        } finally {
+          if (dr != null) {
+            log.trace(dr.getCachedString());
+          }
+        }
+        
         if (!(object instanceof JAXBElement)) {
             // invalid request
             log.info("Invalid security layer request. " + object.toString());
@@ -344,6 +367,8 @@ public class SLCommandFactory {
               SLExceptionMessages.EC4011_NOTIMPLEMENTED, new Object[]{qName.toString()});
         }
 
+        
+        
         // try to instantiate
         SLCommand slCommand;
         try {
@@ -360,6 +385,7 @@ public class SLCommandFactory {
               e);
             throw new SLRuntimeException(e);
         }
+
         slCommand.init(context, (JAXBElement) object);
 
         return slCommand;

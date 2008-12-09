@@ -17,7 +17,9 @@
 package at.gv.egiz.bku.slcommands.impl;
 
 import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadRequestType;
+import at.buergerkarte.namespaces.securitylayer._1.InfoboxUpdateRequestType;
 import at.gv.egiz.bku.slcommands.InfoboxReadResult;
+import at.gv.egiz.bku.slcommands.InfoboxUpdateResult;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 
@@ -44,10 +46,25 @@ public interface Infobox {
    * 
    * @return the data read from this infobox as InfoboxReadResult
    * 
-   * @throws SLCommandException
-   *           if reading from this infobox fails
+   * @throws SLCommandException 
+   * 
+   *            if reading from this infobox fails
    */
   public InfoboxReadResult read(InfoboxReadRequestType request,
+      SLCommandContext cmdCtx) throws SLCommandException;
+
+  /**
+   * Update data in this infobox.
+   * 
+   * @param request
+   *          the InfoboxUpdateRequest
+   * @param cmdCtx
+   *          the command context
+   * @return a corresponding InfoboxUpdateResult
+   * @throws SLCommandException
+   *           if updating this infobox fails
+   */
+  public InfoboxUpdateResult update(InfoboxUpdateRequestType request,
       SLCommandContext cmdCtx) throws SLCommandException;
 
 }

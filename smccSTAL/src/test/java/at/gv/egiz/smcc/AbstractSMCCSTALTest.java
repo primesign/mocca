@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.smartcardio.Card;
+import javax.smartcardio.CardTerminal;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -61,13 +62,25 @@ public class AbstractSMCCSTALTest extends AbstractSMCCSTAL implements
     }
 
     @Override
-    public void init(Card card) {
+    public void init(Card card, CardTerminal cardTerminal) {
       // TODO Auto-generated method stub
       
     }
 
     @Override
     public void setLocale(Locale locale) {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public Card getCard() {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    @Override
+    public void reset() throws SignatureCardException {
       // TODO Auto-generated method stub
       
     }

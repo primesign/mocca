@@ -83,7 +83,6 @@ public class InfoboxReadCommandImpl extends AbstractInfoboxCommandImpl<InfoboxRe
     }
     
   }
- 
 
   @Override
   public String getIdentityLinkDomainId() {
@@ -94,12 +93,4 @@ public class InfoboxReadCommandImpl extends AbstractInfoboxCommandImpl<InfoboxRe
     }
   }
 
-  @Override
-  public String getInfoboxIdentifier() {
-    if (infobox != null) {
-      return infobox.getIdentifier();
-    } else {
-      return null;
-    }
-  }
 }

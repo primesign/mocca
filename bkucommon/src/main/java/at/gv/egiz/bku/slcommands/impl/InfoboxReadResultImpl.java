@@ -20,6 +20,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.transform.Result;
 import javax.xml.transform.Templates;
 
+import at.buergerkarte.namespaces.securitylayer._1.Base64XMLContentType;
 import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadDataAssocArrayType;
 import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadResponseType;
 import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
@@ -40,6 +41,17 @@ public class InfoboxReadResultImpl extends SLResultImpl implements InfoboxReadRe
     infoboxReadResponseType.setAssocArrayData(assocArray);
     
     this.infoboxReadResponse = infoboxReadResponseType;
+  }
+  
+  public InfoboxReadResultImpl(Base64XMLContentType value) {
+    
+    ObjectFactory objectFactory = new ObjectFactory();
+    InfoboxReadResponseType infoboxReadResponseType = objectFactory.createInfoboxReadResponseType();
+    
+    infoboxReadResponseType.setBinaryFileData(value);
+    
+    this.infoboxReadResponse = infoboxReadResponseType;
+    
   }
 
   @Override

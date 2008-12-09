@@ -60,6 +60,9 @@
           key="http://www.buergerkarte.at/namespaces/securitylayer/1.2#:InfoboxReadRequest"
           value="at.gv.egiz.bku.slcommands.impl.InfoboxReadCommandImpl" />
         <entry
+          key="http://www.buergerkarte.at/namespaces/securitylayer/1.2#:InfoboxUpdateRequest"
+          value="at.gv.egiz.bku.slcommands.impl.InfoboxUpdateCommandImpl" />
+        <entry
           key="http://www.buergerkarte.at/namespaces/securitylayer/1.2#:CreateXMLSignatureRequest"
           value="at.gv.egiz.bku.slcommands.impl.CreateXMLSignatureCommandImpl" />
       </map>
@@ -76,9 +79,9 @@
         <entry
           key="IdentityLink"
           value="at.gv.egiz.bku.slcommands.impl.IdentityLinkInfoboxImpl" />
-<!--        <entry-->
-<!--          key="CardChannel"-->
-<!--          value="at.gv.egiz.bku.slcommands.impl.CardChannelInfoboxImpl" />-->
+        <entry
+          key="CardChannel"
+          value="at.gv.egiz.bku.slcommands.impl.CardChannelInfoboxImpl" />
       </map>
     </property>
   </bean>

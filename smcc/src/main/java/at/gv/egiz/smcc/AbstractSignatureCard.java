@@ -36,6 +36,7 @@ import javax.smartcardio.ATR;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
+import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
@@ -53,7 +54,12 @@ public abstract class AbstractSignatureCard implements SignatureCard {
 
   int ifs_ = 254;
 
-  Card card_;
+  private Card card_;
+  
+  /**
+   * The card terminal that connects the {@link #card_}.  
+   */
+  private CardTerminal cardTerminal;
 
   protected AbstractSignatureCard(String resourceBundleName) {
     this.resourceBundleName = resourceBundleName;
@@ -331,14 +337,20 @@ public abstract class AbstractSignatureCard implements SignatureCard {
   }
 
   
-  public void init(Card card) {
+  public void init(Card card, CardTerminal cardTerminal) {
     card_ = card;
+    this.cardTerminal = cardTerminal;
     ATR atr = card.getATR();
     byte[] atrBytes = atr.getBytes();
     if (atrBytes.length >= 6) {
       ifs_ = 0xFF & atr.getBytes()[6];
       log.trace("Setting IFS (information field size) to " + ifs_);
     }
+  }
+  
+  @Override
+  public Card getCard() {
+    return card_;
   }
 
   protected CardChannel getCardChannel() {
@@ -369,6 +381,20 @@ public abstract class AbstractSignatureCard implements SignatureCard {
       } catch (Exception e) {
         log.info("Error while resetting card", e);
       }
+    }
+  }
+
+  @Override
+  public void reset() throws SignatureCardException {
+    try {
+      log.debug("Disconnect and reset smart card.");
+      card_.disconnect(true);
+      log.debug("Reconnect smart card.");
+      if (cardTerminal != null) {
+        card_ = cardTerminal.connect("*");
+      }
+    } catch (CardException e) {
+      throw new SignatureCardException("Failed to reset card.", e);
     }
   }
 

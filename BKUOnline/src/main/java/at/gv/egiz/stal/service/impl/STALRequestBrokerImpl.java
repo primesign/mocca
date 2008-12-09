@@ -85,7 +85,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
      * @pre requests: either single SignRequest, QuitRequest or multiple ReadInfoboxRequests
      */
     @Override
-    public List<STALResponse> handleRequest(List<STALRequest> stalRequests) {
+    public List<STALResponse> handleRequest(List<? extends STALRequest> stalRequests) {
       if (interrupted) {
         return null;
       }

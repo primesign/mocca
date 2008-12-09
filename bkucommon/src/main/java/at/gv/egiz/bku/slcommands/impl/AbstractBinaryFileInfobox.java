@@ -37,7 +37,7 @@ public abstract class AbstractBinaryFileInfobox extends AbstractInfoboxImpl impl
   /**
    * Is this infobox' content an XML entity?
    */
-  private boolean isXMLEntity = false;
+  protected boolean isXMLEntity = false;
   
   /**
    * @return <code>true</code> if this infobox' content is an XML entity or <code>false</code> otherwise.
@@ -61,8 +61,6 @@ public abstract class AbstractBinaryFileInfobox extends AbstractInfoboxImpl impl
     }
     
   }
-
-  
   
 
 }

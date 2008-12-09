@@ -22,6 +22,8 @@ import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
+import at.gv.egiz.stal.ext.APDUScriptRequest;
+
 import java.util.List;
 import javax.swing.JDialog;
 
@@ -40,7 +42,7 @@ public class LocalBKUWorker extends AbstractBKUWorker {
   }
 
   @Override
-  public List<STALResponse> handleRequest(List<STALRequest> requestList) {
+  public List<STALResponse> handleRequest(List<? extends STALRequest> requestList) {
     signatureCard = null;
     List<STALResponse> responses = super.handleRequest(requestList);
     // container.setVisible(false);

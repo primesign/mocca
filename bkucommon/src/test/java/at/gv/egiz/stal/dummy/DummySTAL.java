@@ -71,7 +71,7 @@ public class DummySTAL implements STAL {
   }
 
   @Override
-  public List<STALResponse> handleRequest(List<STALRequest> requestList) {
+  public List<STALResponse> handleRequest(List<? extends STALRequest> requestList) {
 
     List<STALResponse> responses = new ArrayList<STALResponse>();
     for (STALRequest request : requestList) {

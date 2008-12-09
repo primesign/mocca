@@ -121,7 +121,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
   }
 
   @Override
-  public List<STALResponse> handleRequest(List<STALRequest> requestList) {
+  public List<STALResponse> handleRequest(List<? extends STALRequest> requestList) {
     log.debug("Got request list containing " + requestList.size()
         + " STAL requests");
     List<STALResponse> responseList = new ArrayList<STALResponse>(requestList

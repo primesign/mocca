@@ -57,7 +57,7 @@ public class SMCCHelper {
     SignatureCardFactory factory = SignatureCardFactory.getInstance();
     if (useSWCard) {
       try {
-        signatureCard = factory.createSignatureCard(null);
+        signatureCard = factory.createSignatureCard(null, null);
         resultCode = CARD_FOUND;
       } catch (CardNotSupportedException e) {
         resultCode = CARD_NOT_SUPPORTED;
@@ -83,7 +83,7 @@ public class SMCCHelper {
             if (c == null) {
               throw new CardNotSupportedException();
             }
-            signatureCard = factory.createSignatureCard(c);
+            signatureCard = factory.createSignatureCard(c, cardTerminal);
             ATR atr = newCards.get(cardTerminal).getATR();
             log.trace("Found supported card (" + signatureCard.toString() + ") "
                 + "in terminal '" + cardTerminal.getName() + "', ATR = "
