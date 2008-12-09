@@ -19,7 +19,7 @@
 		</dependency>
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
-			<artifactId>STAL</artifactId>
+			<artifactId>STALExt</artifactId>
 			<version>1.0.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
