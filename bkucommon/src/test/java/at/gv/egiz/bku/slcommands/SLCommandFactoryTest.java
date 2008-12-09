@@ -33,6 +33,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
+import at.gv.egiz.stal.dummy.DummySTAL;
 
 public class SLCommandFactoryTest {
   
@@ -49,6 +50,7 @@ public class SLCommandFactoryTest {
   public void setUp() {
     factory = SLCommandFactory.getInstance();
     context = new SLCommandContext();
+    context.setSTAL(new DummySTAL());
   }
   
   @Test

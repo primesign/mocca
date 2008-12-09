@@ -51,8 +51,9 @@ public class DummySTAL implements STAL {
   public DummySTAL() {
     try {
       KeyStore ks = KeyStore.getInstance("pkcs12");
-      ks.load(getClass().getClassLoader().getResourceAsStream(
-          "at/gv/egiz/stal/dummy/keystore/Cert.p12"), "1622".toCharArray());
+      InputStream ksStream = getClass().getClassLoader().getResourceAsStream(
+      "at/gv/egiz/bku/slcommands/impl/Cert.p12");
+      ks.load(ksStream, "1622".toCharArray());
       for (Enumeration<String> aliases = ks.aliases(); aliases
           .hasMoreElements();) {
         String alias = aliases.nextElement();

@@ -25,9 +25,12 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import at.gv.egiz.bku.slcommands.ErrorResult;
 import at.gv.egiz.bku.slcommands.InfoboxReadCommand;
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
@@ -39,13 +42,20 @@ import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.dummy.DummySTAL;
 
-@Ignore
+//@Ignore
 public class InfoboxReadComandImplTest {
 
+  private static ApplicationContext appCtx;
+  
   private SLCommandFactory factory;
   
   private STAL stal;
   
+  @BeforeClass
+  public static void setUpClass() {
+    appCtx = new ClassPathXmlApplicationContext("at/gv/egiz/bku/slcommands/testApplicationContext.xml");
+  }
+
   @Before
   public void setUp() {
     factory = SLCommandFactory.getInstance();
@@ -72,18 +82,22 @@ public class InfoboxReadComandImplTest {
     assertNotNull(inputStream);
     
     SLCommandContext context = new SLCommandContext();
+    context.setSTAL(stal);
     SLCommand command = factory.createSLCommand(new StreamSource(inputStream), context);
     assertTrue(command instanceof InfoboxReadCommand);
   }
 
-  @Test(expected=SLCommandException.class)
   public void testInfboxReadRequestInvalid2() throws SLCommandException, SLRuntimeException, SLRequestException {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.Invalid-2.xml");
     assertNotNull(inputStream);
     
     SLCommandContext context = new SLCommandContext();
+    context.setSTAL(stal);
     SLCommand command = factory.createSLCommand(new StreamSource(inputStream), context);
     assertTrue(command instanceof InfoboxReadCommand);
+    
+    SLResult result = command.execute();
+    assertTrue(result instanceof ErrorResult);
   }
 
 }
