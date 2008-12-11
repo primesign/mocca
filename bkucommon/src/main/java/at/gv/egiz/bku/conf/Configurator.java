@@ -14,6 +14,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.security.Security;
+import java.security.Provider.Service;
 import java.security.cert.CertStore;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -150,9 +152,21 @@ public abstract class Configurator {
     log.debug("Registering security providers");
     Security.insertProviderAt(new IAIK(), 1);
     Security.insertProviderAt(new ECCProvider(false), 2);
-    Security.addProvider(new STALProvider());
-    XSecProvider.addAsProvider(false);
+    
+    // registering STALProvider as delegation provider for XSECT
+    STALProvider stalProvider = new STALProvider();
+    Set<Service> services = stalProvider.getServices();
     StringBuilder sb = new StringBuilder();
+    for (Service service : services) {
+      String algorithm = service.getType() + "." + service.getAlgorithm();
+      XSecProvider.setDelegationProvider(algorithm, stalProvider.getName());
+      sb.append("\n" + algorithm);
+    }
+    log.debug("Registered STALProvider as XSecProvider delegation provider for the following services : " + sb.toString());
+    
+    Security.addProvider(stalProvider);
+    XSecProvider.addAsProvider(false);
+    sb = new StringBuilder();
     sb.append("Registered providers: ");
     int i = 1;
     for (Provider prov : Security.getProviders()) {
