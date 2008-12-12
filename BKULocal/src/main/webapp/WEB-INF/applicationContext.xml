@@ -82,6 +82,9 @@
         <entry
           key="CardChannel"
           value="at.gv.egiz.bku.slcommands.impl.CardChannelInfoboxImpl" />
+        <entry
+          key="SV-Personendaten"
+          value="at.gv.egiz.bku.slcommands.impl.SVPersonendatenInfoboxImpl" />
       </map>
     </property>
   </bean>

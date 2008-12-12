@@ -19,6 +19,8 @@ package at.gv.egiz.smcc;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
@@ -27,6 +29,8 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
+import sun.misc.HexDumpEncoder;
+
 import at.gv.egiz.smcc.SignatureCard.KeyboxName;
 import at.gv.egiz.smcc.util.SMCCHelper;
 
@@ -34,10 +38,9 @@ public class STARCOSCardTest {
 
   /**
    * @param args
-   * @throws CardException 
-   * @throws NoSuchAlgorithmException 
+   * @throws Exception 
    */
-  public static void main(String[] args) throws CardException, NoSuchAlgorithmException, InterruptedException {
+  public static void main(String[] args) throws Exception {
     
     SMCCHelper helper = new SMCCHelper();
     while (helper.getResultCode() != SMCCHelper.CARD_FOUND) {
@@ -55,16 +58,39 @@ public class STARCOSCardTest {
     System.out.println("Found '" + signatureCard + "'.");
     
     try {
-//      signatureCard.getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR);
-//      signatureCard.getCertificate(KeyboxName.CERITIFIED_KEYPAIR);
-//      signatureCard.getInfobox("IdentityLink", new CommandLinePINProvider(), null);
+//      printJavaByteArray(
+//          signatureCard.getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR), System.out);
+//      printJavaByteArray(
+//          signatureCard.getCertificate(KeyboxName.CERITIFIED_KEYPAIR), System.out);
+//      System.out. println(new String(signatureCard.getInfobox("IdentityLink", new CommandLinePINProvider(), null)));
+//        byte[] infobox = signatureCard.getInfobox("Status", new CommandLinePINProvider(), null);
+//        printJavaByteArray(infobox, System.out);
       MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
       byte[] digest = messageDigest.digest("test".getBytes());
-      signatureCard.createSignature(digest, KeyboxName.CERITIFIED_KEYPAIR, new CommandLinePINProvider());
+      byte[] signature = signatureCard.createSignature(digest, KeyboxName.SECURE_SIGNATURE_KEYPAIR, new CommandLinePINProvider());
+      printJavaByteArray(signature, System.out);
     } catch (SignatureCardException e) {
       e.printStackTrace();
     }
 
+  }
+  
+  public static void printJavaByteArray(byte[] bytes, OutputStream os) {
+    
+    PrintWriter w = new PrintWriter(os);
+    
+    w.write("new byte[] {");
+    for (int i = 0; i < bytes.length;) {
+      if (i % 8 == 0) { 
+        w.write("\n  ");
+      }
+      w.write("(byte) 0x" + Integer.toHexString(0x0F & (bytes[i] >> 4)) + Integer.toHexString(0x0F & bytes[i]));
+      if (++i < bytes.length) {
+        w.write(", ");
+      }
+    }
+    w.write("\n};");
+    w.flush();
   }
   
   private static class CommandLinePINProvider implements PINProvider {

@@ -103,6 +103,9 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler implements
           stalResp.setInfoboxValue(resp);
           return stalResp;
         }
+      } catch (IllegalArgumentException e) {
+        log.info("Infobox " + infoBox.getInfoboxIdentifier() + " not supported.");
+        return new ErrorResponse(4002);
       } catch (NotActivatedException e) {
         log.info("Citizen card not activated.", e);
         gui.showErrorDialog(BKUGUIFacade.ERR_CARD_NOTACTIVATED, null, this, null);

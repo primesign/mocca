@@ -16,11 +16,16 @@
  */
 package at.gv.egiz.bku.slcommands.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +41,7 @@ import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadParamsAssocArrayTy
 import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadParamsAssocArrayType.ReadValue;
 import at.gv.egiz.bku.slcommands.InfoboxReadResult;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
+import at.gv.egiz.bku.slcommands.SLCommandFactory;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 
 /**
@@ -54,7 +60,7 @@ public abstract class AbstractAssocArrayInfobox extends AbstractInfoboxImpl
   /**
    * The search string pattern.
    */
-  public static final String SEARCH_STRING_PATTERN = ".&&[^/](/.&&[^/])*";
+  public static final String SEARCH_STRING_PATTERN = "(.&&[^/])+(/.&&[^/])*";
   
   /**
    * @return the keys available in this infobox.
@@ -91,6 +97,11 @@ public abstract class AbstractAssocArrayInfobox extends AbstractInfoboxImpl
     
     if ("*".equals(searchString) || "**".equals(searchString)) {
       return Arrays.asList(getKeys());
+    }
+    
+    if (!searchString.contains("*")) {
+      Arrays.asList(getKeys()).contains(searchString);
+      return Collections.singletonList(searchString);
     }
     
     if (Pattern.matches(SEARCH_STRING_PATTERN, searchString)) {
@@ -160,15 +171,10 @@ public abstract class AbstractAssocArrayInfobox extends AbstractInfoboxImpl
   protected InfoboxReadResult readPairs(ReadPairs readPairs, SLCommandContext cmdCtx) throws SLCommandException {
     
     if (readPairs.isValuesAreXMLEntities() && !isValuesAreXMLEntities()) {
-      log.info("Got valuesAreXMLEntities=" + readPairs + " but infobox type is binary.");
+      log.info("Got valuesAreXMLEntities=" + readPairs.isValuesAreXMLEntities() + " but infobox type is binary.");
       throw new SLCommandException(4010);
     }
     
-    if (!readPairs.isValuesAreXMLEntities() && isValuesAreXMLEntities()) {
-      log.info("Got valuesAreXMLEntities=" + readPairs + " but infobox type is XML.");
-      throw new SLCommandException(4010);
-    }
-
     List<String> selectedKeys = selectKeys(readPairs.getSearchString());
     
     if (readPairs.isUserMakesUnique() && selectedKeys.size() > 1) {
@@ -177,26 +183,10 @@ public abstract class AbstractAssocArrayInfobox extends AbstractInfoboxImpl
       throw new SLCommandException(4010);
     }
     
-    ObjectFactory objectFactory = new ObjectFactory();
-
-    InfoboxReadDataAssocArrayType infoboxReadDataAssocArrayType = objectFactory.createInfoboxReadDataAssocArrayType();
-
-    Map<String, Object> values = getValues(selectedKeys, cmdCtx);
-    for (String key : selectedKeys) {
-      InfoboxAssocArrayPairType infoboxAssocArrayPairType = objectFactory.createInfoboxAssocArrayPairType();
-      infoboxAssocArrayPairType.setKey(key);
-      Object value = values.get(key);
-      if (value instanceof byte[]) {
-        infoboxAssocArrayPairType.setBase64Content((byte[]) value);
-      } else {
-        infoboxAssocArrayPairType.setXMLContent((XMLContentType) value);
-      }
-      infoboxReadDataAssocArrayType.getPair().add(infoboxAssocArrayPairType);
-    }
-    
-    return new InfoboxReadResultImpl(infoboxReadDataAssocArrayType);
+    return new InfoboxReadResultImpl(marshallPairs(selectedKeys, getValues(
+        selectedKeys, cmdCtx), readPairs.isValuesAreXMLEntities()));
   }
-
+  
   /**
    * Read the value specified by <code>readPairs</code>.
    * 
@@ -213,12 +203,7 @@ public abstract class AbstractAssocArrayInfobox extends AbstractInfoboxImpl
   protected InfoboxReadResult readValue(ReadValue readValue, SLCommandContext cmdCtx) throws SLCommandException {
     
     if (readValue.isValueIsXMLEntity() && !isValuesAreXMLEntities()) {
-      log.info("Got valuesAreXMLEntities=" + readValue + " but infobox type is binary.");
-      throw new SLCommandException(4010);
-    }
-    
-    if (!readValue.isValueIsXMLEntity() && isValuesAreXMLEntities()) {
-      log.info("Got valuesAreXMLEntities=" + readValue + " but infobox type is XML.");
+      log.info("Got valuesAreXMLEntities=" + readValue.isValueIsXMLEntity() + " but infobox type is binary.");
       throw new SLCommandException(4010);
     }
     
@@ -230,24 +215,59 @@ public abstract class AbstractAssocArrayInfobox extends AbstractInfoboxImpl
       selectedKeys = Collections.emptyList();
     }
     
+    return new InfoboxReadResultImpl(marshallPairs(selectedKeys, getValues(
+        selectedKeys, cmdCtx), readValue.isValueIsXMLEntity()));
+    
+  }
+  
+  protected InfoboxReadDataAssocArrayType marshallPairs(List<String> selectedKeys, Map<String, Object> values, boolean areXMLEntities) throws SLCommandException {
+    
     ObjectFactory objectFactory = new ObjectFactory();
-
+    
     InfoboxReadDataAssocArrayType infoboxReadDataAssocArrayType = objectFactory.createInfoboxReadDataAssocArrayType();
     
-    Map<String, Object> values = getValues(selectedKeys, cmdCtx);
     for (String key : selectedKeys) {
       InfoboxAssocArrayPairType infoboxAssocArrayPairType = objectFactory.createInfoboxAssocArrayPairType();
       infoboxAssocArrayPairType.setKey(key);
+     
       Object value = values.get(key);
-      if (value instanceof byte[]) {
-        infoboxAssocArrayPairType.setBase64Content((byte[]) value);
+      if (areXMLEntities) {
+        if (value instanceof byte[]) {
+          log.info("Got valuesAreXMLEntities=" + areXMLEntities + " but infobox type is binary.");
+          throw new SLCommandException(4122);
+        } else {
+          XMLContentType contentType = objectFactory.createXMLContentType();
+          contentType.getContent().add(value);
+          infoboxAssocArrayPairType.setXMLContent(contentType);
+        }
       } else {
-        infoboxAssocArrayPairType.setXMLContent((XMLContentType) value);
+        infoboxAssocArrayPairType.setBase64Content((value instanceof byte[]) ? (byte[]) value : marshallValue(value));
       }
+      
       infoboxReadDataAssocArrayType.getPair().add(infoboxAssocArrayPairType);
     }
+
+    return infoboxReadDataAssocArrayType;
     
-    return new InfoboxReadResultImpl(infoboxReadDataAssocArrayType);
+  }
+
+  protected byte[] marshallValue(Object jaxbElement) throws SLCommandException {
+    SLCommandFactory commandFactory = SLCommandFactory.getInstance();
+    JAXBContext jaxbContext = commandFactory.getJaxbContext();
+    
+    ByteArrayOutputStream result;
+    try {
+      Marshaller marshaller = jaxbContext.createMarshaller();
+      
+      result = new ByteArrayOutputStream();
+      marshaller.marshal(jaxbElement, result);
+    } catch (JAXBException e) {
+      log.info("Failed to marshall infobox content.", e);
+      throw new SLCommandException(4122);
+    }
+    
+    return result.toByteArray();
+  
   }
 
   @Override

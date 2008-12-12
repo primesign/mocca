@@ -80,6 +80,7 @@ public class LegacyDataUrlConnectionImpl implements DataUrlConnectionSPI {
       }
       if (hostnameVerifier != null) {
         log.debug("Setting custom hostname verifier");
+        https.setHostnameVerifier(hostnameVerifier);
       }
     }
     connection.setDoOutput(true);
@@ -229,6 +230,8 @@ public class LegacyDataUrlConnectionImpl implements DataUrlConnectionSPI {
   public DataUrlConnectionSPI newInstance() {
     DataUrlConnectionSPI uc = new LegacyDataUrlConnectionImpl();
     uc.setConfiguration(config);
+    uc.setSSLSocketFactory(sslSocketFactory);
+    uc.setHostnameVerifier(hostnameVerifier);
     return uc;
   }
 

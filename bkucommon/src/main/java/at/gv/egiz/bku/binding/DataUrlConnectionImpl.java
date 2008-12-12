@@ -100,6 +100,7 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
       }
       if (hostnameVerifier != null) {
         log.debug("Setting custom hostname verifier");
+        https.setHostnameVerifier(hostnameVerifier);
       }
     } else {
       log.trace("No secure connection with: "+url+ " class="+connection.getClass());
