@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>hexBinary">
  *       &lt;attribute name="sequence" use="required" type="{http://www.w3.org/2001/XMLSchema}positiveInteger" />
  *       &lt;attribute name="rc" type="{http://www.w3.org/2001/XMLSchema}integer" default="0" />
- *       &lt;attribute name="SW" type="{http://www.w3.org/2001/XMLSchema}hexBinary" default="9000" />
+ *       &lt;attribute name="sw" type="{http://www.w3.org/2001/XMLSchema}hexBinary" default="9000" />
  *     &lt;/extension>
  *   &lt;/simpleContent>
  * &lt;/complexType>
@@ -138,7 +138,7 @@ public class ResponseAPDUType {
      *     {@link String }
      *     
      */
-    public byte[] getSW() {
+    public byte[] getSw() {
         if (sw == null) {
             return new HexBinaryAdapter().unmarshal("9000");
         } else {
@@ -154,7 +154,7 @@ public class ResponseAPDUType {
      *     {@link String }
      *     
      */
-    public void setSW(byte[] value) {
+    public void setSw(byte[] value) {
         this.sw = ((byte[]) value);
     }
 
