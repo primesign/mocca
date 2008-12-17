@@ -29,11 +29,14 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
+import org.junit.Ignore;
+
 import sun.misc.HexDumpEncoder;
 
 import at.gv.egiz.smcc.SignatureCard.KeyboxName;
 import at.gv.egiz.smcc.util.SMCCHelper;
 
+@Ignore
 public class STARCOSCardTest {
 
   /**

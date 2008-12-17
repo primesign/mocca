@@ -18,8 +18,11 @@ package at.gv.egiz.smcc;
 
 import java.util.Locale;
 
+import org.junit.Ignore;
+
 import at.gv.egiz.smcc.util.SMCCHelper;
 
+@Ignore
 public class SMCCApplication {
 
   /**

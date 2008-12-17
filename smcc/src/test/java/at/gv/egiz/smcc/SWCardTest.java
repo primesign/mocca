@@ -20,8 +20,11 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.junit.Ignore;
+
 import at.gv.egiz.smcc.SignatureCard.KeyboxName;
 
+@Ignore
 public class SWCardTest implements PINProvider {
 
   SWCard swCard = new SWCard();
