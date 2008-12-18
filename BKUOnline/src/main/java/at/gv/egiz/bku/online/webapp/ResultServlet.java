@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import at.gv.egiz.bku.binding.HTTPBindingProcessor;
 import at.gv.egiz.bku.binding.HttpUtil;
 import at.gv.egiz.bku.binding.IdFactory;
-import at.gv.egiz.bku.conf.Configurator;
+import at.gv.egiz.bku.utils.NullOutputStream;
 
 /**
  * Delivers the result to the browser
@@ -99,18 +99,20 @@ public class ResultServlet extends SpringBKUServlet {
       resp.sendRedirect(expiredPage);
       return;
     }
-
-    String redirectUrl = (String) session.getAttribute(BKURequestHandler.REDIRECT_URL_SESSION_ATTRIBUTE);
-    if (redirectUrl != null) {
-      log.debug("Executing deferred browser redirect to: "+redirectUrl);
-      resp.sendRedirect(redirectUrl);
-      session.invalidate();
-      return;
+    String redirectUrl = (String) session
+        .getAttribute(BKURequestHandler.REDIRECT_URL_SESSION_ATTRIBUTE);
+    if (redirectUrl == null) {
+      redirectUrl = bp.getRedirectURL();
     }
-    
-    if (bp.getRedirectURL() != null) {
-      resp.sendRedirect(bp.getRedirectURL());
-      session.invalidate();
+    if (redirectUrl != null) {
+      try {
+        bp.writeResultTo(new NullOutputStream(), encoding);
+        getBindingProcessorManager().removeBindingProcessor(bp.getId());
+      } finally {
+        log.debug("Executing deferred browser redirect to: " + redirectUrl);
+        resp.sendRedirect(redirectUrl);
+        session.invalidate();
+      }
       return;
     }
     resp.setStatus(bp.getResponseCode());
@@ -118,8 +120,8 @@ public class ResultServlet extends SpringBKUServlet {
     resp.setHeader("Pragma", "no-cache"); // HTTP 1.0
     resp.setDateHeader("Expires", 0);
     if (configurator.getProperty(USER_AGENT_PROPERTY_KEY) != null) {
-      resp.setHeader(HttpUtil.HTTP_HEADER_USER_AGENT, configurator.getProperty(
-          USER_AGENT_PROPERTY_KEY));
+      resp.setHeader(HttpUtil.HTTP_HEADER_USER_AGENT, configurator
+          .getProperty(USER_AGENT_PROPERTY_KEY));
     } else {
       resp.setHeader(HttpUtil.HTTP_HEADER_USER_AGENT,
           "citizen-card-environment/1.2 MOCCA Unknown");
