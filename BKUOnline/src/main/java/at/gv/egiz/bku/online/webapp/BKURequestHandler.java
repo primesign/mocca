@@ -50,6 +50,7 @@ public class BKURequestHandler extends SpringBKUServlet {
   private static final long serialVersionUID = 1L;
 
   public final static String REDIRECT_URL = "appletPage.jsp";
+  public final static String REDIRECT_URL_SESSION_ATTRIBUTE="redirectUrl";
 
   protected Log log = LogFactory.getLog(BKURequestHandler.class);
 
@@ -170,7 +171,13 @@ public class BKURequestHandler extends SpringBKUServlet {
       log.debug("Using locale " + locale);
       session.setAttribute("locale", locale.toString());
     }
-
+    
+    // handle server side redirect url after processing
+    String redirectUrl = bindingProcessor.getRedirectURL(); 
+    if ( redirectUrl != null) {
+      log.debug("Got redirect URL "+redirectUrl+". Deferring browser redirect.");
+      session.setAttribute(REDIRECT_URL_SESSION_ATTRIBUTE, redirectUrl);
+    }
     // TODO error if no dispatcher found
     RequestDispatcher dispatcher = getServletContext().getNamedDispatcher(
         BKU_APPLET_JSP);

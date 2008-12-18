@@ -100,8 +100,17 @@ public class ResultServlet extends SpringBKUServlet {
       return;
     }
 
+    String redirectUrl = (String) session.getAttribute(BKURequestHandler.REDIRECT_URL_SESSION_ATTRIBUTE);
+    if (redirectUrl != null) {
+      log.debug("Executing deferred browser redirect to: "+redirectUrl);
+      resp.sendRedirect(redirectUrl);
+      session.invalidate();
+      return;
+    }
+    
     if (bp.getRedirectURL() != null) {
       resp.sendRedirect(bp.getRedirectURL());
+      session.invalidate();
       return;
     }
     resp.setStatus(bp.getResponseCode());
