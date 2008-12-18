@@ -47,7 +47,7 @@
                 var attributes = {
                     codebase :'applet',
                     code :'at.gv.egiz.bku.online.applet.BKUApplet.class',
-                    archive :'BKUApplet-1.0.2-SNAPSHOT.jar, commons-logging-1.1.1.jar, iaik_jce_me4se-3.04.jar',
+                    archive :'BKUApplet.jar, commons-logging-1.1.1.jar, iaik_jce_me4se-3.04.jar',
                     width : <%=width%>,
                     height :<%=height%>
                 };

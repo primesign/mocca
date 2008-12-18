@@ -121,6 +121,7 @@
 							</artifactItems>-->
 							<includeGroupIds>at.gv.egiz</includeGroupIds>
 							<includeArtifactIds>BKUApplet</includeArtifactIds>
+							<stripVersion>true</stripVersion>
               <excludeTransitive>true</excludeTransitive>
 						</configuration>
 					</execution>

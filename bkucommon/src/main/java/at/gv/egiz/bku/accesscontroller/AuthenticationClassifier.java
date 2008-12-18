@@ -65,7 +65,8 @@ public class AuthenticationClassifier {
 		} catch (CertificateParsingException e) {
 			log.error(e);
 		}
-		if (cert.getExtensionValue("1.2.40.0.10.1.1.1") != null) {
+		if ((cert.getExtensionValue("1.2.40.0.10.1.1.1") != null)
+        || (cert.getExtensionValue("1.2.40.0.10.1.1.2") != null)) {
 			return true;
 		}
 		return false;

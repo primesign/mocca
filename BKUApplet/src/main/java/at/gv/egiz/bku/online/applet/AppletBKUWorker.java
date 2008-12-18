@@ -38,7 +38,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 /**
- *
+ * 
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
@@ -48,7 +48,8 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
   protected String sessionId;
   protected STALPortType stalPort;
 
-  public AppletBKUWorker(BKUGUIFacade gui, AppletContext ctx, AppletParameterProvider paramProvider) {
+  public AppletBKUWorker(BKUGUIFacade gui, AppletContext ctx,
+      AppletParameterProvider paramProvider) {
     super(gui);
     if (ctx == null) {
       throw new NullPointerException("Applet context not provided");
@@ -76,7 +77,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
       actionCommandList.clear();
       actionCommandList.add("ok");
       gui.showErrorDialog(BKUGUIFacade.ERR_SERVICE_UNREACHABLE,
-              new Object[]{e.getMessage()});
+          new Object[] { e.getMessage() });
       try {
         waitForAction();
       } catch (InterruptedException e1) {
@@ -92,8 +93,10 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
 
       GetNextRequestResponseType nextRequestResp = stalPort.connect(sessionId);
       do {
-        List<RequestType> requests = nextRequestResp.getInfoboxReadRequestOrSignRequestOrQuitRequest();
-        List<STALRequest> stalRequests = STALTranslator.translateRequests(requests);
+        List<RequestType> requests = nextRequestResp
+            .getInfoboxReadRequestOrSignRequestOrQuitRequest();
+        List<STALRequest> stalRequests = STALTranslator
+            .translateRequests(requests);
 
         if (log.isInfoEnabled()) {
           StringBuilder sb = new StringBuilder("Received ");
@@ -142,64 +145,76 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
         }
 
         if (!finished) {
-          log.info("Not finished yet (BKUWorker: " + this + "), sending responses");
+          log.info("Not finished yet (BKUWorker: " + this
+              + "), sending responses");
           GetNextRequestType nextRequest = of.createGetNextRequestType();
           nextRequest.setSessionId(sessionId);
-          nextRequest.getInfoboxReadResponseOrSignResponseOrErrorResponse().addAll(responses);
+          nextRequest.getInfoboxReadResponseOrSignResponseOrErrorResponse()
+              .addAll(responses);
           nextRequestResp = stalPort.getNextRequest(nextRequest);
         }
       } while (!finished);
       log.info("Done " + Thread.currentThread().getName());
     } catch (Exception ex) {
       log.error(ex.getMessage(), ex);
-      gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, new Object[]{ex.getMessage()});
+      gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, new Object[] { ex
+          .getMessage() });
       try {
         waitForAction();
       } catch (InterruptedException e) {
         log.error(e);
       }
-    }
-    if (signatureCard != null) {
-      signatureCard.disconnect(false);
+      if (signatureCard != null) {
+        signatureCard.disconnect(false);
+      }
     }
     sendRedirect();
   }
 
   protected void sendRedirect() {
     try {
-      URL redirectURL = params.getURLParameter(BKUApplet.REDIRECT_URL, sessionId);
-      String redirectTarget = params.getAppletParameter(BKUApplet.REDIRECT_TARGET);
+      URL redirectURL = params.getURLParameter(BKUApplet.REDIRECT_URL,
+          sessionId);
+      String redirectTarget = params
+          .getAppletParameter(BKUApplet.REDIRECT_TARGET);
       if (redirectTarget == null) {
         log.info("Done. Redirecting to " + redirectURL + " ...");
         ctx.showDocument(redirectURL);
       } else {
-        log.info("Done. Redirecting to " + redirectURL + " (target=" + redirectTarget + ") ...");
+        log.info("Done. Redirecting to " + redirectURL + " (target="
+            + redirectTarget + ") ...");
         ctx.showDocument(redirectURL, redirectTarget);
       }
     } catch (MalformedURLException ex) {
       log.warn("Failed to redirect: " + ex.getMessage(), ex);
-    // gui.showErrorDialog(errorMsg, okListener, actionCommand)
+      // gui.showErrorDialog(errorMsg, okListener, actionCommand)
     }
   }
 
   private STALPortType getSTALPort() throws MalformedURLException {
     URL wsdlURL = params.getURLParameter(BKUApplet.WSDL_URL);
     log.debug("STAL WSDL at " + wsdlURL);
-    QName endpointName = new QName(BKUApplet.STAL_WSDL_NS, BKUApplet.STAL_SERVICE);
+    QName endpointName = new QName(BKUApplet.STAL_WSDL_NS,
+        BKUApplet.STAL_SERVICE);
     STALService stal = new STALService(wsdlURL, endpointName);
     return stal.getSTALPort();
   }
 
   private void registerSignRequestHandler() throws MalformedURLException {
-    String hashDataDisplayStyle = params.getAppletParameter(BKUApplet.HASHDATA_DISPLAY);
+    String hashDataDisplayStyle = params
+        .getAppletParameter(BKUApplet.HASHDATA_DISPLAY);
     if (BKUApplet.HASHDATA_DISPLAY_BROWSER.equals(hashDataDisplayStyle)) {
-      URL hashDataURL = params.getURLParameter(BKUApplet.HASHDATA_URL, sessionId);
+      URL hashDataURL = params.getURLParameter(BKUApplet.HASHDATA_URL,
+          sessionId);
       log.debug("register SignRequestHandler for HashDataURL " + hashDataURL);
-      addRequestHandler(SignRequest.class, new BrowserHashDataDisplay(ctx, hashDataURL));
+      addRequestHandler(SignRequest.class, new BrowserHashDataDisplay(ctx,
+          hashDataURL));
     } else {
-      //BKUApplet.HASHDATA_DISPLAY_FRAME
-      log.debug("register SignRequestHandler for STAL port " + BKUApplet.WSDL_URL);
-      AppletHashDataDisplay handler = new AppletHashDataDisplay(stalPort, sessionId);
+      // BKUApplet.HASHDATA_DISPLAY_FRAME
+      log.debug("register SignRequestHandler for STAL port "
+          + BKUApplet.WSDL_URL);
+      AppletHashDataDisplay handler = new AppletHashDataDisplay(stalPort,
+          sessionId);
       addRequestHandler(SignRequest.class, handler);
     }
   }
