@@ -12,23 +12,24 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for AttributeType complex type.
+ * <p>Java class for AnyType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="AttributeType">
+ * &lt;complexType name="AnyType">
  *   &lt;complexContent>
- *     &lt;extension base="{urn:oasis:names:tc:SAML:1.0:assertion}AttributeDesignatorType">
- *       &lt;sequence>
- *         &lt;element ref="{urn:oasis:names:tc:SAML:1.0:assertion}AttributeValue" maxOccurs="unbounded"/>
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       &lt;sequence maxOccurs="unbounded" minOccurs="0">
+ *         &lt;any/>
  *       &lt;/sequence>
- *     &lt;/extension>
+ *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -36,43 +37,43 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "AttributeType", propOrder = {
-    "attributeValue"
+@XmlType(name = "AnyType", propOrder = {
+    "content"
 })
-public class AttributeType
-    extends AttributeDesignatorType
-{
+public class AnyType {
 
-    @XmlElement(name = "AttributeValue", required = true)
-    protected List<AnyType> attributeValue;
+    @XmlMixed
+    @XmlAnyElement(lax = true)
+    protected List<Object> content;
 
     /**
-     * Gets the value of the attributeValue property.
+     * Gets the value of the content property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the attributeValue property.
+     * This is why there is not a <CODE>set</CODE> method for the content property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getAttributeValue().add(newItem);
+     *    getContent().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link AnyType }
+     * {@link Object }
+     * {@link String }
      * 
      * 
      */
-    public List<AnyType> getAttributeValue() {
-        if (attributeValue == null) {
-            attributeValue = new ArrayList<AnyType>();
+    public List<Object> getContent() {
+        if (content == null) {
+            content = new ArrayList<Object>();
         }
-        return this.attributeValue;
+        return this.content;
     }
 
 }
