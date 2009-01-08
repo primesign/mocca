@@ -28,8 +28,7 @@
         <META HTTP-EQUIV="EXPIRES" CONTENT="Mon, 22 Jul 2002 11:12:01 GMT">
         <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
     </head>
-    <body> <!-- style="background:#e8f4fe"-->
-        <%
+    <%
         int width = session.getAttribute("appletWidth") == null ? 190
                 : (Integer) session.getAttribute("appletWidth");
         int height = session.getAttribute("appletHeight") == null ? 130
@@ -38,34 +37,45 @@
         String guiStyle = (String) session.getAttribute("appletGuiStyle");
         String hashDataDisplay = (String) session.getAttribute("appletHashDataDisplay");
         String locale = (String) session.getAttribute("locale");
-        %>
-        <script>
-            if (!deployJava.versionCheck('1.6.0_04+')) {
-                document
-                .write('<b>Diese Anwendung benötigt die Java Platform Version 1.6.0_04 oder höher.</b>' + '<input type="submit" value="Java Platform 1.6.0_02 installieren" onclick="deployJava.installLatestJRE();">');
-            } else {
-                var attributes = {
-                    codebase :'applet',
-                    code :'at.gv.egiz.bku.online.applet.BKUApplet.class',
-                    archive :'BKUApplet.jar, commons-logging-1.1.1.jar, iaik_jce_me4se-3.04.jar',
-                    width : <%=width%>,
-                    height :<%=height%>
-                };
-                var parameters = {
-                    GuiStyle : '<%=guiStyle%>',
-                    Locale : '<%=locale%>',
-                    Background : '<%=backgroundImg%>',
-                    WSDL_URL :'../stal;jsessionid=<%=session.getId()%>?wsdl',
-                    HelpURL : '../help/',
-                    HashDataDisplay : '<%=hashDataDisplay%>',
-                    HashDataURL : '../hashDataInput',
-                    SessionID : '<%=session.getId()%>',
-                    RedirectURL : '../bkuResult',
-                    RedirectTarget: '_parent'
-                };
-                var version = '1.6.0_04';
-                deployJava.runApplet(attributes, parameters, version);
-            }
-        </script>
+    %>
+    <body style="background:#ffffff;padding:0;margin-top:0;border-style: none;">
+            <!--width:<%=width%>px;margin:auto;-->
+        <!--<div style="display: table; height: <%=height%>px; #position: relative; overflow: hidden;border: thin solid green;">
+            <div style=" #position: absolute; #top: 50%;display: table-cell; vertical-align: middle;">
+                <div style=" #position: relative; #top: -50%">
+-->
+            <script>
+                if (!deployJava.versionCheck('1.6.0_04+')) {
+                    document
+                    .write('<b>Diese Anwendung benötigt die Java Platform Version 1.6.0_04 oder höher.</b>' + '<input type="submit" value="Java Platform 1.6.0_02 installieren" onclick="deployJava.installLatestJRE();">');
+                } else {
+                    var attributes = {
+                        codebase :'applet',
+                        code :'at.gv.egiz.bku.online.applet.BKUApplet.class',
+                        archive :'BKUApplet.jar, commons-logging-1.1.1.jar, iaik_jce_me4se-3.04.jar',
+                        width : <%=width%>,
+                        height :<%=height%>
+                    };
+                    var parameters = {
+                        GuiStyle : '<%=guiStyle%>',
+                        Locale : '<%=locale%>',
+                        Background : '<%=backgroundImg%>',
+                        WSDL_URL :'../stal;jsessionid=<%=session.getId()%>?wsdl',
+                        HelpURL : '../help/',
+                        HashDataDisplay : '<%=hashDataDisplay%>',
+                        HashDataURL : '../hashDataInput',
+                        SessionID : '<%=session.getId()%>',
+                        RedirectURL : '../bkuResult',
+                        RedirectTarget: '_parent'
+                    };
+                    var version = '1.6.0_04';
+                    deployJava.runApplet(attributes, parameters, version);
+                }
+            </script>
+        <!--
+                </div>
+            </div>
+        </div>
+        -->
     </body>
 </html>
