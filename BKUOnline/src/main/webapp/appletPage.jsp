@@ -30,7 +30,7 @@
     </head>
     <%
         int width = session.getAttribute("appletWidth") == null ? 190
-                : (Integer) session.getAttribute("appletWidth");
+                : (Integer) session.getAttribute("appletWidth"); //230 for workshop demo integration
         int height = session.getAttribute("appletHeight") == null ? 130
                 : (Integer) session.getAttribute("appletHeight");
         String backgroundImg = (String) session.getAttribute("appletBackground");
@@ -38,7 +38,7 @@
         String hashDataDisplay = (String) session.getAttribute("appletHashDataDisplay");
         String locale = (String) session.getAttribute("locale");
     %>
-    <body style="background:#ffffff;padding:0;margin-top:0;border-style: none;">
+    <body style="background:#ffffff;padding:0;margin:0;border-style: none;width:<%=width%>">
             <!--width:<%=width%>px;margin:auto;-->
         <!--<div style="display: table; height: <%=height%>px; #position: relative; overflow: hidden;border: thin solid green;">
             <div style=" #position: absolute; #top: 50%;display: table-cell; vertical-align: middle;">
