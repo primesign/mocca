@@ -16,14 +16,20 @@
 -->
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ page import="java.util.Locale"%>
+<%@ page import="java.io.File"%>
 <%
-  String pathInfo[] = (request.getPathInfo() != null) ? request
+    String pathInfo[] = (request.getPathInfo() != null) ? request
       .getPathInfo().split("/") : new String[] {};
-  String language = pathInfo[1].split("_")[0];
-  String filename = pathInfo[2];
-  String path = "/helpfiles/" + language.toLowerCase() + "/" + filename;
-  System.out.println(path);
+    String language = pathInfo[1].split("_")[0];
+    String filename = pathInfo[2];
+    String helpDir = "/helpfiles";
+    String path;
+    if ((new File(helpDir + "/"  + language.toLowerCase())).isDirectory()) {
+        path = helpDir + "/"  + language.toLowerCase() + "/" + filename;
+    } else {
+        path = helpDir + "/de/" + filename;
+    }
+    System.out.println(path);
 %>
 
 <jsp:include page="<%=path%>" flush="true"/>

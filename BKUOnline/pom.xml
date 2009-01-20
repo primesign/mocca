@@ -1,110 +1,128 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<artifactId>bku</artifactId>
-		<groupId>at.gv.egiz</groupId>
-		<version>1.0.2</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>at.gv.egiz</groupId>
-	<artifactId>BKUOnline</artifactId>
-	<packaging>war</packaging>
-	<name>BKU Online</name>
-	<version>1.0.2</version>
+    <parent>
+        <artifactId>bku</artifactId>
+        <groupId>at.gv.egiz</groupId>
+        <version>1.0.2</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>at.gv.egiz</groupId>
+    <artifactId>BKUOnline</artifactId>
+    <packaging>war</packaging>
+    <name>BKU Online</name>
+    <version>1.0.2</version>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>tlc</id>
-			<name>TLC Repository</name>
-			<url>http://commons.ucalgary.ca/pub/m2</url>
-		</pluginRepository>
-	</pluginRepositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>tlc</id>
+            <name>TLC Repository</name>
+            <url>http://commons.ucalgary.ca/pub/m2</url>
+        </pluginRepository>
+    </pluginRepositories>
 
-	<dependencies>
-		<dependency>
-			<groupId>at.gv.egiz</groupId>
-			<artifactId>bkucommon</artifactId>
-			<version>1.0.2</version>
-		</dependency>
-		<dependency>
-      <groupId>at.gv.egiz</groupId>
-      <artifactId>BKUViewer</artifactId>
-      <version>1.0.2</version>
-    </dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>2.5.5</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>2.5.5</version>
-		</dependency>
-		<dependency>
-			<groupId>at.gv.egiz</groupId>
-			<artifactId>STALService</artifactId>
-			<version>1.0.2</version>
-			<scope>compile</scope>
-		</dependency>
-        <!-- build BKUApplet prior to BKUOnline -->
+    <dependencies>
         <dependency>
-          <groupId>at.gv.egiz</groupId>
-          <artifactId>BKUApplet</artifactId> 
-          <version>1.0.2</version>
-          <scope>provided</scope> 
+            <groupId>at.gv.egiz</groupId>
+            <artifactId>bkucommon</artifactId>
+            <version>1.0.2</version>
         </dependency>
         <dependency>
-          <groupId>at.gv.egiz</groupId>
-          <artifactId>STALService</artifactId> 
-          <version>1.0.2</version>
+            <groupId>at.gv.egiz</groupId>
+            <artifactId>BKUViewer</artifactId>
+            <version>1.0.2</version>
         </dependency>
-        
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>2.5.5</version>
+        </dependency>
+        <dependency>
+            <groupId>at.gv.egiz</groupId>
+            <artifactId>STALService</artifactId>
+            <version>1.0.2</version>
+            <scope>compile</scope>
+        </dependency>
+		<!-- build BKUApplet prior to BKUOnline -->
+        <dependency>
+            <groupId>at.gv.egiz</groupId>
+            <artifactId>BKUApplet</artifactId>
+            <version>1.0.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>at.gv.egiz</groupId>
+            <artifactId>STALService</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <!-- TODO move at.buergerkarte.namespaces.cardchannel.service out from STALXService
+         |   so that BKUOnline does not have to depend on STALXService
+        <dependency>
+          <groupId>at.gv.egiz</groupId>
+          <artifactId>STALXService</artifactId>
+          <version>1.0.2-SNAPSHOT</version>
+        </dependency-->
 		<!--
-			| see https://wsit.dev.java.net/issues/show_bug.cgi?id=970
+         | see https://wsit.dev.java.net/issues/show_bug.cgi?id=970
 		-->
-		<dependency>
-			<groupId>com.sun.xml.ws</groupId>
-			<artifactId>jaxws-rt</artifactId>
-			<version>2.1.4</version>
-            <!--scope>provided</scope-->
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt</artifactId>
+            <version>2.1.5</version>
+            <!-- use JAX-WS RI with SJSXP instead of Woodstox -->
+            <exclusions>
+                <exclusion>
+                    <groupId>woodstox</groupId>
+                    <artifactId>wstx-asl</artifactId>
+                </exclusion>
+            </exclusions>
 			<!--
 				conflict with SAAJ from java 6 ? <exclusions> <exclusion>
 				<groupId>javax.xml.soap</groupId> <artifactId>saaj-api</artifactId>
 				</exclusion> <exclusion>
 				<groupId>com.sun.xml.messaging.saaj</groupId>
 				<artifactId>saaj-impl</artifactId> </exclusion> </exclusions -->
-		</dependency>
-	</dependencies>
-	<properties>
-		<netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
-	</properties>
-	<scm>
-	  <developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.0.2/BKUOnline</developerConnection>
-		<connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.0.2/BKUOnline</connection>
-		<url>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.0.2/BKUOnline</url>
-	</scm>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copyapplet-dependencies</id>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-              <outputDirectory>${project.build.directory}/${project.build.finalName}/applet</outputDirectory>
+        </dependency>
+        <!-- use JAX-WS RI with SJSXP instead of Woodstox -->
+        <dependency>
+            <artifactId>sjsxp</artifactId>
+            <groupId>com.sun.xml.stream</groupId>
+            <version>1.0.1</version>
+        </dependency>
+    </dependencies>
+    <properties>
+        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
+    </properties>
+    <scm>
+        <developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.0.2/BKUOnline</developerConnection>
+        <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.0.2/BKUOnline</connection>
+        <url>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.0.2/BKUOnline</url>
+    </scm>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copyapplet-dependencies</id>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/${project.build.finalName}/applet</outputDirectory>
 							<!--<artifactItems>
 								<artifactItem>
 									<groupId>at.gv.egiz</groupId>
@@ -120,32 +138,33 @@
 									<artifactId>iaik_jce_me4se</artifactId>
 								</artifactItem>
 							</artifactItems>-->
-							<includeGroupIds>at.gv.egiz</includeGroupIds>
-							<includeArtifactIds>BKUApplet</includeArtifactIds>
-              <excludeTransitive>true</excludeTransitive>
-						</configuration>
-					</execution>
-          <execution>
-            <id>copyapplet</id>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/${project.build.finalName}/applet</outputDirectory>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>commons-logging</groupId>
-                  <artifactId>commons-logging</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>iaik</groupId>
-                  <artifactId>iaik_jce_me4se</artifactId>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-				</executions>
-			</plugin>
+                            <includeGroupIds>at.gv.egiz</includeGroupIds>
+                            <includeArtifactIds>BKUApplet</includeArtifactIds>
+                            <stripVersion>true</stripVersion>
+                            <excludeTransitive>true</excludeTransitive>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copyapplet</id>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/${project.build.finalName}/applet</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>commons-logging</groupId>
+                                    <artifactId>commons-logging</artifactId>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>iaik</groupId>
+                                    <artifactId>iaik_jce_me4se</artifactId>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!--plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-surefire-plugin</artifactId> 
@@ -153,67 +172,77 @@
                 <skip>true</skip>
               </configuration> 
             </plugin-->
-	    <!--plugin> 
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>jaxws-maven-plugin</artifactId> 
-              <executions> 
-                <execution>
-                  <goals> 
-                    <goal>wsimport</goal> 
-                  </goals> 
-                </execution> 
-              </executions> 
-              <configuration>
-                <target>2.0</target>
-                <verbose>true</verbose>
-                <bindingDirectory>${basedir}/src/main/custom-binding</bindingDirectory>
-                <bindingFiles> 
-                  <bindingFile>stalservice-custom.xml</bindingFile>
-                  <bindingFile>staltypes-custom.xml</bindingFile> 
-                </bindingFiles>
-                <wsdlDirectory>${basedir}/src/main/webapp/WEB-INF/wsdl</wsdlDirectory>
-                <wsdlFiles> 
-                  <wsdlFile>stal.wsdl</wsdlFile>
-                </wsdlFiles>
-                <sourceDestDir>${project.build.directory}/generated-sources/wsimport</sourceDestDir>
-                <staleFile>${project.build.directory}/generated-sources/wsimport/.staleFlag</staleFile>
-              </configuration> 
-            </plugin-->
-			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.0.2</version>
-				<configuration>
-					<manifest>
-						<addDefaultImplementationEntries>
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <manifest>
+                        <addDefaultImplementationEntries>
 							true
-            </addDefaultImplementationEntries>
-					</manifest>
-					<archive>
-						<manifestEntries>
-							<Implementation-Build>
+                        </addDefaultImplementationEntries>
+                    </manifest>
+                    <archive>
+                        <manifestEntries>
+                            <Implementation-Build>
 								${project.version}-r${buildNumber}
-              </Implementation-Build>
-						</manifestEntries>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>maven-buildnumber-plugin</artifactId>
-				<version>0.9.6</version>
-				<executions>
-					<execution>
-						<phase>validate</phase>
-						<goals>
-							<goal>create</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<doCheck>false</doCheck>
-					<doUpdate>false</doUpdate>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+                            </Implementation-Build>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>maven-buildnumber-plugin</artifactId>
+                <version>0.9.6</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <doCheck>false</doCheck>
+                    <doUpdate>false</doUpdate>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>jaxb-generate</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>jaxws-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>wsimport</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <verbose>true</verbose>
+                            <bindingDirectory>${basedir}/src/main/custom-binding</bindingDirectory>
+                            <bindingFiles>
+                                <bindingFile>stalservice-custom.xml</bindingFile>
+                                <bindingFile>staltypes-custom.xml</bindingFile>
+                                <bindingFile>cardchannel-custom.xml</bindingFile>
+                            </bindingFiles>
+                            <wsdlDirectory>${basedir}/src/main/webapp/WEB-INF/wsdl</wsdlDirectory>
+                            <wsdlDirectory>${basedir}/src/main/wsdl</wsdlDirectory>
+                            <wsdlFiles>
+                                <wsdlFile>stal-service.wsdl</wsdlFile>
+                            </wsdlFiles>
+                            <sourceDestDir>${project.build.directory}/generated-sources/wsimport</sourceDestDir>
+                            <staleFile>${project.build.directory}/generated-sources/wsimport/.staleFlag</staleFile>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

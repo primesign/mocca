@@ -25,21 +25,32 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
+import at.gv.egiz.stal.dummy.DummySTAL;
 
 public class SLCommandFactoryTest {
   
+  protected static ApplicationContext appCtx;
   SLCommandFactory factory;
   SLCommandContext context;
+  
+  @BeforeClass
+  public static void setUpClass() {
+    appCtx = new ClassPathXmlApplicationContext("at/gv/egiz/bku/slcommands/testApplicationContext.xml");
+  }
   
   @Before
   public void setUp() {
     factory = SLCommandFactory.getInstance();
     context = new SLCommandContext();
+    context.setSTAL(new DummySTAL());
   }
   
   @Test

@@ -18,29 +18,37 @@
 <definitions name="stal" targetNamespace="http://www.egiz.gv.at/wsdl/stal"
     xmlns="http://schemas.xmlsoap.org/wsdl/"
     xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-    xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.egiz.gv.at/wsdl/stal" xmlns:ns="http://www.egiz.gv.at/stal" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://www.egiz.gv.at/wsdl/stal"
+    xmlns:stal="http://www.egiz.gv.at/stal"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
     <types>
         <xsd:schema targetNamespace="http://www.egiz.gv.at/wsdl/stal">
-            <xsd:import namespace="http://www.egiz.gv.at/stal" schemaLocation="stal.xsd"/>
+            <xsd:import namespace="http://www.egiz.gv.at/stal" schemaLocation="stal-service.xsd"/>
+            <!--xsd:import namespace="http://www.egiz.gv.at/stal" schemaLocation="stal-extended.xsd"/-->
         </xsd:schema>
+        <!-- test 
+        <xsd:schema targetNamespace="http://www.egiz.gv.at/wsdl/stal-extended">
+            <xsd:import namespace="http://www.buergerkarte.at/cardchannel" schemaLocation="CardChannel.xsd"/>
+        </xsd:schema-->
     </types>
     <message name="ConnectRequest">
-        <part name="part1" element="ns:SessionId"/>
+        <part name="part1" element="stal:SessionId"/>
     </message>
     <message name="NextRequestRequest">
-        <part name="part1" element="ns:GetNextRequest"/>
+        <part name="part1" element="stal:GetNextRequest"/>
     </message>
     <message name="NextRequestResponse">
-        <part name="part1" element="ns:GetNextRequestResponse"/>
+        <part name="part1" element="stal:GetNextRequestResponse"/>
     </message>
     <message name="GetHashDataInputRequest">
-        <part name="part1" element="ns:GetHashDataInput"/>
+        <part name="part1" element="stal:GetHashDataInput"/>
     </message>
     <message name="GetHashDataInputResponse">
-        <part name="part1" element="ns:GetHashDataInputResponse"/>
+        <part name="part1" element="stal:GetHashDataInputResponse"/>
     </message>
     <message name="GetHashDataInputFault">
-        <part name="part1" element="ns:GetHashDataInputFault"/>
+        <part name="part1" element="stal:GetHashDataInputFault"/>
     </message>
     <portType name="STALPortType">
         <operation name="connect">

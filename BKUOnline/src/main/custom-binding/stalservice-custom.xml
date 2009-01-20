@@ -23,7 +23,7 @@
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
         xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-        wsdlLocation="../webapp/WEB-INF/wsdl/stal.wsdl">
+        wsdlLocation="../wsdl/stal-service.wsdl">
     
             
     <!-- default settings 

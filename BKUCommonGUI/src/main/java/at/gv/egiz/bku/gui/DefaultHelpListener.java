@@ -57,10 +57,10 @@ public class DefaultHelpListener extends AbstractHelpListener {
   /**
    * blocks until help viewer returns (is closed)
    * @param helpURL
-   * @param helpTopic
+   * @param helpTopic ignored
    */
   @Override
-  public void showDocument(final URL helpURL, final String helpTopic)  { 
+  public void showDocument(final URL helpURL, final String helpTopic)  {
 //    try {
       log.debug("schedule help dialog");
 
@@ -72,9 +72,9 @@ public class DefaultHelpListener extends AbstractHelpListener {
           log.debug("show help dialog");
 
           if (ctx == null) {
-            HelpViewer.showHelpDialog(helpURL, helpTopic, messages);
+            HelpViewer.showHelpDialog(helpURL, messages); // helpTopic, messages);
           } else {
-            HelpViewer.showHelpDialog(ctx, helpURL, helpTopic, messages);
+            HelpViewer.showHelpDialog(ctx, helpURL, messages); //helpTopic, messages);
           }
         }
       });

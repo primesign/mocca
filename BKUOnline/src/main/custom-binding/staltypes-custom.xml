@@ -27,7 +27,7 @@
 -->
 <bindings xmlns='http://java.sun.com/xml/ns/jaxb' version='2.1'
           xmlns:xs='http://www.w3.org/2001/XMLSchema'
-           xmlns:stal="http://www.egiz.gv.at/stal"
+          xmlns:stal="http://www.egiz.gv.at/stal"
           xmlns:xjc='http://java.sun.com/xml/ns/jaxb/xjc'
           xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
           xsi:schemaLocation='http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd

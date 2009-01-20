@@ -27,7 +27,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import at.gv.egiz.bku.binding.MultiTestDataUrlConnection.DataSourceProvider;
 import at.gv.egiz.bku.utils.StreamUtil;
@@ -81,6 +84,14 @@ public class HttpBindingProcessorTest {
   protected Map<String, String> clientHeaderMap;
   protected TestDataUrlConnection server;
 
+  protected static ApplicationContext appCtx;
+  
+  @BeforeClass
+  public static void setUpClass() {
+    appCtx = new ClassPathXmlApplicationContext("at/gv/egiz/bku/slcommands/testApplicationContext.xml");
+  }
+  
+  
   @Before
   public void setUp() throws IOException {
     server = new TestDataUrlConnection();

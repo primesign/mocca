@@ -673,7 +673,7 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 					FormParameterStore fps = new FormParameterStore();
 					fps.init(fp);
 					if (!fps.isEmpty()) {
-						log.debug("Setting from parameter: " + fps.getFormParameterName());
+						log.debug("Setting form parameter: " + fps.getFormParameterName());
 						formParameterMap.put(fps.getFormParameterName(), fps);
 					}
 				}

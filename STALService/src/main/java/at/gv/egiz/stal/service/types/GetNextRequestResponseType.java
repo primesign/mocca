@@ -3,12 +3,14 @@ package at.gv.egiz.stal.service.types;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlType;
+//import at.buergerkarte.namespaces.cardchannel.ScriptType;
 
 
 /**
@@ -24,6 +26,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="InfoboxReadRequest" type="{http://www.egiz.gv.at/stal}InfoboxReadRequestType"/>
  *         &lt;element name="SignRequest" type="{http://www.egiz.gv.at/stal}SignRequestType"/>
  *         &lt;element name="QuitRequest" type="{http://www.egiz.gv.at/stal}QuitRequestType"/>
+ *         &lt;element ref="{http://www.egiz.gv.at/stal}OtherRequest"/>
  *       &lt;/choice>
  *       &lt;attribute name="SessionId" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
@@ -39,12 +42,13 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class GetNextRequestResponseType {
 
-    @XmlElements({
-        @XmlElement(name = "InfoboxReadRequest", type = InfoboxReadRequestType.class),
-        @XmlElement(name = "QuitRequest", type = QuitRequestType.class),
-        @XmlElement(name = "SignRequest", type = SignRequestType.class)
+    @XmlElementRefs({
+        @XmlElementRef(name = "SignRequest", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
+        @XmlElementRef(name = "QuitRequest", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
+        @XmlElementRef(name = "OtherRequest", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
+        @XmlElementRef(name = "InfoboxReadRequest", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class)
     })
-    protected List<RequestType> infoboxReadRequestOrSignRequestOrQuitRequest;
+    protected List<JAXBElement<? extends RequestType>> infoboxReadRequestOrSignRequestOrQuitRequest;
     @XmlAttribute(name = "SessionId")
     protected String sessionId;
 
@@ -66,15 +70,17 @@ public class GetNextRequestResponseType {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link InfoboxReadRequestType }
-     * {@link QuitRequestType }
-     * {@link SignRequestType }
+     * {@link JAXBElement }{@code <}{@link QuitRequestType }{@code >}
+     * {@link JAXBElement }{@code <}{@link RequestType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ScriptType }{@code >}
+     * {@link JAXBElement }{@code <}{@link InfoboxReadRequestType }{@code >}
+     * {@link JAXBElement }{@code <}{@link SignRequestType }{@code >}
      * 
      * 
      */
-    public List<RequestType> getInfoboxReadRequestOrSignRequestOrQuitRequest() {
+    public List<JAXBElement<? extends RequestType>> getInfoboxReadRequestOrSignRequestOrQuitRequest() {
         if (infoboxReadRequestOrSignRequestOrQuitRequest == null) {
-            infoboxReadRequestOrSignRequestOrQuitRequest = new ArrayList<RequestType>();
+            infoboxReadRequestOrSignRequestOrQuitRequest = new ArrayList<JAXBElement<? extends RequestType>>();
         }
         return this.infoboxReadRequestOrSignRequestOrQuitRequest;
     }

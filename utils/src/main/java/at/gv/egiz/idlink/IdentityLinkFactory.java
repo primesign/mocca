@@ -81,6 +81,7 @@ import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import at.gv.e_government.reference.namespace.persondata._20020228_.AbstractPersonType;
 import at.gv.e_government.reference.namespace.persondata._20020228_.IdentificationType;
 import at.gv.e_government.reference.namespace.persondata._20020228_.PersonNameType;
 import at.gv.e_government.reference.namespace.persondata._20020228_.PhysicalPersonType;
@@ -88,6 +89,7 @@ import at.gv.e_government.reference.namespace.persondata._20020228_.Identificati
 import at.gv.e_government.reference.namespace.persondata._20020228_.PersonNameType.FamilyName;
 import at.gv.egiz.xmldsig.KeyTypeNotSupportedException;
 import at.gv.egiz.xmldsig.KeyValueFactory;
+import oasis.names.tc.saml._1_0.assertion.AnyType;
 
 public class IdentityLinkFactory {
   
@@ -215,8 +217,11 @@ public class IdentityLinkFactory {
     physicalPersonType.getIdentification().add(identificationType);
     physicalPersonType.setName(personNameType);
     physicalPersonType.setDateOfBirth(dateOfBirth);
-    
-    subjectConfirmationType.setSubjectConfirmationData(physicalPersonType);
+    JAXBElement<AbstractPersonType> physicalPerson = prFactory.createPerson(physicalPersonType);
+
+    AnyType personType = asFactory.createAnyType();
+    personType.getContent().add(physicalPerson);
+    subjectConfirmationType.setSubjectConfirmationData(personType);
     
     JAXBElement<SubjectConfirmationType> subjectConfirmation = asFactory.createSubjectConfirmation(subjectConfirmationType);
     
@@ -232,7 +237,9 @@ public class IdentityLinkFactory {
       AttributeType attributeType = asFactory.createAttributeType();
       attributeType.setAttributeName("CitizenPublicKey");
       attributeType.setAttributeNamespace("urn:publicid:gv.at:namespaces:identitylink:1.2");
-      attributeType.getAttributeValue().add(createKeyValue.getValue());
+      AnyType attributeValueType = asFactory.createAnyType();
+      attributeValueType.getContent().add(createKeyValue);
+      attributeType.getAttributeValue().add(attributeValueType);
       
       attributeStatementType.getAttribute().add(attributeType);
       

@@ -31,7 +31,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.Part;
@@ -51,11 +53,12 @@ import at.gv.egiz.bku.utils.binding.Protocol;
  * 
  */
 public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
-  
+
   private final static Log log = LogFactory.getLog(DataUrlConnectionImpl.class);
 
   public final static Protocol[] SUPPORTED_PROTOCOLS = { Protocol.HTTP,
       Protocol.HTTPS };
+
   protected X509Certificate serverCertificate;
   protected Protocol protocol;
   protected URL url;
@@ -64,6 +67,8 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
   protected ArrayList<Part> formParams;
   protected String boundary;
   protected Properties config = null;
+  protected SSLSocketFactory sslSocketFactory;
+  protected HostnameVerifier hostnameVerifier;
 
   protected DataUrlResponse result;
 
@@ -84,6 +89,22 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
    */
   public void connect() throws SocketTimeoutException, IOException {
     connection = (HttpURLConnection) url.openConnection();
+    if (connection instanceof HttpsURLConnection) {
+      log.trace("Detected ssl connection");
+      HttpsURLConnection https = (HttpsURLConnection) connection;
+      if (sslSocketFactory != null) {
+        log.debug("Setting custom ssl socket factory for ssl connection");
+        https.setSSLSocketFactory(sslSocketFactory);
+      } else {
+        log.trace("No custom socket factory set");
+      }
+      if (hostnameVerifier != null) {
+        log.debug("Setting custom hostname verifier");
+        https.setHostnameVerifier(hostnameVerifier);
+      }
+    } else {
+      log.trace("No secure connection with: "+url+ " class="+connection.getClass());
+    }
     connection.setDoOutput(true);
     Set<String> headers = requestHttpHeaders.keySet();
     Iterator<String> headerIt = headers.iterator();
@@ -91,13 +112,13 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
       String name = headerIt.next();
       connection.setRequestProperty(name, requestHttpHeaders.get(name));
     }
-    log.trace("Connecting to: "+url);
+    log.trace("Connecting to: " + url);
     connection.connect();
     if (connection instanceof HttpsURLConnection) {
       HttpsURLConnection ssl = (HttpsURLConnection) connection;
       X509Certificate[] certs = (X509Certificate[]) ssl.getServerCertificates();
       if ((certs != null) && (certs.length >= 1)) {
-        log.trace("Server certificate: "+certs[0]);
+        log.trace("Server certificate: " + certs[0]);
         serverCertificate = certs[0];
       }
     }
@@ -156,7 +177,8 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
       log.info(iox);
     }
     log.trace("Reading response");
-    result = new DataUrlResponse(url.toString(), connection.getResponseCode(),  is);
+    result = new DataUrlResponse(url.toString(), connection.getResponseCode(),
+        is);
     Map<String, String> responseHttpHeaders = new HashMap<String, String>();
     Map<String, List<String>> httpHeaders = connection.getHeaderFields();
     for (Iterator<String> keyIt = httpHeaders.keySet().iterator(); keyIt
@@ -227,6 +249,7 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
   public DataUrlConnectionSPI newInstance() {
     DataUrlConnectionSPI uc = new DataUrlConnectionImpl();
     uc.setConfiguration(config);
+    uc.setSSLSocketFactory(sslSocketFactory);
     return uc;
   }
 
@@ -238,5 +261,15 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
   @Override
   public void setConfiguration(Properties config) {
     this.config = config;
+  }
+
+  @Override
+  public void setSSLSocketFactory(SSLSocketFactory socketFactory) {
+    this.sslSocketFactory = socketFactory;
+  }
+  
+  @Override
+  public void setHostnameVerifier(HostnameVerifier hostnameVerifier) {
+    this.hostnameVerifier = hostnameVerifier;
   }
 }

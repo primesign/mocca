@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +33,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import at.gv.egiz.bku.binding.BindingProcessor;
 import at.gv.egiz.bku.binding.HTTPBindingProcessor;
 import at.gv.egiz.bku.binding.HttpUtil;
 import at.gv.egiz.bku.binding.IdFactory;
@@ -43,14 +45,16 @@ import at.gv.egiz.org.apache.tomcat.util.http.AcceptLanguage;
  * 
  */
 public class BKURequestHandler extends SpringBKUServlet {
+  public static final String BKU_APPLET_JSP = "BKUApplet";
 
   private static final long serialVersionUID = 1L;
 
-  public final static String REDIRECT_URL = "appletPage.jsp";
+  public final static String REDIRECT_URL_SESSION_ATTRIBUTE="redirectUrl";
 
   protected Log log = LogFactory.getLog(BKURequestHandler.class);
 
-  private static String getStringFromStream(InputStream is, String encoding) throws IOException {
+  private static String getStringFromStream(InputStream is, String encoding)
+      throws IOException {
     if (is == null) {
       return null;
     }
@@ -61,28 +65,41 @@ public class BKURequestHandler extends SpringBKUServlet {
     StreamUtil.copyStream(is, os);
     return new String(os.toByteArray(), encoding);
   }
-  
-  
+
+  @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, java.io.IOException {
-    log.debug("Got new request");
-    HttpSession session = req.getSession();
-    String lang = req.getHeader("Accept-Language");
-    Locale locale = AcceptLanguage.getLocale(lang);
-    log.debug("Using locale: " + locale);
-
+    log.debug("Received new request");
+    
+    HttpSession session = req.getSession(false);
     if (session != null) {
       log.warn("Already a session with id: " + session.getId()
-          + " active, deleting this one");
-      getBindingProcessorManager().removeBindingProcessor(
+          + " active, trying to get Bindingprocessor");
+      BindingProcessor bp = getBindingProcessorManager().getBindingProcessor(
           IdFactory.getInstance().createId(session.getId()));
+      if (bp != null) {
+        log.debug("Found binding processor, using this one");
+        RequestDispatcher dispatcher = getServletContext().getNamedDispatcher(
+            BKU_APPLET_JSP);
+        log.debug("forward to applet");
+        dispatcher.forward(req, resp);
+        return;
+      }
+      log.debug("Did not find a binding processor, creating new ...");
     }
-    String id = req.getSession(true).getId();
-    log.debug("Using session id: " + id);
-    HTTPBindingProcessor bindingProcessor;
+    session = req.getSession(true);
+    if (log.isDebugEnabled()) {
+      log.debug("Using session id: " + session.getId());
+    }
 
+    String acceptLanguage = req.getHeader("Accept-Language");
+    Locale locale = AcceptLanguage.getLocale(acceptLanguage);
+    log.debug("Accept-Language locale: " + locale);
+
+    HTTPBindingProcessor bindingProcessor;
     bindingProcessor = (HTTPBindingProcessor) getBindingProcessorManager()
-        .createBindingProcessor(req.getRequestURL().toString(), id, locale);
+        .createBindingProcessor(req.getRequestURL().toString(),
+            session.getId(), locale);
 
     Map<String, String> headerMap = new HashMap<String, String>();
     for (Enumeration<String> headerName = req.getHeaderNames(); headerName
@@ -102,13 +119,20 @@ public class BKURequestHandler extends SpringBKUServlet {
     bindingProcessor.consumeRequestStream(req.getInputStream());
     req.getInputStream().close();
     getBindingProcessorManager().process(bindingProcessor);
-    
+
     log.trace("Trying to find applet parameters in request");
-    String width = getStringFromStream(bindingProcessor.getFormData("appletWidth"), charset);
-    String height = getStringFromStream(bindingProcessor.getFormData("appletHeight"), charset);
-    String background = getStringFromStream(bindingProcessor.getFormData("appletBackground"), charset);
-    String guiStyle = getStringFromStream(bindingProcessor.getFormData("appletGuiStyle"), charset);
-    String hashDataDisplay = getStringFromStream(bindingProcessor.getFormData("appletHashDataDisplay"), charset);
+    String width = getStringFromStream(bindingProcessor
+        .getFormData("appletWidth"), charset);
+    String height = getStringFromStream(bindingProcessor
+        .getFormData("appletHeight"), charset);
+    String background = getStringFromStream(bindingProcessor
+        .getFormData("appletBackground"), charset);
+    String guiStyle = getStringFromStream(bindingProcessor
+        .getFormData("appletGuiStyle"), charset);
+    String hashDataDisplay = getStringFromStream(bindingProcessor
+        .getFormData("appletHashDataDisplay"), charset);
+    String localeFormParam = getStringFromStream(bindingProcessor
+        .getFormData("locale"), charset);
     if (width != null) {
       try {
         log.trace("Found applet width parameter: " + width);
@@ -139,11 +163,30 @@ public class BKURequestHandler extends SpringBKUServlet {
       log.trace("Found applet hash data display parameter: " + hashDataDisplay);
       session.setAttribute("appletHashDataDisplay", hashDataDisplay);
     }
-    String redirectUrl = REDIRECT_URL+";jsessionid="+session.getId();
-    log.debug("Redirecting to: "+redirectUrl);
-    resp.sendRedirect(redirectUrl);
+    if (localeFormParam != null) {
+      log.debug("overrule accept-language locale " + locale
+          + " with form param " + localeFormParam);
+      locale = new Locale(localeFormParam);
+    }
+    if (locale != null) {
+      log.debug("Using locale " + locale);
+      session.setAttribute("locale", locale.toString());
+    }
+    
+    // handle server side redirect url after processing
+    String redirectUrl = bindingProcessor.getRedirectURL(); 
+    if ( redirectUrl != null) {
+      log.debug("Got redirect URL "+redirectUrl+". Deferring browser redirect.");
+      session.setAttribute(REDIRECT_URL_SESSION_ATTRIBUTE, redirectUrl);
+    }
+    // TODO error if no dispatcher found
+    RequestDispatcher dispatcher = getServletContext().getNamedDispatcher(
+        BKU_APPLET_JSP);
+    log.debug("forward to applet");
+    dispatcher.forward(req, resp);
   }
 
+  @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, java.io.IOException {
     doPost(req, resp);

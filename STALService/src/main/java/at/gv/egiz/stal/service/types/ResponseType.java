@@ -3,6 +3,7 @@ package at.gv.egiz.stal.service.types;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -24,6 +25,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ResponseType")
+@XmlSeeAlso({
+    ErrorResponseType.class,
+    InfoboxReadResponseType.class,
+    SignResponseType.class
+//    at.buergerkarte.namespaces.cardchannel.ResponseType.class
+})
 public abstract class ResponseType {
 
 

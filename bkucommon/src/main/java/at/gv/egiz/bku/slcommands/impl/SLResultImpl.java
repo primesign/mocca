@@ -16,6 +16,7 @@
 */
 package at.gv.egiz.bku.slcommands.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 
 import javax.xml.bind.JAXBContext;
@@ -32,6 +33,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,6 +47,8 @@ import at.gv.egiz.bku.slexceptions.SLBindingException;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
+import at.gv.egiz.bku.utils.DebugOutputStream;
+import at.gv.egiz.bku.utils.DebugWriter;
 
 /**
  * This class serves as an abstract base class for the implementation of a
@@ -85,7 +89,7 @@ public abstract class SLResultImpl implements SLResult {
 
   private Marshaller getMarshaller() {
     try {
-      JAXBContext context  = SLCommandFactory.getJaxbContext();
+      JAXBContext context  = SLCommandFactory.getInstance().getJaxbContext();
       Marshaller marshaller = context.createMarshaller();
       marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
       return marshaller;
@@ -128,6 +132,20 @@ public abstract class SLResultImpl implements SLResult {
    * @param templates
    */
   protected void writeTo(JAXBElement<?> response, Result result, Templates templates) {
+    
+    DebugWriter dw = null;
+    DebugOutputStream ds = null;
+    if (log.isTraceEnabled() && result instanceof StreamResult) {
+      StreamResult streamResult = (StreamResult) result;
+      if (streamResult.getOutputStream() != null) {
+        ds = new DebugOutputStream(streamResult.getOutputStream());
+        streamResult.setOutputStream(ds);
+      }
+      if (streamResult.getWriter() != null) {
+        dw = new DebugWriter(streamResult.getWriter());
+        streamResult.setWriter(dw);
+      }
+    }
 
     TransformerHandler transformerHandler = null;
     if (templates != null) {
@@ -151,9 +169,35 @@ public abstract class SLResultImpl implements SLResult {
       writeErrorTo(commandException, result, templates);
     }
     
+    if (ds != null) {
+      try {
+        log.trace("Marshalled result:\n" + new String(ds.getBufferedBytes(), "UTF-8"));
+      } catch (UnsupportedEncodingException e) {
+        log.trace(e.getMessage());
+      }
+    }
+    
+    if (dw != null) {
+      log.trace("Marshalled result:\n" + dw.getBufferedString());
+    }
+    
   }
   
   protected void writeTo(Node node, Result result, Templates templates) {
+
+    DebugWriter dw = null;
+    DebugOutputStream ds = null;
+    if (log.isTraceEnabled() && result instanceof StreamResult) {
+      StreamResult streamResult = (StreamResult) result;
+      if (streamResult.getOutputStream() != null) {
+        ds = new DebugOutputStream(streamResult.getOutputStream());
+        streamResult.setOutputStream(ds);
+      }
+      if (streamResult.getWriter() != null) {
+        dw = new DebugWriter(streamResult.getWriter());
+        streamResult.setWriter(dw);
+      }
+    }
 
     if (templates == null) {
       try {
@@ -179,7 +223,19 @@ public abstract class SLResultImpl implements SLResult {
         writeErrorTo(new SLException(2008), result, templates);
       }
     }
+
+    if (ds != null) {
+      try {
+        log.trace("Marshalled result:\n" + new String(ds.getBufferedBytes(), "UTF-8"));
+      } catch (UnsupportedEncodingException e) {
+        log.trace(e.getMessage());
+      }
+    }
     
+    if (dw != null) {
+      log.trace("Marshalled result:\n" + dw.getBufferedString());
+    }
+
   }
   
   protected void writeErrorTo(SLException slException, Result result, Templates templates) {

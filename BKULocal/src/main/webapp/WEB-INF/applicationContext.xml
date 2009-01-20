@@ -18,7 +18,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
-  <bean id="STALFactory" class="at.gv.egiz.bku.local.stal.SMCCSTALFactory"
+  <bean id="STALFactory" class="at.gv.egiz.bku.local.stal.LocalSTALFactory"
     scope="singleton">
     <property name="helpURL" value="http://localhost:3495/help"/>
   </bean>
@@ -47,6 +47,46 @@
 
   <bean id="commandInvoker" class="at.gv.egiz.bku.binding.SLCommandInvokerImpl">
     <property name="securityManager" ref="accessController" />
+  </bean>
+
+  <bean id="slCommandFactory" class="at.gv.egiz.bku.slcommands.SLCommandFactory"
+    factory-method="getInstance">
+    <property name="commandImpl">
+      <map>
+        <entry
+          key="http://www.buergerkarte.at/namespaces/securitylayer/1.2#:NullOperationRequest"
+          value="at.gv.egiz.bku.slcommands.impl.NullOperationCommandImpl" />
+        <entry
+          key="http://www.buergerkarte.at/namespaces/securitylayer/1.2#:InfoboxReadRequest"
+          value="at.gv.egiz.bku.slcommands.impl.InfoboxReadCommandImpl" />
+        <entry
+          key="http://www.buergerkarte.at/namespaces/securitylayer/1.2#:InfoboxUpdateRequest"
+          value="at.gv.egiz.bku.slcommands.impl.InfoboxUpdateCommandImpl" />
+        <entry
+          key="http://www.buergerkarte.at/namespaces/securitylayer/1.2#:CreateXMLSignatureRequest"
+          value="at.gv.egiz.bku.slcommands.impl.CreateXMLSignatureCommandImpl" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="infoboxFactory" class="at.gv.egiz.bku.slcommands.impl.InfoboxFactory"
+    factory-method="getInstance">
+    <property name="infoboxImpl">
+      <map>
+        <entry
+          key="Certificates"
+          value="at.gv.egiz.bku.slcommands.impl.CertificatesInfoboxImpl" />
+        <entry
+          key="IdentityLink"
+          value="at.gv.egiz.bku.slcommands.impl.IdentityLinkInfoboxImpl" />
+        <entry
+          key="CardChannel"
+          value="at.gv.egiz.bku.slcommands.impl.CardChannelInfoboxImpl" />
+        <entry
+          key="SV-Personendaten"
+          value="at.gv.egiz.bku.slcommands.impl.SVPersonendatenInfoboxImpl" />
+      </map>
+    </property>
   </bean>
   
   <!-- Configure Configuration -->

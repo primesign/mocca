@@ -29,6 +29,7 @@ import javax.xml.transform.dom.DOMResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import at.buergerkarte.namespaces.securitylayer._1.Base64XMLContentType;
@@ -56,7 +57,7 @@ public class InfoboxReadResultFileImpl extends SLResultImpl implements
   /**
    * The XML document containing the infobox content.
    */
-  Document xmlDocument;
+  protected Document xmlDocument;
 
   /**
    * Creates the response document from the given <code>binaryContent</code>.
@@ -95,7 +96,7 @@ public class InfoboxReadResultFileImpl extends SLResultImpl implements
     
     JAXBElement<InfoboxReadResponseType> infoboxReadResponse = factory.createInfoboxReadResponse(infoboxReadResponseType);
     
-    JAXBContext context = SLCommandFactory.getJaxbContext();
+    JAXBContext context = SLCommandFactory.getInstance().getJaxbContext();
     try {
       Marshaller marshaller = context.createMarshaller();
       marshaller.marshal(infoboxReadResponse, doc);
@@ -112,12 +113,32 @@ public class InfoboxReadResultFileImpl extends SLResultImpl implements
   /**
    * @return an XMLResult for marshalling the infobox to
    */
-  Result getXmlResult(boolean preserveSpace) {
+  public Result getXmlResult(boolean preserveSpace) {
     
     xmlDocument = createResponseDocument(null, preserveSpace);
     
     NodeList nodeList = xmlDocument.getElementsByTagNameNS(SLCommand.NAMESPACE_URI, "XMLContent");
     return new DOMResult(nodeList.item(0));
+    
+  }
+
+  /**
+   * Creates a new <code>InfoboxReadResponse</code> document and appends
+   * the given <code>node</code> as child node of the <code>XMLContent</code> element.
+   * 
+   * @param node the node to be appended as child node of the <code>XMLContnet</code> element
+   * @param preserveSpace if <code>true</code> the value of the <code>XMLContent</code>'s <code>space</code> 
+   * attribute is set to <code>preserve</code>.  
+   */
+  public void setResultXMLContent(Node node, boolean preserveSpace) {
+    
+    xmlDocument = createResponseDocument(null, preserveSpace);
+    
+    NodeList nodeList = xmlDocument.getElementsByTagNameNS(SLCommand.NAMESPACE_URI, "XMLContent");
+    if (node.getOwnerDocument() != xmlDocument) {
+      node = xmlDocument.importNode(node, true);
+    }
+    nodeList.item(0).appendChild(node);
     
   }
   
@@ -127,7 +148,7 @@ public class InfoboxReadResultFileImpl extends SLResultImpl implements
    * 
    * @param resultBytes
    */
-  void setResultBytes(byte[] resultBytes) {
+  public void setResultBytes(byte[] resultBytes) {
     
     xmlDocument = createResponseDocument(resultBytes, false);
     

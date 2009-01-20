@@ -35,10 +35,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 /**
- *
+ * 
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
@@ -47,8 +48,10 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
   protected AppletParameterProvider params;
   protected String sessionId;
   protected STALPortType stalPort;
+  private ObjectFactory stalObjFactory = new ObjectFactory();
 
-  public AppletBKUWorker(BKUGUIFacade gui, AppletContext ctx, AppletParameterProvider paramProvider) {
+  public AppletBKUWorker(BKUGUIFacade gui, AppletContext ctx,
+          AppletParameterProvider paramProvider) {
     super(gui);
     if (ctx == null) {
       throw new NullPointerException("Applet context not provided");
@@ -88,11 +91,16 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
     try {
       registerSignRequestHandler();
 
-      ObjectFactory of = new ObjectFactory();
-
       GetNextRequestResponseType nextRequestResp = stalPort.connect(sessionId);
       do {
-        List<RequestType> requests = nextRequestResp.getInfoboxReadRequestOrSignRequestOrQuitRequest();
+        List<JAXBElement<? extends RequestType>> requests = nextRequestResp.getInfoboxReadRequestOrSignRequestOrQuitRequest();
+
+        // (rather use validator)
+        if (requests.size() == 0) {
+          log.error("Received empty NextRequestResponse: no STAL requests to handle. (STAL-X requests might not have gotten unmarshalled)");
+          throw new Exception("No STAL requests to handle.");
+        }
+
         List<STALRequest> stalRequests = STALTranslator.translateRequests(requests);
 
         if (log.isInfoEnabled()) {
@@ -114,13 +122,13 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
             String domainId = r.getDomainIdentifier();
             if ("IdentityLink".equals(infoboxId) && domainId == null) {
               if (!InternalSSLSocketFactory.getInstance().isEgovAgency()) {
-                handle = false;
+                  handle = false;
               }
             }
           }
         }
 
-        List<ResponseType> responses;
+        List<JAXBElement<? extends ResponseType>> responses;
         if (handle) {
           List<STALResponse> stalResponses = handleRequest(stalRequests);
           if (log.isInfoEnabled()) {
@@ -134,16 +142,17 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
           }
           responses = STALTranslator.fromSTAL(stalResponses);
         } else {
-          responses = new ArrayList<ResponseType>(1);
-          ErrorResponseType err = of.createErrorResponseType();
+          log.error("Insufficient rights to execute command InfoboxReadRequest for Infobox IdentityLink, return Error 6002");
+          responses = new ArrayList<JAXBElement<? extends ResponseType>>(1);
+          ErrorResponseType err = stalObjFactory.createErrorResponseType();
           err.setErrorCode(6002);
           // err.setErrorMessage();
-          responses.add(err);
+          responses.add(stalObjFactory.createGetNextRequestTypeErrorResponse(err));
         }
 
         if (!finished) {
           log.info("Not finished yet (BKUWorker: " + this + "), sending responses");
-          GetNextRequestType nextRequest = of.createGetNextRequestType();
+          GetNextRequestType nextRequest = stalObjFactory.createGetNextRequestType();
           nextRequest.setSessionId(sessionId);
           nextRequest.getInfoboxReadResponseOrSignResponseOrErrorResponse().addAll(responses);
           nextRequestResp = stalPort.getNextRequest(nextRequest);
@@ -158,16 +167,17 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
       } catch (InterruptedException e) {
         log.error(e);
       }
-    }
-    if (signatureCard != null) {
-      signatureCard.disconnect(false);
+      if (signatureCard != null) {
+        signatureCard.disconnect(false);
+      }
     }
     sendRedirect();
   }
 
   protected void sendRedirect() {
     try {
-      URL redirectURL = params.getURLParameter(BKUApplet.REDIRECT_URL, sessionId);
+      URL redirectURL = params.getURLParameter(BKUApplet.REDIRECT_URL,
+              sessionId);
       String redirectTarget = params.getAppletParameter(BKUApplet.REDIRECT_TARGET);
       if (redirectTarget == null) {
         log.info("Done. Redirecting to " + redirectURL + " ...");
@@ -185,7 +195,8 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
   private STALPortType getSTALPort() throws MalformedURLException {
     URL wsdlURL = params.getURLParameter(BKUApplet.WSDL_URL);
     log.debug("STAL WSDL at " + wsdlURL);
-    QName endpointName = new QName(BKUApplet.STAL_WSDL_NS, BKUApplet.STAL_SERVICE);
+    QName endpointName = new QName(BKUApplet.STAL_WSDL_NS,
+            BKUApplet.STAL_SERVICE);
     STALService stal = new STALService(wsdlURL, endpointName);
     return stal.getSTALPort();
   }
@@ -193,13 +204,16 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
   private void registerSignRequestHandler() throws MalformedURLException {
     String hashDataDisplayStyle = params.getAppletParameter(BKUApplet.HASHDATA_DISPLAY);
     if (BKUApplet.HASHDATA_DISPLAY_BROWSER.equals(hashDataDisplayStyle)) {
-      URL hashDataURL = params.getURLParameter(BKUApplet.HASHDATA_URL, sessionId);
+      URL hashDataURL = params.getURLParameter(BKUApplet.HASHDATA_URL,
+              sessionId);
       log.debug("register SignRequestHandler for HashDataURL " + hashDataURL);
-      addRequestHandler(SignRequest.class, new BrowserHashDataDisplay(ctx, hashDataURL));
+      addRequestHandler(SignRequest.class, new BrowserHashDataDisplay(ctx,
+              hashDataURL));
     } else {
-      //BKUApplet.HASHDATA_DISPLAY_FRAME
+      // BKUApplet.HASHDATA_DISPLAY_FRAME
       log.debug("register SignRequestHandler for STAL port " + BKUApplet.WSDL_URL);
-      AppletHashDataDisplay handler = new AppletHashDataDisplay(stalPort, sessionId);
+      AppletHashDataDisplay handler = new AppletHashDataDisplay(stalPort,
+              sessionId);
       addRequestHandler(SignRequest.class, handler);
     }
   }

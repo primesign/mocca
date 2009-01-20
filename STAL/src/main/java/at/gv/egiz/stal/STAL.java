@@ -32,7 +32,7 @@ public interface STAL {
    * @param aRequestList
    * @return
    */
-  public List<STALResponse> handleRequest(List<STALRequest> aRequestList);
+  public List<STALResponse> handleRequest(List<? extends STALRequest> aRequestList);
   
   /**
    * Sets the preferred locale for userinteraction (e.g. PIN dialogs).

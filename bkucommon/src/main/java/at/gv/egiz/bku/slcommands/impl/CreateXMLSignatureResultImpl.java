@@ -84,7 +84,7 @@ public class CreateXMLSignatureResultImpl extends SLResultImpl {
 
     DocumentFragment fragment = doc.createDocumentFragment();
     
-    JAXBContext jaxbContext = SLCommandFactory.getJaxbContext();
+    JAXBContext jaxbContext = SLCommandFactory.getInstance().getJaxbContext();
     try {
       Marshaller marshaller = jaxbContext.createMarshaller();
       marshaller.marshal(createCreateXMLSignatureResponse, fragment);

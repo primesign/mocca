@@ -30,6 +30,9 @@ import org.apache.commons.logging.LogFactory;
  * This class does not keep a GUI reference and subclasses should not interfere with the GUI.
  * Therefore, any errors occurring in showDocument() should be handled/displayed within
  * showDocument() and exceptions thrown from showDocument() are logged, not displayed in the GUI.
+ * <br/>
+ * The help URL is build as [baseURL]/[locale]/[helpTopic].html
+ * (note that no session information is contained).
  * 
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
@@ -41,7 +44,7 @@ public abstract class AbstractHelpListener implements ActionListener {
   protected ResourceBundle messages;
 
   public AbstractHelpListener(URL baseURL, Locale locale) {
-    if (baseURL == null || "".equals(baseURL)) {
+    if (baseURL == null || "".equals(baseURL.toString())) {
       throw new RuntimeException("no help URL provided");
     }
     this.baseURL = baseURL;

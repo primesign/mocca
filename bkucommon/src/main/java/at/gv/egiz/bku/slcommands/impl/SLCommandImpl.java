@@ -16,22 +16,11 @@
 */
 package at.gv.egiz.bku.slcommands.impl;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-
 import javax.xml.bind.JAXBElement;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
-import at.gv.egiz.stal.ErrorResponse;
-import at.gv.egiz.stal.STAL;
-import at.gv.egiz.stal.STALRequest;
-import at.gv.egiz.stal.STALResponse;
 
 /**
  * This class serves as abstract base class for the implementation of a security
@@ -48,17 +37,16 @@ public abstract class SLCommandImpl<T> implements SLCommand {
    * The <code>SLCommandContext</code> for this <code>SLCommand</code>.
    */
   protected SLCommandContext cmdCtx;
+  
+  /**
+   * The STAL helper.
+   */
+  protected STALHelper stalHelper;
 
   /**
    * The request element of this command.
    */
   protected JAXBElement<T> request;
-
-  /**
-   * An iterator over the <code>STALResponse</code>s received in
-   * {@link SLCommandImpl#requestSTAL(List)}.
-   */
-  protected Iterator<STALResponse> stalResponses;
 
   @SuppressWarnings("unchecked")
   @Override
@@ -68,7 +56,7 @@ public abstract class SLCommandImpl<T> implements SLCommand {
     this.request = (JAXBElement<T>) request;
 
     this.cmdCtx = ctx;
-    assert this.cmdCtx != null;
+    stalHelper = new STALHelper(cmdCtx.getSTAL());
 
   }
 
@@ -89,74 +77,5 @@ public abstract class SLCommandImpl<T> implements SLCommand {
    */
   protected SLCommandContext getCmdCtx() {
     return cmdCtx;
-  }
-
-  /**
-   * Calls {@link STAL#handleRequest(List)} with the given
-   * <code>stalRequests</code>.
-   * 
-   * @param stalRequests
-   * @throws SLCommandException
-   */
-     protected void requestSTAL(List<STALRequest> stalRequests) throws SLCommandException {
-    List<STALResponse> responses = cmdCtx.getSTAL().handleRequest(stalRequests);
-    if (responses == null) {
-      Log log = LogFactory.getLog(this.getClass());
-      log.info("Received no responses from STAL.");
-      throw new SLCommandException(4000);
-    } else if (responses.size() != stalRequests.size()) {
-      Log log = LogFactory.getLog(this.getClass());
-      log.info("Received invalid count of responses from STAL. Expected "
-          + stalRequests.size() + ", but got " + responses.size() + ".");
-      // throw new SLCommandException(4000);
-    }
-    stalResponses = responses.iterator();
-  }
-
-  /**
-   * @return <code>true</code> if there are more {@link STALResponse}s to be
-   *         fetched with {@link #nextResponse(Class)}, or <code>false</code>
-   *         otherwise.
-   */
-  protected boolean hasNextResponse() {
-    return (stalResponses != null) ? stalResponses.hasNext() : false;
-  }
-
-  /**
-   * Returns the next response of type <code>responseClass</code> that has been
-   * received by {@link #requestSTAL(List)}.
-   * 
-   * @param responseClass
-   *          the response must be an instance of
-   * @return the next response of type <code>responseClass</code>
-   * 
-   * @throws NoSuchElementException
-   *           if there is no more response
-   * @throws SLCommandException
-   *           if the next response is of type {@link ErrorResponse} or not of
-   *           type <code>responseClass</code>
-   */
-  protected STALResponse nextResponse(
-      Class<? extends STALResponse> responseClass) throws SLCommandException {
-
-    if (stalResponses == null) {
-      throw new NoSuchElementException();
-    }
-
-    STALResponse response = stalResponses.next();
-
-    if (response instanceof ErrorResponse) {
-      throw new SLCommandException(((ErrorResponse) response).getErrorCode());
-    }
-
-    if (!(responseClass.isAssignableFrom(response.getClass()))) {
-      Log log = LogFactory.getLog(this.getClass());
-      log.info("Received " + response.getClass() + " from STAL but expected "
-          + responseClass);
-      throw new SLCommandException(4000);
-    }
-
-    return response;
-
   }
 }

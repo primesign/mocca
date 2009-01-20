@@ -31,6 +31,7 @@ package at.gv.egiz.smcc;
 import java.util.Locale;
 
 import javax.smartcardio.Card;
+import javax.smartcardio.CardTerminal;
 
 public interface SignatureCard {
 
@@ -75,12 +76,21 @@ public interface SignatureCard {
 
   }
 
-  public void init(Card card);
+  public void init(Card card, CardTerminal cardTerminal);
+  
+  public Card getCard();
 
   public byte[] getCertificate(KeyboxName keyboxName)
       throws SignatureCardException, InterruptedException;
   
   public void disconnect(boolean reset);
+  
+  /**
+   * Performs a reset of the card.
+   * 
+   * @throws SignatureCardException if reset fails.
+   */
+  public void reset() throws SignatureCardException;
 
   /**
    * 

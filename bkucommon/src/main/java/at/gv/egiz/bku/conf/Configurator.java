@@ -14,6 +14,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.security.Security;
+import java.security.Provider.Service;
 import java.security.cert.CertStore;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -80,7 +82,7 @@ public abstract class Configurator {
           log.error("Cannot add trusted ca", e);
         }
       }
-      return  caCerts.toArray(new X509Certificate[caCerts.size()]);
+      return caCerts.toArray(new X509Certificate[caCerts.size()]);
     } else {
       log.warn("No CA certificates configured");
     }
@@ -150,9 +152,21 @@ public abstract class Configurator {
     log.debug("Registering security providers");
     Security.insertProviderAt(new IAIK(), 1);
     Security.insertProviderAt(new ECCProvider(false), 2);
-    Security.addProvider(new STALProvider());
-    XSecProvider.addAsProvider(false);
+    
+    // registering STALProvider as delegation provider for XSECT
+    STALProvider stalProvider = new STALProvider();
+    Set<Service> services = stalProvider.getServices();
     StringBuilder sb = new StringBuilder();
+    for (Service service : services) {
+      String algorithm = service.getType() + "." + service.getAlgorithm();
+      XSecProvider.setDelegationProvider(algorithm, stalProvider.getName());
+      sb.append("\n" + algorithm);
+    }
+    log.debug("Registered STALProvider as XSecProvider delegation provider for the following services : " + sb.toString());
+    
+    Security.addProvider(stalProvider);
+    XSecProvider.addAsProvider(false);
+    sb = new StringBuilder();
     sb.append("Registered providers: ");
     int i = 1;
     for (Provider prov : Security.getProviders()) {
@@ -187,28 +201,28 @@ public abstract class Configurator {
   }
 
   public void configureVersion() {
-    Properties p = new Properties();
-    try {
-      InputStream is = getManifest();
-      if (is != null) {
-        p.load(getManifest());
-        String version = p.getProperty("Implementation-Build");
-        properties.setProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY,
-            "citizen-card-environment/1.2 MOCCA " + version);
-        DataUrl.setConfiguration(properties);
-        log
-            .debug("Setting user agent to: "
-                + properties
-                    .getProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY));
-      } else {
-        log.warn("Cannot read manifest");
-        properties.setProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY,
-            "citizen-card-environment/1.2 MOCCA UNKNOWN");
-        DataUrl.setConfiguration(properties);
+    if (properties.getProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY) == null) {
+      Properties p = new Properties();
+      try {
+        InputStream is = getManifest();
+        if (is != null) {
+          p.load(getManifest());
+          String version = p.getProperty("Implementation-Build");
+          properties.setProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY,
+              "citizen-card-environment/1.2 MOCCA " + version);
+          log.debug("Setting user agent to: "
+              + properties
+                  .getProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY));
+        } else {
+          log.warn("Cannot read manifest");
+          properties.setProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY,
+              "citizen-card-environment/1.2 MOCCA UNKNOWN");
+        }
+      } catch (IOException e) {
+        log.error(e);
       }
-    } catch (IOException e) {
-      log.error(e);
     }
+    DataUrl.setConfiguration(properties);
   }
 
   public void configure() {
@@ -255,7 +269,7 @@ public abstract class Configurator {
             getCertDir(), getCADir(), caCerts);
         sslCtx.init(km, new TrustManager[] { pkixTM }, null);
       }
-      HttpsURLConnection.setDefaultSSLSocketFactory(sslCtx.getSocketFactory());
+      DataUrl.setSSLSocketFactory(sslCtx.getSocketFactory());
     } catch (Exception e) {
       log.error("Cannot configure SSL", e);
     }
@@ -263,7 +277,7 @@ public abstract class Configurator {
       log.warn("---------------------------------");
       log.warn(" Disabling Hostname Verification ");
       log.warn("---------------------------------");
-      HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+      DataUrl.setHostNameVerifier(new HostnameVerifier() {
         @Override
         public boolean verify(String hostname, SSLSession session) {
           return true;
@@ -272,8 +286,6 @@ public abstract class Configurator {
     }
   }
 
-  
-  
   public void setCertValidator(CertValidator certValidator) {
     this.certValidator = certValidator;
   }

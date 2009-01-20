@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package at.gv.egiz.stal.service.impl;
 
+//import at.buergerkarte.namespaces.cardchannel.service.CommandAPDUType;
+//import at.buergerkarte.namespaces.cardchannel.service.ScriptType;
 import at.gv.egiz.bku.binding.BindingProcessor;
 import at.gv.egiz.bku.binding.BindingProcessorManager;
 import at.gv.egiz.bku.binding.Id;
@@ -36,6 +37,7 @@ import at.gv.egiz.stal.service.types.QuitRequestType;
 import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
 import at.gv.egiz.stal.service.types.SignRequestType;
+import com.sun.xml.ws.developer.UsesJAXBContext;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,6 +48,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.jws.WebService;
 import javax.servlet.ServletContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 import org.apache.commons.logging.Log;
@@ -56,46 +59,45 @@ import org.apache.commons.logging.LogFactory;
  * @author clemens
  */
 @WebService(endpointInterface = "at.gv.egiz.stal.service.STALPortType")
+@UsesJAXBContext(STALXJAXBContextFactory.class)
 public class STALServiceImpl implements STALPortType {
 
   public static final String BINDING_PROCESSOR_MANAGER = "bindingProcessorManager";
   public static final Id TEST_SESSION_ID = IdFactory.getInstance().createId("TestSession");
-  
   protected static final Log log = LogFactory.getLog(STALServiceImpl.class);
-  
+
+
   static {
-    
     if (log.isTraceEnabled()) {
       log.trace("enabling webservice communication dump");
       System.setProperty("com.sun.xml.ws.transport.http.HttpAdapter.dump", "true");
     } else {
       System.setProperty("com.sun.xml.ws.fault.SOAPFaultBuilder.disableCaptureStackTrace", "false");
     }
-    
   }
-  
   @Resource
-  WebServiceContext wsContext;
+  protected WebServiceContext wsContext;
   protected IdFactory idF = IdFactory.getInstance();
+  private at.gv.egiz.stal.service.types.ObjectFactory stalObjFactory = new at.gv.egiz.stal.service.types.ObjectFactory();
+//  private at.buergerkarte.namespaces.cardchannel.service.ObjectFactory ccObjFactory = new at.buergerkarte.namespaces.cardchannel.service.ObjectFactory();
 
-   
   @Override
   public GetNextRequestResponseType connect(String sessId) {
-    
+
     if (sessId == null) {
       throw new NullPointerException("No session id provided");
     }
-    
+
     Id sessionId = idF.createId(sessId);
 
     if (log.isDebugEnabled()) {
       log.debug("Received Connect [" + sessionId + "]");
     }
-    
+
     if (TEST_SESSION_ID.equals(sessionId)) {
       return getTestSessionNextRequestResponse(null);
     }
-    
+
     GetNextRequestResponseType response = new GetNextRequestResponseType();
     response.setSessionId(sessionId.toString());
 
@@ -103,7 +105,7 @@ public class STALServiceImpl implements STALPortType {
 
     if (stal != null) {
 
-      List<RequestType> requestsOut = ((STALRequestBroker) stal).connect();
+      List<JAXBElement<? extends RequestType>> requestsOut = ((STALRequestBroker) stal).connect();
       response.getInfoboxReadRequestOrSignRequestOrQuitRequest().addAll(requestsOut);
 
       if (log.isDebugEnabled()) {
@@ -112,29 +114,32 @@ public class STALServiceImpl implements STALPortType {
         sb.append("] containing ");
         sb.append(requestsOut.size());
         sb.append(" requests: ");
-        for (RequestType reqOut : requestsOut) {
-          sb.append(reqOut.getClass());
+        for (JAXBElement<? extends RequestType> reqOut : requestsOut) {
+          sb.append(reqOut.getValue().getClass());
           sb.append(' ');
         }
         log.debug(sb.toString());
       }
     } else {
       log.error("Failed to get STAL for session " + sessionId + ", returning QuitRequest");
-      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(new QuitRequestType());
+      QuitRequestType quitT = stalObjFactory.createQuitRequestType();
+      JAXBElement<QuitRequestType> quit = stalObjFactory.createGetNextRequestResponseTypeQuitRequest(quitT);
+      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(quit);
     }
     return response;
   }
-  
+
   @Override
   public GetNextRequestResponseType getNextRequest(GetNextRequestType request) {
 
     if (request.getSessionId() == null) {
       throw new NullPointerException("No session id provided");
     }
-    
+
     Id sessionId = idF.createId(request.getSessionId());
 
-    List<ResponseType> responsesIn = request.getInfoboxReadResponseOrSignResponseOrErrorResponse();//getResponse();
+    List<JAXBElement<? extends ResponseType>> responsesIn = request.getInfoboxReadResponseOrSignResponseOrErrorResponse();
+//    List<ResponseType> responsesIn = request.getInfoboxReadResponseOrSignResponseOrErrorResponse();//getResponse();
 
     if (log.isDebugEnabled()) {
       StringBuilder sb = new StringBuilder("Received GetNextRequest [");
@@ -142,25 +147,25 @@ public class STALServiceImpl implements STALPortType {
       sb.append("] containing ");
       sb.append(responsesIn.size());
       sb.append(" responses: ");
-      for (ResponseType respIn : responsesIn) {
+      for (Object respIn : responsesIn) {
         sb.append(respIn.getClass());
         sb.append(' ');
       }
       log.debug(sb.toString());
     }
-    
+
     if (TEST_SESSION_ID.equals(sessionId)) {
       return getTestSessionNextRequestResponse(responsesIn);
     }
 
     GetNextRequestResponseType response = new GetNextRequestResponseType();
     response.setSessionId(sessionId.toString());
-    
+
     STALRequestBroker stal = getStal(sessionId);
 
     if (stal != null) {
 
-      List<RequestType> requestsOut = ((STALRequestBroker) stal).nextRequest(responsesIn);
+      List<JAXBElement<? extends RequestType>> requestsOut = ((STALRequestBroker) stal).nextRequest(responsesIn);
       response.getInfoboxReadRequestOrSignRequestOrQuitRequest().addAll(requestsOut);
 
       if (log.isDebugEnabled()) {
@@ -169,15 +174,17 @@ public class STALServiceImpl implements STALPortType {
         sb.append("] containing ");
         sb.append(requestsOut.size());
         sb.append(" requests: ");
-        for (RequestType reqOut : requestsOut) {
-          sb.append(reqOut.getClass());
+        for (JAXBElement<? extends RequestType> reqOut : requestsOut) {
+          sb.append(reqOut.getValue().getClass());
           sb.append(' ');
         }
         log.debug(sb.toString());
       }
     } else {
       log.error("Failed to get STAL for session " + sessionId + ", returning QuitRequest");
-      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(new QuitRequestType());
+      QuitRequestType quitT = stalObjFactory.createQuitRequestType();
+      JAXBElement<QuitRequestType> quit = stalObjFactory.createGetNextRequestResponseTypeQuitRequest(quitT);
+      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(quit);
     }
     return response;
   }
@@ -188,7 +195,7 @@ public class STALServiceImpl implements STALPortType {
     if (request.getSessionId() == null) {
       throw new NullPointerException("No session id provided");
     }
-    
+
     Id sessionId = idF.createId(request.getSessionId());
 
     if (log.isDebugEnabled()) {
@@ -197,13 +204,13 @@ public class STALServiceImpl implements STALPortType {
 
     GetHashDataInputResponseType response = new GetHashDataInputResponseType();
     response.setSessionId(sessionId.toString());
-      
+
     if (TEST_SESSION_ID.equals(sessionId)) {
       log.debug("Received GetHashDataInput for session " + TEST_SESSION_ID + ", return DummyHashDataInput");
       GetHashDataInputResponseType.Reference ref = new GetHashDataInputResponseType.Reference();
       ref.setID("signed-data-reference-0-1214921968-27971781-24309"); //Reference-" + TEST_SESSION_ID + "-001");
       ref.setMimeType("text/plain");
-      
+
       Charset charset;
       try {
         charset = Charset.forName("iso-8859-15");
@@ -316,30 +323,52 @@ public class STALServiceImpl implements STALPortType {
     return (bp == null) ? null : (bp.isFinished() ? null : (STALRequestBroker) bp.getSTAL());
   }
 
-  private GetNextRequestResponseType getTestSessionNextRequestResponse(List<ResponseType> responsesIn) {
+  private GetNextRequestResponseType getTestSessionNextRequestResponse(List<JAXBElement<? extends ResponseType>> responsesIn) {
     GetNextRequestResponseType response = new GetNextRequestResponseType();
     response.setSessionId(TEST_SESSION_ID.toString());
-    
-    if (responsesIn != null && responsesIn.size() > 0 && responsesIn.get(0) instanceof ErrorResponseType) {
-      log.info("Received TestSession GetNextRequest(ErrorResponse), returning QuitRequest");
-      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(new QuitRequestType());
+
+    List<JAXBElement<? extends RequestType>> reqs = response.getInfoboxReadRequestOrSignRequestOrQuitRequest();
+
+    if (responsesIn == null) {
+      log.info("[TestSession] received CONNECT, return dummy requests ");
+//      ScriptType scriptT = ccObjFactory.createScriptType();
+//      CommandAPDUType cmd = ccObjFactory.createCommandAPDUType();
+//      cmd.setValue("TestSession CardChannelCMD 1234".getBytes());
+//      scriptT.getResetOrCommandAPDUOrVerifyAPDU().add(cmd);
+//      reqs.add(ccObjFactory.createScript(scriptT));
+      addDummyRequests(reqs);
+    } else if (responsesIn != null && responsesIn.size() > 0 && responsesIn.get(0).getValue() instanceof ErrorResponseType) {
+      log.info("[TestSession] received ErrorResponse, return QUIT request");
+      QuitRequestType quitT = stalObjFactory.createQuitRequestType();
+      reqs.add(stalObjFactory.createGetNextRequestResponseTypeQuitRequest(quitT));
     } else {
-      log.info("Received TestSession GetNextRequest, returning SignRequest and 3 InfoboxReadRequests ");
-      InfoboxReadRequestType req = new InfoboxReadRequestType();
-      req.setInfoboxIdentifier("IdentityLink");
-      req.setDomainIdentifier("hansiwurzel");
-      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(req);
-      SignRequestType sig = new SignRequestType();
-      sig.setKeyIdentifier("SecureSignatureKeypair");
-      sig.setSignedInfo("<dsig:SignedInfo  xmlns:dsig=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:xpf=\"http://www.w3.org/2002/06/xmldsig-filter2\"><dsig:CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\" /> <dsig:SignatureMethod Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1\" /> <dsig:Reference Id=\"signed-data-reference-0-1214921968-27971781-24309\" URI=\"#signed-data-object-0-1214921968-27971781-13578\"><dsig:Transforms> <dsig:Transform Algorithm=\"http://www.w3.org/2002/06/xmldsig-filter2\"> <xpf:XPath xmlns:xpf=\"http://www.w3.org/2002/06/xmldsig-filter2\" Filter=\"intersect\">id('signed-data-object-0-1214921968-27971781-13578')/node()</xpf:XPath></dsig:Transform></dsig:Transforms><dsig:DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\" /> <dsig:DigestValue>H1IePEEfGQ2SG03H6LTzw1TpCuM=</dsig:DigestValue></dsig:Reference><dsig:Reference Id=\"etsi-data-reference-0-1214921968-27971781-25439\" Type=\"http://uri.etsi.org/01903/v1.1.1#SignedProperties\" URI=\"#xmlns(etsi=http://uri.etsi.org/01903/v1.1.1%23)%20xpointer(id('etsi-data-object-0-1214921968-27971781-3095')/child::etsi:QualifyingProperties/child::etsi:SignedProperties)\"><dsig:DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\" /><dsig:DigestValue>yV6Q+I60buqR4mMaxA7fi+CV35A=</dsig:DigestValue></dsig:Reference></dsig:SignedInfo>".getBytes());
-      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(sig);
-      req = new InfoboxReadRequestType();
-      req.setInfoboxIdentifier("CertifiedKeypair");
-      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(req);
-      req = new InfoboxReadRequestType();
-      req.setInfoboxIdentifier("SecureSignatureKeypair");
-      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(req);
+      log.info("[TestSession] received " + responsesIn.size() + " response(s), return dummy requests" );
+      addDummyRequests(reqs);
     }
     return response;
   }
+
+  private void addDummyRequests(List<JAXBElement<? extends RequestType>> reqs) {
+//    log.info("[TestSession] add READ request for Infobox IdentityLink");
+//    InfoboxReadRequestType ibrT1 = stalObjFactory.createInfoboxReadRequestType();
+//    ibrT1.setInfoboxIdentifier("IdentityLink");
+//    reqs.add(stalObjFactory.createGetNextRequestResponseTypeInfoboxReadRequest(ibrT1));
+
+    log.info("[TestSession] add READ request for Infobox CertifiedKeypair");
+    InfoboxReadRequestType ibrT2 = stalObjFactory.createInfoboxReadRequestType();
+    ibrT2.setInfoboxIdentifier("CertifiedKeypair");
+    reqs.add(stalObjFactory.createGetNextRequestResponseTypeInfoboxReadRequest(ibrT2));
+
+    log.info("[TestSession] add READ request for Infobox SecureSignatureKeypair");
+    InfoboxReadRequestType ibrT3 = stalObjFactory.createInfoboxReadRequestType();
+    ibrT3.setInfoboxIdentifier("SecureSignatureKeypair");
+    reqs.add(stalObjFactory.createGetNextRequestResponseTypeInfoboxReadRequest(ibrT3));
+
+    log.info("[TestSession] add SIGN request");
+    SignRequestType sigT1 = stalObjFactory.createSignRequestType();
+    sigT1.setKeyIdentifier("SecureSignatureKeypair");
+    sigT1.setSignedInfo("<dsig:SignedInfo  xmlns:dsig=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:xpf=\"http://www.w3.org/2002/06/xmldsig-filter2\"><dsig:CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\" /> <dsig:SignatureMethod Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1\" /> <dsig:Reference Id=\"signed-data-reference-0-1214921968-27971781-24309\" URI=\"#signed-data-object-0-1214921968-27971781-13578\"><dsig:Transforms> <dsig:Transform Algorithm=\"http://www.w3.org/2002/06/xmldsig-filter2\"> <xpf:XPath xmlns:xpf=\"http://www.w3.org/2002/06/xmldsig-filter2\" Filter=\"intersect\">id('signed-data-object-0-1214921968-27971781-13578')/node()</xpf:XPath></dsig:Transform></dsig:Transforms><dsig:DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\" /> <dsig:DigestValue>H1IePEEfGQ2SG03H6LTzw1TpCuM=</dsig:DigestValue></dsig:Reference><dsig:Reference Id=\"etsi-data-reference-0-1214921968-27971781-25439\" Type=\"http://uri.etsi.org/01903/v1.1.1#SignedProperties\" URI=\"#xmlns(etsi=http://uri.etsi.org/01903/v1.1.1%23)%20xpointer(id('etsi-data-object-0-1214921968-27971781-3095')/child::etsi:QualifyingProperties/child::etsi:SignedProperties)\"><dsig:DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\" /><dsig:DigestValue>yV6Q+I60buqR4mMaxA7fi+CV35A=</dsig:DigestValue></dsig:Reference></dsig:SignedInfo>".getBytes());
+    reqs.add(stalObjFactory.createGetNextRequestResponseTypeSignRequest(sigT1));
+  }
+
 }

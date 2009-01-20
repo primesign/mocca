@@ -24,8 +24,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,7 +34,6 @@ import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
-import java.util.Collections;
 
 public abstract class AbstractSMCCSTAL implements STAL {
   private static Log log = LogFactory.getLog(AbstractSMCCSTAL.class);
@@ -106,7 +103,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
           log.info("Interrupt in handleRequest, do not retry");
           throw e;
         } catch (Exception e) {
-          log.info("Error while handling STAL request:" + e);
+          log.info("Error while handling STAL request:", e);
           if (++retryCounter < maxRetries) {
             signatureCard.disconnect(true);
             signatureCard = null;
@@ -124,7 +121,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
   }
 
   @Override
-  public List<STALResponse> handleRequest(List<STALRequest> requestList) {
+  public List<STALResponse> handleRequest(List<? extends STALRequest> requestList) {
     log.debug("Got request list containing " + requestList.size()
         + " STAL requests");
     List<STALResponse> responseList = new ArrayList<STALResponse>(requestList
@@ -143,8 +140,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
         }
       } catch (InterruptedException ex) {
         log.error("got interrupted, return ErrorResponse 6001");
-        responseList = Collections.singletonList((STALResponse) new ErrorResponse(6001));
-        break;
+        throw new RuntimeException(ex);
       }
       
     }

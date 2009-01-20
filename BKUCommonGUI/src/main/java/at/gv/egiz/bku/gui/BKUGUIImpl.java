@@ -58,9 +58,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -117,7 +114,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
       this.contentPane = contentPane;
 
       if (locale != null) {
-          messages = ResourceBundle.getBundle(MESSAGES_BUNDLE, locale);
+          Locale lang = new Locale(locale.getLanguage().substring(0,2));
+          log.debug("loading applet resources for language: " + lang.toString());
+          messages = ResourceBundle.getBundle(MESSAGES_BUNDLE, lang);
       } else {
           messages = ResourceBundle.getBundle(MESSAGES_BUNDLE);
       }

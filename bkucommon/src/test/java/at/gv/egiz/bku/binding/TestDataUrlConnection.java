@@ -27,6 +27,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSocketFactory;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Ignore;
@@ -129,6 +132,18 @@ public class TestDataUrlConnection implements DataUrlConnectionSPI {
 
   @Override
   public void setConfiguration(Properties config) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void setHostnameVerifier(HostnameVerifier hostnameVerifier) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void setSSLSocketFactory(SSLSocketFactory socketFactory) {
     // TODO Auto-generated method stub
     
   }

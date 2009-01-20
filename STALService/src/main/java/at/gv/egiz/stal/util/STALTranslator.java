@@ -16,6 +16,7 @@ import at.gv.egiz.stal.service.types.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -27,9 +28,10 @@ public class STALTranslator {
 
   protected static final Log log = LogFactory.getLog(STALTranslator.class);
 
-  public static List<STALRequest> translateRequests(List<RequestType> requests) {
+  public static List<STALRequest> translateRequests(List<JAXBElement<? extends RequestType>> requests) {
     List<STALRequest> stalRequests = new ArrayList<STALRequest>(requests.size());
-    for (RequestType request : requests) {
+    for (JAXBElement<? extends RequestType> requestElt : requests) {
+      RequestType request = requestElt.getValue();
       if (request instanceof InfoboxReadRequestType) {
         InfoboxReadRequest stalReq = new InfoboxReadRequest();
         stalReq.setDomainIdentifier(((InfoboxReadRequestType) request).getDomainIdentifier());
@@ -51,37 +53,40 @@ public class STALTranslator {
     return stalRequests;
   }
 
-  public static List<ResponseType> fromSTAL(List<STALResponse> stalResponses) {
-    List<ResponseType> responses = new ArrayList<ResponseType>(stalResponses.size());
+  public static List<JAXBElement<? extends ResponseType>> fromSTAL(List<STALResponse> stalResponses) {
+    ObjectFactory stalObjFactory = new ObjectFactory();
+    List<JAXBElement<? extends ResponseType>> responses = new ArrayList<JAXBElement<? extends ResponseType>>(stalResponses.size());
     for (STALResponse stalResp : stalResponses) {
       if (stalResp instanceof InfoboxReadResponse) {
-        InfoboxReadResponseType resp = new InfoboxReadResponseType();
+        InfoboxReadResponseType resp = stalObjFactory.createInfoboxReadResponseType();
         resp.setInfoboxValue(((InfoboxReadResponse) stalResp).getInfoboxValue());
-        responses.add(resp);
+        responses.add(stalObjFactory.createGetNextRequestTypeInfoboxReadResponse(resp));
       } else if (stalResp instanceof SignResponse) {
-        SignResponseType resp = new SignResponseType();
+        SignResponseType resp = stalObjFactory.createSignResponseType();
         resp.setSignatureValue(((SignResponse) stalResp).getSignatureValue());
-        responses.add(resp);
+        responses.add(stalObjFactory.createGetNextRequestTypeSignResponse(resp));
       } else if (stalResp instanceof ErrorResponse) {
-        ErrorResponseType resp = new ErrorResponseType();
+        ErrorResponseType resp = stalObjFactory.createErrorResponseType();
         resp.setErrorCode(((ErrorResponse) stalResp).getErrorCode());
         resp.setErrorMessage(((ErrorResponse) stalResp).getErrorMessage());
-        responses.add(resp);
+        responses.add(stalObjFactory.createGetNextRequestTypeErrorResponse(resp));
       } else {
         log.error("unknown STAL response type: " + stalResp.getClass());
-        ErrorResponseType resp = new ErrorResponseType(); 
+        ErrorResponseType resp = stalObjFactory.createErrorResponseType();
         resp.setErrorCode(4000);
         resp.setErrorMessage("unknown STAL response type: " + stalResp.getClass());
-        responses = Collections.singletonList((ResponseType) resp);
+        responses.clear();
+        responses.add(stalObjFactory.createGetNextRequestTypeErrorResponse(resp));
         break;
       }
     }
     return responses;
   }
   
-  public static List<STALResponse> toSTAL(List<ResponseType> responses) {
+  public static List<STALResponse> toSTAL(List<JAXBElement<? extends ResponseType>> responses) {
     List<STALResponse> stalResponses = new ArrayList<STALResponse>(responses.size());
-    for (ResponseType resp : responses) {
+    for (JAXBElement<? extends ResponseType> respElt : responses) {
+      ResponseType resp = respElt.getValue();
       if (resp instanceof InfoboxReadResponseType) {
         InfoboxReadResponse stalResp = new InfoboxReadResponse();
         stalResp.setInfoboxValue(((InfoboxReadResponseType) resp).getInfoboxValue());

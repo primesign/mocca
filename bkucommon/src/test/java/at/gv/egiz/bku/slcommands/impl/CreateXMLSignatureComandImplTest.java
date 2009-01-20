@@ -16,8 +16,8 @@
 */
 package at.gv.egiz.bku.slcommands.impl;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import iaik.xml.crypto.XSecProvider;
 
 import java.io.InputStream;
@@ -28,8 +28,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import at.gv.egiz.bku.slcommands.CreateXMLSignatureCommand;
 import at.gv.egiz.bku.slcommands.InfoboxReadCommand;
@@ -43,7 +43,7 @@ import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.dummy.DummySTAL;
-@Ignore
+//@Ignore
 public class CreateXMLSignatureComandImplTest {
 
   private SLCommandFactory factory;
@@ -52,8 +52,9 @@ public class CreateXMLSignatureComandImplTest {
 
   @BeforeClass
   public static void setUpClass() {
-    
-    
+
+    new ClassPathXmlApplicationContext("at/gv/egiz/bku/slcommands/testApplicationContext.xml");
+
     Security.addProvider(new STALProvider());
     XSecProvider.addAsProvider(true);
   }
