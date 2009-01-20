@@ -3,11 +3,12 @@ package at.gv.egiz.stal.service.types;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -24,6 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="InfoboxReadResponse" type="{http://www.egiz.gv.at/stal}InfoboxReadResponseType"/>
  *         &lt;element name="SignResponse" type="{http://www.egiz.gv.at/stal}SignResponseType"/>
  *         &lt;element name="ErrorResponse" type="{http://www.egiz.gv.at/stal}ErrorResponseType"/>
+ *         &lt;element ref="{http://www.egiz.gv.at/stal}OtherResponse"/>
  *       &lt;/choice>
  *       &lt;attribute name="SessionId" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
@@ -39,12 +41,13 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class GetNextRequestType {
 
-    @XmlElements({
-        @XmlElement(name = "SignResponse", type = SignResponseType.class),
-        @XmlElement(name = "InfoboxReadResponse", type = InfoboxReadResponseType.class),
-        @XmlElement(name = "ErrorResponse", type = ErrorResponseType.class)
+    @XmlElementRefs({
+        @XmlElementRef(name = "ErrorResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
+        @XmlElementRef(name = "SignResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
+        @XmlElementRef(name = "OtherResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
+        @XmlElementRef(name = "InfoboxReadResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class)
     })
-    protected List<ResponseType> infoboxReadResponseOrSignResponseOrErrorResponse;
+    protected List<JAXBElement<? extends at.gv.egiz.stal.service.types.ResponseType>> infoboxReadResponseOrSignResponseOrErrorResponse;
     @XmlAttribute(name = "SessionId")
     protected String sessionId;
 
@@ -66,15 +69,17 @@ public class GetNextRequestType {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link SignResponseType }
-     * {@link InfoboxReadResponseType }
-     * {@link ErrorResponseType }
+     * {@link JAXBElement }{@code <}{@link SignResponseType }{@code >}
+     * {@link JAXBElement }{@code <}{@link at.buergerkarte.namespaces.cardchannel.ResponseType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ErrorResponseType }{@code >}
+     * {@link JAXBElement }{@code <}{@link at.gv.egiz.stal.service.types.ResponseType }{@code >}
+     * {@link JAXBElement }{@code <}{@link InfoboxReadResponseType }{@code >}
      * 
      * 
      */
-    public List<ResponseType> getInfoboxReadResponseOrSignResponseOrErrorResponse() {
+    public List<JAXBElement<? extends at.gv.egiz.stal.service.types.ResponseType>> getInfoboxReadResponseOrSignResponseOrErrorResponse() {
         if (infoboxReadResponseOrSignResponseOrErrorResponse == null) {
-            infoboxReadResponseOrSignResponseOrErrorResponse = new ArrayList<ResponseType>();
+            infoboxReadResponseOrSignResponseOrErrorResponse = new ArrayList<JAXBElement<? extends at.gv.egiz.stal.service.types.ResponseType>>();
         }
         return this.infoboxReadResponseOrSignResponseOrErrorResponse;
     }

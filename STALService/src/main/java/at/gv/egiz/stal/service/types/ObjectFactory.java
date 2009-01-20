@@ -24,50 +24,26 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _GetHashDataInputFault_QNAME = new QName("http://www.egiz.gv.at/stal", "GetHashDataInputFault");
     private final static QName _GetHashDataInput_QNAME = new QName("http://www.egiz.gv.at/stal", "GetHashDataInput");
-    private final static QName _GetNextRequestResponse_QNAME = new QName("http://www.egiz.gv.at/stal", "GetNextRequestResponse");
     private final static QName _GetHashDataInputResponse_QNAME = new QName("http://www.egiz.gv.at/stal", "GetHashDataInputResponse");
+    private final static QName _OtherRequest_QNAME = new QName("http://www.egiz.gv.at/stal", "OtherRequest");
     private final static QName _GetNextRequest_QNAME = new QName("http://www.egiz.gv.at/stal", "GetNextRequest");
+    private final static QName _OtherResponse_QNAME = new QName("http://www.egiz.gv.at/stal", "OtherResponse");
     private final static QName _SessionId_QNAME = new QName("http://www.egiz.gv.at/stal", "SessionId");
+    private final static QName _GetHashDataInputFault_QNAME = new QName("http://www.egiz.gv.at/stal", "GetHashDataInputFault");
+    private final static QName _GetNextRequestResponse_QNAME = new QName("http://www.egiz.gv.at/stal", "GetNextRequestResponse");
+    private final static QName _GetNextRequestResponseTypeQuitRequest_QNAME = new QName("http://www.egiz.gv.at/stal", "QuitRequest");
+    private final static QName _GetNextRequestResponseTypeInfoboxReadRequest_QNAME = new QName("http://www.egiz.gv.at/stal", "InfoboxReadRequest");
+    private final static QName _GetNextRequestResponseTypeSignRequest_QNAME = new QName("http://www.egiz.gv.at/stal", "SignRequest");
+    private final static QName _GetNextRequestTypeErrorResponse_QNAME = new QName("http://www.egiz.gv.at/stal", "ErrorResponse");
+    private final static QName _GetNextRequestTypeSignResponse_QNAME = new QName("http://www.egiz.gv.at/stal", "SignResponse");
+    private final static QName _GetNextRequestTypeInfoboxReadResponse_QNAME = new QName("http://www.egiz.gv.at/stal", "InfoboxReadResponse");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: at.gv.egiz.stal.service.types
      * 
      */
     public ObjectFactory() {
-    }
-
-    /**
-     * Create an instance of {@link GetNextRequestType }
-     * 
-     */
-    public GetNextRequestType createGetNextRequestType() {
-        return new GetNextRequestType();
-    }
-
-    /**
-     * Create an instance of {@link InfoboxReadRequestType }
-     * 
-     */
-    public InfoboxReadRequestType createInfoboxReadRequestType() {
-        return new InfoboxReadRequestType();
-    }
-
-    /**
-     * Create an instance of {@link GetHashDataInputResponseType.Reference }
-     * 
-     */
-    public GetHashDataInputResponseType.Reference createGetHashDataInputResponseTypeReference() {
-        return new GetHashDataInputResponseType.Reference();
-    }
-
-    /**
-     * Create an instance of {@link ErrorResponseType }
-     * 
-     */
-    public ErrorResponseType createErrorResponseType() {
-        return new ErrorResponseType();
     }
 
     /**
@@ -79,27 +55,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GetHashDataInputResponseType.Reference }
+     * 
+     */
+    public GetHashDataInputResponseType.Reference createGetHashDataInputResponseTypeReference() {
+        return new GetHashDataInputResponseType.Reference();
+    }
+
+    /**
+     * Create an instance of {@link GetNextRequestType }
+     * 
+     */
+    public GetNextRequestType createGetNextRequestType() {
+        return new GetNextRequestType();
+    }
+
+    /**
      * Create an instance of {@link SignRequestType }
      * 
      */
     public SignRequestType createSignRequestType() {
         return new SignRequestType();
-    }
-
-    /**
-     * Create an instance of {@link GetHashDataInputFaultType }
-     * 
-     */
-    public GetHashDataInputFaultType createGetHashDataInputFaultType() {
-        return new GetHashDataInputFaultType();
-    }
-
-    /**
-     * Create an instance of {@link SignResponseType }
-     * 
-     */
-    public SignResponseType createSignResponseType() {
-        return new SignResponseType();
     }
 
     /**
@@ -111,19 +87,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetHashDataInputResponseType }
+     * Create an instance of {@link ErrorResponseType }
      * 
      */
-    public GetHashDataInputResponseType createGetHashDataInputResponseType() {
-        return new GetHashDataInputResponseType();
-    }
-
-    /**
-     * Create an instance of {@link InfoboxReadResponseType }
-     * 
-     */
-    public InfoboxReadResponseType createInfoboxReadResponseType() {
-        return new InfoboxReadResponseType();
+    public ErrorResponseType createErrorResponseType() {
+        return new ErrorResponseType();
     }
 
     /**
@@ -135,6 +103,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link InfoboxReadResponseType }
+     * 
+     */
+    public InfoboxReadResponseType createInfoboxReadResponseType() {
+        return new InfoboxReadResponseType();
+    }
+
+    /**
+     * Create an instance of {@link InfoboxReadRequestType }
+     * 
+     */
+    public InfoboxReadRequestType createInfoboxReadRequestType() {
+        return new InfoboxReadRequestType();
+    }
+
+    /**
      * Create an instance of {@link GetNextRequestResponseType }
      * 
      */
@@ -143,12 +127,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetHashDataInputFaultType }{@code >}}
+     * Create an instance of {@link GetHashDataInputResponseType }
      * 
      */
-    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "GetHashDataInputFault")
-    public JAXBElement<GetHashDataInputFaultType> createGetHashDataInputFault(GetHashDataInputFaultType value) {
-        return new JAXBElement<GetHashDataInputFaultType>(_GetHashDataInputFault_QNAME, GetHashDataInputFaultType.class, null, value);
+    public GetHashDataInputResponseType createGetHashDataInputResponseType() {
+        return new GetHashDataInputResponseType();
+    }
+
+    /**
+     * Create an instance of {@link SignResponseType }
+     * 
+     */
+    public SignResponseType createSignResponseType() {
+        return new SignResponseType();
+    }
+
+    /**
+     * Create an instance of {@link GetHashDataInputFaultType }
+     * 
+     */
+    public GetHashDataInputFaultType createGetHashDataInputFaultType() {
+        return new GetHashDataInputFaultType();
     }
 
     /**
@@ -161,21 +160,21 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GetNextRequestResponseType }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "GetNextRequestResponse")
-    public JAXBElement<GetNextRequestResponseType> createGetNextRequestResponse(GetNextRequestResponseType value) {
-        return new JAXBElement<GetNextRequestResponseType>(_GetNextRequestResponse_QNAME, GetNextRequestResponseType.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetHashDataInputResponseType }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "GetHashDataInputResponse")
     public JAXBElement<GetHashDataInputResponseType> createGetHashDataInputResponse(GetHashDataInputResponseType value) {
         return new JAXBElement<GetHashDataInputResponseType>(_GetHashDataInputResponse_QNAME, GetHashDataInputResponseType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link RequestType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "OtherRequest")
+    public JAXBElement<RequestType> createOtherRequest(RequestType value) {
+        return new JAXBElement<RequestType>(_OtherRequest_QNAME, RequestType.class, null, value);
     }
 
     /**
@@ -188,12 +187,93 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ResponseType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "OtherResponse")
+    public JAXBElement<ResponseType> createOtherResponse(ResponseType value) {
+        return new JAXBElement<ResponseType>(_OtherResponse_QNAME, ResponseType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "SessionId")
     public JAXBElement<String> createSessionId(String value) {
         return new JAXBElement<String>(_SessionId_QNAME, String.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetHashDataInputFaultType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "GetHashDataInputFault")
+    public JAXBElement<GetHashDataInputFaultType> createGetHashDataInputFault(GetHashDataInputFaultType value) {
+        return new JAXBElement<GetHashDataInputFaultType>(_GetHashDataInputFault_QNAME, GetHashDataInputFaultType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetNextRequestResponseType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "GetNextRequestResponse")
+    public JAXBElement<GetNextRequestResponseType> createGetNextRequestResponse(GetNextRequestResponseType value) {
+        return new JAXBElement<GetNextRequestResponseType>(_GetNextRequestResponse_QNAME, GetNextRequestResponseType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link QuitRequestType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "QuitRequest", scope = GetNextRequestResponseType.class)
+    public JAXBElement<QuitRequestType> createGetNextRequestResponseTypeQuitRequest(QuitRequestType value) {
+        return new JAXBElement<QuitRequestType>(_GetNextRequestResponseTypeQuitRequest_QNAME, QuitRequestType.class, GetNextRequestResponseType.class, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InfoboxReadRequestType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "InfoboxReadRequest", scope = GetNextRequestResponseType.class)
+    public JAXBElement<InfoboxReadRequestType> createGetNextRequestResponseTypeInfoboxReadRequest(InfoboxReadRequestType value) {
+        return new JAXBElement<InfoboxReadRequestType>(_GetNextRequestResponseTypeInfoboxReadRequest_QNAME, InfoboxReadRequestType.class, GetNextRequestResponseType.class, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SignRequestType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "SignRequest", scope = GetNextRequestResponseType.class)
+    public JAXBElement<SignRequestType> createGetNextRequestResponseTypeSignRequest(SignRequestType value) {
+        return new JAXBElement<SignRequestType>(_GetNextRequestResponseTypeSignRequest_QNAME, SignRequestType.class, GetNextRequestResponseType.class, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ErrorResponseType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "ErrorResponse", scope = GetNextRequestType.class)
+    public JAXBElement<ErrorResponseType> createGetNextRequestTypeErrorResponse(ErrorResponseType value) {
+        return new JAXBElement<ErrorResponseType>(_GetNextRequestTypeErrorResponse_QNAME, ErrorResponseType.class, GetNextRequestType.class, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link SignResponseType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "SignResponse", scope = GetNextRequestType.class)
+    public JAXBElement<SignResponseType> createGetNextRequestTypeSignResponse(SignResponseType value) {
+        return new JAXBElement<SignResponseType>(_GetNextRequestTypeSignResponse_QNAME, SignResponseType.class, GetNextRequestType.class, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link InfoboxReadResponseType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "InfoboxReadResponse", scope = GetNextRequestType.class)
+    public JAXBElement<InfoboxReadResponseType> createGetNextRequestTypeInfoboxReadResponse(InfoboxReadResponseType value) {
+        return new JAXBElement<InfoboxReadResponseType>(_GetNextRequestTypeInfoboxReadResponse_QNAME, InfoboxReadResponseType.class, GetNextRequestType.class, value);
     }
 
 }
