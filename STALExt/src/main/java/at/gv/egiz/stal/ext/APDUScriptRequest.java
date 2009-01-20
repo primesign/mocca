@@ -18,7 +18,7 @@ package at.gv.egiz.stal.ext;
 
 import java.util.List;
 
-import at.gv.egiz.stal.STALRequest;;
+import at.gv.egiz.stal.STALRequest;
 
 public class APDUScriptRequest extends STALRequest {
 
