@@ -3,14 +3,14 @@
     <parent>
         <artifactId>bku</artifactId>
         <groupId>at.gv.egiz</groupId>
-        <version>1.0.2</version>
+        <version>1.0.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>at.gv.egiz</groupId>
     <artifactId>BKUOnline</artifactId>
     <packaging>war</packaging>
     <name>BKU Online</name>
-    <version>1.0.2</version>
+    <version>1.0.2-SNAPSHOT</version>
 
     <pluginRepositories>
         <pluginRepository>
@@ -24,12 +24,12 @@
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>bkucommon</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>BKUViewer</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -53,20 +53,20 @@
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>STALService</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.2-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 		<!-- build BKUApplet prior to BKUOnline -->
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>BKUApplet</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.2-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>STALService</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.2-SNAPSHOT</version>
         </dependency>
         <!-- TODO move at.buergerkarte.namespaces.cardchannel.service out from STALXService
          |   so that BKUOnline does not have to depend on STALXService
@@ -107,9 +107,9 @@
         <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
     </properties>
     <scm>
-        <developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/bku-1.0.2/BKUOnline</developerConnection>
-        <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/bku-1.0.2/BKUOnline</connection>
-        <url>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/bku-1.0.2/BKUOnline</url>
+        <developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKUOnline</developerConnection>
+        <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKUOnline</connection>
+        <url>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKUOnline</url>
     </scm>
     <build>
         <plugins>
