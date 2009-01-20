@@ -5,7 +5,7 @@
     elementFormDefault="qualified"
     xmlns:stal="http://www.egiz.gv.at/stal">
 
-    <xs:import namespace="http://www.egiz.gv.at/stal" schemaLocation="stal-extended.xsd"/>
+    <xs:import namespace="http://www.egiz.gv.at/stal" schemaLocation="stal-service.xsd"/>
 
     <xs:annotation>
         <xs:documentation>Schema for transparent access to cards using a BKU and the CardChannel

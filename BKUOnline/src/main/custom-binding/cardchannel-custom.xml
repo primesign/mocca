@@ -29,7 +29,7 @@
           xmlns:xs='http://www.w3.org/2001/XMLSchema'
           xmlns:xjc='http://java.sun.com/xml/ns/jaxb/xjc'
           xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-          schemaLocation='../webapp/WEB-INF/wsdl/CardChannel.xsd'
+          schemaLocation='../wsdl/CardChannel.xsd'
           xsi:schemaLocation='http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd
                               http://www.w3.org/2001/XMLSchema http://www.w3.org/2001/XMLSchema.xsd'>
 
