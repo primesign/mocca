@@ -24,6 +24,8 @@
         <title>MOCCA Applet</title>
         <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
         <script type="text/javascript" src="js/deployJava.js"></script>
+        <style type="text/css" media="all">@import "css/applet.css";</style>
+
         <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
         <META HTTP-EQUIV="EXPIRES" CONTENT="Mon, 22 Jul 2002 11:12:01 GMT">
         <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
@@ -38,12 +40,7 @@
         String hashDataDisplay = (String) session.getAttribute("appletHashDataDisplay");
         String locale = (String) session.getAttribute("locale");
     %>
-    <body style="background:#ffffff;padding:0;margin:0;border-style: none;width:<%=width%>">
-            <!--width:<%=width%>px;margin:auto;-->
-        <!--<div style="display: table; height: <%=height%>px; #position: relative; overflow: hidden;border: thin solid green;">
-            <div style=" #position: absolute; #top: 50%;display: table-cell; vertical-align: middle;">
-                <div style=" #position: relative; #top: -50%">
--->
+    <body id="appletpage" style="width:<%=width%>">
             <script>
                 if (!deployJava.versionCheck('1.6.0_04+')) {
                     document
@@ -72,10 +69,5 @@
                     deployJava.runApplet(attributes, parameters, version);
                 }
             </script>
-        <!--
-                </div>
-            </div>
-        </div>
-        -->
     </body>
 </html>

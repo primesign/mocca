@@ -1,0 +1,16 @@
+
+root { 
+    display: block;
+}
+
+body {
+    background: #ffffff;
+    /*background-image: url(../img/mocca-t_s.png);*/
+    padding: 0;
+    margin: 0;
+    border-style: none;
+    /*
+    width:<%=width%>
+    */
+}
+
