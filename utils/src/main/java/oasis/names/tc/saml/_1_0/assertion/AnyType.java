@@ -18,6 +18,14 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
+ * This type is introduced to avoid the DOM Element binding of
+ * AttributeValue and SubjectConfirmationData, specified as
+ * <pre>
+ *  &lt;element name="AttributeValue" type="anyType"/>
+ *  &lt;element name="SubjectConfirmationData" type="anyType"/>
+ * </pre>
+ * in the original SAML 1.0 Assertion schema.
+ * 
  * <p>Java class for AnyType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
