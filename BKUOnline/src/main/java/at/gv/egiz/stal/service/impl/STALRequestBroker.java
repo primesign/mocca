@@ -22,6 +22,7 @@ import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
 import java.util.List;
+import javax.xml.bind.JAXBElement;
 
 /**
  *
@@ -32,9 +33,9 @@ public interface STALRequestBroker extends STAL {
     public static final int ERR_4500 = 4500;
     public static final long DEFAULT_TIMEOUT_MS = 1000*60*5; //5mn
 
-    public List<RequestType> connect();
+    public List<JAXBElement<? extends RequestType>> connect();
     
-    public List<RequestType> nextRequest(List<ResponseType> response);
+    public List<JAXBElement<? extends RequestType>> nextRequest(List<JAXBElement<? extends ResponseType>> responses);
 
     public List<HashDataInput> getHashDataInput();
 }

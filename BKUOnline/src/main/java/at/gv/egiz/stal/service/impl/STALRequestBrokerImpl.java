@@ -25,6 +25,7 @@ import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.service.types.InfoboxReadRequestType;
+import at.gv.egiz.stal.service.types.ObjectFactory;
 import at.gv.egiz.stal.service.types.QuitRequestType;
 import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import javax.xml.bind.JAXBElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -52,14 +54,12 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
 
     private static final Log log = LogFactory.getLog(STALRequestBrokerImpl.class);
 
-//    private boolean expectingResponse = false;
+    private ObjectFactory stalObjFactory = new ObjectFactory();
+    
     private boolean interrupted = false;
     
-//    private final RequestsMonitor reqMon = new RequestsMonitor();
-//    private final ResponsesMonitor respMon = new ResponsesMonitor();
-
-    protected ArrayList<RequestType> requests;
-    protected ArrayList<ResponseType> responses;
+    protected final ArrayList<JAXBElement<? extends RequestType>> requests;
+    protected final ArrayList<JAXBElement<? extends ResponseType>> responses;
 
     protected ArrayList<HashDataInput> hashDataInputs;
     
@@ -69,8 +69,8 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
       if (timeoutMillisec <= 0) 
         timeoutMillisec = DEFAULT_TIMEOUT_MS;
       timeout = timeoutMillisec;
-      requests = new ArrayList<RequestType>();
-      responses = new ArrayList<ResponseType>();
+      requests = new ArrayList<JAXBElement<? extends RequestType>>();
+      responses = new ArrayList<JAXBElement<? extends ResponseType>>();
       hashDataInputs = new ArrayList<HashDataInput>();
     }
     
@@ -95,36 +95,39 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
 
             requests.clear();
             hashDataInputs.clear();
-//            reqMon.produce(requests);
-//            reqMon.setHashDataInput(null);
             
             for (STALRequest stalRequest : stalRequests) {
                 if (stalRequest instanceof SignRequest) {
                   log.trace("Received SignRequest, keep HashDataInput.");
-                  SignRequestType req = new SignRequestType();
-                  req.setKeyIdentifier(((SignRequest) stalRequest).getKeyIdentifier());
-                  req.setSignedInfo(((SignRequest) stalRequest).getSignedInfo());
+                  SignRequestType reqT = stalObjFactory.createSignRequestType();
+                  reqT.setKeyIdentifier(((SignRequest) stalRequest).getKeyIdentifier());
+                  reqT.setSignedInfo(((SignRequest) stalRequest).getSignedInfo());
+                  JAXBElement<SignRequestType> req = stalObjFactory.createGetNextRequestResponseTypeSignRequest(reqT);
                   requests.add(req);
                   //DataObjectHashDataInput with reference caching enabled DataObject 
                   hashDataInputs.addAll(((SignRequest) stalRequest).getHashDataInput());
                   break;
                 } else if (stalRequest instanceof InfoboxReadRequest) {
                   log.trace("Received InfoboxReadRequest");
-                  InfoboxReadRequestType req = new InfoboxReadRequestType();
-                  req.setInfoboxIdentifier(((InfoboxReadRequest) stalRequest).getInfoboxIdentifier());
-                  req.setDomainIdentifier(((InfoboxReadRequest) stalRequest).getDomainIdentifier());
+                  InfoboxReadRequestType reqT = new InfoboxReadRequestType();
+                  reqT.setInfoboxIdentifier(((InfoboxReadRequest) stalRequest).getInfoboxIdentifier());
+                  reqT.setDomainIdentifier(((InfoboxReadRequest) stalRequest).getDomainIdentifier());
+                  JAXBElement<InfoboxReadRequestType> req = stalObjFactory.createGetNextRequestResponseTypeInfoboxReadRequest(reqT);
                   requests.add(req);
                 } else if (stalRequest instanceof QuitRequest) {
                   log.trace("Received QuitRequest, do not wait for responses.");
-                  requests.add(new QuitRequestType());
+                  QuitRequestType reqT = stalObjFactory.createQuitRequestType();
+                  JAXBElement<QuitRequestType> req = stalObjFactory.createGetNextRequestResponseTypeQuitRequest(reqT);
+                  requests.add(req);
                   log.trace("notifying request consumers");
                   requests.notify();
-//                    reqMon.notify();
                   return new ArrayList<STALResponse>();
                 } else {
                   log.error("Received unsupported STAL request: " + stalRequest.getClass().getName() + ", send QUIT");
                   requests.clear();
-                  requests.add(new QuitRequestType());
+                  QuitRequestType reqT = stalObjFactory.createQuitRequestType();
+                  JAXBElement<QuitRequestType> req = stalObjFactory.createGetNextRequestResponseTypeQuitRequest(reqT);
+                  requests.add(req);
                   log.trace("notifying request consumers");
                   requests.notify();
                   return new ArrayList<STALResponse>();
@@ -132,32 +135,25 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
             }
             log.trace("notifying request consumers");
             requests.notify();
-//            reqMon.notify();
           }
           
-          synchronized (responses) { //respMon) {
+          synchronized (responses) { 
             long beforeWait = System.currentTimeMillis();
-//            while (respMon.responses == null) {
             while (responses.isEmpty()) {
                 log.trace("waiting to consume response");
-//                respMon.wait(timeout);
                 responses.wait(timeout);
                 if (System.currentTimeMillis() - beforeWait >= timeout) {
                     log.warn("timeout while waiting to consume response, cleanup requests");
-//                    reqMon.consume(); //TODO check deadlock?
-//                    reqMon.setHashDataInput(null);
-                    requests.clear(); //TODO sync on requests?
+                    requests.clear(); 
                     hashDataInputs.clear();
                     return Collections.singletonList((STALResponse) new ErrorResponse(ERR_4500));
                 }
             }
             log.trace("consuming responses");
-//            List<STALResponse> responses = respMon.consume();
             List<STALResponse> resps = STALTranslator.toSTAL(responses);
             responses.clear();
             log.trace("notifying response producers");
             responses.notify();
-//            respMon.notify();
 
             return resps;
           }
@@ -169,7 +165,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
     }
 
     @Override
-    public List<RequestType> connect() {
+    public List<JAXBElement<? extends RequestType>> connect() {
       if (interrupted) {
         return null;
       }
@@ -181,15 +177,9 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                 requests.wait(timeout);
                 if (System.currentTimeMillis() - beforeWait >= timeout) {
                     log.warn("timeout while waiting to consume request");
-                    return Collections.singletonList((RequestType) new QuitRequestType());
+                    return createSingleQuitRequest();
                 }
             }
-            
-//            log.trace("consume request");
-//            List<RequestType> reqs = new ArrayList<RequestType>(); 
-//            reqs.addAll(requests);
-//            requests.clear();
-//            return reqs;
             log.trace("don't consume request now, leave for further connect calls");
             return requests;
           }
@@ -212,7 +202,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
      * @return QUIT if expected responses are not provided
      */
     @Override
-    public List<RequestType> nextRequest(List<ResponseType> resps) {
+    public List<JAXBElement<? extends RequestType>> nextRequest(List<JAXBElement<? extends ResponseType>> resps) {
       if (interrupted) {
         return null;
       }
@@ -227,69 +217,43 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
             }
           }
           
-          synchronized (responses) { //respMon) {
+          synchronized (responses) { 
             if (resps != null && resps.size() > 0) {
-//                if (!expectingResponse) {
-//                    log.warn("Received unexpected response in nextRequest(), return QUIT");
-//                    return Collections.singletonList((RequestType) new QuitRequestType());
-//                }
                 long beforeWait = System.currentTimeMillis();
-//                while (respMon.responses != null) {
                 while (!responses.isEmpty()) {
                     log.trace("waiting to produce response");
-//                    respMon.wait(timeout);
                     responses.wait(timeout);
                     if (System.currentTimeMillis() - beforeWait >= timeout) {
                         log.warn("timeout while waiting to produce response");
-                        return Collections.singletonList((RequestType) new QuitRequestType());
+                        return createSingleQuitRequest();
                     }
                 }
                 log.trace("produce response");
-//                respMon.produce(resps);
                 responses.addAll(resps);
                 //reset HashDataInputCallback iff SignResponse
                 if (log.isTraceEnabled()) {
-                    for (ResponseType response : resps) {
-                        log.trace("Received STAL response: " + response.getClass().getName());
+                    for (JAXBElement<? extends ResponseType> response : resps) {
+                        log.trace("Received STAL response: " + response.getValue().getClass().getName());
                     }
                 }
                 log.trace("notifying response consumers");
-//                respMon.notify();
                 responses.notify();
             } else {
-//                if (expectingResponse) {
-//                    log.warn("Did not receive expected response(s) in nextRequest(), return QUIT");
-//                    return Collections.singletonList((RequestType) new QuitRequestType());
-//                }
-//                log.trace("expecting non-null response in next nextRequest(response)");
-//                expectingResponse = true;
               log.error("Received NextRequest without responses, return QUIT");
-              return Collections.singletonList((RequestType) new QuitRequestType());
+              return createSingleQuitRequest();
             }
           }
           
-          synchronized (requests) { //reqMon) {
+          synchronized (requests) { 
             long beforeWait = System.currentTimeMillis();
-//            while (reqMon.requests == null) {
             while (requests.isEmpty()) {
                 log.trace("waiting to consume request");
-//                reqMon.wait(timeout);
                 requests.wait(timeout);
                 if (System.currentTimeMillis() - beforeWait >= timeout) {
                     log.warn("timeout while waiting to consume request");
-                    return Collections.singletonList((RequestType) new QuitRequestType());
+                    return createSingleQuitRequest();
                 }
             }
-//            log.trace("consume request");
-//            List<RequestType> reqs = new ArrayList<RequestType>(); // reqMon.consume();
-//            reqs.addAll(requests);
-//            
-////            if (requests.size() > 0 && requests.get(0) instanceof QuitRequestType) {
-////                log.trace("expecting no response in next nextRequest()");
-////                expectingResponse = false;
-////            }
-//            requests.clear();
-//            return reqs;
             log.trace("don't consume request now, but on next response delivery");
             return requests;
           }
@@ -304,92 +268,19 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
     public List<HashDataInput> getHashDataInput() {
       synchronized (requests) {
         log.trace("return " + hashDataInputs.size() + " current HashDataInput(s) ");
-        return hashDataInputs; //reqMon.getHashDataInput();
+        return hashDataInputs;
       }
     }
     
     @Override
     public void setLocale(Locale locale) {
     }
-    
-//    class RequestsMonitor {
-//      List<STALRequest> requests;
-//      List<HashDataInput> hashDataInput;
-//      
-//      void produce(List<STALRequest> req) {
-//        requests = req;
-//      }
-//      
-//      synchronized List<at.gv.egiz.stal.service.types.STALRequest> consume() {
-//        List<at.gv.egiz.stal.service.types.STALRequest> reqs = new ArrayList<at.gv.egiz.stal.service.types.STALRequest>();
-//        for (STALRequest request : requests) {
-//          if (request instanceof SignRequest) {
-//            at.gv.egiz.stal.service.types.SignRequest r = new at.gv.egiz.stal.service.types.SignRequest();
-//            r.setKeyIdentifier(((SignRequest) request).getKeyIdentifier());
-//            r.setSignedInfo(((SignRequest) request).getSignedInfo());
-//            reqs.add(r);
-//          } else if (request instanceof InfoboxReadRequest) {
-//            at.gv.egiz.stal.service.types.InfoboxReadRequest r = new at.gv.egiz.stal.service.types.InfoboxReadRequest();
-//            r.setDomainIdentifier(((InfoboxReadRequest) request).getDomainIdentifier());
-//            r.setInfoboxIdentifier(((InfoboxReadRequest) request).getInfoboxIdentifier());
-//            reqs.add(r);
-//          } else if (request instanceof QuitRequest) {
-//            at.gv.egiz.stal.service.types.QuitRequest r = new at.gv.egiz.stal.service.types.QuitRequest();
-//            reqs.add(r);
-//          } else {
-//            log.error("unknown STAL request type: " + request.getClass());
-//            requests = null;
-//            return Collections.singletonList((at.gv.egiz.stal.service.types.STALRequest) new at.gv.egiz.stal.service.types.QuitRequest());
-//          }
-//        }
-//        requests = null;
-//        return reqs;
-//      }
-//      
-//      void setHashDataInput(List<HashDataInput> hdi) {
-//        hashDataInput = hdi;
-//      }
-//      
-//      List<HashDataInput> getHashDataInput() {
-//        return hashDataInput;
-//      }
-//    }
-//    
-//    /** TODO: now, that responses are not nulled, synchronize directly on responses? */
-//    class ResponsesMonitor {
-//      List<at.gv.egiz.stal.service.types.STALResponse> responses;
-//      
-//      void produce(List<at.gv.egiz.stal.service.types.STALResponse> resp) {
-//        responses = resp;
-//      }
-//      
-//      synchronized List<STALResponse> consume() {
-//        List<STALResponse> resps = new ArrayList<STALResponse>();
-//        
-//        for (at.gv.egiz.stal.service.types.STALResponse response : responses) {
-//          if (response instanceof at.gv.egiz.stal.service.types.InfoboxReadResponse) {
-//            InfoboxReadResponse r = new InfoboxReadResponse();
-//            r.setInfoboxValue(((at.gv.egiz.stal.service.types.InfoboxReadResponse) response).getInfoboxValue());
-//            resps.add(r);
-//          } else if (response instanceof at.gv.egiz.stal.service.types.SignResponse) {
-//            SignResponse r = new SignResponse();
-//            r.setSignatureValue(((at.gv.egiz.stal.service.types.SignResponse) response).getSignatureValue());
-//            resps.add(r);
-//          } else if (response instanceof at.gv.egiz.stal.service.types.ErrorResponse) {
-//            ErrorResponse r = new ErrorResponse();
-//            r.setErrorCode(((at.gv.egiz.stal.service.types.ErrorResponse) response).getErrorCode());
-//            r.setErrorMessage(((at.gv.egiz.stal.service.types.ErrorResponse) response).getErrorMessage());
-//            resps.add(r);
-//          } else {
-//            log.error("unknown STAL response type: " + response.getClass());
-//            ErrorResponse r = new ErrorResponse(4000);
-//            r.setErrorMessage("unknown STAL response type: " + response.getClass());
-//            responses = null;
-//            return Collections.singletonList((STALResponse) r);
-//          }
-//        }
-//        responses = null;
-//        return resps;
-//      }
-//    }
+
+    private List<JAXBElement<? extends RequestType>> createSingleQuitRequest() {
+      QuitRequestType quitT = stalObjFactory.createQuitRequestType();
+      JAXBElement<QuitRequestType> quit = stalObjFactory.createGetNextRequestResponseTypeQuitRequest(quitT);
+      ArrayList<JAXBElement<? extends RequestType>> l = new ArrayList<JAXBElement<? extends RequestType>>();
+      l.add(quit);
+      return l;
+    }
 }

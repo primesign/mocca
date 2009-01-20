@@ -26,8 +26,18 @@
     <!-- end #sidebar1 --></div>
   <div id="mainContent">
     <h1> Fehler: Es konnte keine PC/SC-Schnittstelle gefunden werden</h1>
-    <p>Die Software für den Zugriff auf die Bürgerkarte konnte keine PC/SC-Schnittstelle für den Zugriff auf Kartenleser erkennen. Das Betriebssystem scheint keine PC/SC-Schnittstelle zur Verfügung zu stellen.</p>
-    <p>Unter Betriebssystemen die PCSC-Lite verwenden (Linux u.a.) tritt dieses Problem auch auf, wenn kein Kartenleser angeschlossen ist und daher der entsprechende Dienst nicht gestartet wurde oder wenn die entsprechende Bibliothek nicht zur Verfügung steht (<a href="http://java.sun.com/javase/6/docs/technotes/guides/security/SunProviders.html#SunPCSCProvider">weitere Informationen</a>).<br class="clearfloat" />
+    <p>Die Software für den Zugriff auf die Bürgerkarte konnte keine PC/SC-Schnittstelle für den Zugriff auf Kartenleser erkennen. 
+       Das Betriebssystem scheint keine PC/SC-Schnittstelle zur Verfügung zu stellen.</p>
+    <p>Häufige Ursachen für dieses Problem sind
+    <ul>
+        <li>Der PC/SC Dienst läuft nicht</li>
+        <li>Die entsprechende PC/SC Bibliothek kann von Java nicht gefunden werden
+        (<a href="http://java.sun.com/javase/6/docs/technotes/guides/security/SunProviders.html#SunPCSCProvider">weitere Informationen</a>).</li>
+    </ul>
+    </p>
+    <p>Unter Betriebssystemen die PCSC-Lite verwenden (Linux u.a.) tritt dieses Problem auch auf, 
+       wenn kein Kartenleser angeschlossen ist und daher der entsprechende Dienst nicht gestartet wurde.
+       <br class="clearfloat" />
     </p>
     <p><br class="clearfloat" /></p>    
   </div>

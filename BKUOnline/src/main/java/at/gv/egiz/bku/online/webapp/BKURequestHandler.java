@@ -67,13 +67,11 @@ public class BKURequestHandler extends SpringBKUServlet {
     return new String(os.toByteArray(), encoding);
   }
 
+  @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, java.io.IOException {
-    log.debug("Got new request");
-    String acceptLanguage = req.getHeader("Accept-Language");
-    Locale locale = AcceptLanguage.getLocale(acceptLanguage);
-    log.debug("Accept-Language locale: " + locale);
-
+    log.debug("Received new request");
+    
     HttpSession session = req.getSession(false);
     if (session != null) {
       log.warn("Already a session with id: " + session.getId()
@@ -94,6 +92,10 @@ public class BKURequestHandler extends SpringBKUServlet {
     if (log.isDebugEnabled()) {
       log.debug("Using session id: " + session.getId());
     }
+
+    String acceptLanguage = req.getHeader("Accept-Language");
+    Locale locale = AcceptLanguage.getLocale(acceptLanguage);
+    log.debug("Accept-Language locale: " + locale);
 
     HTTPBindingProcessor bindingProcessor;
     bindingProcessor = (HTTPBindingProcessor) getBindingProcessorManager()
@@ -185,6 +187,7 @@ public class BKURequestHandler extends SpringBKUServlet {
     dispatcher.forward(req, resp);
   }
 
+  @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, java.io.IOException {
     doPost(req, resp);

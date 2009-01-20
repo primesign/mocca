@@ -27,21 +27,14 @@
 -->
 <bindings xmlns='http://java.sun.com/xml/ns/jaxb' version='2.1'
           xmlns:xs='http://www.w3.org/2001/XMLSchema'
-          xmlns:stal="http://www.egiz.gv.at/stal"
           xmlns:xjc='http://java.sun.com/xml/ns/jaxb/xjc'
           xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+          schemaLocation='../webapp/WEB-INF/wsdl/CardChannel.xsd'
           xsi:schemaLocation='http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd
                               http://www.w3.org/2001/XMLSchema http://www.w3.org/2001/XMLSchema.xsd'>
-    <bindings scd="x-schema::stal" xmlns:stal="http://www.egiz.gv.at/stal">
-        <schemaBindings>
-            <!-- generate all classes to at.gv.egiz.stal, then move service-only classes to at.gv.egiz.stal.service -->
-            <package name="at.gv.egiz.stal.service.types"/>
-        </schemaBindings>
-    </bindings>
-    <!--bindings scd="/type::stal:RequestType">
-        <class name="STALRequest"/>
-    </bindings>
-    <bindings scd="/type::stal:ResponseType">
-        <class name="STALResponse"/>
-    </bindings-->
+
+    <!-- cannot use scd, CardChannel.xsd has no namespace?! -->
+    <schemaBindings>
+        <package name="at.buergerkarte.namespaces.cardchannel.service"/>
+    </schemaBindings>
 </bindings>
