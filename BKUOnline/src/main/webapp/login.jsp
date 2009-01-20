@@ -24,7 +24,7 @@
         <title>MOCCA Applet</title>
         <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
         <script type="text/javascript" src="js/deployJava.js"></script>
-        <style type="text/css" media="all">@import "css/applet.css";</style>
+        <style type="text/css" media="all">@import "css/login.css";</style>
 
         <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
         <META HTTP-EQUIV="EXPIRES" CONTENT="Mon, 22 Jul 2002 11:12:01 GMT">
@@ -37,7 +37,6 @@
                 : (Integer) session.getAttribute("appletHeight");
         String backgroundImg = (String) session.getAttribute("appletBackground");
         String guiStyle = (String) session.getAttribute("appletGuiStyle");
-        String hashDataDisplay = (String) session.getAttribute("appletHashDataDisplay");
         String locale = (String) session.getAttribute("locale");
     %>
     <body id="appletpage" style="width:<%=width%>">
@@ -59,8 +58,6 @@
                         Background : '<%=backgroundImg%>',
                         WSDL_URL :'../stal;jsessionid=<%=session.getId()%>?wsdl',
                         HelpURL : '../help/',
-                        HashDataDisplay : '<%=hashDataDisplay%>',
-                        HashDataURL : '../hashDataInput',
                         SessionID : '<%=session.getId()%>',
                         RedirectURL : '../bkuResult',
                         RedirectTarget: '_parent'

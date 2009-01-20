@@ -50,7 +50,7 @@
 	</servlet>
     <servlet>
         <servlet-name>BKUApplet</servlet-name>
-        <jsp-file>/appletPage.jsp</jsp-file>
+        <jsp-file>/login.jsp</jsp-file>
     </servlet>
     <servlet>
       <servlet-name>help</servlet-name>
