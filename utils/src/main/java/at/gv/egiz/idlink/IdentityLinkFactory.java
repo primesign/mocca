@@ -81,6 +81,7 @@ import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import at.gv.e_government.reference.namespace.persondata._20020228_.AbstractPersonType;
 import at.gv.e_government.reference.namespace.persondata._20020228_.IdentificationType;
 import at.gv.e_government.reference.namespace.persondata._20020228_.PersonNameType;
 import at.gv.e_government.reference.namespace.persondata._20020228_.PhysicalPersonType;
@@ -216,7 +217,7 @@ public class IdentityLinkFactory {
     physicalPersonType.getIdentification().add(identificationType);
     physicalPersonType.setName(personNameType);
     physicalPersonType.setDateOfBirth(dateOfBirth);
-    JAXBElement<PhysicalPersonType> physicalPerson = prFactory.createPhysicalPerson(physicalPersonType);
+    JAXBElement<AbstractPersonType> physicalPerson = prFactory.createPerson(physicalPersonType);
 
     AnyType personType = asFactory.createAnyType();
     personType.getContent().add(physicalPerson);
