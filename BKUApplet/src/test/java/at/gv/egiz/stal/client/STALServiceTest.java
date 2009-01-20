@@ -41,6 +41,7 @@ import at.gv.egiz.stal.service.types.GetNextRequestResponseType;
 import at.gv.egiz.stal.service.types.GetNextRequestType;
 import at.gv.egiz.stal.service.types.InfoboxReadRequestType;
 import at.gv.egiz.stal.service.types.RequestType;
+import javax.xml.bind.JAXBElement;
 
 /**
  *
@@ -51,7 +52,7 @@ public class STALServiceTest {
 //    @Test
     public void callSTAL() {
         try {
-            URL endpointURL = new URL("http://localhost:8080/bkuonline/stal?wsdl");
+            URL endpointURL = new URL("http://localhost:3495/bkuonline/stal?wsdl");
             QName endpointName = new QName("http://www.egiz.gv.at/wsdl/stal", "STALService");
             STALService stal = new STALService(endpointURL, endpointName);
 //            stal = new STALService();
@@ -63,7 +64,8 @@ public class STALServiceTest {
             GetNextRequestResponseType nrResp = port.getNextRequest(nrReq);
             assertNotNull(nrResp);
             System.out.println("got response: " + nrResp.getInfoboxReadRequestOrSignRequestOrQuitRequest().size());
-            for (RequestType stalReq : nrResp.getInfoboxReadRequestOrSignRequestOrQuitRequest()) {
+            for (JAXBElement<? extends RequestType> stalReqElt : nrResp.getInfoboxReadRequestOrSignRequestOrQuitRequest()) {
+              RequestType stalReq = stalReqElt.getValue();
                 if (stalReq instanceof InfoboxReadRequestType) {
                    String ibid = ((InfoboxReadRequestType) stalReq).getInfoboxIdentifier(); 
                    String did = ((InfoboxReadRequestType) stalReq).getDomainIdentifier();
