@@ -43,6 +43,7 @@ import at.gv.egiz.bku.binding.DataUrlConnection;
 import at.gv.egiz.bku.slcommands.impl.xsect.DataObject;
 import at.gv.egiz.bku.slcommands.impl.xsect.STALProvider;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
+import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 
 public abstract class Configurator {
   private Log log = LogFactory.getLog(Configurator.class);
@@ -270,6 +271,7 @@ public abstract class Configurator {
         sslCtx.init(km, new TrustManager[] { pkixTM }, null);
       }
       DataUrl.setSSLSocketFactory(sslCtx.getSocketFactory());
+      URLDereferencer.getInstance().setSSLSocketFactory(sslCtx.getSocketFactory());
     } catch (Exception e) {
       log.error("Cannot configure SSL", e);
     }
@@ -278,6 +280,12 @@ public abstract class Configurator {
       log.warn(" Disabling Hostname Verification ");
       log.warn("---------------------------------");
       DataUrl.setHostNameVerifier(new HostnameVerifier() {
+        @Override
+        public boolean verify(String hostname, SSLSession session) {
+          return true;
+        }
+      });
+      URLDereferencer.getInstance().setHostnameVerifier(new HostnameVerifier() {
         @Override
         public boolean verify(String hostname, SSLSession session) {
           return true;

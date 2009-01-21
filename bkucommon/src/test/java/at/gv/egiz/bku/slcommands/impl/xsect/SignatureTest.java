@@ -33,6 +33,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSocketFactory;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -190,6 +192,18 @@ public class SignatureTest {
           return new StreamData(url, contentType, stream);
           
         }
+        
+      }
+
+      @Override
+      public void setHostnameVerifier(HostnameVerifier hostnameVerifier) {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public void setSSLSocketFactory(SSLSocketFactory socketFactory) {
+        // TODO Auto-generated method stub
         
       }
       

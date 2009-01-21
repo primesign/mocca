@@ -21,6 +21,9 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSocketFactory;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,6 +41,9 @@ public class URLDereferencer {
 
   private Map<String, URLProtocolHandler> handlerMap = new HashMap<String, URLProtocolHandler>();
 
+  private HostnameVerifier hostnameVerifier;
+  private SSLSocketFactory sslSocketFactory;
+  
   private URLDereferencer() {
     registerHandlers();
   }
@@ -63,6 +69,8 @@ public class URLDereferencer {
       throw new MalformedURLException("No handler for protocol: " + protocol
           + " found");
     }
+    handler.setHostnameVerifier(hostnameVerifier);
+    handler.setSSLSocketFactory(sslSocketFactory);
     return handler.dereference(aUrl, aContext);
   }
 
@@ -86,5 +94,13 @@ public class URLDereferencer {
     for (String proto : HTTPURLProtocolHandlerImpl.PROTOCOLS) {
       handlerMap.put(proto, handler);
     }
+  }
+  
+  public void setHostnameVerifier(HostnameVerifier hostnameVerifier) {
+    this.hostnameVerifier = hostnameVerifier;
+  }
+
+  public void setSSLSocketFactory(SSLSocketFactory socketFactory) {
+    this.sslSocketFactory = socketFactory;
   }
 }
