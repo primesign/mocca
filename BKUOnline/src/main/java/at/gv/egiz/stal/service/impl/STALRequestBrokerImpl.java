@@ -24,13 +24,14 @@ import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
+import at.gv.egiz.stal.service.translator.STALTranslator;
+import at.gv.egiz.stal.service.translator.TranslationException;
 import at.gv.egiz.stal.service.types.InfoboxReadRequestType;
 import at.gv.egiz.stal.service.types.ObjectFactory;
 import at.gv.egiz.stal.service.types.QuitRequestType;
 import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
 import at.gv.egiz.stal.service.types.SignRequestType;
-import at.gv.egiz.stal.util.STALTranslator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +55,8 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
 
     private static final Log log = LogFactory.getLog(STALRequestBrokerImpl.class);
 
-    private ObjectFactory stalObjFactory = new ObjectFactory();
+    private ObjectFactory of = new ObjectFactory();
+    private STALTranslator translator = new STALTranslator();
     
     private boolean interrupted = false;
     
@@ -69,6 +71,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
       if (timeoutMillisec <= 0) 
         timeoutMillisec = DEFAULT_TIMEOUT_MS;
       timeout = timeoutMillisec;
+//      translator.registerTranslationHandler(handler);
       requests = new ArrayList<JAXBElement<? extends RequestType>>();
       responses = new ArrayList<JAXBElement<? extends ResponseType>>();
       hashDataInputs = new ArrayList<HashDataInput>();
@@ -97,42 +100,70 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
             hashDataInputs.clear();
             
             for (STALRequest stalRequest : stalRequests) {
+              try {
+                JAXBElement<? extends RequestType> request = translator.translate(stalRequest);
+                requests.add(request);
                 if (stalRequest instanceof SignRequest) {
-                  log.trace("Received SignRequest, keep HashDataInput.");
-                  SignRequestType reqT = stalObjFactory.createSignRequestType();
-                  reqT.setKeyIdentifier(((SignRequest) stalRequest).getKeyIdentifier());
-                  reqT.setSignedInfo(((SignRequest) stalRequest).getSignedInfo());
-                  JAXBElement<SignRequestType> req = stalObjFactory.createGetNextRequestResponseTypeSignRequest(reqT);
-                  requests.add(req);
-                  //DataObjectHashDataInput with reference caching enabled DataObject 
+                  //TODO refactor SignRequestType to keep HDI
+                  // and getHashDataInput() accesses request obj
+                  // (requests are cleared only when we receive the response)
+                  // DataObjectHashDataInput with reference caching enabled DataObject
                   hashDataInputs.addAll(((SignRequest) stalRequest).getHashDataInput());
-                  break;
-                } else if (stalRequest instanceof InfoboxReadRequest) {
-                  log.trace("Received InfoboxReadRequest");
-                  InfoboxReadRequestType reqT = new InfoboxReadRequestType();
-                  reqT.setInfoboxIdentifier(((InfoboxReadRequest) stalRequest).getInfoboxIdentifier());
-                  reqT.setDomainIdentifier(((InfoboxReadRequest) stalRequest).getDomainIdentifier());
-                  JAXBElement<InfoboxReadRequestType> req = stalObjFactory.createGetNextRequestResponseTypeInfoboxReadRequest(reqT);
-                  requests.add(req);
                 } else if (stalRequest instanceof QuitRequest) {
                   log.trace("Received QuitRequest, do not wait for responses.");
-                  QuitRequestType reqT = stalObjFactory.createQuitRequestType();
-                  JAXBElement<QuitRequestType> req = stalObjFactory.createGetNextRequestResponseTypeQuitRequest(reqT);
-                  requests.add(req);
-                  log.trace("notifying request consumers");
-                  requests.notify();
-                  return new ArrayList<STALResponse>();
-                } else {
-                  log.error("Received unsupported STAL request: " + stalRequest.getClass().getName() + ", send QUIT");
-                  requests.clear();
-                  QuitRequestType reqT = stalObjFactory.createQuitRequestType();
-                  JAXBElement<QuitRequestType> req = stalObjFactory.createGetNextRequestResponseTypeQuitRequest(reqT);
-                  requests.add(req);
                   log.trace("notifying request consumers");
                   requests.notify();
                   return new ArrayList<STALResponse>();
                 }
+              } catch (TranslationException ex) {
+                log.error(ex.getMessage() + ", send QUIT");
+                requests.clear();
+                QuitRequestType reqT = of.createQuitRequestType();
+                JAXBElement<QuitRequestType> req = of.createGetNextRequestResponseTypeQuitRequest(reqT);
+                requests.add(req);
+                log.trace("notifying request consumers");
+                requests.notify();
+                return new ArrayList<STALResponse>();
+              }
             }
+              
+
+//                if (stalRequest instanceof SignRequest) {
+//                  log.trace("Received SignRequest, keep HashDataInput.");
+//                  SignRequestType reqT = of.createSignRequestType();
+//                  reqT.setKeyIdentifier(((SignRequest) stalRequest).getKeyIdentifier());
+//                  reqT.setSignedInfo(((SignRequest) stalRequest).getSignedInfo());
+//                  JAXBElement<SignRequestType> req = of.createGetNextRequestResponseTypeSignRequest(reqT);
+//                  requests.add(req);
+//                  //DataObjectHashDataInput with reference caching enabled DataObject
+//                  hashDataInputs.addAll(((SignRequest) stalRequest).getHashDataInput());
+//                  break;
+//                } else if (stalRequest instanceof InfoboxReadRequest) {
+//                  log.trace("Received InfoboxReadRequest");
+//                  InfoboxReadRequestType reqT = new InfoboxReadRequestType();
+//                  reqT.setInfoboxIdentifier(((InfoboxReadRequest) stalRequest).getInfoboxIdentifier());
+//                  reqT.setDomainIdentifier(((InfoboxReadRequest) stalRequest).getDomainIdentifier());
+//                  JAXBElement<InfoboxReadRequestType> req = of.createGetNextRequestResponseTypeInfoboxReadRequest(reqT);
+//                  requests.add(req);
+//                } else if (stalRequest instanceof QuitRequest) {
+//                  log.trace("Received QuitRequest, do not wait for responses.");
+//                  QuitRequestType reqT = of.createQuitRequestType();
+//                  JAXBElement<QuitRequestType> req = of.createGetNextRequestResponseTypeQuitRequest(reqT);
+//                  requests.add(req);
+//                  log.trace("notifying request consumers");
+//                  requests.notify();
+//                  return new ArrayList<STALResponse>();
+//                } else {
+//                  log.error("Received unsupported STAL request: " + stalRequest.getClass().getName() + ", send QUIT");
+//                  requests.clear();
+//                  QuitRequestType reqT = of.createQuitRequestType();
+//                  JAXBElement<QuitRequestType> req = of.createGetNextRequestResponseTypeQuitRequest(reqT);
+//                  requests.add(req);
+//                  log.trace("notifying request consumers");
+//                  requests.notify();
+//                  return new ArrayList<STALResponse>();
+//                }
+//            }
             log.trace("notifying request consumers");
             requests.notify();
           }
@@ -150,12 +181,24 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                 }
             }
             log.trace("consuming responses");
-            List<STALResponse> resps = STALTranslator.toSTAL(responses);
+            List<STALResponse> stalResponses = new ArrayList<STALResponse>();
+            try {
+              for (JAXBElement<? extends ResponseType> resp : responses) {
+                  STALResponse stalResp = translator.translate(resp);
+                  stalResponses.add(stalResp);
+              }
+            } catch (TranslationException ex) {
+              log.error(ex.getMessage() + ", return ErrorResponse (4000)");
+              ErrorResponse stalResp = new ErrorResponse(4000);
+              stalResp.setErrorMessage(ex.getMessage());
+              stalResponses = Collections.singletonList((STALResponse) stalResp);
+            }
+
             responses.clear();
             log.trace("notifying response producers");
             responses.notify();
 
-            return resps;
+            return stalResponses;
           }
         } catch (InterruptedException ex) {
             log.warn("interrupt in handleRequest(): " + ex.getMessage());
@@ -277,8 +320,8 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
     }
 
     private List<JAXBElement<? extends RequestType>> createSingleQuitRequest() {
-      QuitRequestType quitT = stalObjFactory.createQuitRequestType();
-      JAXBElement<QuitRequestType> quit = stalObjFactory.createGetNextRequestResponseTypeQuitRequest(quitT);
+      QuitRequestType quitT = of.createQuitRequestType();
+      JAXBElement<QuitRequestType> quit = of.createGetNextRequestResponseTypeQuitRequest(quitT);
       ArrayList<JAXBElement<? extends RequestType>> l = new ArrayList<JAXBElement<? extends RequestType>>();
       l.add(quit);
       return l;

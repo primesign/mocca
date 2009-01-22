@@ -23,13 +23,14 @@ import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.service.STALPortType;
 import at.gv.egiz.stal.service.STALService;
+import at.gv.egiz.stal.service.translator.STALTranslator;
+import at.gv.egiz.stal.service.translator.TranslationException;
 import at.gv.egiz.stal.service.types.ErrorResponseType;
 import at.gv.egiz.stal.service.types.GetNextRequestResponseType;
 import at.gv.egiz.stal.service.types.GetNextRequestType;
 import at.gv.egiz.stal.service.types.ObjectFactory;
 import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
-import at.gv.egiz.stal.util.STALTranslator;
 import java.applet.AppletContext;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import javax.xml.ws.WebServiceException;
 
 /**
  * 
@@ -49,6 +51,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
   protected String sessionId;
   protected STALPortType stalPort;
   private ObjectFactory stalObjFactory = new ObjectFactory();
+  private STALTranslator translator = new STALTranslator();
 
   public AppletBKUWorker(BKUGUIFacade gui, AppletContext ctx,
           AppletParameterProvider paramProvider) {
@@ -72,106 +75,145 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
   @Override
   public void run() {
     gui.showWelcomeDialog();
+
     try {
       stalPort = getSTALPort();
-    } catch (Exception e) {
-      log.fatal("Failed to get STAL web-service port: " + e.getMessage(), e);
-      actionCommandList.clear();
-      actionCommandList.add("ok");
-      gui.showErrorDialog(BKUGUIFacade.ERR_SERVICE_UNREACHABLE,
-              new Object[]{e.getMessage()});
-      try {
-        waitForAction();
-      } catch (InterruptedException e1) {
-        log.error(e1);
-      }
-      return;
-    }
 
-    try {
-      registerSignRequestHandler();
+      registerSignRequestHandler(stalPort, sessionId);
 
       GetNextRequestResponseType nextRequestResp = stalPort.connect(sessionId);
+
       do {
-        List<JAXBElement<? extends RequestType>> requests = nextRequestResp.getInfoboxReadRequestOrSignRequestOrQuitRequest();
+        List<JAXBElement<? extends RequestType>> requests;
+        List<JAXBElement<? extends ResponseType>> responses = new ArrayList<JAXBElement<? extends ResponseType>>();
 
-        // (rather use validator)
-        if (requests.size() == 0) {
-          log.error("Received empty NextRequestResponse: no STAL requests to handle. (STAL-X requests might not have gotten unmarshalled)");
-          throw new Exception("No STAL requests to handle.");
-        }
+        try {
+          requests = nextRequestResp.getInfoboxReadRequestOrSignRequestOrQuitRequest();
+          responses.clear();
 
-        List<STALRequest> stalRequests = STALTranslator.translateRequests(requests);
-
-        if (log.isInfoEnabled()) {
-          StringBuilder sb = new StringBuilder("Received ");
-          sb.append(stalRequests.size());
-          sb.append(" STAL requests: ");
-          for (STALRequest r : stalRequests) {
-            sb.append(r.getClass());
-            sb.append(' ');
+          // (rather use validator)
+          if (requests.size() == 0) {
+            log.error("Received empty NextRequestResponse: no STAL requests to handle. (STAL-X requests might not have gotten unmarshalled)");
+            throw new RuntimeException("No STAL requests to handle.");
           }
-          log.info(sb.toString());
-        }
 
-        boolean handle = true;
-        for (STALRequest request : stalRequests) {
-          if (request instanceof at.gv.egiz.stal.InfoboxReadRequest) {
-            at.gv.egiz.stal.InfoboxReadRequest r = (at.gv.egiz.stal.InfoboxReadRequest) request;
-            String infoboxId = r.getInfoboxIdentifier();
-            String domainId = r.getDomainIdentifier();
-            if ("IdentityLink".equals(infoboxId) && domainId == null) {
-              if (!InternalSSLSocketFactory.getInstance().isEgovAgency()) {
-                  handle = false;
-              }
-            }
-          }
-        }
-
-        List<JAXBElement<? extends ResponseType>> responses;
-        if (handle) {
-          List<STALResponse> stalResponses = handleRequest(stalRequests);
           if (log.isInfoEnabled()) {
-            StringBuilder sb = new StringBuilder(stalResponses.size());
-            sb.append(" STAL responses: ");
-            for (STALResponse r : stalResponses) {
-              sb.append(r.getClass());
+            StringBuilder sb = new StringBuilder("Received ");
+            sb.append(requests.size());
+            sb.append(" requests: ");
+            for (JAXBElement<? extends RequestType> r : requests) {
+              sb.append(r.getValue().getClass());
               sb.append(' ');
             }
             log.info(sb.toString());
           }
-          responses = STALTranslator.fromSTAL(stalResponses);
-        } else {
-          log.error("Insufficient rights to execute command InfoboxReadRequest for Infobox IdentityLink, return Error 6002");
-          responses = new ArrayList<JAXBElement<? extends ResponseType>>(1);
+
+          List<STALRequest> stalRequests = new ArrayList<STALRequest>();
+          for (JAXBElement<? extends RequestType> req : requests) {
+            try {
+              stalRequests.add(translator.translate(req));
+            } catch (TranslationException ex) {
+              log.error("Received unknown request from server STAL: " + ex.getMessage());
+              throw new RuntimeException(ex);
+            }
+          }
+
+          checkPermission(stalRequests);
+
+          List<STALResponse> stalResponses = handleRequest(stalRequests);
+          for (STALResponse stalResponse : stalResponses) {
+            try {
+              responses.add(translator.translate(stalResponse));
+            } catch (TranslationException ex) {
+              log.error("Received unknown response from STAL: " + ex.getMessage());
+              throw new RuntimeException(ex);
+            }
+          }
+
+        } catch (RuntimeException ex) {
+          // return ErrorResponse to server, which displays error page
+          log.error(ex.getMessage());
+          Throwable cause = ex.getCause();
           ErrorResponseType err = stalObjFactory.createErrorResponseType();
-          err.setErrorCode(6002);
-          // err.setErrorMessage();
+          if (cause != null) {
+            log.error("caused by: " + cause.getMessage());
+            if (cause instanceof SecurityException) {
+              err.setErrorCode(6002);
+            } else {
+              err.setErrorCode(4000);
+            }
+          } else {
+            err.setErrorCode(4000);
+          }
+          responses.clear();
           responses.add(stalObjFactory.createGetNextRequestTypeErrorResponse(err));
+
+        } finally {
+          if (!finished) {
+            if (log.isInfoEnabled()) {
+              StringBuilder sb = new StringBuilder("Sending ");
+              sb.append(responses.size());
+              sb.append(" responses: ");
+              for (JAXBElement<? extends ResponseType> r : responses) {
+                sb.append(r.getValue().getClass());
+                sb.append(' ');
+              }
+              log.info(sb.toString());
+            }
+            GetNextRequestType nextRequest = stalObjFactory.createGetNextRequestType();
+            nextRequest.setSessionId(sessionId);
+            nextRequest.getInfoboxReadResponseOrSignResponseOrErrorResponse().addAll(responses);
+            nextRequestResp = stalPort.getNextRequest(nextRequest);
+          }
         }
 
-        if (!finished) {
-          log.info("Not finished yet (BKUWorker: " + this + "), sending responses");
-          GetNextRequestType nextRequest = stalObjFactory.createGetNextRequestType();
-          nextRequest.setSessionId(sessionId);
-          nextRequest.getInfoboxReadResponseOrSignResponseOrErrorResponse().addAll(responses);
-          nextRequestResp = stalPort.getNextRequest(nextRequest);
-        }
+
       } while (!finished);
       log.info("Done " + Thread.currentThread().getName());
+
+    } catch (WebServiceException ex) {
+      log.fatal("communication error with server STAL: " + ex.getMessage(), ex);
+      showErrorDialog(BKUGUIFacade.ERR_SERVICE_UNREACHABLE, ex);
+    } catch (MalformedURLException ex) {
+      log.fatal(ex.getMessage(), ex);
+      showErrorDialog(BKUGUIFacade.ERR_CONFIG, ex);
     } catch (Exception ex) {
       log.error(ex.getMessage(), ex);
-      gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, new Object[]{ex.getMessage()});
-      try {
-        waitForAction();
-      } catch (InterruptedException e) {
-        log.error(e);
-      }
+      showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, ex);
+    } finally {
       if (signatureCard != null) {
         signatureCard.disconnect(false);
       }
     }
+
     sendRedirect();
+  }
+
+  private void checkPermission(List<STALRequest> stalRequests) {
+    for (STALRequest request : stalRequests) {
+      if (request instanceof at.gv.egiz.stal.InfoboxReadRequest) {
+        at.gv.egiz.stal.InfoboxReadRequest r = (at.gv.egiz.stal.InfoboxReadRequest) request;
+        String infoboxId = r.getInfoboxIdentifier();
+        String domainId = r.getDomainIdentifier();
+        if ("IdentityLink".equals(infoboxId) && domainId == null) {
+          if (!InternalSSLSocketFactory.getInstance().isEgovAgency()) {
+            throw new RuntimeException(new SecurityException("Insufficient rights to execute command InfoboxReadRequest for Infobox IdentityLink"));
+          }
+        }
+      }
+    }
+  }
+
+  private void showErrorDialog(String err_code, Exception ex) {
+    actionCommandList.clear();
+    actionCommandList.add("ok");
+    gui.showErrorDialog(err_code,
+            new Object[]{ex.getMessage()}, this, "ok");
+    try {
+      waitForAction();
+    } catch (InterruptedException e) {
+      log.error(e);
+    }
   }
 
   protected void sendRedirect() {
@@ -201,20 +243,10 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
     return stal.getSTALPort();
   }
 
-  private void registerSignRequestHandler() throws MalformedURLException {
-    String hashDataDisplayStyle = params.getAppletParameter(BKUApplet.HASHDATA_DISPLAY);
-    if (BKUApplet.HASHDATA_DISPLAY_BROWSER.equals(hashDataDisplayStyle)) {
-      URL hashDataURL = params.getURLParameter(BKUApplet.HASHDATA_URL,
-              sessionId);
-      log.debug("register SignRequestHandler for HashDataURL " + hashDataURL);
-      addRequestHandler(SignRequest.class, new BrowserHashDataDisplay(ctx,
-              hashDataURL));
-    } else {
-      // BKUApplet.HASHDATA_DISPLAY_FRAME
-      log.debug("register SignRequestHandler for STAL port " + BKUApplet.WSDL_URL);
-      AppletHashDataDisplay handler = new AppletHashDataDisplay(stalPort,
-              sessionId);
-      addRequestHandler(SignRequest.class, handler);
-    }
+  private void registerSignRequestHandler(STALPortType stalPort, String sessionId) {
+    log.debug("register SignRequestHandler (resolve hashdata via STAL Webservice)");
+    AppletHashDataDisplay handler = new AppletHashDataDisplay(stalPort,
+            sessionId);
+    addRequestHandler(SignRequest.class, handler);
   }
 }

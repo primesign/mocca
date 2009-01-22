@@ -147,8 +147,8 @@ public class STALServiceImpl implements STALPortType {
       sb.append("] containing ");
       sb.append(responsesIn.size());
       sb.append(" responses: ");
-      for (Object respIn : responsesIn) {
-        sb.append(respIn.getClass());
+      for (JAXBElement<? extends ResponseType> respIn : responsesIn) {
+        sb.append(respIn.getValue().getClass());
         sb.append(' ');
       }
       log.debug(sb.toString());
