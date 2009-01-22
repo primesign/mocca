@@ -133,16 +133,14 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
         } catch (RuntimeException ex) {
           // return ErrorResponse to server, which displays error page
           log.error(ex.getMessage());
-          Throwable cause = ex.getCause();
           ErrorResponseType err = stalObjFactory.createErrorResponseType();
-          if (cause != null) {
-            log.error("caused by: " + cause.getMessage());
-            if (cause instanceof SecurityException) {
-              err.setErrorCode(6002);
-            } else {
-              err.setErrorCode(4000);
-            }
+          if (ex instanceof SecurityException) {
+            err.setErrorCode(6002);
           } else {
+            Throwable cause = ex.getCause();
+            if (cause != null) {
+              log.error("caused by: " + cause.getMessage());
+            }
             err.setErrorCode(4000);
           }
           responses.clear();
@@ -189,6 +187,11 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
     sendRedirect();
   }
 
+  /**
+   * throws RuntimeException if requests contain InfoboxReadRequest for IdentityLink
+   * and STAL Service Endpoint is no e-Gov agency
+   * @param stalRequests
+   */
   private void checkPermission(List<STALRequest> stalRequests) {
     for (STALRequest request : stalRequests) {
       if (request instanceof at.gv.egiz.stal.InfoboxReadRequest) {
@@ -197,7 +200,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
         String domainId = r.getDomainIdentifier();
         if ("IdentityLink".equals(infoboxId) && domainId == null) {
           if (!InternalSSLSocketFactory.getInstance().isEgovAgency()) {
-            throw new RuntimeException(new SecurityException("Insufficient rights to execute command InfoboxReadRequest for Infobox IdentityLink"));
+            throw new SecurityException("Insufficient rights to execute command InfoboxReadRequest for Infobox IdentityLink");
           }
         }
       }
