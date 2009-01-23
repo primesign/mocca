@@ -31,6 +31,7 @@
         <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
     </head>
     <%
+        // min W/H (for de locale): 152px/145px with gui style 'tiny'
         int width = session.getAttribute("appletWidth") == null ? 190
                 : (Integer) session.getAttribute("appletWidth"); //230 for workshop demo integration
         int height = session.getAttribute("appletHeight") == null ? 130
