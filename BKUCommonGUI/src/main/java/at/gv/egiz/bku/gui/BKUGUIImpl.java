@@ -53,6 +53,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -68,6 +69,10 @@ import org.apache.commons.logging.LogFactory;
 public class BKUGUIImpl implements BKUGUIFacade {
     
     private static final Log log = LogFactory.getLog(BKUGUIImpl.class);
+
+    protected enum PinLabelPosition {
+      LEFT, ABOVE
+    }
 
     protected HelpMouseListener helpListener;
     
@@ -92,6 +97,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
     protected boolean renderHeaderPanel = false;
     protected boolean renderIconPanel = false;
     protected boolean renderCancelButton = false;
+    protected boolean shortText = false;
+    protected PinLabelPosition pinLabelPos = PinLabelPosition.LEFT;
+    protected boolean renderRefId = false;
 
     /**
      * set contentPane
@@ -125,6 +133,10 @@ public class BKUGUIImpl implements BKUGUIFacade {
         renderHeaderPanel = true;
         renderIconPanel = false;
         renderCancelButton = true;
+        renderRefId = true;
+      } else if (guiStyle == Style.tiny) {
+        shortText = true;
+        pinLabelPos = PinLabelPosition.ABOVE;
       }
 
       registerHelpListener(helpListener);
@@ -537,11 +549,21 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 if (numRetries < 0) {
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                   String infoPattern = messages.getString(MESSAGE_ENTERPIN);
-                  infoLabel.setText(MessageFormat.format(infoPattern, new Object[] {pinSpec.getLocalizedName()}));
+                  if (shortText) {
+                    infoLabel.setText(MessageFormat.format(infoPattern, new Object[] {"PIN"}));
+                  } else {
+                    infoLabel.setText(MessageFormat.format(infoPattern, new Object[] {pinSpec.getLocalizedName()}));
+                  }
                   helpListener.setHelpTopic(HELP_CARDPIN);
                 } else {
+                  String retryPattern;
+                  if (numRetries < 2) {
+                    retryPattern = messages.getString(MESSAGE_LAST_RETRY);
+                  } else {
+                    retryPattern = messages.getString(MESSAGE_RETRIES);
+                  }
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() | java.awt.Font.BOLD));
-                  infoLabel.setText(MessageFormat.format(messages.getString(MESSAGE_RETRIES), new Object[]{String.valueOf(numRetries)}));
+                  infoLabel.setText(MessageFormat.format(retryPattern, new Object[]{String.valueOf(numRetries)}));
                   infoLabel.setForeground(ERROR_COLOR);
                   helpListener.setHelpTopic(HELP_RETRY);
                 }
@@ -570,27 +592,47 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   infoVertical
                           .addComponent(helpLabel);
                 } 
-                
-                mainPanelLayout.setHorizontalGroup(
-                        mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                          .addGroup(infoHorizontal)
+
+                GroupLayout.Group pinHorizontal;
+                GroupLayout.Group pinVertical;
+
+                if (pinLabelPos == PinLabelPosition.ABOVE) {
+                  pinHorizontal = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                          .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                          .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                           .addGroup(mainPanelLayout.createSequentialGroup()
-                            .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                            .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                              .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) //))
-                              .addComponent(pinsizeLabel))));
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                            .addComponent(pinsizeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE));
+                  pinVertical = mainPanelLayout.createSequentialGroup()
+                          .addComponent(cardPinLabel)
+                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                          .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE);
+                } else {
+                  pinHorizontal = mainPanelLayout.createSequentialGroup()
+                          .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pinsizeLabel));
+                  pinVertical = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                          .addComponent(cardPinLabel)
+                          .addComponent(pinField);
+                }
+
+                mainPanelLayout.setHorizontalGroup(
+                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addGroup(infoHorizontal)
+                    .addGroup(pinHorizontal));
+
                 mainPanelLayout.setVerticalGroup(
-                        mainPanelLayout.createSequentialGroup()
-                          .addGroup(infoVertical)
-                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                            .addComponent(cardPinLabel)
-                            .addComponent(pinField))
-                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                          .addComponent(pinsizeLabel));
-                
-                
+                  mainPanelLayout.createSequentialGroup()
+                    .addGroup(infoVertical)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(pinVertical)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(pinsizeLabel));
+
+
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
 
@@ -707,7 +749,11 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 JLabel infoLabel = new JLabel();
                 if (numRetries < 0) {
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                  infoLabel.setText(messages.getString(MESSAGE_HASHDATALINK));
+                  if (shortText) {
+                    infoLabel.setText(messages.getString(MESSAGE_HASHDATALINK_TINY));
+                  } else {
+                    infoLabel.setText(messages.getString(MESSAGE_HASHDATALINK));
+                  }
                   infoLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                   infoLabel.setForeground(HYPERLINK_COLOR);
                   infoLabel.addMouseListener(new MouseAdapter() {
@@ -720,8 +766,14 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   });
                   helpListener.setHelpTopic(HELP_SIGNPIN);
                 } else {
+                  String retryPattern;
+                  if (numRetries < 2) {
+                    retryPattern = messages.getString(MESSAGE_LAST_RETRY);
+                  } else {
+                    retryPattern = messages.getString(MESSAGE_RETRIES);
+                  }
+                  infoLabel.setText(MessageFormat.format(retryPattern, new Object[]{String.valueOf(numRetries)}));
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() | java.awt.Font.BOLD));
-                  infoLabel.setText(MessageFormat.format(messages.getString(MESSAGE_RETRIES), new Object[]{String.valueOf(numRetries)}));
                   infoLabel.setForeground(ERROR_COLOR);
                   helpListener.setHelpTopic(HELP_RETRY);
                 }
@@ -737,28 +789,48 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 if (!renderHeaderPanel) {
                   infoHorizontal
                           .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                          .addComponent(helpLabel); //, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE);
+                          .addComponent(helpLabel);
                   infoVertical
                           .addComponent(helpLabel);
+                }
+
+                GroupLayout.Group pinHorizontal;
+                GroupLayout.Group pinVertical;
+
+                if (pinLabelPos == PinLabelPosition.ABOVE) {
+                  pinHorizontal = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                          .addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                          .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                          .addGroup(mainPanelLayout.createSequentialGroup()
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                            .addComponent(pinsizeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE));
+                          
+                  pinVertical = mainPanelLayout.createSequentialGroup()
+                          .addComponent(signPinLabel)
+                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                          .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE);
+                } else {
+                  pinHorizontal = mainPanelLayout.createSequentialGroup()
+                          .addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pinsizeLabel));
+                  pinVertical = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                          .addComponent(signPinLabel)
+                          .addComponent(pinField);
                 }
 
                 mainPanelLayout.setHorizontalGroup(
                   mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addGroup(infoHorizontal)
-                    .addGroup(mainPanelLayout.createSequentialGroup()
-                        .addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                          .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                          .addComponent(pinsizeLabel))));
+                    .addGroup(pinHorizontal));
 
                 mainPanelLayout.setVerticalGroup(
                   mainPanelLayout.createSequentialGroup()
                     .addGroup(infoVertical)
                     .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                        .addComponent(signPinLabel)
-                        .addComponent(pinField))
+                    .addGroup(pinVertical)
                     .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(pinsizeLabel));
 
@@ -1084,9 +1156,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
           String refIdLabelPattern = messages.getString(MESSAGE_HASHDATALIST);
           refIdLabel.setText(MessageFormat.format(refIdLabelPattern, new Object[]{signedReferences.size()}));
 
-          HashDataTableModel tableModel = new HashDataTableModel(signedReferences);
+          HashDataTableModel tableModel = new HashDataTableModel(signedReferences, renderRefId);
           final JTable hashDataTable = new JTable(tableModel);
-          hashDataTable.setDefaultRenderer(HashDataInput.class, new HyperlinkRenderer());
+          hashDataTable.setDefaultRenderer(HashDataInput.class, new HyperlinkRenderer(renderRefId));
           hashDataTable.setTableHeader(null);
           
           // not possible to add mouse listener to TableCellRenderer

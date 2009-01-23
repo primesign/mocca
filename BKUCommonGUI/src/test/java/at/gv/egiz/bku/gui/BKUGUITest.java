@@ -39,8 +39,8 @@ public class BKUGUITest {
     public void testBKUGUI() {
         JFrame testFrame = new JFrame("BKUGUITest");
         Container contentPane = testFrame.getContentPane();
-        contentPane.setPreferredSize(new Dimension(190, 130));
-        BKUGUIFacade gui = BKUGUIFactory.createGUI(contentPane, null, BKUGUIFacade.Style.simple, null, null);
+        contentPane.setPreferredSize(new Dimension(170, 150));
+        BKUGUIFacade gui = BKUGUIFactory.createGUI(contentPane, null, BKUGUIFacade.Style.tiny, null, null);
         BKUGUIWorker worker = new BKUGUIWorker();
         worker.init(gui);
         testFrame.pack();

@@ -63,9 +63,11 @@ public interface BKUGUIFacade {
   public static final String MESSAGE_INSERTCARD = "message.insertcard";
   public static final String MESSAGE_ENTERPIN = "message.enterpin";
   public static final String MESSAGE_HASHDATALINK = "message.hashdatalink";
+  public static final String MESSAGE_HASHDATALINK_TINY = "message.hashdatalink.tiny";
 //  public static final String MESSAGE_HASHDATA = "message.hashdata";
   public static final String MESSAGE_HASHDATALIST = "message.hashdatalist";
   public static final String MESSAGE_RETRIES = "message.retries";
+  public static final String MESSAGE_LAST_RETRY = "message.retries.last";
   public static final String MESSAGE_OVERWRITE = "message.overwrite";
   public static final String MESSAGE_HELP = "message.help";
   public static final String WARNING_XHTML = "warning.xhtml";
@@ -90,7 +92,7 @@ public interface BKUGUIFacade {
   public static final String SAVE_HASHDATAINPUT_PREFIX = "save.hashdatainput.prefix";
   public static final String ALT_HELP = "alt.help";
 
-  public enum Style { simple, advanced };
+  public enum Style { tiny, simple, advanced };
     
 //  public void init(Container contentPane, Locale locale, Style guiStyle, URL background, ActionListener helpListener);
 

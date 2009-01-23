@@ -31,14 +31,23 @@ class HashDataTableModel extends DefaultTableModel {
   protected static final Log log = LogFactory.getLog(HashDataTableModel.class);
   
   /** HashDataInput in first column, register hyperlinkrenderer only here */
-  protected Class[] types = new Class[]{ HashDataInput.class, String.class };
+  protected Class[] types;
   protected List<HashDataInput> hashDataInputs;
-  
-  public HashDataTableModel(List<HashDataInput> hashDataInputs) {
-    super(0, 2);
+
+  public HashDataTableModel(List<HashDataInput> hashDataInputs, boolean twoColLayout) {
+    super(0, (twoColLayout) ? 2 : 1);
     this.hashDataInputs = hashDataInputs;
-    for (HashDataInput hdi : hashDataInputs) {
-      addRow(new Object[]{ hdi, hdi.getMimeType()});
+
+    if (twoColLayout) {
+      types = new Class[] { HashDataInput.class, String.class };
+      for (HashDataInput hdi : hashDataInputs) {
+        addRow(new Object[] { hdi, hdi.getMimeType() });
+      }
+    } else {
+      types = new Class[] { HashDataInput.class };
+      for (HashDataInput hdi : hashDataInputs) {
+        addRow(new Object[] { hdi });
+      }
     }
   }
 

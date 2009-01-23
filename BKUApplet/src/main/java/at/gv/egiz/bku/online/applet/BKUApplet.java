@@ -91,8 +91,11 @@ public class BKUApplet extends JApplet implements AppletParameterProvider {
     log.debug("setting locale to " + getLocale());
 
     BKUGUIFacade.Style guiStyle;
-    if ("advanced".equals(getAppletParameter(GUI_STYLE))) { 
+    String guiStyleParam = getAppletParameter(GUI_STYLE);
+    if ("advanced".equals(guiStyleParam)) {
       guiStyle = BKUGUIFacade.Style.advanced;
+    } else if ("tiny".equals(guiStyleParam)) {
+      guiStyle = BKUGUIFacade.Style.tiny;
     } else {
       guiStyle = BKUGUIFacade.Style.simple;
     }

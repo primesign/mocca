@@ -26,13 +26,25 @@ import javax.swing.table.DefaultTableCellRenderer;
  */
 public class HyperlinkRenderer extends DefaultTableCellRenderer {
 
+  protected boolean renderReferenceId;
+
+  public HyperlinkRenderer(boolean renderReferenceId) {
+    this.renderReferenceId = renderReferenceId;
+  }
+
   /**
    * cannot change mouse cursor here, do in jTable
    * @param value
    */
   @Override
   protected void setValue(Object value) {
-    super.setText("<html><u>" + ((HashDataInput) value).getReferenceId() + "</u></html>");
+    String hrefText;
+    if (renderReferenceId) {
+      hrefText = ((HashDataInput) value).getReferenceId();
+    } else {
+      hrefText = ((HashDataInput) value).getMimeType();
+    }
+    super.setText("<html><u>" + hrefText + "</u></html>");
     setForeground(BKUGUIFacade.HYPERLINK_COLOR);
   }
 }

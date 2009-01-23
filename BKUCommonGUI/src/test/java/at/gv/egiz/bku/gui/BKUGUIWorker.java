@@ -142,17 +142,17 @@ public class BKUGUIWorker implements Runnable {
 //            Thread.sleep(2000);
 //
 //            PINSpec cardPinSpec = new PINSpec(4, 4, "[0-9]", "Karten-PIN");
-//            
+//
 //            gui.showCardPINDialog(cardPinSpec, okListener, "ok", cancelListener, "cancel");
 //            
 //            Thread.sleep(2000);
 //
-//            gui.showSignaturePINDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
+            gui.showSignaturePINDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
 //
 //            Thread.sleep(4000);
 //
 
-    gui.showErrorDialog(BKUGUIFacade.ERR_NO_PCSC, null, null, null);
+//            gui.showErrorDialog(BKUGUIFacade.ERR_NO_PCSC, null, null, null);
     
 //            gui.showSignaturePINRetryDialog(signPinSpec, 2, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
 //
