@@ -18,6 +18,8 @@ package at.gv.egiz.stal.service.impl;
 
 //import at.buergerkarte.namespaces.cardchannel.service.CommandAPDUType;
 //import at.buergerkarte.namespaces.cardchannel.service.ScriptType;
+import at.buergerkarte.namespaces.cardchannel.service.CommandAPDUType;
+import at.buergerkarte.namespaces.cardchannel.service.ScriptType;
 import at.gv.egiz.bku.binding.BindingProcessor;
 import at.gv.egiz.bku.binding.BindingProcessorManager;
 import at.gv.egiz.bku.binding.Id;
@@ -78,8 +80,10 @@ public class STALServiceImpl implements STALPortType {
   @Resource
   protected WebServiceContext wsContext;
   protected IdFactory idF = IdFactory.getInstance();
+  /** JAXB ObjectFactories */
   private at.gv.egiz.stal.service.types.ObjectFactory stalObjFactory = new at.gv.egiz.stal.service.types.ObjectFactory();
-//  private at.buergerkarte.namespaces.cardchannel.service.ObjectFactory ccObjFactory = new at.buergerkarte.namespaces.cardchannel.service.ObjectFactory();
+  /** don't confuse with at.buergerkarte.namespaces.cardchannel */
+  private at.buergerkarte.namespaces.cardchannel.service.ObjectFactory ccObjFactory = new at.buergerkarte.namespaces.cardchannel.service.ObjectFactory();
 
   @Override
   public GetNextRequestResponseType connect(String sessId) {
@@ -331,12 +335,12 @@ public class STALServiceImpl implements STALPortType {
 
     if (responsesIn == null) {
       log.info("[TestSession] received CONNECT, return dummy requests ");
-//      ScriptType scriptT = ccObjFactory.createScriptType();
-//      CommandAPDUType cmd = ccObjFactory.createCommandAPDUType();
-//      cmd.setValue("TestSession CardChannelCMD 1234".getBytes());
-//      scriptT.getResetOrCommandAPDUOrVerifyAPDU().add(cmd);
-//      reqs.add(ccObjFactory.createScript(scriptT));
-      addDummyRequests(reqs);
+//      addDummyRequests(reqs);
+      ScriptType scriptT = ccObjFactory.createScriptType();
+      CommandAPDUType cmd = ccObjFactory.createCommandAPDUType();
+      cmd.setValue("TestSession CardChannelCMD 1234".getBytes());
+      scriptT.getResetOrCommandAPDUOrVerifyAPDU().add(cmd);
+      reqs.add(ccObjFactory.createScript(scriptT));
     } else if (responsesIn != null && responsesIn.size() > 0 && responsesIn.get(0).getValue() instanceof ErrorResponseType) {
       log.info("[TestSession] received ErrorResponse, return QUIT request");
       QuitRequestType quitT = stalObjFactory.createQuitRequestType();

@@ -156,9 +156,9 @@ public class STALTranslator {
 
     JAXBElement<? extends RequestType> translate(STALRequest request) throws TranslationException;
 
-    STALRequest translate(RequestType request) throws TranslationException;
-
     JAXBElement<? extends ResponseType> translate(STALResponse response) throws TranslationException;
+
+    STALRequest translate(RequestType request) throws TranslationException;
 
     STALResponse translate(ResponseType response) throws TranslationException;
   }
@@ -178,7 +178,6 @@ public class STALTranslator {
 
     @Override
     public List<Class> getSupportedTypes() {
-//      log.warn(" *** Fake STALTranslator ***");
       return Arrays.asList(new Class[]{InfoboxReadRequest.class,
                 SignRequest.class,
                 QuitRequest.class,

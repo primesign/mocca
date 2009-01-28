@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>STALExt</artifactId>
-			<version>1.0.4-SNAPSHOT</version>
+			<version>1.0.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -62,6 +62,11 @@
       <artifactId>spring-context</artifactId>
       <scope>test</scope>
     </dependency>
+        <!-- dependency to ensure NamespacePrefixmapper -->
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+        </dependency>
 	</dependencies>
 	<build>
 		<plugins>

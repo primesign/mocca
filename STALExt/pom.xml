@@ -8,7 +8,7 @@
   <groupId>at.gv.egiz</groupId>
   <artifactId>STALExt</artifactId>
   <name>STAL Extension</name>
-  <version>1.0.4-SNAPSHOT</version>
+  <version>1.0.2-SNAPSHOT</version>
   <description />
   <dependencies>
     <dependency>

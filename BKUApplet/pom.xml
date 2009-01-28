@@ -23,35 +23,23 @@
               <includeGroupIds>at.gv.egiz</includeGroupIds>
               <excludeTransitive>true</excludeTransitive>
               <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-              <excludes>META-INF\/</excludes><!--
-              <artifactItems>
-                <artifactItem>
-                  <groupId>at.gv.egiz</groupId>
-                  <artifactId>smcc</artifactId>
-                  <type>jar</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>at.gv.egiz</groupId>
-                  <artifactId>smccSTAL</artifactId>
-                  <type>jar</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>at.gv.egiz</groupId>
-                  <artifactId>STAL</artifactId>
-                  <type>jar</type>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>at.gv.egiz</groupId>
-                  <artifactId>STALService</artifactId>
-                  <type>jar</type>
-                </artifactItem>
-                 <artifactItem>
-                  <groupId>at.gv.egiz</groupId>
-                  <artifactId>BKUCommonGUI</artifactId>
-                  <type>jar</type>
-                </artifactItem>
-              </artifactItems>
-            --></configuration>
+              <excludes>META-INF\/</excludes>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- appletviewer target/test-classes/appletTest.html
+             |   commons-logging and iaik_jce_me4se are transitive dependencies
+             |-->
+            <id>copy_testapplet</id>
+            <goals>
+                <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+                <outputDirectory>${project.build.directory}/test-classes</outputDirectory>
+                <includeGroupIds>at.gv.egiz,commons-logging,iaik</includeGroupIds>
+                <includeArtifactIds>commons-logging,iaik_jce_me4se</includeArtifactIds>
+                <stripVersion>true</stripVersion>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -80,30 +68,6 @@
           <verify>true</verify>
         </configuration>
       </plugin>
-      <plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copytestlibs</id>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>commons-logging</groupId>
-									<artifactId>commons-logging</artifactId>
-								</artifactItem>
-								<artifactItem>
-									<groupId>iaik</groupId>
-									<artifactId>iaik_jce_me4se</artifactId>
-								</artifactItem>
-							</artifactItems>
-							<outputDirectory>${project.build.directory}/test-libs</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
     </plugins>
   </build>
   <dependencies>
@@ -131,10 +95,6 @@
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUCommonGUI</artifactId>
       <version>1.0.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
     </dependency>
   </dependencies>
 </project>

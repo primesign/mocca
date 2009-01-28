@@ -16,6 +16,7 @@
 */
 package at.gv.egiz.bku.slcommands.impl;
 
+import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -34,6 +35,8 @@ import at.buergerkarte.namespaces.securitylayer._1.CreateXMLSignatureResponseTyp
 import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
 import at.gv.egiz.bku.slcommands.SLCommandFactory;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
+import at.gv.egiz.marshal.MarshallerFactory;
+import javax.xml.bind.PropertyException;
 
 /**
  * This calls implements the result of the security layer command <code>CreateXMLSignature</code>.
@@ -86,7 +89,7 @@ public class CreateXMLSignatureResultImpl extends SLResultImpl {
     
     JAXBContext jaxbContext = SLCommandFactory.getInstance().getJaxbContext();
     try {
-      Marshaller marshaller = jaxbContext.createMarshaller();
+      Marshaller marshaller = MarshallerFactory.createMarshaller(jaxbContext);
       marshaller.marshal(createCreateXMLSignatureResponse, fragment);
     } catch (JAXBException e) {
       log.error("Failed to marshall 'CreateXMLSignatureResponse'", e);

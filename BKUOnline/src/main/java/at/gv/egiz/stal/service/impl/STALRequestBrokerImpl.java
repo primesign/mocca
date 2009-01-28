@@ -19,19 +19,17 @@ package at.gv.egiz.stal.service.impl;
 
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.HashDataInput;
-import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.service.translator.STALTranslator;
 import at.gv.egiz.stal.service.translator.TranslationException;
-import at.gv.egiz.stal.service.types.InfoboxReadRequestType;
 import at.gv.egiz.stal.service.types.ObjectFactory;
 import at.gv.egiz.stal.service.types.QuitRequestType;
 import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
-import at.gv.egiz.stal.service.types.SignRequestType;
+import at.gv.egiz.stalx.service.translator.STALXTranslationHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -71,10 +69,12 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
       if (timeoutMillisec <= 0) 
         timeoutMillisec = DEFAULT_TIMEOUT_MS;
       timeout = timeoutMillisec;
-//      translator.registerTranslationHandler(handler);
       requests = new ArrayList<JAXBElement<? extends RequestType>>();
       responses = new ArrayList<JAXBElement<? extends ResponseType>>();
       hashDataInputs = new ArrayList<HashDataInput>();
+
+      // register handler for STAL-X
+      translator.registerTranslationHandler(new STALXTranslationHandler());
     }
     
     /**

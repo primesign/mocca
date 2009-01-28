@@ -16,6 +16,7 @@
  */
 package at.gv.egiz.bku.slcommands.impl;
 
+import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,6 +44,8 @@ import at.gv.egiz.bku.slcommands.InfoboxReadResult;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLCommandFactory;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
+import at.gv.egiz.marshal.MarshallerFactory;
+import javax.xml.bind.PropertyException;
 
 /**
  * An abstract base class for {@link Infobox} implementations of type associative array.
@@ -257,8 +260,7 @@ public abstract class AbstractAssocArrayInfobox extends AbstractInfoboxImpl
     
     ByteArrayOutputStream result;
     try {
-      Marshaller marshaller = jaxbContext.createMarshaller();
-      
+      Marshaller marshaller = MarshallerFactory.createMarshaller(jaxbContext);
       result = new ByteArrayOutputStream();
       marshaller.marshal(jaxbElement, result);
     } catch (JAXBException e) {

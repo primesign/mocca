@@ -1,4 +1,4 @@
-
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <artifactId>bku</artifactId>
@@ -56,25 +56,20 @@
             <version>1.0.5-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
-		<!-- build BKUApplet prior to BKUOnline -->
-        <dependency>
-            <groupId>at.gv.egiz</groupId>
-            <artifactId>BKUApplet</artifactId>
-            <version>1.0.5-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
+		<dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>STALService</artifactId>
             <version>1.0.5-SNAPSHOT</version>
         </dependency>
-        <!-- TODO move at.buergerkarte.namespaces.cardchannel.service out from STALXService
+        <!--
+         |   TODO move at.buergerkarte.namespaces.cardchannel.service out from STALXService
          |   so that BKUOnline does not have to depend on STALXService
+         |-->
         <dependency>
           <groupId>at.gv.egiz</groupId>
           <artifactId>STALXService</artifactId>
           <version>1.0.2-SNAPSHOT</version>
-        </dependency-->
+        </dependency>
 		<!--
          | see https://wsit.dev.java.net/issues/show_bug.cgi?id=970
 		-->
@@ -102,10 +97,30 @@
             <groupId>com.sun.xml.stream</groupId>
             <version>1.0.1</version>
         </dependency>
+        <!--
+         |   Applet-only dependencies (put in provided scope)
+         |   list to make them known to maven-dependency plugin
+         |   and make sure BKUApplet(Ext) is built prior to BKUOnline
+         |-->
+        <dependency>
+            <groupId>at.gv.egiz</groupId>
+            <artifactId>BKUApplet</artifactId>
+            <version>1.0.5-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>at.gv.egiz</groupId>
+            <artifactId>BKUAppletExt</artifactId>
+            <version>1.0.2-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>iaik</groupId>
+            <artifactId>iaik_jce_me4se</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
-    <properties>
-        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
-    </properties>
     <scm>
         <developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKUOnline</developerConnection>
         <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKUOnline</connection>
@@ -117,75 +132,31 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copyapplet-dependencies</id>
+                        <id>copy_applet</id>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/${project.build.finalName}/applet</outputDirectory>
-							<!--<artifactItems>
-								<artifactItem>
-									<groupId>at.gv.egiz</groupId>
-									<artifactId>BKUApplet</artifactId>
-									<version>1.0</version>
-								</artifactItem>
-								<artifactItem>
-									<groupId>commons-logging</groupId>
-									<artifactId>commons-logging</artifactId>
-								</artifactItem>
-								<artifactItem>
-									<groupId>iaik</groupId>
-									<artifactId>iaik_jce_me4se</artifactId>
-								</artifactItem>
-							</artifactItems>-->
-                            <includeGroupIds>at.gv.egiz</includeGroupIds>
-                            <includeArtifactIds>BKUApplet</includeArtifactIds>
-                            <stripVersion>true</stripVersion>
+                            <includeGroupIds>at.gv.egiz,commons-logging,iaik</includeGroupIds>
+                            <includeArtifactIds>BKUApplet,BKUAppletExt,commons-logging,iaik_jce_me4se</includeArtifactIds>
                             <excludeTransitive>true</excludeTransitive>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copyapplet</id>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/${project.build.finalName}/applet</outputDirectory>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>commons-logging</groupId>
-                                    <artifactId>commons-logging</artifactId>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>iaik</groupId>
-                                    <artifactId>iaik_jce_me4se</artifactId>
-                                </artifactItem>
-                            </artifactItems>
+                            <stripVersion>true</stripVersion>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-            <!--plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-surefire-plugin</artifactId> 
-              <configuration>
-                <skip>true</skip>
-              </configuration> 
-            </plugin-->
+            
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.0.2</version>
                 <configuration>
                     <manifest>
-                        <addDefaultImplementationEntries>
-							true
-                        </addDefaultImplementationEntries>
+                        <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                     </manifest>
                     <archive>
                         <manifestEntries>
-                            <Implementation-Build>
-								${project.version}-r${buildNumber}
-                            </Implementation-Build>
+                            <Implementation-Build>${project.version}-r${buildNumber}</Implementation-Build>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -211,7 +182,7 @@
     </build>
     <profiles>
         <profile>
-            <id>jaxb-generate</id>
+            <id>jaxb-generate-stal</id>
             <build>
                 <plugins>
                     <plugin>
@@ -245,4 +216,7 @@
             </build>
         </profile>
     </profiles>
+    <properties>
+        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
+    </properties>
 </project>

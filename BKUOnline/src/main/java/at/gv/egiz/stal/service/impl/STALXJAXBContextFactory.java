@@ -47,11 +47,11 @@ public class STALXJAXBContextFactory implements JAXBContextFactory {
     }
     List<Class> classes = new ArrayList<Class>();
     classes.addAll(classesToBind);
-//    Class ccOF = at.buergerkarte.namespaces.cardchannel.service.ObjectFactory.class;
-//    if (!classes.contains(ccOF)) {
-//      log.debug("adding " + ccOF + " to JAXBContext seed");
-//      classes.add(ccOF);
-//    }
+    Class ccOF = at.buergerkarte.namespaces.cardchannel.service.ObjectFactory.class;
+    if (!classes.contains(ccOF)) {
+      log.debug("adding " + ccOF + " to JAXBContext seed");
+      classes.add(ccOF);
+    }
 
     //TODO add typeReference?
 

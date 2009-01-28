@@ -45,6 +45,11 @@
 			<groupId>iaik</groupId>
 			<artifactId>iaik_xsect</artifactId>
 		</dependency>
+        <!-- dependency to ensure NamespacePrefixmapper -->
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+        </dependency>
 	</dependencies>
 	<!--
 		add dependencies to determine build order of BKU modules | (scope

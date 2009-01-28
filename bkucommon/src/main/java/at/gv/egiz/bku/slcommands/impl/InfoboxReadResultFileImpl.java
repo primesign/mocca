@@ -16,6 +16,7 @@
 */
 package at.gv.egiz.bku.slcommands.impl;
 
+import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -40,6 +41,8 @@ import at.gv.egiz.bku.slcommands.InfoboxReadResult;
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slcommands.SLCommandFactory;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
+import at.gv.egiz.marshal.MarshallerFactory;
+import javax.xml.bind.PropertyException;
 
 /**
  * This class implements the result of the security layer command <code>InfoboxReadRequest</code>.
@@ -98,7 +101,7 @@ public class InfoboxReadResultFileImpl extends SLResultImpl implements
     
     JAXBContext context = SLCommandFactory.getInstance().getJaxbContext();
     try {
-      Marshaller marshaller = context.createMarshaller();
+      Marshaller marshaller = MarshallerFactory.createMarshaller(context);
       marshaller.marshal(infoboxReadResponse, doc);
     } catch (JAXBException e) {
       log.error("Failed to marshal 'InfoboxReadResponse' document.", e);

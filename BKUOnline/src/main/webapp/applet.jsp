@@ -39,6 +39,16 @@
         String backgroundImg = (String) session.getAttribute("appletBackground");
         String guiStyle = (String) session.getAttribute("appletGuiStyle");
         String locale = (String) session.getAttribute("locale");
+
+        String appletClass, appletArchive;
+        //if (Boolean.parseBoolean((String) session.getAttribute("appletExtension"))) {
+        if ("activation".equals(guiStyle)) {
+            appletArchive = "BKUAppletExt.jar";
+            appletClass = "at.gv.egiz.bku.online.applet.ext.BKUAppletExt.class";
+        } else {
+            appletArchive = "BKUApplet.jar";
+            appletClass = "at.gv.egiz.bku.online.applet.BKUApplet.class";
+        }
     %>
     <body id="appletpage" style="width:<%=width%>">
             <script>
@@ -48,8 +58,8 @@
                 } else {
                     var attributes = {
                         codebase :'applet',
-                        code :'at.gv.egiz.bku.online.applet.BKUApplet.class',
-                        archive :'BKUApplet.jar, commons-logging-1.1.1.jar, iaik_jce_me4se-3.04.jar',
+                        code : '<%=appletClass%>',
+                        archive : '<%=appletArchive + ", commons-logging.jar, iaik_jce_me4se.jar"%>',
                         width : <%=width%>,
                         height :<%=height%>
                     };

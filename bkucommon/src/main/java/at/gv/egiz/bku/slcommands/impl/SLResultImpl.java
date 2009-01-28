@@ -41,6 +41,7 @@ import org.w3c.dom.Node;
 
 import at.buergerkarte.namespaces.securitylayer._1.ErrorResponseType;
 import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
+import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
 import at.gv.egiz.bku.slcommands.SLCommandFactory;
 import at.gv.egiz.bku.slcommands.SLResult;
 import at.gv.egiz.bku.slexceptions.SLBindingException;
@@ -49,6 +50,8 @@ import at.gv.egiz.bku.slexceptions.SLException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 import at.gv.egiz.bku.utils.DebugOutputStream;
 import at.gv.egiz.bku.utils.DebugWriter;
+import at.gv.egiz.marshal.MarshallerFactory;
+import javax.xml.bind.PropertyException;
 
 /**
  * This class serves as an abstract base class for the implementation of a
@@ -90,8 +93,7 @@ public abstract class SLResultImpl implements SLResult {
   private Marshaller getMarshaller() {
     try {
       JAXBContext context  = SLCommandFactory.getInstance().getJaxbContext();
-      Marshaller marshaller = context.createMarshaller();
-      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+      Marshaller marshaller = MarshallerFactory.createMarshaller(context, true);
       return marshaller;
     } catch (JAXBException e) {
       log.fatal("Failed to marshall error response.", e);

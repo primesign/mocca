@@ -22,7 +22,6 @@ import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
-import at.gv.egiz.stal.ext.APDUScriptRequest;
 
 import java.util.List;
 import javax.swing.JDialog;

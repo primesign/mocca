@@ -23,7 +23,7 @@ import at.gv.egiz.stal.service.types.GetNextRequestType;
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 @XmlSeeAlso({
     at.gv.egiz.stal.service.types.ObjectFactory.class
-//    at.buergerkarte.namespaces.cardchannel.ObjectFactory.class
+//    at.buergerkarte.namespaces.cardchannel.service.ObjectFactory.class
 })
 public interface STALPortType {
 

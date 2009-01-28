@@ -133,6 +133,9 @@ public class BKURequestHandler extends SpringBKUServlet {
         .getFormData("appletHashDataDisplay"), charset);
     String localeFormParam = getStringFromStream(bindingProcessor
         .getFormData("locale"), charset);
+    String extension = getStringFromStream(bindingProcessor
+        .getFormData("appletExtension"), charset);
+
     if (width != null) {
       try {
         log.trace("Found applet width parameter: " + width);

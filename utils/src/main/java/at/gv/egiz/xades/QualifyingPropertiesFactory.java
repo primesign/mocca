@@ -16,6 +16,8 @@
 */
 package at.gv.egiz.xades;
 
+import at.gv.egiz.marshal.MarshallerFactory;
+import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -211,9 +213,7 @@ public class QualifyingPropertiesFactory {
   public void marshallQualifyingProperties(JAXBElement<QualifyingPropertiesType> qualifyingProperties, Node parent) throws JAXBException {
     
     try {
-      Marshaller marshaller = jaxbContext.createMarshaller();
-
-      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+      Marshaller marshaller = MarshallerFactory.createMarshaller(jaxbContext, true);
 
       marshaller.marshal(qualifyingProperties, parent);
     } catch (PropertyException e) {

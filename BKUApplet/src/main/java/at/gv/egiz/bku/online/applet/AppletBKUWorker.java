@@ -22,7 +22,6 @@ import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.service.STALPortType;
-import at.gv.egiz.stal.service.STALService;
 import at.gv.egiz.stal.service.translator.STALTranslator;
 import at.gv.egiz.stal.service.translator.TranslationException;
 import at.gv.egiz.stal.service.types.ErrorResponseType;
@@ -31,13 +30,10 @@ import at.gv.egiz.stal.service.types.GetNextRequestType;
 import at.gv.egiz.stal.service.types.ObjectFactory;
 import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
-import java.applet.AppletContext;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
 
 /**
@@ -46,29 +42,19 @@ import javax.xml.ws.WebServiceException;
  */
 public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
 
-  protected AppletContext ctx;
-  protected AppletParameterProvider params;
+  protected BKUApplet applet;
   protected String sessionId;
-  protected STALPortType stalPort;
+
   private ObjectFactory stalObjFactory = new ObjectFactory();
-  private STALTranslator translator = new STALTranslator();
 
-  public AppletBKUWorker(BKUGUIFacade gui, AppletContext ctx,
-          AppletParameterProvider paramProvider) {
+  public AppletBKUWorker(BKUApplet applet, BKUGUIFacade gui) {
     super(gui);
-    if (ctx == null) {
-      throw new NullPointerException("Applet context not provided");
-    }
-    if (paramProvider == null) {
-      throw new NullPointerException("No applet parameters provided");
-    }
-    this.ctx = ctx;
-    this.params = paramProvider;
-
-    sessionId = params.getAppletParameter(BKUApplet.SESSION_ID);
+    this.applet = applet;
+    
+    sessionId = applet.getParameter(BKUApplet.SESSION_ID);
     if (sessionId == null) {
       sessionId = "TestSession";
-      log.info("using dummy sessionId " + sessionId);
+      log.warn("using dummy sessionId " + sessionId);
     }
   }
 
@@ -77,9 +63,11 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
     gui.showWelcomeDialog();
 
     try {
-      stalPort = getSTALPort();
+      STALPortType stalPort = applet.getSTALPort();
+      STALTranslator stalTranslator = applet.getSTALTranslator();
 
-      registerSignRequestHandler(stalPort, sessionId);
+      addRequestHandler(SignRequest.class,
+              new AppletHashDataDisplay(stalPort, sessionId));
 
       GetNextRequestResponseType nextRequestResp = stalPort.connect(sessionId);
 
@@ -111,7 +99,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
           List<STALRequest> stalRequests = new ArrayList<STALRequest>();
           for (JAXBElement<? extends RequestType> req : requests) {
             try {
-              stalRequests.add(translator.translate(req));
+              stalRequests.add(stalTranslator.translate(req));
             } catch (TranslationException ex) {
               log.error("Received unknown request from server STAL: " + ex.getMessage());
               throw new RuntimeException(ex);
@@ -123,7 +111,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
           List<STALResponse> stalResponses = handleRequest(stalRequests);
           for (STALResponse stalResponse : stalResponses) {
             try {
-              responses.add(translator.translate(stalResponse));
+              responses.add(stalTranslator.translate(stalResponse));
             } catch (TranslationException ex) {
               log.error("Received unknown response from STAL: " + ex.getMessage());
               throw new RuntimeException(ex);
@@ -184,7 +172,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
       }
     }
 
-    sendRedirect();
+    applet.sendRedirect(sessionId);
   }
 
   /**
@@ -217,39 +205,5 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
     } catch (InterruptedException e) {
       log.error(e);
     }
-  }
-
-  protected void sendRedirect() {
-    try {
-      URL redirectURL = params.getURLParameter(BKUApplet.REDIRECT_URL,
-              sessionId);
-      String redirectTarget = params.getAppletParameter(BKUApplet.REDIRECT_TARGET);
-      if (redirectTarget == null) {
-        log.info("Done. Redirecting to " + redirectURL + " ...");
-        ctx.showDocument(redirectURL);
-      } else {
-        log.info("Done. Redirecting to " + redirectURL + " (target=" + redirectTarget + ") ...");
-        ctx.showDocument(redirectURL, redirectTarget);
-      }
-    } catch (MalformedURLException ex) {
-      log.warn("Failed to redirect: " + ex.getMessage(), ex);
-    // gui.showErrorDialog(errorMsg, okListener, actionCommand)
-    }
-  }
-
-  private STALPortType getSTALPort() throws MalformedURLException {
-    URL wsdlURL = params.getURLParameter(BKUApplet.WSDL_URL);
-    log.debug("STAL WSDL at " + wsdlURL);
-    QName endpointName = new QName(BKUApplet.STAL_WSDL_NS,
-            BKUApplet.STAL_SERVICE);
-    STALService stal = new STALService(wsdlURL, endpointName);
-    return stal.getSTALPort();
-  }
-
-  private void registerSignRequestHandler(STALPortType stalPort, String sessionId) {
-    log.debug("register SignRequestHandler (resolve hashdata via STAL Webservice)");
-    AppletHashDataDisplay handler = new AppletHashDataDisplay(stalPort,
-            sessionId);
-    addRequestHandler(SignRequest.class, handler);
   }
 }

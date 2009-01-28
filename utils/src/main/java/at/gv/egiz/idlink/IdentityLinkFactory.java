@@ -87,6 +87,8 @@ import at.gv.e_government.reference.namespace.persondata._20020228_.PersonNameTy
 import at.gv.e_government.reference.namespace.persondata._20020228_.PhysicalPersonType;
 import at.gv.e_government.reference.namespace.persondata._20020228_.IdentificationType.Value;
 import at.gv.e_government.reference.namespace.persondata._20020228_.PersonNameType.FamilyName;
+import at.gv.egiz.marshal.MarshallerFactory;
+import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
 import at.gv.egiz.xmldsig.KeyTypeNotSupportedException;
 import at.gv.egiz.xmldsig.KeyValueFactory;
 import oasis.names.tc.saml._1_0.assertion.AnyType;
@@ -276,9 +278,7 @@ public class IdentityLinkFactory {
     DOMResult result = new DOMResult(parent, nextSibling);
 
     try {
-      Marshaller marshaller = jaxbContext.createMarshaller();
-
-      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+      Marshaller marshaller = MarshallerFactory.createMarshaller(jaxbContext, true);
 
       marshaller.marshal(identityLink, result);
     } catch (PropertyException e) {

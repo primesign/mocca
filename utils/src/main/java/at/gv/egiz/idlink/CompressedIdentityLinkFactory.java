@@ -51,6 +51,8 @@ import at.gv.egiz.idlink.ans1.CitizenPublicKey;
 import at.gv.egiz.idlink.ans1.IdentityLink;
 import at.gv.egiz.idlink.ans1.PersonData;
 import at.gv.egiz.idlink.ans1.PhysicalPersonData;
+import at.gv.egiz.marshal.MarshallerFactory;
+import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
 import at.gv.egiz.xmldsig.KeyTypeNotSupportedException;
 import at.gv.egiz.xmldsig.KeyValueFactory;
 
@@ -302,9 +304,7 @@ public class CompressedIdentityLinkFactory {
     
 
     try {
-      Marshaller marshaller = jaxbContext.createMarshaller();
-
-      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+      Marshaller marshaller = MarshallerFactory.createMarshaller(jaxbContext);
 
       marshaller.marshal(compressedIdentityLink, result);
     } catch (PropertyException e) {

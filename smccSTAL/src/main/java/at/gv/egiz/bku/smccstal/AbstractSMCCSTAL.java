@@ -61,8 +61,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
 
   protected abstract BKUGUIFacade getGUI();
 
-  private STALResponse getRespone(STALRequest request) throws InterruptedException {
-    log.info("Processing: " + request.getClass());
+  private STALResponse getResponse(STALRequest request) throws InterruptedException {
     int retryCounter = 0;
     while (retryCounter < maxRetries) {
       log.info("Retry #" + retryCounter + " of " + maxRetries);
@@ -130,7 +129,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
       log.info("Processing: " + request.getClass());
       STALResponse response;
       try {
-        response = getRespone(request);
+        response = getResponse(request);
         if (response != null) {
           responseList.add(response);
           if (response instanceof ErrorResponse) {

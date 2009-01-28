@@ -20,6 +20,8 @@
 		<module>BKUViewer</module>
 		<module>BKULocalApp</module>
 		<module>STALExt</module>
+        <module>STALXService</module>
+        <module>BKUAppletExt</module>
 	</modules>
 	<developers>
 		<developer>
@@ -230,6 +232,11 @@
 				<artifactId>spring-context</artifactId>
 				<version>2.5.5</version>
 			</dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>2.1.9</version>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 </project>
