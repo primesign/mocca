@@ -34,11 +34,12 @@ import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
+import at.gv.egiz.stal.StatusRequest;
 
 public abstract class AbstractSMCCSTAL implements STAL {
   private static Log log = LogFactory.getLog(AbstractSMCCSTAL.class);
 
-  public final static int DEFAULT_MAX_RETRIES = 3;
+  public final static int DEFAULT_MAX_RETRIES = 1;
 
   protected Locale locale = Locale.getDefault();
   protected SignatureCard signatureCard = null;
@@ -49,6 +50,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
 
   protected AbstractSMCCSTAL() {
     addRequestHandler(InfoboxReadRequest.class, new InfoBoxReadRequestHandler());
+    addRequestHandler(StatusRequest.class, new StatusRequestHandler());
     unrecoverableErrors.add(6001);
   }
 
