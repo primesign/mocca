@@ -28,7 +28,8 @@ public class ObjectFactory {
 
     private final static QName _Grunddaten_QNAME = new QName("", "Grunddaten");
     private final static QName _Script_QNAME = new QName("", "Script");
-    private final static QName _Response_QNAME = new QName("", "Response");
+    /** A-Trust expects <pre>&lt;Result></pre> instead of <pre>&lt;Response></pre> */
+    private final static QName _Response_QNAME = new QName("", "Result"); //Response");
     private final static QName _SVPersonenbindung_QNAME = new QName("", "SV-Personenbindung");
     private final static QName _Status_QNAME = new QName("", "Status");
     private final static QName _EHIC_QNAME = new QName("", "EHIC");
@@ -132,9 +133,9 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ResponseType }{@code >}}
-     * 
+     *  A-Trust expects <pre>&lt;Result></pre> instead of <pre>&lt;Response></pre> 
      */
-    @XmlElementDecl(namespace = "", name = "Response")
+    @XmlElementDecl(namespace = "", name = "Result") //Response")
     public JAXBElement<ResponseType> createResponse(ResponseType value) {
         return new JAXBElement<ResponseType>(_Response_QNAME, ResponseType.class, null, value);
     }
