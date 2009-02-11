@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
-//import at.buergerkarte.namespaces.cardchannel.ScriptType;
+//import at.buergerkarte.namespaces.cardchannel.service.ScriptType;
 
 
 /**
@@ -27,10 +27,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "RequestType")
 @XmlSeeAlso({
+//    ScriptType.class,
     SignRequestType.class,
     InfoboxReadRequestType.class,
-    QuitRequestType.class
-//    ScriptType.class
+    QuitRequestType.class,
+    StatusRequestType.class
 })
 public abstract class RequestType {
 

@@ -24,6 +24,8 @@ import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.SignResponse;
+import at.gv.egiz.stal.StatusRequest;
+import at.gv.egiz.stal.StatusResponse;
 import at.gv.egiz.stal.service.types.ErrorResponseType;
 import at.gv.egiz.stal.service.types.InfoboxReadRequestType;
 import at.gv.egiz.stal.service.types.InfoboxReadResponseType;
@@ -33,6 +35,8 @@ import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
 import at.gv.egiz.stal.service.types.SignRequestType;
 import at.gv.egiz.stal.service.types.SignResponseType;
+import at.gv.egiz.stal.service.types.StatusRequestType;
+import at.gv.egiz.stal.service.types.StatusResponseType;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -181,15 +185,19 @@ public class STALTranslator {
       return Arrays.asList(new Class[]{InfoboxReadRequest.class,
                 SignRequest.class,
                 QuitRequest.class,
+                StatusRequest.class,
                 InfoboxReadRequestType.class,
                 SignRequestType.class,
                 QuitRequestType.class,
+                StatusRequestType.class,
                 InfoboxReadResponse.class,
                 SignResponse.class,
                 ErrorResponse.class,
+                StatusResponse.class,
                 InfoboxReadResponseType.class,
                 SignResponseType.class,
-                ErrorResponseType.class
+                ErrorResponseType.class,
+                StatusResponseType.class
       });
     }
 
@@ -209,6 +217,9 @@ public class STALTranslator {
         return of.createGetNextRequestResponseTypeInfoboxReadRequest(req);
       } else if (request instanceof QuitRequest) {
         return of.createGetNextRequestResponseTypeQuitRequest(of.createQuitRequestType());
+      } else if (request instanceof StatusRequest) {
+        StatusRequestType req = of.createStatusRequestType();
+        return of.createGetNextRequestResponseTypeStatusRequest(req);
       }
       throw new TranslationException(request.getClass());
     }
@@ -227,6 +238,8 @@ public class STALTranslator {
         return stalReq;
       } else if (request instanceof QuitRequestType) {
         return new QuitRequest();
+      } else if (request instanceof StatusRequestType) {
+        return new StatusRequest();
       }
       throw new TranslationException(request.getClass());
     }
@@ -246,6 +259,10 @@ public class STALTranslator {
         resp.setErrorCode(((ErrorResponse) response).getErrorCode());
         resp.setErrorMessage(((ErrorResponse) response).getErrorMessage());
         return of.createGetNextRequestTypeErrorResponse(resp);
+      } else if (response instanceof StatusResponse) {
+        StatusResponseType resp = of.createStatusResponseType();
+        resp.setCardReady(((StatusResponse) response).isCardReady());
+        return of.createGetNextRequestTypeStatusResponse(resp);
       }
       throw new TranslationException(response.getClass());
     }
@@ -264,6 +281,10 @@ public class STALTranslator {
         ErrorResponse stalResp = new ErrorResponse();
         stalResp.setErrorCode(((ErrorResponseType) response).getErrorCode());
         stalResp.setErrorMessage(((ErrorResponseType) response).getErrorMessage());
+        return stalResp;
+      } else if (response instanceof StatusResponseType) {
+        StatusResponse stalResp = new StatusResponse();
+        stalResp.setCardReady(((StatusResponseType) response).isCardReady());
         return stalResp;
       }
       throw new TranslationException(response.getClass());

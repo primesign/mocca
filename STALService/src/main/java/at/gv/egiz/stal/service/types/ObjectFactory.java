@@ -38,7 +38,9 @@ public class ObjectFactory {
     private final static QName _GetNextRequestTypeErrorResponse_QNAME = new QName("http://www.egiz.gv.at/stal", "ErrorResponse");
     private final static QName _GetNextRequestTypeSignResponse_QNAME = new QName("http://www.egiz.gv.at/stal", "SignResponse");
     private final static QName _GetNextRequestTypeInfoboxReadResponse_QNAME = new QName("http://www.egiz.gv.at/stal", "InfoboxReadResponse");
-
+    private final static QName _GetNextRequestResponseTypeStatusRequest_QNAME = new QName("http://www.egiz.gv.at/stal", "StatusRequest");
+    private final static QName _GetNextRequestTypeStatusResponse_QNAME = new QName("http://www.egiz.gv.at/stal", "StatusResponse");
+    
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: at.gv.egiz.stal.service.types
      * 
@@ -46,6 +48,22 @@ public class ObjectFactory {
     public ObjectFactory() {
     }
 
+    /**
+     * Create an instance of {@link StatusResponseType }
+     *
+     */
+    public StatusResponseType createStatusResponseType() {
+        return new StatusResponseType();
+    }
+
+    /**
+     * Create an instance of {@link StatusRequestType }
+     *
+     */
+    public StatusRequestType createStatusRequestType() {
+        return new StatusRequestType();
+    }
+    
     /**
      * Create an instance of {@link GetHashDataInputType }
      * 
@@ -149,6 +167,25 @@ public class ObjectFactory {
     public GetHashDataInputFaultType createGetHashDataInputFaultType() {
         return new GetHashDataInputFaultType();
     }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link StatusRequestType }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "StatusRequest", scope = GetNextRequestResponseType.class)
+    public JAXBElement<StatusRequestType> createGetNextRequestResponseTypeStatusRequest(StatusRequestType value) {
+        return new JAXBElement<StatusRequestType>(_GetNextRequestResponseTypeStatusRequest_QNAME, StatusRequestType.class, GetNextRequestResponseType.class, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link StatusResponseType }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "StatusResponse", scope = GetNextRequestType.class)
+    public JAXBElement<StatusResponseType> createGetNextRequestTypeStatusResponse(StatusResponseType value) {
+        return new JAXBElement<StatusResponseType>(_GetNextRequestTypeStatusResponse_QNAME, StatusResponseType.class, GetNextRequestType.class, value);
+    }
+
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetHashDataInputType }{@code >}}

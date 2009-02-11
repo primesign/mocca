@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="InfoboxReadResponse" type="{http://www.egiz.gv.at/stal}InfoboxReadResponseType"/>
  *         &lt;element name="SignResponse" type="{http://www.egiz.gv.at/stal}SignResponseType"/>
  *         &lt;element name="ErrorResponse" type="{http://www.egiz.gv.at/stal}ErrorResponseType"/>
+ *         &lt;element name="StatusResponse" type="{http://www.egiz.gv.at/stal}StatusResponseType"/>
  *         &lt;element ref="{http://www.egiz.gv.at/stal}OtherResponse"/>
  *       &lt;/choice>
  *       &lt;attribute name="SessionId" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -42,10 +43,11 @@ import javax.xml.bind.annotation.XmlType;
 public class GetNextRequestType {
 
     @XmlElementRefs({
-        @XmlElementRef(name = "ErrorResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
-        @XmlElementRef(name = "SignResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
+        @XmlElementRef(name = "StatusResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
+        @XmlElementRef(name = "InfoboxReadResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
         @XmlElementRef(name = "OtherResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
-        @XmlElementRef(name = "InfoboxReadResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class)
+        @XmlElementRef(name = "ErrorResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
+        @XmlElementRef(name = "SignResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class)
     })
     protected List<JAXBElement<? extends at.gv.egiz.stal.service.types.ResponseType>> infoboxReadResponseOrSignResponseOrErrorResponse;
     @XmlAttribute(name = "SessionId")
@@ -69,10 +71,11 @@ public class GetNextRequestType {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link SignResponseType }{@code >}
-     * {@link JAXBElement }{@code <}{@link at.buergerkarte.namespaces.cardchannel.ResponseType }{@code >}
-     * {@link JAXBElement }{@code <}{@link ErrorResponseType }{@code >}
+     * {@link JAXBElement }{@code <}{@link at.buergerkarte.namespaces.cardchannel.service.ResponseType }{@code >}
+     * {@link JAXBElement }{@code <}{@link StatusResponseType }{@code >}
      * {@link JAXBElement }{@code <}{@link at.gv.egiz.stal.service.types.ResponseType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ErrorResponseType }{@code >}
+     * {@link JAXBElement }{@code <}{@link SignResponseType }{@code >}
      * {@link JAXBElement }{@code <}{@link InfoboxReadResponseType }{@code >}
      * 
      * 

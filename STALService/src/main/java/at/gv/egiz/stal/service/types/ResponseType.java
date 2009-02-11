@@ -26,10 +26,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ResponseType")
 @XmlSeeAlso({
+//    at.buergerkarte.namespaces.cardchannel.service.ResponseType.class,
     ErrorResponseType.class,
     InfoboxReadResponseType.class,
-    SignResponseType.class
-//    at.buergerkarte.namespaces.cardchannel.ResponseType.class
+    SignResponseType.class,
+    StatusResponseType.class
 })
 public abstract class ResponseType {
 
