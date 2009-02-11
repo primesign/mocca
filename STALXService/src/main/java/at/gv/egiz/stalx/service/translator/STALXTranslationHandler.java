@@ -56,7 +56,7 @@ public class STALXTranslationHandler implements STALTranslator.TranslationHandle
   @Override
   public List<Class> getSupportedTypes() {
     return Arrays.asList(new Class[]{ScriptType.class,
-              ResponseType.class,
+              at.buergerkarte.namespaces.cardchannel.service.ResponseType.class,
               APDUScriptRequest.class,
               APDUScriptResponse.class});
   }
