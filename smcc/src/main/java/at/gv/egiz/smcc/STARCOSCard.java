@@ -29,8 +29,10 @@
 package at.gv.egiz.smcc;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 
+import java.util.List;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
@@ -453,6 +455,11 @@ public class STARCOSCard extends AbstractSignatureCard implements SignatureCard 
     }
   }
 
+  @Override
+  public byte[] getKIDs() {
+    return new byte[] { KID_PIN_CARD, KID_PIN_SS };
+  }
+
   /**
    * VERIFY PIN
    * <p>
@@ -466,61 +473,81 @@ public class STARCOSCard extends AbstractSignatureCard implements SignatureCard 
    *          the KID of the PIN to be verified
    * 
    * @return -1 if VERIFY PIN was successful, or the number of possible retries 
-   * 
-   * @throws CardException
-   *           if communication with the smart card fails.
+   *
+   * @throws LockedException
+   *            if the pin is locked
    * @throws NotActivatedException
    *           if the card application has not been activated
    * @throws SignatureCardException
-   *           if VERIFY PIN fails
+   *           if VERIFY PIN fails for some other reason (card communication error)
    */
   @Override
-  protected int verifyPIN(String pin, byte kid) throws CardException, SignatureCardException {
-    
-    CardChannel channel = getCardChannel();
+  public int verifyPIN(String pin, byte kid) throws LockedException, NotActivatedException, SignatureCardException {
+    try {
+      CardChannel channel = getCardChannel();
 
-    ResponseAPDU resp;
-    if (pin == null) {
-      resp = transmit(channel, new CommandAPDU(0x00, 0x20, 0x00, kid));
-    } else {
-      // PIN length in bytes
-      int len = (int) Math.ceil(pin.length() / 2);
-
-      // BCD encode PIN and marshal PIN block
-      byte[] pinBytes = new BigInteger(pin, 16).toByteArray();
-      byte[] pinBlock = new byte[8];
-      if (len < pinBytes.length) {
-        System.arraycopy(pinBytes, pinBytes.length - len, pinBlock, 1, len);
+      ResponseAPDU resp;
+      if (pin == null) {
+        resp = transmit(channel, new CommandAPDU(0x00, 0x20, 0x00, kid));
       } else {
-        System.arraycopy(pinBytes, 0, pinBlock, len - pinBytes.length + 1,
-            pinBytes.length);
+        // PIN length in bytes
+        int len = (int) Math.ceil(pin.length() / 2);
+
+        // BCD encode PIN and marshal PIN block
+        byte[] pinBytes = new BigInteger(pin, 16).toByteArray();
+        byte[] pinBlock = new byte[8];
+        if (len < pinBytes.length) {
+          System.arraycopy(pinBytes, pinBytes.length - len, pinBlock, 1, len);
+        } else {
+          System.arraycopy(pinBytes, 0, pinBlock, len - pinBytes.length + 1,
+              pinBytes.length);
+        }
+        pinBlock[0] = (byte) (0x20 + len * 2);
+        Arrays.fill(pinBlock, len + 1, 8, (byte) 0xff);
+
+        resp = transmit(channel, new CommandAPDU(0x00, 0x20, 0x00, kid, pinBlock), false);
+
       }
-      pinBlock[0] = (byte) (0x20 + len * 2);
-      Arrays.fill(pinBlock, len + 1, 8, (byte) 0xff);
 
-      resp = transmit(channel, new CommandAPDU(0x00, 0x20, 0x00, kid, pinBlock), false);
-      
+      if (resp.getSW() == 0x63c0) {
+        throw new LockedException("PIN locked.");
+      } else if (resp.getSW1() == 0x63 && resp.getSW2() >> 4 == 0xc) {
+        // return number of possible retries
+        return resp.getSW2() & 0x0f;
+      } else if (resp.getSW() == 0x6983) {
+        throw new LockedException();
+      } else if (resp.getSW() == 0x6984) {
+        // PIN LCS = "Initialized" (-> not activated)
+        throw new NotActivatedException("PIN not set.");
+      } else if (resp.getSW() == 0x9000) {
+        return -1; // success
+      } else {
+        throw new SignatureCardException("Failed to verify pin: SW="
+            + Integer.toHexString(resp.getSW()));
+      }
+    } catch (CardException ex) {
+      log.error("smart card communication failed: " + ex.getMessage());
+      throw new SignatureCardException("smart card communication failed: " + ex.getMessage(), ex);
     }
-
-    if (resp.getSW() == 0x63c0) {
-      throw new LockedException("PIN locked.");
-    } else if (resp.getSW1() == 0x63 && resp.getSW2() >> 4 == 0xc) {
-      // return number of possible retries
-      return resp.getSW2() & 0x0f;
-    } else if (resp.getSW() == 0x6983) {
-      throw new LockedException();
-    } else if (resp.getSW() == 0x6984) {
-      // PIN LCS = "Initialized" (-> not activated)
-      throw new NotActivatedException("PIN not set.");
-    } else if (resp.getSW() == 0x9000) {
-      return -1; // success
-    } else {
-      throw new SignatureCardException("Failed to verify pin: SW="
-          + Integer.toHexString(resp.getSW()));
-    }
-    
   }
-  
+
+  @Override
+  public void reset() throws SignatureCardException {
+    try {
+      super.reset();
+      log.debug("select MF (e-card workaround)");
+      CardChannel channel = getCardChannel();
+      ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0xA4, 0x00, 0x0C));
+      if (resp.getSW() != 0x9000) {
+        throw new SignatureCardException("Failed to select MF after RESET: SW=" + Integer.toHexString(resp.getSW()) + ".");
+      }
+    } catch (CardException ex) {
+      log.error("Failed to select MF after RESET: " + ex.getMessage(), ex);
+      throw new SignatureCardException("Failed to select MF after RESET");
+    }
+  }
+
+
   public String toString() {
     return "e-card";
   }

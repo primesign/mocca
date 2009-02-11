@@ -112,7 +112,8 @@ public abstract class AbstractSignatureCard implements SignatureCard {
   protected abstract ResponseAPDU selectFileFID(byte[] fid) throws CardException,
       SignatureCardException;
 
-  protected abstract int verifyPIN(String pin, byte kid) throws CardException, SignatureCardException;
+  // made public
+//  protected abstract int verifyPIN(String pin, byte kid) throws CardException, SignatureCardException;
 
   
   protected byte[] readRecord(int recordNumber) throws SignatureCardException, CardException {

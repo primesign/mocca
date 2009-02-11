@@ -30,6 +30,8 @@ package at.gv.egiz.smcc;
 
 import java.nio.charset.Charset;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
@@ -320,7 +322,12 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
   }
 
   @Override
-  protected int verifyPIN(String pin, byte kid) throws CardException, SignatureCardException {
+  public byte[] getKIDs() {
+    return new byte[] { KID_PIN_DEC, KID_PIN_INF, KID_PIN_SIG };
+  }
+
+  @Override
+  public int verifyPIN(String pin, byte kid) throws LockedException, NotActivatedException, SignatureCardException {
     
     CardChannel channel = getCardChannel();
 
@@ -329,8 +336,13 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
     System.arraycopy(asciiPIN, 0, encodedPIN, 0, Math.min(asciiPIN.length,
         encodedPIN.length));
 
-    ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0x20, 0x00,
-        kid, encodedPIN), false);
+    ResponseAPDU resp;
+    try {
+      resp = transmit(channel, new CommandAPDU(0x00, 0x20, 0x00, kid, encodedPIN), false);
+    } catch (CardException ex) {
+      log.error("smart card communication failed: " + ex.getMessage());
+      throw new SignatureCardException("smart card communication failed: " + ex.getMessage(), ex);
+    }
     
     if (resp.getSW() == 0x63c0) {
       throw new LockedException("PIN locked.");

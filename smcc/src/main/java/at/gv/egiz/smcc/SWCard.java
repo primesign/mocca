@@ -389,4 +389,14 @@ public class SWCard implements SignatureCard {
   public void reset() throws SignatureCardException {
   }
 
+  @Override
+  public byte[] getKIDs() {
+    return null;
+  }
+
+  @Override
+  public int verifyPIN(String pin, byte kid) throws LockedException, NotActivatedException, SignatureCardException {
+    return -1;
+  }
+
 }

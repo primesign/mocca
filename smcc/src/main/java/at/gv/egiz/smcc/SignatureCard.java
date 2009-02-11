@@ -28,6 +28,7 @@
 //
 package at.gv.egiz.smcc;
 
+import java.util.List;
 import java.util.Locale;
 
 import javax.smartcardio.Card;
@@ -115,7 +116,24 @@ public interface SignatureCard {
    */
   public byte[] createSignature(byte[] hash, KeyboxName keyboxName,
       PINProvider provider) throws SignatureCardException, InterruptedException;
-  
+
+  /**
+   * get the KIDs for the availabel PINs
+   * @return array of KIDs
+   */
+  public byte[] getKIDs();
+
+  /**
+   *
+   * @param pin may be null to test the PIN status
+   * @param kid
+   * @return the number of remaining retries or -1
+   * @throws at.gv.egiz.smcc.LockedException
+   * @throws at.gv.egiz.smcc.NotActivatedException
+   * @throws at.gv.egiz.smcc.SignatureCardException
+   */
+  public int verifyPIN(String pin, byte kid) throws LockedException, NotActivatedException, SignatureCardException;
+
   /**
    * Sets the local for evtl. required callbacks (e.g. PINSpec)
    * @param locale must not be null;
