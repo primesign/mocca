@@ -53,6 +53,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 //    ErrorResponse.class,
 //    SignResponse.class,
 //    InfoboxReadResponse.class
+//    StatusResponse.class
 //})
 public abstract class STALResponse {
 

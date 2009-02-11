@@ -48,6 +48,7 @@ import javax.xml.bind.annotation.XmlType;
 //    SignRequest.class,
 //    InfoboxReadRequest.class,
 //    QuitRequest.class
+//    StatusRequest.class
 //})
 public abstract class STALRequest {
 
