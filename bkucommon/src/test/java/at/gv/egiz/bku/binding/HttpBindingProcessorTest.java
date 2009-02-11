@@ -95,7 +95,7 @@ public class HttpBindingProcessorTest {
   @Before
   public void setUp() throws IOException {
     server = new TestDataUrlConnection();
-    DataUrl.setDataUrlConnectionClass(server);
+    DataUrl.setDataUrlConnectionImpl(server);
     serverHeaderMap = new HashMap<String, String>();
     serverHeaderMap.put("Content-Type", HttpUtil.TXT_XML);
     server.setResponseCode(200);
@@ -251,7 +251,7 @@ public class HttpBindingProcessorTest {
   @Test
   public void testWithValidDataUrl307XML() throws IOException, InterruptedException {
     server = new MultiTestDataUrlConnection();
-    DataUrl.setDataUrlConnectionClass(server);
+    DataUrl.setDataUrlConnectionImpl(server);
     TestDataSource tds = new TestDataSource();
     ((MultiTestDataUrlConnection)server).setDataSource(tds);
     

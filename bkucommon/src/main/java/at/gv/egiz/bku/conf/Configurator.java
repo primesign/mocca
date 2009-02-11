@@ -46,6 +46,7 @@ import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 
 public abstract class Configurator {
+
   private Log log = LogFactory.getLog(Configurator.class);
 
   protected Properties properties;
@@ -202,22 +203,22 @@ public abstract class Configurator {
   }
 
   public void configureVersion() {
-    if (properties.getProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY) == null) {
+    if (properties.getProperty(DataUrlConnection.USERAGENT_CONFIG_P) == null) {
       Properties p = new Properties();
       try {
         InputStream is = getManifest();
         if (is != null) {
           p.load(getManifest());
           String version = p.getProperty("Implementation-Build");
-          properties.setProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY,
-              "citizen-card-environment/1.2 MOCCA " + version);
+          properties.setProperty(DataUrlConnection.USERAGENT_CONFIG_P,
+                  DataUrlConnection.USERAGENT_BASE + version);
           log.debug("Setting user agent to: "
               + properties
-                  .getProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY));
+                  .getProperty(DataUrlConnection.USERAGENT_CONFIG_P));
         } else {
           log.warn("Cannot read manifest");
-          properties.setProperty(DataUrlConnection.USER_AGENT_PROPERTY_KEY,
-              "citizen-card-environment/1.2 MOCCA UNKNOWN");
+          properties.setProperty(DataUrlConnection.USERAGENT_CONFIG_P,
+                  DataUrlConnection.USERAGENT_DEFAULT);
         }
       } catch (IOException e) {
         log.error(e);
@@ -254,6 +255,7 @@ public abstract class Configurator {
       log.error("Cannot load CA certificates", e1);
     }
     String disableAll = getProperty("SSL.disableAllChecks");
+    String disableHostnameVerification = getProperty("SSL.disableHostnameVerification");
     try {
       KeyManager[] km = null;
       SSLContext sslCtx = SSLContext
@@ -275,7 +277,7 @@ public abstract class Configurator {
     } catch (Exception e) {
       log.error("Cannot configure SSL", e);
     }
-    if ((disableAll != null) && (Boolean.parseBoolean(disableAll))) {
+    if ((disableAll != null && Boolean.parseBoolean(disableAll)) || (disableHostnameVerification != null && Boolean.parseBoolean(disableHostnameVerification))) {
       log.warn("---------------------------------");
       log.warn(" Disabling Hostname Verification ");
       log.warn("---------------------------------");

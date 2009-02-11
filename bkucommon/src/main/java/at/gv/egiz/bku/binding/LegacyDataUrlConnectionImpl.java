@@ -212,12 +212,13 @@ public class LegacyDataUrlConnectionImpl implements DataUrlConnectionSPI {
     this.url = url;
     requestHttpHeaders = new HashMap<String, String>();
     if ((config != null)
-        && (config.getProperty(USER_AGENT_PROPERTY_KEY) != null)) {
+        && (config.getProperty(USERAGENT_CONFIG_P) != null)) {
+      log.debug("setting User-Agent header: " + config.getProperty(USERAGENT_CONFIG_P));
       requestHttpHeaders.put(HttpUtil.HTTP_HEADER_USER_AGENT, config
-          .getProperty(USER_AGENT_PROPERTY_KEY));
+          .getProperty(USERAGENT_CONFIG_P));
     } else {
       requestHttpHeaders
-          .put(HttpUtil.HTTP_HEADER_USER_AGENT, DEFAULT_USERAGENT);
+          .put(HttpUtil.HTTP_HEADER_USER_AGENT, USERAGENT_DEFAULT);
 
     }
     requestHttpHeaders.put(HttpUtil.HTTP_HEADER_CONTENT_TYPE,

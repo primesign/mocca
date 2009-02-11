@@ -118,7 +118,7 @@ public class CardChannelInfoboxImpl extends AbstractBinaryFileInfobox {
 
       ByteArrayOutputStream redirectedStream = ((at.gv.egiz.slbinding.impl.XMLContentType) content).getRedirectedStream();
       if (redirectedStream != null) {
-        
+
         if (log.isDebugEnabled()) {
 
           StringBuilder sb = new StringBuilder();

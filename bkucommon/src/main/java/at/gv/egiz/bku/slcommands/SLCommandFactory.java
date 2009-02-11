@@ -17,7 +17,6 @@
 package at.gv.egiz.bku.slcommands;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +41,6 @@ import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import at.buergerkarte.namespaces.cardchannel.ObjectFactory;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLExceptionMessages;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
