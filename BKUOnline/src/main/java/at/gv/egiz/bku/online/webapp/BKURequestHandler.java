@@ -166,6 +166,10 @@ public class BKURequestHandler extends SpringBKUServlet {
       log.trace("Found applet hash data display parameter: " + hashDataDisplay);
       session.setAttribute("appletHashDataDisplay", hashDataDisplay);
     }
+    if (extension != null && !"".equals(extension)) {
+      log.trace("Found applet extension parameter: " + extension);
+      session.setAttribute("extension", extension);
+    }
     if (localeFormParam != null) {
       log.debug("overrule accept-language locale " + locale
           + " with form param " + localeFormParam);
@@ -179,7 +183,7 @@ public class BKURequestHandler extends SpringBKUServlet {
     // handle server side redirect url after processing
     String redirectUrl = bindingProcessor.getRedirectURL(); 
     if ( redirectUrl != null) {
-      log.debug("Got redirect URL "+redirectUrl+". Deferring browser redirect.");
+      log.info("Got redirect URL "+redirectUrl+". Deferring browser redirect.");
       session.setAttribute(REDIRECT_URL_SESSION_ATTRIBUTE, redirectUrl);
     }
     // TODO error if no dispatcher found

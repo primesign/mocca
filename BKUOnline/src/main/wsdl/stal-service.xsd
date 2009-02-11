@@ -42,6 +42,7 @@
       <element name="InfoboxReadResponse" type="tns:InfoboxReadResponseType"/>
       <element name="SignResponse" type="tns:SignResponseType"/>
       <element name="ErrorResponse" type="tns:ErrorResponseType"/>
+      <element name="StatusResponse" type="tns:StatusResponseType"/>
       <element ref="tns:OtherResponse"/>
       <!-- do not list cc:Script here, JAXB knows about substitution groups
       <element ref="cc:Script"/-->
@@ -77,6 +78,13 @@
       </extension>
     </complexContent>
   </complexType>
+  <complexType name="StatusResponseType">
+    <complexContent>
+      <extension base="tns:ResponseType">
+        <attribute name="cardReady" type="boolean" />
+      </extension>
+    </complexContent>
+  </complexType>
   <complexType name="GetNextRequestResponseType">
         <!-- abstract Request/Response type not supported by JAX-WS 2.0 (jdk < 1.6.0_04) 
         <sequence>
@@ -86,6 +94,7 @@
       <element name="InfoboxReadRequest" type="tns:InfoboxReadRequestType"/>
       <element name="SignRequest" type="tns:SignRequestType"/>
       <element name="QuitRequest" type="tns:QuitRequestType"/>
+      <element name="StatusRequest" type="tns:StatusRequestType"/>
       <element ref="tns:OtherRequest"/>
       <!-- do not list cc:Response here, JAXB knows about substitution groups
       <element ref="cc:Response"/-->
@@ -129,6 +138,11 @@
     </complexContent>
   </complexType>
   <complexType name="QuitRequestType">
+    <complexContent>
+      <extension base="tns:RequestType"/>
+    </complexContent>
+  </complexType>
+  <complexType name="StatusRequestType">
     <complexContent>
       <extension base="tns:RequestType"/>
     </complexContent>

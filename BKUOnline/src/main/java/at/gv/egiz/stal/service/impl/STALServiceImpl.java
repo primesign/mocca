@@ -16,8 +16,6 @@
  */
 package at.gv.egiz.stal.service.impl;
 
-//import at.buergerkarte.namespaces.cardchannel.service.CommandAPDUType;
-//import at.buergerkarte.namespaces.cardchannel.service.ScriptType;
 import at.buergerkarte.namespaces.cardchannel.service.CommandAPDUType;
 import at.buergerkarte.namespaces.cardchannel.service.ScriptType;
 import at.gv.egiz.bku.binding.BindingProcessor;

@@ -109,7 +109,7 @@ public class ResultServlet extends SpringBKUServlet {
         bp.writeResultTo(new NullOutputStream(), encoding);
         getBindingProcessorManager().removeBindingProcessor(bp.getId());
       } finally {
-        log.debug("Executing deferred browser redirect to: " + redirectUrl);
+        log.info("Executing deferred browser redirect to: " + redirectUrl);
         resp.sendRedirect(redirectUrl);
         session.invalidate();
       }

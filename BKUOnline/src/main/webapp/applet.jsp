@@ -24,14 +24,15 @@
         <title>MOCCA Applet</title>
         <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
         <script type="text/javascript" src="js/deployJava.js"></script>
-        <style type="text/css" media="all">@import "css/login.css";</style>
+        <style type="text/css" media="all">@import "css/applet.css";</style>
 
         <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
         <META HTTP-EQUIV="EXPIRES" CONTENT="Mon, 22 Jul 2002 11:12:01 GMT">
         <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
     </head>
     <%
-        // min W/H (for de locale): 152px/145px with gui style 'tiny'
+        // min W/H (for de locale): 145px/145px with gui style 'tiny'
+        // (vs. 152px on linux)
         int width = session.getAttribute("appletWidth") == null ? 190
                 : (Integer) session.getAttribute("appletWidth"); //230 for workshop demo integration
         int height = session.getAttribute("appletHeight") == null ? 130
@@ -39,12 +40,15 @@
         String backgroundImg = (String) session.getAttribute("appletBackground");
         String guiStyle = (String) session.getAttribute("appletGuiStyle");
         String locale = (String) session.getAttribute("locale");
+        String extension = (String) session.getAttribute("extension");
 
         String appletClass, appletArchive;
-        //if (Boolean.parseBoolean((String) session.getAttribute("appletExtension"))) {
-        if ("activation".equals(guiStyle)) {
+        if ("activation".equals(extension)) {
             appletArchive = "BKUAppletExt.jar";
-            appletClass = "at.gv.egiz.bku.online.applet.ext.BKUAppletExt.class";
+            appletClass = "at.gv.egiz.bku.online.applet.ActivationApplet.class";
+        } else if ("pin".equals(extension)) {
+            appletArchive = "BKUAppletExt.jar";
+            appletClass = "at.gv.egiz.bku.online.applet.PINManagementApplet.class";
         } else {
             appletArchive = "BKUApplet.jar";
             appletClass = "at.gv.egiz.bku.online.applet.BKUApplet.class";
