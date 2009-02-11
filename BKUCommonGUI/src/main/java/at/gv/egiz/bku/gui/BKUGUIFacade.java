@@ -25,6 +25,7 @@ import java.util.Locale;
 
 public interface BKUGUIFacade {
 
+  public static final String ERR_UNKNOWN_WITH_PARAM = "error.unknown.param";
   public static final String ERR_UNKNOWN = "error.unknown";
   public static final String ERR_SERVICE_UNREACHABLE = "error.ws.unreachable";
   public static final String ERR_NO_PCSC = "error.pcsc";

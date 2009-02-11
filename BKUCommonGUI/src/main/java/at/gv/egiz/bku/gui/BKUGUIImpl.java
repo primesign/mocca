@@ -19,14 +19,12 @@ package at.gv.egiz.bku.gui;
 
 import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.stal.HashDataInput;
-import at.gv.egiz.stal.impl.ByteArrayHashDataInput;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -68,7 +66,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class BKUGUIImpl implements BKUGUIFacade {
     
-    private static final Log log = LogFactory.getLog(BKUGUIImpl.class);
+    protected static final Log log = LogFactory.getLog(BKUGUIImpl.class);
 
     protected enum PinLabelPosition {
       LEFT, ABOVE
