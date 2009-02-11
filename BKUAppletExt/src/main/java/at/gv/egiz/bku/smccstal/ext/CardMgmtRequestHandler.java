@@ -19,6 +19,7 @@
  */
 package at.gv.egiz.bku.smccstal.ext;
 
+import at.gv.egiz.bku.gui.ActivationGUIFacade;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,12 +46,13 @@ import at.gv.egiz.stal.ext.APDUScriptRequest.Reset;
 import at.gv.egiz.stal.ext.APDUScriptResponse.Response;
 import at.gv.egiz.stal.ext.APDUScriptResponse.ATR;
 import at.gv.egiz.stal.ext.APDUScriptResponse.ResponseScriptElement;
+import java.awt.event.ActionListener;
 
 /**
  * @author mcentner
  *
  */
-public class CardMgmtRequestHandler extends AbstractRequestHandler {
+public class CardMgmtRequestHandler extends AbstractRequestHandler implements ActionListener {
 
   /**
    * Logging facility.
@@ -61,7 +63,12 @@ public class CardMgmtRequestHandler extends AbstractRequestHandler {
    * The sequence counter.
    */
   private int sequenceNum = 0;
-  
+
+  /**
+   * display script num
+   */
+  private int currentActivationScript = 0;
+
   @Override
   public STALResponse handleRequest(STALRequest request)
       throws InterruptedException {
@@ -69,7 +76,8 @@ public class CardMgmtRequestHandler extends AbstractRequestHandler {
     // APDU Script Request
     if (request instanceof APDUScriptRequest) {
 
-      gui.showWaitDialog("CardChannel");
+      currentActivationScript++;
+      log.debug("handling APDU script " + currentActivationScript);
       
       Card icc = card.getCard();
 
@@ -81,20 +89,28 @@ public class CardMgmtRequestHandler extends AbstractRequestHandler {
       List<RequestScriptElement> script = ((APDUScriptRequest) request).getScript();
       ArrayList<ResponseScriptElement> responses = new ArrayList<ResponseScriptElement>(script.size());
 
+      ((ActivationGUIFacade) gui).showActivationProgressDialog(currentActivationScript, script.size(), this, "cancel");
+
       try {
+        log.trace("begin exclusive");
         icc.beginExclusive();
 
         for (RequestScriptElement scriptElement : script) {
+          ((ActivationGUIFacade) gui).incrementProgress();
+          
           if (scriptElement instanceof Command) {
+            log.trace("handling APDU script element COMMAND");
             Command command = (Command) scriptElement;
             CommandAPDU commandAPDU = new CommandAPDU(command.getCommandAPDU());
-            
+
+            log.trace("get basicchannel");
             CardChannel channel = icc.getBasicChannel();
             
             sequenceNum = command.getSequence();
-            log.debug("Transmit " + sequenceNum + " " + commandAPDU.toString());
+            log.debug("Transmit APDU (sequence=" + sequenceNum + ")");
+            log.trace(commandAPDU.toString());
             ResponseAPDU responseAPDU = channel.transmit(commandAPDU);
-            log.debug("" + responseAPDU);
+            log.trace(responseAPDU.toString());
             
             byte[] sw = new byte[] { 
                 (byte) (0xFF & responseAPDU.getSW1()),
@@ -105,16 +121,22 @@ public class CardMgmtRequestHandler extends AbstractRequestHandler {
             if (command.getExpectedSW() != null && 
               !Arrays.equals(sw, command.getExpectedSW())) {
               // unexpected SW
-              log.info("Got unexpected SW. APDU-script execution stopped.");
+              log.warn("Got unexpected SW. APDU-script execution stopped.");
               break;
             }
             
           } else if (scriptElement instanceof Reset) {
-            
+
+            log.trace("handling APDU script element RESET");
             sequenceNum = 0;
             card.reset();
-            responses.add(new ATR(icc.getATR().getBytes()));
-            
+            javax.smartcardio.ATR atr = icc.getATR();
+            log.trace("got ATR: " + atr.toString());
+            responses.add(new ATR(atr.getBytes()));
+
+            log.trace("regain exclusive access to card");
+            icc = card.getCard();
+            icc.beginExclusive();
           }
           
         }
@@ -125,6 +147,9 @@ public class CardMgmtRequestHandler extends AbstractRequestHandler {
       } catch (SignatureCardException e) {
         log.info("Failed to reset smart card.", e);
         responses.add(new Response(sequenceNum, null, null, Response.RC_UNSPECIFIED));
+      } catch (RuntimeException e) {
+        log.error(e);
+        throw e;
       } finally {
         try {
           icc.endExclusive();
@@ -133,7 +158,8 @@ public class CardMgmtRequestHandler extends AbstractRequestHandler {
         }
       }
 
-      gui.showWaitDialog("wait for server...");
+      log.trace("done handling APDU script " + currentActivationScript + ", return response containing " + responses.size() + " elements");
+      ((ActivationGUIFacade) gui).showIdleDialog(this, "cancel");
       return new APDUScriptResponse(responses);
       
     } else {
