@@ -20,13 +20,12 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.net.MalformedURLException;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 import javax.swing.JDialog;
 import javax.swing.WindowConstants;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
-import at.gv.egiz.bku.gui.BKUGUIFactory;
+import at.gv.egiz.bku.gui.BKUGUIImpl;
 import at.gv.egiz.bku.gui.DefaultHelpListener;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
@@ -59,7 +58,7 @@ public class LocalSTALFactory implements STALFactory {
     } catch (MalformedURLException ex) {
       log.error("failed to configure help listener: " + ex.getMessage(), ex);
     }
-    BKUGUIFacade gui = BKUGUIFactory.createGUI(dialog.getContentPane(), 
+    BKUGUIFacade gui = new BKUGUIImpl(dialog.getContentPane(),
             dialog.getLocale(),
             BKUGUIFacade.Style.advanced,
             null,
