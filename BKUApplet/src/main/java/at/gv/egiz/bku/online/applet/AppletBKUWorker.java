@@ -165,7 +165,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
       showErrorDialog(BKUGUIFacade.ERR_CONFIG, ex);
     } catch (Exception ex) {
       log.error(ex.getMessage(), ex);
-      showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, ex);
+      showErrorDialog(BKUGUIFacade.ERR_UNKNOWN_WITH_PARAM, ex);
     } finally {
       if (signatureCard != null) {
         signatureCard.disconnect(false);
@@ -195,7 +195,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
     }
   }
 
-  private void showErrorDialog(String err_code, Exception ex) {
+  protected void showErrorDialog(String err_code, Exception ex) {
     actionCommandList.clear();
     actionCommandList.add("ok");
     gui.showErrorDialog(err_code,

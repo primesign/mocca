@@ -31,7 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
-import at.gv.egiz.bku.gui.BKUGUIFactory;
+import at.gv.egiz.bku.gui.BKUGUIImpl;
 import at.gv.egiz.stal.service.STALPortType;
 import at.gv.egiz.stal.service.STALService;
 import java.awt.Container;
@@ -57,8 +57,6 @@ public class BKUApplet extends JApplet {
   public static final String BACKGROUND_IMG = "Background";
   public static final String REDIRECT_URL = "RedirectURL";
   public static final String REDIRECT_TARGET = "RedirectTarget";
-//  public static final String HASHDATA_DISPLAY_INTERNAL = "internal";
-//  public static final String HASHDATA_DISPLAY_BROWSER = "browser";
   public static final String HASHDATA_DISPLAY_FRAME = "frame";
   /**
    * STAL WSDL namespace and service name
@@ -69,6 +67,14 @@ public class BKUApplet extends JApplet {
    * Dummy session id, used if no sessionId parameter is provided
    */
   protected static final String TEST_SESSION_ID = "TestSession";
+
+  static {
+    if (log.isTraceEnabled()) {
+      log.trace("enabling webservice communication dump");
+      System.setProperty("com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump", "true");
+    }
+  }
+
   /**
    * STAL
    */
@@ -82,7 +88,7 @@ public class BKUApplet extends JApplet {
   @Override
   public void init() {
     log.info("Welcome to MOCCA");
-    log.debug("Called init()");
+    log.trace("Called init()");
 
     HttpsURLConnection.setDefaultSSLSocketFactory(InternalSSLSocketFactory.getInstance());
 
@@ -127,19 +133,19 @@ public class BKUApplet extends JApplet {
             backgroundImgURL,
             helpListener);
 
-    worker = new AppletBKUWorker(this, gui);
+    worker = createBKUWorker(this, gui);
   }
 
   @Override
   public void start() {
-    log.debug("Called start()");
+    log.trace("Called start()");
     workerThread = new Thread(worker);
     workerThread.start();
   }
 
   @Override
   public void stop() {
-    log.debug("Called stop()");
+    log.trace("Called stop()");
     if ((workerThread != null) && (workerThread.isAlive())) {
       workerThread.interrupt();
     }
@@ -147,8 +153,79 @@ public class BKUApplet extends JApplet {
 
   @Override
   public void destroy() {
-    log.debug("Called destroy()");
+    log.trace("Called destroy()");
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // factory methods for subclasses to inject different components
+  /////////////////////////////////////////////////////////////////////////////
+  
+  protected BKUGUIFacade createGUI(Container contentPane,
+          Locale locale,
+          Style guiStyle,
+          URL backgroundImgURL,
+          AbstractHelpListener helpListener) {
+    return new BKUGUIImpl(contentPane, locale, guiStyle, backgroundImgURL, helpListener);
+  }
+
+  protected AppletBKUWorker createBKUWorker(BKUApplet applet, BKUGUIFacade gui) {
+    return new AppletBKUWorker(applet, gui);
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  // callback for BKUWorker to allow extension
+  /////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Callback for BKUWorker to allow extension
+   * @return
+   * @throws java.net.MalformedURLException
+   */
+  public STALPortType getSTALPort() throws MalformedURLException {
+    URL wsdlURL = getURLParameter(WSDL_URL, null);
+    log.debug("setting STAL WSDL: " + wsdlURL);
+    QName endpointName = new QName(STAL_WSDL_NS, STAL_SERVICE);
+    STALService stal = new STALService(wsdlURL, endpointName);
+    return stal.getSTALPort();
+  }
+
+  /**
+   * Callback for BKUWorker to allow extension
+   * (TODO STALPort could know its STALTranslator)
+   * @return
+   * @throws java.net.MalformedURLException
+   */
+  public STALTranslator getSTALTranslator() {
+    return new STALTranslator();
+  }
+
+  /**
+   * Callback for BKUWorker to keep applet context out of BKUWorker
+   * @return
+   * @throws java.net.MalformedURLException
+   */
+  protected void sendRedirect(String sessionId) {
+    try {
+      URL redirectURL = getURLParameter(REDIRECT_URL, sessionId);
+      String redirectTarget = getParameter(REDIRECT_TARGET);
+      if (redirectTarget == null) {
+        log.info("Done. Redirecting to " + redirectURL + " ...");
+        getAppletContext().showDocument(redirectURL);
+      } else {
+        log.info("Done. Redirecting to " + redirectURL + " (target=" + redirectTarget + ") ...");
+        getAppletContext().showDocument(redirectURL, redirectTarget);
+      }
+    } catch (MalformedURLException ex) {
+      log.warn("Failed to redirect: " + ex.getMessage(), ex);
+    // gui.showErrorDialog(errorMsg, okListener, actionCommand)
+    }
+  }
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  // utility methods
+  /////////////////////////////////////////////////////////////////////////////
 
   protected URL getURLParameter(String paramKey, String sessionId) throws MalformedURLException {
     String urlParam = getParameter(paramKey);
@@ -165,7 +242,6 @@ public class BKUApplet extends JApplet {
           }
           url = new URL(codebase, urlParam);
         }
-        log.info("applet parameter " + url);
         return url;
       } catch (MalformedURLException ex) {
         log.error("applet paremeter " + urlParam + " is not a valid URL: " + ex.getMessage());
@@ -174,50 +250,6 @@ public class BKUApplet extends JApplet {
     } else {
       log.error("applet paremeter " + urlParam + " not set");
       throw new MalformedURLException(urlParam + " not set");
-    }
-  }
-
-  /**
-   * provides a means to for subclasses to inject a different GUI
-   */
-  protected BKUGUIFacade createGUI(Container contentPane,
-          Locale locale,
-          Style guiStyle,
-          URL backgroundImgURL,
-          AbstractHelpListener helpListener) {
-    return BKUGUIFactory.createGUI(contentPane,
-            locale,
-            guiStyle,
-            backgroundImgURL,
-            helpListener);
-  }
-
-  protected STALPortType getSTALPort() throws MalformedURLException {
-    URL wsdlURL = getURLParameter(WSDL_URL, null);
-    log.debug("setting STAL WSDL: " + wsdlURL);
-    QName endpointName = new QName(STAL_WSDL_NS, STAL_SERVICE);
-    STALService stal = new STALService(wsdlURL, endpointName);
-    return stal.getSTALPort();
-  }
-
-  protected STALTranslator getSTALTranslator() {
-    return new STALTranslator();
-  }
-
-  protected void sendRedirect(String sessionId) {
-    try {
-      URL redirectURL = getURLParameter(REDIRECT_URL, sessionId);
-      String redirectTarget = getParameter(REDIRECT_TARGET);
-      if (redirectTarget == null) {
-        log.info("Done. Redirecting to " + redirectURL + " ...");
-        getAppletContext().showDocument(redirectURL);
-      } else {
-        log.info("Done. Redirecting to " + redirectURL + " (target=" + redirectTarget + ") ...");
-        getAppletContext().showDocument(redirectURL, redirectTarget);
-      }
-    } catch (MalformedURLException ex) {
-      log.warn("Failed to redirect: " + ex.getMessage(), ex);
-    // gui.showErrorDialog(errorMsg, okListener, actionCommand)
     }
   }
 }

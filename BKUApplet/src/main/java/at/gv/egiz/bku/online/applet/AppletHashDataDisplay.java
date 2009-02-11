@@ -16,12 +16,10 @@
  */
 package at.gv.egiz.bku.online.applet;
 
-import at.gv.egiz.bku.gui.BKUGUIFacade;
 import java.security.DigestException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -34,7 +32,6 @@ import at.gv.egiz.stal.service.GetHashDataInputFault;
 import at.gv.egiz.stal.service.STALPortType;
 import at.gv.egiz.stal.service.types.GetHashDataInputResponseType;
 import at.gv.egiz.stal.service.types.GetHashDataInputType;
-import at.gv.egiz.stal.signedinfo.DigestMethodType;
 import at.gv.egiz.stal.signedinfo.ReferenceType;
 import java.security.NoSuchAlgorithmException;
 
