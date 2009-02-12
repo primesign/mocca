@@ -44,6 +44,7 @@ import static org.junit.Assert.*;
  *
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
+@Ignore
 public class FileSystemTest {
 
   /** asign premium */
