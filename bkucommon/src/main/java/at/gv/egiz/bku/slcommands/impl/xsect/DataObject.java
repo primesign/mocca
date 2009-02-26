@@ -49,6 +49,8 @@ import javax.xml.crypto.dsig.spec.XPathType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.w3._2000._09.xmldsig_.TransformType;
+import org.w3._2000._09.xmldsig_.TransformsType;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -79,7 +81,12 @@ import at.gv.egiz.bku.viewer.ValidationException;
 import at.gv.egiz.bku.viewer.Validator;
 import at.gv.egiz.bku.viewer.ValidatorFactory;
 import at.gv.egiz.dom.DOMUtils;
+import at.gv.egiz.marshal.NamespacePrefix;
+import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
 import at.gv.egiz.slbinding.impl.XMLContentType;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
  * This class represents a <code>DataObject</code> of an XML-Signature
@@ -332,6 +339,33 @@ public class DataObject {
     } 
     // other values are not allowed by the schema and are therefore ignored
     
+  }
+
+  private byte[] getTransformsBytes(at.gv.egiz.slbinding.impl.TransformsInfoType ti) {
+    return ti.getRedirectedStream().toByteArray();
+//    byte[] transformsBytes = ti.getRedirectedStream().toByteArray();
+//
+//    if (transformsBytes == null || transformsBytes.length == 0) {
+//      return null;
+//    }
+//
+//    String dsigPrefix = ti.getNamespaceContext().getNamespaceURI("http://www.w3.org/2000/09/xmldsig#");
+//    byte[] pre, post;
+//    if (dsigPrefix == null) {
+//      log.trace("XMLDSig not declared in outside dsig:Transforms");
+//      pre = "<AssureDSigNS>".getBytes();
+//      post = "</AssureDSigNS>".getBytes();
+//    } else {
+//      log.trace("XMLDSig bound to prefix " + dsigPrefix);
+//       pre = ("<AssureDSigNS xmlns:" + dsigPrefix + "=\"http://www.w3.org/2000/09/xmldsig#\">").getBytes();
+//       post = "</AssureDSigNS>".getBytes();
+//    }
+//
+//    byte[] workaround = new byte[pre.length + transformsBytes.length + post.length];
+//    System.arraycopy(pre, 0, workaround, 0, pre.length);
+//    System.arraycopy(transformsBytes, 0, workaround, pre.length, transformsBytes.length);
+//    System.arraycopy(post, 0, workaround, pre.length + transformsBytes.length, post.length);
+//    return workaround;
   }
 
   /**
@@ -664,23 +698,21 @@ public class DataObject {
    *           <code>transformsInfo</code> cannot be unmarshalled.
    */
   private XSECTTransforms createTransforms(TransformsInfoType transformsInfo) throws SLRequestException, MarshalException {
-    
-    ByteArrayOutputStream redirectedStream = ((at.gv.egiz.slbinding.impl.TransformsInfoType) transformsInfo).getRedirectedStream();
-    byte[] transformBytes = (redirectedStream != null) ? redirectedStream.toByteArray() : null;
-    
-    if (transformBytes != null && transformBytes.length > 0) {
 
+    byte[] transforms = getTransformsBytes((at.gv.egiz.slbinding.impl.TransformsInfoType) transformsInfo);
+
+    if (transforms != null && transforms.length > 0) {
       // debug
       if (log.isTraceEnabled()) {
         StringBuilder sb = new StringBuilder();
         sb.append("Trying to parse transforms:\n");
-        sb.append(new String(transformBytes, Charset.forName("UTF-8")));
+        sb.append(new String(transforms, Charset.forName("UTF-8")));
         log.trace(sb);
       }
-      
+
       DOMImplementationLS domImplLS = DOMUtils.getDOMImplementationLS();
       LSInput input = domImplLS.createLSInput();
-      input.setByteStream(new ByteArrayInputStream(transformBytes));
+      input.setByteStream(new ByteArrayInputStream(transforms));
 
       LSParser parser = domImplLS.createLSParser(
           DOMImplementationLS.MODE_SYNCHRONOUS, null);
@@ -701,8 +733,8 @@ public class DataObject {
       }
 
       // adopt ds:Transforms
-      Element documentElement = document.getDocumentElement();
-      Node adoptedTransforms = ctx.getDocument().adoptNode(documentElement);
+      Element transformsElt = document.getDocumentElement();
+      Node adoptedTransforms = ctx.getDocument().adoptNode(transformsElt);
 
       DOMCryptoContext context = new DOMCryptoContext();
 
@@ -712,7 +744,79 @@ public class DataObject {
     } else {
       return null;
     }
-    
+
+
+//    TransformsType transformsType = transformsInfo.getTransforms();
+//    if (transformsType == null) {
+//      return null;
+//    }
+//    List<TransformType> transformList = transformsType.getTransform();
+//
+//    DOMImplementationLS domImplLS = DOMUtils.getDOMImplementationLS();
+////    Document transformsDoc = ((DOMImplementation) domImplLS).createDocument("http://www.w3.org/2000/09/xmldsig#", "Transforms", null);
+////    Element transforms = transformsDoc.getDocumentElement();
+//    Document transformsDoc = DOMUtils.createDocument();
+//    Element transforms = transformsDoc.createElementNS(
+//            "http://www.w3.org/2000/09/xmldsig#",
+//            Signature.XMLDSIG_PREFIX + ":Transforms");
+//    transformsDoc.appendChild(transforms);
+//
+//    for (TransformType transformType : transformList) {
+//      log.trace("found " + transformType.getClass().getName());
+//      Element transform = transformsDoc.createElementNS(
+//              "http://www.w3.org/2000/09/xmldsig#",
+//              Signature.XMLDSIG_PREFIX + ":Transform");
+//      String algorithm = transformType.getAlgorithm();
+//      if (algorithm != null) {
+//        log.trace("found algorithm " + algorithm);
+//        transform.setAttribute("Algorithm", algorithm);
+//      }
+//
+//      at.gv.egiz.slbinding.impl.TransformType t = (at.gv.egiz.slbinding.impl.TransformType) transformType;
+//      byte[] redirectedBytes = t.getRedirectedStream().toByteArray();
+//      if (redirectedBytes != null && redirectedBytes.length > 0) {
+//        if (log.isTraceEnabled()) {
+//          StringBuilder sb = new StringBuilder();
+//          sb.append("Trying to parse dsig:Transform:\n");
+//          sb.append(new String(redirectedBytes, Charset.forName("UTF-8")));
+//          log.trace(sb);
+//        }
+//        LSInput input = domImplLS.createLSInput();
+//        input.setByteStream(new ByteArrayInputStream(redirectedBytes));
+//
+//        LSParser parser = domImplLS.createLSParser(
+//            DOMImplementationLS.MODE_SYNCHRONOUS, null);
+//        DOMConfiguration domConfig = parser.getDomConfig();
+//        SimpleDOMErrorHandler errorHandler = new SimpleDOMErrorHandler();
+//        domConfig.setParameter("error-handler", errorHandler);
+//        domConfig.setParameter("validate", Boolean.FALSE);
+//
+//        try {
+//          Document redirectedDoc = parser.parse(input);
+//          Node redirected = transformsDoc.adoptNode(redirectedDoc.getDocumentElement());
+//          transform.appendChild(redirected);
+//
+//          //not supported by Xerces2.9.1
+////          Node redirected = parser.parseWithContext(input, transform, LSParser.ACTION_APPEND_AS_CHILDREN);
+//
+//        } catch (DOMException e) {
+//          log.info("Failed to parse dsig:Transform.", e);
+//          throw new SLRequestException(3002);
+//        } catch (LSException e) {
+//          log.info("Failed to parse dsig:Transform.", e);
+//          throw new SLRequestException(3002);
+//        }
+//      }
+//      transforms.appendChild(transform);
+//    }
+//
+//    //adopt ds:Transforms
+//    Node adoptedTransforms = ctx.getDocument().adoptNode(transforms);
+//    DOMCryptoContext context = new DOMCryptoContext();
+//
+//    // unmarshall ds:Transforms
+//    return new XSECTTransforms(context, adoptedTransforms);
+
   }
   
   /**

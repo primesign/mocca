@@ -31,6 +31,7 @@ package at.gv.egiz.smcc;
 import java.util.List;
 import java.util.Locale;
 
+import java.util.Map;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardTerminal;
 
@@ -118,10 +119,10 @@ public interface SignatureCard {
       PINProvider provider) throws SignatureCardException, InterruptedException;
 
   /**
-   * get the KIDs for the availabel PINs
+   * Get the KIDs for all available PINs and the corresponding PINSpecs
    * @return array of KIDs
    */
-  public byte[] getKIDs();
+  public List<PINSpec> getPINSpecs();
 
   /**
    *

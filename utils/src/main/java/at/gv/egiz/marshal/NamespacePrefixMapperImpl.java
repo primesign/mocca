@@ -36,35 +36,35 @@ public class NamespacePrefixMapperImpl extends NamespacePrefixMapper {
       log.trace("prefix for namespace " + namespaceUri + " requested");
     }
     if ("http://www.w3.org/2001/XMLSchema-instance".equals(namespaceUri)) {
-      return "xsi";
+      return NamespacePrefix.XSI_PREFIX;
     }
 
     if ("http://www.w3.org/2000/09/xmldsig#".equals(namespaceUri)) {
-      return "dsig";
+      return NamespacePrefix.XMLDSIG_PREFIX;
     }
 
     if ("http://www.buergerkarte.at/namespaces/securitylayer/1.2#".equals(namespaceUri)) {
-      return "sl";
+      return NamespacePrefix.SL_PREFIX;
     }
 
     if ("http://www.buergerkarte.at/cardchannel".equals(namespaceUri)) {
-      return "cc";
+      return NamespacePrefix.CARDCHANNEL_PREFIX;
     }
 
     if ("http://www.w3.org/2001/04/xmldsig-more#".equals(namespaceUri)) {
-      return "ecdsa";
+      return NamespacePrefix.ECDSA_PREFIX;
     }
 
     if ("http://reference.e-government.gv.at/namespace/persondata/20020228#".equals(namespaceUri)) {
-      return "pr";
+      return NamespacePrefix.PERSONDATA_PREFIX;
     }
 
     if ("urn:oasis:names:tc:SAML:1.0:assertion".equals(namespaceUri)) {
-      return "saml";
+      return NamespacePrefix.SAML10_PREFIX;
     }
 
     if ("http://uri.etsi.org/01903/v1.1.1#".equals(namespaceUri)) {
-      return "xades";
+      return NamespacePrefix.XADES_PREFIX;
     }
     
     return suggestion;

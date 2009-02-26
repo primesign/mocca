@@ -38,9 +38,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.CellRendererPane;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -51,7 +48,6 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -1064,7 +1060,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
     @Override
     public char[] getPin() {
         if (pinField != null) {
-            return pinField.getPassword();
+          char[] pin = pinField.getPassword();
+          pinField = null;
+          return pin;
         }
         return null;
     }

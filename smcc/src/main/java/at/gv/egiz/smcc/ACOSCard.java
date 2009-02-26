@@ -30,8 +30,6 @@ package at.gv.egiz.smcc;
 
 import java.nio.charset.Charset;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
@@ -41,7 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
-  
+
   private static Log log = LogFactory.getLog(ACOSCard.class);
 
   public static final byte[] AID_DEC = new byte[] { (byte) 0xA0, (byte) 0x00,
@@ -100,8 +98,15 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
       (byte) 0x01 // RSA // TODO: Not verified yet
   };
 
+  private static final int PINSPEC_INF = 0;
+  private static final int PINSPEC_DEC = 1;
+  private static final int PINSPEC_SIG = 2;
+
   public ACOSCard() {
     super("at/gv/egiz/smcc/ACOSCard");
+    pinSpecs.add(PINSPEC_INF, new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("inf.pin.name"), KID_PIN_INF, null));
+    pinSpecs.add(PINSPEC_DEC, new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("dec.pin.name"), KID_PIN_DEC, null));
+    pinSpecs.add(PINSPEC_SIG, new PINSpec(6, 10, "[0-9]", getResourceBundle().getString("sig.pin.name"), KID_PIN_SIG, null));
   }
 
   /* (non-Javadoc)
@@ -165,7 +170,8 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
     try {
       if ("IdentityLink".equals(infobox)) {
  
-        PINSpec spec = new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("inf.pin.name"));
+        PINSpec spec = pinSpecs.get(PINSPEC_INF);
+        //new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("inf.pin.name"));
         
         int retries = -1;
         String pin = null;
@@ -219,7 +225,8 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
       
       if (KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(keyboxName)) {
 
-        PINSpec spec = new PINSpec(6, 10, "[0-9]", getResourceBundle().getString("sig.pin.name"));
+        PINSpec spec = pinSpecs.get(PINSPEC_SIG);
+        //new PINSpec(6, 10, "[0-9]", getResourceBundle().getString("sig.pin.name"));
         
         int retries = -1;
         String pin = null;
@@ -260,7 +267,8 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
     
       } else if (KeyboxName.CERITIFIED_KEYPAIR.equals(keyboxName)) {
         
-        PINSpec spec = new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("dec.pin.name"));
+        PINSpec spec = pinSpecs.get(PINSPEC_DEC);
+        //new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("dec.pin.name"));
 
         int retries = -1;
         String pin = null;
@@ -319,11 +327,6 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
     CardChannel channel = getCardChannel();
     return transmit(channel, new CommandAPDU(0x00, 0xA4, 0x00,
         0x00, fid, 256));
-  }
-
-  @Override
-  public byte[] getKIDs() {
-    return new byte[] { KID_PIN_DEC, KID_PIN_INF, KID_PIN_SIG };
   }
 
   @Override

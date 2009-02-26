@@ -87,6 +87,8 @@ import at.gv.egiz.bku.utils.urldereferencer.StreamData;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencerContext;
 import at.gv.egiz.dom.DOMUtils;
+import at.gv.egiz.marshal.NamespacePrefix;
+import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
 import at.gv.egiz.slbinding.impl.XMLContentType;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.xades.QualifyingPropertiesException;
@@ -99,6 +101,7 @@ import at.gv.egiz.xades.QualifyingPropertiesFactory;
  * @author mcentner
  */
 public class Signature {
+  public static final String XMLDSIG_PREFIX = "dsig";
   
   /**
    * Logging facility.
@@ -407,7 +410,7 @@ public class Signature {
     
     signContext.setProperty("javax.xml.crypto.dsig.cacheReference", Boolean.TRUE);
     
-    signContext.putNamespacePrefix(XMLSignature.XMLNS, "dsig");
+    signContext.putNamespacePrefix(XMLSignature.XMLNS,XMLDSIG_PREFIX); 
     
     signContext.setURIDereferencer(new URIDereferncerAdapter(ctx.getDereferencerContext()));
     

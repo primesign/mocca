@@ -31,7 +31,11 @@ package at.gv.egiz.smcc;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.smartcardio.ATR;
@@ -48,6 +52,8 @@ import org.apache.commons.logging.LogFactory;
 public abstract class AbstractSignatureCard implements SignatureCard {
 
   private static Log log = LogFactory.getLog(AbstractSignatureCard.class);
+
+  protected List<PINSpec> pinSpecs = new ArrayList<PINSpec>();
 
   private ResourceBundle i18n;
   private String resourceBundleName;
@@ -433,4 +439,8 @@ public abstract class AbstractSignatureCard implements SignatureCard {
     }
   }
 
+  @Override
+  public List<PINSpec> getPINSpecs() {
+    return pinSpecs;
+  }
 }

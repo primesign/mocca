@@ -36,9 +36,13 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
+import java.util.Map;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardTerminal;
 
@@ -311,7 +315,7 @@ public class SWCard implements SignatureCard {
 
     if (password == null) {
 
-      PINSpec pinSpec = new PINSpec(0, -1, ".", "KeyStore-Password");
+      PINSpec pinSpec = new PINSpec(0, -1, ".", "KeyStore-Password", (byte) 0x01, null);
       
       password = provider.providePIN(pinSpec, -1);
       
@@ -390,13 +394,13 @@ public class SWCard implements SignatureCard {
   }
 
   @Override
-  public byte[] getKIDs() {
-    return null;
+  public int verifyPIN(String pin, byte kid) throws LockedException, NotActivatedException, SignatureCardException {
+    return -1;
   }
 
   @Override
-  public int verifyPIN(String pin, byte kid) throws LockedException, NotActivatedException, SignatureCardException {
-    return -1;
+  public List<PINSpec> getPINSpecs() {
+    return new ArrayList<PINSpec>();
   }
 
 }

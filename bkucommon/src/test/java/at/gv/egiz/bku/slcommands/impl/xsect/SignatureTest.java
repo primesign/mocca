@@ -78,6 +78,7 @@ import at.gv.egiz.bku.utils.urldereferencer.URLProtocolHandler;
 import at.gv.egiz.dom.DOMUtils;
 import at.gv.egiz.slbinding.RedirectEventFilter;
 import at.gv.egiz.slbinding.RedirectUnmarshallerListener;
+import org.junit.Ignore;
 
 public class SignatureTest {
 
@@ -756,6 +757,48 @@ public class SignatureTest {
     assertNotNull(objects);
     assertTrue("Size " + objects.size() + " but should be 1.", objects.size() == 1);
     
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  @Ignore
+  public void testTransformsInfo_2() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
+
+    CreateXMLSignatureRequestType requestType = unmarshalCreateXMLSignatureRequest("TransformsInfo_2.xml");
+
+    Signature signature = new Signature(null, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
+
+
+    signature.setSignatureInfo(requestType.getSignatureInfo());
+
+    List<DataObjectInfoType> dataObjectInfos = requestType.getDataObjectInfo();
+
+    for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
+      signature.addDataObject(dataObjectInfo);
+    }
+
+    signature.setSignerCeritifcate(certificate);
+
+    signature.buildXMLSignature();
+
+    signAndMarshalSignature(signature);
+
+    List<Reference> references = signature.getReferences();
+    assertTrue(references.size() == 2);
+
+    Reference reference = references.get(0);
+    assertNotNull(reference.getId());
+
+    List<Transform> transforms = reference.getTransforms();
+    assertTrue("Size " + transforms.size() + "", transforms.size() == 2);
+
+    Transform transform = transforms.get(0);
+    assertTrue(Transform.XSLT.equals(transform.getAlgorithm()));
+
+    List<XMLObject> objects = signature.getXMLObjects();
+    assertNotNull(objects);
+    assertTrue("Size " + objects.size() + " but should be 1.", objects.size() == 1);
+
   }
 
   

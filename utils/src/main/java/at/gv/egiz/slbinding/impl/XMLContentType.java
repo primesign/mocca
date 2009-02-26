@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
 public class XMLContentType extends at.buergerkarte.namespaces.securitylayer._1.XMLContentType implements RedirectCallback {
 
     @XmlTransient
-    private static Log log = LogFactory.getLog(TransformsInfoType.class);
+    private static Log log = LogFactory.getLog(XMLContentType.class);
     @XmlTransient
     protected ByteArrayOutputStream redirectOS = null;
 

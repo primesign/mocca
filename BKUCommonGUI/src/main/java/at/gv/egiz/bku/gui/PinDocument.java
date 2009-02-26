@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import javax.swing.JButton;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 
 /**
@@ -30,9 +31,10 @@ import javax.swing.text.PlainDocument;
  */
 class PINDocument extends PlainDocument {
 
-        private PINSpec pinSpec;
-        private Pattern pinPattern;
-        private JButton enterButton;
+        protected PINSpec pinSpec;
+        protected Pattern pinPattern;
+        protected JButton enterButton;
+        protected Document compareTo;
 
         public PINDocument(PINSpec pinSpec, JButton enterButton) {
             this.pinSpec = pinSpec;
@@ -42,6 +44,11 @@ class PINDocument extends PlainDocument {
                 pinPattern = Pattern.compile(".");
             }
             this.enterButton = enterButton;
+        }
+
+        public PINDocument(PINSpec pinSpec, JButton enterButton, Document compareTo) {
+          this(pinSpec, enterButton);
+          this.compareTo = compareTo;
         }
 
         @Override
@@ -58,12 +65,23 @@ class PINDocument extends PlainDocument {
                     super.insertString(offs, str, a);
                 }
             }
-            enterButton.setEnabled(getLength() >= pinSpec.getMinLength());
+            if (enterButton != null) {
+              enterButton.setEnabled(getLength() >= pinSpec.getMinLength() && compare());
+            }
         }
 
         @Override
         public void remove(int offs, int len) throws BadLocationException {
             super.remove(offs, len);
-            enterButton.setEnabled(getLength() >= pinSpec.getMinLength());
+            if (enterButton != null) {
+              enterButton.setEnabled(getLength() >= pinSpec.getMinLength() && compare());
+            }
+        }
+
+        private boolean compare() throws BadLocationException {
+          if (compareTo == null) {
+            return true;
+          }
+          return compareTo.getText(0, compareTo.getLength()).equals(getText(0, getLength()));
         }
     }

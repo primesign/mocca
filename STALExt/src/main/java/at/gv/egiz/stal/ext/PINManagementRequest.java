@@ -20,9 +20,12 @@ package at.gv.egiz.stal.ext;
 import at.gv.egiz.stal.STALRequest;
 
 /**
+ * Dummy STAL request to trigger PIN Management. (no proper STAL requests
+ * for PIN activation, unblocking)
+ *
  *
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class UnblockPINRequest extends STALRequest {
+public class PINManagementRequest extends STALRequest {
 
 }

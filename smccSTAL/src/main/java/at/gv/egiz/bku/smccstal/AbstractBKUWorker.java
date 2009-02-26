@@ -102,6 +102,9 @@ public abstract class AbstractBKUWorker extends AbstractSMCCSTAL implements Acti
 
   @Override
   protected boolean waitForCard() {
+    if (signatureCard != null) {
+      return false;
+    }
     SMCCHelper smccHelper = new SMCCHelper();
     actionCommandList.clear();
     actionCommandList.add("cancel");

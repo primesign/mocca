@@ -19,6 +19,7 @@ package at.gv.egiz.bku.online.applet;
 import at.gv.egiz.bku.gui.AbstractHelpListener;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.PINManagementGUI;
+import at.gv.egiz.bku.gui.PINManagementGUIFacade;
 import java.awt.Container;
 import java.net.URL;
 import java.util.Locale;
@@ -45,6 +46,6 @@ public class PINManagementApplet extends BKUApplet {
 
   @Override
   protected AppletBKUWorker createBKUWorker(BKUApplet applet, BKUGUIFacade gui) {
-    return new PINManagementBKUWorker(applet, gui);
+    return new PINManagementBKUWorker(applet, (PINManagementGUIFacade) gui);
   }
 }

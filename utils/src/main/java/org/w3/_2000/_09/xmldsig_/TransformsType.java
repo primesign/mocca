@@ -57,7 +57,7 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class TransformsType {
 
-    @XmlElement(name = "Transform", required = true)
+    @XmlElement(name = "Transform", required = true) //, type=at.gv.egiz.slbinding.impl.TransformType.class)
     protected List<TransformType> transform;
 
     /**

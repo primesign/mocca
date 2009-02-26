@@ -25,8 +25,6 @@ import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.impl.ByteArrayHashDataInput;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +44,7 @@ public class BKUGUIWorker implements Runnable {
   public void run() {
         try {
 
-    final PINSpec signPinSpec = new PINSpec(6, 10, "[0-9]", "Signatur-PIN");
+    final PINSpec signPinSpec = new PINSpec(6, 10, "[0-9]", "Signatur-PIN", (byte)0x00, null);
 
 
     final ActionListener cancelListener = new ActionListener() {

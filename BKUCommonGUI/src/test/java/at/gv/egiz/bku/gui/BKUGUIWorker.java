@@ -46,7 +46,7 @@ public class BKUGUIWorker implements Runnable {
   public void run() {
 //        try {
 
-    final PINSpec signPinSpec = new PINSpec(6, 10, "[0-9]", "Signatur-PIN");
+    final PINSpec signPinSpec = new PINSpec(6, 10, "[0-9]", "Signatur-PIN", (byte) 0x81, null);
 
 
     final ActionListener cancelListener = new ActionListener() {

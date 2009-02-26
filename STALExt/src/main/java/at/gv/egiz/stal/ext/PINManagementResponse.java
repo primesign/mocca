@@ -15,18 +15,14 @@
  * limitations under the License.
  */
 
-package at.gv.egiz.bku.gui;
+package at.gv.egiz.stal.ext;
 
-import at.gv.egiz.smcc.SignatureCardException;
+import at.gv.egiz.stal.STALResponse;
 
 /**
  *
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public interface PINStatusProvider {
-
-  public enum STATUS { ACTIV, NOT_ACTIV, BLOCKED };
-
-  public STATUS getPINStatus(int pin) throws SignatureCardException;
+public class PINManagementResponse extends STALResponse {
 
 }

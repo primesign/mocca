@@ -52,6 +52,8 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 
 import static org.junit.Assert.*;
+import org.w3._2000._09.xmldsig_.TransformType;
+import org.w3._2000._09.xmldsig_.TransformsType;
 
 /**
  *
@@ -131,11 +133,34 @@ public class RedirectTest {
                 Iterator<TransformsInfoType> tiIt = transformsInfos.iterator();
                 while (tiIt.hasNext()) {
                     at.gv.egiz.slbinding.impl.TransformsInfoType ti = (at.gv.egiz.slbinding.impl.TransformsInfoType) tiIt.next();
+//                    TransformsInfoType ti = tiIt.next();
                     assertNotNull(ti);
-                    System.out.println("found at.gv.egiz.slbinding.impl.TransformsInfoType TransformsInfo");
+                    System.out.println("found sl:TransformsInfo: " + ti.getClass().getName()); //at.gv.egiz.slbinding.impl.TransformsInfoType TransformsInfo");
+//                    TransformsType ts = ti.getTransforms();
+//                    assertNotNull(ts);
+//                    System.out.println("found dsig:Transforms " + ts.getClass().getName()); //org.w3._2000._09.xmldsig_.TransformsType dsig:Transforms");
+//                    List<TransformType> tL = ts.getTransform();
+//                    assertNotNull(tL);
+//                    System.out.println("found " + tL.size() + " org.w3._2000._09.xmldsig_.TransformType dsig:Transform");
+//                    for (TransformType t : tL) {
+//                      if (t instanceof at.gv.egiz.slbinding.impl.TransformType) {
+//                        System.out.println("found at.gv.egiz.slbinding.impl.TransformType");
+//                        byte[] redirectedBytes = ((at.gv.egiz.slbinding.impl.TransformType) t).getRedirectedStream().toByteArray();
+//                        if (redirectedBytes != null && redirectedBytes.length > 0) {
+//                          System.out.println("reading redirected stream...");
+//                          os.write("--- redirected Transform ---".getBytes());
+//                          os.write(redirectedBytes);
+//                          os.write("\n".getBytes());
+//                        } else {
+//                          System.out.println("no redirected stream");
+//                        }
+//                      }
+//                    }
+
                     ByteArrayOutputStream dsigTransforms = ti.getRedirectedStream();
+                    os.write("--- redirected TransformsInfo content ---".getBytes());
                     os.write(dsigTransforms.toByteArray());
-                    os.write("\n".getBytes());
+                    os.write("\n---".getBytes());
 
                     MetaInfoType mi = ti.getFinalDataMetaInfo();
                     assertNotNull(mi);

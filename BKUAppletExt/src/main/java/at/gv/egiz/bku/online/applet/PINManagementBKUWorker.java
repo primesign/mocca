@@ -18,35 +18,28 @@ package at.gv.egiz.bku.online.applet;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.PINManagementGUIFacade;
-import at.gv.egiz.bku.smccstal.ext.PINMgmtRequestHandler;
+import at.gv.egiz.bku.smccstal.ext.PINManagementRequestHandler;
+import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.STALResponse;
-import at.gv.egiz.stal.ext.ActivatePINRequest;
-import at.gv.egiz.stal.ext.ChangePINRequest;
-import at.gv.egiz.stal.ext.UnblockPINRequest;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Collection;
+import at.gv.egiz.stal.ext.PINManagementRequest;
+import at.gv.egiz.stal.ext.PINManagementResponse;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * This BKU Worker does not connect to STAL webservice
+ * (no Internet connection permitted while activating PINs).
+ * 
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class PINManagementBKUWorker extends AppletBKUWorker {
 
-  protected PINMgmtRequestHandler handler = new PINMgmtRequestHandler();
-  protected PINManagementActionListener listener = new PINManagementActionListener();
-
-  public PINManagementBKUWorker(BKUApplet applet, BKUGUIFacade gui) {
+  public PINManagementBKUWorker(BKUApplet applet, PINManagementGUIFacade gui) {
     super(applet, gui);
     handlerMap.clear();
-//    PINMgmtRequestHandler handler = new PINMgmtRequestHandler();
-//    addRequestHandler(ActivatePINRequest.class, handler);
-//    addRequestHandler(ChangePINRequest.class, handler);
-//    addRequestHandler(UnblockPINRequest.class, handler);
+    addRequestHandler(PINManagementRequest.class, new PINManagementRequestHandler());
   }
 
   @Override
@@ -54,22 +47,24 @@ public class PINManagementBKUWorker extends AppletBKUWorker {
     gui.showWelcomeDialog();
 
     try {
+      List<STALResponse> responses = handleRequest(Collections.singletonList(new PINManagementRequest()));
 
-      if (waitForCard()) {
-        gui.showErrorDialog("no card, canceled PIN mgmt dialog", null);
+      if (responses.size() == 1) {
+        STALResponse response = responses.get(0);
+        if (response instanceof PINManagementResponse) {
+          log.debug("PIN management dialog finished");
+        } else if (response instanceof ErrorResponse) {
+          showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, null);
+        } else {
+          throw new RuntimeException("Invalid STAL response: " + response.getClass().getName());
+        }
+      } else {
+        throw new RuntimeException("invalid number of STAL responses: " + responses.size());
       }
 
-      actionCommandList.clear();
-      actionCommandList.add("cancel");
-
-      ((PINManagementGUIFacade) gui).showPINManagementDialog(handler,
-              listener, "activate",
-              listener, "change",
-              listener, "unblock",
-              this, "cancel");
-
-      waitForAction();
-
+    } catch (RuntimeException ex) {
+      log.error("unexpected error: " + ex.getMessage(), ex);
+      showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, null);
     } catch (Exception ex) {
       log.error(ex.getMessage(), ex);
       showErrorDialog(BKUGUIFacade.ERR_UNKNOWN_WITH_PARAM, ex);
@@ -82,31 +77,4 @@ public class PINManagementBKUWorker extends AppletBKUWorker {
     applet.sendRedirect(sessionId);
   }
 
-  protected class PINManagementActionListener implements ActionListener {
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      try {
-        String cmd = e.getActionCommand();
-        if ("activate".equals(cmd)) {
-          //create STAL request, call handle(req)
-          ActivatePINRequest stalReq = new ActivatePINRequest();
-          STALResponse stalResp = handler.handleRequest(stalReq);
-          gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN_WITH_PARAM, new Object[]{"debug"}, this, "back");
-        } else if ("change".equals(cmd)) {
-        } else if ("unblock".equals(cmd)) {
-        } else if ("back".equals(cmd)) {
-
-          ((PINManagementGUIFacade) gui).showPINManagementDialog(handler,
-                  this, "activate",
-                  this, "change",
-                  this, "unblock",
-                  PINManagementBKUWorker.this, "cancel");
-
-        }
-      } catch (InterruptedException ex) {
-        log.fatal(ex);
-      }
-    }
   }
-}

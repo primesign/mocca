@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 
-package at.gv.egiz.stal.ext;
-
-import at.gv.egiz.stal.STALRequest;
+package at.gv.egiz.marshal;
 
 /**
  *
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class ChangePINRequest extends STALRequest {
+public interface NamespacePrefix {
+  String CARDCHANNEL_PREFIX = "cc";
+  String ECDSA_PREFIX = "ecdsa";
+  String PERSONDATA_PREFIX = "pr";
+  String SAML10_PREFIX = "saml";
+  String SL_PREFIX = "sl";
+  String XADES_PREFIX = "xades";
+  String XMLDSIG_PREFIX = "xmldsig";
+  String XSI_PREFIX = "xsi";
 
 }

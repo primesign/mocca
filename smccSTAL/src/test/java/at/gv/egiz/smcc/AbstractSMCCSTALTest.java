@@ -86,14 +86,15 @@ public class AbstractSMCCSTALTest extends AbstractSMCCSTAL implements
       
     }
 
-      @Override
-      public byte[] getKIDs() {
-        return null;
-      }
 
       @Override
       public int verifyPIN(String pin, byte kid) throws LockedException, NotActivatedException, SignatureCardException {
         return 0;
+      }
+
+      @Override
+      public List<PINSpec> getPINSpecs() {
+        return new ArrayList<PINSpec>();
       }
      
    };

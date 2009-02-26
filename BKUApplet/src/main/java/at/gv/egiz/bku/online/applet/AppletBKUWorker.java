@@ -195,11 +195,16 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
     }
   }
 
+  /**
+   *
+   * @param err_code
+   * @param ex if not null, the message will be appended as parameter to the error message
+   */
   protected void showErrorDialog(String err_code, Exception ex) {
     actionCommandList.clear();
     actionCommandList.add("ok");
-    gui.showErrorDialog(err_code,
-            new Object[]{ex.getMessage()}, this, "ok");
+    Object[] params = (ex != null) ? new Object[] { ex.getMessage() } : null;
+    gui.showErrorDialog(err_code, params, this, "ok");
     try {
       waitForAction();
     } catch (InterruptedException e) {

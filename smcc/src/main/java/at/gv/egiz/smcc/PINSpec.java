@@ -35,23 +35,40 @@ public class PINSpec {
     
     String name_;
 
+    byte kid_;
+
+    byte[] context_aid_;
+
+    /**
+     *
+     * @param minLenght
+     * @param maxLength
+     * @param rexepPattern
+     * @param resourceBundle
+     * @param name
+     * @param kid the keyId for this pin
+     */
     public PINSpec(int minLenght, int maxLength, String rexepPattern, 
-        ResourceBundle resourceBundle, String name) {
+        ResourceBundle resourceBundle, String name, byte kid, byte[] contextAID) {
         
         minLength_ = minLenght;
         maxLength_ = maxLength;
         rexepPattern_ = rexepPattern;
         resourceBundle_ = resourceBundle;
         name_ = name;
+        kid_ = kid;
+        context_aid_ = contextAID;
     }
     
     public PINSpec(int minLenght, int maxLength, String rexepPattern, 
-        String name) {
+        String name, byte kid, byte[] contextAID) {
         
         minLength_ = minLenght;
         maxLength_ = maxLength;
         rexepPattern_ = rexepPattern;
         name_ = name;
+        kid_ = kid;
+        context_aid_ = contextAID;
     }
     
     
@@ -75,7 +92,14 @@ public class PINSpec {
     public String getRexepPattern() {
         return rexepPattern_;
     }
-    
+
+    public byte getKID() {
+      return kid_;
+    }
+
+    public byte[] getContextAID() {
+      return context_aid_;
+    }
     
     
 }

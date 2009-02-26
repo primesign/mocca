@@ -15,14 +15,25 @@
  * limitations under the License.
  */
 
-package at.gv.egiz.stal.ext;
+package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.stal.STALRequest;
+import at.gv.egiz.smcc.PINSpec;
+import javax.swing.table.DefaultTableCellRenderer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class ActivatePINRequest extends STALRequest {
+public class PINSpecRenderer extends DefaultTableCellRenderer {
+
+  private static final Log log = LogFactory.getLog(PINSpecRenderer.class);
+
+  @Override
+  protected void setValue(Object value) {
+    PINSpec pinSpec = (PINSpec) value;
+    super.setText(pinSpec.getLocalizedName());
+  }
 
 }

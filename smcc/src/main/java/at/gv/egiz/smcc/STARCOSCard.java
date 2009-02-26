@@ -29,10 +29,8 @@
 package at.gv.egiz.smcc;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 
-import java.util.List;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
@@ -42,7 +40,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class STARCOSCard extends AbstractSignatureCard implements SignatureCard {
-  
+
   /**
    * Logging facility.
    */
@@ -155,12 +153,17 @@ public class STARCOSCard extends AbstractSignatureCard implements SignatureCard 
   };
 
   public static final byte KID_PIN_CARD = (byte) 0x01;
-  
+
+  private static final int PINSPEC_CARD = 0;
+  private static final int PINSPEC_SS = 1;
+
   /**
    * Creates an new instance.
    */
   public STARCOSCard() {
     super("at/gv/egiz/smcc/STARCOSCard");
+    pinSpecs.add(PINSPEC_CARD, new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("card.pin.name"), KID_PIN_CARD, null));
+    pinSpecs.add(PINSPEC_SS, new PINSpec(6, 10, "[0-9]", getResourceBundle().getString("sig.pin.name"), KID_PIN_SS, AID_DF_SS));
   }
  
   @Override
@@ -210,7 +213,8 @@ public class STARCOSCard extends AbstractSignatureCard implements SignatureCard 
     try {
       if ("IdentityLink".equals(infobox)) {
  
-        PINSpec spec = new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("card.pin.name"));
+        PINSpec spec = pinSpecs.get(PINSPEC_CARD);
+        //new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("card.pin.name"));
         
         int retries = -1;
         String pin = null;
@@ -302,7 +306,8 @@ public class STARCOSCard extends AbstractSignatureCard implements SignatureCard 
       
       if (KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(keyboxName)) {
 
-        PINSpec spec = new PINSpec(6, 10, "[0-9]", getResourceBundle().getString("sig.pin.name"));
+        PINSpec spec = pinSpecs.get(PINSPEC_SS);
+        //new PINSpec(6, 10, "[0-9]", getResourceBundle().getString("sig.pin.name"));
         
         int retries = -1;
         String pin = null;
@@ -334,7 +339,8 @@ public class STARCOSCard extends AbstractSignatureCard implements SignatureCard 
  
       } else if (KeyboxName.CERITIFIED_KEYPAIR.equals(keyboxName)) {
 
-        PINSpec spec = new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("card.pin.name"));
+        PINSpec spec = pinSpecs.get(PINSPEC_CARD);
+        //new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("card.pin.name"));
  
         int retries = -1;
         String pin = null;
@@ -453,11 +459,6 @@ public class STARCOSCard extends AbstractSignatureCard implements SignatureCard 
     } else {
       return resp.getData();
     }
-  }
-
-  @Override
-  public byte[] getKIDs() {
-    return new byte[] { KID_PIN_CARD, KID_PIN_SS };
   }
 
   /**
