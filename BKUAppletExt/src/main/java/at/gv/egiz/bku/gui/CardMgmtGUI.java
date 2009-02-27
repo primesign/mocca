@@ -40,6 +40,12 @@ public class CardMgmtGUI extends BKUGUIImpl {
           AbstractHelpListener helpListener) {
     super(contentPane, locale, guiStyle, backgroundImgURL, helpListener);
 
+  }
+
+  @Override
+  protected void loadMessageBundle(Locale locale) {
+    super.loadMessageBundle(locale);
+
     if (locale != null) {
         Locale lang = new Locale(locale.getLanguage().substring(0,2));
         log.debug("loading applet resources for language: " + lang.toString());
@@ -47,6 +53,18 @@ public class CardMgmtGUI extends BKUGUIImpl {
     } else {
         cardmgmtMessages = ResourceBundle.getBundle(CARDMGMT_MESSAGES_BUNDLE);
     }
+  }
 
+  @Override
+  protected String getMessage(String key) {
+    if (super.hasMessage(key)) {
+      return super.getMessage(key);
+    }
+    return cardmgmtMessages.getString(key);
+  }
+
+  @Override
+  protected boolean hasMessage(String key) {
+    return (cardmgmtMessages.containsKey(key) || super.hasMessage(key));
   }
 }

@@ -22,6 +22,7 @@ import at.gv.egiz.bku.gui.PINManagementGUIFacade.STATUS;
 import at.gv.egiz.bku.smccstal.AbstractRequestHandler;
 import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.smcc.SignatureCardException;
+import at.gv.egiz.smcc.VerificationFailedException;
 import at.gv.egiz.smcc.util.SMCCHelper;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.STALRequest;
@@ -31,6 +32,8 @@ import at.gv.egiz.stal.ext.PINManagementResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
@@ -45,7 +48,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public class PINManagementRequestHandler extends AbstractRequestHandler {
 
-  public static final String ERR_NOPIN_SELECTED = "err.no.pin.selected";
   protected static final Log log = LogFactory.getLog(PINManagementRequestHandler.class);
 
 //  protected ResourceBundle messages;
@@ -70,7 +72,7 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
         } else if ("back".equals(actionCommand)) {
           showPINManagementDialog(gui);
         } else {
-          PINSpec selectedPIN = gui.getSelectedPIN();
+          PINSpec selectedPIN = gui.getSelectedPINSpec();
 
           if (selectedPIN == null) {
             throw new RuntimeException("no PIN selected for activation/change");
@@ -99,6 +101,11 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
               byte[] pin = encodePIN(gui.getPin()); //new byte[]{(byte) 0x25, (byte) 0x40};
               changePIN(selectedPIN.getKID(), selectedPIN.getContextAID(), oldPin, pin);
               showPINManagementDialog(gui);
+            } catch (VerificationFailedException ex) {
+              log.error("failed to change " + selectedPIN.getLocalizedName() + ": " + ex.getMessage());
+              gui.showErrorDialog(PINManagementGUIFacade.ERR_RETRIES,
+                      new Object[] {selectedPIN.getLocalizedName(), ex.getRetries()},
+                      this, "back");
             } catch (SignatureCardException ex) {
               log.error("failed to change " + selectedPIN.getLocalizedName() + ": " + ex.getMessage());
               gui.showErrorDialog(PINManagementGUIFacade.ERR_CHANGE, 
@@ -132,8 +139,8 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
    * @throws at.gv.egiz.smcc.SignatureCardException
    */
   private void activatePIN(byte kid, byte[] contextAID, byte[] pin) throws SignatureCardException {
+    Card icc = card.getCard();
     try {
-      Card icc = card.getCard();
       icc.beginExclusive();
       CardChannel channel = icc.getBasicChannel();
 
@@ -141,6 +148,7 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
         CommandAPDU selectAPDU = new CommandAPDU(0x00, 0xa4, 0x04, 0x0c, contextAID);
         ResponseAPDU responseAPDU = channel.transmit(selectAPDU);
         if (responseAPDU.getSW() != 0x9000) {
+          icc.endExclusive();
           String msg = "Failed to activate PIN " + SMCCHelper.toString(new byte[]{kid}) +
                   ": Failed to select AID " + SMCCHelper.toString(contextAID) +
                   ": " + SMCCHelper.toString(responseAPDU.getBytes());
@@ -150,8 +158,9 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
       }
 
       if (pin.length > 7) {
-        log.error("Invalid PIN");
-        throw new SignatureCardException("Invalid PIN");
+        icc.endExclusive();
+        log.error("PIN too long");
+        throw new SignatureCardException("PIN too long");
       }
       byte length = (byte) (0x20 | pin.length * 2);
 
@@ -166,24 +175,27 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
       ResponseAPDU responseAPDU = channel.transmit(verifyAPDU);
 
       if (responseAPDU.getSW() != 0x9000) {
+        icc.endExclusive();
         String msg = "Failed to activate PIN " + SMCCHelper.toString(new byte[]{kid}) + ": " + SMCCHelper.toString(responseAPDU.getBytes());
         log.error(msg);
         throw new SignatureCardException(msg);
       }
-
-
       icc.endExclusive();
-
-
     } catch (CardException ex) {
-      log.error("Failed to get PIN status: " + ex.getMessage());
-      throw new SignatureCardException("Failed to get PIN status", ex);
+      log.error("Failed to activate PIN: " + ex.getMessage());
+      throw new SignatureCardException(ex.getMessage(), ex);
+    } finally {
+      try {
+        icc.endExclusive();
+      } catch (CardException ex) {
+        log.trace("failed to end exclusive card access");
+      }
     }
   }
 
-  private void changePIN(byte kid, byte[] contextAID, byte[] oldPIN, byte[] newPIN) throws SignatureCardException {
+  private void changePIN(byte kid, byte[] contextAID, byte[] oldPIN, byte[] newPIN) throws SignatureCardException, VerificationFailedException {
+    Card icc = card.getCard();
     try {
-      Card icc = card.getCard();
       icc.beginExclusive();
       CardChannel channel = icc.getBasicChannel();
 
@@ -191,6 +203,7 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
         CommandAPDU selectAPDU = new CommandAPDU(0x00, 0xa4, 0x04, 0x0c, contextAID);
         ResponseAPDU responseAPDU = channel.transmit(selectAPDU);
         if (responseAPDU.getSW() != 0x9000) {
+          icc.endExclusive();
           String msg = "Failed to change PIN " + SMCCHelper.toString(new byte[]{kid}) +
                   ": Failed to select AID " + SMCCHelper.toString(contextAID) +
                   ": " + SMCCHelper.toString(responseAPDU.getBytes());
@@ -200,8 +213,9 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
       }
 
       if (oldPIN.length > 7 || newPIN.length > 7) {
-        log.error("Invalid PIN");
-        throw new SignatureCardException("Invalid PIN");
+        icc.endExclusive();
+        log.error("PIN too long");
+        throw new SignatureCardException("PIN too long");
       }
       byte oldLength = (byte) (0x20 | oldPIN.length * 2);
       byte newLength = (byte) (0x20 | newPIN.length * 2);
@@ -220,48 +234,42 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
       CommandAPDU verifyAPDU = new CommandAPDU(apdu);
       ResponseAPDU responseAPDU = channel.transmit(verifyAPDU);
 
+      if (responseAPDU.getSW1() == 0x63 && responseAPDU.getSW2() >> 4 == 0xc) {
+        icc.endExclusive();
+        int retries = responseAPDU.getSW2() & 0x0f;
+        log.error("Wrong PIN, " + retries + " tries left");
+        throw new VerificationFailedException(retries);
+      }
       if (responseAPDU.getSW() != 0x9000) {
-        String msg = "Failed to change PIN " + SMCCHelper.toString(new byte[]{kid}) + ": " + SMCCHelper.toString(responseAPDU.getBytes());
+        icc.endExclusive();
+        String msg = "Failed to change PIN " 
+                + SMCCHelper.toString(new byte[]{kid}) + ": "
+                + SMCCHelper.toString(responseAPDU.getBytes());
         log.error(msg);
         throw new SignatureCardException(msg);
       }
-
-
-      icc.endExclusive();
-
+      
 
     } catch (CardException ex) {
-      log.error("Failed to get PIN status: " + ex.getMessage());
-      throw new SignatureCardException("Failed to get PIN status", ex);
+      log.error("Failed to change PIN: " + ex.getMessage());
+      throw new SignatureCardException(ex.getMessage(), ex);
+    } finally {
+      try {
+        icc.endExclusive();
+      } catch (CardException ex) {
+        log.trace("failed to end exclusive card access");
+      }
     }
   }
 
   public Map<PINSpec, STATUS> getPINStatuses() throws SignatureCardException {
+    Card icc = card.getCard();
     try {
-      Card icc = card.getCard();
       icc.beginExclusive();
       CardChannel channel = icc.getBasicChannel();
 
       HashMap<PINSpec, STATUS> pinStatuses = new HashMap<PINSpec, STATUS>();
       List<PINSpec> pins = card.getPINSpecs();
-
-      //select DF_SichereSignatur 00 A4 04 0C 08 D0 40 00 00 17 00 12 01
-//      CommandAPDU selectAPDU = new CommandAPDU(new byte[]{(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x0c, (byte) 0x08,
-//                (byte) 0xd0, (byte) 0x40, (byte) 0x00, (byte) 0x00, (byte) 0x17, (byte) 0x00, (byte) 0x12, (byte) 0x01});
-//      ResponseAPDU rAPDU = channel.transmit(selectAPDU);
-//      log.debug("SELECT FILE DF_SichereSignatur: " + SMCCHelper.toString(rAPDU.getBytes()));
-
-      //select DF_SIG DF 70
-//      CommandAPDU selectAPDU = new CommandAPDU(new byte[]{(byte) 0x00, (byte) 0xa4, (byte) 0x00, (byte) 0x0c, (byte) 0x02,
-//                (byte) 0xdf, (byte) 0x70 });
-//      ResponseAPDU rAPDU = channel.transmit(selectAPDU);
-//      log.debug("SELECT FILE DF_SIG: " + SMCCHelper.toString(rAPDU.getBytes()));
-
-      //select DF_DEC DF 71
-//      CommandAPDU selectAPDU = new CommandAPDU(new byte[]{(byte) 0x00, (byte) 0xa4, (byte) 0x04, (byte) 0x0c, (byte) 0x08,
-//                (byte) 0xd0, (byte) 0x40, (byte) 0x00, (byte) 0x00, (byte) 0x17, (byte) 0x00, (byte) 0x12, (byte) 0x01});
-//      ResponseAPDU rAPDU = channel.transmit(selectAPDU);
-//      log.debug("SELECT FILE DF_SichereSignatur: " + SMCCHelper.toString(rAPDU.getBytes()));
 
       for (PINSpec pinSpec : pins) {
         byte kid = pinSpec.getKID();
@@ -271,6 +279,7 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
           CommandAPDU selectAPDU = new CommandAPDU(0x00, 0xa4, 0x04, 0x0c, contextAID);
           ResponseAPDU responseAPDU = channel.transmit(selectAPDU);
           if (responseAPDU.getSW() != 0x9000) {
+            icc.endExclusive();
             String msg = "Failed to activate PIN " + SMCCHelper.toString(new byte[]{kid}) +
                     ": Failed to select AID " + SMCCHelper.toString(contextAID) +
                     ": " + SMCCHelper.toString(responseAPDU.getBytes());
@@ -296,13 +305,19 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
 
         pinStatuses.put(pinSpec, status);
       }
-      icc.endExclusive();
+//      icc.endExclusive();
 
       return pinStatuses;
 
     } catch (CardException ex) {
       log.error("Failed to get PIN status: " + ex.getMessage());
-      throw new SignatureCardException("Failed to get PIN status", ex);
+      throw new SignatureCardException(ex.getMessage(), ex);
+    } finally {
+      try {
+        icc.endExclusive();
+      } catch (CardException ex) {
+        log.trace("failed to end exclusive card access");
+      }
     }
   }
 
@@ -312,7 +327,7 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
     for (int i = 0; i < length; i++) {
       pin[i] = (byte) (16*Character.digit(pinChars[i*2], 16) + Character.digit(pinChars[i*2+1], 16));
     }
-    log.trace("***** "  + SMCCHelper.toString(pin) + " ******");
+//    log.trace("***** "  + SMCCHelper.toString(pin) + " ******");
     return pin;
   }
 
@@ -324,7 +339,7 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
               this, "cancel");
     } catch (SignatureCardException ex) {
       gui.showErrorDialog(BKUGUIFacade.ERR_UNKNOWN_WITH_PARAM, 
-              new Object[]{"FAILED TO GET PIN STATUSES: " + ex.getMessage()},
+              new Object[]{ex.getMessage()},
               this, "cancel");
     }
   }

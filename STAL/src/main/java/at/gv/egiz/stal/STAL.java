@@ -39,5 +39,5 @@ public interface STAL {
    * If the locale is not set the default locale will be used.
    * @param locale must not be null.
    */
-  public void setLocale(Locale locale);
+//  public void setLocale(Locale locale);
 }

@@ -115,13 +115,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
             ActionListener helpListener) {
       this.contentPane = contentPane;
 
-      if (locale != null) {
-          Locale lang = new Locale(locale.getLanguage().substring(0,2));
-          log.debug("loading applet resources for language: " + lang.toString());
-          messages = ResourceBundle.getBundle(MESSAGES_BUNDLE, lang);
-      } else {
-          messages = ResourceBundle.getBundle(MESSAGES_BUNDLE);
-      }
+      loadMessageBundle(locale);
 
       if (guiStyle == Style.advanced) {
         renderHeaderPanel = true;
@@ -230,11 +224,11 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
       helpLabel = new JLabel();
       helpLabel.setIcon(new ImageIcon(getClass().getResource(HELP_IMG))); 
-      helpLabel.getAccessibleContext().setAccessibleName(messages.getString(ALT_HELP));
+      helpLabel.getAccessibleContext().setAccessibleName(getMessage(ALT_HELP));
       helpLabel.addMouseListener(helpListener);
       helpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     
-      buttonSize = initButtonSize(messages, renderCancelButton);
+      buttonSize = initButtonSize();
         
       if (renderHeaderPanel) {
         headerPanel = new JPanel();
@@ -292,9 +286,31 @@ public class BKUGUIImpl implements BKUGUIFacade {
       contentPanelLayout.setVerticalGroup(verticalContent);
     }
 
+    /**
+     * BKUWorker inits signaturecard with locale
+     * @return
+     */
     @Override
     public Locale getLocale() {
       return messages.getLocale();
+    }
+
+    /**
+     * to be overridden by subclasses providing additional resource messages
+     * @param key
+     * @return
+     */
+    protected String getMessage(String key) {
+      return messages.getString(key);
+    }
+
+    /**
+     * to be overridden by subclasses providing additional resource messages
+     * @param key
+     * @return
+     */
+    protected boolean hasMessage(String key) {
+      return messages.containsKey(key);
     }
 
     @Override
@@ -318,10 +334,10 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 welcomeMsgLabel.setFont(welcomeMsgLabel.getFont().deriveFont(welcomeMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                 
                 if (renderHeaderPanel) {
-                  titleLabel.setText(messages.getString(TITLE_WELCOME));
-                  welcomeMsgLabel.setText(messages.getString(MESSAGE_WAIT));
+                  titleLabel.setText(getMessage(TITLE_WELCOME));
+                  welcomeMsgLabel.setText(getMessage(MESSAGE_WAIT));
                 } else {
-                  welcomeMsgLabel.setText(messages.getString(TITLE_WELCOME));   
+                  welcomeMsgLabel.setText(getMessage(TITLE_WELCOME));
                 }
                 
                 GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
@@ -364,14 +380,14 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 buttonPanel.removeAll();
 
                 if (renderHeaderPanel) {
-                  titleLabel.setText(messages.getString(TITLE_INSERTCARD));
+                  titleLabel.setText(getMessage(TITLE_INSERTCARD));
                 }
                 
                 helpListener.setHelpTopic(HELP_INSERTCARD);
 
                 JLabel insertCardMsgLabel = new JLabel();
                 insertCardMsgLabel.setFont(insertCardMsgLabel.getFont().deriveFont(insertCardMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                insertCardMsgLabel.setText(messages.getString(MESSAGE_INSERTCARD));
+                insertCardMsgLabel.setText(getMessage(MESSAGE_INSERTCARD));
 
                 GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
                 mainPanel.setLayout(mainPanelLayout);
@@ -395,7 +411,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 if (renderCancelButton) {
                   JButton cancelButton = new JButton();
                   cancelButton.setFont(cancelButton.getFont().deriveFont(cancelButton.getFont().getStyle() & ~java.awt.Font.BOLD));
-                  cancelButton.setText(messages.getString(BUTTON_CANCEL));
+                  cancelButton.setText(getMessage(BUTTON_CANCEL));
                   cancelButton.addActionListener(cancelListener);
                   cancelButton.setActionCommand(cancelCommand);
 
@@ -440,10 +456,10 @@ public class BKUGUIImpl implements BKUGUIFacade {
               insertCardMsgLabel.setFont(insertCardMsgLabel.getFont().deriveFont(insertCardMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
 
               if (renderHeaderPanel) {
-                titleLabel.setText(messages.getString(TITLE_CARD_NOT_SUPPORTED));
-                insertCardMsgLabel.setText(messages.getString(MESSAGE_INSERTCARD));
+                titleLabel.setText(getMessage(TITLE_CARD_NOT_SUPPORTED));
+                insertCardMsgLabel.setText(getMessage(MESSAGE_INSERTCARD));
               } else {
-                insertCardMsgLabel.setText(messages.getString(TITLE_CARD_NOT_SUPPORTED)); 
+                insertCardMsgLabel.setText(getMessage(TITLE_CARD_NOT_SUPPORTED));
               }
 
               helpListener.setHelpTopic(HELP_CARDNOTSUPPORTED);
@@ -469,7 +485,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
               if (renderCancelButton) {
                 JButton cancelButton = new JButton();
                 cancelButton.setFont(cancelButton.getFont().deriveFont(cancelButton.getFont().getStyle() & ~java.awt.Font.BOLD));
-                cancelButton.setText(messages.getString(BUTTON_CANCEL));
+                cancelButton.setText(getMessage(BUTTON_CANCEL));
                 cancelButton.addActionListener(cancelListener);
                 cancelButton.setActionCommand(cancelCommand);
 
@@ -506,23 +522,23 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
                 if (renderHeaderPanel) {
                   if (numRetries < 0) {
-                      String cardpinTitle = messages.getString(TITLE_CARDPIN);
+                      String cardpinTitle = getMessage(TITLE_CARDPIN);
                       titleLabel.setText(MessageFormat.format(cardpinTitle, new Object[]{pinSpec.getLocalizedName()}));
                   } else {
-                      titleLabel.setText(messages.getString(TITLE_RETRY));
+                      titleLabel.setText(getMessage(TITLE_RETRY));
                   }
                 }
 
                 JButton okButton = new JButton();
                 okButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle() & ~java.awt.Font.BOLD));
-                okButton.setText(messages.getString(BUTTON_OK));
+                okButton.setText(getMessage(BUTTON_OK));
                 okButton.setEnabled(false);
                 okButton.setActionCommand(okCommand);
                 okButton.addActionListener(okListener);
 
                 JLabel cardPinLabel = new JLabel();
                 cardPinLabel.setFont(cardPinLabel.getFont().deriveFont(cardPinLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                String pinLabel = messages.getString(LABEL_PIN);
+                String pinLabel = getMessage(LABEL_PIN);
                 cardPinLabel.setText(MessageFormat.format(pinLabel, new Object[]{pinSpec.getLocalizedName()}));
 
                 pinField = new JPasswordField();
@@ -542,7 +558,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 JLabel infoLabel = new JLabel();
                 if (numRetries < 0) {
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                  String infoPattern = messages.getString(MESSAGE_ENTERPIN);
+                  String infoPattern = getMessage(MESSAGE_ENTERPIN);
                   if (shortText) {
                     infoLabel.setText(MessageFormat.format(infoPattern, new Object[] {"PIN"}));
                   } else {
@@ -552,9 +568,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 } else {
                   String retryPattern;
                   if (numRetries < 2) {
-                    retryPattern = messages.getString(MESSAGE_LAST_RETRY);
+                    retryPattern = getMessage(MESSAGE_LAST_RETRY);
                   } else {
-                    retryPattern = messages.getString(MESSAGE_RETRIES);
+                    retryPattern = getMessage(MESSAGE_RETRIES);
                   }
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() | java.awt.Font.BOLD));
                   infoLabel.setText(MessageFormat.format(retryPattern, new Object[]{String.valueOf(numRetries)}));
@@ -564,7 +580,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 
                 JLabel pinsizeLabel = new JLabel();
                 pinsizeLabel.setFont(pinsizeLabel.getFont().deriveFont(pinsizeLabel.getFont().getStyle() & ~java.awt.Font.BOLD, pinsizeLabel.getFont().getSize()-2));
-                String pinsizePattern = messages.getString(LABEL_PINSIZE);
+                String pinsizePattern = getMessage(LABEL_PINSIZE);
                 String pinSize = String.valueOf(pinSpec.getMinLength());
                 if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
                     pinSize += "-" + pinSpec.getMaxLength();
@@ -638,7 +654,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 if (renderCancelButton) {
                   JButton cancelButton = new JButton();
                   cancelButton.setFont(cancelButton.getFont().deriveFont(cancelButton.getFont().getStyle() & ~java.awt.Font.BOLD));
-                  cancelButton.setText(messages.getString(BUTTON_CANCEL));
+                  cancelButton.setText(getMessage(BUTTON_CANCEL));
                   cancelButton.setActionCommand(cancelCommand);
                   cancelButton.addActionListener(cancelListener);
 
@@ -699,22 +715,22 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 
                 if (renderHeaderPanel) {
                   if (numRetries < 0) {
-                      titleLabel.setText(messages.getString(TITLE_SIGN));
+                      titleLabel.setText(getMessage(TITLE_SIGN));
                   } else {
-                      titleLabel.setText(messages.getString(TITLE_RETRY));
+                      titleLabel.setText(getMessage(TITLE_RETRY));
                   }
                 }
 
                 JButton signButton = new JButton();
                 signButton.setFont(signButton.getFont().deriveFont(signButton.getFont().getStyle() & ~java.awt.Font.BOLD));
-                signButton.setText(messages.getString(BUTTON_SIGN));
+                signButton.setText(getMessage(BUTTON_SIGN));
                 signButton.setEnabled(false);
                 signButton.setActionCommand(signCommand);
                 signButton.addActionListener(signListener);
 
                 JLabel signPinLabel = new JLabel();
                 signPinLabel.setFont(signPinLabel.getFont().deriveFont(signPinLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                String pinLabel = messages.getString(LABEL_PIN);
+                String pinLabel = getMessage(LABEL_PIN);
                 signPinLabel.setText(MessageFormat.format(pinLabel, new Object[]{pinSpec.getLocalizedName()}));
 
                 pinField = new JPasswordField();
@@ -733,7 +749,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
                 JLabel pinsizeLabel = new JLabel();
                 pinsizeLabel.setFont(pinsizeLabel.getFont().deriveFont(pinsizeLabel.getFont().getStyle() & ~java.awt.Font.BOLD, pinsizeLabel.getFont().getSize()-2));
-                String pinsizePattern = messages.getString(LABEL_PINSIZE);
+                String pinsizePattern = getMessage(LABEL_PINSIZE);
                 String pinSize = String.valueOf(pinSpec.getMinLength());
                 if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
                     pinSize += "-" + pinSpec.getMaxLength();
@@ -744,9 +760,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 if (numRetries < 0) {
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                   if (shortText) {
-                    infoLabel.setText(messages.getString(MESSAGE_HASHDATALINK_TINY));
+                    infoLabel.setText(getMessage(MESSAGE_HASHDATALINK_TINY));
                   } else {
-                    infoLabel.setText(messages.getString(MESSAGE_HASHDATALINK));
+                    infoLabel.setText(getMessage(MESSAGE_HASHDATALINK));
                   }
                   infoLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                   infoLabel.setForeground(HYPERLINK_COLOR);
@@ -762,9 +778,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 } else {
                   String retryPattern;
                   if (numRetries < 2) {
-                    retryPattern = messages.getString(MESSAGE_LAST_RETRY);
+                    retryPattern = getMessage(MESSAGE_LAST_RETRY);
                   } else {
-                    retryPattern = messages.getString(MESSAGE_RETRIES);
+                    retryPattern = getMessage(MESSAGE_RETRIES);
                   }
                   infoLabel.setText(MessageFormat.format(retryPattern, new Object[]{String.valueOf(numRetries)}));
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() | java.awt.Font.BOLD));
@@ -839,7 +855,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 if (renderCancelButton) {
                   JButton cancelButton = new JButton();
                   cancelButton.setFont(cancelButton.getFont().deriveFont(cancelButton.getFont().getStyle() & ~java.awt.Font.BOLD));
-                  cancelButton.setText(messages.getString(BUTTON_CANCEL));
+                  cancelButton.setText(getMessage(BUTTON_CANCEL));
                   cancelButton.setActionCommand(cancelCommand);
                   cancelButton.addActionListener(cancelListener);
 
@@ -881,12 +897,12 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 buttonPanel.removeAll();
 
                 if (renderHeaderPanel) {
-                  titleLabel.setText(messages.getString(TITLE_ERROR));
+                  titleLabel.setText(getMessage(TITLE_ERROR));
                 }
 
                 helpListener.setHelpTopic(errorMsgKey);
                 
-                String errorMsgPattern = messages.getString(errorMsgKey);
+                String errorMsgPattern = getMessage(errorMsgKey);
                 String errorMsg = MessageFormat.format(errorMsgPattern, errorMsgParams);
                 
                 JLabel errorMsgLabel = new JLabel();
@@ -902,7 +918,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 if (!renderHeaderPanel) {
                   JLabel errorTitleLabel = new JLabel();
                   errorTitleLabel.setFont(errorTitleLabel.getFont().deriveFont(errorTitleLabel.getFont().getStyle() | java.awt.Font.BOLD));
-                  errorTitleLabel.setText(messages.getString(TITLE_ERROR));
+                  errorTitleLabel.setText(getMessage(TITLE_ERROR));
                   errorTitleLabel.setForeground(ERROR_COLOR);
                 
                   mainHorizontal
@@ -923,7 +939,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 
                 JButton okButton = new JButton();
                 okButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle() & ~java.awt.Font.BOLD));
-                okButton.setText(messages.getString(BUTTON_OK));
+                okButton.setText(getMessage(BUTTON_OK));
                 okButton.setActionCommand(okCommand);
                 okButton.addActionListener(okListener);
 
@@ -959,12 +975,12 @@ public class BKUGUIImpl implements BKUGUIFacade {
           buttonPanel.removeAll();
 
           if (renderHeaderPanel) {
-            titleLabel.setText(messages.getString(TITLE_ERROR));
+            titleLabel.setText(getMessage(TITLE_ERROR));
           }
 
           helpListener.setHelpTopic(errorMsgKey);
           
-          String errorMsgPattern = messages.getString(errorMsgKey);
+          String errorMsgPattern = getMessage(errorMsgKey);
           String errorMsg = MessageFormat.format(errorMsgPattern, errorMsgParams);
 
           JLabel errorMsgLabel = new JLabel();
@@ -981,7 +997,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
           if (!renderHeaderPanel) {
             JLabel errorTitleLabel = new JLabel();
             errorTitleLabel.setFont(errorTitleLabel.getFont().deriveFont(errorTitleLabel.getFont().getStyle() | java.awt.Font.BOLD));
-            errorTitleLabel.setText(messages.getString(TITLE_ERROR));
+            errorTitleLabel.setText(getMessage(TITLE_ERROR));
             errorTitleLabel.setForeground(ERROR_COLOR);
 
             mainHorizontal
@@ -1021,7 +1037,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 buttonPanel.removeAll();
 
                 if (renderHeaderPanel) {
-                  titleLabel.setText(messages.getString(TITLE_WAIT));
+                  titleLabel.setText(getMessage(TITLE_WAIT));
                 }
                 
                 helpListener.setHelpTopic(HELP_WAIT);
@@ -1031,7 +1047,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 if (waitMessage != null) {
                     waitMsgLabel.setText("<html>" + waitMessage + "</html>");
                 } else {
-                    waitMsgLabel.setText(messages.getString(MESSAGE_WAIT));
+                    waitMsgLabel.setText(getMessage(MESSAGE_WAIT));
                 }
 
                 GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
@@ -1079,7 +1095,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
             final String okCommand) {
       
       if (signedReferences == null) {
-        showErrorDialog(messages.getString(ERR_NO_HASHDATA), new Object[] {"No SignedReferences provided"}, okListener, okCommand);
+        showErrorDialog(getMessage(ERR_NO_HASHDATA), new Object[] {"No SignedReferences provided"}, okListener, okCommand);
         return;
       }
       
@@ -1142,14 +1158,14 @@ public class BKUGUIImpl implements BKUGUIFacade {
           buttonPanel.removeAll();
 
           if (renderHeaderPanel) {
-            titleLabel.setText(messages.getString(TITLE_HASHDATA));
+            titleLabel.setText(getMessage(TITLE_HASHDATA));
           }
           
           helpListener.setHelpTopic(HELP_HASHDATALIST);
           
           JLabel refIdLabel = new JLabel();
           refIdLabel.setFont(refIdLabel.getFont().deriveFont(refIdLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-          String refIdLabelPattern = messages.getString(MESSAGE_HASHDATALIST);
+          String refIdLabelPattern = getMessage(MESSAGE_HASHDATALIST);
           refIdLabel.setText(MessageFormat.format(refIdLabelPattern, new Object[]{signedReferences.size()}));
 
           HashDataTableModel tableModel = new HashDataTableModel(signedReferences, renderRefId);
@@ -1229,7 +1245,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
           JButton backButton = new JButton();
           backButton.setFont(backButton.getFont().deriveFont(backButton.getFont().getStyle() & ~java.awt.Font.BOLD));
-          backButton.setText(messages.getString(BUTTON_BACK));
+          backButton.setText(getMessage(BUTTON_BACK));
           backButton.setActionCommand(backCommand);
           backButton.addActionListener(backListener);
 
@@ -1271,15 +1287,15 @@ public class BKUGUIImpl implements BKUGUIFacade {
           fileDialog.setDialogType(JFileChooser.SAVE_DIALOG);
           fileDialog.setFileHidingEnabled(true);
           if (signedRefs.size() == 1) {
-            fileDialog.setDialogTitle(messages.getString(WINDOWTITLE_SAVE));
+            fileDialog.setDialogTitle(getMessage(WINDOWTITLE_SAVE));
             fileDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
             String mimeType = signedRefs.get(0).getMimeType();
             MimeFilter mimeFilter = new MimeFilter(mimeType, messages);
             fileDialog.setFileFilter(mimeFilter);
-            String filename = messages.getString(SAVE_HASHDATAINPUT_PREFIX) + MimeFilter.getExtension(mimeType);
+            String filename = getMessage(SAVE_HASHDATAINPUT_PREFIX) + MimeFilter.getExtension(mimeType);
             fileDialog.setSelectedFile(new File(userHome, filename));
           } else {
-            fileDialog.setDialogTitle(messages.getString(WINDOWTITLE_SAVEDIR));
+            fileDialog.setDialogTitle(getMessage(WINDOWTITLE_SAVEDIR));
             fileDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
           }
           
@@ -1292,14 +1308,14 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 String id = hashDataInput.getReferenceId();
                 File file;
                 if (f.isDirectory()) {
-                  String filename = messages.getString(SAVE_HASHDATAINPUT_PREFIX) + '_' + id + MimeFilter.getExtension(mimeType);
+                  String filename = getMessage(SAVE_HASHDATAINPUT_PREFIX) + '_' + id + MimeFilter.getExtension(mimeType);
                   file = new File(f, filename);
                 } else {
                   file = f;
                 }
                 if (file.exists()) {
-                  String ovrwrt = messages.getString(MESSAGE_OVERWRITE);
-                  int overwrite = JOptionPane.showConfirmDialog(fileDialog, MessageFormat.format(ovrwrt, file), messages.getString(WINDOWTITLE_OVERWRITE), JOptionPane.OK_CANCEL_OPTION);
+                  String ovrwrt = getMessage(MESSAGE_OVERWRITE);
+                  int overwrite = JOptionPane.showConfirmDialog(fileDialog, MessageFormat.format(ovrwrt, file), getMessage(WINDOWTITLE_OVERWRITE), JOptionPane.OK_CANCEL_OPTION);
                   if (overwrite != JOptionPane.OK_OPTION) {
                     continue;
                   }
@@ -1352,34 +1368,50 @@ public class BKUGUIImpl implements BKUGUIFacade {
         });
       }
     }
-    
-  private static int initButtonSize(ResourceBundle messages, boolean renderCancelButton) {
 
-    int buttonSize = 0;
-    
-    JButton b = new JButton();
-    b.setText(messages.getString(BUTTON_OK));
-    if (b.getPreferredSize().width > buttonSize) {
-      buttonSize = b.getPreferredSize().width;
-    }
-    b.setText(messages.getString(BUTTON_SIGN));
-    if (b.getPreferredSize().width > buttonSize) {
-      buttonSize = b.getPreferredSize().width;
-    }
-    b.setText(messages.getString(BUTTON_BACK));
-    if (b.getPreferredSize().width > buttonSize) {
-      buttonSize = b.getPreferredSize().width;
-    }
-    b.setText(messages.getString(BUTTON_SAVE));
-    if (b.getPreferredSize().width > buttonSize) {
-      buttonSize = b.getPreferredSize().width;
-    }
-    if (renderCancelButton) {
-      b.setText(messages.getString(BUTTON_CANCEL));
-      if (b.getPreferredSize().width > buttonSize) {
-        buttonSize = b.getPreferredSize().width;
+    /**
+     * Called from constructor.
+     * Subclasses may override this method to ensure the message bundle is loaded
+     * once initButtonSize (called from constructor as well) is called.
+     * (Only relevant if initButtonSize is overridden as well)
+     * @param locale
+     */
+    protected void loadMessageBundle(Locale locale) {
+      if (locale != null) {
+        Locale lang = new Locale(locale.getLanguage().substring(0, 2));
+        log.debug("loading applet resources for language: " + lang.toString());
+        messages = ResourceBundle.getBundle(MESSAGES_BUNDLE, lang);
+      } else {
+        messages = ResourceBundle.getBundle(MESSAGES_BUNDLE);
       }
     }
-    return buttonSize;
-  }
+
+    protected int initButtonSize() {
+      int bs = 0;
+
+      JButton b = new JButton();
+      b.setText(getMessage(BUTTON_OK));
+      if (b.getPreferredSize().width > bs) {
+        bs = b.getPreferredSize().width;
+      }
+      b.setText(getMessage(BUTTON_SIGN));
+      if (b.getPreferredSize().width > bs) {
+        bs = b.getPreferredSize().width;
+      }
+      b.setText(getMessage(BUTTON_BACK));
+      if (b.getPreferredSize().width > bs) {
+        bs = b.getPreferredSize().width;
+      }
+      b.setText(getMessage(BUTTON_SAVE));
+      if (b.getPreferredSize().width > bs) {
+        bs = b.getPreferredSize().width;
+      }
+      if (renderCancelButton) {
+        b.setText(getMessage(BUTTON_CANCEL));
+        if (b.getPreferredSize().width > bs) {
+          bs = b.getPreferredSize().width;
+        }
+      }
+      return bs;
+    }
 }

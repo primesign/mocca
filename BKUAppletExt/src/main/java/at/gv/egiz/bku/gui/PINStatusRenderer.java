@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class PINStatusRenderer extends DefaultTableCellRenderer {
   
-  private static final Log log = LogFactory.getLog(PINStatusRenderer.class);
+//  private static final Log log = LogFactory.getLog(PINStatusRenderer.class);
 
   public static final Color RED = new Color(0.9f, 0.0f, 0.0f);
   public static final Color GREEN = new Color(0.0f, 0.8f, 0.0f);

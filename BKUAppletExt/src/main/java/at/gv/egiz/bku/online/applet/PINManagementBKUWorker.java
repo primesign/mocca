@@ -25,8 +25,6 @@ import at.gv.egiz.stal.ext.PINManagementRequest;
 import at.gv.egiz.stal.ext.PINManagementResponse;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This BKU Worker does not connect to STAL webservice
@@ -52,8 +50,9 @@ public class PINManagementBKUWorker extends AppletBKUWorker {
       if (responses.size() == 1) {
         STALResponse response = responses.get(0);
         if (response instanceof PINManagementResponse) {
-          log.debug("PIN management dialog finished");
+          log.debug("PIN management dialog terminated");
         } else if (response instanceof ErrorResponse) {
+          log.debug("PIN management dialog terminated with error");
           showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, null);
         } else {
           throw new RuntimeException("Invalid STAL response: " + response.getClass().getName());

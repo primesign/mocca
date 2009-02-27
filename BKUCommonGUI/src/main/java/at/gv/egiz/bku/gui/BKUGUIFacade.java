@@ -97,6 +97,10 @@ public interface BKUGUIFacade {
     
 //  public void init(Container contentPane, Locale locale, Style guiStyle, URL background, ActionListener helpListener);
 
+  /**
+   * BKUWorker needs to init signature card with locale
+   * @return
+   */
   public Locale getLocale();
 
   public void showWelcomeDialog();

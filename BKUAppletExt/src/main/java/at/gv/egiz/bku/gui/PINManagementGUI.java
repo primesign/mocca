@@ -39,13 +39,17 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * TODO pull out ResourceBundle to common superclass for activationGUI and pinMgmtGUI
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class PINManagementGUI extends ActivationGUI implements PINManagementGUIFacade {
+public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFacade {
 
+  protected static final Log log = LogFactory.getLog(PINManagementGUI.class);
+  
   /** remember the pinfield to return to worker */
   protected JPasswordField oldPinField;
   /** remember the pinSpec to return to worker */
@@ -70,7 +74,7 @@ public class PINManagementGUI extends ActivationGUI implements PINManagementGUIF
   }
 
   @Override
-  public PINSpec getSelectedPIN() {
+  public PINSpec getSelectedPINSpec() {
     return pinSpec;
   }
 
@@ -100,11 +104,11 @@ public class PINManagementGUI extends ActivationGUI implements PINManagementGUIF
                 mgmtLabel.setFont(mgmtLabel.getFont().deriveFont(mgmtLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
 
                 if (renderHeaderPanel) {
-                  titleLabel.setText(cardmgmtMessages.getString(TITLE_PINMGMT));
-                  String infoPattern = cardmgmtMessages.getString(MESSAGE_PINMGMT);
+                  titleLabel.setText(getMessage(TITLE_PINMGMT));
+                  String infoPattern = getMessage(MESSAGE_PINMGMT);
                   mgmtLabel.setText(MessageFormat.format(infoPattern, pins.size()));
                 } else {
-                  mgmtLabel.setText(cardmgmtMessages.getString(TITLE_PINMGMT));
+                  mgmtLabel.setText(getMessage(TITLE_PINMGMT));
                 }
 
                 final PINStatusTableModel tableModel = new PINStatusTableModel(pins);
@@ -146,19 +150,19 @@ public class PINManagementGUI extends ActivationGUI implements PINManagementGUIF
                           STATUS status = (STATUS) tableModel.getValueAt(selectionIdx, 1);
 
                           if (status == STATUS.NOT_ACTIV) {
-                            activateButton.setText(cardmgmtMessages.getString(BUTTON_ACTIVATE));
+                            activateButton.setText(getMessage(BUTTON_ACTIVATE));
                             activateButton.setEnabled(true);
                             activateButton.setActionCommand(activateCmd);
                           } else if (status == STATUS.BLOCKED) {
-                            activateButton.setText(cardmgmtMessages.getString(BUTTON_UNBLOCK));
+                            activateButton.setText(getMessage(BUTTON_UNBLOCK));
                             activateButton.setEnabled(true);
                             activateButton.setActionCommand(unblockCmd);
                           } else if (status == STATUS.ACTIV) {
-                            activateButton.setText(cardmgmtMessages.getString(BUTTON_CHANGE));
+                            activateButton.setText(getMessage(BUTTON_CHANGE));
                             activateButton.setEnabled(true);
                             activateButton.setActionCommand(changeCmd);
                           } else {
-                            activateButton.setText(cardmgmtMessages.getString(BUTTON_ACTIVATE));
+                            activateButton.setText(getMessage(BUTTON_ACTIVATE));
                             activateButton.setEnabled(false);
                           }
                         }
@@ -200,7 +204,7 @@ public class PINManagementGUI extends ActivationGUI implements PINManagementGUIF
 
                 JButton cancelButton = new JButton();
                 cancelButton.setFont(cancelButton.getFont().deriveFont(cancelButton.getFont().getStyle() & ~java.awt.Font.BOLD));
-                cancelButton.setText(messages.getString(BUTTON_CANCEL));
+                cancelButton.setText(getMessage(BUTTON_CLOSE));
                 cancelButton.setActionCommand(cancelCmd);
                 cancelButton.addActionListener(cancelListener);
 
@@ -266,27 +270,27 @@ public class PINManagementGUI extends ActivationGUI implements PINManagementGUIF
                 mgmtLabel.setFont(mgmtLabel.getFont().deriveFont(mgmtLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
 
                 if (renderHeaderPanel) {
-                  titleLabel.setText(cardmgmtMessages.getString(TITLE));
-                  String mgmtPattern = cardmgmtMessages.getString(MESSAGE_MGMT);
+                  titleLabel.setText(getMessage(TITLE));
+                  String mgmtPattern = getMessage(MESSAGE_MGMT);
                   if (shortText) {
                     mgmtLabel.setText(MessageFormat.format(mgmtPattern, "PIN"));
                   } else {
                     mgmtLabel.setText(MessageFormat.format(mgmtPattern, pinSpec.getLocalizedName()));
                   }
                 } else {
-                  mgmtLabel.setText(cardmgmtMessages.getString(TITLE));
+                  mgmtLabel.setText(getMessage(TITLE));
                 }
 
                 JButton okButton = new JButton();
                 okButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle() & ~java.awt.Font.BOLD));
-                okButton.setText(messages.getString(BUTTON_OK));
+                okButton.setText(getMessage(BUTTON_OK));
                 okButton.setEnabled(false);
                 okButton.setActionCommand(okCommand);
                 okButton.addActionListener(okListener);
 
                 JLabel pinLabel = new JLabel();
                 pinLabel.setFont(pinLabel.getFont().deriveFont(pinLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                String pinLabelPattern = (changePin) ? cardmgmtMessages.getString(LABEL_NEW_PIN) : messages.getString(LABEL_PIN);
+                String pinLabelPattern = (changePin) ? getMessage(LABEL_NEW_PIN) : getMessage(LABEL_PIN);
                 pinLabel.setText(MessageFormat.format(pinLabelPattern, new Object[]{pinSpec.getLocalizedName()}));
 
                 final JPasswordField repeatPinField = new JPasswordField();
@@ -305,7 +309,7 @@ public class PINManagementGUI extends ActivationGUI implements PINManagementGUIF
                 });
                 JLabel repeatPinLabel = new JLabel();
                 repeatPinLabel.setFont(pinLabel.getFont());
-                String repeatPinLabelPattern = cardmgmtMessages.getString(LABEL_REPEAT_PIN);
+                String repeatPinLabelPattern = getMessage(LABEL_REPEAT_PIN);
                 repeatPinLabel.setText(MessageFormat.format(repeatPinLabelPattern, new Object[]{pinSpec.getLocalizedName()}));
 
                 repeatPinField.setText("");
@@ -325,7 +329,7 @@ public class PINManagementGUI extends ActivationGUI implements PINManagementGUIF
                 if (changePin) {
                   oldPinLabel = new JLabel();
                   oldPinLabel.setFont(oldPinLabel.getFont().deriveFont(oldPinLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                  String oldPinLabelPattern = cardmgmtMessages.getString(LABEL_OLD_PIN);
+                  String oldPinLabelPattern = getMessage(LABEL_OLD_PIN);
                   oldPinLabel.setText(MessageFormat.format(oldPinLabelPattern, new Object[]{pinSpec.getLocalizedName()}));
 
                   oldPinField = new JPasswordField();
@@ -345,7 +349,7 @@ public class PINManagementGUI extends ActivationGUI implements PINManagementGUIF
                 
                 JLabel pinsizeLabel = new JLabel();
                 pinsizeLabel.setFont(pinsizeLabel.getFont().deriveFont(pinsizeLabel.getFont().getStyle() & ~java.awt.Font.BOLD, pinsizeLabel.getFont().getSize()-2));
-                String pinsizePattern = messages.getString(LABEL_PINSIZE);
+                String pinsizePattern = getMessage(LABEL_PINSIZE);
                 String pinSize = String.valueOf(pinSpec.getMinLength());
                 if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
                     pinSize += "-" + pinSpec.getMaxLength();
@@ -468,7 +472,7 @@ public class PINManagementGUI extends ActivationGUI implements PINManagementGUIF
 
                 JButton cancelButton = new JButton();
                 cancelButton.setFont(cancelButton.getFont().deriveFont(cancelButton.getFont().getStyle() & ~java.awt.Font.BOLD));
-                cancelButton.setText(messages.getString(BUTTON_CANCEL));
+                cancelButton.setText(getMessage(BUTTON_CANCEL));
                 cancelButton.setActionCommand(cancelCommand);
                 cancelButton.addActionListener(cancelListener);
 
@@ -522,12 +526,12 @@ public class PINManagementGUI extends ActivationGUI implements PINManagementGUIF
                 buttonPanel.removeAll();
 
                 if (renderHeaderPanel) {
-                  titleLabel.setText(messages.getString(TITLE_ERROR));
+                  titleLabel.setText(getMessage(TITLE_ERROR));
                 }
 
                 helpListener.setHelpTopic(HELP_PINMGMT);
 
-                String errorMsgPattern = cardmgmtMessages.getString(ERR_UNBLOCK);
+                String errorMsgPattern = getMessage(ERR_UNBLOCK);
                 String errorMsg = MessageFormat.format(errorMsgPattern, pin.getLocalizedName());
 
                 JLabel errorMsgLabel = new JLabel();
@@ -543,7 +547,7 @@ public class PINManagementGUI extends ActivationGUI implements PINManagementGUIF
                 if (!renderHeaderPanel) {
                   JLabel errorTitleLabel = new JLabel();
                   errorTitleLabel.setFont(errorTitleLabel.getFont().deriveFont(errorTitleLabel.getFont().getStyle() | java.awt.Font.BOLD));
-                  errorTitleLabel.setText(messages.getString(TITLE_ERROR));
+                  errorTitleLabel.setText(getMessage(TITLE_ERROR));
                   errorTitleLabel.setForeground(ERROR_COLOR);
 
                   mainHorizontal
@@ -564,7 +568,7 @@ public class PINManagementGUI extends ActivationGUI implements PINManagementGUIF
 
                 JButton okButton = new JButton();
                 okButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle() & ~java.awt.Font.BOLD));
-                okButton.setText(messages.getString(BUTTON_OK));
+                okButton.setText(getMessage(BUTTON_OK));
                 okButton.setActionCommand(cancelCommand);
                 okButton.addActionListener(cancelListener);
 
@@ -584,5 +588,28 @@ public class PINManagementGUI extends ActivationGUI implements PINManagementGUIF
         });
   }
 
+  @Override
+  protected int initButtonSize() {
+    int bs = super.initButtonSize();
 
+    JButton b = new JButton();
+    b.setText(getMessage(BUTTON_ACTIVATE));
+    if (b.getPreferredSize().width > bs) {
+      bs = b.getPreferredSize().width;
+    }
+    b.setText(getMessage(BUTTON_CHANGE));
+    if (b.getPreferredSize().width > bs) {
+      bs = b.getPreferredSize().width;
+    }
+    b.setText(getMessage(BUTTON_UNBLOCK));
+    if (b.getPreferredSize().width > bs) {
+      bs = b.getPreferredSize().width;
+    }
+    b.setText(getMessage(BUTTON_CANCEL));
+    if (b.getPreferredSize().width > bs) {
+      bs = b.getPreferredSize().width;
+    }
+
+    return bs;
+  }
 }

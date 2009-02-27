@@ -54,7 +54,7 @@ public abstract class AbstractBKUWorker extends AbstractSMCCSTAL implements Acti
       throw new NullPointerException("No BKU GUI provided");
     }
     this.gui = gui;
-    this.locale = gui.getLocale();
+//    this.locale = gui.getLocale();
     addRequestHandler(QuitRequest.class, this);
   }
 
@@ -149,7 +149,7 @@ public abstract class AbstractBKUWorker extends AbstractSMCCSTAL implements Acti
         }
         break;
       case SMCCHelper.CARD_FOUND:
-        signatureCard = smccHelper.getSignatureCard(locale);
+        signatureCard = smccHelper.getSignatureCard(gui.getLocale());
         return false;
       }
       smccHelper.update(3000);

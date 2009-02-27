@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
+//import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,7 +41,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
 
   public final static int DEFAULT_MAX_RETRIES = 1;
 
-  protected Locale locale = Locale.getDefault();
+//  protected Locale locale = Locale.getDefault();
   protected SignatureCard signatureCard = null;
   protected Map<String, SMCCSTALRequestHandler> handlerMap = new HashMap<String, SMCCSTALRequestHandler>();
 
@@ -159,13 +159,13 @@ public abstract class AbstractSMCCSTAL implements STAL {
     return handlerMap.get(request.getSimpleName());
   }
 
-  @Override
-  public void setLocale(Locale locale) {
-    if (locale == null) {
-      throw new NullPointerException("Locale must not be set to null");
-    }
-    this.locale = locale;
-  }
+//  @Override
+//  public void setLocale(Locale locale) {
+//    if (locale == null) {
+//      throw new NullPointerException("Locale must not be set to null");
+//    }
+//    this.locale = locale;
+//  }
 
   public void setMaxRetries(int maxRetries) {
     this.maxRetries = maxRetries;

@@ -43,6 +43,7 @@ public interface PINManagementGUIFacade extends BKUGUIFacade {
   public static final String ERR_ACTIVATE = "err.activate";
   public static final String ERR_CHANGE = "err.change";
   public static final String ERR_UNBLOCK = "err.unblock";
+  public static final String ERR_RETRIES = "err.retries";
 
   public static final String BUTTON_ACTIVATE = "button.activate";
   public static final String BUTTON_UNBLOCK = "button.unblock";
@@ -73,5 +74,5 @@ public interface PINManagementGUIFacade extends BKUGUIFacade {
 
   public char[] getOldPin();
 
-  public PINSpec getSelectedPIN();
+  public PINSpec getSelectedPINSpec();
 }

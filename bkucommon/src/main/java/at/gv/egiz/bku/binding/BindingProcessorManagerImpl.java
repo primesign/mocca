@@ -216,7 +216,7 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
     bindingProcessor.init(stal, commandInvokerClass.newInstance());
     if (locale != null) {
       bindingProcessor.setLocale(locale);
-      stal.setLocale(locale);
+//      stal.setLocale(locale);
     }
     return bindingProcessor;
   }

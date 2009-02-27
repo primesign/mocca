@@ -315,10 +315,6 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
       }
     }
     
-    @Override
-    public void setLocale(Locale locale) {
-    }
-
     private List<JAXBElement<? extends RequestType>> createSingleQuitRequest() {
       QuitRequestType quitT = of.createQuitRequestType();
       JAXBElement<QuitRequestType> quit = of.createGetNextRequestResponseTypeQuitRequest(quitT);
