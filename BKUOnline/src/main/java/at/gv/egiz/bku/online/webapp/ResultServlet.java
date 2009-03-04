@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import at.gv.egiz.bku.binding.HTTPBindingProcessor;
 import at.gv.egiz.bku.binding.HttpUtil;
 import at.gv.egiz.bku.binding.IdFactory;
+import at.gv.egiz.bku.conf.Configurator;
 import at.gv.egiz.bku.utils.NullOutputStream;
 
 /**
@@ -40,7 +41,6 @@ import at.gv.egiz.bku.utils.NullOutputStream;
 public class ResultServlet extends SpringBKUServlet {
 
   private final static Log log = LogFactory.getLog(ResultServlet.class);
-  public final static String USER_AGENT_PROPERTY_KEY = "UserAgent";
 
   private String encoding = "UTF-8";
   private String expiredPage = "./expiredError.jsp";
@@ -116,15 +116,16 @@ public class ResultServlet extends SpringBKUServlet {
       return;
     }
     resp.setStatus(bp.getResponseCode());
+//    log.info("ALLOW CACHING OF RESULT PAGE");
     resp.setHeader("Cache-Control", "no-store"); // HTTP 1.1
     resp.setHeader("Pragma", "no-cache"); // HTTP 1.0
     resp.setDateHeader("Expires", 0);
-    if (configurator.getProperty(USER_AGENT_PROPERTY_KEY) != null) {
+    if (configurator.getProperty(Configurator.USERAGENT_CONFIG_P) != null) {
       resp.setHeader(HttpUtil.HTTP_HEADER_USER_AGENT, configurator
-          .getProperty(USER_AGENT_PROPERTY_KEY));
+          .getProperty(Configurator.USERAGENT_CONFIG_P));
     } else {
       resp.setHeader(HttpUtil.HTTP_HEADER_USER_AGENT,
-          "citizen-card-environment/1.2 MOCCA Unknown");
+              Configurator.USERAGENT_DEFAULT);
     }
     for (Iterator<String> it = bp.getResponseHeaders().keySet().iterator(); it
         .hasNext();) {

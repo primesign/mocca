@@ -19,8 +19,10 @@ package at.gv.egiz.bku.gui;
 
 import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.stal.HashDataInput;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -882,143 +884,114 @@ public class BKUGUIImpl implements BKUGUIFacade {
     }
 
     @Override
-    public void showErrorDialog(final String errorMsgKey, final Object[] errorMsgParams, final ActionListener okListener, final String okCommand) {
+    public void showErrorDialog(
+            final String errorMsgKey, final Object[] errorMsgParams,
+            final ActionListener okListener, final String okCommand) {
         
-      log.debug("scheduling error dialog");
-      
+      showMessageDialog(TITLE_ERROR, ERROR_COLOR,
+              errorMsgKey, errorMsgParams, okListener, okCommand);
+    }
+
+    @Override
+    public void showErrorDialog(
+            final String errorMsgKey, final Object[] errorMsgParams) {
+
+      showMessageDialog(TITLE_ERROR, ERROR_COLOR,
+              errorMsgKey, errorMsgParams, null, null);
+    }
+
+    @Override
+    public void showMessageDialog(
+            final String titleKey,
+            final String msgKey, final Object[] msgParams,
+            final ActionListener okListener, final String okCommand) {
+
+      showMessageDialog(titleKey, null, 
+              msgKey, msgParams, okListener, okCommand);
+    }
+
+    private void showMessageDialog(
+            final String titleKey, final Color titleColor,
+            final String msgKey, final Object[] msgParams,
+            final ActionListener okListener, final String okCommand) {
+
+      log.debug("scheduling message dialog");
+
       SwingUtilities.invokeLater(new Runnable() {
 
           @Override
             public void run() {
 
-                log.debug("show error dialog");
-                
+                log.debug("show message dialog");
+
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
 
                 if (renderHeaderPanel) {
-                  titleLabel.setText(getMessage(TITLE_ERROR));
+                  titleLabel.setText(getMessage(titleKey));
                 }
 
-                helpListener.setHelpTopic(errorMsgKey);
-                
-                String errorMsgPattern = getMessage(errorMsgKey);
-                String errorMsg = MessageFormat.format(errorMsgPattern, errorMsgParams);
-                
-                JLabel errorMsgLabel = new JLabel();
-                errorMsgLabel.setFont(errorMsgLabel.getFont().deriveFont(errorMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                errorMsgLabel.setText(errorMsg);
+                helpListener.setHelpTopic(msgKey);
+
+                String msgPattern = getMessage(msgKey);
+                String msg = MessageFormat.format(msgPattern, msgParams);
+
+                JLabel msgLabel = new JLabel();
+                msgLabel.setFont(msgLabel.getFont().deriveFont(msgLabel.getFont().getStyle() & ~Font.BOLD));
+                msgLabel.setText(msg);
 
                 GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
                 mainPanel.setLayout(mainPanelLayout);
 
                 GroupLayout.ParallelGroup mainHorizontal = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
                 GroupLayout.SequentialGroup mainVertical = mainPanelLayout.createSequentialGroup();
-                
+
                 if (!renderHeaderPanel) {
-                  JLabel errorTitleLabel = new JLabel();
-                  errorTitleLabel.setFont(errorTitleLabel.getFont().deriveFont(errorTitleLabel.getFont().getStyle() | java.awt.Font.BOLD));
-                  errorTitleLabel.setText(getMessage(TITLE_ERROR));
-                  errorTitleLabel.setForeground(ERROR_COLOR);
-                
+                  JLabel titleLabel = new JLabel();
+                  titleLabel.setFont(titleLabel.getFont().deriveFont(titleLabel.getFont().getStyle() | Font.BOLD));
+                  titleLabel.setText(getMessage(titleKey));
+                  if (titleColor != null) {
+                    titleLabel.setForeground(titleColor);
+                  }
+
                   mainHorizontal
                           .addGroup(mainPanelLayout.createSequentialGroup()
-                            .addComponent(errorTitleLabel)
+                            .addComponent(titleLabel)
                             .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
                             .addComponent(helpLabel));
                   mainVertical
                           .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                            .addComponent(errorTitleLabel)
+                            .addComponent(titleLabel)
                             .addComponent(helpLabel));
                 }
-                
+
                 mainPanelLayout.setHorizontalGroup(mainHorizontal
-                        .addComponent(errorMsgLabel));
+                        .addComponent(msgLabel));
                 mainPanelLayout.setVerticalGroup(mainVertical
-                        .addComponent(errorMsgLabel));
-                
-                JButton okButton = new JButton();
-                okButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle() & ~java.awt.Font.BOLD));
-                okButton.setText(getMessage(BUTTON_OK));
-                okButton.setActionCommand(okCommand);
-                okButton.addActionListener(okListener);
+                        .addComponent(msgLabel));
 
-                GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
-                buttonPanel.setLayout(buttonPanelLayout);
+                if (okListener != null && okCommand != null) {
+                  JButton okButton = new JButton();
+                  okButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle() & ~java.awt.Font.BOLD));
+                  okButton.setText(getMessage(BUTTON_OK));
+                  okButton.setActionCommand(okCommand);
+                  okButton.addActionListener(okListener);
 
-                buttonPanelLayout.setHorizontalGroup(
-                  buttonPanelLayout.createSequentialGroup()
-                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(okButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
-                buttonPanelLayout.setVerticalGroup(
-                  buttonPanelLayout.createSequentialGroup()
-                    .addComponent(okButton));
+                  GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+                  buttonPanel.setLayout(buttonPanelLayout);
+
+                  buttonPanelLayout.setHorizontalGroup(
+                    buttonPanelLayout.createSequentialGroup()
+                          .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                          .addComponent(okButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
+                  buttonPanelLayout.setVerticalGroup(
+                    buttonPanelLayout.createSequentialGroup()
+                      .addComponent(okButton));
+                }
 
                 contentPanel.validate();
             }
         });
-    }
-
-    @Override
-    public void showErrorDialog(final String errorMsgKey, final Object[] errorMsgParams) {
-      
-      log.debug("scheduling error  dialog");
-      
-      SwingUtilities.invokeLater(new Runnable() {
-
-        @Override
-        public void run() {
-          
-          log.debug("show error dialog");
-      
-          mainPanel.removeAll();
-          buttonPanel.removeAll();
-
-          if (renderHeaderPanel) {
-            titleLabel.setText(getMessage(TITLE_ERROR));
-          }
-
-          helpListener.setHelpTopic(errorMsgKey);
-          
-          String errorMsgPattern = getMessage(errorMsgKey);
-          String errorMsg = MessageFormat.format(errorMsgPattern, errorMsgParams);
-
-          JLabel errorMsgLabel = new JLabel();
-          errorMsgLabel.setFont(errorMsgLabel.getFont().deriveFont(errorMsgLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-          errorMsgLabel.setText(errorMsg);
-          
-          GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
-          mainPanel.setLayout(mainPanelLayout);
-
-          
-          GroupLayout.ParallelGroup mainHorizontal = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
-          GroupLayout.SequentialGroup mainVertical = mainPanelLayout.createSequentialGroup();
-
-          if (!renderHeaderPanel) {
-            JLabel errorTitleLabel = new JLabel();
-            errorTitleLabel.setFont(errorTitleLabel.getFont().deriveFont(errorTitleLabel.getFont().getStyle() | java.awt.Font.BOLD));
-            errorTitleLabel.setText(getMessage(TITLE_ERROR));
-            errorTitleLabel.setForeground(ERROR_COLOR);
-
-            mainHorizontal
-                    .addGroup(mainPanelLayout.createSequentialGroup()
-                      .addComponent(errorTitleLabel)
-                      .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                      .addComponent(helpLabel));
-            mainVertical
-                    .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                      .addComponent(errorTitleLabel)
-                      .addComponent(helpLabel));
-          }
-
-          mainPanelLayout.setHorizontalGroup(mainHorizontal
-                  .addComponent(errorMsgLabel));
-          mainPanelLayout.setVerticalGroup(mainVertical
-                  .addComponent(errorMsgLabel));
-          
-          contentPanel.validate();
-        }
-      });
     }
 
     @Override

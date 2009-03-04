@@ -31,7 +31,6 @@ package at.gv.egiz.smcc;
 import java.util.List;
 import java.util.Locale;
 
-import java.util.Map;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardTerminal;
 
@@ -135,11 +134,19 @@ public interface SignatureCard {
    */
   public int verifyPIN(String pin, byte kid) throws LockedException, NotActivatedException, SignatureCardException;
 
+  public void changePIN(byte kid, byte[] contextAID,
+          String oldPIN, String newPIN)
+          throws SignatureCardException, VerificationFailedException;
+
+  public void activatePIN(byte kid, byte[] contextAID,
+          String pin)
+          throws SignatureCardException;
+
   /**
    * Sets the local for evtl. required callbacks (e.g. PINSpec)
    * @param locale must not be null;
    */
   public void setLocale(Locale locale);
   
-
+  
 }

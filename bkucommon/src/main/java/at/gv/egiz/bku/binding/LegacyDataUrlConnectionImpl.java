@@ -1,6 +1,7 @@
 package at.gv.egiz.bku.binding;
 
 
+import at.gv.egiz.bku.conf.Configurator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,7 +39,7 @@ import at.gv.egiz.bku.utils.binding.Protocol;
  */
 public class LegacyDataUrlConnectionImpl implements DataUrlConnectionSPI {
   
-  private final static Log log = LogFactory.getLog(DataUrlConnectionImpl.class);
+  private final static Log log = LogFactory.getLog(LegacyDataUrlConnectionImpl.class);
 
   public final static Protocol[] SUPPORTED_PROTOCOLS = { Protocol.HTTP,
       Protocol.HTTPS };
@@ -212,13 +213,13 @@ public class LegacyDataUrlConnectionImpl implements DataUrlConnectionSPI {
     this.url = url;
     requestHttpHeaders = new HashMap<String, String>();
     if ((config != null)
-        && (config.getProperty(USERAGENT_CONFIG_P) != null)) {
-      log.debug("setting User-Agent header: " + config.getProperty(USERAGENT_CONFIG_P));
+        && (config.getProperty(Configurator.USERAGENT_CONFIG_P) != null)) {
+      log.debug("setting User-Agent header: " + config.getProperty(Configurator.USERAGENT_CONFIG_P));
       requestHttpHeaders.put(HttpUtil.HTTP_HEADER_USER_AGENT, config
-          .getProperty(USERAGENT_CONFIG_P));
+          .getProperty(Configurator.USERAGENT_CONFIG_P));
     } else {
       requestHttpHeaders
-          .put(HttpUtil.HTTP_HEADER_USER_AGENT, USERAGENT_DEFAULT);
+          .put(HttpUtil.HTTP_HEADER_USER_AGENT, Configurator.USERAGENT_DEFAULT);
 
     }
     requestHttpHeaders.put(HttpUtil.HTTP_HEADER_CONTENT_TYPE,

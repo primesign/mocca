@@ -16,6 +16,7 @@
  */
 package at.gv.egiz.bku.binding;
 
+import at.gv.egiz.bku.conf.Configurator;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
@@ -82,7 +83,7 @@ public class DataUrl {
   public static void setConfiguration(Properties props) {
     configuration = props;
     if (configuration != null) {
-      String className = configuration.getProperty(DataUrlConnection.DATAURLCONNECTION_CONFIG_P);
+      String className = configuration.getProperty(Configurator.DATAURLCONNECTION_CONFIG_P);
       if (className != null) {
         try {
           log.info("set DataURLConnection class: " + className);

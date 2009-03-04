@@ -34,12 +34,6 @@ import at.gv.egiz.bku.slcommands.SLResult;
  */
 public interface DataUrlConnection {
 
-    public final static String USERAGENT_CONFIG_P = "UserAgent";
-    public static final String USERAGENT_DEFAULT = "citizen-card-environment/1.2 MOCCA/UNKNOWN";
-    public static final String USERAGENT_BASE = "citizen-card-environment/1.2 MOCCA/";
-
-    public static final String DATAURLCONNECTION_CONFIG_P = "DataURLConnectionImplClass";
-
     public static final String FORMPARAM_RESPONSETYPE = "ResponseType";
     public static final String DEFAULT_RESPONSETYPE = "HTTP-Security-Layer-RESPONSE";
     public static final String FORMPARAM_XMLRESPONSE = "XMLResponse";

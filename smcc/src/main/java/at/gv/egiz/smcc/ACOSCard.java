@@ -28,6 +28,7 @@
 //
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.util.SMCCHelper;
 import java.nio.charset.Charset;
 
 import javax.smartcardio.CardChannel;
@@ -104,9 +105,12 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
 
   public ACOSCard() {
     super("at/gv/egiz/smcc/ACOSCard");
-    pinSpecs.add(PINSPEC_INF, new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("inf.pin.name"), KID_PIN_INF, null));
-    pinSpecs.add(PINSPEC_DEC, new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("dec.pin.name"), KID_PIN_DEC, null));
-    pinSpecs.add(PINSPEC_SIG, new PINSpec(6, 10, "[0-9]", getResourceBundle().getString("sig.pin.name"), KID_PIN_SIG, null));
+    pinSpecs.add(PINSPEC_INF,
+            new PINSpec(0, 8, "[0-9]", getResourceBundle().getString("inf.pin.name"), KID_PIN_INF, AID_DEC));
+    pinSpecs.add(PINSPEC_DEC, 
+            new PINSpec(0, 8, "[0-9]", getResourceBundle().getString("dec.pin.name"), KID_PIN_DEC, AID_DEC));
+    pinSpecs.add(PINSPEC_SIG, 
+            new PINSpec(0, 8, "[0-9]", getResourceBundle().getString("sig.pin.name"), KID_PIN_SIG, AID_SIG));
   }
 
   /* (non-Javadoc)
@@ -334,14 +338,13 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
     
     CardChannel channel = getCardChannel();
 
-    byte[] asciiPIN = pin.getBytes(Charset.forName("ASCII"));
-    byte[] encodedPIN = new byte[8];
-    System.arraycopy(asciiPIN, 0, encodedPIN, 0, Math.min(asciiPIN.length,
-        encodedPIN.length));
-
     ResponseAPDU resp;
     try {
-      resp = transmit(channel, new CommandAPDU(0x00, 0x20, 0x00, kid, encodedPIN), false);
+      if (pin != null) {
+        resp = transmit(channel, new CommandAPDU(0x00, 0x20, 0x00, kid, encodePINBlock(pin)), false);
+      } else {
+        resp = transmit(channel, new CommandAPDU(0x00, 0x20, 0x00, kid), false);
+      }
     } catch (CardException ex) {
       log.error("smart card communication failed: " + ex.getMessage());
       throw new SignatureCardException("smart card communication failed: " + ex.getMessage(), ex);
@@ -419,7 +422,28 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
     }
   }
 
+  @Override
   public String toString() {
     return "a-sign premium";
+  }
+
+  /**
+   * ASCII encoded pin, padded with 0x00
+   * @param pin
+   * @return a 8 byte pin block 
+   */
+  @Override
+  public byte[] encodePINBlock(String pin) {
+    byte[] asciiPIN = pin.getBytes(Charset.forName("ASCII"));
+    byte[] encodedPIN = new byte[8];
+    System.arraycopy(asciiPIN, 0, encodedPIN, 0, Math.min(asciiPIN.length,
+        encodedPIN.length));
+//    System.out.println("ASCII encoded PIN block: " + SMCCHelper.toString(encodedPIN));
+    return encodedPIN;
+  }
+
+  @Override
+  public void activatePIN(byte kid, byte[] contextAID, String pin) throws SignatureCardException {
+    throw new SignatureCardException("PIN activation not supported by this card");
   }
 }

@@ -49,6 +49,13 @@ public abstract class Configurator {
 
   private Log log = LogFactory.getLog(Configurator.class);
 
+  public final static String USERAGENT_CONFIG_P = "UserAgent";
+  public static final String DATAURLCONNECTION_CONFIG_P = "DataURLConnectionImplClass";
+
+  public static final String USERAGENT_DEFAULT = "citizen-card-environment/1.2 MOCCA/UNKNOWN";
+  public static final String USERAGENT_BASE = "citizen-card-environment/1.2 MOCCA/";
+
+
   protected Properties properties;
 
   protected CertValidator certValidator;
@@ -203,22 +210,22 @@ public abstract class Configurator {
   }
 
   public void configureVersion() {
-    if (properties.getProperty(DataUrlConnection.USERAGENT_CONFIG_P) == null) {
+    if (properties.getProperty(USERAGENT_CONFIG_P) == null) {
       Properties p = new Properties();
       try {
         InputStream is = getManifest();
         if (is != null) {
           p.load(getManifest());
           String version = p.getProperty("Implementation-Build");
-          properties.setProperty(DataUrlConnection.USERAGENT_CONFIG_P,
-                  DataUrlConnection.USERAGENT_BASE + version);
+          properties.setProperty(USERAGENT_CONFIG_P,
+                  USERAGENT_BASE + version);
           log.debug("Setting user agent to: "
               + properties
-                  .getProperty(DataUrlConnection.USERAGENT_CONFIG_P));
+                  .getProperty(USERAGENT_CONFIG_P));
         } else {
           log.warn("Cannot read manifest");
-          properties.setProperty(DataUrlConnection.USERAGENT_CONFIG_P,
-                  DataUrlConnection.USERAGENT_DEFAULT);
+          properties.setProperty(USERAGENT_CONFIG_P,
+                  USERAGENT_DEFAULT);
         }
       } catch (IOException e) {
         log.error(e);

@@ -151,12 +151,4 @@ public class DummySTAL implements STAL {
 
     return responses;
   }
-
-  @Override
-  public void setLocale(Locale locale) {
-    // TODO Auto-generated method stub
-    
-  }
-  
-
 }

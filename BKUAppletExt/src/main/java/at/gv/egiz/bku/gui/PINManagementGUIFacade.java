@@ -32,6 +32,10 @@ public interface PINManagementGUIFacade extends BKUGUIFacade {
   public static final String TITLE_ACTIVATE_PIN = "title.activate.pin";
   public static final String TITLE_CHANGE_PIN = "title.change.pin";
   public static final String TITLE_UNBLOCK_PIN = "title.unblock.pin";
+  public static final String TITLE_ACTIVATE_SUCCESS = "title.activate.success";
+  public static final String TITLE_CHANGE_SUCCESS = "title.change.success";
+  public static final String MESSAGE_ACTIVATE_SUCCESS = "message.activate.success";
+  public static final String MESSAGE_CHANGE_SUCCESS = "message.change.success";
   public static final String MESSAGE_PINMGMT = "message.pin.mgmt";
   public static final String MESSAGE_ACTIVATE_PIN = "message.activate.pin";
   public static final String MESSAGE_CHANGE_PIN = "message.change.pin";

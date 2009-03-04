@@ -127,7 +127,9 @@ public interface BKUGUIFacade {
 
   public void showHashDataInputDialog(List<HashDataInput> signedReferences, ActionListener okListener, String okCommand);
 
-  public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams, ActionListener okListener, String actionCommand);
+  public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams, ActionListener okListener, String okCommand);
 
   public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams);
+
+  public void showMessageDialog(String titleKey, String msgKey, Object[] msgParams, ActionListener okListener, String okCommand);
 }

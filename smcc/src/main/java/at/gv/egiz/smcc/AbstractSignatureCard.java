@@ -28,14 +28,13 @@
 //
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.util.SMCCHelper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import javax.smartcardio.ATR;
@@ -443,4 +442,54 @@ public abstract class AbstractSignatureCard implements SignatureCard {
   public List<PINSpec> getPINSpecs() {
     return pinSpecs;
   }
+
+  public void changePIN(byte kid, byte[] contextAID, String oldPIN, String newPIN) throws SignatureCardException, VerificationFailedException {
+    Card icc = getCard();
+    try {
+      icc.beginExclusive();
+      CardChannel channel = icc.getBasicChannel();
+
+      if (contextAID != null) {
+        ResponseAPDU responseAPDU = transmit(channel,
+                new CommandAPDU(0x00, 0xa4, 0x04, 0x0c, contextAID));
+        if (responseAPDU.getSW() != 0x9000) {
+          icc.endExclusive();
+          String msg = "Failed to change PIN " + SMCCHelper.toString(new byte[]{kid}) +
+                  ": Failed to select AID " + SMCCHelper.toString(contextAID) +
+                  ": " + SMCCHelper.toString(responseAPDU.getBytes());
+          log.error(msg);
+          throw new SignatureCardException(msg);
+        }
+      }
+
+      byte[] cmd = new byte[16];
+      System.arraycopy(encodePINBlock(oldPIN), 0, cmd, 0, 8);
+      System.arraycopy(encodePINBlock(newPIN), 0, cmd, 8, 8);
+
+      ResponseAPDU responseAPDU = transmit(channel,
+              new CommandAPDU(0x00, 0x24, 0x00, kid, cmd), false);
+
+      icc.endExclusive();
+
+      if (responseAPDU.getSW1() == 0x63 && responseAPDU.getSW2() >> 4 == 0xc) {
+        int retries = responseAPDU.getSW2() & 0x0f;
+        log.error("Failed VERIFY PIN, " + retries + " tries left");
+        throw new VerificationFailedException(retries);
+      }
+      if (responseAPDU.getSW() != 0x9000) {
+        String msg = "Failed to change PIN "
+                + SMCCHelper.toString(new byte[]{kid}) + ": "
+                + SMCCHelper.toString(responseAPDU.getBytes());
+        log.error(msg);
+        throw new SignatureCardException(msg);
+      }
+
+    } catch (CardException ex) {
+      log.error("Failed to change PIN: " + ex.getMessage());
+      throw new SignatureCardException(ex.getMessage(), ex);
+    }
+  }
+  
+  abstract byte[] encodePINBlock(String pin);
+
 }

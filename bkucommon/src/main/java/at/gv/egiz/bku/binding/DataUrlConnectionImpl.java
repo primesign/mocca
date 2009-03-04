@@ -43,6 +43,7 @@ import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.bku.binding.multipart.InputStreamPartSource;
 import at.gv.egiz.bku.binding.multipart.SLResultPart;
+import at.gv.egiz.bku.conf.Configurator;
 import at.gv.egiz.bku.slcommands.SLResult;
 import at.gv.egiz.bku.slcommands.SLResult.SLResultType;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
@@ -225,12 +226,12 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
     boundary = "--" + IdFactory.getInstance().createId().toString();
     requestHttpHeaders = new HashMap<String, String>();
     if ((config != null)
-        && (config.getProperty(USERAGENT_CONFIG_P) != null)) {
+        && (config.getProperty(Configurator.USERAGENT_CONFIG_P) != null)) {
       requestHttpHeaders.put(HttpUtil.HTTP_HEADER_USER_AGENT, config
-          .getProperty(USERAGENT_CONFIG_P));
+          .getProperty(Configurator.USERAGENT_CONFIG_P));
     } else {
       requestHttpHeaders
-          .put(HttpUtil.HTTP_HEADER_USER_AGENT, USERAGENT_DEFAULT);
+          .put(HttpUtil.HTTP_HEADER_USER_AGENT, Configurator.USERAGENT_DEFAULT);
 
     }
     requestHttpHeaders.put(HttpUtil.HTTP_HEADER_CONTENT_TYPE,

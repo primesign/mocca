@@ -28,9 +28,9 @@
 //
 package at.gv.egiz.smcc;
 
-import java.math.BigInteger;
+import at.gv.egiz.smcc.util.SMCCHelper;
 import java.util.Arrays;
-
+import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
@@ -162,8 +162,14 @@ public class STARCOSCard extends AbstractSignatureCard implements SignatureCard 
    */
   public STARCOSCard() {
     super("at/gv/egiz/smcc/STARCOSCard");
-    pinSpecs.add(PINSPEC_CARD, new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("card.pin.name"), KID_PIN_CARD, null));
-    pinSpecs.add(PINSPEC_SS, new PINSpec(6, 10, "[0-9]", getResourceBundle().getString("sig.pin.name"), KID_PIN_SS, AID_DF_SS));
+    pinSpecs.add(PINSPEC_CARD, 
+            new PINSpec(4, 12, "[0-9]",
+              getResourceBundle().getString("card.pin.name"),
+              KID_PIN_CARD, null));
+    pinSpecs.add(PINSPEC_SS,
+            new PINSpec(6, 12, "[0-9]",
+              getResourceBundle().getString("sig.pin.name"),
+              KID_PIN_SS, AID_DF_SS));
   }
  
   @Override
@@ -491,21 +497,8 @@ public class STARCOSCard extends AbstractSignatureCard implements SignatureCard 
       if (pin == null) {
         resp = transmit(channel, new CommandAPDU(0x00, 0x20, 0x00, kid));
       } else {
-        // PIN length in bytes
-        int len = (int) Math.ceil(pin.length() / 2);
-
         // BCD encode PIN and marshal PIN block
-        byte[] pinBytes = new BigInteger(pin, 16).toByteArray();
-        byte[] pinBlock = new byte[8];
-        if (len < pinBytes.length) {
-          System.arraycopy(pinBytes, pinBytes.length - len, pinBlock, 1, len);
-        } else {
-          System.arraycopy(pinBytes, 0, pinBlock, len - pinBytes.length + 1,
-              pinBytes.length);
-        }
-        pinBlock[0] = (byte) (0x20 + len * 2);
-        Arrays.fill(pinBlock, len + 1, 8, (byte) 0xff);
-
+        byte[] pinBlock = encodePINBlock(pin);
         resp = transmit(channel, new CommandAPDU(0x00, 0x20, 0x00, kid, pinBlock), false);
 
       }
@@ -553,6 +546,65 @@ public class STARCOSCard extends AbstractSignatureCard implements SignatureCard 
     return "e-card";
   }
 
- 
+  /**
+   * BCD encodes the pin, pads with 0xFF and prepends the pins length
+   * @param pin
+   * @return a 8 byte pin block consisting of length byte (0x2X),
+   * the BCD encoded pin and a 0xFF padding
+   */
+  @Override
+  public byte[] encodePINBlock(String pin) {
+    char[] pinChars = pin.toCharArray();
+    int numDigits = pinChars.length;
+    int numBytes = (int) Math.ceil(numDigits/2.0);
+
+    byte[] pinBlock = new byte[8];
+    pinBlock[0] = (byte) (0x20 | numDigits);
+
+    for (int i = 0; i < numBytes; i++) {
+      int p1 = 16*Character.digit(pinChars[i*2], 16);
+      int p2 = (i*2+1 < numDigits) ? Character.digit(pinChars[i*2+1], 16) : 0xf;
+      pinBlock[i+1] = (byte) (p1 + p2);
+    }
+    Arrays.fill(pinBlock, numBytes + 1, pinBlock.length, (byte) 0xff);
+//    log.trace("BCD encoded PIN block: " + SMCCHelper.toString(pinBlock));
+
+    return pinBlock;
+  }
+
+  public void activatePIN(byte kid, byte[] contextAID, String pin) throws SignatureCardException {
+    Card icc = getCard();
+    try {
+      icc.beginExclusive();
+      CardChannel channel = icc.getBasicChannel();
+
+      if (contextAID != null) {
+        ResponseAPDU responseAPDU = transmit(channel,
+                new CommandAPDU(0x00, 0xa4, 0x04, 0x0c, contextAID));
+        if (responseAPDU.getSW() != 0x9000) {
+          icc.endExclusive();
+          String msg = "Failed to activate PIN " + SMCCHelper.toString(new byte[]{kid}) +
+                  ": Failed to select AID " + SMCCHelper.toString(contextAID) +
+                  ": " + SMCCHelper.toString(responseAPDU.getBytes());
+          log.error(msg);
+          throw new SignatureCardException(msg);
+        }
+      }
+
+      ResponseAPDU responseAPDU = transmit(channel,
+              new CommandAPDU(0x00, 0x24, 0x01, kid, encodePINBlock(pin)), false);
+
+      icc.endExclusive();
+
+      if (responseAPDU.getSW() != 0x9000) {
+        String msg = "Failed to activate PIN " + SMCCHelper.toString(new byte[]{kid}) + ": " + SMCCHelper.toString(responseAPDU.getBytes());
+        log.error(msg);
+        throw new SignatureCardException(msg);
+      }
+    } catch (CardException ex) {
+      log.error("Failed to activate PIN: " + ex.getMessage());
+      throw new SignatureCardException(ex.getMessage(), ex);
+    }
+  }
 
 }

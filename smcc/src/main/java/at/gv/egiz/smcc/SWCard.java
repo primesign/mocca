@@ -403,4 +403,12 @@ public class SWCard implements SignatureCard {
     return new ArrayList<PINSpec>();
   }
 
+  @Override
+  public void changePIN(byte kid, byte[] contextAID, String oldPIN, String newPIN) throws SignatureCardException, VerificationFailedException {
+  }
+
+  @Override
+  public void activatePIN(byte kid, byte[] contextAID, String pin) throws SignatureCardException {
+  }
+
 }
