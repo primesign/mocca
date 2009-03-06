@@ -31,6 +31,7 @@ public interface PINManagementGUIFacade extends BKUGUIFacade {
   public static final String TITLE_PINMGMT = "title.pin.mgmt";
   public static final String TITLE_ACTIVATE_PIN = "title.activate.pin";
   public static final String TITLE_CHANGE_PIN = "title.change.pin";
+  public static final String TITLE_VERIFY_PIN = "title.verify.pin";
   public static final String TITLE_UNBLOCK_PIN = "title.unblock.pin";
   public static final String TITLE_ACTIVATE_SUCCESS = "title.activate.success";
   public static final String TITLE_CHANGE_SUCCESS = "title.change.success";
@@ -39,19 +40,25 @@ public interface PINManagementGUIFacade extends BKUGUIFacade {
   public static final String MESSAGE_PINMGMT = "message.pin.mgmt";
   public static final String MESSAGE_ACTIVATE_PIN = "message.activate.pin";
   public static final String MESSAGE_CHANGE_PIN = "message.change.pin";
+  public static final String MESSAGE_VERIFY_PIN = "message.verify.pin";
   public static final String MESSAGE_UNBLOCK_PIN = "message.unblock.pin";
   public static final String LABEL_OLD_PIN = "label.old.pin";
   public static final String LABEL_NEW_PIN = "label.new.pin";
   public static final String LABEL_REPEAT_PIN = "label.repeat.pin";
 
+  public static final String ERR_STATUS = "err.status";
   public static final String ERR_ACTIVATE = "err.activate";
   public static final String ERR_CHANGE = "err.change";
   public static final String ERR_UNBLOCK = "err.unblock";
+  public static final String ERR_VERIFY = "err.verify";
   public static final String ERR_RETRIES = "err.retries";
+  public static final String ERR_LOCKED = "err.locked";
+  public static final String ERR_NOT_ACTIVE = "err.not.active";
 
   public static final String BUTTON_ACTIVATE = "button.activate";
   public static final String BUTTON_UNBLOCK = "button.unblock";
   public static final String BUTTON_CHANGE = "button.change";
+  public static final String BUTTON_VERIFY = "button.verify";
 
   public static final String STATUS_ACTIVE = "status.active";
   public static final String STATUS_BLOCKED = "status.blocked";
@@ -61,7 +68,7 @@ public interface PINManagementGUIFacade extends BKUGUIFacade {
   public enum STATUS { ACTIV, NOT_ACTIV, BLOCKED, UNKNOWN };
 
   public void showPINManagementDialog(Map<PINSpec, STATUS> pins,
-          ActionListener activateListener, String activateCmd, String changeCmd, String unblockCmd,
+          ActionListener activateListener, String activateCmd, String changeCmd, String unblockCmd, String verifyCmd,
           ActionListener cancelListener, String cancelCmd);
 
   public void showActivatePINDialog(PINSpec pin,
@@ -73,6 +80,10 @@ public interface PINManagementGUIFacade extends BKUGUIFacade {
           ActionListener cancelListener, String cancelCmd);
 
   public void showUnblockPINDialog(PINSpec pin,
+          ActionListener okListener, String okCmd,
+          ActionListener cancelListener, String cancelCmd);
+
+  public void showVerifyPINDialog(PINSpec pin,
           ActionListener okListener, String okCmd,
           ActionListener cancelListener, String cancelCmd);
 

@@ -20,6 +20,7 @@ package at.gv.egiz.bku.gui;
 import at.gv.egiz.smcc.PINSpec;
 import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -55,6 +56,8 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
   /** remember the pinSpec to return to worker */
   protected PINSpec pinSpec;
 
+  protected enum DIALOG { VERIFY, ACTIVATE, CHANGE, UNBLOCK };
+
   public PINManagementGUI(Container contentPane,
           Locale locale,
           Style guiStyle,
@@ -84,6 +87,7 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
           final String activateCmd,
           final String changeCmd,
           final String unblockCmd,
+          final String verifyCmd,
           final ActionListener cancelListener,
           final String cancelCmd) {
 
@@ -161,9 +165,10 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                             activateButton.setText(getMessage(BUTTON_CHANGE));
                             activateButton.setEnabled(true);
                             activateButton.setActionCommand(changeCmd);
-                          } else {
-                            activateButton.setText(getMessage(BUTTON_ACTIVATE));
-                            activateButton.setEnabled(false);
+                          } else if (status == STATUS.UNKNOWN) {
+                            activateButton.setText(getMessage(BUTTON_VERIFY));
+                            activateButton.setEnabled(true);
+                            activateButton.setActionCommand(verifyCmd);
                           }
                         }
                       }
@@ -234,11 +239,11 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
           final ActionListener okListener, final String okCommand,
           final ActionListener cancelListener, final String cancelCommand) {
     log.debug("scheduling activate pin dialog");
-    showPINDialog(false, pin, okListener, okCommand, cancelListener, cancelCommand);
+    showPINDialog(DIALOG.ACTIVATE, pin, okListener, okCommand, cancelListener, cancelCommand);
   }
 
 
-  private void showPINDialog(final boolean changePin, final PINSpec pinSpec,
+  private void showPINDialog(final DIALOG type, final PINSpec pinSpec,
           final ActionListener okListener, final String okCommand,
           final ActionListener cancelListener, final String cancelCommand) {
 
@@ -248,17 +253,25 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
             public void run() {
 
               String HELP_TOPIC, TITLE, MESSAGE_MGMT;
-              if (changePin) {
+              HELP_TOPIC = HELP_PINMGMT;
+
+              if (type == DIALOG.CHANGE) {
                 log.debug("show change pin dialog");
-                HELP_TOPIC = HELP_PINMGMT;
                 TITLE = TITLE_CHANGE_PIN;
                 MESSAGE_MGMT = MESSAGE_CHANGE_PIN;
-              } else {
+              } else if (type == DIALOG.ACTIVATE) {
                 log.debug("show activate pin dialog");
-                HELP_TOPIC = HELP_PINMGMT;
                 TITLE = TITLE_ACTIVATE_PIN;
                 MESSAGE_MGMT = MESSAGE_ACTIVATE_PIN;
                 oldPinField = null;
+              } else if (type == DIALOG.VERIFY) {
+                log.debug("show verify pin dialog");
+                TITLE = TITLE_VERIFY_PIN;
+                MESSAGE_MGMT = MESSAGE_VERIFY_PIN;
+              } else {
+                log.debug("show unblock pin dialog");
+                TITLE = TITLE_UNBLOCK_PIN;
+                MESSAGE_MGMT = MESSAGE_UNBLOCK_PIN;
               }
 
                 mainPanel.removeAll();
@@ -267,7 +280,7 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 helpListener.setHelpTopic(HELP_TOPIC);
 
                 JLabel mgmtLabel = new JLabel();
-                mgmtLabel.setFont(mgmtLabel.getFont().deriveFont(mgmtLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+                mgmtLabel.setFont(mgmtLabel.getFont().deriveFont(mgmtLabel.getFont().getStyle() & ~Font.BOLD));
 
                 if (renderHeaderPanel) {
                   titleLabel.setText(getMessage(TITLE));
@@ -282,73 +295,83 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 }
 
                 JButton okButton = new JButton();
-                okButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle() & ~java.awt.Font.BOLD));
+                okButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle() & ~Font.BOLD));
                 okButton.setText(getMessage(BUTTON_OK));
-                okButton.setEnabled(false);
+                okButton.setEnabled(type == DIALOG.VERIFY && pinSpec.getMinLength() == 0);
                 okButton.setActionCommand(okCommand);
                 okButton.addActionListener(okListener);
 
+                JLabel oldPinLabel = null;
+                JLabel repeatPinLabel = null;
                 JLabel pinLabel = new JLabel();
-                pinLabel.setFont(pinLabel.getFont().deriveFont(pinLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                String pinLabelPattern = (changePin) ? getMessage(LABEL_NEW_PIN) : getMessage(LABEL_PIN);
+                pinLabel.setFont(pinLabel.getFont().deriveFont(pinLabel.getFont().getStyle() & ~Font.BOLD));
+                String pinLabelPattern = (type == DIALOG.CHANGE) ? getMessage(LABEL_NEW_PIN) : getMessage(LABEL_PIN);
                 pinLabel.setText(MessageFormat.format(pinLabelPattern, new Object[]{pinSpec.getLocalizedName()}));
 
                 final JPasswordField repeatPinField = new JPasswordField();
                 pinField = new JPasswordField();
                 pinField.setText("");
-                pinField.setDocument(new PINDocument(pinSpec, null));
                 pinField.setActionCommand(okCommand);
                 pinField.addActionListener(new ActionListener() {
 
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         if (pinField.getPassword().length >= pinSpec.getMinLength()) {
-                          repeatPinField.requestFocusInWindow();
-                        }
-                    }
-                });
-                JLabel repeatPinLabel = new JLabel();
-                repeatPinLabel.setFont(pinLabel.getFont());
-                String repeatPinLabelPattern = getMessage(LABEL_REPEAT_PIN);
-                repeatPinLabel.setText(MessageFormat.format(repeatPinLabelPattern, new Object[]{pinSpec.getLocalizedName()}));
-
-                repeatPinField.setText("");
-                repeatPinField.setDocument(new PINDocument(pinSpec, okButton, pinField.getDocument()));
-                repeatPinField.setActionCommand(okCommand);
-                repeatPinField.addActionListener(new ActionListener() {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (pinField.getPassword().length >= pinSpec.getMinLength()) {
+                          if (type == DIALOG.VERIFY) {
                             okListener.actionPerformed(e);
+                          } else {
+                            repeatPinField.requestFocusInWindow();
+                          }
                         }
                     }
                 });
 
-                JLabel oldPinLabel = null;
-                if (changePin) {
-                  oldPinLabel = new JLabel();
-                  oldPinLabel.setFont(oldPinLabel.getFont().deriveFont(oldPinLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                  String oldPinLabelPattern = getMessage(LABEL_OLD_PIN);
-                  oldPinLabel.setText(MessageFormat.format(oldPinLabelPattern, new Object[]{pinSpec.getLocalizedName()}));
+                if (type != DIALOG.VERIFY) {
+                  pinField.setDocument(new PINDocument(pinSpec, null));
+                  repeatPinLabel = new JLabel();
+                  repeatPinLabel.setFont(pinLabel.getFont());
+                  String repeatPinLabelPattern = getMessage(LABEL_REPEAT_PIN);
+                  repeatPinLabel.setText(MessageFormat.format(repeatPinLabelPattern, new Object[]{pinSpec.getLocalizedName()}));
 
-                  oldPinField = new JPasswordField();
-                  oldPinField.setText("");
-                  oldPinField.setDocument(new PINDocument(pinSpec, null));
-                  oldPinField.setActionCommand(okCommand);
-                  oldPinField.addActionListener(new ActionListener() {
+                  repeatPinField.setText("");
+                  repeatPinField.setDocument(new PINDocument(pinSpec, okButton, pinField.getDocument()));
+                  repeatPinField.setActionCommand(okCommand);
+                  repeatPinField.addActionListener(new ActionListener() {
 
                       @Override
                       public void actionPerformed(ActionEvent e) {
-                          if (oldPinField.getPassword().length >= pinSpec.getMinLength()) {
-                            pinField.requestFocusInWindow();
+                          if (pinField.getPassword().length >= pinSpec.getMinLength()) {
+                              okListener.actionPerformed(e);
                           }
                       }
                   });
+
+                  if (type == DIALOG.CHANGE) {
+                    oldPinLabel = new JLabel();
+                    oldPinLabel.setFont(oldPinLabel.getFont().deriveFont(oldPinLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+                    String oldPinLabelPattern = getMessage(LABEL_OLD_PIN);
+                    oldPinLabel.setText(MessageFormat.format(oldPinLabelPattern, new Object[]{pinSpec.getLocalizedName()}));
+
+                    oldPinField = new JPasswordField();
+                    oldPinField.setText("");
+                    oldPinField.setDocument(new PINDocument(pinSpec, null));
+                    oldPinField.setActionCommand(okCommand);
+                    oldPinField.addActionListener(new ActionListener() {
+
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            if (oldPinField.getPassword().length >= pinSpec.getMinLength()) {
+                              pinField.requestFocusInWindow();
+                            }
+                        }
+                    });
+                  } // else -> ACTIVATE (not verify, not change)
+                } else {
+                  pinField.setDocument(new PINDocument(pinSpec, okButton));
                 }
-                
+
                 JLabel pinsizeLabel = new JLabel();
-                pinsizeLabel.setFont(pinsizeLabel.getFont().deriveFont(pinsizeLabel.getFont().getStyle() & ~java.awt.Font.BOLD, pinsizeLabel.getFont().getSize()-2));
+                pinsizeLabel.setFont(pinsizeLabel.getFont().deriveFont(pinsizeLabel.getFont().getStyle() & ~Font.BOLD, pinsizeLabel.getFont().getSize()-2));
                 String pinsizePattern = getMessage(LABEL_PINSIZE);
                 String pinSize = String.valueOf(pinSpec.getMinLength());
                 if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
@@ -375,37 +398,39 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 GroupLayout.ParallelGroup pinHorizontal = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
                 GroupLayout.SequentialGroup pinVertical = mainPanelLayout.createSequentialGroup();
 
-                if (pinLabelPos == PinLabelPosition.ABOVE) {
-                  if (changePin) {
-                    pinHorizontal
-                            .addComponent(oldPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(oldPinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
-                    pinVertical
-                            .addComponent(oldPinLabel)
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(oldPinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED);
-                  }
-                  pinHorizontal 
-                          .addComponent(pinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                          .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                          .addComponent(repeatPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                          .addComponent(repeatPinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                          .addGroup(mainPanelLayout.createSequentialGroup()
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                            .addComponent(pinsizeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE));
-                  pinVertical
-                          .addComponent(pinLabel)
-                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                          .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                          .addComponent(repeatPinLabel)
-                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                          .addComponent(repeatPinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                          .addComponent(pinsizeLabel);
-                } else {
-                  if (changePin) {
+//                if (pinLabelPos == PinLabelPosition.ABOVE) {
+//                  if (changePin) {
+//                      pinHorizontal
+//                              .addComponent(oldPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+//                              .addComponent(oldPinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
+//                      pinVertical
+//                              .addComponent(oldPinLabel)
+//                              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+//                              .addComponent(oldPinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+//                              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED);
+//                  }
+//                  pinHorizontal
+//                          .addComponent(pinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+//                          .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//                          .addComponent(repeatPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+//                          .addComponent(repeatPinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//                          .addGroup(mainPanelLayout.createSequentialGroup()
+//                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+//                            .addComponent(pinsizeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE));
+//                  pinVertical
+//                          .addComponent(pinLabel)
+//                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+//                          .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+//                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+//                          .addComponent(repeatPinLabel)
+//                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+//                          .addComponent(repeatPinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+//                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+//                          .addComponent(pinsizeLabel);
+//                } else {
+
+
+                  if (type == DIALOG.CHANGE) {
                     pinHorizontal
                           .addGroup(mainPanelLayout.createSequentialGroup()
                             .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -422,8 +447,16 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                           .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                             .addComponent(oldPinLabel)
                             .addComponent(oldPinField))
+                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                            .addComponent(pinLabel)
+                            .addComponent(pinField))
+                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                            .addComponent(repeatPinLabel)
+                            .addComponent(repeatPinField))
                           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED);
-                  } else {
+                  } else if (type == DIALOG.ACTIVATE) {
                     pinHorizontal
                           .addGroup(mainPanelLayout.createSequentialGroup()
                             .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -434,12 +467,7 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                               .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                               .addComponent(repeatPinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
 
-                  }
-                  pinHorizontal
-                          .addGroup(mainPanelLayout.createSequentialGroup()
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                            .addComponent(pinsizeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE));
-                  pinVertical
+                    pinVertical
                           .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                             .addComponent(pinLabel)
                             .addComponent(pinField))
@@ -447,9 +475,27 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                           .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                             .addComponent(repeatPinLabel)
                             .addComponent(repeatPinField))
-                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED);
+                  } else { // VERIFY
+                    pinHorizontal
+                          .addGroup(mainPanelLayout.createSequentialGroup()
+                            .addComponent(pinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+
+                    pinVertical
+                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                            .addComponent(pinLabel)
+                            .addComponent(pinField))
+                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED);
+                  }
+                  pinHorizontal
+                          .addGroup(mainPanelLayout.createSequentialGroup()
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                            .addComponent(pinsizeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE));
+                  pinVertical
                           .addComponent(pinsizeLabel);
-                }
+//                }
 
                 mainPanelLayout.setHorizontalGroup(
                   mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -503,7 +549,7 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
           final ActionListener cancelListener, final String cancelCommand) {
     
       log.debug("scheduling change pin dialog");
-      showPINDialog(true, pin, okListener, okCommand, cancelListener, cancelCommand);
+      showPINDialog(DIALOG.CHANGE, pin, okListener, okCommand, cancelListener, cancelCommand);
   }
 
   @Override
@@ -611,5 +657,10 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
     }
 
     return bs;
+  }
+
+  @Override
+  public void showVerifyPINDialog(PINSpec pin, ActionListener okListener, String okCmd, ActionListener cancelListener, String cancelCmd) {
+    showPINDialog(DIALOG.VERIFY, pin, okListener, okCmd, cancelListener, cancelCmd);
   }
 }

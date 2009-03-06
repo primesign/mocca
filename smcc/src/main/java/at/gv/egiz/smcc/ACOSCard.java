@@ -31,6 +31,7 @@ package at.gv.egiz.smcc;
 import at.gv.egiz.smcc.util.SMCCHelper;
 import java.nio.charset.Charset;
 
+import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
@@ -334,8 +335,8 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
   }
 
   @Override
-  public int verifyPIN(String pin, byte kid) throws LockedException, NotActivatedException, SignatureCardException {
-    
+  protected int verifyPIN(String pin, byte kid) throws LockedException, NotActivatedException, SignatureCardException {
+
     CardChannel channel = getCardChannel();
 
     ResponseAPDU resp;
@@ -343,13 +344,17 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
       if (pin != null) {
         resp = transmit(channel, new CommandAPDU(0x00, 0x20, 0x00, kid, encodePINBlock(pin)), false);
       } else {
+        //TODO this is not supported
         resp = transmit(channel, new CommandAPDU(0x00, 0x20, 0x00, kid), false);
       }
     } catch (CardException ex) {
       log.error("smart card communication failed: " + ex.getMessage());
       throw new SignatureCardException("smart card communication failed: " + ex.getMessage(), ex);
     }
-    
+
+    //6A 00 (falshe P1/P2) nicht in contextAID
+    //69 85 (nutzungsbedingungen nicht erfüllt) in DF_Sig und nicht sigpin
+
     if (resp.getSW() == 0x63c0) {
       throw new LockedException("PIN locked.");
     } else if (resp.getSW1() == 0x63 && resp.getSW2() >> 4 == 0xc) {
@@ -363,7 +368,6 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
       throw new SignatureCardException("Failed to verify pin: SW="
           + Integer.toHexString(resp.getSW()) + ".");
     }
-
   }
   
   private void mseSetDST(int p1, int p2, byte[] dst) throws CardException, SignatureCardException {
@@ -432,8 +436,7 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
    * @param pin
    * @return a 8 byte pin block 
    */
-  @Override
-  public byte[] encodePINBlock(String pin) {
+  private byte[] encodePINBlock(String pin) {
     byte[] asciiPIN = pin.getBytes(Charset.forName("ASCII"));
     byte[] encodedPIN = new byte[8];
     System.arraycopy(asciiPIN, 0, encodedPIN, 0, Math.min(asciiPIN.length,
@@ -443,7 +446,72 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
   }
 
   @Override
-  public void activatePIN(byte kid, byte[] contextAID, String pin) throws SignatureCardException {
+  public void activatePIN(PINSpec pinSpec, String pin) throws SignatureCardException {
     throw new SignatureCardException("PIN activation not supported by this card");
+  }
+
+  /**
+   * SCARD_E_NOT_TRANSACTED inf/dec PIN not active (pcsc crash)
+   * @param pinSpec
+   * @param oldPIN
+   * @param newPIN
+   * @throws at.gv.egiz.smcc.LockedException
+   * @throws at.gv.egiz.smcc.VerificationFailedException
+   * @throws at.gv.egiz.smcc.NotActivatedException
+   * @throws at.gv.egiz.smcc.SignatureCardException
+   */
+  @Override
+  public void changePIN(PINSpec pinSpec, String oldPIN, String newPIN)
+          throws LockedException, VerificationFailedException, NotActivatedException, SignatureCardException {
+    Card icc = getCard();
+    try {
+      icc.beginExclusive();
+      CardChannel channel = icc.getBasicChannel();
+
+      if (pinSpec.getContextAID() != null) {
+        ResponseAPDU responseAPDU = transmit(channel,
+                new CommandAPDU(0x00, 0xa4, 0x04, 0x0c, pinSpec.getContextAID()));
+        if (responseAPDU.getSW() != 0x9000) {
+          icc.endExclusive();
+          String msg = "Select AID " + SMCCHelper.toString(pinSpec.getContextAID()) +
+                  ": SW=" + Integer.toHexString(responseAPDU.getSW());
+          log.error(msg);
+          throw new SignatureCardException(msg);
+        }
+      }
+
+      byte[] cmd = new byte[16];
+      System.arraycopy(encodePINBlock(oldPIN), 0, cmd, 0, 8);
+      System.arraycopy(encodePINBlock(newPIN), 0, cmd, 8, 8);
+
+      ResponseAPDU responseAPDU = transmit(channel,
+              new CommandAPDU(0x00, 0x24, 0x00, pinSpec.getKID(), cmd), false);
+
+      icc.endExclusive();
+
+      log.debug("change pin returned SW=" + Integer.toHexString(responseAPDU.getSW()));
+
+      if (responseAPDU.getSW() == 0x63c0) {
+        log.error(pinSpec.getLocalizedName() + " locked");
+        throw new LockedException();
+      } else if (responseAPDU.getSW1() == 0x63 && responseAPDU.getSW2() >> 4 == 0xc) {
+        int retries = responseAPDU.getSW2() & 0x0f;
+        log.error("wrong " + pinSpec.getLocalizedName() + ", " + retries + " retries");
+        throw new VerificationFailedException(retries);
+      } else if (responseAPDU.getSW() == 0x6983) {
+        // sig-pin only (card not transacted for inf/dec pin)
+        log.error(pinSpec.getLocalizedName() + " not activated");
+        throw new NotActivatedException();
+      } else if (responseAPDU.getSW() != 0x9000) {
+        String msg = "Failed to change " + pinSpec.getLocalizedName() +
+                ": SW=" + Integer.toHexString(responseAPDU.getSW());
+        log.error(msg);
+        throw new SignatureCardException(msg);
+      }
+    } catch (CardException ex) {
+      log.error("Failed to change " + pinSpec.getLocalizedName() +
+              ": " + ex.getMessage());
+      throw new SignatureCardException(ex.getMessage(), ex);
+    }
   }
 }

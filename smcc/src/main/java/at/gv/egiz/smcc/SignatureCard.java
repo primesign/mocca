@@ -125,21 +125,20 @@ public interface SignatureCard {
 
   /**
    *
+   * @param pinSpec descriptor which pin to verify
    * @param pin may be null to test the PIN status
-   * @param kid
    * @return the number of remaining retries or -1
    * @throws at.gv.egiz.smcc.LockedException
    * @throws at.gv.egiz.smcc.NotActivatedException
    * @throws at.gv.egiz.smcc.SignatureCardException
    */
-  public int verifyPIN(String pin, byte kid) throws LockedException, NotActivatedException, SignatureCardException;
+  public int verifyPIN(PINSpec pinSpec, String pin)
+          throws LockedException, NotActivatedException, SignatureCardException;
 
-  public void changePIN(byte kid, byte[] contextAID,
-          String oldPIN, String newPIN)
-          throws SignatureCardException, VerificationFailedException;
+  public void changePIN(PINSpec pinSpec, String oldPIN, String newPIN)
+          throws LockedException, VerificationFailedException, NotActivatedException, SignatureCardException;
 
-  public void activatePIN(byte kid, byte[] contextAID,
-          String pin)
+  public void activatePIN(PINSpec pinSpec, String pin)
           throws SignatureCardException;
 
   /**

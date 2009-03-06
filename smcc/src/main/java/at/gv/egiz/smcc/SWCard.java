@@ -394,21 +394,20 @@ public class SWCard implements SignatureCard {
   }
 
   @Override
-  public int verifyPIN(String pin, byte kid) throws LockedException, NotActivatedException, SignatureCardException {
-    return -1;
-  }
-
-  @Override
   public List<PINSpec> getPINSpecs() {
     return new ArrayList<PINSpec>();
   }
 
   @Override
-  public void changePIN(byte kid, byte[] contextAID, String oldPIN, String newPIN) throws SignatureCardException, VerificationFailedException {
+  public int verifyPIN(PINSpec pinSpec, String pin) throws LockedException, NotActivatedException, SignatureCardException {
+    return -1;
   }
 
   @Override
-  public void activatePIN(byte kid, byte[] contextAID, String pin) throws SignatureCardException {
+  public void changePIN(PINSpec pinSpec, String oldPIN, String newPIN) throws LockedException, VerificationFailedException, NotActivatedException, SignatureCardException {
   }
 
+  @Override
+  public void activatePIN(PINSpec pinSpec, String pin) throws SignatureCardException {
+  }
 }

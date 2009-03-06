@@ -124,4 +124,10 @@ public class BKUGuiProxy implements BKUGUIFacade {
     showDialog();
     delegate.showHashDataInputDialog(signedReferences, okListener, okCommand);
   }
+
+  @Override
+  public void showMessageDialog(String titleKey, String msgKey, Object[] msgParams, ActionListener okListener, String okCommand) {
+    showDialog();
+    delegate.showMessageDialog(titleKey, msgKey, msgParams, okListener, okCommand);
+  }
 }

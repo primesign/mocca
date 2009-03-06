@@ -20,8 +20,6 @@ import at.gv.egiz.bku.gui.PINManagementGUIFacade.STATUS;
 import at.gv.egiz.smcc.PINSpec;
 import java.util.Map;
 import javax.swing.table.DefaultTableModel;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  *
@@ -29,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class PINStatusTableModel extends DefaultTableModel {
 
-  protected static final Log log = LogFactory.getLog(PINStatusTableModel.class);
+//  protected static final Log log = LogFactory.getLog(PINStatusTableModel.class);
   protected Class[] types;
 
   public PINStatusTableModel(Map<PINSpec, STATUS> pinStatuses) {
@@ -37,7 +35,7 @@ public class PINStatusTableModel extends DefaultTableModel {
     if (pinStatuses == null) {
       throw new RuntimeException("pinStatuses must not be null");
     }
-    log.trace(pinStatuses.size() + " PINs");
+//    log.trace(pinStatuses.size() + " PINs");
     types = new Class[] { PINSpec.class, STATUS.class };
     for (PINSpec pinSpec : pinStatuses.keySet()) {
       addRow(new Object[] { pinSpec, pinStatuses.get(pinSpec) });
