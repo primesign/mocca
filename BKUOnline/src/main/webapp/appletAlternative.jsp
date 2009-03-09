@@ -15,39 +15,46 @@
   limitations under the License.
 -->
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8"
-         import="at.gv.egiz.org.apache.tomcat.util.http.AcceptLanguage"%>
+         pageEncoding="UTF-8"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>MOCCA PIN Management</title>
+        <title>MOCCA Applet</title>
         <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
         <script type="text/javascript" src="js/deployJava.js"></script>
-        <style type="text/css" media="all">@import "css/applet.css";</style>
+        <style type="text/css" media="all">@import "css/appletAlternative.css";</style>
 
         <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
         <META HTTP-EQUIV="EXPIRES" CONTENT="Mon, 22 Jul 2002 11:12:01 GMT">
         <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
     </head>
     <%
-        String locale = request.getParameter("locale");
-        if (locale == null) {
-            String acceptLanguage = request.getHeader("Accept-Language");
-            locale = AcceptLanguage.getLocale(acceptLanguage).toString();
+        // min W/H (for de locale): 145px/145px with gui style 'tiny'
+        // (vs. 152px on linux)
+        int width = session.getAttribute("appletWidth") == null ? 190
+                : (Integer) session.getAttribute("appletWidth"); //230 for workshop demo integration
+        int height = session.getAttribute("appletHeight") == null ? 130
+                : (Integer) session.getAttribute("appletHeight");
+        String backgroundImg = (String) session.getAttribute("appletBackground");
+        String guiStyle = (String) session.getAttribute("appletGuiStyle");
+        String locale = (String) session.getAttribute("locale");
+        String extension = (String) session.getAttribute("extension");
+
+        String appletClass, appletArchive;
+        if ("activation".equals(extension)) {
+            appletArchive = "BKUAppletExt.jar";
+            appletClass = "at.gv.egiz.bku.online.applet.ActivationApplet.class";
+        } else if ("pin".equals(extension)) {
+            appletArchive = "BKUAppletExt.jar";
+            appletClass = "at.gv.egiz.bku.online.applet.PINManagementApplet.class";
+        } else {
+            appletArchive = "BKUApplet.jar";
+            appletClass = "at.gv.egiz.bku.online.applet.BKUApplet.class";
         }
-        String widthP = request.getParameter("appletWidth");
-        String heightP = request.getParameter("appletHeight");
-        int width = (widthP == null) ? 295
-                : Integer.parseInt(widthP);
-        int height = (heightP == null) ? 200
-                : Integer.parseInt(heightP);
-        String guiStyle = request.getParameter("appletGuiStyle");
-        if (guiStyle == null) {
-            guiStyle = "advanced";
-        }
-        String backgroundImg = request.getParameter("appletBackground");
+        appletArchive = "BKUAppletExt.jar";
+        appletClass = "at.gv.egiz.bku.online.applet.ActivationApplet.class";
     %>
     <body id="appletpage" style="width:<%=width%>">
             <script>
@@ -57,8 +64,8 @@
                 } else {
                     var attributes = {
                         codebase :'applet',
-                        code : 'at.gv.egiz.bku.online.applet.PINManagementApplet.class',
-                        archive : 'BKUAppletExt.jar, commons-logging.jar, iaik_jce_me4se.jar',
+                        code : '<%=appletClass%>',
+                        archive : '<%=appletArchive + ", commons-logging.jar, iaik_jce_me4se.jar"%>',
                         width : <%=width%>,
                         height :<%=height%>
                     };
@@ -66,9 +73,10 @@
                         GuiStyle : '<%=guiStyle%>',
                         Locale : '<%=locale%>',
                         Background : '<%=backgroundImg%>',
+                        WSDL_URL :'../stal;jsessionid=<%=session.getId()%>?wsdl',
                         HelpURL : '../help/',
-                        SessionID : '<%=request.getSession().getId()%>',
-                        RedirectURL : '../',
+                        SessionID : '<%=session.getId()%>',
+                        RedirectURL : '../bkuResult',
                         RedirectTarget: '_parent'
                     };
                     var version = '1.6.0_04';

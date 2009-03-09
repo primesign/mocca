@@ -116,7 +116,6 @@ public class ResultServlet extends SpringBKUServlet {
       return;
     }
     resp.setStatus(bp.getResponseCode());
-//    log.info("ALLOW CACHING OF RESULT PAGE");
     resp.setHeader("Cache-Control", "no-store"); // HTTP 1.1
     resp.setHeader("Pragma", "no-cache"); // HTTP 1.0
     resp.setDateHeader("Expires", 0);

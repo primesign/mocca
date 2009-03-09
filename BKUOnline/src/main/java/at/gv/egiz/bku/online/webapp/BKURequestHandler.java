@@ -45,7 +45,9 @@ import at.gv.egiz.org.apache.tomcat.util.http.AcceptLanguage;
  * 
  */
 public class BKURequestHandler extends SpringBKUServlet {
-  public static final String BKU_APPLET_JSP = "BKUApplet";
+
+  public static final String APPLET_PAGE_P = "appletPage";
+  public static final String APPLET_PAGE_DEFAULT = "BKUApplet";
 
   private static final long serialVersionUID = 1L;
 
@@ -69,7 +71,7 @@ public class BKURequestHandler extends SpringBKUServlet {
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, java.io.IOException {
-    log.debug("Received new request");
+    log.debug("Received SecurityLayer request");
     
     HttpSession session = req.getSession(false);
     if (session != null) {
@@ -79,9 +81,9 @@ public class BKURequestHandler extends SpringBKUServlet {
           IdFactory.getInstance().createId(session.getId()));
       if (bp != null) {
         log.debug("Found binding processor, using this one");
-        RequestDispatcher dispatcher = getServletContext().getNamedDispatcher(
-            BKU_APPLET_JSP);
-        log.debug("forward to applet");
+        String appletPage = (String) session.getAttribute(APPLET_PAGE_P);
+        RequestDispatcher dispatcher = getServletContext().getNamedDispatcher(appletPage);
+        log.debug("forward to applet " + appletPage);
         dispatcher.forward(req, resp);
         return;
       }
@@ -121,6 +123,15 @@ public class BKURequestHandler extends SpringBKUServlet {
     getBindingProcessorManager().process(bindingProcessor);
 
     log.trace("Trying to find applet parameters in request");
+
+    String appletPage = getStringFromStream(bindingProcessor
+        .getFormData(APPLET_PAGE_P), charset);
+    if (appletPage == null) {
+      appletPage = APPLET_PAGE_DEFAULT;
+    }
+    log.trace("requested appletPage " + appletPage);
+    session.setAttribute(APPLET_PAGE_P, appletPage);
+
     String width = getStringFromStream(bindingProcessor
         .getFormData("appletWidth"), charset);
     String height = getStringFromStream(bindingProcessor
@@ -186,10 +197,16 @@ public class BKURequestHandler extends SpringBKUServlet {
       log.info("Got redirect URL "+redirectUrl+". Deferring browser redirect.");
       session.setAttribute(REDIRECT_URL_SESSION_ATTRIBUTE, redirectUrl);
     }
-    // TODO error if no dispatcher found
     RequestDispatcher dispatcher = getServletContext().getNamedDispatcher(
-        BKU_APPLET_JSP);
-    log.debug("forward to applet");
+        appletPage);
+    if (dispatcher == null) {
+      log.warn("requested AppletPage " + appletPage + " not configured");
+      appletPage = APPLET_PAGE_DEFAULT;
+      session.setAttribute(APPLET_PAGE_P, APPLET_PAGE_DEFAULT);
+      dispatcher = getServletContext().getNamedDispatcher(
+        appletPage);
+    }
+    log.debug("forward to applet " + appletPage);
     dispatcher.forward(req, resp);
   }
 

@@ -53,6 +53,10 @@
         <jsp-file>/applet.jsp</jsp-file>
     </servlet>
     <servlet>
+        <servlet-name>BKUAppletAlternative</servlet-name>
+        <jsp-file>/appletAlternative.jsp</jsp-file>
+    </servlet>
+    <servlet>
       <servlet-name>help</servlet-name>
       <jsp-file>/help.jsp</jsp-file>
     </servlet>
