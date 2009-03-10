@@ -126,8 +126,9 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
             err.setErrorCode(6002);
           } else {
             Throwable cause = ex.getCause();
-            if (cause != null) {
-              log.error("caused by: " + cause.getMessage());
+            if (cause != null && cause instanceof InterruptedException) {
+              log.info("do not return error response, client might want to resume session");
+              finished = true;
             }
             err.setErrorCode(4000);
           }
@@ -155,7 +156,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
 
 
       } while (!finished);
-      log.info("Done " + Thread.currentThread().getName());
+      log.info("Finished " + Thread.currentThread().getName());
 
     } catch (WebServiceException ex) {
       log.fatal("communication error with server STAL: " + ex.getMessage(), ex);
