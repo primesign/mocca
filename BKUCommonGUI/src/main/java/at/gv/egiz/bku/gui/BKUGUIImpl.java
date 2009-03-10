@@ -970,7 +970,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 mainPanelLayout.setVerticalGroup(mainVertical
                         .addComponent(msgLabel));
 
-                if (okListener != null && okCommand != null) {
+                if (okListener != null) {
                   JButton okButton = new JButton();
                   okButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle() & ~java.awt.Font.BOLD));
                   okButton.setText(getMessage(BUTTON_OK));
