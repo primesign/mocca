@@ -21,6 +21,7 @@
 package at.gv.egiz.bku.gui;
 
 import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.STARCOSCard;
 import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.impl.ByteArrayHashDataInput;
 import java.awt.event.ActionEvent;
@@ -46,7 +47,8 @@ public class BKUGUIWorker implements Runnable {
   public void run() {
 //        try {
 
-    final PINSpec signPinSpec = new PINSpec(6, 10, "[0-9]", "Signatur-PIN", (byte) 0x81, null);
+    final PINSpec signPinSpec = new PINSpec(6, 10, "[0-9]", "Test-PIN", (byte) 0x81, null);
+    final PINSpec cardPinSpec = new PINSpec(4, 4, "[0-9]", "Test-PIN", (byte) 0x01, null);
 
 
     final ActionListener cancelListener = new ActionListener() {
