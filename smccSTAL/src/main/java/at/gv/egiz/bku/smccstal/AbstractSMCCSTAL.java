@@ -101,7 +101,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
             return null;
           }
         } catch (InterruptedException e) {
-          log.info("Interrupt in handleRequest, do not retry");
+          log.info("Interrupt during request handling, do not retry");
           throw e;
         } catch (Exception e) {
           log.info("Error while handling STAL request:", e);
@@ -140,8 +140,8 @@ public abstract class AbstractSMCCSTAL implements STAL {
           }
         }
       } catch (InterruptedException ex) {
-        log.error("got interrupted, return ErrorResponse 6001");
-        throw new RuntimeException(ex);
+        log.error("interrupted during request handling");
+        throw new RuntimeException("interrupted during request handling", ex);
       }
       
     }
