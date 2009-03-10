@@ -605,27 +605,27 @@ public class BKUGUIImpl implements BKUGUIFacade {
                           .addComponent(helpLabel);
                 } 
 
-                GroupLayout.Group pinHorizontal;
+                // align pinfield and pinsize to the right
+                GroupLayout.ParallelGroup pinHorizontal = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING);
                 GroupLayout.Group pinVertical;
 
                 if (pinLabelPos == PinLabelPosition.ABOVE) {
-                  pinHorizontal = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                          .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                          .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                          .addGroup(mainPanelLayout.createSequentialGroup()
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                            .addComponent(pinsizeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE));
+                  pinHorizontal
+                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                            .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                          .addComponent(pinsizeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE);
                   pinVertical = mainPanelLayout.createSequentialGroup()
                           .addComponent(cardPinLabel)
                           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                           .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE);
                 } else {
-                  pinHorizontal = mainPanelLayout.createSequentialGroup()
-                          .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(pinsizeLabel));
+                  pinHorizontal
+                          .addGroup(mainPanelLayout.createSequentialGroup()
+                            .addComponent(cardPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                          .addComponent(pinsizeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE);
                   pinVertical = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                           .addComponent(cardPinLabel)
                           .addComponent(pinField);
@@ -806,28 +806,27 @@ public class BKUGUIImpl implements BKUGUIFacade {
                           .addComponent(helpLabel);
                 }
 
-                GroupLayout.Group pinHorizontal;
+                // align pinfield and pinsize to the right
+                GroupLayout.ParallelGroup pinHorizontal = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING);
                 GroupLayout.Group pinVertical;
 
                 if (pinLabelPos == PinLabelPosition.ABOVE) {
-                  pinHorizontal = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                          .addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                          .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                          .addGroup(mainPanelLayout.createSequentialGroup()
-                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                            .addComponent(pinsizeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE));
-                          
+                  pinHorizontal
+                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                            .addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                          .addComponent(pinsizeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE);
                   pinVertical = mainPanelLayout.createSequentialGroup()
                           .addComponent(signPinLabel)
                           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                           .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE);
                 } else {
-                  pinHorizontal = mainPanelLayout.createSequentialGroup()
-                          .addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(pinsizeLabel));
+                  pinHorizontal
+                          .addGroup(mainPanelLayout.createSequentialGroup()
+                            .addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                          .addComponent(pinsizeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE);
                   pinVertical = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                           .addComponent(signPinLabel)
                           .addComponent(pinField);
