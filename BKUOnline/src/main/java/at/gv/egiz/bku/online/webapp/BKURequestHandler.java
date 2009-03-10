@@ -81,10 +81,10 @@ public class BKURequestHandler extends SpringBKUServlet {
           IdFactory.getInstance().createId(session.getId()));
       if (bp != null) {
         log.debug("Found binding processor, using this one");
-        String appletPage = (String) session.getAttribute(APPLET_PAGE_P);
-        RequestDispatcher dispatcher = getServletContext().getNamedDispatcher(appletPage);
-        log.debug("forward to applet " + appletPage);
-        dispatcher.forward(req, resp);
+        String appletPage = getStringFromStream(
+                ((HTTPBindingProcessor) bp).getFormData(APPLET_PAGE_P),
+                req.getCharacterEncoding());
+        getDispatcher(appletPage).forward(req, resp);
         return;
       }
       log.debug("Did not find a binding processor, creating new ...");
@@ -123,14 +123,6 @@ public class BKURequestHandler extends SpringBKUServlet {
     getBindingProcessorManager().process(bindingProcessor);
 
     log.trace("Trying to find applet parameters in request");
-
-    String appletPage = getStringFromStream(bindingProcessor
-        .getFormData(APPLET_PAGE_P), charset);
-    if (appletPage == null) {
-      appletPage = APPLET_PAGE_DEFAULT;
-    }
-    log.trace("requested appletPage " + appletPage);
-    session.setAttribute(APPLET_PAGE_P, appletPage);
 
     String width = getStringFromStream(bindingProcessor
         .getFormData("appletWidth"), charset);
@@ -197,17 +189,10 @@ public class BKURequestHandler extends SpringBKUServlet {
       log.info("Got redirect URL "+redirectUrl+". Deferring browser redirect.");
       session.setAttribute(REDIRECT_URL_SESSION_ATTRIBUTE, redirectUrl);
     }
-    RequestDispatcher dispatcher = getServletContext().getNamedDispatcher(
-        appletPage);
-    if (dispatcher == null) {
-      log.warn("requested AppletPage " + appletPage + " not configured");
-      appletPage = APPLET_PAGE_DEFAULT;
-      session.setAttribute(APPLET_PAGE_P, APPLET_PAGE_DEFAULT);
-      dispatcher = getServletContext().getNamedDispatcher(
-        appletPage);
-    }
-    log.debug("forward to applet " + appletPage);
-    dispatcher.forward(req, resp);
+
+    String appletPage = getStringFromStream(bindingProcessor
+        .getFormData(APPLET_PAGE_P), charset);
+    getDispatcher(appletPage).forward(req, resp);
   }
 
   @Override
@@ -215,4 +200,22 @@ public class BKURequestHandler extends SpringBKUServlet {
       throws ServletException, java.io.IOException {
     doPost(req, resp);
   }
+
+  private RequestDispatcher getDispatcher(String appletPage) {
+    RequestDispatcher dispatcher = null;
+    if (appletPage != null) {
+      log.trace("requested appletPage " + appletPage);
+      dispatcher = getServletContext().getNamedDispatcher(appletPage);
+    }
+    if (dispatcher == null) {
+      log.trace("no appletPage requested or appletPage not configured, using default");
+      appletPage = APPLET_PAGE_DEFAULT;
+      dispatcher = getServletContext().getNamedDispatcher(appletPage);
+    }
+//    session.setAttribute(APPLET_PAGE_P, appletPage);
+    log.debug("forward to applet " + appletPage);
+
+    return dispatcher;
+  }
+
 }
