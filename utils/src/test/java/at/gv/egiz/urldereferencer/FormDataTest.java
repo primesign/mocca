@@ -77,12 +77,20 @@ public class FormDataTest implements FormDataURLSupplier {
   @Test
   public void testFormData() throws IOException {
     paramName = "Müllcontainer";
+    testStream = new ByteArrayInputStream("HelloWorld".getBytes("UTF-8"));
     String url = "formdata:"+paramName;
     StreamData sd = URLDereferencer.getInstance().dereference(url, urlCtx);
-    assertNull(sd);
-    testStream = new ByteArrayInputStream("HelloWorld".getBytes("UTF-8"));
-    sd = URLDereferencer.getInstance().dereference(url, urlCtx);
+    assertNotNull(sd);
     String result = StreamUtil.asString(sd.getStream(), "UTF-8");
     assertEquals("HelloWorld", result);
   }
+  
+  @Test(expected=IOException.class)
+  public void testFormDataNotFound() throws IOException {
+    paramName = "Müllcontainer";
+    testStream = new ByteArrayInputStream("HelloWorld".getBytes("UTF-8"));
+    String url = "formdata:"+paramName+"2";
+    StreamData sd = URLDereferencer.getInstance().dereference(url, urlCtx);
+  }
+  
 }

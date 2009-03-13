@@ -61,6 +61,7 @@ public class Container {
     handlers.setHandlers(new Handler[] { webappcontext, new DefaultHandler() });
 
     server.setHandler(handlers);
+    server.setGracefulShutdown(1000*3);
   }
 
   public void start() throws Exception {

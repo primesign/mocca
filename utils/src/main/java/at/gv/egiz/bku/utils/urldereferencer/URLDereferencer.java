@@ -55,6 +55,8 @@ public class URLDereferencer {
    * @param aContext
    * @throws MalformedURLException
    *           if the protocol is not supported
+   * @throws IOException if the url cannot be dereferenced (e.g. formdata not provided)
+   *           
    */
   public StreamData dereference(String aUrl, URLDereferencerContext aContext)
       throws IOException {

@@ -59,6 +59,7 @@ import static org.junit.Assert.*;
  *
  * @author clemens
  */
+@Ignore
 public class STALRequestBrokerTest {
 
     private static final Log log = LogFactory.getLog(STALRequestBrokerTest.class);

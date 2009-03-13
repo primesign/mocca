@@ -151,12 +151,12 @@ public class TrayIconDialog implements TrayIconDialogInterface {
   public synchronized static TrayIconDialogInterface getInstance() {
     ClassLoader cl = TrayIconDialog.class.getClassLoader();
     if (instance == null) {
-      if (cl.toString().startsWith("sun.")) {
+      if (cl.toString().equals(cl.getParent().toString())) {
         instance = new TrayIconDialog();
         return instance;
       }
       ClassLoader parent = cl;
-      while (!parent.toString().startsWith("sun.")) {
+      while (!parent.toString().equals(cl.getParent().toString())) {
         parent = parent.getParent();
       }
       try {
