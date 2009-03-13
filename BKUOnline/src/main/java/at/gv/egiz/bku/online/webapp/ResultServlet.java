@@ -79,7 +79,21 @@ public class ResultServlet extends SpringBKUServlet {
   }
 
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, java.io.IOException {
+      throws ServletException, java.io.IOException { 
+    String version = configurator.getProperty(Configurator.SIGNATURE_LAYOUT);
+    if ((version != null) && (!"".equals(version.trim()))) {
+      resp.setHeader(Configurator.SIGNATURE_LAYOUT, version);
+    } else {
+      log.debug("Do not set siglayout header");
+    }
+      
+    if (configurator.getProperty(Configurator.USERAGENT_CONFIG_P) != null) {
+      resp.setHeader(HttpUtil.HTTP_HEADER_SERVER, configurator
+          .getProperty(Configurator.USERAGENT_CONFIG_P));
+    } else {
+      resp.setHeader(HttpUtil.HTTP_HEADER_SERVER,
+              Configurator.USERAGENT_DEFAULT);
+    }
 
     HttpSession session = req.getSession(false);
     if (session == null) {
@@ -119,13 +133,6 @@ public class ResultServlet extends SpringBKUServlet {
     resp.setHeader("Cache-Control", "no-store"); // HTTP 1.1
     resp.setHeader("Pragma", "no-cache"); // HTTP 1.0
     resp.setDateHeader("Expires", 0);
-    if (configurator.getProperty(Configurator.USERAGENT_CONFIG_P) != null) {
-      resp.setHeader(HttpUtil.HTTP_HEADER_USER_AGENT, configurator
-          .getProperty(Configurator.USERAGENT_CONFIG_P));
-    } else {
-      resp.setHeader(HttpUtil.HTTP_HEADER_USER_AGENT,
-              Configurator.USERAGENT_DEFAULT);
-    }
     for (Iterator<String> it = bp.getResponseHeaders().keySet().iterator(); it
         .hasNext();) {
       String header = it.next();

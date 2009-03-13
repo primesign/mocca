@@ -30,6 +30,7 @@ public class HttpUtil {
   public final static String DEFAULT_CHARSET = "ISO-8859-1";
   public final static String HTTP_HEADER_CONTENT_TYPE = "Content-Type";
   public static final String HTTP_HEADER_USER_AGENT = "User-Agent";
+  public static final String HTTP_HEADER_SERVER = "Server";
   public final static String HTTP_HEADER_REFERER = "Referer";
   public final static String CONTENT_TRANSFER_ENCODING = "Content-Transfer-Encoding";
   public final static String MULTIPART_FOTMDATA = "multipart/form-data";

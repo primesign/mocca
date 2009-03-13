@@ -81,6 +81,13 @@ public class HTTPURLProtocolHandlerImpl implements URLProtocolHandler {
         .getInputStream());
   }
 
+  /**
+   * 
+   * @param aUrl
+   * @param aContext
+   * @return
+   * @throws IOException if the data cannot be found or reading the stream failed.
+   */
   protected StreamData dereferenceFormData(String aUrl,
       URLDereferencerContext aContext) throws IOException {
     log.debug("Dereferencing formdata url: " + aUrl);
@@ -96,7 +103,7 @@ public class HTTPURLProtocolHandlerImpl implements URLProtocolHandler {
     if (is != null) {
       return new StreamData(aUrl, contentType, is);
     }
-    return null;
+     throw new IOException("Cannot dereference url: formdata not found");
   }
 
   @Override

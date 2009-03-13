@@ -33,15 +33,14 @@ import org.apache.commons.logging.LogFactory;
 import at.gv.egiz.bku.binding.BindingProcessorManager;
 import at.gv.egiz.bku.binding.HTTPBindingProcessor;
 import at.gv.egiz.bku.binding.HttpUtil;
+import at.gv.egiz.bku.conf.Configurator;
 import at.gv.egiz.org.apache.tomcat.util.http.AcceptLanguage;
 
-public abstract class BKURequestHandler extends HttpServlet {
+public class BKURequestHandler extends SpringBKUServlet {
 
 	public final static String ENCODING = "UTF-8";
 
 	protected Log log = LogFactory.getLog(BKURequestHandler.class);
-
-	protected abstract BindingProcessorManager getBindingProcessorManager();
 
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, java.io.IOException {
@@ -77,6 +76,22 @@ public abstract class BKURequestHandler extends HttpServlet {
 			String header = it.next();
 			resp.setHeader(header, bindingProcessor.getResponseHeaders().get(header));
 		}
+		String sigLayout="";
+		String version = configurator.getProperty(Configurator.SIGNATURE_LAYOUT);
+		if ((version != null) && (!"".equals(version.trim()))) {
+		  resp.setHeader(Configurator.SIGNATURE_LAYOUT, version);
+		} else {
+		  log.debug("Do not set siglayout header");
+		}
+			
+	  if (configurator.getProperty(Configurator.USERAGENT_CONFIG_P) != null) {
+      resp.setHeader(HttpUtil.HTTP_HEADER_SERVER, configurator
+          .getProperty(Configurator.USERAGENT_CONFIG_P));
+    } else {
+      resp.setHeader(HttpUtil.HTTP_HEADER_SERVER,
+              Configurator.USERAGENT_DEFAULT);
+    }
+		
 		resp.setContentType(bindingProcessor.getResultContentType());
 		resp.setCharacterEncoding(ENCODING);
 		bindingProcessor.writeResultTo(resp.getOutputStream(), ENCODING);

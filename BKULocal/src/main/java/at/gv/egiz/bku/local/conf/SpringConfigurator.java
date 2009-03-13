@@ -29,6 +29,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import at.gv.egiz.bku.conf.Configurator;
+import at.gv.egiz.bku.local.webapp.SpringBKUServlet;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 
 public class SpringConfigurator extends Configurator implements
@@ -72,6 +73,7 @@ public class SpringConfigurator extends Configurator implements
       defaultInit();
     }
     super.configure();
+    SpringBKUServlet.setConfigurator(this);
   }
 
   public void defaultInit() {

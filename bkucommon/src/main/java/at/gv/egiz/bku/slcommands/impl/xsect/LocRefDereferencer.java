@@ -105,7 +105,6 @@ public class LocRefDereferencer implements URIDereferencer {
       throw new URIReferenceException("Failed to dereference URI '" + locRef
           + "'. " + e.getMessage(), e);
     }
-
     return new OctetStreamData(streamData.getStream(), locRef, streamData
         .getContentType());
   }

@@ -225,10 +225,17 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
     this.url = url;
     boundary = "--" + IdFactory.getInstance().createId().toString();
     requestHttpHeaders = new HashMap<String, String>();
-    if ((config != null)
-        && (config.getProperty(Configurator.USERAGENT_CONFIG_P) != null)) {
-      requestHttpHeaders.put(HttpUtil.HTTP_HEADER_USER_AGENT, config
-          .getProperty(Configurator.USERAGENT_CONFIG_P));
+    
+    if (config != null) {
+      String sigLayout="";
+      String version = config.getProperty(Configurator.SIGNATURE_LAYOUT);
+      if ((version != null) && (!"".equals(version.trim()))) {
+        requestHttpHeaders.put(Configurator.SIGNATURE_LAYOUT, version);
+      } else {
+        log.debug("Do not set siglayout header");
+      }
+      String userAgent = config.getProperty(Configurator.USERAGENT_CONFIG_P, Configurator.USERAGENT_DEFAULT);
+      requestHttpHeaders.put(HttpUtil.HTTP_HEADER_USER_AGENT, userAgent);
     } else {
       requestHttpHeaders
           .put(HttpUtil.HTTP_HEADER_USER_AGENT, Configurator.USERAGENT_DEFAULT);
@@ -251,6 +258,7 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
     DataUrlConnectionSPI uc = new DataUrlConnectionImpl();
     uc.setConfiguration(config);
     uc.setSSLSocketFactory(sslSocketFactory);
+    uc.setHostnameVerifier(hostnameVerifier);
     return uc;
   }
 

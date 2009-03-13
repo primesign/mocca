@@ -672,10 +672,10 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 				} else {
 					FormParameterStore fps = new FormParameterStore();
 					fps.init(fp);
-					if (!fps.isEmpty()) {
+					//if (!fps.isEmpty()) {
 						log.debug("Setting form parameter: " + fps.getFormParameterName());
 						formParameterMap.put(fps.getFormParameterName(), fps);
-					}
+					//}
 				}
 			}
 			if (slCommand == null) {

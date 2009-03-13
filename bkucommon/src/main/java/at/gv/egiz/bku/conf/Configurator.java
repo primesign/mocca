@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
@@ -26,6 +27,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -39,7 +42,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.bku.binding.DataUrl;
-import at.gv.egiz.bku.binding.DataUrlConnection;
 import at.gv.egiz.bku.slcommands.impl.xsect.DataObject;
 import at.gv.egiz.bku.slcommands.impl.xsect.STALProvider;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
@@ -55,10 +57,12 @@ public abstract class Configurator {
   public static final String USERAGENT_DEFAULT = "citizen-card-environment/1.2 MOCCA/UNKNOWN";
   public static final String USERAGENT_BASE = "citizen-card-environment/1.2 MOCCA/";
 
+  public static final String SIGNATURE_LAYOUT = "SignatureLayout";
 
   protected Properties properties;
 
   protected CertValidator certValidator;
+  protected String signaturLayoutVersion;
 
   protected Configurator() {
   }
@@ -161,7 +165,7 @@ public abstract class Configurator {
     log.debug("Registering security providers");
     Security.insertProviderAt(new IAIK(), 1);
     Security.insertProviderAt(new ECCProvider(false), 2);
-    
+
     // registering STALProvider as delegation provider for XSECT
     STALProvider stalProvider = new STALProvider();
     Set<Service> services = stalProvider.getServices();
@@ -171,8 +175,10 @@ public abstract class Configurator {
       XSecProvider.setDelegationProvider(algorithm, stalProvider.getName());
       sb.append("\n" + algorithm);
     }
-    log.debug("Registered STALProvider as XSecProvider delegation provider for the following services : " + sb.toString());
-    
+    log
+        .debug("Registered STALProvider as XSecProvider delegation provider for the following services : "
+            + sb.toString());
+
     Security.addProvider(stalProvider);
     XSecProvider.addAsProvider(false);
     sb = new StringBuilder();
@@ -190,6 +196,31 @@ public abstract class Configurator {
       DataObject.enableHashDataInputValidation(Boolean.parseBoolean(bv));
     } else {
       log.warn("ValidateHashDataInputs not set, falling back to default");
+    }
+  }
+
+  public void configureSingatureLayoutVersion() {
+    if (properties.get(SIGNATURE_LAYOUT) == null) {
+      try {
+        String classContainer = Configurator.class.getProtectionDomain()
+            .getCodeSource().getLocation().toString();
+        URL manifestUrl = new URL("jar:" + classContainer
+            + "!/META-INF/MANIFEST.MF");
+        Manifest manifest = new Manifest(manifestUrl.openStream());
+        Attributes att = manifest.getMainAttributes();
+        String layout = null;
+        if (att != null) {
+          layout = att.getValue(SIGNATURE_LAYOUT);
+        }
+        if (layout != null) {
+          log.info("Setting signature layout to: " + layout);
+          properties.put(SIGNATURE_LAYOUT, layout);
+        } else {
+          log.warn("No signature layout version defined");
+        }
+      } catch (Exception ex) {
+        log.warn("Cannot read manifest", ex);
+      }
     }
   }
 
@@ -217,15 +248,15 @@ public abstract class Configurator {
         if (is != null) {
           p.load(getManifest());
           String version = p.getProperty("Implementation-Build");
-          properties.setProperty(USERAGENT_CONFIG_P,
-                  USERAGENT_BASE + version);
+          if (version == null) {
+            version="UNKNOWN";
+          }
+          properties.setProperty(USERAGENT_CONFIG_P, USERAGENT_BASE + version);
           log.debug("Setting user agent to: "
-              + properties
-                  .getProperty(USERAGENT_CONFIG_P));
+              + properties.getProperty(USERAGENT_CONFIG_P));
         } else {
           log.warn("Cannot read manifest");
-          properties.setProperty(USERAGENT_CONFIG_P,
-                  USERAGENT_DEFAULT);
+          properties.setProperty(USERAGENT_CONFIG_P, USERAGENT_DEFAULT);
         }
       } catch (IOException e) {
         log.error(e);
@@ -240,6 +271,7 @@ public abstract class Configurator {
     configViewer();
     configureSSL();
     configureVersion();
+    configureSingatureLayoutVersion();
     configureNetwork();
   }
 
@@ -280,11 +312,14 @@ public abstract class Configurator {
         sslCtx.init(km, new TrustManager[] { pkixTM }, null);
       }
       DataUrl.setSSLSocketFactory(sslCtx.getSocketFactory());
-      URLDereferencer.getInstance().setSSLSocketFactory(sslCtx.getSocketFactory());
+      URLDereferencer.getInstance().setSSLSocketFactory(
+          sslCtx.getSocketFactory());
     } catch (Exception e) {
       log.error("Cannot configure SSL", e);
     }
-    if ((disableAll != null && Boolean.parseBoolean(disableAll)) || (disableHostnameVerification != null && Boolean.parseBoolean(disableHostnameVerification))) {
+    if ((disableAll != null && Boolean.parseBoolean(disableAll))
+        || (disableHostnameVerification != null && Boolean
+            .parseBoolean(disableHostnameVerification))) {
       log.warn("---------------------------------");
       log.warn(" Disabling Hostname Verification ");
       log.warn("---------------------------------");

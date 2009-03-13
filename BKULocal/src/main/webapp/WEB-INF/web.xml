@@ -34,7 +34,7 @@
   <!--  Begin BKU Config -->
   <servlet>
     <servlet-name>BKUServlet</servlet-name>
-    <servlet-class>at.gv.egiz.bku.local.webapp.SpringBKUServlet</servlet-class>
+    <servlet-class>at.gv.egiz.bku.local.webapp.BKURequestHandler</servlet-class>
   </servlet>
   <servlet>
       <servlet-name>help</servlet-name>
