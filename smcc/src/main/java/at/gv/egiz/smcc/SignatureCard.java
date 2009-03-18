@@ -36,6 +36,14 @@ import javax.smartcardio.CardTerminal;
 
 public interface SignatureCard {
 
+  /**
+   * IFD FEATURES
+   */
+  static final Byte FEATURE_VERIFY_PIN_DIRECT = new Byte((byte) 0x06);
+  static final Byte FEATURE_MODIFY_PIN_DIRECT = new Byte((byte) 0x07);
+  static final Byte FEATURE_MCT_READER_DIRECT = new Byte((byte) 0x08);
+  static final Byte FEATURE_IFD_PIN_PROPERTIES = new Byte((byte) 0x0a);
+
   public static class KeyboxName {
 
     public static KeyboxName SECURE_SIGNATURE_KEYPAIR = new KeyboxName(
@@ -123,29 +131,29 @@ public interface SignatureCard {
    */
   public List<PINSpec> getPINSpecs();
 
+  public void verifyPIN(PINSpec pinSpec, PINProvider pinProvider)
+          throws LockedException, NotActivatedException, CancelledException, SignatureCardException, InterruptedException;
+
+  public void changePIN(PINSpec pinSpec, ChangePINProvider pinProvider)
+          throws LockedException, NotActivatedException, CancelledException, SignatureCardException, InterruptedException;
+
+  public void activatePIN(PINSpec pinSpec, PINProvider pinProvider)
+          throws CancelledException, SignatureCardException, InterruptedException;
+
+  public void unblockPIN(PINSpec pinSpec, PINProvider pukProvider)
+          throws CancelledException, SignatureCardException, InterruptedException;
+
   /**
-   *
-   * @param pinSpec descriptor which pin to verify
-   * @param pin may be null to test the PIN status
-   * @return the number of remaining retries or -1
-   * @throws at.gv.egiz.smcc.LockedException
-   * @throws at.gv.egiz.smcc.NotActivatedException
-   * @throws at.gv.egiz.smcc.SignatureCardException
+   * TODO
+   * @return
    */
-  public int verifyPIN(PINSpec pinSpec, String pin)
-          throws LockedException, NotActivatedException, SignatureCardException;
-
-  public void changePIN(PINSpec pinSpec, String oldPIN, String newPIN)
-          throws LockedException, VerificationFailedException, NotActivatedException, SignatureCardException;
-
-  public void activatePIN(PINSpec pinSpec, String pin)
-          throws SignatureCardException;
+  public boolean ifdSupportsFeature(byte feature);
 
   /**
    * Sets the local for evtl. required callbacks (e.g. PINSpec)
    * @param locale must not be null;
    */
   public void setLocale(Locale locale);
-  
-  
+
+
 }

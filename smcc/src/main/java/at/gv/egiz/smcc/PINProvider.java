@@ -28,8 +28,30 @@
 //
 package at.gv.egiz.smcc;
 
+/**
+ * The number of retries is not fixed and there is no way (?) to obtain this value.
+ * A PINProvider should therefore maintain an internal retry counter or flag
+ * to decide whether or not to warn the user (num retries passed in providePIN).
+ *
+ * Therefore PINProvider objects should not be reused.
+ *
+ * (ACOS: reload counter: between 0 and 15, where 15 meens deactivated)
+ *
+ * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ */
 public interface PINProvider {
-  
-  public String providePIN(PINSpec spec, int retries) throws InterruptedException;
+
+  /**
+   *
+   * @param spec
+   * @param retries num of remaining retries or -1 if unknown
+   * (a positive value does <em>not</em> necessarily signify that there was
+   * already an unsuccessful PIN verification)
+   * @return pin != null
+   * @throws at.gv.egiz.smcc.CancelledException
+   * @throws java.lang.InterruptedException
+   */
+  public char[] providePIN(PINSpec spec, int retries)
+          throws CancelledException, InterruptedException;
 
 }

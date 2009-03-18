@@ -18,13 +18,19 @@ package at.gv.egiz.bku.smccstal.ext;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.PINManagementGUIFacade;
+import at.gv.egiz.bku.gui.PINManagementGUIFacade.DIALOG;
 import at.gv.egiz.bku.gui.PINManagementGUIFacade.STATUS;
 import at.gv.egiz.bku.smccstal.AbstractRequestHandler;
+import at.gv.egiz.bku.smccstal.PINProviderFactory;
+import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.LockedException;
 import at.gv.egiz.smcc.NotActivatedException;
+import at.gv.egiz.smcc.PINProvider;
 import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.smcc.STARCOSCard;
+import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.smcc.SignatureCardException;
+import at.gv.egiz.smcc.TimeoutException;
 import at.gv.egiz.smcc.VerificationFailedException;
 import at.gv.egiz.smcc.util.SMCCHelper;
 import at.gv.egiz.stal.ErrorResponse;
@@ -35,8 +41,6 @@ import at.gv.egiz.stal.ext.PINManagementResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
@@ -53,7 +57,8 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
 
   protected static final Log log = LogFactory.getLog(PINManagementRequestHandler.class);
 
-  Map<PINSpec, STATUS> pinStatuses;
+  protected Map<PINSpec, STATUS> pinStatuses;
+  private ManagementPINProviderFactory pinProviderFactory;
 
   @Override
   public STALResponse handleRequest(STALRequest request) throws InterruptedException {
@@ -61,9 +66,12 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
 
       PINManagementGUIFacade gui = (PINManagementGUIFacade) this.gui;
 
-      try {
-      pinStatuses = getPINStatuses();
+      PINSpec selectedPIN = null;
 
+      try {
+
+      pinStatuses = getPINStatuses();
+      
       gui.showPINManagementDialog(pinStatuses,
               this, "activate_enterpin", "change_enterpin", "unblock_enterpuk", "verify_enterpin",
               this, "cancel");
@@ -74,166 +82,92 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
 
         if ("cancel".equals(actionCommand)) {
           return new PINManagementResponse();
-        } else if ("back".equals(actionCommand)) {
-          gui.showPINManagementDialog(pinStatuses,
-              this, "activate_enterpin", "change_enterpin", "unblock_enterpuk", "verify_enterpin",
-              this, "cancel");
         } else {
-          PINSpec selectedPIN = gui.getSelectedPINSpec();
+          selectedPIN = gui.getSelectedPINSpec();
 
           if (selectedPIN == null) {
-            throw new RuntimeException("no PIN selected for activation/change");
+            throw new NullPointerException("no PIN selected for activation/change");
           }
 
-          if ("activate_enterpin".equals(actionCommand)) {
-            gui.showActivatePINDialog(selectedPIN,
-                    this, "activate", this, "back");
-          } else if ("change_enterpin".equals(actionCommand)) {
-            gui.showChangePINDialog(selectedPIN,
-                    this, "change", this, "back");
-          } else if ("unblock_enterpuk".equals(actionCommand)) {
-            gui.showUnblockPINDialog(selectedPIN,
-                    this, "unblock", this, "back");
-          } else if ("verify_enterpin".equals(actionCommand)) {
-            gui.showVerifyPINDialog(selectedPIN,
-                    this, "verify", this, "back");
-          } else if ("activate".equals(actionCommand)) {
-            try {
-              log.debug("activate " + selectedPIN.getLocalizedName());
-              card.activatePIN(selectedPIN,
-                      String.valueOf(gui.getPin()));
+          if (pinProviderFactory == null) {
+            pinProviderFactory =
+                    ManagementPINProviderFactory.getInstance(card, gui);
+          }
+
+          try {
+            if ("activate_enterpin".equals(actionCommand)) {
+              log.info("activate " + selectedPIN.getLocalizedName());
+              card.activatePIN(selectedPIN, 
+                      pinProviderFactory.getActivatePINProvider());
               updatePINStatus(selectedPIN, STATUS.ACTIV);
               gui.showMessageDialog(PINManagementGUIFacade.TITLE_ACTIVATE_SUCCESS,
                       PINManagementGUIFacade.MESSAGE_ACTIVATE_SUCCESS,
                       new Object[] {selectedPIN.getLocalizedName()},
-                      this, "ok");
+                      BKUGUIFacade.BUTTON_OK, this, "ok");
               waitForAction();
-              gui.showPINManagementDialog(pinStatuses,
-                this, "activate_enterpin", "change_enterpin", "unblock_enterpuk", "verify_enterpin",
-                this, "cancel");
-            } catch (GetPINStatusException ex) {
-              log.error("failed to get " +  selectedPIN.getLocalizedName() +
-                      " status: " + ex.getMessage());
-              gui.showErrorDialog(PINManagementGUIFacade.ERR_STATUS, null,
-                      this, "cancel");
-            } catch (SignatureCardException ex) {
-              log.error("failed to activate " + selectedPIN.getLocalizedName() +
-                      ": " + ex.getMessage());
-              gui.showErrorDialog(PINManagementGUIFacade.ERR_ACTIVATE, 
-                      new Object[] {selectedPIN.getLocalizedName()},
-                      this, "cancel");
-            }
-          } else if ("change".equals(actionCommand)) {
-            log.info("change " + selectedPIN.getLocalizedName());
-            try {
-              card.changePIN(selectedPIN,
-                      String.valueOf(gui.getOldPin()),
-                      String.valueOf(gui.getPin()));
+            } else if ("change_enterpin".equals(actionCommand)) {
+              log.info("change " + selectedPIN.getLocalizedName());
+              card.changePIN(selectedPIN, 
+                      pinProviderFactory.getChangePINProvider());
               updatePINStatus(selectedPIN, STATUS.ACTIV);
               gui.showMessageDialog(PINManagementGUIFacade.TITLE_CHANGE_SUCCESS,
                       PINManagementGUIFacade.MESSAGE_CHANGE_SUCCESS,
                       new Object[] {selectedPIN.getLocalizedName()},
-                      this, "ok");
+                      BKUGUIFacade.BUTTON_OK, this, "ok");
               waitForAction();
-              gui.showPINManagementDialog(pinStatuses,
-                this, "activate_enterpin", "change_enterpin", "unblock_enterpuk", "verify_enterpin",
-                this, "cancel");
-            } catch (GetPINStatusException ex) {
-              log.error("failed to get " +  selectedPIN.getLocalizedName() +
-                      " status: " + ex.getMessage());
-              gui.showErrorDialog(PINManagementGUIFacade.ERR_STATUS, null,
-                      this, "cancel");
-            } catch (LockedException ex) {
-              log.error("failed to change " + selectedPIN.getLocalizedName() +
-                      ": PIN locked");
-              updatePINStatus(selectedPIN, STATUS.BLOCKED);
-              gui.showErrorDialog(PINManagementGUIFacade.ERR_LOCKED,
-                      new Object[] {selectedPIN.getLocalizedName()},
-                      this, "ok");
-              waitForAction();
-              gui.showPINManagementDialog(pinStatuses,
-                this, "activate_enterpin", "change_enterpin", "unblock_enterpuk", "verify_enterpin",
-                this, "cancel");
-            } catch (VerificationFailedException ex) {
-              log.error("failed to change " + selectedPIN.getLocalizedName() +
-                      ": " + ex.getMessage());
-              gui.showErrorDialog(PINManagementGUIFacade.ERR_RETRIES,
-                      new Object[] {selectedPIN.getLocalizedName(), ex.getRetries()},
-                      this, "change_enterpin");
-            } catch (NotActivatedException ex) {
-              log.error("failed to change " + selectedPIN.getLocalizedName() +
-                      ": PIN not active");
-              updatePINStatus(selectedPIN, STATUS.NOT_ACTIV);
-              gui.showErrorDialog(PINManagementGUIFacade.ERR_NOT_ACTIVE,
-                      new Object[] {selectedPIN.getLocalizedName()},
-                      this, "ok");
-              waitForAction();
-              gui.showPINManagementDialog(pinStatuses,
-                this, "activate_enterpin", "change_enterpin", "unblock_enterpuk", "verify_enterpin",
-                this, "cancel");
-            } catch (SignatureCardException ex) {
-              log.error("failed to change " + selectedPIN.getLocalizedName() +
-                      ": " + ex.getMessage());
-              gui.showErrorDialog(PINManagementGUIFacade.ERR_CHANGE, 
-                      new Object[] {selectedPIN.getLocalizedName()},
-                      this, "cancel");
-            }
-          } else if ("unblock".equals(actionCommand)) {
-            log.info("unblock " + selectedPIN.getLocalizedName());
-            log.error("unblock PIN not implemented");
-            gui.showErrorDialog(PINManagementGUIFacade.ERR_UNBLOCK, null, this, "cancel");
-          } else if ("verify".equals(actionCommand)) {
-            try {
-              log.info("verify " + selectedPIN.getLocalizedName());
-              int retries = card.verifyPIN(selectedPIN, String.valueOf(gui.getPin()));
-              log.trace(retries + " retries");
-              if (retries < 0) {
-                updatePINStatus(selectedPIN, STATUS.ACTIV);
-                gui.showPINManagementDialog(pinStatuses,
-                        this, "activate_enterpin", "change_enterpin", "unblock_enterpuk", "verify_enterpin",
-                        this, "cancel");
-              } else {
-                log.error("failed to verify " + selectedPIN.getLocalizedName() +
-                      ": " + retries + " retries left");
-                gui.showErrorDialog(PINManagementGUIFacade.ERR_RETRIES,
-                      new Object[] {selectedPIN.getLocalizedName(), retries},
-                      this, "verify_enterpin");
-              }
-            } catch (GetPINStatusException ex) {
-              log.error("failed to get " +  selectedPIN.getLocalizedName() +
-                      " status: " + ex.getMessage());
-              gui.showErrorDialog(PINManagementGUIFacade.ERR_STATUS, null,
-                      this, "cancel");
-            } catch (LockedException ex) {
-              log.error("failed to verify " + selectedPIN.getLocalizedName() +
-                      ": PIN locked");
-              updatePINStatus(selectedPIN, STATUS.BLOCKED);
-              gui.showPINManagementDialog(pinStatuses,
-                      this, "activate_enterpin", "change_enterpin", "unblock_enterpuk", "verify_enterpin",
-                      this, "cancel");
-            } catch (NotActivatedException ex) {
-              log.error("failed to verify " + selectedPIN.getLocalizedName() +
-                      ": PIN not active");
-              updatePINStatus(selectedPIN, STATUS.NOT_ACTIV);
-              gui.showPINManagementDialog(pinStatuses,
-                      this, "activate_enterpin", "change_enterpin", "unblock_enterpuk", "verify_enterpin",
-                      this, "cancel");
-            } catch (SignatureCardException ex) {
-              log.error("failed to verify " + selectedPIN.getLocalizedName() +
-                      ": " + ex.getMessage());
-              gui.showErrorDialog(PINManagementGUIFacade.ERR_STATUS,
-                      new Object[] {selectedPIN.getLocalizedName()},
-                      this, "cancel");
-            }
 
-          } else {
-            throw new RuntimeException("unsupported action " + actionCommand);
+            } else if ("unblock_enterpuk".equals(actionCommand)) {
+              log.info("unblock " + selectedPIN.getLocalizedName());
+              card.unblockPIN(selectedPIN,
+                      pinProviderFactory.getUnblockPINProvider());
+            } else if ("verify_enterpin".equals(actionCommand)) {
+              log.info("verify " + selectedPIN.getLocalizedName());
+              card.verifyPIN(selectedPIN,
+                      pinProviderFactory.getVerifyPINProvider());
+              updatePINStatus(selectedPIN, STATUS.ACTIV);
+            }
+          } catch (CancelledException ex) {
+            log.trace("cancelled");
+          } catch (TimeoutException ex) {
+            log.error("Timeout during pin entry");
+            gui.showMessageDialog(BKUGUIFacade.TITLE_ENTRY_TIMEOUT,
+                    BKUGUIFacade.ERR_PIN_TIMEOUT, 
+                    new Object[] {selectedPIN.getLocalizedName()},
+                    BKUGUIFacade.BUTTON_OK, this, null);
+            waitForAction();
+          } catch (LockedException ex) {
+            log.error(selectedPIN.getLocalizedName() + " locked");
+            updatePINStatus(selectedPIN, STATUS.BLOCKED);
+            gui.showErrorDialog(PINManagementGUIFacade.ERR_LOCKED,
+                    new Object[] {selectedPIN.getLocalizedName()},
+                    this, null);
+            waitForAction();
+          } catch (NotActivatedException ex) {
+            log.error(selectedPIN.getLocalizedName() + " not active");
+            updatePINStatus(selectedPIN, STATUS.NOT_ACTIV);
+            gui.showErrorDialog(PINManagementGUIFacade.ERR_NOT_ACTIVE,
+                    new Object[] {selectedPIN.getLocalizedName()},
+                    this, null);
+            waitForAction();
           }
-        }
-      }
+        } // end if
+
+        selectedPIN = null;
+        gui.showPINManagementDialog(pinStatuses,
+                this, "activate_enterpin", "change_enterpin", "unblock_enterpuk", "verify_enterpin",
+                this, "cancel");
+      } // end while
+
       } catch (GetPINStatusException ex) {
-        log.error("Failed to get PIN statuses: " + ex.getMessage());
+        String pin = (selectedPIN != null) ? selectedPIN.getLocalizedName() : "pin";
+        log.error("failed to get " +  pin + " status: " + ex.getMessage());
         gui.showErrorDialog(PINManagementGUIFacade.ERR_STATUS, null,
+                this, "ok");
+        waitForAction();
+        return new ErrorResponse(1000);
+      } catch (SignatureCardException ex) {
+        log.error(ex.getMessage(), ex);
+        gui.showErrorDialog(PINManagementGUIFacade.ERR_UNKNOWN, null,
                 this, "ok");
         waitForAction();
         return new ErrorResponse(1000);
@@ -242,7 +176,6 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
       log.error("Got unexpected STAL request: " + request);
       return new ErrorResponse(1000);
     }
-
   }
 
   @Override
@@ -375,4 +308,100 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
       pinStatuses.put(pinSpec, status);
     }
   }
+
+//  /**
+//   * provides oldPin and newPin from one dialog,
+//   * and don't know whether providePIN() or provideOldPIN() is called first.
+//   */
+//  class SoftwarePinProvider implements PINProvider {
+//
+//    private PINManagementGUIFacade.DIALOG type;
+//    private boolean retry = false;
+//
+//    private char[] newPin;
+//    private char[] oldPin;
+//
+//    public SoftwarePinProvider(DIALOG type) {
+//      this.type = type;
+//    }
+//
+//    @Override
+//    public char[] providePIN(PINSpec spec, int retries)
+//            throws CancelledException, InterruptedException {
+//      if (newPin == null) {
+//        getPINs(spec, retries);
+//      }
+//      char[] pin = newPin;
+//      newPin = null;
+//      return pin;
+//    }
+//
+//    @Override
+//    public char[] provideOldPIN(PINSpec spec, int retries)
+//            throws CancelledException, InterruptedException {
+//      if (oldPin == null) {
+//        getPINs(spec, retries);
+//      }
+//      char[] pin = oldPin;
+//      oldPin = null;
+//      return pin;
+//    }
+//
+//    private void getPINs(PINSpec spec, int retries)
+//            throws InterruptedException, CancelledException {
+//      PINManagementGUIFacade gui =
+//              (PINManagementGUIFacade) PINManagementRequestHandler.this.gui;
+//
+//      if (retry) {
+//        gui.showPINDialog(type, spec, retries,
+//              PINManagementRequestHandler.this, "exec",
+//              PINManagementRequestHandler.this, "back");
+//      } else {
+//        gui.showPINDialog(type, spec,
+//              PINManagementRequestHandler.this, "exec",
+//              PINManagementRequestHandler.this, "back");
+//      }
+//      waitForAction();
+//
+//      if (actionCommand.equals("exec")) {
+//        gui.showWaitDialog(null);
+//        retry = true;
+//        oldPin = gui.getOldPin();
+//        newPin = gui.getPin();
+//      } else if (actionCommand.equals("back")) {
+//        throw new CancelledException();
+//      } else {
+//        log.error("unsupported command " + actionCommand);
+//        throw new CancelledException();
+//      }
+//    }
+//  }
+//
+//
+//  class PinpadPinProvider implements PINProvider {
+//
+//    private PINManagementGUIFacade.DIALOG type;
+//    private boolean retry = false;
+//
+//    public PinpadPinProvider(DIALOG type) {
+//      this.type = type;
+//    }
+//
+//    @Override
+//    public char[] providePIN(PINSpec spec, int retries) {
+//      log.debug("provide pin for " + type);
+//      if (retry) {
+//        ((PINManagementGUIFacade) gui).showPinpadPINDialog(type, spec, retries);
+//      } else {
+//        ((PINManagementGUIFacade) gui).showPinpadPINDialog(type, spec, -1);
+//        retry = true;
+//      }
+//      return null;
+//    }
+//
+//    @Override
+//    public char[] provideOldPIN(PINSpec spec, int retries) {
+//      return null;
+//    }
+//  }
 }

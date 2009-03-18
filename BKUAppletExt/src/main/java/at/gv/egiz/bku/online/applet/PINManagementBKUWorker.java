@@ -42,7 +42,8 @@ public class PINManagementBKUWorker extends AppletBKUWorker {
 
   @Override
   public void run() {
-    gui.showWelcomeDialog();
+    gui.showMessageDialog(BKUGUIFacade.TITLE_WELCOME,
+            BKUGUIFacade.MESSAGE_WELCOME);
 
     try {
       List<STALResponse> responses = handleRequest(Collections.singletonList(new PINManagementRequest()));
@@ -53,7 +54,6 @@ public class PINManagementBKUWorker extends AppletBKUWorker {
           log.debug("PIN management dialog terminated");
         } else if (response instanceof ErrorResponse) {
           log.debug("PIN management dialog terminated with error");
-          showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, null);
         } else {
           throw new RuntimeException("Invalid STAL response: " + response.getClass().getName());
         }
@@ -62,7 +62,11 @@ public class PINManagementBKUWorker extends AppletBKUWorker {
       }
 
     } catch (RuntimeException ex) {
-      log.error("unexpected error: " + ex.getMessage(), ex);
+      log.error(ex.getMessage());
+      Throwable cause = ex.getCause();
+      if (cause != null) { // && cause instanceof InterruptedException) {
+        log.info(cause.getMessage());
+      }
       showErrorDialog(BKUGUIFacade.ERR_UNKNOWN, null);
     } catch (Exception ex) {
       log.error(ex.getMessage(), ex);

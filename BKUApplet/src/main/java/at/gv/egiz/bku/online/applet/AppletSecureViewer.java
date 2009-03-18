@@ -16,6 +16,7 @@
  */
 package at.gv.egiz.bku.online.applet;
 
+import at.gv.egiz.bku.smccstal.SecureViewer;
 import java.security.DigestException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -45,13 +46,13 @@ import java.security.NoSuchAlgorithmException;
  * 
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class AppletHashDataDisplay extends SignRequestHandler {
+public class AppletSecureViewer extends SignRequestHandler {
 
-  private static final Log log = LogFactory.getLog(AppletHashDataDisplay.class);
+  private static final Log log = LogFactory.getLog(AppletSecureViewer.class);
   protected STALPortType stalPort;
   protected String sessId;
 
-  public AppletHashDataDisplay(STALPortType stalPort, String sessId) {
+  public AppletSecureViewer(STALPortType stalPort, String sessId) {
     if (stalPort == null || sessId == null) {
       throw new NullPointerException("STAL port must not be null");
     }
@@ -66,13 +67,14 @@ public class AppletHashDataDisplay extends SignRequestHandler {
    * @throws java.lang.Exception
    */
   @Override
-  public void displayHashDataInputs(List<ReferenceType> signedReferences) throws DigestException, Exception {
+  public void displayDataToBeSigned(List<ReferenceType> signedReferences) 
+          throws DigestException, Exception {
 
-    List<GetHashDataInputResponseType.Reference> hdi = getHashDataInput(signedReferences);
+  List<GetHashDataInputResponseType.Reference> hdi = getHashDataInput(signedReferences);
     List<HashDataInput> verifiedHashDataInputs = verifyHashDataInput(signedReferences, hdi);
 
     if (verifiedHashDataInputs.size() > 0) {
-      gui.showHashDataInputDialog(verifiedHashDataInputs, this, "hashDataDone");
+      gui.showSecureViewer(verifiedHashDataInputs, this, "hashDataDone");
     } else {
       throw new Exception("No signature data (apart from any QualifyingProperties or a Manifest)");
     }
@@ -84,7 +86,8 @@ public class AppletHashDataDisplay extends SignRequestHandler {
    * @return
    * @throws at.gv.egiz.stal.service.GetHashDataInputFault
    */
-  private List<GetHashDataInputResponseType.Reference> getHashDataInput(List<ReferenceType> signedReferences) throws GetHashDataInputFault, Exception {
+  private List<GetHashDataInputResponseType.Reference> getHashDataInput(List<ReferenceType> signedReferences)
+          throws GetHashDataInputFault, Exception {
     GetHashDataInputType request = new GetHashDataInputType();
     request.setSessionId(sessId);
 
@@ -129,7 +132,8 @@ public class AppletHashDataDisplay extends SignRequestHandler {
    * @throws java.security.NoSuchAlgorithmException
    * @throws Exception if no hashdata input is provided for a signed reference
    */
-  private List<HashDataInput> verifyHashDataInput(List<ReferenceType> signedReferences, List<GetHashDataInputResponseType.Reference> hashDataInputs) throws DigestException, NoSuchAlgorithmException, Exception {
+  private List<HashDataInput> verifyHashDataInput(List<ReferenceType> signedReferences, List<GetHashDataInputResponseType.Reference> hashDataInputs)
+          throws DigestException, NoSuchAlgorithmException, Exception {
 
     ArrayList<HashDataInput> verifiedHashDataInputs = new ArrayList<HashDataInput>();
 

@@ -35,13 +35,18 @@ public interface PINManagementGUIFacade extends BKUGUIFacade {
   public static final String TITLE_UNBLOCK_PIN = "title.unblock.pin";
   public static final String TITLE_ACTIVATE_SUCCESS = "title.activate.success";
   public static final String TITLE_CHANGE_SUCCESS = "title.change.success";
-  public static final String MESSAGE_ACTIVATE_SUCCESS = "message.activate.success";
-  public static final String MESSAGE_CHANGE_SUCCESS = "message.change.success";
-  public static final String MESSAGE_PINMGMT = "message.pin.mgmt";
-  public static final String MESSAGE_ACTIVATE_PIN = "message.activate.pin";
-  public static final String MESSAGE_CHANGE_PIN = "message.change.pin";
-  public static final String MESSAGE_VERIFY_PIN = "message.verify.pin";
-  public static final String MESSAGE_UNBLOCK_PIN = "message.unblock.pin";
+
+  // removed message.* prefix to reuse keys as help keys
+  public static final String MESSAGE_ACTIVATE_SUCCESS = "activate.success";
+  public static final String MESSAGE_CHANGE_SUCCESS = "change.success";
+  public static final String MESSAGE_PINMGMT = "pin.mgmt";
+  public static final String MESSAGE_PINPAD = "pinpad";
+  public static final String MESSAGE_CHANGEPIN_PINPAD = "pinpad.change";
+  public static final String MESSAGE_ACTIVATE_PIN = "activate.pin";
+  public static final String MESSAGE_CHANGE_PIN = "change.pin";
+  public static final String MESSAGE_VERIFY_PIN = "verify.pin";
+  public static final String MESSAGE_UNBLOCK_PIN = "unblock.pin";
+  
   public static final String LABEL_OLD_PIN = "label.old.pin";
   public static final String LABEL_NEW_PIN = "label.new.pin";
   public static final String LABEL_REPEAT_PIN = "label.repeat.pin";
@@ -66,26 +71,37 @@ public interface PINManagementGUIFacade extends BKUGUIFacade {
   public static final String STATUS_UNKNOWN = "status.unknown";
 
   public enum STATUS { ACTIV, NOT_ACTIV, BLOCKED, UNKNOWN };
+  public enum DIALOG { VERIFY, ACTIVATE, CHANGE, UNBLOCK };
 
   public void showPINManagementDialog(Map<PINSpec, STATUS> pins,
           ActionListener activateListener, String activateCmd, String changeCmd, String unblockCmd, String verifyCmd,
           ActionListener cancelListener, String cancelCmd);
 
-  public void showActivatePINDialog(PINSpec pin,
+  public void showPINDialog(DIALOG type, PINSpec pin,
           ActionListener okListener, String okCmd,
           ActionListener cancelListener, String cancelCmd);
 
-  public void showChangePINDialog(PINSpec pin,
+  public void showPINDialog(DIALOG type, PINSpec pin, int retries,
           ActionListener okListener, String okCmd,
           ActionListener cancelListener, String cancelCmd);
 
-  public void showUnblockPINDialog(PINSpec pin,
-          ActionListener okListener, String okCmd,
-          ActionListener cancelListener, String cancelCmd);
+  public void showPinpadPINDialog(DIALOG type, PINSpec pin, int retries);
 
-  public void showVerifyPINDialog(PINSpec pin,
-          ActionListener okListener, String okCmd,
-          ActionListener cancelListener, String cancelCmd);
+//  public void showActivatePINDialog(PINSpec pin,
+//          ActionListener okListener, String okCmd,
+//          ActionListener cancelListener, String cancelCmd);
+//
+//  public void showChangePINDialog(PINSpec pin,
+//          ActionListener okListener, String okCmd,
+//          ActionListener cancelListener, String cancelCmd);
+//
+//  public void showUnblockPINDialog(PINSpec pin,
+//          ActionListener okListener, String okCmd,
+//          ActionListener cancelListener, String cancelCmd);
+//
+//  public void showVerifyPINDialog(PINSpec pin,
+//          ActionListener okListener, String okCmd,
+//          ActionListener cancelListener, String cancelCmd);
 
   public char[] getOldPin();
 

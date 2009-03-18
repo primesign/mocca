@@ -36,6 +36,7 @@ public interface BKUGUIFacade {
   public static final String ERR_INVALID_HASH = "error.invalid.hash";
   public static final String ERR_CARD_LOCKED = "error.card.locked";
   public static final String ERR_CARD_NOTACTIVATED = "error.card.notactivated";
+  public static final String ERR_PIN_TIMEOUT = "error.pin.timeout";
   public static final String ERR_VIEWER = "error.viewer";
   public static final String ERR_EXTERNAL_LINK = "error.external.link";
   public static final String ERR_CONFIG = "error.config";
@@ -52,6 +53,7 @@ public interface BKUGUIFacade {
   public static final String TITLE_CARDPIN = "title.cardpin";
   public static final String TITLE_SIGN = "title.sign";
   public static final String TITLE_ERROR = "title.error";
+  public static final String TITLE_ENTRY_TIMEOUT = "title.entry.timeout";
   public static final String TITLE_RETRY = "title.retry";
   public static final String TITLE_WAIT = "title.wait";
   public static final String TITLE_HASHDATA = "title.hashdata";
@@ -60,17 +62,22 @@ public interface BKUGUIFacade {
   public static final String WINDOWTITLE_OVERWRITE = "windowtitle.overwrite";
   public static final String WINDOWTITLE_VIEWER = "windowtitle.viewer";
   public static final String WINDOWTITLE_HELP = "windowtitle.help";
-  public static final String MESSAGE_WAIT = "message.wait";
-  public static final String MESSAGE_INSERTCARD = "message.insertcard";
-  public static final String MESSAGE_ENTERPIN = "message.enterpin";
-  public static final String MESSAGE_HASHDATALINK = "message.hashdatalink";
-  public static final String MESSAGE_HASHDATALINK_TINY = "message.hashdatalink.tiny";
-//  public static final String MESSAGE_HASHDATA = "message.hashdata";
-  public static final String MESSAGE_HASHDATALIST = "message.hashdatalist";
-  public static final String MESSAGE_RETRIES = "message.retries";
-  public static final String MESSAGE_LAST_RETRY = "message.retries.last";
-  public static final String MESSAGE_OVERWRITE = "message.overwrite";
-  public static final String MESSAGE_HELP = "message.help";
+
+  // removed message.* prefix to reuse keys as help keys
+  public static final String MESSAGE_WELCOME = "welcome";
+  public static final String MESSAGE_WAIT = "wait";
+  public static final String MESSAGE_INSERTCARD = "insertcard";
+  public static final String MESSAGE_CARD_NOT_SUPPORTED = "cardnotsupported";
+  public static final String MESSAGE_ENTERPIN = "enterpin";
+  public static final String MESSAGE_ENTERPIN_PINPAD = "enterpin.pinpad";
+  public static final String MESSAGE_HASHDATALINK = "hashdatalink";
+  public static final String MESSAGE_HASHDATALINK_TINY = "hashdatalink.tiny";
+  public static final String MESSAGE_HASHDATALIST = "hashdatalist";
+  public static final String MESSAGE_RETRIES = "retries";
+  public static final String MESSAGE_LAST_RETRY = "retries.last";
+  public static final String MESSAGE_OVERWRITE = "overwrite";
+  public static final String MESSAGE_HELP = "help";
+
   public static final String WARNING_XHTML = "warning.xhtml";
   public static final String LABEL_PIN = "label.pin";
   public static final String LABEL_PINSIZE = "label.pinsize";
@@ -103,33 +110,48 @@ public interface BKUGUIFacade {
    */
   public Locale getLocale();
 
-  public void showWelcomeDialog();
+//  public void showWelcomeDialog();
 
   /**
    * 
    * @param waitMessage if null, a simple 'please wait' text is displayed
    */
-  public void showWaitDialog(String waitMessage);
+//  public void showWaitDialog(String waitMessage);
 
-  public void showInsertCardDialog(ActionListener cancelListener, String actionCommand);
+//  public void showInsertCardDialog(ActionListener cancelListener, String actionCommand);
 
-  public void showCardNotSupportedDialog(ActionListener cancelListener, String actionCommand);
+//  public void showCardNotSupportedDialog(ActionListener cancelListener, String actionCommand);
 
-  public void showCardPINDialog(PINSpec pinSpec, ActionListener okListener, String okCommand, ActionListener cancelListener, String cancelCommand);
+  public void showCardPINDialog(PINSpec pinSpec, int numRetries,
+          ActionListener okListener, String okCommand,
+          ActionListener cancelListener, String cancelCommand);
 
-  public void showCardPINRetryDialog(PINSpec pinSpec, int numRetries, ActionListener okListener, String okCommand, ActionListener cancelListener, String cancelCommand);
+//  public void showCardPINRetryDialog(PINSpec pinSpec, int numRetries, ActionListener okListener, String okCommand, ActionListener cancelListener, String cancelCommand);
 
-  public void showSignaturePINDialog(PINSpec pinSpec, ActionListener signListener, String signCommand, ActionListener cancelListener, String cancelCommand, ActionListener hashdataListener, String hashdataCommand);
+  public void showSignaturePINDialog(PINSpec pinSpec, int numRetries, ActionListener signListener, String signCommand, ActionListener cancelListener, String cancelCommand, ActionListener hashdataListener, String hashdataCommand);
 
-  public void showSignaturePINRetryDialog(PINSpec pinSpec, int numRetries, ActionListener okListener, String okCommand, ActionListener cancelListener, String cancelCommand, ActionListener hashdataListener, String hashdataCommand);
+//  public void showSignaturePINRetryDialog(PINSpec pinSpec, int numRetries, ActionListener okListener, String okCommand, ActionListener cancelListener, String cancelCommand, ActionListener hashdataListener, String hashdataCommand);
+
+//  public void showPinpadSignaturePINDialog(PINSpec pinSpec, int retries);
 
   public char[] getPin();
 
-  public void showHashDataInputDialog(List<HashDataInput> signedReferences, ActionListener okListener, String okCommand);
+  public void showSecureViewer(List<HashDataInput> signedReferences,
+          ActionListener okListener, String okCommand);
 
-  public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams, ActionListener okListener, String okCommand);
+  public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams,
+          ActionListener okListener, String okCommand);
 
   public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams);
 
-  public void showMessageDialog(String titleKey, String msgKey, Object[] msgParams, ActionListener okListener, String okCommand);
+  public void showMessageDialog(String titleKey, 
+          String msgKey, Object[] msgParams,
+          String buttonKey,
+          ActionListener okListener, String okCommand);
+
+  public void showMessageDialog(String titleKey,
+          String msgKey, Object[] msgParams);
+
+  public void showMessageDialog(String titleKey,
+          String msgKey);
 }

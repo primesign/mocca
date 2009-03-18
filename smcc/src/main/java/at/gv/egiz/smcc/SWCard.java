@@ -77,11 +77,11 @@ public class SWCard implements SignatureCard {
 
   private KeyStore certifiedKeyStore;
   
-  private String certifiedKeyStorePassword;
+  private char[] certifiedKeyStorePassword;
   
   private KeyStore secureKeyStore;
   
-  private String secureKeyStorePassword;
+  private char[] secureKeyStorePassword;
   
   private Certificate certifiedCertificate;
   
@@ -195,7 +195,7 @@ public class SWCard implements SignatureCard {
   
   }
   
-  private String loadKeyStorePassword(String passwordFileName) throws SignatureCardException {
+  private char[] loadKeyStorePassword(String passwordFileName) throws SignatureCardException {
 
     String fileName = getFileName(passwordFileName);
     FileInputStream keyStorePasswordFile;
@@ -212,7 +212,7 @@ public class SWCard implements SignatureCard {
       for (int l; (l = reader.read(b)) != -1;) {
         sb.append(b, 0, l);
       }
-      return sb.toString();
+      return sb.toString().toCharArray();
     } catch (IOException e) {
       throw new SignatureCardException("Failed to read file '" + passwordFileName + "'.");
     }
@@ -237,7 +237,7 @@ public class SWCard implements SignatureCard {
     
   }
   
-  private String getPassword(KeyboxName keyboxName) throws SignatureCardException {
+  private char[] getPassword(KeyboxName keyboxName) throws SignatureCardException {
     
     if (keyboxName == KeyboxName.CERITIFIED_KEYPAIR) {
       if (certifiedKeyStorePassword == null) {
@@ -311,7 +311,7 @@ public class SWCard implements SignatureCard {
   public byte[] createSignature(byte[] hash, KeyboxName keyboxName, PINProvider provider) throws SignatureCardException, InterruptedException {
 
     // KeyStore password
-    String password = getPassword(keyboxName);
+    char[] password = getPassword(keyboxName);
 
     if (password == null) {
 
@@ -325,7 +325,7 @@ public class SWCard implements SignatureCard {
       
     }
 
-    KeyStore keyStore = getKeyStore(keyboxName, password.toCharArray());
+    KeyStore keyStore = getKeyStore(keyboxName, password);
 
     PrivateKey privateKey = null;
     
@@ -338,7 +338,7 @@ public class SWCard implements SignatureCard {
           Key key = null;
           while (key == null) {
             try {
-              key = keyStore.getKey(alias, password.toCharArray());
+              key = keyStore.getKey(alias, password);
             } catch (UnrecoverableKeyException e) {
               log.info("Failed to get Key from KeyStore. Wrong password?", e);
             }
@@ -399,15 +399,27 @@ public class SWCard implements SignatureCard {
   }
 
   @Override
-  public int verifyPIN(PINSpec pinSpec, String pin) throws LockedException, NotActivatedException, SignatureCardException {
-    return -1;
+  public void verifyPIN(PINSpec pinSpec, PINProvider pinProvider)
+          throws LockedException, NotActivatedException, SignatureCardException {
   }
 
   @Override
-  public void changePIN(PINSpec pinSpec, String oldPIN, String newPIN) throws LockedException, VerificationFailedException, NotActivatedException, SignatureCardException {
+  public void activatePIN(PINSpec pinSpec, PINProvider pinProvider) throws SignatureCardException {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public void activatePIN(PINSpec pinSpec, String pin) throws SignatureCardException {
+  public void unblockPIN(PINSpec pinSpec, PINProvider pukProvider) throws CancelledException, SignatureCardException, InterruptedException {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public void changePIN(PINSpec pinSpec, ChangePINProvider pinProvider) throws LockedException, NotActivatedException, CancelledException, SignatureCardException, InterruptedException {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public boolean ifdSupportsFeature(byte feature) {
+    return false;
   }
 }

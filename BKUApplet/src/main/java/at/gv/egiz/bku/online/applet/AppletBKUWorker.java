@@ -60,14 +60,15 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
 
   @Override
   public void run() {
-    gui.showWelcomeDialog();
+    gui.showMessageDialog(BKUGUIFacade.TITLE_WELCOME,
+            BKUGUIFacade.MESSAGE_WELCOME);
 
     try {
       STALPortType stalPort = applet.getSTALPort();
       STALTranslator stalTranslator = applet.getSTALTranslator();
 
       addRequestHandler(SignRequest.class,
-              new AppletHashDataDisplay(stalPort, sessionId));
+              new AppletSecureViewer(stalPort, sessionId));
 
       GetNextRequestResponseType nextRequestResp = stalPort.connect(sessionId);
 

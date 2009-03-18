@@ -196,7 +196,7 @@ public class SignatureCardFactory {
             (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00
         },
         "at.gv.egiz.smcc.ACOSCard"));
-    
+
   }
 
   /**

@@ -74,7 +74,7 @@ public class BKUGUIWorker implements Runnable {
 
           @Override
           public void actionPerformed(ActionEvent e) {
-            gui.showSignaturePINDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", null, "hashdata");
+            gui.showSignaturePINDialog(signPinSpec, -1, signListener, "sign", cancelListener, "cancel", null, "hashdata");
           }
         };
         HashDataInput signedRef1 = new ByteArrayHashDataInput(
@@ -112,7 +112,7 @@ public class BKUGUIWorker implements Runnable {
 //                    signedRefs.add(signedRef4);
 //                    signedRefs.add(signedRef4);
 //                    signedRefs = Collections.singletonList(signedRef1);
-        gui.showHashDataInputDialog(signedRefs, returnListener, "return");
+        gui.showSecureViewer(signedRefs, returnListener, "return");
       }
     };
 

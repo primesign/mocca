@@ -33,23 +33,26 @@ import at.gv.egiz.stal.InfoboxReadResponse;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 
-public class InfoBoxReadRequestHandler extends AbstractRequestHandler implements
-    PINProvider {
+public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
 
   private static Log log = LogFactory.getLog(InfoBoxReadRequestHandler.class);
 
-  private int retryCounter = 0;
+  protected PINProviderFactory pinProviderFactory;
 
   @Override
   public STALResponse handleRequest(STALRequest request) throws InterruptedException {
     if (request instanceof InfoboxReadRequest) {
       InfoboxReadRequest infoBox = (InfoboxReadRequest) request;
+      if (pinProviderFactory == null) {
+        pinProviderFactory = PINProviderFactory.getInstance(card, gui);
+      }
       try {
         if (infoBox.getInfoboxIdentifier().equals("IdentityLink")) {
           newSTALMessage("Message.RequestCaption", "Message.IdentityLink");
           log.debug("Handling identitylink infobox");
-          byte[] resp = card.getInfobox(infoBox.getInfoboxIdentifier(), this,
-              infoBox.getDomainIdentifier());
+          byte[] resp = card.getInfobox(infoBox.getInfoboxIdentifier(),
+                  pinProviderFactory.getCardPINProvider(),
+                  infoBox.getDomainIdentifier());
           if (resp == null) {
             log.info("Got null as result->user cancelled");
             return new ErrorResponse(6001);
@@ -94,8 +97,9 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler implements
           newSTALMessage("Message.RequestCaption", "Message.InfoboxReadRequest");
           log.warn("Unknown infobox identifier: "
               + infoBox.getInfoboxIdentifier() + " trying generic request");
-          byte[] resp = card.getInfobox(infoBox.getInfoboxIdentifier(), this,
-              infoBox.getDomainIdentifier());
+          byte[] resp = card.getInfobox(infoBox.getInfoboxIdentifier(),
+                  pinProviderFactory.getCardPINProvider(),
+                  infoBox.getDomainIdentifier());
           if (resp == null) {
             return new ErrorResponse(6001);
           }
@@ -110,13 +114,15 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler implements
         log.info("Citizen card not activated.", e);
         gui.showErrorDialog(BKUGUIFacade.ERR_CARD_NOTACTIVATED, null, this, null);
         waitForAction();
-        gui.showWaitDialog(null);
+        gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
+                BKUGUIFacade.MESSAGE_WAIT);
         return new ErrorResponse(6001);
       } catch (LockedException e) {
         log.info("Citizen card locked.", e);
         gui.showErrorDialog(BKUGUIFacade.ERR_CARD_LOCKED, null, this, null);
         waitForAction();
-        gui.showWaitDialog(null);
+        gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
+                BKUGUIFacade.MESSAGE_WAIT);
         return new ErrorResponse(6001);
       } catch (CancelledException cx) {
         log.debug("User cancelled request", cx);
@@ -134,21 +140,5 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler implements
   @Override
   public boolean requireCard() {
     return true;
-  }
-
-  @Override
-  public String providePIN(PINSpec spec, int retries) throws InterruptedException {
-    if (retryCounter++ > 0) {
-      log.info("PIN wrong retrying ...");
-      gui.showCardPINRetryDialog(spec, retries, this, "ok", this, "cancel");
-    } else {
-      gui.showCardPINDialog(spec, this, "ok", this, "cancel");
-    }
-    waitForAction();
-    gui.showWaitDialog(null);
-    if (actionCommand.equals("cancel")) {
-      return null;
-    }
-    return new String(gui.getPin());
   }
 }

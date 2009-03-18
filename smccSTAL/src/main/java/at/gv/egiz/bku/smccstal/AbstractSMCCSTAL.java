@@ -121,6 +121,12 @@ public abstract class AbstractSMCCSTAL implements STAL {
     return new ErrorResponse(6000);
   }
 
+  /**
+   *
+   * @param requestList
+   * @return
+   * @throws RuntimeException with cause InterruptedException if interrupted
+   */
   @Override
   public List<STALResponse> handleRequest(List<? extends STALRequest> requestList) {
     log.debug("Got request list containing " + requestList.size()

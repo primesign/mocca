@@ -35,6 +35,7 @@ class PINDocument extends PlainDocument {
         protected Pattern pinPattern;
         protected JButton enterButton;
         protected Document compareTo;
+        protected Document oldPin;
 
         public PINDocument(PINSpec pinSpec, JButton enterButton) {
             this.pinSpec = pinSpec;
@@ -46,9 +47,28 @@ class PINDocument extends PlainDocument {
             this.enterButton = enterButton;
         }
 
+        /**
+         *
+         * @param pinSpec
+         * @param enterButton 
+         * @param compareTo enable enterButton iff this pinDocument's pin equals to compareTo's pin. may be null
+         */
         public PINDocument(PINSpec pinSpec, JButton enterButton, Document compareTo) {
           this(pinSpec, enterButton);
           this.compareTo = compareTo;
+        }
+
+        /**
+         *
+         * @param pinSpec
+         * @param enterButton may be null
+         * @param compareTo enable enterButton iff this pinDocument's pin equals to compareTo's pin. may be null
+         * @param oldPin enable enterButton iff oldPin meets the pinSpec pin length requirements, may be null
+         */
+        public PINDocument(PINSpec pinSpec, JButton enterButton, Document compareTo, Document oldPin) {
+          this(pinSpec, enterButton);
+          this.compareTo = compareTo;
+          this.oldPin = oldPin;
         }
 
         @Override
@@ -66,7 +86,10 @@ class PINDocument extends PlainDocument {
                 }
             }
             if (enterButton != null) {
-              enterButton.setEnabled(getLength() >= pinSpec.getMinLength() && compare());
+              enterButton.setEnabled(
+                      (oldPin == null || oldPin.getLength() >= pinSpec.getMinLength()) &&
+                      getLength() >= pinSpec.getMinLength() &&
+                      compare());
             }
         }
 
@@ -74,7 +97,10 @@ class PINDocument extends PlainDocument {
         public void remove(int offs, int len) throws BadLocationException {
             super.remove(offs, len);
             if (enterButton != null) {
-              enterButton.setEnabled(getLength() >= pinSpec.getMinLength() && compare());
+              enterButton.setEnabled(
+                      (oldPin == null || oldPin.getLength() >= pinSpec.getMinLength()) &&
+                      getLength() >= pinSpec.getMinLength() &&
+                      compare());
             }
         }
 

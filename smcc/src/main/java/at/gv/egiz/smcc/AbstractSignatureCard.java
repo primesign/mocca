@@ -33,12 +33,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.smartcardio.ATR;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
@@ -53,6 +53,14 @@ import org.apache.commons.logging.LogFactory;
 public abstract class AbstractSignatureCard implements SignatureCard {
 
   private static Log log = LogFactory.getLog(AbstractSignatureCard.class);
+
+  static final short GET_FEATURE_REQUEST = 3400;
+  
+  private static int getCtrlCode(short function) {
+    return 0x310000 | ((0xFFFF & function) << 2);
+  }
+
+  protected Map<Byte, Long> ifdCtrlCmds;
 
   protected List<PINSpec> pinSpecs = new ArrayList<PINSpec>();
 
@@ -106,11 +114,14 @@ public abstract class AbstractSignatureCard implements SignatureCard {
    */
   protected byte[] selectFileAID(byte[] dfName) throws CardException, SignatureCardException {
     CardChannel channel = getCardChannel();
-    ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0xA4, 0x04,
-        0x00, dfName, 256));
+    ResponseAPDU resp = transmit(channel,
+            new CommandAPDU(0x00, 0xA4, 0x04, 0x00, dfName, 256));
+//            new CommandAPDU(0x00, 0xa4, 0x04, 0x0c, dfName));
     if (resp.getSW() != 0x9000) {
-      throw new SignatureCardException("Failed to select application AID="
-          + toString(dfName) + ": SW=" + Integer.toHexString(resp.getSW()) + ".");
+      String msg = "Failed to select application AID=" + SMCCHelper.toString(dfName) +
+              ": SW=" + Integer.toHexString(resp.getSW());
+      log.error(msg);
+      throw new SignatureCardException(msg);
     } else {
       return resp.getBytes();
     }
@@ -119,10 +130,63 @@ public abstract class AbstractSignatureCard implements SignatureCard {
   protected abstract ResponseAPDU selectFileFID(byte[] fid) throws CardException,
       SignatureCardException;
 
-  protected abstract int verifyPIN(String pin, byte kid) 
+  /**
+   * VERIFY APDU without PIN BLOCK
+   * Not supported by ACOS cards (and GemPC Pinpad?)
+   * @param kid
+   * @return the number of possible tries until card is blocked or -1 if unknown
+   * (ACOS does not support this VERIFY APDU type)
+   * @throws at.gv.egiz.smcc.LockedException
+   * @throws at.gv.egiz.smcc.NotActivatedException
+   * @throws at.gv.egiz.smcc.SignatureCardException
+   */
+  protected abstract int verifyPIN(byte kid)
           throws LockedException, NotActivatedException, SignatureCardException;
 
-  
+  /**
+   * VERIFY APDU with PIN BLOCK
+   * If IFD supports VERIFY_PIN on pinpad, parameter pin may be empty.
+   * @param kid
+   * @param pin to be encoded in the PIN BLOCK
+   * @return -1 if VERIFY PIN was successful, or the number of possible retries
+   * @throws at.gv.egiz.smcc.LockedException
+   * @throws at.gv.egiz.smcc.NotActivatedException
+   * @throws at.gv.egiz.smcc.SignatureCardException
+   */
+  protected abstract int verifyPIN(byte kid, char[] pin)
+          throws LockedException, NotActivatedException, CancelledException, TimeoutException, SignatureCardException;
+
+  /**
+   * CHANGE(?) APDU
+   * If IFD supports VERIFY_PIN on pinpad, parameter pin may be empty.
+   * @param kid
+   * @param pin
+   * @throws at.gv.egiz.smcc.SignatureCardException if activation fails
+   */
+  protected abstract void activatePIN(byte kid, char[] pin)
+          throws CancelledException, TimeoutException, SignatureCardException;
+
+  /**
+   * CHANGE(?) APDU
+   * If IFD supports VERIFY_PIN on pinpad, parameter pin may be empty.
+   * @param kid
+   * @param pin
+   * @return -1 if CHANGE PIN was successful, or the number of possible retries
+   * @throws at.gv.egiz.smcc.SignatureCardException if change fails
+   */
+  protected abstract int changePIN(byte kid, char[] oldPin, char[] newPin)
+          throws CancelledException, TimeoutException, SignatureCardException;
+
+  /**
+   * encode the pin as needed in VERIFY/CHANGE APDUs
+   * @param pin
+   * @return
+   * @throws at.gv.egiz.smcc.SignatureCardException if the provided pin does
+   * not meet the restrictions imposed by the encoding (not the pinSpec!),
+   * such as maximum Length
+   */
+  protected abstract byte[] encodePINBlock(char[] pin) throws SignatureCardException;
+
   protected byte[] readRecord(int recordNumber) throws SignatureCardException, CardException {
     return readRecord(getCardChannel(), recordNumber);
   }
@@ -295,7 +359,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
    * @throws SignatureCardException
    * @throws CardException 
    */
-  protected byte[] readTLVFile(byte[] aid, byte[] ef, String pin, byte kid, int maxLength)
+  protected byte[] readTLVFile(byte[] aid, byte[] ef, char[] pin, byte kid, int maxLength)
       throws SignatureCardException, InterruptedException, CardException {
 
 
@@ -318,7 +382,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
 
     // VERIFY
     if (pin != null) {
-      int retries = verifyPIN(pin, kid);
+      int retries = verifyPIN(kid, pin);
       if (retries != -1) {
         throw new VerificationFailedException(retries);
       }
@@ -388,6 +452,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
       ifs_ = 0xFF & atr.getBytes()[6];
       log.trace("Setting IFS (information field size) to " + ifs_);
     }
+    ifdCtrlCmds = queryIFDFeatures();
   }
   
   @Override
@@ -446,39 +511,266 @@ public abstract class AbstractSignatureCard implements SignatureCard {
   }
 
   @Override
-  public int verifyPIN(PINSpec pinSpec, String pin) throws LockedException, NotActivatedException, SignatureCardException {
-
-    Card icc = getCard();
+  public void verifyPIN(PINSpec pinSpec, PINProvider pinProvider)
+          throws LockedException, NotActivatedException, CancelledException, TimeoutException, SignatureCardException, InterruptedException {
     try {
-      icc.beginExclusive();
-      CardChannel channel = icc.getBasicChannel();
+      getCard().beginExclusive();
 
       if (pinSpec.getContextAID() != null) {
-        ResponseAPDU responseAPDU = transmit(channel,
-                new CommandAPDU(0x00, 0xa4, 0x04, 0x0c, pinSpec.getContextAID()));
-        if (responseAPDU.getSW() != 0x9000) {
-          icc.endExclusive();
-          String msg = "Failed to verify PIN " +
-                  SMCCHelper.toString(new byte[]{pinSpec.getKID()}) +
-                  ": Failed to verify AID " +
-                  SMCCHelper.toString(pinSpec.getContextAID()) +
-                  ": " + SMCCHelper.toString(responseAPDU.getBytes());
-          log.error(msg);
-          throw new SignatureCardException(msg);
-        }
+        selectFileAID(pinSpec.getContextAID());
       }
-      return verifyPIN(pin, pinSpec.getKID());
+
+      int retries = verifyPIN(pinSpec.getKID());
+      do {
+        char[] pin = pinProvider.providePIN(pinSpec, retries);
+        retries = verifyPIN(pinSpec.getKID(), pin);
+      } while (retries > 0);
+      //return on -1, 0 never reached: verifyPIN throws LockedEx
 
     } catch (CardException ex) {
-      log.error("failed to verify pinspec: " + ex.getMessage(), ex);
+      log.error("failed to verify " + pinSpec.getLocalizedName() +
+              ": " + ex.getMessage(), ex);
       throw new SignatureCardException(ex);
     } finally {
       try {
-        icc.endExclusive();
+        getCard().endExclusive();
       } catch (CardException ex) {
         log.trace("failed to end exclusive card access: " + ex.getMessage());
       }
-
     }
   }
+
+  @Override
+  public void activatePIN(PINSpec pinSpec, PINProvider pinProvider)
+          throws CancelledException, SignatureCardException, CancelledException, TimeoutException, InterruptedException {
+   try {
+      getCard().beginExclusive();
+
+      if (pinSpec.getContextAID() != null) {
+        selectFileAID(pinSpec.getContextAID());
+      }
+      char[] pin = pinProvider.providePIN(pinSpec, -1);
+      activatePIN(pinSpec.getKID(), pin);
+      
+    } catch (CardException ex) {
+      log.error("Failed to activate " + pinSpec.getLocalizedName() +
+              ": " + ex.getMessage());
+      throw new SignatureCardException(ex.getMessage(), ex);
+    } finally {
+      try {
+        getCard().endExclusive();
+      } catch (CardException ex) {
+        log.trace("failed to end exclusive card access: " + ex.getMessage());
+      }
+    }
+  }
+
+  /**
+   * activates pin (newPIN) if not active
+   * @param pinSpec
+   * @param oldPIN
+   * @param newPIN
+   * @throws at.gv.egiz.smcc.LockedException
+   * @throws at.gv.egiz.smcc.VerificationFailedException
+   * @throws at.gv.egiz.smcc.NotActivatedException
+   * @throws at.gv.egiz.smcc.SignatureCardException
+   */
+  @Override
+  public void changePIN(PINSpec pinSpec, ChangePINProvider pinProvider)
+          throws LockedException, NotActivatedException, CancelledException, TimeoutException, SignatureCardException, InterruptedException {
+    try {
+      getCard().beginExclusive();
+
+      if (pinSpec.getContextAID() != null) {
+        selectFileAID(pinSpec.getContextAID());
+      }
+
+      int retries = verifyPIN(pinSpec.getKID());
+      do {
+        char[] newPin = pinProvider.providePIN(pinSpec, retries);
+        char[] oldPin = pinProvider.provideOldPIN(pinSpec, retries);
+        retries = changePIN(pinSpec.getKID(), oldPin, newPin);
+      } while (retries > 0);
+      //return on -1, 0 never reached: verifyPIN throws LockedEx
+
+    } catch (CardException ex) {
+      log.error("Failed to change " + pinSpec.getLocalizedName() +
+              ": " + ex.getMessage());
+      throw new SignatureCardException(ex.getMessage(), ex);
+    } finally {
+      try {
+        getCard().endExclusive();
+      } catch (CardException ex) {
+        log.trace("failed to end exclusive card access: " + ex.getMessage());
+      }
+    }
+  }
+
+  @Override
+  public void unblockPIN(PINSpec pinSpec, PINProvider pinProvider)
+          throws CancelledException, SignatureCardException, InterruptedException {
+    throw new SignatureCardException("Unblock not supported yet");
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // IFD related code
+  /////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * TODO implement VERIFY_PIN_START/FINISH (feature 0x01/0x02)
+   * @return
+   */
+  @Override
+  public boolean ifdSupportsFeature(byte feature) {
+    if (ifdCtrlCmds != null) {
+      return ifdCtrlCmds.containsKey(feature);
+    }
+    return false;
+  }
+
+  protected Map<Byte, Long> queryIFDFeatures() {
+
+    if (card_ == null) {
+      throw new NullPointerException("Need connected smart card to query IFD features");
+    }
+
+    Map<Byte, Long> ifdFeatures = new HashMap<Byte, Long>();
+
+    try {
+      if (log.isTraceEnabled()) {
+        log.trace("GET_FEATURE_REQUEST CtrlCode " + Integer.toHexString(getCtrlCode(GET_FEATURE_REQUEST)));
+      }
+      byte[] resp = card_.transmitControlCommand(getCtrlCode(GET_FEATURE_REQUEST), new byte[]{});
+
+      if (log.isTraceEnabled()) {
+        log.trace("GET_FEATURE_REQUEST Response " + SMCCHelper.toString(resp));
+      }
+
+      for (int i = 0; i + 5 < resp.length; i += 6) {
+        Byte feature = new Byte(resp[i]);
+        Long ctrlCode = new Long(
+          ((0xFF & resp[i + 2]) << 24) |
+          ((0xFF & resp[i + 3]) << 16) |
+          ((0xFF & resp[i + 4]) << 8) |
+           (0xFF & resp[i + 5]));
+        if (log.isInfoEnabled()) {
+          log.info("IFD supports feature " + Integer.toHexString(feature.byteValue()) +
+                  ": " + Long.toHexString(ctrlCode.longValue()));
+        }
+        ifdFeatures.put(feature, ctrlCode);
+      }
+
+    } catch (CardException ex) {
+      log.debug("Failed to query IFD features: " + ex.getMessage());
+      log.trace(ex);
+      log.info("IFD does not support PINPad");
+      return null;
+    }
+    return ifdFeatures;
+  }
+
+
+  protected byte ifdGetKeyPressed() throws CardException {
+    if (ifdSupportsFeature(FEATURE_VERIFY_PIN_DIRECT)) {
+
+      Long controlCode = (Long) ifdCtrlCmds.get(new Byte((byte) 0x05));
+
+      byte key = 0x00;
+      while (key == 0x00) {
+
+        byte[] resp = card_.transmitControlCommand(controlCode.intValue(), new byte[] {});
+
+        if (resp != null && resp.length > 0) {
+          key = resp[0];
+        }
+      }
+
+      System.out.println("Key: " + key);
+
+    }
+
+    return 0x00;
+  }
+
+  protected byte[] ifdVerifyPINFinish() throws CardException {
+    if (ifdSupportsFeature(FEATURE_VERIFY_PIN_DIRECT)) {
+
+      Long controlCode = (Long) ifdCtrlCmds.get(new Byte((byte) 0x02));
+
+      byte[] resp = card_.transmitControlCommand(controlCode.intValue(), new byte[] {});
+
+      System.out.println("CommandResp: " + toString(resp));
+
+      return resp;
+
+    }
+
+    return null;
+  }
+
+
+  /**
+   * assumes ifdSupportsVerifyPIN() == true
+   * @param pinVerifyStructure
+   * @return
+   * @throws javax.smartcardio.CardException
+   */
+//  protected byte[] ifdVerifyPIN(byte[] pinVerifyStructure) throws CardException {
+//
+////      Long ctrlCode = (Long) ifdFeatures.get(FEATURE_IFD_PIN_PROPERTIES);
+////      if (ctrlCode != null) {
+////        if (log.isTraceEnabled()) {
+////          log.trace("PIN_PROPERTIES CtrlCode " + Integer.toHexString(ctrlCode.intValue()));
+////        }
+////        byte[] resp = card_.transmitControlCommand(ctrlCode.intValue(), new byte[] {});
+////
+////        if (log.isTraceEnabled()) {
+////          log.trace("PIN_PROPERTIES Response " + SMCCHelper.toString(resp));
+////        }
+////      }
+//
+//
+//      Long ctrlCode = (Long) ifdFeatures.get(FEATURE_VERIFY_PIN_DIRECT);
+//      if (ctrlCode == null) {
+//        throw new NullPointerException("no CtrlCode for FEATURE_VERIFY_PIN_DIRECT");
+//      }
+//
+//      if (log.isTraceEnabled()) {
+//        log.trace("VERIFY_PIN_DIRECT CtrlCode " + Integer.toHexString(ctrlCode.intValue()) +
+//                ", PIN_VERIFY_STRUCTURE " + SMCCHelper.toString(pinVerifyStructure));
+//      }
+//      byte[] resp = card_.transmitControlCommand(ctrlCode.intValue(), pinVerifyStructure);
+//
+//      if (log.isTraceEnabled()) {
+//        log.trace("VERIFY_PIN_DIRECT Response " + SMCCHelper.toString(resp));
+//      }
+//      return resp;
+//  }
+
+//  protected Long getControlCode(Byte feature) {
+//    if (ifdFeatures != null) {
+//      return ifdFeatures.get(feature);
+//    }
+//    return null;
+//  }
+
+  protected byte[] transmitControlCommand(Long ctrlCode, byte[] ctrlCommand)
+          throws CardException {
+//    Long ctrlCode = (Long) ifdFeatures.get(feature);
+    if (ctrlCode == null) {
+      throw new NullPointerException("ControlCode " +
+              Integer.toHexString(ctrlCode.intValue()) + " not supported");
+    }
+    if (log.isTraceEnabled()) {
+      log.trace("CtrlCommand (" + Integer.toHexString(ctrlCode.intValue()) +
+              ")  " + SMCCHelper.toString(ctrlCommand));
+    }
+    byte[] resp = card_.transmitControlCommand(ctrlCode.intValue(), ctrlCommand);
+
+    if (log.isTraceEnabled()) {
+      log.trace("CtrlCommand Response " + SMCCHelper.toString(resp));
+    }
+    return resp;
+  }
+
 }

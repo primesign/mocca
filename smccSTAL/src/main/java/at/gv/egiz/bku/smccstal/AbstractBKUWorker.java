@@ -136,7 +136,9 @@ public abstract class AbstractBKUWorker extends AbstractSMCCSTAL implements Acti
         if (oldValue != SMCCHelper.CARD_NOT_SUPPORTED) {
           actionCommandList.clear();
           actionCommandList.add("cancel");
-          gui.showCardNotSupportedDialog(this, "cancel");
+          gui.showMessageDialog(BKUGUIFacade.TITLE_CARD_NOT_SUPPORTED,
+                  BKUGUIFacade.MESSAGE_CARD_NOT_SUPPORTED, null,
+                  BKUGUIFacade.BUTTON_CANCEL, this, "cancel");
           oldValue = SMCCHelper.CARD_NOT_SUPPORTED;
         }
         break;
@@ -144,7 +146,9 @@ public abstract class AbstractBKUWorker extends AbstractSMCCSTAL implements Acti
         if (oldValue != SMCCHelper.NO_CARD) {
           actionCommandList.clear();
           actionCommandList.add("cancel");
-          gui.showInsertCardDialog(this, "cancel");
+          gui.showMessageDialog(BKUGUIFacade.TITLE_INSERTCARD,
+            BKUGUIFacade.MESSAGE_INSERTCARD, null,
+            BKUGUIFacade.BUTTON_CANCEL, this, "cancel");
           oldValue = SMCCHelper.NO_CARD;
         }
         break;

@@ -67,7 +67,7 @@ public class LocalSignRequestHandler extends SignRequestHandler {
    * @throws java.lang.Exception
    */
   @Override
-  public void displayHashDataInputs(List<ReferenceType> dsigReferences) throws Exception {
+  public void displayDataToBeSigned(List<ReferenceType> dsigReferences) throws Exception {
     if (dsigReferences == null || dsigReferences.size() < 1) {
       log.error("No hashdata input selected to be displayed: null");
       throw new Exception("No HashData Input selected to be displayed");
@@ -109,7 +109,7 @@ public class LocalSignRequestHandler extends SignRequestHandler {
       log.error("dsig:SignedInfo does not contain a data reference");
       throw new Exception("dsig:SignedInfo does not contain a data reference");
     }
-    gui.showHashDataInputDialog(selectedHashDataInputs, this, "hashDataDone");
+    gui.showSecureViewer(selectedHashDataInputs, this, "hashDataDone");
   }
 
   private ByteArrayHashDataInput getByteArrayHashDataInput(HashDataInput hashDataInput) throws IOException {

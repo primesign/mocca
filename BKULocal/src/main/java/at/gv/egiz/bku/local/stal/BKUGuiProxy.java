@@ -40,27 +40,27 @@ public class BKUGuiProxy implements BKUGUIFacade {
     return delegate.getLocale();
   }
 
+//  @Override
+//  public void showCardNotSupportedDialog(ActionListener cancelListener,
+//      String actionCommand) {
+//    showDialog();
+//    delegate.showCardNotSupportedDialog(cancelListener, actionCommand);
+//  }
+//
+//  @Override
+//  public void showCardPINDialog(PINSpec pinSpec, ActionListener okListener,
+//      String okCommand, ActionListener cancelListener, String cancelCommand) {
+//    showDialog();
+//    delegate.showCardPINDialog(pinSpec, okListener, okCommand, cancelListener,
+//        cancelCommand);
+//  }
+//
   @Override
-  public void showCardNotSupportedDialog(ActionListener cancelListener,
-      String actionCommand) {
-    showDialog();
-    delegate.showCardNotSupportedDialog(cancelListener, actionCommand);
-  }
-
-  @Override
-  public void showCardPINDialog(PINSpec pinSpec, ActionListener okListener,
-      String okCommand, ActionListener cancelListener, String cancelCommand) {
-    showDialog();
-    delegate.showCardPINDialog(pinSpec, okListener, okCommand, cancelListener,
-        cancelCommand);
-  }
-
-  @Override
-  public void showCardPINRetryDialog(PINSpec pinSpec, int numRetries,
+  public void showCardPINDialog(PINSpec pinSpec, int numRetries,
       ActionListener okListener, String okCommand,
       ActionListener cancelListener, String cancelCommand) {
     showDialog();
-    delegate.showCardPINRetryDialog(pinSpec, numRetries, okListener, okCommand,
+    delegate.showCardPINDialog(pinSpec, numRetries, okListener, okCommand,
         cancelListener, cancelCommand);
   }
 
@@ -77,57 +77,71 @@ public class BKUGuiProxy implements BKUGUIFacade {
     delegate.showErrorDialog(errorMsgKey, errorMsgParams);
   }
 
+//  @Override
+//  public void showInsertCardDialog(ActionListener cancelListener,
+//      String actionCommand) {
+//    showDialog();
+//    delegate.showInsertCardDialog(cancelListener, actionCommand);
+//  }
+//
+//  @Override
+//  public void showSignaturePINDialog(PINSpec pinSpec,
+//      ActionListener signListener, String signCommand,
+//      ActionListener cancelListener, String cancelCommand,
+//      ActionListener hashdataListener, String hashdataCommand) {
+//    showDialog();
+//    delegate.showSignaturePINDialog(pinSpec, signListener, signCommand,
+//        cancelListener, cancelCommand, hashdataListener, hashdataCommand);
+//  }
+//
   @Override
-  public void showInsertCardDialog(ActionListener cancelListener,
-      String actionCommand) {
-    showDialog();
-    delegate.showInsertCardDialog(cancelListener, actionCommand);
-  }
-
-  @Override
-  public void showSignaturePINDialog(PINSpec pinSpec,
-      ActionListener signListener, String signCommand,
-      ActionListener cancelListener, String cancelCommand,
-      ActionListener hashdataListener, String hashdataCommand) {
-    showDialog();
-    delegate.showSignaturePINDialog(pinSpec, signListener, signCommand,
-        cancelListener, cancelCommand, hashdataListener, hashdataCommand);
-  }
-
-  @Override
-  public void showSignaturePINRetryDialog(PINSpec pinSpec, int numRetries,
+  public void showSignaturePINDialog(PINSpec pinSpec, int numRetries,
       ActionListener okListener, String okCommand,
       ActionListener cancelListener, String cancelCommand,
       ActionListener hashdataListener, String hashdataCommand) {
     showDialog();
-    delegate.showSignaturePINRetryDialog(pinSpec, numRetries, okListener,
+    delegate.showSignaturePINDialog(pinSpec, numRetries, okListener,
         okCommand, cancelListener, cancelCommand, hashdataListener,
         hashdataCommand);
   }
+//
+//  @Override
+//  public void showWaitDialog(String waitMessage) {
+//    showDialog();
+//    delegate.showWaitDialog(waitMessage);
+//  }
+//
+//  @Override
+//  public void showWelcomeDialog() {
+//    showDialog();
+//    delegate.showWelcomeDialog();
+//  }
 
   @Override
-  public void showWaitDialog(String waitMessage) {
-    showDialog();
-    delegate.showWaitDialog(waitMessage);
-  }
-
-  @Override
-  public void showWelcomeDialog() {
-    showDialog();
-    delegate.showWelcomeDialog();
-  }
-
-  @Override
-  public void showHashDataInputDialog(List<HashDataInput> signedReferences, 
+  public void showSecureViewer(List<HashDataInput> signedReferences,
           ActionListener okListener, 
           String okCommand) {
     showDialog();
-    delegate.showHashDataInputDialog(signedReferences, okListener, okCommand);
+    delegate.showSecureViewer(signedReferences, okListener, okCommand);
   }
 
   @Override
-  public void showMessageDialog(String titleKey, String msgKey, Object[] msgParams, ActionListener okListener, String okCommand) {
+  public void showMessageDialog(String titleKey, 
+          String msgKey, Object[] msgParams,
+          String buttonKey, ActionListener okListener, String okCommand) {
     showDialog();
-    delegate.showMessageDialog(titleKey, msgKey, msgParams, okListener, okCommand);
+    delegate.showMessageDialog(titleKey, msgKey, msgParams, buttonKey, okListener, okCommand);
+  }
+
+  @Override
+  public void showMessageDialog(String titleKey, String msgKey, Object[] msgParams) {
+    showDialog();
+    delegate.showMessageDialog(titleKey, msgKey, msgParams);
+  }
+
+  @Override
+  public void showMessageDialog(String titleKey, String msgKey) {
+    showDialog();
+    delegate.showMessageDialog(titleKey, msgKey);
   }
 }
