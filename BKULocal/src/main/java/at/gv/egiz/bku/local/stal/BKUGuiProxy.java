@@ -144,4 +144,12 @@ public class BKUGuiProxy implements BKUGUIFacade {
     showDialog();
     delegate.showMessageDialog(titleKey, msgKey);
   }
+
+  @Override
+  public void showPinpadSignaturePINDialog(PINSpec pinSpec, int numRetries,
+          ActionListener viewerListener, String viewerCommand) {
+    showDialog();
+    delegate.showPinpadSignaturePINDialog(pinSpec, numRetries,
+            viewerListener, viewerCommand);
+  }
 }

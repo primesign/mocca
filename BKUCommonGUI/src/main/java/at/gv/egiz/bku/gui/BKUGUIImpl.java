@@ -71,6 +71,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
     }
 
     protected HelpMouseListener helpListener;
+    protected SecureViewerDialog secureViewer;
     
     protected Container contentPane;
     protected ResourceBundle messages;
@@ -145,13 +146,16 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 @Override
                 public void run() {
                   
-                  log.debug("initializing gui");
+                  log.debug("initializing gui [" + Thread.currentThread().getName() + "]");
 
                   if (renderIconPanel) {
                     initIconPanel(background);
                     initContentPanel(null);
                   } else {
-                    initContentPanel(background);
+                    initContentPanel((background == null) ?
+                      getClass().getResource(DEFAULT_BACKGROUND) :
+                      background
+                    );
                   }
                   
                   GroupLayout layout = new GroupLayout(contentPane);
@@ -159,15 +163,27 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   
                   if (renderIconPanel) {
                     layout.setHorizontalGroup(layout.createSequentialGroup()
-                        .addComponent(iconPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(contentPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
-                    layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                      .addComponent(iconPanel, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                      .addComponent(contentPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+                            .addContainerGap()
+                            .addComponent(iconPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(contentPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addContainerGap());
+                    layout.setVerticalGroup(layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                              .addComponent(iconPanel, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                              .addComponent(contentPanel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addContainerGap());
                   } else {
-                    layout.setHorizontalGroup(layout.createSequentialGroup().addComponent(contentPanel));
-                    layout.setVerticalGroup(layout.createSequentialGroup().addComponent(contentPanel));
+                    layout.setHorizontalGroup(layout.createSequentialGroup()
+                            // left border
+                            .addContainerGap()
+                            .addComponent(contentPanel)
+                            .addContainerGap());
+                    layout.setVerticalGroup(layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(contentPanel)
+                            .addContainerGap());
                   }
                 }
             });
@@ -178,11 +194,12 @@ public class BKUGUIImpl implements BKUGUIFacade {
     
     protected void initIconPanel(URL background) {
       if (background == null) {
-        background = getClass().getResource(DEFAULT_BACKGROUND);
+        background = getClass().getResource(DEFAULT_ICON);
       }
       if ("file".equals(background.getProtocol())) {
-        log.warn("file:// background images not permitted: " + background);
-        background = getClass().getResource(DEFAULT_BACKGROUND);
+        log.warn("file:// background images not permitted: " + background +
+                ", loading default background");
+        background = getClass().getResource(DEFAULT_ICON);
       }
       log.debug("loading icon panel background " + background);
       
@@ -194,26 +211,24 @@ public class BKUGUIImpl implements BKUGUIFacade {
       iconPanel.setLayout(iconPanelLayout);
       iconPanelLayout.setHorizontalGroup(
         iconPanelLayout.createSequentialGroup()
-          .addContainerGap()
           .addComponent(iconLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE));
-          // no gap here (contentPanel has containerGap)
       iconPanelLayout.setVerticalGroup(
         iconPanelLayout.createSequentialGroup()
-          .addContainerGap()
-          .addComponent(iconLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-          .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+          .addComponent(iconLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE));
     }
 
     protected void initContentPanel(URL background) { 
 
+//      if (background == null) {
+//        background = getClass().getResource(DEFAULT_BACKGROUND);
+//      }
       if (background == null) {
-        background = getClass().getResource(DEFAULT_BACKGROUND);
-      }
-      if (background == null) {
+        log.debug("no background image set");
           contentPanel = new JPanel();
       } else {
           if ("file".equals(background.getProtocol())) {
-            log.warn("file:// background images not permitted: " + background);
+            log.warn("file:// background images not permitted: " + background +
+                    ", loading default background");
             background = getClass().getResource(DEFAULT_BACKGROUND);
           }
           log.debug("loading background " + background);
@@ -257,34 +272,29 @@ public class BKUGUIImpl implements BKUGUIFacade {
       GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
       contentPanel.setLayout(contentPanelLayout);
 
-      GroupLayout.ParallelGroup horizontalContentInner = contentPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
+      // align header, main and button to the right
+      GroupLayout.ParallelGroup horizontalContent =
+              contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING); //LEADING);
+      GroupLayout.SequentialGroup verticalContent =
+              contentPanelLayout.createSequentialGroup();
+
       if (renderHeaderPanel) {
-        horizontalContentInner
+        horizontalContent
                 .addComponent(headerPanel, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
+        verticalContent
+                .addComponent(headerPanel, 0, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED);
+
       }
-      horizontalContentInner
+      horizontalContent
               .addComponent(mainPanel, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(buttonPanel, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE);
-      GroupLayout.SequentialGroup horizontalContentOuter = contentPanelLayout.createSequentialGroup();
-      if (!renderIconPanel) {
-        horizontalContentOuter
-                .addContainerGap();
-      }
-      horizontalContentOuter
-              .addGroup(horizontalContentInner)
-              .addContainerGap();
-      contentPanelLayout.setHorizontalGroup(horizontalContentOuter);
-      
-      GroupLayout.SequentialGroup verticalContent = contentPanelLayout.createSequentialGroup();
-      verticalContent.addContainerGap();
-      if (renderHeaderPanel) {
-        verticalContent.addComponent(headerPanel, 0, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED);
-      }
-      verticalContent.addComponent(mainPanel, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE) 
-        .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(buttonPanel, 0, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        .addContainerGap();
+              .addComponent(buttonPanel, 0, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE); //Short.MAX_VALUE);
+      verticalContent
+              .addComponent(mainPanel, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+              .addComponent(buttonPanel, 0, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE);
+
+      contentPanelLayout.setHorizontalGroup(horizontalContent); //Outer);
       contentPanelLayout.setVerticalGroup(verticalContent);
     }
 
@@ -521,7 +531,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
             @Override
             public void run() {
 
-              log.debug("show card-pin dialog");
+              log.debug("show card-pin dialog [" + Thread.currentThread().getName() + "]");
       
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
@@ -653,7 +663,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 buttonPanel.setLayout(buttonPanelLayout);
 
                 GroupLayout.SequentialGroup buttonHorizontal = buttonPanelLayout.createSequentialGroup()
-                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(okButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE);
                 GroupLayout.Group buttonVertical;
                 
@@ -701,6 +710,128 @@ public class BKUGUIImpl implements BKUGUIFacade {
 //    }
 
     @Override
+    public void showPinpadSignaturePINDialog(final PINSpec pinSpec, final int numRetries,
+//            final ActionListener cancelListener, final String cancelCommand,
+            final ActionListener hashdataListener, final String hashdataCommand) {
+
+        log.debug("scheduling pinpad signature-pin dialog");
+
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+
+              log.debug("show pinpad signature-pin dialog [" + Thread.currentThread().getName() + "]");
+
+                mainPanel.removeAll();
+                buttonPanel.removeAll();
+
+                if (renderHeaderPanel) {
+                  if (numRetries < 0) {
+                      titleLabel.setText(getMessage(TITLE_SIGN));
+                  } else {
+                      titleLabel.setText(getMessage(TITLE_RETRY));
+                  }
+                }
+
+                JLabel infoLabel = new JLabel();
+                if (numRetries < 0) {
+                  infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+                  if (shortText) {
+                    infoLabel.setText(getMessage(MESSAGE_HASHDATALINK_TINY));
+                  } else {
+                    infoLabel.setText(getMessage(MESSAGE_HASHDATALINK));
+                  }
+                  infoLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                  infoLabel.setForeground(HYPERLINK_COLOR);
+                  infoLabel.addMouseListener(new MouseAdapter() {
+
+                      @Override
+                      public void mouseClicked(MouseEvent me) {
+                          ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, hashdataCommand);
+                          hashdataListener.actionPerformed(e);
+                      }
+                  });
+                  helpListener.setHelpTopic(HELP_SIGNPIN);
+                } else {
+                  String retryPattern;
+                  if (numRetries < 2) {
+                    retryPattern = getMessage(MESSAGE_LAST_RETRY);
+                  } else {
+                    retryPattern = getMessage(MESSAGE_RETRIES);
+                  }
+                  infoLabel.setText(MessageFormat.format(retryPattern, new Object[]{String.valueOf(numRetries)}));
+                  infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() | java.awt.Font.BOLD));
+                  infoLabel.setForeground(ERROR_COLOR);
+                  helpListener.setHelpTopic(HELP_RETRY);
+                }
+
+                String pinSize = String.valueOf(pinSpec.getMinLength());
+                if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
+                    pinSize += "-" + pinSpec.getMaxLength();
+                }
+
+                String msgPattern = getMessage(MESSAGE_ENTERPIN_PINPAD);
+                String msg = MessageFormat.format(msgPattern, new Object[] {
+                  pinSpec.getLocalizedName(), pinSize });
+
+                JLabel msgLabel = new JLabel();
+                msgLabel.setFont(msgLabel.getFont().deriveFont(msgLabel.getFont().getStyle() & ~Font.BOLD));
+                msgLabel.setText(msg);
+
+                GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
+                mainPanel.setLayout(mainPanelLayout);
+
+                GroupLayout.SequentialGroup infoHorizontal = mainPanelLayout.createSequentialGroup()
+                        .addComponent(infoLabel);
+                GroupLayout.ParallelGroup infoVertical = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(infoLabel);
+
+                if (!renderHeaderPanel) {
+                  infoHorizontal
+                          .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                          .addComponent(helpLabel);
+                  infoVertical
+                          .addComponent(helpLabel);
+                }
+
+                mainPanelLayout.setHorizontalGroup(
+                  mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addGroup(infoHorizontal)
+                    .addComponent(msgLabel));
+
+                mainPanelLayout.setVerticalGroup(
+                  mainPanelLayout.createSequentialGroup()
+                    .addGroup(infoVertical)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(msgLabel));
+
+                //no cancel button (cancel via pinpad)
+//                if (renderCancelButton) {
+//                    JButton cancelButton = new JButton();
+//                    cancelButton.setFont(cancelButton.getFont().deriveFont(cancelButton.getFont().getStyle() & ~java.awt.Font.BOLD));
+//                    cancelButton.setText(getMessage(BUTTON_CANCEL));
+//                    cancelButton.setActionCommand(cancelCommand);
+//                    cancelButton.addActionListener(cancelListener);
+//
+//                    GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+//                    buttonPanel.setLayout(buttonPanelLayout);
+//
+//                    GroupLayout.SequentialGroup buttonHorizontal = buttonPanelLayout.createSequentialGroup()
+//                            .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE);
+//                    GroupLayout.SequentialGroup buttonVertical = buttonPanelLayout.createSequentialGroup()
+//                            .addComponent(cancelButton);
+//
+//                    buttonPanelLayout.setHorizontalGroup(buttonHorizontal);
+//                    buttonPanelLayout.setVerticalGroup(buttonVertical);
+//                }
+
+                contentPanel.validate();
+            }
+        });
+    }
+
+    @Override
     public void showSignaturePINDialog(final PINSpec pinSpec, final int numRetries,
             final ActionListener signListener, final String signCommand,
             final ActionListener cancelListener, final String cancelCommand,
@@ -717,7 +848,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
             @Override
             public void run() {
               
-              log.debug("show signature-pin dialog");
+              log.debug("show signature-pin dialog [" + Thread.currentThread().getName() + "]");
       
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
@@ -728,6 +859,38 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   } else {
                       titleLabel.setText(getMessage(TITLE_RETRY));
                   }
+                }
+
+                JLabel infoLabel = new JLabel();
+                if (numRetries < 0) {
+                  infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+                  if (shortText) {
+                    infoLabel.setText(getMessage(MESSAGE_HASHDATALINK_TINY));
+                  } else {
+                    infoLabel.setText(getMessage(MESSAGE_HASHDATALINK));
+                  }
+                  infoLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                  infoLabel.setForeground(HYPERLINK_COLOR);
+                  infoLabel.addMouseListener(new MouseAdapter() {
+
+                      @Override
+                      public void mouseClicked(MouseEvent me) {
+                          ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, hashdataCommand);
+                          hashdataListener.actionPerformed(e);
+                      }
+                  });
+                  helpListener.setHelpTopic(HELP_SIGNPIN);
+                } else {
+                  String retryPattern;
+                  if (numRetries < 2) {
+                    retryPattern = getMessage(MESSAGE_LAST_RETRY);
+                  } else {
+                    retryPattern = getMessage(MESSAGE_RETRIES);
+                  }
+                  infoLabel.setText(MessageFormat.format(retryPattern, new Object[]{String.valueOf(numRetries)}));
+                  infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() | java.awt.Font.BOLD));
+                  infoLabel.setForeground(ERROR_COLOR);
+                  helpListener.setHelpTopic(HELP_RETRY);
                 }
 
                 JButton signButton = new JButton();
@@ -765,46 +928,14 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 }
                 pinsizeLabel.setText(MessageFormat.format(pinsizePattern, new Object[]{pinSize}));
 
-                JLabel infoLabel = new JLabel();
-                if (numRetries < 0) {
-                  infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                  if (shortText) {
-                    infoLabel.setText(getMessage(MESSAGE_HASHDATALINK_TINY));
-                  } else {
-                    infoLabel.setText(getMessage(MESSAGE_HASHDATALINK));
-                  }
-                  infoLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                  infoLabel.setForeground(HYPERLINK_COLOR);
-                  infoLabel.addMouseListener(new MouseAdapter() {
-
-                      @Override
-                      public void mouseClicked(MouseEvent me) {
-                          ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, hashdataCommand);
-                          hashdataListener.actionPerformed(e);
-                      }
-                  });
-                  helpListener.setHelpTopic(HELP_SIGNPIN);
-                } else {
-                  String retryPattern;
-                  if (numRetries < 2) {
-                    retryPattern = getMessage(MESSAGE_LAST_RETRY);
-                  } else {
-                    retryPattern = getMessage(MESSAGE_RETRIES);
-                  }
-                  infoLabel.setText(MessageFormat.format(retryPattern, new Object[]{String.valueOf(numRetries)}));
-                  infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() | java.awt.Font.BOLD));
-                  infoLabel.setForeground(ERROR_COLOR);
-                  helpListener.setHelpTopic(HELP_RETRY);
-                }
-
                 GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
                 mainPanel.setLayout(mainPanelLayout);
-                
+
                 GroupLayout.SequentialGroup infoHorizontal = mainPanelLayout.createSequentialGroup()
                         .addComponent(infoLabel);
                 GroupLayout.ParallelGroup infoVertical = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addComponent(infoLabel);
-                       
+
                 if (!renderHeaderPanel) {
                   infoHorizontal
                           .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
@@ -814,8 +945,8 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 }
 
                 // align pinfield and pinsize to the right
-                GroupLayout.ParallelGroup pinHorizontal = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING);
-                GroupLayout.Group pinVertical;
+                GroupLayout.Group pinHorizontal = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING);
+                GroupLayout.SequentialGroup pinVertical = mainPanelLayout.createSequentialGroup();
 
                 if (pinLabelPos == PinLabelPosition.ABOVE) {
                   pinHorizontal
@@ -823,20 +954,25 @@ public class BKUGUIImpl implements BKUGUIFacade {
                             .addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                             .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                           .addComponent(pinsizeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE);
-                  pinVertical = mainPanelLayout.createSequentialGroup()
+                  pinVertical
                           .addComponent(signPinLabel)
                           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                          .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE);
-                } else {
+                          .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                          .addComponent(pinsizeLabel);
+                } else { // PinLabelPosition.LEFT
                   pinHorizontal
                           .addGroup(mainPanelLayout.createSequentialGroup()
                             .addComponent(signPinLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(pinField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                           .addComponent(pinsizeLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE);
-                  pinVertical = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                          .addComponent(signPinLabel)
-                          .addComponent(pinField);
+                  pinVertical
+                          .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                            .addComponent(signPinLabel)
+                            .addComponent(pinField))
+                          .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                          .addComponent(pinsizeLabel);
                 }
 
                 mainPanelLayout.setHorizontalGroup(
@@ -848,18 +984,14 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   mainPanelLayout.createSequentialGroup()
                     .addGroup(infoVertical)
                     .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                    .addGroup(pinVertical)
-                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(pinsizeLabel));
+                    .addGroup(pinVertical));
 
                 GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
                 buttonPanel.setLayout(buttonPanelLayout);
 
-                GroupLayout.SequentialGroup buttonHorizontal = buttonPanelLayout.createSequentialGroup()
-                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(signButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE);
+                GroupLayout.SequentialGroup buttonHorizontal = buttonPanelLayout.createSequentialGroup();
                 GroupLayout.Group buttonVertical;
-                
+
                 if (renderCancelButton) {
                   JButton cancelButton = new JButton();
                   cancelButton.setFont(cancelButton.getFont().deriveFont(cancelButton.getFont().getStyle() & ~java.awt.Font.BOLD));
@@ -868,17 +1000,19 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   cancelButton.addActionListener(cancelListener);
 
                   buttonHorizontal
+                          .addComponent(signButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
                           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                           .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE);
-                  
                   buttonVertical = buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                           .addComponent(signButton)
-                          .addComponent(cancelButton); 
+                          .addComponent(cancelButton);
                 } else {
+                  buttonHorizontal
+                          .addComponent(signButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE);
                   buttonVertical = buttonPanelLayout.createSequentialGroup()
                           .addComponent(signButton);
                 }
-                
+
                 buttonPanelLayout.setHorizontalGroup(buttonHorizontal);
                 buttonPanelLayout.setVerticalGroup(buttonVertical);
 
@@ -951,7 +1085,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
           @Override
             public void run() {
 
-                log.debug("show message dialog");
+                log.debug("show message dialog [" + Thread.currentThread().getName() + "]");
 
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
@@ -1011,7 +1145,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
                   buttonPanelLayout.setHorizontalGroup(
                     buttonPanelLayout.createSequentialGroup()
-                          .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                           .addComponent(okButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
                   buttonPanelLayout.setVerticalGroup(
                     buttonPanelLayout.createSequentialGroup()
@@ -1084,68 +1217,69 @@ public class BKUGUIImpl implements BKUGUIFacade {
         }
         return null;
     }
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    // SECURE VIEWER
+    ////////////////////////////////////////////////////////////////////////////
+
     
     /**
-     * TODO handle multiple references in HashDataViewer
      * @param signedReferences
-     * @param okListener
+     * @param backListener gets notified if pin-dialog has to be redrawn
+     * (signedRefencesList returns via BACK button)
      * @param okCommand
      */
     @Override
-    public void showSecureViewer(final List<HashDataInput> signedReferences,
-            final ActionListener okListener, 
-            final String okCommand) {
+    public void showSecureViewer(final List<HashDataInput> dataToBeSigned,
+            final ActionListener backListener, final String backCommand) {
       
-      if (signedReferences == null) {
-        showErrorDialog(getMessage(ERR_NO_HASHDATA), new Object[] {"No SignedReferences provided"}, okListener, okCommand);
-        return;
-      }
-      
-      if (signedReferences.size() == 1) {
+      if (dataToBeSigned == null) {
+        showErrorDialog(getMessage(ERR_NO_HASHDATA),
+                new Object[] {"no signature data provided"},
+                backListener, backCommand);
+      } else if (dataToBeSigned.size() == 1) {
         try {
-          log.debug("scheduling hashdata viewer");
+          log.debug("scheduling secure viewer");
 
-          SwingUtilities.invokeAndWait(new Runnable() {
+          SwingUtilities.invokeLater(new Runnable() {
 
             @Override
             public void run() {
-              ActionListener saveHashDataListener = new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                  HashDataInput hdi = signedReferences.get(0);
-                  showSaveHashDataInputDialog(Collections.singletonList(hdi), okListener, okCommand);
-                }
-              };
-              showHashDataViewer(signedReferences.get(0), saveHashDataListener, "save");
+              showSecureViewer(dataToBeSigned.get(0)); 
             }
           });
        
-        } catch (InterruptedException ex) {
-          log.error("Failed to display HashDataViewer: " + ex.getMessage());
-        } catch (InvocationTargetException ex) {
-          log.error("Failed to display HashDataViewer: " + ex.getMessage());
+        } catch (Exception ex) { //InterruptedException InvocationTargetException
+          log.error("Failed to display secure viewer: " + ex.getMessage());
+          log.trace(ex);
+          showErrorDialog(ERR_UNKNOWN, null, backListener, backCommand);
         }
       } else {
-        showSignedReferencesListDialog(signedReferences, okListener, okCommand);
+        showSignedReferencesListDialog(dataToBeSigned, backListener, backCommand);
       }
     }
     
     /**
      * has to be called from event dispatcher thread
+     * This method blocks until the dialog's close button is pressed.
      * @param hashDataText
      * @param saveListener
      * @param saveCommand
      */
-    private void showHashDataViewer(final HashDataInput hashDataInput, final ActionListener saveListener, final String saveCommand) {
+    private void showSecureViewer(HashDataInput dataToBeSigned) {
       
-      log.debug("show hashdata viewer");
-
-      ActionListener l = helpListener.getActionListener();
-      HashDataViewer.showHashDataInput(contentPane, hashDataInput, messages, saveListener, saveCommand, l);
+      log.debug("show secure viewer [" + Thread.currentThread().getName() + "]");
+      if (secureViewer == null) {
+        secureViewer = new SecureViewerDialog(null, messages,
+                helpListener.getActionListener());
+      }
+      secureViewer.setContent(dataToBeSigned);
+      log.trace("show secure viewer returned");
     }
     
-    private void showSignedReferencesListDialog(final List<HashDataInput> signedReferences, final ActionListener backListener, final String backCommand) {
+    private void showSignedReferencesListDialog(final List<HashDataInput> signedReferences,
+            final ActionListener backListener, final String backCommand) {
       
       log.debug("scheduling signed references list dialog");
       
@@ -1154,7 +1288,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
         @Override
         public void run() {
           
-          log.debug("show signed references list dialog");
+          log.debug("show signed references list dialog [" + Thread.currentThread().getName() + "]");
           
           mainPanel.removeAll();
           buttonPanel.removeAll();
@@ -1202,13 +1336,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   int selectionIdx = lsm.getMinSelectionIndex();
                   if (selectionIdx >= 0) {
                     final HashDataInput selection = signedReferences.get(selectionIdx);
-                    showHashDataViewer(selection, new ActionListener() {
-
-                      @Override
-                      public void actionPerformed(ActionEvent e) {
-                        showSaveHashDataInputDialog(Collections.singletonList(selection), null, null);
-                      }
-                    }, "save");
+                    showSecureViewer(selection);
                   }
                 }
               });
@@ -1255,9 +1383,8 @@ public class BKUGUIImpl implements BKUGUIFacade {
           buttonPanel.setLayout(buttonPanelLayout);
 
           buttonPanelLayout.setHorizontalGroup(buttonPanelLayout.createSequentialGroup()
-                  .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                   .addComponent(backButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE));
-          buttonPanelLayout.setVerticalGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+          buttonPanelLayout.setVerticalGroup(buttonPanelLayout.createSequentialGroup()
                   .addComponent(backButton));
 
           contentPanel.validate();
@@ -1266,96 +1393,101 @@ public class BKUGUIImpl implements BKUGUIFacade {
     }
     
     /**
-     * 
-     * @param signedRefs
      * @param okListener may be null
-     * @param okCommand
      */
-    private void showSaveHashDataInputDialog(final List<HashDataInput> signedRefs, final ActionListener okListener, final String okCommand) {
-      
-      log.debug("scheduling save hashdatainput dialog");
-      
-      SwingUtilities.invokeLater(new Runnable() {
+//    private void showSaveDialog(final List<HashDataInput> signedRefs,
+//            final ActionListener okListener, final String okCommand) {
+//
+//      log.debug("scheduling save dialog");
+//
+//      SwingUtilities.invokeLater(new Runnable() {
+//
+//        @Override
+//        public void run() {
+//
+//          log.debug("show save dialog");
+//
+//          String userHome = System.getProperty("user.home");
+//
+//          JFileChooser fileDialog = new JFileChooser(userHome);
+//          fileDialog.setMultiSelectionEnabled(false);
+//          fileDialog.setDialogType(JFileChooser.SAVE_DIALOG);
+//          fileDialog.setFileHidingEnabled(true);
+//          if (signedRefs.size() == 1) {
+//            fileDialog.setDialogTitle(getMessage(WINDOWTITLE_SAVE));
+//            fileDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+//            String mimeType = signedRefs.get(0).getMimeType();
+//            MimeFilter mimeFilter = new MimeFilter(mimeType, messages);
+//            fileDialog.setFileFilter(mimeFilter);
+//            String filename = getMessage(SAVE_HASHDATAINPUT_PREFIX) + MimeFilter.getExtension(mimeType);
+//            fileDialog.setSelectedFile(new File(userHome, filename));
+//          } else {
+//            fileDialog.setDialogTitle(getMessage(WINDOWTITLE_SAVEDIR));
+//            fileDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+//          }
+//
+//          //parent contentPane -> placed over applet
+//          switch (fileDialog.showSaveDialog(fileDialog)) {
+//            case JFileChooser.APPROVE_OPTION:
+//              File f = fileDialog.getSelectedFile();
+//              for (HashDataInput hashDataInput : signedRefs) {
+//                String mimeType = hashDataInput.getMimeType();
+//                String id = hashDataInput.getReferenceId();
+//                File file;
+//                if (f.isDirectory()) {
+//                  String filename = getMessage(SAVE_HASHDATAINPUT_PREFIX) + '_' + id + MimeFilter.getExtension(mimeType);
+//                  file = new File(f, filename);
+//                } else {
+//                  file = f;
+//                }
+//                if (file.exists()) {
+//                  String ovrwrt = getMessage(MESSAGE_OVERWRITE);
+//                  int overwrite = JOptionPane.showConfirmDialog(fileDialog, MessageFormat.format(ovrwrt, file), getMessage(WINDOWTITLE_OVERWRITE), JOptionPane.OK_CANCEL_OPTION);
+//                  if (overwrite != JOptionPane.OK_OPTION) {
+//                    continue;
+//                  }
+//                }
+//                if (log.isDebugEnabled()) {
+//                    log.debug("writing hashdata input " + id + " (" + mimeType + ") to file " + file);
+//                }
+//                FileOutputStream fos = null;
+//                try {
+//                    fos = new FileOutputStream(file);
+//                    BufferedOutputStream bos = new BufferedOutputStream(fos);
+//                    InputStream hdi = hashDataInput.getHashDataInput();
+//                    int b;
+//                    while ((b = hdi.read()) != -1) {
+//                        bos.write(b);
+//                    }
+//                    bos.flush();
+//                    bos.close();
+//                } catch (IOException ex) {
+//                    log.error("Failed to write " + file + ": " + ex.getMessage());
+//                    showErrorDialog(ERR_WRITE_HASHDATA, new Object[] {ex.getMessage()}, null, null);
+//                    ex.printStackTrace();
+//                } finally {
+//                    try {
+//                        fos.close();
+//                    } catch (IOException ex) {
+//                    }
+//                }
+//              }
+//              break;
+//            case JFileChooser.CANCEL_OPTION :
+//              log.debug("cancelled save dialog");
+//              break;
+//          }
+//          if (okListener != null) {
+//            okListener.actionPerformed(new ActionEvent(fileDialog, ActionEvent.ACTION_PERFORMED, okCommand));
+//          }
+//        }
+//      });
+//    }
 
-        @Override
-        public void run() {
-          
-          log.debug("show save hashdatainput dialog");
-      
-          String userHome = System.getProperty("user.home");
-          
-          JFileChooser fileDialog = new JFileChooser(userHome); 
-          fileDialog.setMultiSelectionEnabled(false);
-          fileDialog.setDialogType(JFileChooser.SAVE_DIALOG);
-          fileDialog.setFileHidingEnabled(true);
-          if (signedRefs.size() == 1) {
-            fileDialog.setDialogTitle(getMessage(WINDOWTITLE_SAVE));
-            fileDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            String mimeType = signedRefs.get(0).getMimeType();
-            MimeFilter mimeFilter = new MimeFilter(mimeType, messages);
-            fileDialog.setFileFilter(mimeFilter);
-            String filename = getMessage(SAVE_HASHDATAINPUT_PREFIX) + MimeFilter.getExtension(mimeType);
-            fileDialog.setSelectedFile(new File(userHome, filename));
-          } else {
-            fileDialog.setDialogTitle(getMessage(WINDOWTITLE_SAVEDIR));
-            fileDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-          }
-          
-          //parent contentPane -> placed over applet
-          switch (fileDialog.showSaveDialog(fileDialog)) {
-            case JFileChooser.APPROVE_OPTION:
-              File f = fileDialog.getSelectedFile();
-              for (HashDataInput hashDataInput : signedRefs) {
-                String mimeType = hashDataInput.getMimeType();
-                String id = hashDataInput.getReferenceId();
-                File file;
-                if (f.isDirectory()) {
-                  String filename = getMessage(SAVE_HASHDATAINPUT_PREFIX) + '_' + id + MimeFilter.getExtension(mimeType);
-                  file = new File(f, filename);
-                } else {
-                  file = f;
-                }
-                if (file.exists()) {
-                  String ovrwrt = getMessage(MESSAGE_OVERWRITE);
-                  int overwrite = JOptionPane.showConfirmDialog(fileDialog, MessageFormat.format(ovrwrt, file), getMessage(WINDOWTITLE_OVERWRITE), JOptionPane.OK_CANCEL_OPTION);
-                  if (overwrite != JOptionPane.OK_OPTION) {
-                    continue;
-                  }
-                }
-                if (log.isDebugEnabled()) {
-                    log.debug("Writing HashDataInput " + id + " (" + mimeType + ") to file " + file);
-                }
-                FileOutputStream fos = null;
-                try {
-                    fos = new FileOutputStream(file);
-                    BufferedOutputStream bos = new BufferedOutputStream(fos);
-                    InputStream hdi = hashDataInput.getHashDataInput();
-                    int b;
-                    while ((b = hdi.read()) != -1) {
-                        bos.write(b);
-                    }
-                    bos.flush();
-                    bos.close();
-                } catch (IOException ex) {
-                    log.error("Failed to write HashDataInput to file " + file + ": " + ex.getMessage());
-                    showErrorDialog(ERR_WRITE_HASHDATA, new Object[] {ex.getMessage()}, null, null);
-                    ex.printStackTrace();
-                } finally {
-                    try {
-                        fos.close();
-                    } catch (IOException ex) {
-                    }
-                }    
-              }  
-          }
-          log.debug("done saving hashdatainput");
-          if (okListener != null) {
-            okListener.actionPerformed(new ActionEvent(fileDialog, ActionEvent.ACTION_PERFORMED, okCommand));
-          }
-        }
-      });
-    }
-    
+    ////////////////////////////////////////////////////////////////////////////
+    // UTILITY METHODS
+    ////////////////////////////////////////////////////////////////////////////
+
     private void registerHelpListener(ActionListener helpListener) {
       if (helpListener != null) {
         this.helpListener = new HelpMouseListener(helpListener);
@@ -1370,6 +1502,11 @@ public class BKUGUIImpl implements BKUGUIFacade {
         });
       }
     }
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    // INITIALIZERS (MAY BE OVERRIDDEN BY SUBCLASSES)
+    ////////////////////////////////////////////////////////////////////////////
 
     /**
      * Called from constructor.

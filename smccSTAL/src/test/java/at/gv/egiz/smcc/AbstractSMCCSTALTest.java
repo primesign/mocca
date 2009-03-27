@@ -1,5 +1,6 @@
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.ccid.CCID;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -109,10 +110,10 @@ public class AbstractSMCCSTALTest extends AbstractSMCCSTAL implements
       }
 
       @Override
-      public boolean ifdSupportsFeature(byte feature) {
-        return false;
+      public CCID getReader() {
+        throw new UnsupportedOperationException("Not supported yet.");
       }
-     
+
    };
     return false;
   }

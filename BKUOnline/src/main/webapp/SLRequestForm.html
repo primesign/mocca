@@ -103,6 +103,33 @@
 </sl:InfoboxReadRequest>
 -->
 <!--
+<?xml version="1.0" encoding="UTF-8"?>
+<sl:CreateXMLSignatureRequest
+   xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#">
+  <sl:KeyboxIdentifier>SecureSignatureKeypair</sl:KeyboxIdentifier>
+   <sl:DataObjectInfo Structure="enveloping">
+     <sl:DataObject>
+       <sl:XMLContent>Ich bin ein einfacher Text.</sl:XMLContent>
+     </sl:DataObject>
+    <sl:TransformsInfo>
+      <sl:FinalDataMetaInfo>
+       <sl:MimeType>text/plain</sl:MimeType>
+       </sl:FinalDataMetaInfo>
+    </sl:TransformsInfo>
+  </sl:DataObjectInfo>
+  <sl:DataObjectInfo Structure="enveloping">
+     <sl:DataObject>
+       <sl:XMLContent><html xmlns="http://www.w3.org/1999/xhtml"><head><title>TestXHTML</title><style/></head><body><p>Ich bin ein einfacher Text.</p></body></html></sl:XMLContent>
+     </sl:DataObject>
+    <sl:TransformsInfo>
+      <sl:FinalDataMetaInfo>
+       <sl:MimeType>application/xhtml+xml</sl:MimeType>
+       </sl:FinalDataMetaInfo>
+    </sl:TransformsInfo>
+  </sl:DataObjectInfo>
+</sl:CreateXMLSignatureRequest>
+-->
+<!--
 <?xml version='1.0' encoding='UTF-8'?>
 <sl10:InfoboxUpdateRequest xmlns:sl10='http://www.buergerkarte.at/namespaces/securitylayer/1.2#'>
     <sl10:InfoboxIdentifier>CardChannel</sl10:InfoboxIdentifier>

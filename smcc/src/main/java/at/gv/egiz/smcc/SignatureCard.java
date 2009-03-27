@@ -28,6 +28,7 @@
 //
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.ccid.CCID;
 import java.util.List;
 import java.util.Locale;
 
@@ -35,14 +36,6 @@ import javax.smartcardio.Card;
 import javax.smartcardio.CardTerminal;
 
 public interface SignatureCard {
-
-  /**
-   * IFD FEATURES
-   */
-  static final Byte FEATURE_VERIFY_PIN_DIRECT = new Byte((byte) 0x06);
-  static final Byte FEATURE_MODIFY_PIN_DIRECT = new Byte((byte) 0x07);
-  static final Byte FEATURE_MCT_READER_DIRECT = new Byte((byte) 0x08);
-  static final Byte FEATURE_IFD_PIN_PROPERTIES = new Byte((byte) 0x0a);
 
   public static class KeyboxName {
 
@@ -143,11 +136,7 @@ public interface SignatureCard {
   public void unblockPIN(PINSpec pinSpec, PINProvider pukProvider)
           throws CancelledException, SignatureCardException, InterruptedException;
 
-  /**
-   * TODO
-   * @return
-   */
-  public boolean ifdSupportsFeature(byte feature);
+  public CCID getReader();
 
   /**
    * Sets the local for evtl. required callbacks (e.g. PINSpec)

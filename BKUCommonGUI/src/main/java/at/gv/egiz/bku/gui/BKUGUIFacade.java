@@ -43,6 +43,7 @@ public interface BKUGUIFacade {
   
   public static final String MESSAGES_BUNDLE = "at/gv/egiz/bku/gui/Messages";
   public static final String DEFAULT_BACKGROUND = "/images/BackgroundChipperling.png";
+  public static final String DEFAULT_ICON = "/images/ChipperlingLogo.png";
   public static final String HELP_IMG = "/images/help.png";
   public static final String HASHDATA_FONT = "Monospaced";
   public static final Color ERROR_COLOR = Color.RED;
@@ -58,6 +59,7 @@ public interface BKUGUIFacade {
   public static final String TITLE_WAIT = "title.wait";
   public static final String TITLE_HASHDATA = "title.hashdata";
   public static final String WINDOWTITLE_SAVE = "windowtitle.save";
+  public static final String WINDOWTITLE_ERROR = "windowtitle.error";
   public static final String WINDOWTITLE_SAVEDIR = "windowtitle.savedir";
   public static final String WINDOWTITLE_OVERWRITE = "windowtitle.overwrite";
   public static final String WINDOWTITLE_VIEWER = "windowtitle.viewer";
@@ -102,42 +104,36 @@ public interface BKUGUIFacade {
 
   public enum Style { tiny, simple, advanced };
     
-//  public void init(Container contentPane, Locale locale, Style guiStyle, URL background, ActionListener helpListener);
-
   /**
    * BKUWorker needs to init signature card with locale
    * @return
    */
   public Locale getLocale();
 
-//  public void showWelcomeDialog();
-
-  /**
-   * 
-   * @param waitMessage if null, a simple 'please wait' text is displayed
-   */
-//  public void showWaitDialog(String waitMessage);
-
-//  public void showInsertCardDialog(ActionListener cancelListener, String actionCommand);
-
-//  public void showCardNotSupportedDialog(ActionListener cancelListener, String actionCommand);
-
   public void showCardPINDialog(PINSpec pinSpec, int numRetries,
           ActionListener okListener, String okCommand,
           ActionListener cancelListener, String cancelCommand);
 
-//  public void showCardPINRetryDialog(PINSpec pinSpec, int numRetries, ActionListener okListener, String okCommand, ActionListener cancelListener, String cancelCommand);
+  public void showSignaturePINDialog(PINSpec pinSpec, int numRetries,
+          ActionListener signListener, String signCommand,
+          ActionListener cancelListener, String cancelCommand,
+          ActionListener viewerListener, String viewerCommand);
 
-  public void showSignaturePINDialog(PINSpec pinSpec, int numRetries, ActionListener signListener, String signCommand, ActionListener cancelListener, String cancelCommand, ActionListener hashdataListener, String hashdataCommand);
-
-//  public void showSignaturePINRetryDialog(PINSpec pinSpec, int numRetries, ActionListener okListener, String okCommand, ActionListener cancelListener, String cancelCommand, ActionListener hashdataListener, String hashdataCommand);
-
-//  public void showPinpadSignaturePINDialog(PINSpec pinSpec, int retries);
+  public void showPinpadSignaturePINDialog(PINSpec pinSpec, int numRetries, 
+          ActionListener viewerListener, String viewerCommand);
 
   public char[] getPin();
 
-  public void showSecureViewer(List<HashDataInput> signedReferences,
-          ActionListener okListener, String okCommand);
+  /**
+   *
+   * @param dataToBeSigned
+   * @param backListener if list of references hides pin dialog, backListener
+   * receives an action when user hits 'back' button (i.e. whenever the pin-dialog
+   * needs to be re-paint)
+   * @param backCommand
+   */
+  public void showSecureViewer(List<HashDataInput> dataToBeSigned,
+          ActionListener backListener, String backCommand);
 
   public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams,
           ActionListener okListener, String okCommand);

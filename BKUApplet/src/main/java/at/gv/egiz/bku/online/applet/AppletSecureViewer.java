@@ -16,17 +16,8 @@
  */
 package at.gv.egiz.bku.online.applet;
 
+import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.smccstal.SecureViewer;
-import java.security.DigestException;
-import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import at.gv.egiz.bku.smccstal.SignRequestHandler;
 import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.impl.ByteArrayHashDataInput;
 import at.gv.egiz.stal.service.GetHashDataInputFault;
@@ -34,49 +25,73 @@ import at.gv.egiz.stal.service.STALPortType;
 import at.gv.egiz.stal.service.types.GetHashDataInputResponseType;
 import at.gv.egiz.stal.service.types.GetHashDataInputType;
 import at.gv.egiz.stal.signedinfo.ReferenceType;
+import at.gv.egiz.stal.signedinfo.SignedInfoType;
+import java.awt.event.ActionListener;
+import java.security.DigestException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- * A SignRequesthandler that obtains hashdata inputs from a STAL webservice and
- * displays these either within the applet or in a separate frame.
- * The internal viewer displays plaintext data only, other mimetypes can be saved to disk.
- * The standalone (frame) viewer displays all mimetypes.
- * 
- * (This class depends on STALService and therefore is not part of BKUCommonGUI.)
- * 
+ *
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class AppletSecureViewer extends SignRequestHandler {
+public class AppletSecureViewer implements SecureViewer {
 
   private static final Log log = LogFactory.getLog(AppletSecureViewer.class);
+
+  protected BKUGUIFacade gui;
   protected STALPortType stalPort;
   protected String sessId;
+  protected List<HashDataInput> verifiedDataToBeSigned;
 
-  public AppletSecureViewer(STALPortType stalPort, String sessId) {
-    if (stalPort == null || sessId == null) {
+  public AppletSecureViewer(BKUGUIFacade gui, STALPortType stalPort,
+          String sessId) {
+    if (gui == null) {
+      throw new NullPointerException("GUI must not be null");
+    }
+    if (stalPort == null) {
       throw new NullPointerException("STAL port must not be null");
     }
-    this.sessId = sessId;
+    if (sessId == null) {
+      throw new NullPointerException("session id must not be null");
+    }
+    this.gui = gui;
     this.stalPort = stalPort;
+    this.sessId = sessId;
   }
 
   /**
-   * TODO don't throw exceptions
+   * retrieves the data to be signed for
    * @param signedReferences
+   * @param okListener
+   * @param okCommand
+   * @param cancelListener
+   * @param cancelCommand
    * @throws java.security.DigestException
    * @throws java.lang.Exception
    */
   @Override
-  public void displayDataToBeSigned(List<ReferenceType> signedReferences) 
+  public void displayDataToBeSigned(SignedInfoType signedInfo,
+          ActionListener okListener, String okCommand)
           throws DigestException, Exception {
-
-  List<GetHashDataInputResponseType.Reference> hdi = getHashDataInput(signedReferences);
-    List<HashDataInput> verifiedHashDataInputs = verifyHashDataInput(signedReferences, hdi);
-
-    if (verifiedHashDataInputs.size() > 0) {
-      gui.showSecureViewer(verifiedHashDataInputs, this, "hashDataDone");
+    
+    if (verifiedDataToBeSigned == null) {
+      log.info("retrieve data to be signed for dsig:SignedInfo " +
+              signedInfo.getId());
+      List<GetHashDataInputResponseType.Reference> hdi = 
+              getHashDataInput(signedInfo.getReference());
+      verifiedDataToBeSigned = verifyHashDataInput(signedInfo.getReference(),
+              hdi);
+    }
+    if (verifiedDataToBeSigned.size() > 0) {
+      gui.showSecureViewer(verifiedDataToBeSigned, okListener, okCommand);
     } else {
-      throw new Exception("No signature data (apart from any QualifyingProperties or a Manifest)");
+      throw new Exception("No data to be signed (apart from any QualifyingProperties or a Manifest)");
     }
   }
 
@@ -110,7 +125,7 @@ public class AppletSecureViewer extends SignRequestHandler {
         }
       }
     }
-    
+
     if (request.getReference().size() < 1) {
       log.error("No signature data (apart from any QualifyingProperties or a Manifest) for session " + sessId);
       throw new Exception("No signature data (apart from any QualifyingProperties or a Manifest)");
@@ -187,7 +202,7 @@ public class AppletSecureViewer extends SignRequestHandler {
         verifiedHashDataInputs.add(new ByteArrayHashDataInput(hdi, signedRefId, mimeType, encoding));
       }
     }
-    
+
     return verifiedHashDataInputs;
   }
 

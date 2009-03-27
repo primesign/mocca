@@ -34,6 +34,7 @@ import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUGUIImpl;
 import at.gv.egiz.stal.service.STALPortType;
 import at.gv.egiz.stal.service.STALService;
+import java.applet.AppletContext;
 import java.awt.Container;
 import javax.xml.namespace.QName;
 
@@ -207,14 +208,19 @@ public class BKUApplet extends JApplet {
    */
   protected void sendRedirect(String sessionId) {
     try {
+      AppletContext ctx = getAppletContext();
+      if (ctx == null) {
+        log.error("no applet context (applet might already have been destroyed)");
+        return;
+      }
       URL redirectURL = getURLParameter(REDIRECT_URL, sessionId);
       String redirectTarget = getParameter(REDIRECT_TARGET);
       if (redirectTarget == null) {
         log.info("Done. Redirecting to " + redirectURL + " ...");
-        getAppletContext().showDocument(redirectURL);
+        ctx.showDocument(redirectURL);
       } else {
         log.info("Done. Redirecting to " + redirectURL + " (target=" + redirectTarget + ") ...");
-        getAppletContext().showDocument(redirectURL, redirectTarget);
+        ctx.showDocument(redirectURL, redirectTarget);
       }
     } catch (MalformedURLException ex) {
       log.warn("Failed to redirect: " + ex.getMessage(), ex);

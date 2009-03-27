@@ -33,7 +33,6 @@ import org.apache.commons.logging.LogFactory;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.LockedException;
 import at.gv.egiz.smcc.NotActivatedException;
-import at.gv.egiz.smcc.PINProvider;
 import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.SignatureCard.KeyboxName;
@@ -47,11 +46,12 @@ import at.gv.egiz.stal.signedinfo.ObjectFactory;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
 import at.gv.egiz.stal.util.JCEAlgorithmNames;
 
-public abstract class SignRequestHandler extends AbstractRequestHandler implements SecureViewer {
+public class SignRequestHandler extends AbstractRequestHandler {
 
     private static Log log = LogFactory.getLog(SignRequestHandler.class);
     private static JAXBContext jaxbContext;
     private PINProviderFactory pinProviderFactory;
+    private SecureViewer secureViewer;
     
     static {
         try {
@@ -59,6 +59,10 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
         } catch (JAXBException e) {
             log.fatal("Cannot init jaxbContext", e);
         }
+    }
+
+    public SignRequestHandler(SecureViewer secureViewer) {
+      this.secureViewer = secureViewer;
     }
 
     @SuppressWarnings("unchecked")
@@ -85,10 +89,8 @@ public abstract class SignRequestHandler extends AbstractRequestHandler implemen
                 if (pinProviderFactory == null) {
                   pinProviderFactory = PINProviderFactory.getInstance(card, gui);
                 }
-                PINProvider pinProvider = pinProviderFactory.
-                        getSignaturePINProvider(this, si.getValue());
-                
-                byte[] resp = card.createSignature(md.digest(), kb, pinProvider);
+                byte[] resp = card.createSignature(md.digest(), kb, 
+                        pinProviderFactory.getSignaturePINProvider(secureViewer, si.getValue()));
                 if (resp == null) {
                     return new ErrorResponse(6001);
                 }

@@ -35,7 +35,7 @@ public abstract class AbstractPINProvider implements PINProvider, ActionListener
 
   protected String action;
 
-  private boolean actionPerformed;
+  protected boolean actionPerformed;
 
 //  protected void waitForAction() throws InterruptedException {
 //    super.wait();

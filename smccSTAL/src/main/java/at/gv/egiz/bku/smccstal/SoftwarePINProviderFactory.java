@@ -49,7 +49,6 @@ public class SoftwarePINProviderFactory extends PINProviderFactory {
 //    protected BKUGUIFacade gui;
     protected SecureViewer viewer;
     protected SignedInfoType signedInfo;
-    protected List<HashDataInput> hashDataInputs;
 
     private SignaturePinProvider(SecureViewer viewer,
             SignedInfoType signedInfo) {
@@ -64,22 +63,14 @@ public class SoftwarePINProviderFactory extends PINProviderFactory {
       gui.showSignaturePINDialog(spec, (retry) ? retries : -1,
               this, "sign",
               this, "cancel",
-              this, "hashData");
+              this, "secureViewer");
 
       do {
         waitForAction();
-        gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
-                BKUGUIFacade.MESSAGE_WAIT);
 
-        if ("hashData".equals(action)) {
-          // show pin dialog in background
-          gui.showSignaturePINDialog(spec, (retry) ? retries : -1,
-                  this, "sign",
-                  this, "cancel",
-                  this, "hashData");
-
+        if ("secureViewer".equals(action)) {
           try {
-            viewer.displayDataToBeSigned(signedInfo.getReference());
+            viewer.displayDataToBeSigned(signedInfo, this, "pinEntry");
           } catch (DigestException ex) {
             log.error("Bad digest value: " + ex.getMessage());
             gui.showErrorDialog(BKUGUIFacade.ERR_INVALID_HASH,
@@ -93,17 +84,23 @@ public class SoftwarePINProviderFactory extends PINProviderFactory {
                     this, "error");
           }
         } else if ("sign".equals(action)) {
+          gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
+                BKUGUIFacade.MESSAGE_WAIT);
           retry = true;
           return gui.getPin();
-        } else if ("hashDataDone".equals(action)) {
+        } else if ("pinEntry".equals(action)) {
           gui.showSignaturePINDialog(spec, (retry) ? retries : -1,
                   this, "sign",
                   this, "cancel",
-                  this, "hashData");
+                  this, "secureViewer");
         } else if ("cancel".equals(action) ||
                 "error".equals(action)) {
+          gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
+                BKUGUIFacade.MESSAGE_WAIT);
           throw new CancelledException(spec.getLocalizedName() +
                   " entry cancelled");
+        } else {
+          log.error("unknown action command " + action);
         }
       } while (true);
     }

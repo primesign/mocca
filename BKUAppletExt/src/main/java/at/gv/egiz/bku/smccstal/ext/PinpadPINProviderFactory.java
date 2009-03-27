@@ -73,23 +73,6 @@ public class PinpadPINProviderFactory extends ManagementPINProviderFactory {
       showPinpadPINDialog(retries, spec);
       retry = true;
       return null;
-
-//      gui.showPINDialog(type, spec, (retry) ? retries : -1,
-//              this, "exec",
-//              this, "back");
-//
-//      waitForAction();
-//
-//      if ("exec".equals(action)) {
-//        gui.showWaitDialog(null);
-//        retry = true;
-//        return gui.getPin();
-//      } else if ("back".equals(action)) {
-//        throw new CancelledException();
-//      } else {
-//        log.error("unsupported command " + action);
-//        throw new CancelledException();
-//      }
     }
 
     /**
@@ -111,9 +94,33 @@ public class PinpadPINProviderFactory extends ManagementPINProviderFactory {
         title = BKUGUIFacade.TITLE_RETRY;
         message = BKUGUIFacade.MESSAGE_RETRIES;
         params = new Object[]{String.valueOf(retries)};
-      } else {
-        title = BKUGUIFacade.TITLE_SIGN;
+      } else if (type == DIALOG.VERIFY) {
+        title = PINManagementGUIFacade.TITLE_VERIFY_PIN;
         message = BKUGUIFacade.MESSAGE_ENTERPIN_PINPAD;
+        String pinSize = String.valueOf(pinSpec.getMinLength());
+        if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
+          pinSize += "-" + pinSpec.getMaxLength();
+        }
+        params = new Object[]{pinSpec.getLocalizedName(), pinSize};
+      } else if (type == DIALOG.ACTIVATE) {
+        title = PINManagementGUIFacade.TITLE_ACTIVATE_PIN;
+        message = PINManagementGUIFacade.MESSAGE_ACTIVATEPIN_PINPAD;
+        String pinSize = String.valueOf(pinSpec.getMinLength());
+        if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
+          pinSize += "-" + pinSpec.getMaxLength();
+        }
+        params = new Object[]{pinSpec.getLocalizedName(), pinSize};
+      } else if (type == DIALOG.CHANGE) {
+        title = PINManagementGUIFacade.TITLE_CHANGE_PIN;
+        message = PINManagementGUIFacade.MESSAGE_CHANGEPIN_PINPAD;
+        String pinSize = String.valueOf(pinSpec.getMinLength());
+        if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
+          pinSize += "-" + pinSpec.getMaxLength();
+        }
+        params = new Object[]{pinSpec.getLocalizedName(), pinSize};
+      } else { //if (type == DIALOG.UNBLOCK) {
+        title = PINManagementGUIFacade.TITLE_UNBLOCK_PIN;
+        message = PINManagementGUIFacade.MESSAGE_UNBLOCKPIN_PINPAD;
         String pinSize = String.valueOf(pinSpec.getMinLength());
         if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
           pinSize += "-" + pinSpec.getMaxLength();

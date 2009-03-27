@@ -14,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package at.gv.egiz.bku.smccstal;
 
-import at.gv.egiz.stal.signedinfo.ReferenceType;
+import at.gv.egiz.stal.signedinfo.SignedInfoType;
+import java.awt.event.ActionListener;
 import java.security.DigestException;
-import java.util.List;
 
 /**
  *
@@ -38,7 +37,7 @@ public interface SecureViewer {
    * (or any other digest computation error occurs)
    * @throws java.lang.Exception
    */
-  void displayDataToBeSigned(List<ReferenceType> signedReferences) 
-          throws DigestException, Exception;
-
+  void displayDataToBeSigned(SignedInfoType signedInfo,
+          ActionListener okListener, String okCommand)
+        throws DigestException, Exception;
 }

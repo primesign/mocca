@@ -118,18 +118,18 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 pinStatusTable.setDefaultRenderer(PINSpec.class, new PINSpecRenderer());
                 pinStatusTable.setDefaultRenderer(STATUS.class, new PINStatusRenderer(cardmgmtMessages));
                 pinStatusTable.setTableHeader(null);
-
-                pinStatusTable.addMouseMotionListener(new MouseMotionAdapter() {
-
-                  @Override
-                  public void mouseMoved(MouseEvent e) {
-                    if (pinStatusTable.columnAtPoint(e.getPoint()) == 0) {
-                      pinStatusTable.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                    } else {
-                      pinStatusTable.setCursor(Cursor.getDefaultCursor());
-                    }
-                  }
-                });
+                pinStatusTable.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+//                pinStatusTable.addMouseMotionListener(new MouseMotionAdapter() {
+//
+//                  @Override
+//                  public void mouseMoved(MouseEvent e) {
+//                    if (pinStatusTable.columnAtPoint(e.getPoint()) == 0) {
+//                      pinStatusTable.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+//                    } else {
+//                      pinStatusTable.setCursor(Cursor.getDefaultCursor());
+//                    }
+//                  }
+//                });
 
                 final JButton activateButton = new JButton();
                 activateButton.setFont(activateButton.getFont().deriveFont(activateButton.getFont().getStyle() & ~java.awt.Font.BOLD));
@@ -392,7 +392,7 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 if (pinpad) {
                   JLabel pinpadLabel = new JLabel();
                   pinpadLabel.setFont(mgmtLabel.getFont().deriveFont(mgmtLabel.getFont().getStyle() & ~Font.BOLD));
-                  String pinpadPattern = getMessage(MESSAGE_PINPAD);
+                  String pinpadPattern = getMessage(MESSAGE_VERIFYPIN_PINPAD);
                   pinpadLabel.setText(MessageFormat.format(pinpadPattern,
                           new Object[] { pinSpec.getLocalizedName(), pinSize }));
                   

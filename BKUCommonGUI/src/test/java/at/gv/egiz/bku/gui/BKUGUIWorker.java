@@ -149,7 +149,9 @@ public class BKUGUIWorker implements Runnable {
 //            
 //            Thread.sleep(2000);
 //
-            gui.showSignaturePINDialog(signPinSpec, -1, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
+//            gui.showSignaturePINDialog(signPinSpec, -1, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
+
+    gui.showPinpadSignaturePINDialog(signPinSpec, -1, hashdataListener, "hashdata");
 //
 //            Thread.sleep(4000);
 //

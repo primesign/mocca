@@ -40,13 +40,16 @@ public interface PINManagementGUIFacade extends BKUGUIFacade {
   public static final String MESSAGE_ACTIVATE_SUCCESS = "activate.success";
   public static final String MESSAGE_CHANGE_SUCCESS = "change.success";
   public static final String MESSAGE_PINMGMT = "pin.mgmt";
-  public static final String MESSAGE_PINPAD = "pinpad";
-  public static final String MESSAGE_CHANGEPIN_PINPAD = "pinpad.change";
+//  public static final String MESSAGE_PINPAD = "pinpad";
   public static final String MESSAGE_ACTIVATE_PIN = "activate.pin";
   public static final String MESSAGE_CHANGE_PIN = "change.pin";
   public static final String MESSAGE_VERIFY_PIN = "verify.pin";
   public static final String MESSAGE_UNBLOCK_PIN = "unblock.pin";
-  
+  public static final String MESSAGE_ACTIVATEPIN_PINPAD = "activate.pinpad";
+  public static final String MESSAGE_CHANGEPIN_PINPAD = "change.pinpad";
+  public static final String MESSAGE_VERIFYPIN_PINPAD = "verify.pinpad";
+  public static final String MESSAGE_UNBLOCKPIN_PINPAD = "unblock.pinpad";
+
   public static final String LABEL_OLD_PIN = "label.old.pin";
   public static final String LABEL_NEW_PIN = "label.new.pin";
   public static final String LABEL_REPEAT_PIN = "label.repeat.pin";

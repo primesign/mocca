@@ -28,6 +28,9 @@
 //
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.ccid.CCID;
+import at.gv.egiz.smcc.ccid.DefaultReader;
+import at.gv.egiz.smcc.ccid.ReaderFactory;
 import at.gv.egiz.smcc.util.SMCCHelper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,6 +42,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.smartcardio.ATR;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
@@ -54,14 +59,6 @@ public abstract class AbstractSignatureCard implements SignatureCard {
 
   private static Log log = LogFactory.getLog(AbstractSignatureCard.class);
 
-  static final short GET_FEATURE_REQUEST = 3400;
-  
-  private static int getCtrlCode(short function) {
-    return 0x310000 | ((0xFFFF & function) << 2);
-  }
-
-  protected Map<Byte, Long> ifdCtrlCmds;
-
   protected List<PINSpec> pinSpecs = new ArrayList<PINSpec>();
 
   private ResourceBundle i18n;
@@ -76,7 +73,8 @@ public abstract class AbstractSignatureCard implements SignatureCard {
   /**
    * The card terminal that connects the {@link #card_}.  
    */
-  private CardTerminal cardTerminal;
+//  private CardTerminal cardTerminal;
+  protected CCID reader;
 
   protected AbstractSignatureCard(String resourceBundleName) {
     this.resourceBundleName = resourceBundleName;
@@ -341,16 +339,34 @@ public abstract class AbstractSignatureCard implements SignatureCard {
    */
   protected byte[] readTLVFile(byte[] aid, byte[] ef, int maxLength)
       throws SignatureCardException, InterruptedException, CardException {
-    return readTLVFile(aid, ef, null, (byte) 0, maxLength);
+    // SELECT FILE (AID)
+    selectFileAID(aid);
+
+    // SELECT FILE (EF)
+    ResponseAPDU resp = selectFileFID(ef);
+    if (resp.getSW() == 0x6a82) {
+      // EF not found
+      throw new FileNotFoundException("EF " + toString(ef) + " not found.");
+    } else if (resp.getSW() != 0x9000) {
+      throw new SignatureCardException("SELECT FILE with "
+          + "FID="
+          + toString(ef)
+          + " failed ("
+          + "SW="
+          + Integer.toHexString(resp.getSW()) + ").");
+    }
+
+    return readBinaryTLV(maxLength, (byte) 0x30);
+//    return readTLVFile(aid, ef, null, (byte) 0, maxLength);
   }
 
   /**
-   * Read the content of a TLV file wich may require a PIN.
+   * Read the content of a TLV file wich requires a PIN.
    * 
    * @param aid the application ID (AID)
    * @param ef the elementary file (EF)
    * @param kid the key ID (KID) of the corresponding PIN
-   * @param provider the PINProvider
+   * @param pin the pin or null if VERIFY on pinpad
    * @param spec the PINSpec
    * @param maxLength the maximum length of the file
    * 
@@ -381,12 +397,10 @@ public abstract class AbstractSignatureCard implements SignatureCard {
     }
 
     // VERIFY
-    if (pin != null) {
       int retries = verifyPIN(kid, pin);
       if (retries != -1) {
         throw new VerificationFailedException(retries);
       }
-    }
    
     return readBinaryTLV(maxLength, (byte) 0x30);
       
@@ -443,16 +457,16 @@ public abstract class AbstractSignatureCard implements SignatureCard {
   }
 
   
+  @Override
   public void init(Card card, CardTerminal cardTerminal) {
-    card_ = card;
-    this.cardTerminal = cardTerminal;
+    this.card_ = card;
+    this.reader = ReaderFactory.getReader(card, cardTerminal);
     ATR atr = card.getATR();
     byte[] atrBytes = atr.getBytes();
     if (atrBytes.length >= 6) {
       ifs_ = 0xFF & atr.getBytes()[6];
       log.trace("Setting IFS (information field size) to " + ifs_);
     }
-    ifdCtrlCmds = queryIFDFeatures();
   }
   
   @Override
@@ -462,6 +476,11 @@ public abstract class AbstractSignatureCard implements SignatureCard {
 
   protected CardChannel getCardChannel() {
     return card_.getBasicChannel();
+  }
+
+  @Override
+  public CCID getReader() {
+    return reader;
   }
 
   @Override
@@ -497,9 +516,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
       log.debug("Disconnect and reset smart card.");
       card_.disconnect(true);
       log.debug("Reconnect smart card.");
-      if (cardTerminal != null) {
-        card_ = cardTerminal.connect("*");
-      }
+      card_ = reader.connect();
     } catch (CardException e) {
       throw new SignatureCardException("Failed to reset card.", e);
     }
@@ -520,6 +537,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
         selectFileAID(pinSpec.getContextAID());
       }
 
+      // -1 if ok or unknown
       int retries = verifyPIN(pinSpec.getKID());
       do {
         char[] pin = pinProvider.providePIN(pinSpec, retries);
@@ -611,166 +629,4 @@ public abstract class AbstractSignatureCard implements SignatureCard {
           throws CancelledException, SignatureCardException, InterruptedException {
     throw new SignatureCardException("Unblock not supported yet");
   }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // IFD related code
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * TODO implement VERIFY_PIN_START/FINISH (feature 0x01/0x02)
-   * @return
-   */
-  @Override
-  public boolean ifdSupportsFeature(byte feature) {
-    if (ifdCtrlCmds != null) {
-      return ifdCtrlCmds.containsKey(feature);
-    }
-    return false;
-  }
-
-  protected Map<Byte, Long> queryIFDFeatures() {
-
-    if (card_ == null) {
-      throw new NullPointerException("Need connected smart card to query IFD features");
-    }
-
-    Map<Byte, Long> ifdFeatures = new HashMap<Byte, Long>();
-
-    try {
-      if (log.isTraceEnabled()) {
-        log.trace("GET_FEATURE_REQUEST CtrlCode " + Integer.toHexString(getCtrlCode(GET_FEATURE_REQUEST)));
-      }
-      byte[] resp = card_.transmitControlCommand(getCtrlCode(GET_FEATURE_REQUEST), new byte[]{});
-
-      if (log.isTraceEnabled()) {
-        log.trace("GET_FEATURE_REQUEST Response " + SMCCHelper.toString(resp));
-      }
-
-      for (int i = 0; i + 5 < resp.length; i += 6) {
-        Byte feature = new Byte(resp[i]);
-        Long ctrlCode = new Long(
-          ((0xFF & resp[i + 2]) << 24) |
-          ((0xFF & resp[i + 3]) << 16) |
-          ((0xFF & resp[i + 4]) << 8) |
-           (0xFF & resp[i + 5]));
-        if (log.isInfoEnabled()) {
-          log.info("IFD supports feature " + Integer.toHexString(feature.byteValue()) +
-                  ": " + Long.toHexString(ctrlCode.longValue()));
-        }
-        ifdFeatures.put(feature, ctrlCode);
-      }
-
-    } catch (CardException ex) {
-      log.debug("Failed to query IFD features: " + ex.getMessage());
-      log.trace(ex);
-      log.info("IFD does not support PINPad");
-      return null;
-    }
-    return ifdFeatures;
-  }
-
-
-  protected byte ifdGetKeyPressed() throws CardException {
-    if (ifdSupportsFeature(FEATURE_VERIFY_PIN_DIRECT)) {
-
-      Long controlCode = (Long) ifdCtrlCmds.get(new Byte((byte) 0x05));
-
-      byte key = 0x00;
-      while (key == 0x00) {
-
-        byte[] resp = card_.transmitControlCommand(controlCode.intValue(), new byte[] {});
-
-        if (resp != null && resp.length > 0) {
-          key = resp[0];
-        }
-      }
-
-      System.out.println("Key: " + key);
-
-    }
-
-    return 0x00;
-  }
-
-  protected byte[] ifdVerifyPINFinish() throws CardException {
-    if (ifdSupportsFeature(FEATURE_VERIFY_PIN_DIRECT)) {
-
-      Long controlCode = (Long) ifdCtrlCmds.get(new Byte((byte) 0x02));
-
-      byte[] resp = card_.transmitControlCommand(controlCode.intValue(), new byte[] {});
-
-      System.out.println("CommandResp: " + toString(resp));
-
-      return resp;
-
-    }
-
-    return null;
-  }
-
-
-  /**
-   * assumes ifdSupportsVerifyPIN() == true
-   * @param pinVerifyStructure
-   * @return
-   * @throws javax.smartcardio.CardException
-   */
-//  protected byte[] ifdVerifyPIN(byte[] pinVerifyStructure) throws CardException {
-//
-////      Long ctrlCode = (Long) ifdFeatures.get(FEATURE_IFD_PIN_PROPERTIES);
-////      if (ctrlCode != null) {
-////        if (log.isTraceEnabled()) {
-////          log.trace("PIN_PROPERTIES CtrlCode " + Integer.toHexString(ctrlCode.intValue()));
-////        }
-////        byte[] resp = card_.transmitControlCommand(ctrlCode.intValue(), new byte[] {});
-////
-////        if (log.isTraceEnabled()) {
-////          log.trace("PIN_PROPERTIES Response " + SMCCHelper.toString(resp));
-////        }
-////      }
-//
-//
-//      Long ctrlCode = (Long) ifdFeatures.get(FEATURE_VERIFY_PIN_DIRECT);
-//      if (ctrlCode == null) {
-//        throw new NullPointerException("no CtrlCode for FEATURE_VERIFY_PIN_DIRECT");
-//      }
-//
-//      if (log.isTraceEnabled()) {
-//        log.trace("VERIFY_PIN_DIRECT CtrlCode " + Integer.toHexString(ctrlCode.intValue()) +
-//                ", PIN_VERIFY_STRUCTURE " + SMCCHelper.toString(pinVerifyStructure));
-//      }
-//      byte[] resp = card_.transmitControlCommand(ctrlCode.intValue(), pinVerifyStructure);
-//
-//      if (log.isTraceEnabled()) {
-//        log.trace("VERIFY_PIN_DIRECT Response " + SMCCHelper.toString(resp));
-//      }
-//      return resp;
-//  }
-
-//  protected Long getControlCode(Byte feature) {
-//    if (ifdFeatures != null) {
-//      return ifdFeatures.get(feature);
-//    }
-//    return null;
-//  }
-
-  protected byte[] transmitControlCommand(Long ctrlCode, byte[] ctrlCommand)
-          throws CardException {
-//    Long ctrlCode = (Long) ifdFeatures.get(feature);
-    if (ctrlCode == null) {
-      throw new NullPointerException("ControlCode " +
-              Integer.toHexString(ctrlCode.intValue()) + " not supported");
-    }
-    if (log.isTraceEnabled()) {
-      log.trace("CtrlCommand (" + Integer.toHexString(ctrlCode.intValue()) +
-              ")  " + SMCCHelper.toString(ctrlCommand));
-    }
-    byte[] resp = card_.transmitControlCommand(ctrlCode.intValue(), ctrlCommand);
-
-    if (log.isTraceEnabled()) {
-      log.trace("CtrlCommand Response " + SMCCHelper.toString(resp));
-    }
-    return resp;
-  }
-
 }

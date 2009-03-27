@@ -28,6 +28,7 @@
 //
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.ccid.CCID;
 import at.gv.egiz.smcc.util.SMCCHelper;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -41,7 +42,7 @@ import javax.smartcardio.ResponseAPDU;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
+public class ACOSCard extends AbstractSignatureCard {
 
   private static Log log = LogFactory.getLog(ACOSCard.class);
 
@@ -180,22 +181,23 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
         //new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("inf.pin.name"));
         
         int retries = -1;
-        char[] pin = null;
-        boolean pinRequiered = false;
+        boolean pinRequired = false;
 
         do {
-          if (pinRequiered) {
-            pin = provider.providePIN(spec, retries);
-          }
           try {
             getCard().beginExclusive();
-            return readTLVFile(AID_DEC, EF_INFOBOX, pin, KID_PIN_INF, EF_INFOBOX_MAX_SIZE);
+            if (pinRequired) {
+              char[] pin = provider.providePIN(spec, retries);
+              return readTLVFile(AID_DEC, EF_INFOBOX, pin, spec.getKID(), EF_INFOBOX_MAX_SIZE);
+            } else {
+              return readTLVFile(AID_DEC, EF_INFOBOX, EF_INFOBOX_MAX_SIZE);
+            }
           } catch (FileNotFoundException e) {
             throw new NotActivatedException();
           } catch (SecurityStatusNotSatisfiedException e) {
-            pinRequiered = true;
+            pinRequired = true;
           } catch (VerificationFailedException e) {
-            pinRequiered = true;
+            pinRequired = true;
             retries = e.getRetries();
           } finally {
             getCard().endExclusive();
@@ -402,10 +404,10 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
           throws LockedException, NotActivatedException, CancelledException, TimeoutException, SignatureCardException {
     try {
       byte[] sw;
-      if (ifdSupportsFeature(FEATURE_VERIFY_PIN_DIRECT)) {
+      if (reader.hasFeature(CCID.FEATURE_VERIFY_PIN_DIRECT)) {
         log.debug("verify PIN on IFD");
-        sw = transmitControlCommand(
-                ifdCtrlCmds.get(FEATURE_VERIFY_PIN_DIRECT),
+        sw = reader.transmitControlCommand(
+                CCID.FEATURE_VERIFY_PIN_DIRECT,
                 getPINVerifyStructure(kid));
 //        int sw = (resp[resp.length-2] & 0xff) << 8 | resp[resp.length-1] & 0xff;
       } else {
@@ -466,10 +468,10 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
           throws LockedException, NotActivatedException, CancelledException, TimeoutException, SignatureCardException {
     try {
        byte[] sw;
-      if (ifdSupportsFeature(FEATURE_MODIFY_PIN_DIRECT)) {
+      if (reader.hasFeature(CCID.FEATURE_MODIFY_PIN_DIRECT)) {
         log.debug("modify PIN on IFD");
-        sw = transmitControlCommand(
-                ifdCtrlCmds.get(FEATURE_MODIFY_PIN_DIRECT),
+        sw = reader.transmitControlCommand(
+                CCID.FEATURE_MODIFY_PIN_DIRECT,
                 getPINModifyStructure(kid));
 //        int sw = (resp[resp.length-2] & 0xff) << 8 | resp[resp.length-1] & 0xff;
       } else {
@@ -543,34 +545,37 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
   }
   
   private byte[] getPINVerifyStructure(byte kid) {
-
-      byte bTimeOut = (byte) 00;            // Default time out
-      byte bTimeOut2 = (byte) 00;           // Default time out
-      byte bmFormatString = (byte) 0x82;      // 1 0001 0 01
+      
+      byte bTimeOut = reader.getbTimeOut();   
+      byte bTimeOut2 = reader.getbTimeOut2(); 
+      byte bmFormatString = (byte) 0x82;      // 1 0000 0 10
                                               // ^------------ System unit = byte
                                               //   ^^^^------- PIN position in the frame = 1 byte
                                               //        ^----- PIN justification left
-                                              //          ^^-- BCD format
-                                              // 1 0000 0 10
                                               //          ^^-- ASCII format
-      byte bmPINBlockString = (byte) 0x08;    // 0100 0111
-                                              // ^^^^--------- PIN length size: 4 bits
-                                              //      ^^^^---- Length PIN = 7 bytes
-      byte bmPINLengthFormat = (byte) 0x04;   // 000 0 0100
+      byte bmPINBlockString = (byte) 0x08;    // 0000 1000
+                                              // ^^^^--------- PIN length size: 0 bits
+                                              //      ^^^^---- Length PIN = 8 bytes
+      byte bmPINLengthFormat = (byte) 0x00;   // 000 0 0000
                                               //     ^-------- System bit units is bit
-                                              //       ^^^^--- PIN length is at the 4th position bit
-      byte wPINMaxExtraDigitL = (byte) 0x04;  // Max=4 digits
-      byte wPINMaxExtraDigitH = (byte) 0x04;  // Min=4 digits
-      byte bEntryValidationCondition = 0x02;  // Max size reach or Validation key pressed
+                                              //       ^^^^--- no PIN length
+      byte wPINMaxExtraDigitL =
+              (reader.getwPINMaxExtraDigitL() < (byte) 0x08) ?
+                reader.getwPINMaxExtraDigitL() : (byte) 0x08;
+      byte wPINMaxExtraDigitH =               
+              (reader.getwPINMaxExtraDigitH() > (byte) 0x00) ?
+                reader.getwPINMaxExtraDigitH() : (byte) 0x00;
+      byte bEntryValidationCondition = 
+              reader.getbEntryValidationCondition();
       byte bNumberMessage = (byte) 0x00;      // No message
-      byte wLangIdL = (byte) 0x0C;            // - English?
-      byte wLangIdH = (byte) 0x04;            // \
-      byte bMsgIndex = (byte) 0x00;           // Default Msg
+      byte wLangIdL = (byte) 0x0C;            
+      byte wLangIdH = (byte) 0x04;            
+      byte bMsgIndex = (byte) 0x00;           
 
       byte[] apdu = new byte[] {
-        (byte) 0x00, (byte) 0x20, (byte) 0x00, kid, (byte) 0x08,  // CLA INS P1 P2 LC
-        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,               // Data
-        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00                // Data
+        (byte) 0x00, (byte) 0x20, (byte) 0x00, kid, (byte) 0x08, 
+        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,      
+        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00       
       };
 
       int offset = 0;
@@ -603,40 +608,43 @@ public class ACOSCard extends AbstractSignatureCard implements SignatureCard {
   
   public byte[] getPINModifyStructure(byte kid) {
 
-      byte bTimeOut = (byte) 00;            // Default time out
-      byte bTimeOut2 = (byte) 00;           // Default time out
-      byte bmFormatString = (byte) 0x82;      // 1 0001 0 01
+      byte bTimeOut = reader.getbTimeOut();
+      byte bTimeOut2 = reader.getbTimeOut2();
+      byte bmFormatString = (byte) 0x82;      // 1 0000 0 10
                                               // ^------------ System unit = byte
                                               //   ^^^^------- PIN position in the frame = 1 byte
                                               //        ^----- PIN justification left
-                                              //          ^^-- BCD format
-                                              // 1 0000 0 10
                                               //          ^^-- ASCII format
-      byte bmPINBlockString = (byte) 0x08;    // 0100 0111
-                                              // ^^^^--------- PIN length size: 4 bits
-                                              //      ^^^^---- Length PIN = 7 bytes
-      byte bmPINLengthFormat = (byte) 0x00;   // 000 0 0100
+      byte bmPINBlockString = (byte) 0x08;    // 0000 1000
+                                              // ^^^^--------- PIN length size: 0 bits
+                                              //      ^^^^---- Length PIN = 8 bytes
+      byte bmPINLengthFormat = (byte) 0x00;   // 000 0 0000
                                               //     ^-------- System bit units is bit
-                                              //       ^^^^--- PIN length is at the 4th position bit
+                                              //       ^^^^--- no PIN length 
       byte bInsertionOffsetOld = (byte) 0x00; // insertion position offset in bytes
-      byte bInsertionOffsetNew = (byte) 0x00; // insertion position offset in bytes
-      byte wPINMaxExtraDigitL = (byte) 0x04;  // Min=4 digits
-      byte wPINMaxExtraDigitH = (byte) 0x04;  // Max=12 digits
-      byte bConfirmPIN = (byte) 0x00;         // ??? need for confirm pin
-      byte bEntryValidationCondition = 0x02;  // Max size reach or Validation key pressed
-      byte bNumberMessage = (byte) 0x00;      // No message
-      byte wLangIdL = (byte) 0x0C;            // - English?
-      byte wLangIdH = (byte) 0x04;            // \
-      byte bMsgIndex1 = (byte) 0x00;           // Default Msg
-      byte bMsgIndex2 = (byte) 0x00;           // Default Msg
-      byte bMsgIndex3 = (byte) 0x00;           // Default Msg
+      byte bInsertionOffsetNew = (byte) 0x08; 
+      byte wPINMaxExtraDigitL =
+              (reader.getwPINMaxExtraDigitL() < (byte) 0x08) ?
+                reader.getwPINMaxExtraDigitL() : (byte) 0x08;
+      byte wPINMaxExtraDigitH =
+              (reader.getwPINMaxExtraDigitH() > (byte) 0x00) ?
+                reader.getwPINMaxExtraDigitH() : (byte) 0x00;
+      byte bConfirmPIN = (byte) 0x03;
+      byte bEntryValidationCondition =
+              reader.getbEntryValidationCondition();
+      byte bNumberMessage = (byte) 0x03;      
+      byte wLangIdL = (byte) 0x0C;            
+      byte wLangIdH = (byte) 0x04;            
+      byte bMsgIndex1 = (byte) 0x00;           
+      byte bMsgIndex2 = (byte) 0x01;           
+      byte bMsgIndex3 = (byte) 0x02;           
 
       byte[] apdu = new byte[] {
-        (byte) 0x00, (byte) 0x24, (byte) 0x00, kid, (byte) 0x10,  // CLA INS P1 P2 LC
-        (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff,               // Data
-        (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,                // ...
-        (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff,               // Data
-        (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff                // ...
+        (byte) 0x00, (byte) 0x24, (byte) 0x00, kid, (byte) 0x10,  
+        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,       
+        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,       
+        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,       
+        (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00        
       };
 
       int offset = 0;

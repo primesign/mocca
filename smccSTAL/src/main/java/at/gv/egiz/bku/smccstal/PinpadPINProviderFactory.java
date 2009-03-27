@@ -21,9 +21,8 @@ import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.PINProvider;
 import at.gv.egiz.smcc.PINSpec;
-import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
-import java.util.List;
+import java.security.DigestException;
 
 /**
  *
@@ -51,8 +50,9 @@ public class PinpadPINProviderFactory extends PINProviderFactory {
 
 //    protected BKUGUIFacade gui;
     protected SecureViewer viewer;
+    protected ViewerThread viewerThread;
     protected SignedInfoType signedInfo;
-    protected List<HashDataInput> hashDataInputs;
+
 
     private SignaturePinProvider(SecureViewer viewer,
             SignedInfoType signedInfo) {
@@ -60,61 +60,92 @@ public class PinpadPINProviderFactory extends PINProviderFactory {
       this.signedInfo = signedInfo;
     }
 
+    protected class ViewerThread extends Thread {
+
+      PINSpec pinSpec;
+      int retries;
+
+      public ViewerThread(PINSpec pinSpec, int retries) {
+        this.pinSpec = pinSpec;
+        this.retries = retries;
+      }
+
+      @Override
+      public void run() {
+
+        try {
+
+          gui.showPinpadSignaturePINDialog(pinSpec, retries,
+              SignaturePinProvider.this, "secureViewer");
+
+          while (true) {
+            waitForAction();
+
+            if ("secureViewer".equals(action)) {
+              viewer.displayDataToBeSigned(signedInfo,
+                      SignaturePinProvider.this, "pinEntry");
+            } else if ("pinEntry".equals(action)) {
+              gui.showPinpadSignaturePINDialog(pinSpec, retries,
+                      SignaturePinProvider.this, "secureViewer");
+            } else {
+              log.error("unsupported action command: " + action);
+            }
+          }
+
+        } catch (DigestException ex) {
+          log.error("Bad digest value: " + ex.getMessage());
+          gui.showErrorDialog(BKUGUIFacade.ERR_INVALID_HASH,
+                  new Object[]{ex.getMessage()});
+        } catch (InterruptedException ex) {
+          log.info("pinpad secure viewer thread interrupted");
+        } catch (Exception ex) {
+          log.error("Could not display hashdata inputs: " +
+                  ex.getMessage());
+          gui.showErrorDialog(BKUGUIFacade.ERR_DISPLAY_HASHDATA,
+                  new Object[]{ex.getMessage()});
+        }
+      }
+    }
+
     @Override
     public char[] providePIN(PINSpec spec, int retries)
             throws CancelledException, InterruptedException {
 
-      showPinpadPINDialog(retries, spec);
+      if (viewerThread != null) {
+        updateViewerThread(retries);
+      } else {
+        viewerThread = new ViewerThread(spec, -1);
+        viewerThread.start();
+      }
+//      if (viewerThread != null) {
+//        log.trace("interrupt old secure viewer thread");
+//        viewerThread.interrupt();
+//      }
+//      viewerThread = new ViewerThread(spec, (retry) ? retries : -1);
+//      log.trace("start new secure viewer thread");
+//      viewerThread.start();
+
       retry = true;
       return null;
-
-//      do {
-//        waitForAction();
-//        gui.showWaitDialog(null);
-//
-//        if ("hashData".equals(action)) {
-//          // show pin dialog in background
-//          gui.showSignaturePINDialog(spec, (retry) ? retries : -1,
-//                  this, "sign",
-//                  this, "cancel",
-//                  this, "hashData");
-//
-//          viewer.displayDataToBeSigned(signedInfo.getReference());
-//
-//        } else if ("sign".equals(action)) {
-//          retry = true;
-//          return gui.getPin();
-//        } else if ("hashDataDone".equals(action)) {
-//          gui.showSignaturePINDialog(spec, (retry) ? retries : -1,
-//                  this, "sign",
-//                  this, "cancel",
-//                  this, "hashData");
-//        } else if ("cancel".equals(action) ||
-//                "error".equals(action)) {
-//          throw new CancelledException(spec.getLocalizedName() +
-//                  " entry cancelled");
-//        }
-//      } while (true);
     }
 
-    private void showPinpadPINDialog(int retries, PINSpec pinSpec) {
-      String title, message;
-      Object[] params;
-      if (retry) {
-        title = BKUGUIFacade.TITLE_RETRY;
-        message = BKUGUIFacade.MESSAGE_RETRIES;
-        params = new Object[]{String.valueOf(retries)};
-      } else {
-        title = BKUGUIFacade.TITLE_SIGN;
-        message = BKUGUIFacade.MESSAGE_ENTERPIN_PINPAD;
-        String pinSize = String.valueOf(pinSpec.getMinLength());
-        if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
-          pinSize += "-" + pinSpec.getMaxLength();
-        }
-        params = new Object[]{pinSpec.getLocalizedName(), pinSize};
-      }
-      gui.showMessageDialog(title, message, params);
+    private synchronized void updateViewerThread(int retries) {
+      log.trace("update viewer thread");
+      viewerThread.retries = retries;
+      action = "pinEntry";
+      actionPerformed = true;
+      notify();
     }
+
+
+//    @Override
+//    protected void finalize() throws Throwable {
+//      if (viewerThread != null) {
+//        viewerThread.interrupt();
+//      }
+//      log.info("finalizing Pinpad SignaturePinProvider");
+//      super.finalize();
+//    }
   }
 
   class CardPinProvider extends AbstractPINProvider {
@@ -151,5 +182,5 @@ public class PinpadPINProviderFactory extends PINProviderFactory {
       gui.showMessageDialog(title, message, params);
     }
   }
-}
+  }
 

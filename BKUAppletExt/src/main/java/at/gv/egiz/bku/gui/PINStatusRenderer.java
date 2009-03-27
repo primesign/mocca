@@ -22,8 +22,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.ResourceBundle;
 import javax.swing.table.DefaultTableCellRenderer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  *

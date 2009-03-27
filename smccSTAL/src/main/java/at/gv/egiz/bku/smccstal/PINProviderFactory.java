@@ -18,6 +18,7 @@
 package at.gv.egiz.bku.smccstal;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.smcc.ccid.CCID;
 import at.gv.egiz.smcc.PINProvider;
 import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
@@ -32,7 +33,7 @@ public abstract class PINProviderFactory {
   
   public static PINProviderFactory getInstance(SignatureCard forCard,
           BKUGUIFacade gui) {
-    if (forCard.ifdSupportsFeature(SignatureCard.FEATURE_VERIFY_PIN_DIRECT)) {
+    if (forCard.getReader().hasFeature(CCID.FEATURE_VERIFY_PIN_DIRECT)) {
       return new PinpadPINProviderFactory(gui);
     } else {
       return new SoftwarePINProviderFactory(gui);

@@ -18,6 +18,7 @@ package at.gv.egiz.bku.online.applet;
 
 import at.gv.egiz.bku.smccstal.AbstractBKUWorker;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.bku.smccstal.SignRequestHandler;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
@@ -67,8 +68,10 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
       STALPortType stalPort = applet.getSTALPort();
       STALTranslator stalTranslator = applet.getSTALTranslator();
 
+      AppletSecureViewer secureViewer =
+              new AppletSecureViewer(gui, stalPort, sessionId);
       addRequestHandler(SignRequest.class,
-              new AppletSecureViewer(stalPort, sessionId));
+              new SignRequestHandler(secureViewer));
 
       GetNextRequestResponseType nextRequestResp = stalPort.connect(sessionId);
 

@@ -17,6 +17,7 @@
 
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.ccid.CCID;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -44,6 +45,7 @@ import java.util.Locale;
 
 import java.util.Map;
 import javax.smartcardio.Card;
+import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 
 import org.apache.commons.logging.Log;
@@ -419,7 +421,50 @@ public class SWCard implements SignatureCard {
   }
 
   @Override
-  public boolean ifdSupportsFeature(byte feature) {
-    return false;
+  public CCID getReader() {
+    return new CCID() {
+
+      @Override
+      public boolean hasFeature(Byte feature) {
+        return false;
+      }
+
+      @Override
+      public byte[] transmitControlCommand(Byte feature, byte[] ctrlCommand)
+              throws SignatureCardException {
+        throw new SignatureCardException(CCID.FEATURES[feature.intValue()] +
+                " not supported");
+      }
+
+      @Override
+      public byte getbTimeOut() {
+        return 0;
+      }
+
+      @Override
+      public byte getbTimeOut2() {
+        return 0;
+      }
+
+      @Override
+      public byte getwPINMaxExtraDigitL() {
+        return 0x12;
+      }
+
+      @Override
+      public byte getwPINMaxExtraDigitH() {
+        return 0x00;
+      }
+
+      @Override
+      public byte getbEntryValidationCondition() {
+        return 0x02;
+      }
+
+      @Override
+      public Card connect() {
+        return null;
+      }
+    };
   }
 }

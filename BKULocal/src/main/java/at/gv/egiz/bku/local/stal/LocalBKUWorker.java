@@ -37,7 +37,8 @@ public class LocalBKUWorker extends AbstractBKUWorker {
   public LocalBKUWorker(BKUGUIFacade gui, JDialog container) {
     super(gui);
     this.container = container;
-    addRequestHandler(SignRequest.class, new LocalSignRequestHandler());
+    addRequestHandler(SignRequest.class, 
+            new LocalSignRequestHandler(new LocalSecureViewer(gui)));
   }
 
   @Override
