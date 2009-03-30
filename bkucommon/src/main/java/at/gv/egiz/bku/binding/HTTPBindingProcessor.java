@@ -281,8 +281,11 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 					String val = null;
 					if (keyVal.length == 2) {
 						val = keyVal[1];
+						val = val.trim();
+					}  else {
+					  log.error("Invalid transfer header encoding: "+paramString);
+					  throw new SLBindingException(2005);
 					}
-					val = val.trim();
 					log.debug("Setting header " + key + " to value " + val);
 					conn.setHTTPHeader(key, val);
 				}
