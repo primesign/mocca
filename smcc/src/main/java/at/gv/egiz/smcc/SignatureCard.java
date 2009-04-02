@@ -128,7 +128,7 @@ public interface SignatureCard {
           throws LockedException, NotActivatedException, CancelledException, SignatureCardException, InterruptedException;
 
   public void changePIN(PINSpec pinSpec, ChangePINProvider pinProvider)
-          throws LockedException, NotActivatedException, CancelledException, SignatureCardException, InterruptedException;
+          throws LockedException, NotActivatedException, CancelledException, PINFormatException, SignatureCardException, InterruptedException;
 
   public void activatePIN(PINSpec pinSpec, PINProvider pinProvider)
           throws CancelledException, SignatureCardException, InterruptedException;

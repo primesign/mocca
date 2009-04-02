@@ -50,7 +50,7 @@ public class SignRequestHandler extends AbstractRequestHandler {
 
     private static Log log = LogFactory.getLog(SignRequestHandler.class);
     private static JAXBContext jaxbContext;
-    private PINProviderFactory pinProviderFactory;
+//    private PINProviderFactory pinProviderFactory;
     private SecureViewer secureViewer;
     
     static {
@@ -86,11 +86,9 @@ public class SignRequestHandler extends AbstractRequestHandler {
                 md.update(signReq.getSignedInfo());
                 KeyboxName kb = SignatureCard.KeyboxName.getKeyboxName(signReq.getKeyIdentifier());
 
-                if (pinProviderFactory == null) {
-                  pinProviderFactory = PINProviderFactory.getInstance(card, gui);
-                }
-                byte[] resp = card.createSignature(md.digest(), kb, 
-                        pinProviderFactory.getSignaturePINProvider(secureViewer, si.getValue()));
+                byte[] resp = card.createSignature(md.digest(), kb,
+                        new PINProviderFactory(card.getReader(), gui)
+                        .getSignaturePINProvider(secureViewer, si.getValue()));
                 if (resp == null) {
                     return new ErrorResponse(6001);
                 }

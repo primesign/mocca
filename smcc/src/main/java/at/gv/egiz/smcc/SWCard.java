@@ -430,13 +430,6 @@ public class SWCard implements SignatureCard {
       }
 
       @Override
-      public byte[] transmitControlCommand(Byte feature, byte[] ctrlCommand)
-              throws SignatureCardException {
-        throw new SignatureCardException(CCID.FEATURES[feature.intValue()] +
-                " not supported");
-      }
-
-      @Override
       public byte getbTimeOut() {
         return 0;
       }
@@ -464,6 +457,31 @@ public class SWCard implements SignatureCard {
       @Override
       public Card connect() {
         return null;
+      }
+
+      @Override
+      public String getName() {
+        return "Software CardReader";
+      }
+
+      @Override
+      public byte[] verifyPin(byte[] PIN_VERIFY) throws CardException {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+      @Override
+      public byte[] verifyPinDirect(byte[] PIN_VERIFY) throws CardException {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+      @Override
+      public byte[] modifyPin(byte[] PIN_MODIFY) throws CardException {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+      @Override
+      public byte[] modifyPinDirect(byte[] PIN_MODIFY) throws CardException {
+        throw new UnsupportedOperationException("Not supported yet.");
       }
     };
   }

@@ -45,15 +45,46 @@ public interface CCID {
     "FEATURE_WRITE_DISPLAY",
     "FEATURE_GET_KEY",
     "FEATURE_IFD_DISPLAY_PROPERTIES"};
-  
-  Byte FEATURE_IFD_PIN_PROPERTIES = new Byte((byte) 10);
-  Byte FEATURE_MCT_READER_DIRECT = new Byte((byte) 8);
-  Byte FEATURE_MODIFY_PIN_DIRECT = new Byte((byte) 7);
-  Byte FEATURE_VERIFY_PIN_DIRECT = new Byte((byte) 6);
-  
+
+  Byte FEATURE_VERIFY_PIN_START = new Byte((byte) 0x01);
+  Byte FEATURE_VERIFY_PIN_FINISH = new Byte((byte) 0x02);
+  Byte FEATURE_MODIFY_PIN_START = new Byte((byte) 0x03);
+  Byte FEATURE_MODIFY_PIN_FINISH = new Byte((byte) 0x04);
+  Byte FEATURE_GET_KEY_PRESSED = new Byte((byte) 0x05);
+  Byte FEATURE_VERIFY_PIN_DIRECT = new Byte((byte) 0x06);
+  Byte FEATURE_MODIFY_PIN_DIRECT = new Byte((byte) 0x07);
+  Byte FEATURE_MCT_READER_DIRECT = new Byte((byte) 0x08);
+  Byte FEATURE_MCT_UNIVERSAL = new Byte((byte) 0x09);
+  Byte FEATURE_IFD_PIN_PROPERTIES = new Byte((byte) 0x0a);
+  //TODO continue list
+
+  String getName();
+
   Card connect() throws CardException;
 
   boolean hasFeature(Byte feature);
+
+  /**
+   * not supported by OMNIKEY CardMan 3621 with ACOS card
+   * @param PIN_VERIFY
+   * @return
+   * @throws at.gv.egiz.smcc.PINOperationAbortedException
+   * @throws javax.smartcardio.CardException
+   */
+  byte[] verifyPin(byte[] PIN_VERIFY) throws PINOperationAbortedException, CardException;
+  
+  byte[] verifyPinDirect(byte[] PIN_VERIFY) throws CardException;
+
+  /**
+   * not supported by OMNIKEY CardMan 3621 with ACOS card
+   * @param PIN_MODIFY
+   * @return
+   * @throws at.gv.egiz.smcc.PINOperationAbortedException
+   * @throws javax.smartcardio.CardException
+   */
+  byte[] modifyPin(byte[] PIN_MODIFY) throws PINOperationAbortedException, CardException;
+
+  byte[] modifyPinDirect(byte[] PIN_MODIFY) throws CardException;
 
   /**
    *
@@ -63,7 +94,7 @@ public interface CCID {
    * @throws at.gv.egiz.smcc.SignatureCardException if feature is not supported
    * or card communication fails
    */
-  byte[] transmitControlCommand(Byte feature, byte[] ctrlCommand) throws SignatureCardException;
+//  byte[] transmitControlCommand(Byte feature, byte[] ctrlCommand) throws SignatureCardException;
 
   /**
    * allow subclasses to override default (deal with reader bugs)

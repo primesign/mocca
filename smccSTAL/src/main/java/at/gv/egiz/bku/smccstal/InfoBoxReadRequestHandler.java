@@ -37,21 +37,20 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
 
   private static Log log = LogFactory.getLog(InfoBoxReadRequestHandler.class);
 
-  protected PINProviderFactory pinProviderFactory;
+//  protected PINProviderFactory pinProviderFactory;
 
   @Override
   public STALResponse handleRequest(STALRequest request) throws InterruptedException {
     if (request instanceof InfoboxReadRequest) {
       InfoboxReadRequest infoBox = (InfoboxReadRequest) request;
-      if (pinProviderFactory == null) {
-        pinProviderFactory = PINProviderFactory.getInstance(card, gui);
-      }
+      
       try {
         if (infoBox.getInfoboxIdentifier().equals("IdentityLink")) {
           newSTALMessage("Message.RequestCaption", "Message.IdentityLink");
           log.debug("Handling identitylink infobox");
           byte[] resp = card.getInfobox(infoBox.getInfoboxIdentifier(),
-                  pinProviderFactory.getCardPINProvider(),
+                  new PINProviderFactory(card.getReader(), gui)
+                  .getCardPINProvider(),
                   infoBox.getDomainIdentifier());
           if (resp == null) {
             log.info("Got null as result->user cancelled");
@@ -98,7 +97,8 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
           log.warn("Unknown infobox identifier: "
               + infoBox.getInfoboxIdentifier() + " trying generic request");
           byte[] resp = card.getInfobox(infoBox.getInfoboxIdentifier(),
-                  pinProviderFactory.getCardPINProvider(),
+                  new PINProviderFactory(card.getReader(), gui)
+                  .getCardPINProvider(),
                   infoBox.getDomainIdentifier());
           if (resp == null) {
             return new ErrorResponse(6001);

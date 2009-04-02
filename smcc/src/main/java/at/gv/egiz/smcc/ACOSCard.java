@@ -401,15 +401,16 @@ public class ACOSCard extends AbstractSignatureCard {
 
   @Override
   protected int verifyPIN(byte kid, char[] pin)
-          throws LockedException, NotActivatedException, CancelledException, TimeoutException, SignatureCardException {
+          throws LockedException, NotActivatedException, CancelledException, TimeoutException, PINFormatException, PINOperationAbortedException, SignatureCardException {
     try {
       byte[] sw;
       if (reader.hasFeature(CCID.FEATURE_VERIFY_PIN_DIRECT)) {
-        log.debug("verify PIN on IFD");
-        sw = reader.transmitControlCommand(
-                CCID.FEATURE_VERIFY_PIN_DIRECT,
-                getPINVerifyStructure(kid));
+        log.debug("verify pin on cardreader");
+        sw = reader.verifyPinDirect(getPINVerifyStructure(kid));
 //        int sw = (resp[resp.length-2] & 0xff) << 8 | resp[resp.length-1] & 0xff;
+      } else if (reader.hasFeature(CCID.FEATURE_VERIFY_PIN_START)) {
+        log.debug("verify pin on cardreader");
+        sw = reader.verifyPin(getPINVerifyStructure(kid));
       } else {
         byte[] pinBlock = encodePINBlock(pin);
         CardChannel channel = getCardChannel();
@@ -442,6 +443,8 @@ public class ACOSCard extends AbstractSignatureCard {
         throw new TimeoutException("[64:00]");
       } else if (sw[0] == (byte) 0x64 && sw[1] == (byte) 0x01) {
         throw new CancelledException("[64:01]");
+      } else if (sw[0] == (byte) 0x64 && sw[1] == (byte) 0x03) {
+        throw new PINFormatException("[64:03]");
       }
       log.error("Failed to verify pin: SW="
               + SMCCHelper.toString(sw));
@@ -465,15 +468,15 @@ public class ACOSCard extends AbstractSignatureCard {
    */
   @Override
   protected int changePIN(byte kid, char[] oldPin, char[] newPin)
-          throws LockedException, NotActivatedException, CancelledException, TimeoutException, SignatureCardException {
+          throws LockedException, NotActivatedException, CancelledException, PINFormatException, PINConfirmationException, TimeoutException, PINOperationAbortedException, SignatureCardException {
     try {
        byte[] sw;
       if (reader.hasFeature(CCID.FEATURE_MODIFY_PIN_DIRECT)) {
-        log.debug("modify PIN on IFD");
-        sw = reader.transmitControlCommand(
-                CCID.FEATURE_MODIFY_PIN_DIRECT,
-                getPINModifyStructure(kid));
-//        int sw = (resp[resp.length-2] & 0xff) << 8 | resp[resp.length-1] & 0xff;
+        log.debug("modify pin on cardreader");
+        sw = reader.modifyPinDirect(getPINModifyStructure(kid));
+      } else if (reader.hasFeature(CCID.FEATURE_MODIFY_PIN_START)) {
+        log.debug("modify pin on cardreader");
+        sw = reader.modifyPin(getPINModifyStructure(kid));
       } else {
         byte[] cmd = new byte[16];
         System.arraycopy(encodePINBlock(oldPin), 0, cmd, 0, 8);
@@ -504,6 +507,13 @@ public class ACOSCard extends AbstractSignatureCard {
         throw new TimeoutException("[64:00]");
       } else if (sw[0] == (byte) 0x64 && sw[1] == (byte) 0x01) {
         throw new CancelledException("[64:01]");
+      } else if (sw[0] == (byte) 0x64 && sw[1] == (byte) 0x02) {
+        throw new PINConfirmationException("[64:02]");
+      } else if (sw[0] == (byte) 0x64 && sw[1] == (byte) 0x03) {
+        throw new PINFormatException("[64:03]");
+      } else if (sw[0] == (byte) 0x6a && sw[1] == (byte) 0x80) {
+        log.info("invalid parameter, assume wrong pin size");
+        throw new PINFormatException("[6a:80]");
       }
       log.error("Failed to change pin: SW="
               + SMCCHelper.toString(sw));
@@ -559,7 +569,7 @@ public class ACOSCard extends AbstractSignatureCard {
       byte bmPINLengthFormat = (byte) 0x00;   // 000 0 0000
                                               //     ^-------- System bit units is bit
                                               //       ^^^^--- no PIN length
-      byte wPINMaxExtraDigitL =
+      byte wPINMaxExtraDigitL = //TODO compare ints, not bytes
               (reader.getwPINMaxExtraDigitL() < (byte) 0x08) ?
                 reader.getwPINMaxExtraDigitL() : (byte) 0x08;
       byte wPINMaxExtraDigitH =               

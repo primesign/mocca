@@ -29,21 +29,16 @@
 package at.gv.egiz.smcc;
 
 import at.gv.egiz.smcc.ccid.CCID;
-import at.gv.egiz.smcc.ccid.DefaultReader;
 import at.gv.egiz.smcc.ccid.ReaderFactory;
 import at.gv.egiz.smcc.util.SMCCHelper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.smartcardio.ATR;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
@@ -152,8 +147,8 @@ public abstract class AbstractSignatureCard implements SignatureCard {
    * @throws at.gv.egiz.smcc.SignatureCardException
    */
   protected abstract int verifyPIN(byte kid, char[] pin)
-          throws LockedException, NotActivatedException, CancelledException, TimeoutException, SignatureCardException;
-
+          throws LockedException, NotActivatedException, CancelledException, PINFormatException, TimeoutException, PINOperationAbortedException, SignatureCardException;
+  
   /**
    * CHANGE(?) APDU
    * If IFD supports VERIFY_PIN on pinpad, parameter pin may be empty.
@@ -162,7 +157,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
    * @throws at.gv.egiz.smcc.SignatureCardException if activation fails
    */
   protected abstract void activatePIN(byte kid, char[] pin)
-          throws CancelledException, TimeoutException, SignatureCardException;
+          throws CancelledException, PINFormatException, PINConfirmationException, TimeoutException, PINOperationAbortedException, SignatureCardException;
 
   /**
    * CHANGE(?) APDU
@@ -173,7 +168,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
    * @throws at.gv.egiz.smcc.SignatureCardException if change fails
    */
   protected abstract int changePIN(byte kid, char[] oldPin, char[] newPin)
-          throws CancelledException, TimeoutException, SignatureCardException;
+          throws LockedException, NotActivatedException, CancelledException, PINFormatException, PINConfirmationException, TimeoutException, PINOperationAbortedException, SignatureCardException;
 
   /**
    * encode the pin as needed in VERIFY/CHANGE APDUs
@@ -595,7 +590,8 @@ public abstract class AbstractSignatureCard implements SignatureCard {
    */
   @Override
   public void changePIN(PINSpec pinSpec, ChangePINProvider pinProvider)
-          throws LockedException, NotActivatedException, CancelledException, TimeoutException, SignatureCardException, InterruptedException {
+          throws LockedException, NotActivatedException, CancelledException,
+          TimeoutException, SignatureCardException, InterruptedException {
     try {
       getCard().beginExclusive();
 

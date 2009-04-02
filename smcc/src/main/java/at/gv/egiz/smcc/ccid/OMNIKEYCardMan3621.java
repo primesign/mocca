@@ -14,24 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package at.gv.egiz.smcc.ccid;
 
 import javax.smartcardio.Card;
 import javax.smartcardio.CardTerminal;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
+ * Fails with ACOS cards (Problem might be 'short' VERIFY which is not supported by ACOS)
+ * TODO
  *
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class ReaderFactory {
+public class OMNIKEYCardMan3621 extends DefaultReader {
 
-  public static CCID getReader(Card icc, CardTerminal ct) {
-    if ("Gemplus GemPC Pinpad 00 00".equals(ct.getName())) {
-      return new GemplusGemPCPinpad(icc, ct);
-    } else if ("OmniKey CardMan 3621 00 00".equals(ct.getName())) {
-      return new OMNIKEYCardMan3621(icc, ct);
-    }
-    return new DefaultReader(icc, ct);
+  protected static final Log log = LogFactory.getLog(OMNIKEYCardMan3621.class);
+  
+  public OMNIKEYCardMan3621(Card icc, CardTerminal ct) {
+    super(icc, ct);
+    log.warn("This card reader does not support ACOS cards.");
+    log.debug("TODO: fall back to software pin entry");
   }
 }
