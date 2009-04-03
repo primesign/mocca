@@ -15,7 +15,8 @@
   limitations under the License.
 -->
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8"%>
+  pageEncoding="UTF-8" 
+  import="at.gv.egiz.bku.online.webapp.AppletDispatcher, org.apache.commons.lang.RandomStringUtils" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -41,16 +42,19 @@
         String guiStyle = (String) session.getAttribute("appletGuiStyle");
         String locale = (String) session.getAttribute("locale");
         String extension = (String) session.getAttribute("extension");
+        String rand = AppletDispatcher.RAND_PREFIX +
+                RandomStringUtils.randomAlphanumeric(16);
+                //(String) session.getAttribute(AppletDispatcher.RAND_ATTRIBUTE);
 
         String appletClass, appletArchive;
         if ("activation".equals(extension)) {
-            appletArchive = "BKUAppletExt.jar";
+            appletArchive = "BKUAppletExt";
             appletClass = "at.gv.egiz.bku.online.applet.ActivationApplet.class";
         } else if ("pin".equals(extension)) {
-            appletArchive = "BKUAppletExt.jar";
+            appletArchive = "BKUAppletExt";
             appletClass = "at.gv.egiz.bku.online.applet.PINManagementApplet.class";
         } else {
-            appletArchive = "BKUApplet.jar";
+            appletArchive = "BKUApplet";
             appletClass = "at.gv.egiz.bku.online.applet.BKUApplet.class";
         }
     %>
@@ -61,21 +65,21 @@
                     .write('<b>Diese Anwendung benötigt die Java Platform Version 1.6.0_04 oder höher.</b>' + '<input type="submit" value="Java Platform 1.6.0_02 installieren" onclick="deployJava.installLatestJRE();">');
                 } else {
                     var attributes = {
-                        codebase :'applet',
-                        code : '<%=appletClass%>',
-                        archive : '<%=appletArchive + ", commons-logging.jar, iaik_jce_me4se.jar"%>',
-                        width : <%=width%>,
-                        height :<%=height%>
+                      codebase :'<%="applet/" + AppletDispatcher.DISPATCH_CTX %>',
+                      code : '<%=appletClass%>',
+                      archive : '<%=appletArchive + rand +".jar, commons-logging.jar, iaik_jce_me4se.jar"%>',
+                      width : <%=width%>,
+                      height :<%=height%>
                     };
                     var parameters = {
-                        GuiStyle : '<%=guiStyle%>',
-                        Locale : '<%=locale%>',
-                        Background : '<%=backgroundImg%>',
-                        WSDL_URL :'../stal;jsessionid=<%=session.getId()%>?wsdl',
-                        HelpURL : '../help/',
-                        SessionID : '<%=session.getId()%>',
-                        RedirectURL : '../bkuResult',
-                        RedirectTarget: '_parent'
+                      GuiStyle : '<%=guiStyle%>',
+                      Locale : '<%=locale%>',
+                      Background : '<%=backgroundImg%>',
+                      WSDL_URL :'../../stal;jsessionid=<%=session.getId()%>?wsdl',
+                      HelpURL : '../../help/',
+                      SessionID : '<%=session.getId()%>',
+                      RedirectURL : '../../bkuResult',
+                      RedirectTarget: '_parent'
                     };
                     var version = '1.6.0_04';
                     deployJava.runApplet(attributes, parameters, version);

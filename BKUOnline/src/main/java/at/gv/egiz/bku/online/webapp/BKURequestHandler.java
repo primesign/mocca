@@ -51,7 +51,7 @@ public class BKURequestHandler extends SpringBKUServlet {
 
   private static final long serialVersionUID = 1L;
 
-  public final static String REDIRECT_URL_SESSION_ATTRIBUTE="redirectUrl";
+  public final static String REDIRECT_URL_SESSION_ATTRIBUTE = "redirectUrl";
 
   protected Log log = LogFactory.getLog(BKURequestHandler.class);
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<!--
+<!--
 		Copyright 2008 Federal Chancellery Austria and Graz University of
 		Technology Licensed under the Apache License, Version 2.0 (the
 		"License"); you may not use this file except in compliance with the
@@ -12,9 +12,7 @@
 		the specific language governing permissions and limitations under the
 		License.
 	-->
-<web-app id="bkuonline" version="2.5"
-	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<web-app id="bkuonline" version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 	<display-name>http-security-layer-request</display-name>
 
 	<!--  Begin Spring Config -->
@@ -53,6 +51,10 @@
         <jsp-file>/applet.jsp</jsp-file>
     </servlet>
     <servlet>
+        <servlet-name>AppletDispatcher</servlet-name>
+        <servlet-class>at.gv.egiz.bku.online.webapp.AppletDispatcher</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>BKUAppletAlternative</servlet-name>
         <jsp-file>/appletAlternative.jsp</jsp-file>
     </servlet>
@@ -75,6 +77,10 @@
     <servlet-mapping>
       <servlet-name>help</servlet-name>
       <url-pattern>/help/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+      <servlet-name>AppletDispatcher</servlet-name>
+      <url-pattern>/applet/dispatch/*</url-pattern>
     </servlet-mapping>
 
 	<!--  End BKU Config -->

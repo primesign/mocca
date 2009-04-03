@@ -77,6 +77,8 @@ public interface BKUGUIFacade {
   public static final String MESSAGE_HASHDATALIST = "hashdatalist";
   public static final String MESSAGE_RETRIES = "retries";
   public static final String MESSAGE_LAST_RETRY = "retries.last";
+  public static final String MESSAGE_RETRIES_PINPAD = "retries.pinpad";
+  public static final String MESSAGE_LAST_RETRY_PINPAD = "retries.pinpad.last";
   public static final String MESSAGE_OVERWRITE = "overwrite";
   public static final String MESSAGE_HELP = "help";
 

@@ -122,8 +122,12 @@ public class ManagementPINProviderFactory extends PINProviderFactory {
       String title, message;
       Object[] params;
       if (retry) {
+        if (retries == 1) {
+          message = BKUGUIFacade.MESSAGE_LAST_RETRY_PINPAD;
+        } else {
+          message = BKUGUIFacade.MESSAGE_RETRIES_PINPAD;
+        }
         title = BKUGUIFacade.TITLE_RETRY;
-        message = BKUGUIFacade.MESSAGE_RETRIES;
         params = new Object[]{String.valueOf(retries)};
       } else if (type == PINManagementGUIFacade.DIALOG.VERIFY) {
         title = PINManagementGUIFacade.TITLE_VERIFY_PIN;
