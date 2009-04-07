@@ -28,7 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *
+ * don't reuse the instance if the card reader might have changed!
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class PINProviderFactory {

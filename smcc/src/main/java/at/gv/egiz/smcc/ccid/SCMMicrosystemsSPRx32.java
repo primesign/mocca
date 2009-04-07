@@ -14,32 +14,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package at.gv.egiz.smcc.ccid;
 
 import javax.smartcardio.Card;
 import javax.smartcardio.CardTerminal;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
+ * bTimeOut: spr532 (win driver) interprets 0x00 as zero sec
+ * instead of default
  *
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class ReaderFactory {
+public class SCMMicrosystemsSPRx32 extends DefaultReader {
+  
+  public static final byte bTimeOut = 0x3c;
+  public static final byte bTimeOut2 = 0x0f;
 
-  public static CCID getReader(Card icc, CardTerminal ct) {
-    String name = ct.getName();
-    if (name != null) {
-      name = name.toLowerCase();
-      if(name.startsWith("gemplus gempc pinpad")) {
-        return new GemplusGemPCPinpad(icc, ct);
-      } else if (name.startsWith("omnikey cardman 3621")) {
-        return new OMNIKEYCardMan3621(icc, ct);
-      } else if (name.startsWith("scm microsystems inc. sprx32 usb smart card reader")) {
-        return new SCMMicrosystemsSPRx32(icc, ct);
-      } else if (name.startsWith("cherry smartboard xx44")) {
-        return new CherrySmartBoardXX44(icc, ct);
-      }
-    }
-    return new DefaultReader(icc, ct);
+  protected final static Log log = LogFactory.getLog(SCMMicrosystemsSPRx32.class);
+
+  public SCMMicrosystemsSPRx32(Card icc, CardTerminal ct) {
+    super(icc, ct);
   }
+
+  @Override
+  public byte getbTimeOut() {
+    return bTimeOut;
+  }
+
+  @Override
+  public byte getbTimeOut2() {
+    return bTimeOut2;   
+  }
+
 }

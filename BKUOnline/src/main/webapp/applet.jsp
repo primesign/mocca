@@ -44,7 +44,6 @@
         String extension = (String) session.getAttribute("extension");
         String rand = AppletDispatcher.RAND_PREFIX +
                 RandomStringUtils.randomAlphanumeric(16);
-                //(String) session.getAttribute(AppletDispatcher.RAND_ATTRIBUTE);
 
         String appletClass, appletArchive;
         if ("activation".equals(extension)) {
@@ -64,6 +63,10 @@
                     document
                     .write('<b>Diese Anwendung benötigt die Java Platform Version 1.6.0_04 oder höher.</b>' + '<input type="submit" value="Java Platform 1.6.0_02 installieren" onclick="deployJava.installLatestJRE();">');
                 } else {
+                  // to enable applet caching, remove AppletDispatcher servlet,
+                  // change codebase to 'applet',
+                  // remove random suffix for appletArchive
+                  // and remove '../' for all URL applet parameters
                     var attributes = {
                       codebase :'<%="applet/" + AppletDispatcher.DISPATCH_CTX %>',
                       code : '<%=appletClass%>',

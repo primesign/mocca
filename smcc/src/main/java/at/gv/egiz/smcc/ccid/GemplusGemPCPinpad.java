@@ -22,7 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *
+ * bTimeOut = 15sec (too short, leave value from DefaultRearder),
+ * however, max is something near 40sec
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class GemplusGemPCPinpad extends DefaultReader {
@@ -31,20 +32,6 @@ public class GemplusGemPCPinpad extends DefaultReader {
 
   public GemplusGemPCPinpad(Card icc, CardTerminal ct) {
     super(icc, ct);
-    log.info("Initializing Gemplus GemPC Pinpad reader");
-    log.info("Gemplus GemPC Pinpad allows PINs to have 4-8 digits");
-
-  }
-
-  @Override
-  public byte getbTimeOut() {
-    return (byte) 0x3c;    // 0x00 default = 15sec
-                           // max 40sec (?)
-  }
-
-  @Override
-  public byte getbTimeOut2() {
-    return (byte) 0x00;    // 0x00 default = 15sec
   }
 
   @Override
@@ -56,10 +43,4 @@ public class GemplusGemPCPinpad extends DefaultReader {
   public byte getwPINMaxExtraDigitH() {
     return (byte) 0x04;
   }
-
-  @Override
-  public byte getbEntryValidationCondition() {
-    return (byte) 0x02;    // validation key pressed
-  }
-
 }

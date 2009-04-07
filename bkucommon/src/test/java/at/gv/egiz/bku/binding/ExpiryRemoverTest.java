@@ -18,14 +18,12 @@ package at.gv.egiz.bku.binding;
 
 import java.net.MalformedURLException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class ExpiryRemoverTest {
   
   @Test
-  @Ignore
   public void testMe() throws InterruptedException, MalformedURLException {
     BindingProcessorManager manager = new BindingProcessorManagerImpl(new DummyStalFactory(),
         new SLCommandInvokerImpl());
@@ -37,16 +35,15 @@ public class ExpiryRemoverTest {
     remover.execute();
     assertTrue(manager.getManagedIds().size() == 1);
     remover.setMaxAcceptedAge(1000);
-    Thread.sleep(500);
+    Thread.sleep(100);
     remover.execute();
     assertTrue(manager.getManagedIds().size() == 1);
-    Thread.sleep(510);
+    Thread.sleep(910);
     remover.execute();
     assertTrue(manager.getManagedIds().size() == 0);
   }
   
   @Test
-  @Ignore
   public void testMe2() throws InterruptedException, MalformedURLException {
     BindingProcessorManager manager = new BindingProcessorManagerImpl(new DummyStalFactory(),
         new SLCommandInvokerImpl());

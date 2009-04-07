@@ -18,8 +18,6 @@
 package at.gv.egiz.bku.online.webapp;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -55,14 +53,18 @@ public class AppletDispatcher extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
 
-//      String suffix = (String) request.getSession().getAttribute(RAND_CTX_ATTRIBUTE);
-//      log.trace("expecting random suffix " + suffix);
-      
       String uri = request.getRequestURI();
-      uri = ctxPattern.matcher(uri).replaceAll("");
-//      uri = uri.replaceAll(suffix, ""); //only the applet jar requests contains the randCtx
-      uri = archivePattern.matcher(uri).replaceAll(".jar");
+//      log.trace("request URI " + uri);
 
+      uri = uri.substring(request.getContextPath().length());
+//      log.trace("removing contextPath " + uri);
+
+      uri = ctxPattern.matcher(uri).replaceAll("");
+//      log.trace("removing dispatch context " + uri);
+
+      uri = archivePattern.matcher(uri).replaceAll(".jar");
+//      log.trace("removing random suffix " + uri);
+      
       if (log.isTraceEnabled()) {
         log.trace("dispatching request URI " + request.getRequestURI() +
                 " to " + uri);
