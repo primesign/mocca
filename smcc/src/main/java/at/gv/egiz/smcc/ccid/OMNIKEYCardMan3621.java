@@ -28,12 +28,17 @@ import org.apache.commons.logging.LogFactory;
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class OMNIKEYCardMan3621 extends DefaultReader {
+  
+  public static final byte wPINMaxExtraDigitH = 0x01;
 
   protected static final Log log = LogFactory.getLog(OMNIKEYCardMan3621.class);
-  
+
   public OMNIKEYCardMan3621(Card icc, CardTerminal ct) {
     super(icc, ct);
-    log.warn("This card reader does not support ACOS cards.");
-    log.debug("TODO: fall back to software pin entry");
+  }
+
+  @Override
+  public byte getwPINMaxExtraDigitH() {
+    return wPINMaxExtraDigitH;
   }
 }

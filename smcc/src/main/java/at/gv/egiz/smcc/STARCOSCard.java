@@ -700,9 +700,9 @@ public class STARCOSCard extends AbstractSignatureCard {
                                               //     ^-------- System bit units is bit
                                               //       ^^^^--- PIN length is at the 4th position bit
       //TODO compare ints, not bytes
-      byte wPINMaxExtraDigitL =               // Max=12 digits (Gemplus support max 8)
-              (reader.getwPINMaxExtraDigitL() < (byte) 0x12) ?
-                reader.getwPINMaxExtraDigitL() : (byte) 0x12;
+      byte wPINMaxExtraDigitL =               // Max=12 digits 
+              (reader.getwPINMaxExtraDigitL() < (byte) 0x0c) ?
+                reader.getwPINMaxExtraDigitL() : (byte) 0x0c;
       byte wPINMaxExtraDigitH =               // Min=4/6 digits TODO card/ss pin (min: 4/6)
               (reader.getwPINMaxExtraDigitH() > (byte) 0x04) ?
                 reader.getwPINMaxExtraDigitH() : (byte) 0x04;
@@ -757,8 +757,8 @@ public class STARCOSCard extends AbstractSignatureCard {
       byte bInsertionOffsetOld = (byte) 0x00; // insertion position offset in bytes
       byte bInsertionOffsetNew = (byte) 0x08; // (add 1 from bmFormatString b3)
       byte wPINMaxExtraDigitL = 
-              (reader.getwPINMaxExtraDigitL() < (byte) 0x12) ?
-                reader.getwPINMaxExtraDigitL() : (byte) 0x12;
+              (reader.getwPINMaxExtraDigitL() < (byte) 0x0c) ?
+                reader.getwPINMaxExtraDigitL() : (byte) 0x0c;
       byte wPINMaxExtraDigitH =               // Min=4/6 digits TODO card/ss pin (min: 4/6)
               (reader.getwPINMaxExtraDigitH() > (byte) 0x04) ?
                 reader.getwPINMaxExtraDigitH() : (byte) 0x04;
