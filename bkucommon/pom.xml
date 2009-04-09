@@ -9,7 +9,7 @@
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>bkucommon</artifactId>
 	<name>BKU Common</name>
-	<version>1.0.6-SNAPSHOT</version>
+	<version>1.1.1-SNAPSHOT</version>
 
 	<build>
 		<plugins>

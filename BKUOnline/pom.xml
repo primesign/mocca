@@ -24,7 +24,7 @@
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>bkucommon</artifactId>
-            <version>1.0.6-SNAPSHOT</version>
+            <version>1.1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>at.gv.egiz</groupId>
