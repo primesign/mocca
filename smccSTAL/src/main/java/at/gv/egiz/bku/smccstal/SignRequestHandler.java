@@ -50,9 +50,7 @@ public class SignRequestHandler extends AbstractRequestHandler {
 
     private static Log log = LogFactory.getLog(SignRequestHandler.class);
     private static JAXBContext jaxbContext;
-//    private PINProviderFactory pinProviderFactory;
-    private SecureViewer secureViewer;
-    
+
     static {
         try {
             jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
@@ -61,6 +59,8 @@ public class SignRequestHandler extends AbstractRequestHandler {
         }
     }
 
+    protected SecureViewer secureViewer;
+    
     public SignRequestHandler(SecureViewer secureViewer) {
       this.secureViewer = secureViewer;
     }
@@ -142,64 +142,4 @@ public class SignRequestHandler extends AbstractRequestHandler {
         return true;
     }
 
-//  class SoftwarePinProvider implements PINProvider {
-//
-//    protected SignedInfoType signedInfo;
-//    protected List<HashDataInput> hashDataInputs;
-//    private boolean retry = false;
-//
-//    public SoftwarePinProvider(SignedInfoType signedInfo) {
-//      this.signedInfo = signedInfo;
-//    }
-//
-//    private void showSignaturePINDialog(PINSpec spec, int retries) {
-//      if (retry) {
-//          gui.showSignaturePINRetryDialog(spec, retries, SignRequestHandler.this, "sign", SignRequestHandler.this,
-//            "cancel", SignRequestHandler.this, "hashData");
-//        } else {
-//          gui.showSignaturePINDialog(spec, SignRequestHandler.this, "sign", SignRequestHandler.this, "cancel", SignRequestHandler.this,
-//            "hashData");
-//        }
-//    }
-//
-//    @Override
-//    public char[] providePIN(PINSpec spec, int retries)
-//            throws CancelledException, InterruptedException {
-//      showSignaturePINDialog(spec, retries);
-//
-//      do {
-//        waitForAction();
-//        gui.showWaitDialog(null);
-//        if (actionCommand.equals("hashData")) {
-//
-//          showSignaturePINDialog(spec, retries);
-//
-//            try {
-//              displayHashDataInputs(signedInfo.getReference());
-//
-//            } catch (DigestException ex) {
-//              log.error("Bad digest value: " + ex.getMessage());
-//              gui.showErrorDialog(BKUGUIFacade.ERR_INVALID_HASH,
-//                      new Object[] {ex.getMessage()},
-//                      SignRequestHandler.this, "error");
-//            } catch (Exception ex) {
-//              log.error("Could not display hashdata inputs: " +
-//                      ex.getMessage());
-//              gui.showErrorDialog(BKUGUIFacade.ERR_DISPLAY_HASHDATA,
-//                      new Object[] {ex.getMessage()},
-//                      SignRequestHandler.this, "error");
-//            }
-//        } else if (actionCommand.equals("sign")) {
-//          retry = true;
-//          return gui.getPin();
-//        } else if (actionCommand.equals("hashDataDone")) {
-//          showSignaturePINDialog(spec, retries);
-//        } else if (actionCommand.equals("cancel") ||
-//                   actionCommand.equals("error")) {
-//          throw new CancelledException(spec.getLocalizedName() +
-//                  " entry cancelled");
-//        }
-//      } while (true);
-//    }
-//  }
 }

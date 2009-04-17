@@ -349,7 +349,7 @@ public class DefaultReader implements CCID {
       if (resp == (byte) 0x00) {
         synchronized(this) {
           try {
-            wait(200);
+            wait(10);
           } catch (InterruptedException ex) {
             log.error("interrupted in MODIFY_PIN");
           }

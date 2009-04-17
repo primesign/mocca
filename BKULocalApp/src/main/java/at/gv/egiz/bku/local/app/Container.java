@@ -51,7 +51,7 @@ public class Container {
     webappcontext.setContextPath("/");
     webappcontext.setExtractWAR(false);
     System.out.println(getClass().getClassLoader().getResource("log4j.properties"));
-    webappcontext.setWar("BKULocal-1.0.2-SNAPSHOT.war");
+    webappcontext.setWar("BKULocal-1.0.4-SNAPSHOT.war");
 
     handlers.setHandlers(new Handler[] { webappcontext, new DefaultHandler() });
 

@@ -23,14 +23,12 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import at.gv.egiz.bku.binding.BindingProcessorManager;
 import at.gv.egiz.bku.binding.HTTPBindingProcessor;
 import at.gv.egiz.bku.binding.HttpUtil;
 import at.gv.egiz.bku.conf.Configurator;
@@ -44,25 +42,32 @@ public class BKURequestHandler extends SpringBKUServlet {
 
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, java.io.IOException {
-		log.debug("Got new request");
-		String lang = req.getHeader("Accept-Language");
-		Locale locale = AcceptLanguage.getLocale(lang);
-		log.debug("Using locale: " + locale);
-		HTTPBindingProcessor bindingProcessor;
-		bindingProcessor = (HTTPBindingProcessor) getBindingProcessorManager()
-				.createBindingProcessor(req.getRequestURL().toString(), null, locale);
-		Map<String, String> headerMap = new HashMap<String, String>();
-		for (Enumeration<String> headerName = req.getHeaderNames(); headerName
-				.hasMoreElements();) {
-			String header = headerName.nextElement();
-			if (header != null) {
-				headerMap.put(header, req.getHeader(header));
-			}
-		}
-		headerMap.put(HttpUtil.HTTP_HEADER_CONTENT_TYPE, req.getContentType() + ";"
-				+ req.getCharacterEncoding());
-		bindingProcessor.setHTTPHeaders(headerMap);
-		bindingProcessor.consumeRequestStream(req.getInputStream());
+
+        log.debug("Received SecurityLayer request");
+
+        String acceptLanguage = req.getHeader("Accept-Language");
+        Locale locale = AcceptLanguage.getLocale(acceptLanguage);
+        log.debug("Accept-Language locale: " + locale);
+
+        HTTPBindingProcessor bindingProcessor;
+        bindingProcessor = (HTTPBindingProcessor) getBindingProcessorManager()
+            .createBindingProcessor(req.getRequestURL().toString(), null, locale);
+        Map<String, String> headerMap = new HashMap<String, String>();
+        for (Enumeration<String> headerName = req.getHeaderNames(); headerName
+            .hasMoreElements();) {
+          String header = headerName.nextElement();
+          if (header != null) {
+            headerMap.put(header, req.getHeader(header));
+          }
+        }
+        String charset = req.getCharacterEncoding();
+        String contentType = req.getContentType();
+        if (charset != null) {
+          contentType += ";" + charset;
+        }
+        headerMap.put(HttpUtil.HTTP_HEADER_CONTENT_TYPE, contentType);
+        bindingProcessor.setHTTPHeaders(headerMap);
+        bindingProcessor.consumeRequestStream(req.getInputStream());
 
 		// fixxme just for testing
 		bindingProcessor.run();
@@ -84,13 +89,13 @@ public class BKURequestHandler extends SpringBKUServlet {
 		  log.debug("Do not set siglayout header");
 		}
 			
-	  if (configurator.getProperty(Configurator.USERAGENT_CONFIG_P) != null) {
-      resp.setHeader(HttpUtil.HTTP_HEADER_SERVER, configurator
-          .getProperty(Configurator.USERAGENT_CONFIG_P));
-    } else {
-      resp.setHeader(HttpUtil.HTTP_HEADER_SERVER,
-              Configurator.USERAGENT_DEFAULT);
-    }
+        if (configurator.getProperty(Configurator.USERAGENT_CONFIG_P) != null) {
+          resp.setHeader(HttpUtil.HTTP_HEADER_SERVER, configurator
+              .getProperty(Configurator.USERAGENT_CONFIG_P));
+        } else {
+          resp.setHeader(HttpUtil.HTTP_HEADER_SERVER,
+                  Configurator.USERAGENT_DEFAULT);
+        }
 		
 		resp.setContentType(bindingProcessor.getResultContentType());
 		resp.setCharacterEncoding(ENCODING);

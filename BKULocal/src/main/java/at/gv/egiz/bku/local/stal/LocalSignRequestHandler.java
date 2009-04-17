@@ -16,38 +16,26 @@
  */
 package at.gv.egiz.bku.local.stal;
 
-import at.gv.egiz.bku.smccstal.SecureViewer;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.bku.smccstal.SignRequestHandler;
-import at.gv.egiz.stal.HashDataInput;
+import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
-import at.gv.egiz.stal.impl.ByteArrayHashDataInput;
-import at.gv.egiz.stal.signedinfo.ReferenceType;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 
 /**
  * 
- * @author clemens
+ * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class LocalSignRequestHandler extends SignRequestHandler {
-//        implements SecureViewer {
 
   private static final Log log = LogFactory.getLog(LocalSignRequestHandler.class);
-
-  protected LocalSecureViewer secureViewer;
 
   public LocalSignRequestHandler(LocalSecureViewer secureViewer) {
     super(secureViewer);
   }
-
 
   /**
    * If the request is a SIGN request, it contains a list of DataObjectHashDataInput 
@@ -63,8 +51,13 @@ public class LocalSignRequestHandler extends SignRequestHandler {
     
     if (request instanceof SignRequest) {
       SignRequest signReq = (SignRequest) request;
-      secureViewer.setDataToBeSigned(signReq.getHashDataInput());
+      ((LocalSecureViewer) secureViewer).setDataToBeSigned(signReq.getHashDataInput());
+      return super.handleRequest(request);
+    } else {
+      log.fatal("Got unexpected STAL request: " + request);
+      return new ErrorResponse(1000);
     }
-    return super.handleRequest(request);
+
+    
   }
 }
