@@ -227,12 +227,12 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
     requestHttpHeaders = new HashMap<String, String>();
     
     if (config != null) {
-      String sigLayout="";
       String version = config.getProperty(Configurator.SIGNATURE_LAYOUT);
       if ((version != null) && (!"".equals(version.trim()))) {
+    	log.debug("setting SignatureLayout header to " + version);
         requestHttpHeaders.put(Configurator.SIGNATURE_LAYOUT, version);
       } else {
-        log.debug("Do not set siglayout header");
+        log.debug("do not set SignatureLayout header");
       }
       String userAgent = config.getProperty(Configurator.USERAGENT_CONFIG_P, Configurator.USERAGENT_DEFAULT);
       requestHttpHeaders.put(HttpUtil.HTTP_HEADER_USER_AGENT, userAgent);

@@ -213,10 +213,10 @@ public abstract class Configurator {
           layout = att.getValue(SIGNATURE_LAYOUT);
         }
         if (layout != null) {
-          log.info("Setting signature layout to: " + layout);
+          log.info("setting SignatureLayout header to " + layout);
           properties.put(SIGNATURE_LAYOUT, layout);
         } else {
-          log.warn("No signature layout version defined");
+          log.warn("no SignatureLayout version defined");
         }
       } catch (Exception ex) {
         log.warn("Cannot read manifest", ex);

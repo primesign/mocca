@@ -81,12 +81,12 @@ public class BKURequestHandler extends SpringBKUServlet {
 			String header = it.next();
 			resp.setHeader(header, bindingProcessor.getResponseHeaders().get(header));
 		}
-		String sigLayout="";
 		String version = configurator.getProperty(Configurator.SIGNATURE_LAYOUT);
 		if ((version != null) && (!"".equals(version.trim()))) {
+		  log.debug("setting SignatureLayout header to " + version);
 		  resp.setHeader(Configurator.SIGNATURE_LAYOUT, version);
 		} else {
-		  log.debug("Do not set siglayout header");
+		  log.debug("do not set SignatureLayout header");
 		}
 			
         if (configurator.getProperty(Configurator.USERAGENT_CONFIG_P) != null) {
