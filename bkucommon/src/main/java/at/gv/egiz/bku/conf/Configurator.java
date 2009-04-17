@@ -262,9 +262,11 @@ public abstract class Configurator {
         log.error(e);
       }
     }
-    DataUrl.setConfiguration(properties);
   }
 
+  /**
+   * TODO cleanup configuration (read MANIFEST, DataURLconfig,...)
+   */
   public void configure() {
     configureProviders();
     configUrlConnections();
@@ -273,6 +275,8 @@ public abstract class Configurator {
     configureVersion();
     configureSingatureLayoutVersion();
     configureNetwork();
+    //after configureVersion() and configureSignatureLayoutVersion()
+    DataUrl.setConfiguration(properties);
   }
 
   public void setConfiguration(Properties props) {
