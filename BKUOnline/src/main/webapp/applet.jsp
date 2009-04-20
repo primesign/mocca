@@ -61,7 +61,7 @@
             <script>
                 if (!deployJava.versionCheck('1.6.0_04+')) {
                     document
-                    .write('<b>Diese Anwendung benötigt die Java Platform Version 1.6.0_04 oder höher.</b>' + '<input type="submit" value="Java Platform 1.6.0_02 installieren" onclick="deployJava.installLatestJRE();">');
+                    .write('<p>Diese Anwendung benötigt Version 6 Update 4 oder höher der <a href="" onclick="deployJava.installLatestJRE();">Java&trade; Laufzeitumgebung</a>.</p>');
                 } else {
                   // to enable applet caching, remove AppletDispatcher servlet,
                   // change codebase to 'applet',

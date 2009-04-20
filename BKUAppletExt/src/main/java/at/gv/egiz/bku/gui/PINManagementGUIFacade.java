@@ -28,6 +28,7 @@ import java.util.Map;
 public interface PINManagementGUIFacade extends BKUGUIFacade {
 
   public static final String HELP_PINMGMT = "help.pin.mgmt";
+//  public static final String HELP_VERIFY_PIN = "help.pin.verify";
   public static final String TITLE_PINMGMT = "title.pin.mgmt";
   public static final String TITLE_ACTIVATE_PIN = "title.activate.pin";
   public static final String TITLE_CHANGE_PIN = "title.change.pin";

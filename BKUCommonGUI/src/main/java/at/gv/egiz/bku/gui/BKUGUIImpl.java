@@ -1533,6 +1533,12 @@ public class BKUGUIImpl implements BKUGUIFacade {
       if (b.getPreferredSize().width > bs) {
         bs = b.getPreferredSize().width;
       }
+      // need cancel button for message dialog,
+      // even if renderCancelButton == false
+      b.setText(getMessage(BUTTON_CANCEL));
+      if (b.getPreferredSize().width > bs) {
+        bs = b.getPreferredSize().width;
+      }
       b.setText(getMessage(BUTTON_SIGN));
       if (b.getPreferredSize().width > bs) {
         bs = b.getPreferredSize().width;
@@ -1544,12 +1550,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
       b.setText(getMessage(BUTTON_SAVE));
       if (b.getPreferredSize().width > bs) {
         bs = b.getPreferredSize().width;
-      }
-      if (renderCancelButton) {
-        b.setText(getMessage(BUTTON_CANCEL));
-        if (b.getPreferredSize().width > bs) {
-          bs = b.getPreferredSize().width;
-        }
       }
       return bs;
     }
