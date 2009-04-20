@@ -3,14 +3,14 @@
     <parent>
         <artifactId>bku</artifactId>
         <groupId>at.gv.egiz</groupId>
-        <version>1.1.1</version>
+        <version>1.1.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>at.gv.egiz</groupId>
     <artifactId>BKUOnline</artifactId>
     <packaging>war</packaging>
     <name>BKU Online</name>
-    <version>1.1.1</version>
+    <version>1.1.2-SNAPSHOT</version>
 
     <pluginRepositories>
         <pluginRepository>
@@ -24,12 +24,12 @@
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>bkucommon</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>BKUViewer</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -53,13 +53,13 @@
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>STALService</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.2-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 		<dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>STALService</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.2-SNAPSHOT</version>
         </dependency>
         <!--
          |   TODO move at.buergerkarte.namespaces.cardchannel.service out from STALXService
@@ -68,7 +68,7 @@
         <dependency>
           <groupId>at.gv.egiz</groupId>
           <artifactId>STALXService</artifactId>
-          <version>1.1.1</version>
+          <version>1.1.2-SNAPSHOT</version>
         </dependency>
 		<!--
          | see https://wsit.dev.java.net/issues/show_bug.cgi?id=970
@@ -105,13 +105,13 @@
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>BKUApplet</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.2-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>BKUAppletExt</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.2-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -122,9 +122,9 @@
 
     </dependencies>
     <scm>
-        <developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.1.1/BKUOnline</developerConnection>
-        <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.1.1/BKUOnline</connection>
-        <url>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.1.1/BKUOnline</url>
+        <developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKUOnline</developerConnection>
+        <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKUOnline</connection>
+        <url>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKUOnline</url>
     </scm>
     <build>
         <plugins>
