@@ -208,7 +208,7 @@ public class BKURequestHandler extends SpringBKUServlet {
       dispatcher = getServletContext().getNamedDispatcher(appletPage);
     }
     if (dispatcher == null) {
-      log.trace("no appletPage requested or appletPage not configured, using default");
+      log.debug("no appletPage requested or appletPage not configured, using default");
       appletPage = APPLET_PAGE_DEFAULT;
       dispatcher = getServletContext().getNamedDispatcher(appletPage);
     }

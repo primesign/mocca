@@ -32,19 +32,15 @@
         <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
     </head>
     <%
-        // min W/H (for de locale): 145px/145px with gui style 'tiny'
-        // (vs. 152px on linux)
         int width = session.getAttribute("appletWidth") == null ? 190
-                : (Integer) session.getAttribute("appletWidth"); //230 for workshop demo integration
+                : (Integer) session.getAttribute("appletWidth"); 
         int height = session.getAttribute("appletHeight") == null ? 130
                 : (Integer) session.getAttribute("appletHeight");
         String backgroundImg = (String) session.getAttribute("appletBackground");
         String guiStyle = (String) session.getAttribute("appletGuiStyle");
         String locale = (String) session.getAttribute("locale");
         String extension = (String) session.getAttribute("extension");
-        String rand = AppletDispatcher.RAND_PREFIX +
-                RandomStringUtils.randomAlphanumeric(16);
-
+        
         String appletClass, appletArchive;
         if ("activation".equals(extension)) {
             appletArchive = "BKUAppletExt";
@@ -56,6 +52,21 @@
             appletArchive = "BKUApplet";
             appletClass = "at.gv.egiz.bku.online.applet.BKUApplet.class";
         }
+     
+        // disable applet caching
+        boolean disableAppletCaching = false;
+        String codebase = "applet";
+        
+        if (disableAppletCaching)  {
+          // run in AppletDispatcher context and
+          // append random alphanumeric string to avoid applet caching
+          // TODO prepend ../ to all xxxURL applet paramaters 
+          codebase += "/" + AppletDispatcher.DISPATCH_CTX;
+          String rand = AppletDispatcher.RAND_PREFIX +
+                  RandomStringUtils.randomAlphanumeric(16);
+          appletArchive += rand;
+        }
+        
     %>
     <body id="appletpage" style="width:<%=width%>">
             <script>
@@ -68,9 +79,9 @@
                   // remove random suffix for appletArchive
                   // and remove '../' for all URL applet parameters
                     var attributes = {
-                      codebase :'<%="applet/" + AppletDispatcher.DISPATCH_CTX %>',
+                      codebase :'<%=codebase %>',
                       code : '<%=appletClass%>',
-                      archive : '<%=appletArchive + rand +".jar, commons-logging.jar, iaik_jce_me4se.jar"%>',
+                      archive : '<%=appletArchive +".jar, commons-logging.jar, iaik_jce_me4se.jar"%>',
                       width : <%=width%>,
                       height :<%=height%>
                     };
@@ -78,10 +89,10 @@
                       GuiStyle : '<%=guiStyle%>',
                       Locale : '<%=locale%>',
                       Background : '<%=backgroundImg%>',
-                      WSDL_URL :'../../stal;jsessionid=<%=session.getId()%>?wsdl',
-                      HelpURL : '../../help/',
+                      WSDL_URL :'../stal;jsessionid=<%=session.getId()%>?wsdl',
+                      HelpURL : '../help/',
                       SessionID : '<%=session.getId()%>',
-                      RedirectURL : '../../bkuResult',
+                      RedirectURL : '../bkuResult',
                       RedirectTarget: '_parent'
                     };
                     var version = '1.6.0_04';
