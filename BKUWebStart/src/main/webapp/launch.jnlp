@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jnlp codebase="http://localhost:8080/BKUWebStart/" href="launch.jnlp" spec="1.0+">
+  <information>
+    <title>BKU Web Start</title>
+    <vendor>EGIZ</vendor>
+    <homepage href="http://mocca.egovlabs.gv.at"/>
+    <description>BKU WebStart (aka. Lokale BKU)</description>
+    <description kind="short">BKU WebStart</description>
+    <icon href="splash.png" kind="splash"/>
+    <icon href="mocca_tiny.png" kind="default"/>
+    <offline-allowed/>
+  </information>
+  <security>
+    <all-permissions/>
+  </security>
+  <resources>
+    <j2se version="1.6+"/>
+    <jar eager="true" href="BKUWebStart.jar" main="true"/>
+    <jar href="lib/appframework-1.0.3.jar"/>
+    <jar href="lib/swing-worker-1.1.jar"/>
+    <jar href="lib/commons-logging-1.1.1.jar"/>
+    <jar href="lib/jetty-util-6.1.15.jar"/>
+    <jar href="lib/commons-cli-1.0.jar"/>
+    <jar href="lib/servlet-api-2.5-20081211.jar"/>
+    <jar href="lib/jetty-6.1.15.jar"/>
+    <jar href="lib/log4j-1.2.12.jar"/>
+  </resources>
+  <application-desc main-class="at.gv.egiz.bku.webstart.BKULauncher">
+  </application-desc>
+</jnlp>

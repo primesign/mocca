@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="$jnlpspec" codebase="$project.Url" href="$outputFile">
+  <information>
+    <title>$project.Name</title>
+    <vendor>$project.Organization.Name</vendor>
+    <homepage href="$project.Url"/>
+    <description>$project.Description</description>
+    <icon href="lib/splash.png" kind="splash"/>
+    <icon href="lib/logo.png" kind="default"/>
+    <shortcut online="false">
+      <desktop/>
+      <menu submenu="MOCCA"/>
+    </shortcut>
+
+#if($offlineAllowed)
+    <offline-allowed/>
+#end
+
+  </information>
+
+
+#if($allPermissions)
+  <security>
+    <all-permissions/>
+  </security>
+#end
+
+  <resources>
+    <!-- initial-heap-size="32m" max-heap-size="128m" -->
+    <j2se version="$j2seVersion"/>
+    <property name="jnlp.versionEnabled" value="true"/>
+
+     $dependencies
+
+  </resources>
+  <application-desc main-class="$mainClass"/>
+</jnlp>
