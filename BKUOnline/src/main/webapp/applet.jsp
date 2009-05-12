@@ -40,7 +40,7 @@
         String guiStyle = (String) session.getAttribute("appletGuiStyle");
         String locale = (String) session.getAttribute("locale");
         String extension = (String) session.getAttribute("extension");
-        
+
         String appletClass, appletArchive;
         if ("activation".equals(extension)) {
             appletArchive = "BKUAppletExt";
@@ -66,7 +66,7 @@
                   RandomStringUtils.randomAlphanumeric(16);
           appletArchive += rand;
         }
-        
+
     %>
     <body id="appletpage" style="width:<%=width%>">
             <script>

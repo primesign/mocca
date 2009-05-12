@@ -18,16 +18,21 @@
 	pageEncoding="UTF-8"%>
 <%@ page import="java.io.File"%>
 <%
+    String path;
+    String helpDir = "/helpfiles";
+
     String pathInfo[] = (request.getPathInfo() != null) ? request
       .getPathInfo().split("/") : new String[] {};
-    String language = pathInfo[1].split("_")[0];
-    String filename = pathInfo[2];
-    String helpDir = "/helpfiles";
-    String path;
-    if ((new File(helpDir + "/"  + language.toLowerCase())).isDirectory()) {
-        path = helpDir + "/"  + language.toLowerCase() + "/" + filename;
+    if (pathInfo.length < 2) {
+      path = helpDir + "/index.html";
     } else {
-        path = helpDir + "/de/" + filename;
+      String language = pathInfo[1].split("_")[0];
+      String filename = pathInfo[2];
+      if ((new File(helpDir + "/"  + language.toLowerCase())).isDirectory()) {
+          path = helpDir + "/"  + language.toLowerCase() + "/" + filename;
+      } else {
+          path = helpDir + "/de/" + filename;
+      }
     }
     System.out.println(path);
 %>

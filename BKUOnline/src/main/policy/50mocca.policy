@@ -1,0 +1,234 @@
+
+
+// ========== MOCCA CODE PERMISSIONS =======================================
+//
+//
+// replace /home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT with ${catalina.base}/webapps/<mocca_context>
+// replace /usr/share/java/xercesImpl.jar with the endorsed xerces (if not in jre/lib/endorsed)
+// replace ${catalina.base}/work/Catalina/localhost/_ with the path to the compiled JSPs
+// replace apps.egiz.gv.at with the DataURL host
+// www.a-trust.at and ksp.ecard.sozialversicherung.gv.at are required for id-link template download
+// replace ldap.a-trust.at:389 with any certificate revocation authority endpoint (OCSP, CRLs)
+
+
+grant codeBase "file:${catalina.home}/bin/tomcat-juli.jar" {
+      permission java.lang.RuntimePermission "accessClassInPackage.sun.util.logging.resources";
+      permission java.io.FilePermission "/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/classes/logging.properties", "read";
+};
+
+grant codeBase "file:${catalina.base}/work/Catalina/localhost/_" {
+      permission java.io.FilePermission "/helpfiles/-", "read";
+      permission java.lang.RuntimePermission "defineClassInPackage.org.apache.jasper.runtime";
+};
+
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/classes/-" {
+      permission java.security.AllPermission;
+//      permission java.io.FilePermission "${catalina.base}/logs", "read, write";
+//      permission java.io.FilePermission "${catalina.base}/logs/*", "read, write";
+//      permission java.util.PropertyPermission "com.sun.xml.ws.fault.SOAPFaultBuilder.disableCaptureStackTrace", "write";
+//      permission java.util.PropertyPermission "com.sun.xml.ws.transport.http.HttpAdapter.dump", "write";
+};
+
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/-" {
+      permission java.io.FilePermission "${catalina.base}/logs", "read, write";
+      permission java.io.FilePermission "${catalina.base}/logs/*", "read, write";
+};
+
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/utils-1.1.2-SNAPSHOT.jar" {
+      permission java.util.PropertyPermission "*", "read";
+      permission java.net.SocketPermission "www.a-trust.at:80", "connect, resolve";
+      permission java.net.SocketPermission "ksp.ecard.sozialversicherung.gv.at:80", "connect,resolve";
+      permission java.lang.RuntimePermission "accessDeclaredMembers";
+      permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+};
+
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/bkucommon-1.1.2-SNAPSHOT.jar" {
+      permission java.io.FilePermission "/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/classes/at/gv/egiz/bku/online/conf/certs/certStore", "write";
+      permission java.io.FilePermission "/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/classes/at/gv/egiz/bku/online/conf/certs/certStore/-", "write";
+      permission java.io.FilePermission "/usr/share/java/xercesImpl.jar", "read";
+      permission java.net.SocketPermission "apps.egiz.gv.at:443", "connect, resolve";
+      permission java.net.SocketPermission "www.a-trust.at:80", "connect, resolve";
+      permission java.net.SocketPermission "ksp.ecard.sozialversicherung.gv.at:80", "connect,resolve";
+      permission java.net.SocketPermission "ldap.a-trust.at:389", "connect, resolve";
+      permission java.net.NetPermission "specifyStreamHandler";
+      permission java.util.PropertyPermission "*", "read, write";
+      permission java.security.SecurityPermission "insertProvider.IAIK";
+      permission java.security.SecurityPermission "putProviderProperty.IAIK";
+      permission java.security.SecurityPermission "removeProvider.IAIK";
+      permission java.security.SecurityPermission "insertProvider.IAIK_ECC";
+      permission java.security.SecurityPermission "putProviderProperty.IAIK_ECC";
+      permission java.security.SecurityPermission "insertProvider.XSECT";
+      permission java.security.SecurityPermission "putProviderProperty.XSECT";
+      permission java.security.SecurityPermission "insertProvider.STAL";
+      permission java.security.SecurityPermission "putProviderProperty.STAL";
+      // XMLDSig is moved backwards by XSECT
+      permission java.security.SecurityPermission "insertProvider.XMLDSig";
+      permission java.security.SecurityPermission "removeProvider.XMLDSig";
+      permission java.lang.RuntimePermission "accessDeclaredMembers";
+      permission java.lang.RuntimePermission "setFactory";
+      permission java.lang.RuntimePermission "getProtectionDomain";
+      permission java.lang.RuntimePermission "accessClassInPackage.sun.net.www.protocol.ldap";
+      permission java.lang.RuntimePermission "modifyThread";
+      permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+};
+
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/iaik_jce_full_signed-3.16.jar" {
+      permission java.util.PropertyPermission "*", "read, write";
+      permission java.security.SecurityPermission "insertProvider.IAIK";
+      permission java.security.SecurityPermission "putProviderProperty.IAIK";
+      permission java.security.SecurityPermission "removeProvider.IAIK";
+      permission java.net.SocketPermission "ldap.a-trust.at:389", "connect, resolve";
+};
+
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/iaik_ecc_signed-2.15.jar" {
+      permission java.security.SecurityPermission "insertProvider.IAIK_ECC";
+      permission java.security.SecurityPermission "putProviderProperty.IAIK_ECC";
+};
+
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/iaik_xsect-1.14.jar" {
+      permission java.util.PropertyPermission "*", "read, write";
+      permission java.security.SecurityPermission "insertProvider.IAIK";
+      permission java.security.SecurityPermission "putProviderProperty.IAIK";
+      permission java.security.SecurityPermission "removeProvider.IAIK";
+      permission java.security.SecurityPermission "insertProvider.XSECT";
+      permission java.security.SecurityPermission "putProviderProperty.XSECT";
+      permission java.security.SecurityPermission "insertProvider.XMLDSig";
+      permission java.security.SecurityPermission "removeProvider.XMLDSig";
+};
+
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/iaik_pki-1.0-MOCCA.jar" {
+      permission java.io.FilePermission "/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/classes/at/gv/egiz/bku/online/conf/certs/certStore", "write";
+      permission java.io.FilePermission "/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/classes/at/gv/egiz/bku/online/conf/certs/certStore/-", "write";
+      permission java.net.SocketPermission "www.a-trust.at:80", "connect, resolve";
+      permission java.net.SocketPermission "ldap.a-trust.at:389", "connect, resolve";
+      permission java.net.NetPermission "specifyStreamHandler";
+      permission java.lang.RuntimePermission "accessClassInPackage.sun.net.www.protocol.ldap";
+};
+
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/xalan-2.7.0.jar" {
+      permission java.util.PropertyPermission "*", "read";
+      permission java.io.FilePermission "${java.home}/lib/xalan.properties", "read";
+      permission java.lang.RuntimePermission "getClassLoader";
+};
+
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/commons-logging-1.1.1.jar" {
+      permission java.security.AllPermission;
+};
+
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/log4j-1.2.12.jar" {
+      permission java.io.FilePermission "/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/classes/log4j.properties", "read";
+      // allow log4j to read its own properties
+      permission java.util.PropertyPermission "log4j.*", "read";
+      // the log4j configuration might want to write logs to ${catalina.base}/logs/bkuonline.log
+      permission java.util.PropertyPermission "catalina.base", "read";
+      permission java.lang.RuntimePermission "defineClassInPackage.java.lang";
+};
+
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/spring-core-2.5.5.jar" {
+      permission java.lang.RuntimePermission "accessDeclaredMembers";
+};
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/spring-web-2.5.5.jar" {
+      permission java.io.FilePermission "/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/classes/at/gv/egiz/bku/online/conf/certs/certStore", "write";
+      permission java.io.FilePermission "/usr/share/java/xercesImpl.jar", "read";
+      permission java.security.SecurityPermission "insertProvider.IAIK";
+      permission java.security.SecurityPermission "putProviderProperty.IAIK";
+      permission java.security.SecurityPermission "removeProvider.IAIK";
+      permission java.security.SecurityPermission "insertProvider.IAIK_ECC";
+      permission java.security.SecurityPermission "putProviderProperty.IAIK_ECC";
+      permission java.security.SecurityPermission "insertProvider.XSECT";
+      permission java.security.SecurityPermission "putProviderProperty.XSECT";
+      permission java.security.SecurityPermission "insertProvider.STAL";
+      permission java.security.SecurityPermission "putProviderProperty.STAL";
+      permission java.security.SecurityPermission "insertProvider.XMLDSig";
+      permission java.security.SecurityPermission "removeProvider.XMLDSig";
+      permission java.util.PropertyPermission "*", "read, write";
+      permission java.lang.RuntimePermission "accessDeclaredMembers";
+      permission java.lang.RuntimePermission "setFactory";
+      permission java.lang.RuntimePermission "getProtectionDomain";
+      permission java.lang.RuntimePermission "defineClassInPackage.java.lang";
+      permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+};
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/spring-beans-2.5.5.jar" {
+      permission java.io.FilePermission "/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/classes/at/gv/egiz/bku/online/conf/certs/certStore", "write";
+      permission java.io.FilePermission "/usr/share/java/xercesImpl.jar", "read";
+      permission java.security.SecurityPermission "insertProvider.IAIK";
+      permission java.security.SecurityPermission "putProviderProperty.IAIK";
+      permission java.security.SecurityPermission "removeProvider.IAIK";
+      permission java.security.SecurityPermission "insertProvider.IAIK_ECC";
+      permission java.security.SecurityPermission "putProviderProperty.IAIK_ECC";
+      permission java.security.SecurityPermission "insertProvider.XSECT";
+      permission java.security.SecurityPermission "putProviderProperty.XSECT";
+      permission java.security.SecurityPermission "insertProvider.STAL";
+      permission java.security.SecurityPermission "putProviderProperty.STAL";
+      permission java.security.SecurityPermission "insertProvider.XMLDSig";
+      permission java.security.SecurityPermission "removeProvider.XMLDSig";
+      permission java.util.PropertyPermission "*", "read, write";
+      permission java.lang.RuntimePermission "accessDeclaredMembers";
+      permission java.lang.RuntimePermission "setFactory";
+      permission java.lang.RuntimePermission "getProtectionDomain";
+      permission java.lang.RuntimePermission "defineClassInPackage.java.lang";
+      permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+};
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/spring-context-2.5.5.jar" {
+      permission java.io.FilePermission "/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/classes/at/gv/egiz/bku/online/conf/certs/certStore", "write";
+      permission java.io.FilePermission "/usr/share/java/xercesImpl.jar", "read";
+      permission java.security.SecurityPermission "insertProvider.IAIK";
+      permission java.security.SecurityPermission "putProviderProperty.IAIK";
+      permission java.security.SecurityPermission "removeProvider.IAIK";
+      permission java.security.SecurityPermission "insertProvider.IAIK_ECC";
+      permission java.security.SecurityPermission "putProviderProperty.IAIK_ECC";
+      permission java.security.SecurityPermission "insertProvider.XSECT";
+      permission java.security.SecurityPermission "putProviderProperty.XSECT";
+      permission java.security.SecurityPermission "insertProvider.STAL";
+      permission java.security.SecurityPermission "putProviderProperty.STAL";
+      permission java.security.SecurityPermission "insertProvider.XMLDSig";
+      permission java.security.SecurityPermission "removeProvider.XMLDSig";
+      permission java.util.PropertyPermission "*", "read, write";
+      permission java.lang.RuntimePermission "accessDeclaredMembers";
+      permission java.lang.RuntimePermission "setFactory";
+      permission java.lang.RuntimePermission "getProtectionDomain";
+      permission java.lang.RuntimePermission "defineClassInPackage.java.lang";
+      permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+};
+
+
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/jaxws-rt-2.1.5.jar" {
+      // need write access to set disableCaptureStackTrace and HttpAdapter.dump
+      permission java.util.PropertyPermission "com.sun.xml.ws.*", "read, write";
+      permission java.util.PropertyPermission "com.sun.xml.bind.*", "read";
+      permission java.util.PropertyPermission "javax.xml.soap.*", "read";
+      permission java.util.PropertyPermission "javax.activation.*", "read";
+      permission java.util.PropertyPermission "xml.catalog.*", "read";
+      permission java.util.PropertyPermission "user.dir", "read";
+      permission java.util.PropertyPermission "user.home", "read";
+      permission java.io.FilePermission "${java.home}/lib/jaxm.properties", "read";
+      permission java.io.FilePermission "${java.home}/lib/mailcap", "read";
+      permission java.io.FilePermission "${user.home}/.mailcap", "read";
+      permission java.io.FilePermission "basename", "read";
+      permission java.io.FilePermission "${catalina.home}/bin/xcatalog", "read";
+      permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+      permission java.lang.RuntimePermission "accessDeclaredMembers";
+      permission java.lang.RuntimePermission "accessClassInPackage.sun.util.logging.resources";
+      permission java.lang.RuntimePermission "setContextClassLoader";
+      permission javax.management.MBeanServerPermission "createMBeanServer";
+      permission javax.management.MBeanPermission "com.sun.xml.ws.*", "registerMBean";
+      permission javax.management.MBeanTrustPermission "register";
+      permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+};
+
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/jaxb-impl-2.1.9.jar" {
+      permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+      permission java.lang.RuntimePermission "accessDeclaredMembers";
+      permission java.util.PropertyPermission "com.sun.xml.bind.v2.*", "read";
+};
+
+grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/commons-httpclient-3.1.jar" {
+      permission java.util.PropertyPermission "*", "read";
+};
+
+// ======== NETBEANS
+
+grant codeBase "file:${catalina.base}/nblib/-" {
+      permission java.security.AllPermission;
+};
+
