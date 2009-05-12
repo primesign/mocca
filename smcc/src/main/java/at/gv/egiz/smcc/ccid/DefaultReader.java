@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class DefaultReader implements CCID {
+  public static final int PIN_ENTRY_POLLING_INTERVAL = 20;
 
   public static final byte bEntryValidationCondition = 0x02;  // validation key pressed
   public static final byte bTimeOut = 0x3c;                   // 60sec (= max on ReinerSCT)
@@ -302,7 +303,7 @@ public class DefaultReader implements CCID {
       if (resp == (byte) 0x00) {
         synchronized(this) {
           try {
-            wait(200);
+            wait(PIN_ENTRY_POLLING_INTERVAL);
           } catch (InterruptedException ex) {
             log.error("interrupted in VERIFY_PIN");
           }
@@ -349,7 +350,7 @@ public class DefaultReader implements CCID {
       if (resp == (byte) 0x00) {
         synchronized(this) {
           try {
-            wait(10);
+            wait(PIN_ENTRY_POLLING_INTERVAL);
           } catch (InterruptedException ex) {
             log.error("interrupted in MODIFY_PIN");
           }

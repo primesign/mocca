@@ -30,6 +30,11 @@ public class ReaderFactory {
     String name = ct.getName();
     if (name != null) {
       name = name.toLowerCase();
+      //ReinerSCT: http://support.reiner-sct.de/downloads/LINUX
+      //           http://www.linux-club.de/viewtopic.php?f=61&t=101287&start=0
+      //old: REINER SCT CyberJack 00 00
+      //new (CCID): 0C4B/0300 Reiner-SCT cyberJack pinpad(a) 00 00
+      //display: REINER SCT CyberJack 00 00
       if(name.startsWith("gemplus gempc pinpad")) {
         return new GemplusGemPCPinpad(icc, ct);
       } else if (name.startsWith("omnikey cardman 3621")) {
