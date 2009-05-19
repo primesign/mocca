@@ -54,7 +54,7 @@
       <servlet-name>help</servlet-name>
       <jsp-file>/help.jsp</jsp-file>
     </servlet>
-	<servlet-mapping>
+    <servlet-mapping>
 		<servlet-name>BKUServlet</servlet-name>
 		<url-pattern>/http-security-layer-request</url-pattern>
 	</servlet-mapping>
@@ -70,17 +70,17 @@
       <servlet-name>help</servlet-name>
       <url-pattern>/help/*</url-pattern>
     </servlet-mapping>
-    
-    <!-- 
+
+    <!--
      |  Configure alternative applet pages that may be requested
-     |  via the 'appletPage' form parameter (cf. SLRequestForm.html) 
+     |  via the 'appletPage' form parameter (cf. SLRequestForm.html)
     <servlet>
         <servlet-name>BKUAppletAlternative</servlet-name>
         <jsp-file>/appletAlternative.jsp</jsp-file>
     </servlet-->
-    
-    <!-- 
-     |  To disable applet caching load the applet via the AppletDispatcher 
+
+    <!--
+     |  To disable applet caching load the applet via the AppletDispatcher
      |  (cf. applet.jsp)
     <servlet>
         <servlet-name>AppletDispatcher</servlet-name>
@@ -113,7 +113,7 @@
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
-	<session-config>
+  <session-config>
 		<session-timeout>5</session-timeout>
 	</session-config>
 </web-app>
