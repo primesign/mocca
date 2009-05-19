@@ -19,11 +19,10 @@
 		<module>STALService</module>
 		<module>BKUCommonGUI</module>
 		<module>BKUViewer</module>
-		<module>BKULocalApp</module>
 		<module>STALExt</module>
-        <module>STALXService</module>
-        <module>BKUAppletExt</module>
-        <module>BKUWebStart</module>
+    <module>STALXService</module>
+    <module>BKUAppletExt</module>
+    <module>BKUWebStart</module>
     
   </modules>
 	<developers>
@@ -184,7 +183,7 @@
 			<dependency>
 				<groupId>xalan</groupId>
 				<artifactId>xalan</artifactId>
-				<version>2.7.0</version>
+				<version>2.7.1</version>
 			</dependency>
 			<dependency>
 				<groupId>iaik</groupId>
