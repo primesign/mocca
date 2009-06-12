@@ -46,6 +46,7 @@ import at.gv.egiz.bku.slcommands.impl.xsect.DataObject;
 import at.gv.egiz.bku.slcommands.impl.xsect.STALProvider;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
+import javax.net.ssl.SSLSocketFactory;
 
 public abstract class Configurator {
 
@@ -261,6 +262,8 @@ public abstract class Configurator {
       } catch (IOException e) {
         log.error(e);
       }
+    } else {
+      log.info("using configured user agent " + properties.getProperty(USERAGENT_CONFIG_P));
     }
   }
 
