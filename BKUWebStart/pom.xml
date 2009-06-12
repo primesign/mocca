@@ -10,34 +10,16 @@
   <artifactId>BKUWebStart</artifactId>
   <packaging>jar</packaging>
   <name>BKU Web Start</name>
-  <version>1.0-SNAPSHOT</version>
-  <url>http://danu-lin.iaik.tugraz.at:8080/jnlp</url>
-  <description>Web Start Bürgerkartenumgebung (BKU) MOCCA-lokal</description>
+  <!-- 
+   | IMPORTANT: update jnlp/resources/version.xml if version changes
+   |-->
+  <version>1.0.3-SNAPSHOT</version>
+  <url>http://mocca.egovlabs.gv.at/</url>
+  <description>Web Start Bürgerkartenumgebung (MOCCA-lokal)</description>
 
   <build>
 
-    <finalName>BKUWebStart</finalName>
     <plugins>
-
-      <!-- target/jnlp does not yet exist..
-      <plugin>
-        <groupId>org.codehaus.mojo.webstart</groupId>
-        <artifactId>webstart-maven-plugin</artifactId>
-        <executions>
-           <execution>
-              <goals>
-                 <goal>unsign</goal>
-              </goals>
-              <phase>package</phase>
-           </execution>
-        </executions>
-        <configuration>
-          <jarPath>${project.build.directory}/jnlp/lib/iaik_jce_full_signed-3.16.jar</jarPath>
-          <jarPath>${project.build.directory}/jnlp/lib/iaik_ecc_signed-2.15.jar</jarPath>
-          <verbose>true</verbose>
-        </configuration>
-      </plugin>
-      -->
 
       <!--plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -54,14 +36,15 @@
         </configuration>
       </plugin-->
 
-       <plugin>
+      <plugin>
          <!-- unpack BKULocal prior to webstart jar generation to include -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
+          <!-- unpack BKULocalWar to classpath
           <execution>
-            <id>unpack-dependencies</id>
-            <phase>package</phase>
+            <id>unpack BKULocal webapp</id>
+            <phase>process-resources</phase>
             <goals>
               <goal>unpack-dependencies</goal>
             </goals>
@@ -69,13 +52,44 @@
               <includeGroupIds>at.gv.egiz</includeGroupIds>
               <includeArtifactIds>BKULocal</includeArtifactIds>
               <includeTypes>war</includeTypes>
-              <!--
-              <includes>**/*.class</includes>
-              <excludes>**/*.properties</excludes>
-              -->
               <outputDirectory>${project.build.directory}/classes/BKULocalWar</outputDirectory>
               <overWriteReleases>false</overWriteReleases>
               <overWriteSnapshots>true</overWriteSnapshots>
+            </configuration>
+          </execution-->
+
+          <!--execution>
+            <id>copy</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>at.gv.egiz</groupId>
+                  <artifactId>BKULocal</artifactId>
+                  <version>[ version ]</version>
+                  <type>[ packaging ]</type>
+                  <classifier> [classifier - optional] </classifier>
+                  <overWrite>[ true or false ]</overWrite>
+                  <outputDirectory>[ output directory ]</outputDirectory>
+                  <destFileName>[ filename ]</destFileName>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution-->
+          <execution>
+            <id>copy BKULocal webapp</id>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeGroupIds>at.gv.egiz</includeGroupIds>
+              <includeArtifactIds>BKULocal</includeArtifactIds>
+              <includeTypes>war</includeTypes>
+              <outputDirectory>${project.build.directory}/classes/</outputDirectory>
+              <stripVersion>true</stripVersion>
             </configuration>
           </execution>
         </executions>
@@ -85,113 +99,101 @@
         <groupId>org.codehaus.mojo.webstart</groupId>
         <artifactId>webstart-maven-plugin</artifactId>
         <executions>
-           <execution>
-              <goals>
-                 <goal>jnlp</goal> <!-- use jnlp, jnlp-inline or jnlp-single as appropriate -->
-              </goals>
-              <phase>package</phase>
-           </execution>
+          <execution>
+          <!-- need lifecycle phase binding, otherwise
+           |   LifecycleSpecificationException: No lifecycle phase binding can be found for goal: jnlp -->
+            <phase>package</phase>
+            <goals>
+             <!-- IMPORTANT: USE jnlp-inline, otherwise no execution in install phase and
+                  the .zip artifact is not installed
+                  (parallel lifecycle build finished prior to install phase?) -->
+              <goal>jnlp-inline</goal>
+            </goals>
+          </execution>
         </executions>
         <configuration>
-           <!--outputDirectory></outputDirectory--> <!-- not required?? -->
 
-           <!--
-           Set to true to exclude all transitive dependencies. Default is false.
-           -->
-           <excludeTransitive>false</excludeTransitive>
+          <excludeTransitive>false</excludeTransitive>
 
-           <!-- The path where the libraries are stored within the jnlp structure. not required. by default the libraries are within the working directory -->
-           <libPath>lib</libPath>
+          <!-- causes unsignAlreadySignedJars to fail
+               (cf. http://jira.codehaus.org/browse/MWEBSTART-107)
+          <libPath>lib</libPath-->
 
-           <!-- [optional] transitive dependencies filter - if omitted, all transitive dependencies are included -->
-           <dependencies>
-             <!-- Note that only groupId and artifactId must be specified here. because of a limitation of the Include/ExcludesArtifactFilter -->
-             <includes>
-                <include>commons-logging:commons-logging</include>
-                <include>log4j:log4j</include>
-                <include>at.gv.egiz:utils</include>
-                <include>javax.activation:activation</include>
-                <include>iaik:iaik_ecc</include>
-                <include>iaik:iaik_jce</include>
-                <include>iaik:iaik_xsect_unsigned</include>
-                <include>org.mortbay.jetty:jetty</include>
-                <include>org.mortbay.jetty:jetty-util</include>
-                <include>org.mortbay.jetty:servlet-api</include>
-             </includes>
-             <!-- excludes>
-                <exclude></exclude>
-             <excludes-->
-           </dependencies>
+          <!--resourcesDirectory>${project.basedir}/src/main/jnlp/resources</resourcesDirectory-->
 
-           <!--resourcesDirectory>${project.basedir}/src/main/jnlp/resources</resourcesDirectory--> <!-- default value -->
+          <jnlp>
+            <inputTemplateResourcePath>${project.basedir}/src/main/jnlp</inputTemplateResourcePath>
+            <inputTemplate>template.xml</inputTemplate>
+            <outputFile>mocca.jnlp</outputFile>
+            <mainClass>at.gv.egiz.bku.webstart.BKULauncher</mainClass>
+            <j2seVersion>1.6+</j2seVersion>
+            <offlineAllowed>true</offlineAllowed>
+            <allPermissions>true</allPermissions>
+          </jnlp>
 
-           <!-- JNLP generation -->
-           <jnlp>
-             <!-- default values -->
-             <!--inputTemplateResourcePath>${project.basedir}</inputTemplateResourcePath-->
-             <inputTemplate>src/main/jnlp/template.xml</inputTemplate> <!-- relative to inputTemplateResourcePath -->
-             <outputFile>mocca.jnlp</outputFile> <!-- defaults to launch.jnlp -->
+          <sign>
+            <alias>test-applet signer</alias>
+            <keystore>${project.basedir}/keystore.ks</keystore>
+            <storepass>storepass</storepass>
+            <keypass>keypass</keypass> <!-- we need to override passwords easily from the command line. ${keypass} -->
+            <verify>true</verify> <!-- verify that the signing operation succeeded -->
+            <keystoreConfig>
+              <delete>false</delete> <!-- delete the keystore -->
+              <gen>false</gen>       <!-- optional shortcut to generate the store. -->
+            </keystoreConfig>
+          </sign>
 
-             <!-- used to automatically identify the jar containing the main class. -->
-             <!-- this is perhaps going to change -->
-             <mainClass>at.gv.egiz.bku.webstart.BKULauncher</mainClass>
+          <!-- BUILDING PROCESS -->
+          <pack200>true</pack200>
+          <!--gzip>true</gzip--> <!-- default force when pack200 false, true when pack200 selected ?? -->
 
-             <j2seVersion>1.6+</j2seVersion>
-             <!--offlineAllowed>true</offlineAllowed-->
-             <!--allPermissions>true</allPermissions-->
-           </jnlp>
+          <!-- causes a version attribute to be output in each jar resource element, optional, default is false -->
+          <outputJarVersions>true</outputJarVersions>
 
-           <!-- SIGNING -->
-           <!-- defining this will automatically sign the jar and its dependencies, if necessary -->
-           <sign>
-             <alias>test-applet signer</alias>
-             <keystore>${project.basedir}/keystore.ks</keystore>
-             <storepass>storepass</storepass>  <!-- ${storepass} -->
-             <keypass>keypass</keypass> <!-- we need to override passwords easily from the command line. ${keypass} -->
-             <!--storetype>fillme</storetype-->
+          <!-- unsign IAIK-JCE (webstart error:  JAR-Ressourcen in JNLP-Datei sind nicht von demselben Zertifikat signiert) -->
+          <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
 
-             <!--validity>fillme</validity-->
-
-             <!-- only required for generating the keystore -->
-             <!--dnameCn>fillme</dnameCn>
-             <dnameOu>fillme</dnameOu>
-             <dnameO>fillme</dnameO>
-             <dnameL>fillme</dnameL>
-             <dnameSt>fillme</dnameSt>
-             <dnameC>fillme</dnameC-->
-
-             <verify>true</verify> <!-- verify that the signing operation succeeded -->
-
-             <!-- KEYSTORE MANAGEMENT -->
-             <keystoreConfig>
-               <delete>false</delete> <!-- delete the keystore -->
-               <gen>false</gen>       <!-- optional shortcut to generate the store. -->
-             </keystoreConfig>
-           </sign>
-
-           <!-- BUILDING PROCESS -->
-
-           <pack200>false</pack200>
-           <gzip>false</gzip> <!-- default force when pack200 false, true when pack200 selected ?? -->
-
-           <!-- causes a version attribute to be output in each jar resource element, optional, default is false -->
-           <outputJarVersions>true</outputJarVersions>
-
-            <!-- unsign IAIK-JCE (webstart error:  JAR-Ressourcen in JNLP-Datei sind nicht von demselben Zertifikat signiert) -->
-            <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
-
-           <!--install>false</install--> <!-- not yet supported -->
-           <verbose>true</verbose>
+          <!--install>false</install--> <!-- not yet supported -->
+          <verbose>true</verbose>
 
         </configuration>
       </plugin>
 
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>maven-buildnumber-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <doCheck>false</doCheck>
+          <doUpdate>false</doUpdate>
+        </configuration>
+      </plugin>
 
-     
-
-
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Implementation-Build>${project.version}-r${buildNumber}</Implementation-Build>
+            </manifestEntries>
+          </archive>
+          <verbose>true</verbose>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+  
   <dependencies>
     <dependency>
       <groupId>at.gv.egiz</groupId>
@@ -205,21 +207,6 @@
       <version>1.1.2-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <artifactId>iaik_jce</artifactId>
-      <groupId>iaik</groupId>
-      <version>3.16</version>
-    </dependency>
-    <dependency>
-      <artifactId>iaik_ecc</artifactId>
-      <groupId>iaik</groupId>
-      <version>2.15</version>
-    </dependency>
-    <dependency>
-      <artifactId>iaik_xsect_unsigned</artifactId>
-      <groupId>iaik</groupId>
-      <version>1.14</version>
-    </dependency>
-    <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
       <version>1.0.4</version>
@@ -231,9 +218,56 @@
     </dependency>
   </dependencies>
 
+<!--
 
-
-
-
+  <profiles>
+    <profile>
+      <id>webapp</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo.webstart</groupId>
+            <artifactId>webstart-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>jnlp-download-servlet</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <templateDirectory>${project.basedir}/src/main/jnlp</templateDirectory>
+              <jnlpFiles>
+                <jnlpFile>
+                  <templateFilename>template.xml</templateFilename>
+                  <outputFilename>mocca.jnlp</outputFilename>
+                  <jarResources>
+                    <jarResource>
+                      <groupId>at.gv.egiz</groupId>
+                      <artifactId>BKUWebStart</artifactId>
+                      <version>1.0-SNAPSHOT</version>
+                      <mainClass>at.gv.egiz.bku.webstart.BKULauncher</mainClass>
+                    </jarResource>
+                  </jarResources>
+                </jnlpFile>
+              </jnlpFiles>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    
+    <profile>
+      <id>standalone</id>
+      <build>
+        <plugins>
+    ...
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+  -->
 
 </project>

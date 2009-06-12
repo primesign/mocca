@@ -36,6 +36,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class TrayIconDialog implements TrayIconDialogInterface {
+  public static final String TRAYICON_RESOURCE = "at/gv/egiz/bku/webstart/ui/trayicon.png";
+  public static final String TRAYMENU_SHUTDOWN = "TrayMenu.Shutdown";
+  public static final String TRAYMENU_TOOLTIP = "TrayMenu.Tooltip";
 
   private static Log log = LogFactory.getLog(TrayIconDialog.class);
   private static TrayIconDialogInterface instance;
@@ -107,10 +110,10 @@ public class TrayIconDialog implements TrayIconDialogInterface {
       if (isSupported) {
         SystemTray tray = SystemTray.getSystemTray();
         Image image = ImageIO.read(getClass().getClassLoader()
-            .getResourceAsStream("at/gv/egiz/bku/webstart/ui/logo.png"));
+            .getResourceAsStream(TRAYICON_RESOURCE));
         PopupMenu popup = new PopupMenu();
         MenuItem exitItem = new MenuItem(resourceBundel
-            .getString("TrayMenu.Shutdown"));
+            .getString(TRAYMENU_SHUTDOWN));
         popup.add(exitItem);
         exitItem.addActionListener(new ActionListener() {
           public void actionPerformed(ActionEvent e) {
@@ -123,7 +126,7 @@ public class TrayIconDialog implements TrayIconDialogInterface {
 
         trayIcon = new TrayIcon(image, "BKULogo", popup);
         trayIcon.setImageAutoSize(true);
-        trayIcon.setToolTip(resourceBundel.getString("TrayMenu.Tooltip"));
+        trayIcon.setToolTip(resourceBundel.getString(TRAYMENU_TOOLTIP));
         try {
           tray.add(trayIcon);
         } catch (AWTException e) {
