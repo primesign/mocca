@@ -64,6 +64,8 @@ public class BKULauncher implements BKUControllerInterface {
   /** resource bundle messages */
   public static final String GREETING_CAPTION = "Greetings.Caption";
   public static final String GREETING_MESSAGE = "Greetings.Message";
+  public static final String STARTUP_CAPTION = "Startup.Caption";
+  public static final String STARTUP_MESSAGE = "Startup.Message";
   public static final String VERSION_FILE = ".version";
   private static Log log = LogFactory.getLog(BKULauncher.class);
   private ResourceBundle resourceBundle = null;
@@ -204,7 +206,7 @@ public class BKULauncher implements BKUControllerInterface {
     }
     TrayIconDialog.getInstance().init(resourceBundle);
     TrayIconDialog.getInstance().setShutdownHook(this);
-    TrayIconDialog.getInstance().displayInfo(GREETING_CAPTION, GREETING_MESSAGE);
+//    TrayIconDialog.getInstance().displayInfo(GREETING_CAPTION, GREETING_MESSAGE);
   }
 
   private void initStart() {
@@ -277,8 +279,12 @@ public class BKULauncher implements BKUControllerInterface {
 
       File configDir = new File(System.getProperty("user.home") + '/' + CONFIG_DIR);
       boolean installCert = launcher.ensureConfig(configDir);
-      launcher.startUpServer();
       launcher.initTrayIcon();
+      TrayIconDialog.getInstance().displayInfo(STARTUP_CAPTION, STARTUP_MESSAGE);
+      launcher.startUpServer();
+      TrayIconDialog.getInstance().displayInfo(GREETING_CAPTION, GREETING_MESSAGE);
+
+//      launcher.initTrayIcon();
       launcher.initFinished(installCert);
     } catch (Exception e) {
       log.fatal("Failed to launch BKU: " + e.getMessage(), e);

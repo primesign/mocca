@@ -15,7 +15,7 @@
    |-->
   <version>1.0.3-SNAPSHOT</version>
   <url>http://mocca.egovlabs.gv.at/</url>
-  <description>Web Start Bürgerkartenumgebung (MOCCA-lokal)</description>
+  <description>Bürgerkartenumgebung (MOCCA Web Start)</description>
 
   <build>
 

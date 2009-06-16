@@ -15,27 +15,6 @@
     </pattern>
     <file>commons-logging-1.0.4.jar</file>
   </resource>
-  <!--resource>
-    <pattern>
-      <name>commons-fileupload-1.2.1.jar</name>
-      <version-id>1.2.1</version-id>
-    </pattern>
-    <file>commons-fileupload-1.2.1.jar</file>
-  </resource>
-  <resource>
-    <pattern>
-      <name>commons-httpclient-3.1.jar</name>
-      <version-id>3.1</version-id>
-    </pattern>
-    <file>commons-httpclient-3.1.jar</file>
-  </resource>
-  <resource>
-    <pattern>
-      <name>commons-codec-1.2.jar</name>
-      <version-id>1.2</version-id>
-    </pattern>
-    <file>commons-codec-1.2.jar</file>
-  </resource-->
 
   <resource>
     <pattern>
@@ -74,13 +53,6 @@
     </pattern>
     <file>iaik_xsect-1.14.jar</file>
   </resource>
-  <!--resource>
-    <pattern>
-      <name>iaik_pki-1.0-MOCCA.jar</name>
-      <version-id>1.0-MOCCA</version-id>
-    </pattern>
-    <file>iaik_pki-1.0-MOCCA.jar</file>
-  </resource-->
 
   <resource>
     <pattern>
@@ -125,34 +97,6 @@
     </pattern>
     <file>stax-api-1.0-2.jar</file>
   </resource>
-  <!--resource>
-    <pattern>
-      <name>xalan-2.7.1.jar</name>
-      <version-id>2.7.1</version-id>
-    </pattern>
-    <file>xalan-2.7.1.jar</file>
-  </resource>
-  <resource>
-    <pattern>
-      <name>serializer-2.7.1.jar</name>
-      <version-id>2.7.1</version-id>
-    </pattern>
-    <file>serializer-2.7.1.jar</file>
-  </resource>
-  <resource>
-    <pattern>
-      <name>xercesImpl-2.9.1.jar</name>
-      <version-id>2.9.1</version-id>
-    </pattern>
-    <file>xercesImpl-2.9.1.jar</file>
-  </resource>
-  <resource>
-    <pattern>
-      <name>xml-apis-1.3.04.jar</name>
-      <version-id>1.3.04</version-id>
-    </pattern>
-    <file>xml-apis-1.3.04.jar</file>
-  </resource-->
 
   <resource>
     <pattern>
@@ -161,26 +105,5 @@
     </pattern>
     <file>utils-1.1.2-SNAPSHOT.jar</file>
   </resource>
-  <!--resource>
-    <pattern>
-      <name>bkucommon-1.1.2-SNAPSHOT.jar</name>
-      <version-id>1.1.2-SNAPSHOT</version-id>
-    </pattern>
-    <file>bkucommon-1.1.2-SNAPSHOT.jar</file>
-  </resource>
-  <resource>
-    <pattern>
-      <name>STALExt-1.1.2-SNAPSHOT.jar</name>
-      <version-id>1.1.2-SNAPSHOT</version-id>
-    </pattern>
-    <file>STALExt-1.1.2-SNAPSHOT.jar</file>
-  </resource>
-  <resource>
-    <pattern>
-      <name>STAL-1.1.2-SNAPSHOT.jar</name>
-      <version-id>1.1.2-SNAPSHOT</version-id>
-    </pattern>
-    <file>STAL-1.1.2-SNAPSHOT.jar</file>
-  </resource-->
   
 </jnlp-versions>
