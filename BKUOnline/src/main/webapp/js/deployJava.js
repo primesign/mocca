@@ -30,6 +30,12 @@
  */
 
 /*
+ * Added by EGIZ:
+ * This file contains a workaround to https://bugzilla.mozilla.org/show_bug.cgi?id=498132
+ * (see lines 90-92)
+ */
+
+/*
  * deployJava.js
  *
  * This file is part of the Deployment Toolkit.  It provides functions for web
@@ -83,8 +89,9 @@ var deployJava = {
         var list = new Array();
         if (deployJava.isPluginInstalled()) {
             var plugin =  deployJava.getPlugin();
-            for (var i = 0; i < plugin.jvms.getLength(); i++) {
-                list[i] = plugin.jvms.get(i).version;
+            var jvms = plugin.jvms;
+            for (var i = 0; i < jvms.getLength(); i++) {
+                list[i] = jvms.get(i).version;
             }
         } else {
             var browser = deployJava.getBrowser();
@@ -130,7 +137,7 @@ var deployJava = {
                 }
             }
         }
-            
+
         if (deployJava.debug) {
             for (var i = 0; i < list.length; ++i) {
                 alert('We claim to have detected Java SE ' + list[i]);
@@ -390,14 +397,14 @@ var deployJava = {
                 }
             }
 
-            var list = deployJava.getJREs();       
+            var list = deployJava.getJREs();
             for (var i = 0; i < list.length; ++i) {
                 if (deployJava.compareVersionToPattern(list[i], patternArray, 
                                                        familyMatch)) {
                     return true;
                 }
             }
-  
+
             return false;
         } else {
             alert('Invalid versionPattern passed to versionCheck: ' + 
