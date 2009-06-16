@@ -68,7 +68,7 @@
         }
 
     %>
-    <body id="appletpage" style="width:<%=width%>">
+    <body id="appletpage" style="width:<%=width%>px">
             <script>
                 if (!deployJava.versionCheck('1.6.0_04+')) {
                     document
