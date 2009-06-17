@@ -39,7 +39,7 @@ public class MarshallerFactory {
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
       }
       log.trace("setting marshaller property NamespacePrefixMapper");
-      m.setProperty("com.sun.xml.bind.NamespacePrefixMapper", new NamespacePrefixMapperImpl());
+      m.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NamespacePrefixMapperImpl());
     } catch (PropertyException ex) {
       log.info("failed to set marshaller property: " + ex.getMessage());
     }
