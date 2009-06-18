@@ -33,7 +33,9 @@
         <xs:attribute name="class" type="xs:NMTOKENS"/>
     </xs:attributeGroup>
     <xs:attributeGroup name="xhtml.title">
-        <xs:attribute name="title" type="xs:string"/>
+        <!-- WORKAROUND to [#422] Get rid of Xerces 2.9.1 dependency (SLXHTML validation)
+         |
+        <xs:attribute name="title" type="xs:string"/> -->
     </xs:attributeGroup>
     <xs:attributeGroup name="xhtml.Core.attrib">
         <xs:attribute ref="xml:space"/>
@@ -43,7 +45,9 @@
         <xs:attributeGroup ref="xhtml.Core.extra.attrib"/>
     </xs:attributeGroup>
     <xs:attributeGroup name="xhtml.I18n.attrib">
-        <xs:attribute ref="xml:lang" />
+        <!-- WORKAROUND to [#422] Get rid of Xerces 2.9.1 dependency (SLXHTML validation)
+         |
+        <xs:attribute ref="xml:lang" /> -->
         <xs:attributeGroup ref="xhtml.I18n.extra.attrib"/>
     </xs:attributeGroup>
     <xs:attributeGroup name="xhtml.Common.attrib">

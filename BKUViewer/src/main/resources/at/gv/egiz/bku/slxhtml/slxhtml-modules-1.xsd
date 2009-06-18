@@ -27,6 +27,10 @@
   <!-- Changes to common attributes module -->
   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
+  <xs:include schemaLocation="xhtml-attribs-1.xsd"/>
+
+  <!-- WORKAROUND to [#422] Get rid of Xerces 2.9.1 dependency (SLXHTML validation)
+   |
   <xs:redefine schemaLocation="xhtml-attribs-1.xsd">
     
     <xs:attributeGroup name="xhtml.I18n.attrib">
@@ -47,13 +51,19 @@
     </xs:attributeGroup>
 
   </xs:redefine>
+   |-->
 
   <xs:include schemaLocation="xhtml-framework-1.xsd"/>  
 
   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
   <!-- Changes to block phrasal elements module -->
   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-  
+
+  <xs:include schemaLocation="xhtml-blkphras-1.xsd"/>
+
+  <!-- WORKAROUND to [#422] Get rid of Xerces 2.9.1 dependency (SLXHTML validation)
+   |   xercesImpl < 2.9.1 cannot handle redefinition here while schema is included elsewhere without redefinition
+   |
   <xs:redefine schemaLocation="xhtml-blkphras-1.xsd">
     
     <xs:attributeGroup name="xhtml.blockquote.attlist">
@@ -66,7 +76,8 @@
     </xs:attributeGroup>
     
   </xs:redefine>  
-  
+   |-->
+   
   <xs:include schemaLocation="xhtml-text-1.xsd"/>
 
   <xs:include schemaLocation="xhtml-list-1.xsd"/>

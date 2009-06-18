@@ -1,3 +1,11 @@
+<!--
+ |
+ |  Important note:
+ |  WORKAROUND to [#422] Get rid of Xerces 2.9.1 dependency (SLXHTML validation)
+ |  requires changes to xhtml-attribs-1.xsd and xhtml-blkphras-1.xsd,
+ |  when updating the xhtml schema make sure to re-incorporate the respective changes!
+ |
+-->
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:xs="http://www.w3.org/2001/XMLSchema" blockDefault="#all">
   <xs:annotation>
