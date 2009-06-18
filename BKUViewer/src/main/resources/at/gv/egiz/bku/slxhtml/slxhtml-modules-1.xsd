@@ -66,7 +66,7 @@
     </xs:attributeGroup>
     
   </xs:redefine>  
-
+  
   <xs:include schemaLocation="xhtml-text-1.xsd"/>
 
   <xs:include schemaLocation="xhtml-list-1.xsd"/>
@@ -83,7 +83,7 @@
           Redefinition by SLXHTML 1.2: Change value of the version attrib.
         </xs:documentation>
       </xs:annotation>         
-      <xs:attribute name="version" type="xh11d:FPI" fixed="-//www.buergerkarte.at//DOCUMENT SLXHTML 1.2//DE"/>
+      <xs:attribute name="version" type="xh11d:CDATA" fixed="-//www.buergerkarte.at//DOCUMENT SLXHTML 1.2//DE"/>
     </xs:attributeGroup>
     
     <xs:attributeGroup name="xhtml.profile.attrib">

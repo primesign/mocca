@@ -10,7 +10,7 @@
     <xs:annotation>
         <xs:documentation>
       This is the XML Schema common attributes module for XHTML
-      $Id: xhtml-attribs-1.xsd,v 1.6 2005/09/26 23:37:47 ahby Exp $
+      $Id: xhtml-attribs-1.xsd,v 1.7 2008/07/05 04:11:00 ahby Exp $
     </xs:documentation>
         <xs:documentation source="xhtml-copyright-1.xsd"/>
         <xs:documentation source="http://www.w3.org/TR/xhtml-modularization/abstract_modules.html#s_commonatts"/>
@@ -36,6 +36,7 @@
         <xs:attribute name="title" type="xs:string"/>
     </xs:attributeGroup>
     <xs:attributeGroup name="xhtml.Core.attrib">
+        <xs:attribute ref="xml:space"/>
         <xs:attributeGroup ref="xhtml.id"/>
         <xs:attributeGroup ref="xhtml.class"/>
         <xs:attributeGroup ref="xhtml.title"/>

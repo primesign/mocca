@@ -11,7 +11,7 @@
     <xs:annotation>
         <xs:documentation>
           This is the XML Schema Block Phrasal support module for XHTML
-          $Id: xhtml-blkphras-1.xsd,v 1.6 2006/09/11 10:27:50 ahby Exp $
+          $Id: xhtml-blkphras-1.xsd,v 1.7 2008/07/05 04:11:00 ahby Exp $
        </xs:documentation>
         <xs:documentation source="xhtml-copyright-1.xsd"/>
     </xs:annotation>
@@ -66,7 +66,6 @@
     </xs:complexType>
     <!-- pre -->
     <xs:attributeGroup name="xhtml.pre.attlist">
-        <xs:attribute ref="xml:space"/>
         <xs:attributeGroup ref="xhtml.Common.attrib"/>
     </xs:attributeGroup>
     <xs:group name="xhtml.pre.content">

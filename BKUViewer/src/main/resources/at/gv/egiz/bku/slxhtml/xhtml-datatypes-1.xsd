@@ -14,7 +14,7 @@
           Defines containers for the XHTML datatypes, many of
           these imported from other specifications and standards.
           
-          $Id: xhtml-datatypes-1.xsd,v 1.9 2008/06/04 20:58:09 ahby Exp $
+          $Id: xhtml-datatypes-1.xsd,v 1.11 2008/10/07 16:57:03 ahby Exp $
         </xs:documentation>
         <xs:documentation source="xhtml-copyright-1.xsd"/>
         <xs:documentation source="http://www.w3.org/TR/2001/REC-xhtml-modularization-20010410/abstraction.html#s_common_attrtypes"/>
@@ -151,23 +151,25 @@
     </xs:simpleType>
     <!-- CURIE placeholder datatypes -->
     <xs:simpleType name="CURIE">
-		<xs:restriction base="xs:string">
-			<xs:pattern value="[\i-[:]][\c-[:]]*:.+" />
-		</xs:restriction>
-    </xs:simpleType>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="(([\i-[:]][\c-[:]]*)?:)?.+" />
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType> 
     <xs:simpleType name="CURIEs">
         <xs:list itemType="xh11d:CURIE"/>
     </xs:simpleType>
     <xs:simpleType name="SafeCURIE">
-		<xs:restriction base="xs:string">
-			<xs:pattern value="\[[\i-[:]][\c-[:]]*:.+\]" />
-		</xs:restriction>
+    <xs:restriction base="xs:string">
+        <xs:pattern value="\[(([\i-[:]][\c-[:]]*)?:)?.+\]" />
+        <xs:minLength value="3"/>
+    </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="SafeCURIEs">
         <xs:list itemType="xh11d:SafeCURIE"/>
     </xs:simpleType>
     <xs:simpleType name="URIorSafeCURIE">
-		<xs:union memberTypes="xs:anyURI xh11d:SafeCURIE" />
+        <xs:union memberTypes="xs:anyURI xh11d:SafeCURIE" />
     </xs:simpleType>
     <xs:simpleType name="URIorSafeCURIEs">
         <xs:list itemType="xh11d:URIorSafeCURIE"/>
