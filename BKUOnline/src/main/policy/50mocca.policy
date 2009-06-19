@@ -133,6 +133,7 @@ grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.
 };
 
 grant codeBase "file:/home/clemens/workspace/bku/BKUOnline/target/BKUOnline-1.1.2-SNAPSHOT/WEB-INF/lib/iaik_xsect-1.14.jar" {
+      permission java.io.FilePermission "/usr/share/java/xercesImpl.jar", "read";
       permission java.util.PropertyPermission "*", "read, write";
       permission java.security.SecurityPermission "insertProvider.IAIK";
       permission java.security.SecurityPermission "putProviderProperty.IAIK";
