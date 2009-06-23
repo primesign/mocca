@@ -31,8 +31,11 @@
 
 /*
  * Added by EGIZ:
- * This file contains a workaround to https://bugzilla.mozilla.org/show_bug.cgi?id=498132
- * (see lines 90-92)
+ * This file contains workarounds to
+ * [#423] Firefox 3.0.11 bug #498132 causes applet loading failure
+ *   (lines 95-99)
+ * [#424] Web Start loading via java plugin (Sun deployment script) fails on WinXP
+ *   (lines 501-506)
  */
 
 /*
@@ -89,6 +92,7 @@ var deployJava = {
         var list = new Array();
         if (deployJava.isPluginInstalled()) {
             var plugin =  deployJava.getPlugin();
+            //[#423] Firefox 3.0.11 bug #498132 causes applet loading failure
             var jvms = plugin.jvms;
             for (var i = 0; i < jvms.getLength(); i++) {
                 list[i] = jvms.get(i).version;
@@ -493,12 +497,13 @@ var deployJava = {
      * Launch a JNLP application, (using the plugin if available)
      */
     launch: function(jnlp) {
-        if (deployJava.isPluginInstalled()) {
-            return deployJava.getPlugin().launch(jnlp);
-        } else {
+      //[#424] Web Start loading via java plugin (Sun deployment script) fails on WinXP
+//        if (deployJava.isPluginInstalled()) {
+//            return deployJava.getPlugin().launch(jnlp);
+//        } else {
             document.location=jnlp;
             return true;
-        }
+//        }
     },
 
     
