@@ -152,11 +152,19 @@ public class BKULauncher implements BKUControllerInterface {
    */
   private boolean updateRequired(String oldVersion, String newVersion) {
     if (oldVersion != null) {
+      log.debug("comparing " + oldVersion + " to " + MIN_CONFIG_VERSION);
+      
       int majorEnd = oldVersion.indexOf('-');
-      if (majorEnd > 0) {
-        oldVersion = oldVersion.substring(0, majorEnd);
+      String oldMajor = (majorEnd < 0) ? oldVersion : oldVersion.substring(0, majorEnd);
+
+      int compare = oldMajor.compareTo(MIN_CONFIG_VERSION);
+      if (compare < 0 ||
+              // SNAPSHOT versions are pre-releases (update if release required)
+              (compare == 0 && oldVersion.startsWith("-SNAPSHOT", majorEnd))) {
+        return true;
+      } else {
+        return false;
       }
-      return (oldVersion.compareTo(MIN_CONFIG_VERSION) < 0);
     }
     log.debug("no old version, update required");
     return true;
