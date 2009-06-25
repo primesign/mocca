@@ -483,6 +483,11 @@ public class SWCard implements SignatureCard {
       public byte[] modifyPinDirect(byte[] PIN_MODIFY) throws CardException {
         throw new UnsupportedOperationException("Not supported yet.");
       }
+
+      @Override
+      public void setDisablePinpad(boolean disable) {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
     };
   }
 }

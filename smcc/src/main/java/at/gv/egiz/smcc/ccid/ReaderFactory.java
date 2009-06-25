@@ -17,8 +17,11 @@
 
 package at.gv.egiz.smcc.ccid;
 
+import at.gv.egiz.smcc.conf.SMCCConfiguration;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardTerminal;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  *
@@ -26,9 +29,33 @@ import javax.smartcardio.CardTerminal;
  */
 public class ReaderFactory {
 
-  public static CCID getReader(Card icc, CardTerminal ct) {
+  protected final static Log log = LogFactory.getLog(ReaderFactory.class);
+  
+  protected SMCCConfiguration configuration;
+  private static ReaderFactory instance;
+
+  private ReaderFactory() {
+  }
+  
+  public static ReaderFactory getInstance() {
+    if (instance == null) {
+      instance = new ReaderFactory();
+    }
+    return instance;
+  }
+  
+  /**
+   * @param configuration the configuration to set
+   */
+  public void setConfiguration(SMCCConfiguration configuration) {
+    this.configuration = configuration;
+  }
+
+  public CCID getReader(Card icc, CardTerminal ct) {
+    CCID reader;
     String name = ct.getName();
     if (name != null) {
+      log.info("creating reader " + name);
       name = name.toLowerCase();
       //ReinerSCT: http://support.reiner-sct.de/downloads/LINUX
       //           http://www.linux-club.de/viewtopic.php?f=61&t=101287&start=0
@@ -36,15 +63,26 @@ public class ReaderFactory {
       //new (CCID): 0C4B/0300 Reiner-SCT cyberJack pinpad(a) 00 00
       //display: REINER SCT CyberJack 00 00
       if(name.startsWith("gemplus gempc pinpad")) {
-        return new GemplusGemPCPinpad(icc, ct);
+        reader = new GemplusGemPCPinpad(icc, ct);
       } else if (name.startsWith("omnikey cardman 3621")) {
-        return new OMNIKEYCardMan3621(icc, ct);
+        reader = new OMNIKEYCardMan3621(icc, ct);
       } else if (name.startsWith("scm microsystems inc. sprx32 usb smart card reader")) {
-        return new SCMMicrosystemsSPRx32(icc, ct);
+        reader = new SCMMicrosystemsSPRx32(icc, ct);
       } else if (name.startsWith("cherry smartboard xx44")) {
-        return new CherrySmartBoardXX44(icc, ct);
+        reader = new CherrySmartBoardXX44(icc, ct);
+      } else {
+        log.info("no suitable implementation found, using default");
+        reader = new DefaultReader(icc, ct);
       }
+    } else {
+      reader = new DefaultReader(icc, ct);
     }
-    return new DefaultReader(icc, ct);
+
+    if (configuration != null) {
+      String disablePinpad = configuration.getProperty(SMCCConfiguration.DISABLE_PINPAD_P);
+      log.debug("setting disablePinpad to " + Boolean.parseBoolean(disablePinpad));
+      reader.setDisablePinpad(Boolean.parseBoolean(disablePinpad));
+    }
+    return reader;
   }
 }

@@ -455,7 +455,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
   @Override
   public void init(Card card, CardTerminal cardTerminal) {
     this.card_ = card;
-    this.reader = ReaderFactory.getReader(card, cardTerminal);
+    this.reader = ReaderFactory.getInstance().getReader(card, cardTerminal);
     ATR atr = card.getATR();
     byte[] atrBytes = atr.getBytes();
     if (atrBytes.length >= 6) {

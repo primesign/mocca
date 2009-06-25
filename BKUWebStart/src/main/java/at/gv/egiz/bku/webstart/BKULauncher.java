@@ -56,8 +56,8 @@ public class BKULauncher implements BKUControllerInterface {
   /** configurations with less than this (major) version will be backuped and updated */
   public static final String MIN_CONFIG_VERSION = "1.0.3";
   public static final String CONFIG_DIR = ".mocca/conf/";
-  public static final String CONF_TEMPLATE_FILE = "template.zip";
-  public static final String CONF_TEMPLATE_RESOURCE = "at/gv/egiz/bku/webstart/conf/template.zip";
+  public static final String CONF_TEMPLATE_FILE = "configuration.zip";
+  public static final String CONF_TEMPLATE_RESOURCE = "at/gv/egiz/bku/webstart/conf/configuration.zip";
   public static final String WEBAPP_RESOURCE = "BKULocal.war";
   public static final String WEBAPP_FILE = "BKULocal.war";
   public static final String KEYSTORE_FILE = "keystore.ks";

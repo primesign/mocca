@@ -62,6 +62,8 @@ public interface CCID {
 
   Card connect() throws CardException;
 
+  void setDisablePinpad(boolean disable);
+  
   boolean hasFeature(Byte feature);
 
   /**

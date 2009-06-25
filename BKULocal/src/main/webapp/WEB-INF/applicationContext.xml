@@ -98,6 +98,11 @@
     <property name="resource" value="file:${user.home}/.mocca/conf/defaultConf.properties"/>
     <property name="certValidator" ref="certValidator"></property>
   </bean>
- 
- 
+
+  <!-- Begin MOCCA Configuration [REFACTORED]
+   |   Configuration beans (no conf properties file) should be injected directly to module configurators.
+   |   Currently, only the ReaderFactory configuration is considered.
+   |-->
+  <import resource="file:${user.home}/.mocca/conf/mocca-conf.xml"/>
+
 </beans>

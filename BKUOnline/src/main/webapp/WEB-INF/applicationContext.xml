@@ -103,4 +103,11 @@
 	<bean id="shutdown" class="at.gv.egiz.bku.online.webapp.ShutdownHandler">
 		<property name="bindingProcessorManager" ref="bindingProcessorManager"></property>
 	</bean>
+
+  <!-- Begin MOCCA Configuration [REFACTORED]
+   |   Configuration beans (no conf properties file) should be injected directly to module configurators.
+   |   Currently, only the ReaderFactory configuration is considered.
+   |-->
+  <import resource="mocca-conf.xml"/>
+
 </beans>

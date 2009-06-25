@@ -55,6 +55,7 @@ public class DefaultReader implements CCID {
 
   protected Card icc;
   protected CardTerminal ct;
+  protected boolean disablePinpad = false;
 
   /**
    * supported features and respective control codes
@@ -78,6 +79,11 @@ public class DefaultReader implements CCID {
     log.debug("setting max pin length: " + getwPINMaxExtraDigitL());
   }
 
+  @Override
+  public void setDisablePinpad(boolean disable) {
+    disablePinpad = disable;
+  }
+  
   /**
    *
    * @return the card terminals name
@@ -137,7 +143,7 @@ public class DefaultReader implements CCID {
 
   @Override
   public boolean hasFeature(Byte feature) {
-    if (features != null) {
+    if (features != null && !disablePinpad) {
       return features.containsKey(feature);
     }
     return false;

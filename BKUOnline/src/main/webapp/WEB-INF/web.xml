@@ -111,7 +111,7 @@
 	<!--  End STAL Config -->
 
   <!-- Begin BKU Web Start Config 
-   |   (activate 'include-webstart' profile) 
+   |   (activate 'include-webstart' profile)
   <servlet>
     <servlet-name>JnlpDownloadServlet</servlet-name>
     <servlet-class>jnlp.sample.servlet.JnlpDownloadServlet</servlet-class>
