@@ -25,20 +25,33 @@
     <body>
         <div id="animDiv" class="box">
             <p>
-                <h1>SL Request</h1>
-                <a href="SLRequestForm.html">Security Layer Request</a>
-                <h1>PIN Management</h1>
-                <a href="PINManagement.jsp">PIN Management Applet</a>
-                <h1>STAL Service</h1>
-                <a href="stal">STAL Service Endpoint</a>
-                <!-- MOCCA Web Start 
-                 |   (activate 'include-webstart' profile) -->
-                <h1>MOCCA Web Start</h1>
-                <script>
-                    var url="webstart/mocca.jnlp"
-                    deployJava.createWebStartLaunchButton(url, "1.6")
-                </script>
+                <h1>MOCCA Online</h1>
+                <p>
+                <a href="SLRequestForm.html">Security Layer Request</a> (demo request form)
+                </p>
+                <p>
+                <a href="PINManagement.jsp">PIN Management</a> (pin management applet)
+                </p>
+                <p>
+                <a href="stal">STAL Service</a> (web service endpoint)
+                </p>
             </p>
         </div>
+
+        <!-- MOCCA Web Start
+         |   (activate 'include-webstart' profile) 
+        <div id="animDiv" class="box">
+          <p>
+              <h1>MOCCA Web Start</h1>
+              <p>
+              <script>
+                  var url="webstart/mocca.jnlp"
+                  deployJava.createWebStartLaunchButton(url, "1.6")
+              </script></p>
+              <p><a href="webstart/mocca.jnlp">MOCCA JNLP File</a> (requires MIME-type association)</p>
+              <p><a href="webstart/player.jnlp">Java Cache Viewer</a> (local installation)</p>
+          </p>
+        </div>
+         |-->
     </body>
 </html>
