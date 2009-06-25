@@ -52,7 +52,29 @@ public class SLXHTMLValidator implements at.gv.egiz.bku.viewer.Validator {
    * The schema file for the SLXHTML schema.
    */
   private static final String SLXHTML_SCHEMA_FILE = "at/gv/egiz/bku/slxhtml/slxhtml.xsd";
-  
+//    public static final String[] SLXHTML_SCHEMA_FILES = new String[]{
+//      "at/gv/egiz/bku/slxhtml/slxhtml.xsd",
+//      "at/gv/egiz/bku/slxhtml/slxhtml-model-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/slxhtml-modules-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xhtml-attribs-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xhtml-blkphras-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xhtml-blkpres-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xhtml-blkstruct-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xhtml-datatypes-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xhtml-framework-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xhtml-image-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xhtml-inlphras-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xhtml-inlpres-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xhtml-inlstruct-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xhtml-list-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xhtml-pres-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xhtml-struct-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xhtml-style-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xhtml-table-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xhtml-text-1.xsd",
+//      "at/gv/egiz/bku/slxhtml/xml.xsd"
+//    };
+
   /**
    * Logging facility.
    */

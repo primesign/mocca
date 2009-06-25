@@ -29,7 +29,7 @@ import at.gv.egiz.bku.viewer.ValidationException;
 import at.gv.egiz.bku.viewer.Validator;
 import at.gv.egiz.bku.viewer.ValidatorFactory;
 
-@Ignore
+//@Ignore
 public class ValidatorTest {
   
   private static Log log = LogFactory.getLog(ValidatorTest.class);
@@ -46,7 +46,7 @@ public class ValidatorTest {
   @Test
   public void testValidate() throws ValidationException {
     
-    String slxhtmlFile = "at/gv/egiz/bku/slxhtml/test.xhtml";
+    String slxhtmlFile = "at/gv/egiz/bku/slxhtml/zugang.xhtml";
     
     Validator validator = ValidatorFactory.newValidator("application/xhtml+xml");
 
