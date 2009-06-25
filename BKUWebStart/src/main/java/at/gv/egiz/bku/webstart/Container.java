@@ -35,6 +35,7 @@ public class Container {
   }
 
   public void init() throws IOException {
+//    System.setProperty("DEBUG", "true");
     server = new Server();
     QueuedThreadPool qtp = new QueuedThreadPool();
     qtp.setMaxThreads(5);
@@ -55,7 +56,13 @@ public class Container {
     sslConnector.setAcceptors(1);
     sslConnector.setHost("127.0.0.1");
     File configDir = new File(System.getProperty("user.home") + "/" + BKULauncher.CONFIG_DIR);
-    sslConnector.setKeystore(configDir.getPath() + "/" + BKULauncher.KEYSTORE_FILE);
+    File keystoreFile = new File(configDir, BKULauncher.KEYSTORE_FILE);
+    if (!keystoreFile.canRead()) {
+      log.error("MOCCA keystore file not readable: " + keystoreFile.getAbsolutePath());
+      throw new FileNotFoundException("MOCCA keystore file not readable: " + keystoreFile.getAbsolutePath());
+    }
+    log.debug("loading MOCCA keystore from " + keystoreFile.getAbsolutePath());
+    sslConnector.setKeystore(keystoreFile.getAbsolutePath());
     File passwdFile = new File(configDir, BKULauncher.PASSWD_FILE);
     BufferedReader reader = new BufferedReader(new FileReader(passwdFile));
     String pwd;
@@ -64,6 +71,42 @@ public class Container {
       sslConnector.setKeyPassword(pwd);
     }
     reader.close();
+    
+    //avoid jetty's ClassCastException: iaik.security.ecc.ecdsa.ECPublicKey cannot be cast to java.security.interfaces.ECPublicKey
+    String[] RFC4492CipherSuites = new String[] {
+      "TLS_ECDH_ECDSA_WITH_NULL_SHA",
+     "TLS_ECDH_ECDSA_WITH_RC4_128_SHA",
+     "TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA",
+     "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA",
+     "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA",
+
+     "TLS_ECDHE_ECDSA_WITH_NULL_SHA",
+     "TLS_ECDHE_ECDSA_WITH_RC4_128_SHA",
+     "TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA",
+     "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
+     "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
+
+     "TLS_ECDH_RSA_WITH_NULL_SHA",
+     "TLS_ECDH_RSA_WITH_RC4_128_SHA",
+     "TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA",
+     "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA",
+     "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA",
+
+     "TLS_ECDHE_RSA_WITH_NULL_SHA",
+     "TLS_ECDHE_RSA_WITH_RC4_128_SHA",
+     "TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
+     "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+     "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
+
+     "TLS_ECDH_anon_WITH_NULL_SHA",
+     "TLS_ECDH_anon_WITH_RC4_128_SHA",
+     "TLS_ECDH_anon_WITH_3DES_EDE_CBC_SHA",
+     "TLS_ECDH_anon_WITH_AES_128_CBC_SHA",
+     "TLS_ECDH_anon_WITH_AES_256_CBC_SHA"
+    };
+
+    sslConnector.setExcludeCipherSuites(RFC4492CipherSuites);
+
 
     server.setConnectors(new Connector[] { connector, sslConnector });
     
@@ -71,7 +114,7 @@ public class Container {
     webapp.setLogUrlOnStart(true);
     webapp.setContextPath("/");
     webapp.setExtractWAR(true); 
-    webapp.setParentLoaderPriority(false); //true);
+    webapp.setParentLoaderPriority(false);
 
     webapp.setWar(copyWebapp(webapp.getTempDirectory())); //getClass().getClassLoader().getResource("BKULocalWar/").toString());
 

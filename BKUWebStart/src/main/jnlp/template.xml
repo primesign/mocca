@@ -5,11 +5,12 @@
 <jnlp spec="$jnlpspec" codebase="$$codebase" context="$$context" href="$$name">
 
   <information>
-    <title>$project.Name EarlyAccess</title>
+    <!--title>$project.Name</title-->
+    <title>$project.Description</title>
     <vendor>$project.Organization.Name</vendor>
     <homepage href="$project.Url"/>
-    <description>$project.Description EarlyAccess</description>
-    <description kind="short">$project.Description EarlyAccess</description>
+    <description>$project.Description</description>
+    <description kind="short">$project.Description</description>
     <icon href="img/logo.png" kind="default" version="1.0-SNAPSHOT"/>
     <icon href="img/splash.png" kind="splash" version="1.0-SNAPSHOT"/>
     <shortcut online="false">

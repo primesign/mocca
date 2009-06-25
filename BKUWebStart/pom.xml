@@ -205,6 +205,12 @@
       <artifactId>utils</artifactId>
       <groupId>at.gv.egiz</groupId>
       <version>1.1.2-SNAPSHOT</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>iaik_ecc_signed</artifactId>
+          <groupId>iaik</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>

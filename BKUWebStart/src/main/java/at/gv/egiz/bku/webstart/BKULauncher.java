@@ -41,6 +41,7 @@ import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.net.BindException;
 import java.net.URI;
 import java.net.URL;
 import java.security.GeneralSecurityException;
@@ -48,6 +49,7 @@ import java.util.UUID;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.zip.ZipOutputStream;
+import org.mortbay.util.MultiException;
 
 public class BKULauncher implements BKUControllerInterface {
 
@@ -65,7 +67,11 @@ public class BKULauncher implements BKUControllerInterface {
   public static final String GREETING_CAPTION = "Greetings.Caption";
   public static final String GREETING_MESSAGE = "Greetings.Message";
   public static final String STARTUP_CAPTION = "Startup.Caption";
+  public static final String ERROR_CAPTION = "Error.Caption";
   public static final String STARTUP_MESSAGE = "Startup.Message";
+  public static final String ERROR_STARTUP_MESSAGE = "Error.Startup.Message";
+  public static final String ERROR_CONF_MESSAGE = "Error.Conf.Message";
+  public static final String ERROR_BIND_MESSAGE = "Error.Bind.Message";
   public static final String VERSION_FILE = ".version";
   private static Log log = LogFactory.getLog(BKULauncher.class);
   private ResourceBundle resourceBundle = null;
@@ -222,8 +228,8 @@ public class BKULauncher implements BKUControllerInterface {
 //        }
 //      }
 
-      log.debug("trying install MOCCA certificate on system browser");
       if (installCert) {
+        log.debug("trying install MOCCA certificate on system browser");
         if (Desktop.isDesktopSupported()) {
           Desktop desktop = Desktop.getDesktop();
           if (desktop.isSupported(Desktop.Action.BROWSE)) {
@@ -270,26 +276,60 @@ public class BKULauncher implements BKUControllerInterface {
   /**
    * @param args
    */
-  public static void main(String[] args) {
-    try {
-      log.warn("***** DISABLING SECURITY MANAGER *******");
+  public static void main(String[] args) throws InterruptedException {
+
+    if (log.isDebugEnabled()) {
+      //System.setProperty("DEBUG", "true");
+      System.setProperty("VERBOSE", "true");
+      System.setProperty("javax.net.debug", "ssl,handshake");
+    }
+    
+//      log.warn("***** DISABLING SECURITY MANAGER *******");
       System.setSecurityManager(null);
+
       BKULauncher launcher = new BKULauncher();
       launcher.initStart();
 
-      File configDir = new File(System.getProperty("user.home") + '/' + CONFIG_DIR);
-      boolean installCert = launcher.ensureConfig(configDir);
+      boolean installCert = false;
+
       launcher.initTrayIcon();
       TrayIconDialog.getInstance().displayInfo(STARTUP_CAPTION, STARTUP_MESSAGE);
-      launcher.startUpServer();
-      TrayIconDialog.getInstance().displayInfo(GREETING_CAPTION, GREETING_MESSAGE);
 
-//      launcher.initTrayIcon();
-      launcher.initFinished(installCert);
-    } catch (Exception e) {
-      log.fatal("Failed to launch BKU: " + e.getMessage(), e);
-      System.exit(-1000);
-    }
+      try {
+        File configDir = new File(System.getProperty("user.home") + '/' + CONFIG_DIR);
+        installCert = launcher.ensureConfig(configDir);
+      } catch (Exception ex) {
+        log.fatal("Failed to init MOCCA configuration, exiting", ex);
+        TrayIconDialog.getInstance().displayError(ERROR_CAPTION, ERROR_CONF_MESSAGE);
+        Thread.sleep(5000);
+        System.exit(-1000);
+      }
+
+      try {
+        launcher.startUpServer();
+        TrayIconDialog.getInstance().displayInfo(GREETING_CAPTION, GREETING_MESSAGE);
+        launcher.initFinished(installCert);
+      } catch (BindException ex) {
+        log.fatal("Failed to launch MOCCA, " + ex.getMessage(), ex);
+        TrayIconDialog.getInstance().displayError(ERROR_CAPTION, ERROR_BIND_MESSAGE);
+        Thread.sleep(5000);
+        System.exit(-1000);
+      } catch (MultiException ex) {
+        log.fatal("Failed to launch MOCCA, " + ex.getMessage(), ex);
+        if (ex.getThrowable(0) instanceof BindException) {
+          TrayIconDialog.getInstance().displayError(ERROR_CAPTION, ERROR_BIND_MESSAGE);
+        } else {
+          TrayIconDialog.getInstance().displayError(ERROR_CAPTION, ERROR_STARTUP_MESSAGE);
+        }
+        Thread.sleep(5000);
+        System.exit(-1000);
+      } catch (Exception e) {
+        log.fatal("Failed to launch MOCCA, " + e.getMessage(), e);
+        TrayIconDialog.getInstance().displayError(ERROR_CAPTION, ERROR_STARTUP_MESSAGE);
+        Thread.sleep(5000);
+        System.exit(-1000);
+      }
+    
   }
 
   private void backupAndDelete(File dir, URI relativeTo, ZipOutputStream zip) throws IOException {
