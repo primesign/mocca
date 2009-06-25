@@ -91,7 +91,7 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 	 * Defines the maximum number of dataurl connects that are allowed within a
 	 * single SL Request processing.
 	 */
-	protected static int MAX_DATAURL_HOPS = 50;
+	protected static int MAX_DATAURL_HOPS = 80;
 
 	protected static String XML_MIME_TYPE = "text/xml";
 	protected static String BINARY_MIME_TYPE = "application/octet-stream";
