@@ -66,6 +66,7 @@ public interface PINManagementGUIFacade extends BKUGUIFacade {
   public static final String ERR_PIN_FORMAT = "err.pin.format";
   public static final String ERR_PIN_CONFIRMATION = "err.pin.confirmation";
   public static final String ERR_PIN_OPERATION_ABORTED = "err.pin.operation.aborted";
+  public static final String ERR_UNSUPPORTED_CARD = "err.unsupported.card";
 
   public static final String BUTTON_ACTIVATE = "button.activate";
   public static final String BUTTON_UNBLOCK = "button.unblock";
