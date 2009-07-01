@@ -2,19 +2,19 @@
 	<parent>
 		<artifactId>bku</artifactId>
 		<groupId>at.gv.egiz</groupId>
-		<version>1.2.0</version>
+		<version>1.2.1-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>BKUViewer</artifactId>
 	<name>BKU viewer components</name>
-	<version>1.2.0</version>
+	<version>1.2.1-SNAPSHOT</version>
 	<description />
 	<dependencies>
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>bkucommon</artifactId>
-			<version>1.2.0</version>
+			<version>1.2.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
