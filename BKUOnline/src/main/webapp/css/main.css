@@ -24,6 +24,13 @@ h1 {
     font-size: 16px;
 }
 
+.disabled {
+  /* for IE */
+  filter:alpha(opacity=60);
+  /* CSS3 standard */
+  opacity:0.4;
+}
+
 .box {
     margin-top: 10px;
     color: #292929;

@@ -215,6 +215,8 @@
             </build>
         </profile>
         <profile>
+          <!-- make sure this profile is active when building entire BKU,
+           |   in order to account for BKUWebStart dependency in reactor build order -->
           <id>include-webstart</id>
           <build>
             <plugins>
@@ -235,7 +237,6 @@
                               <artifactItem>
                                   <groupId>at.gv.egiz</groupId>
                                   <artifactId>BKUWebStart</artifactId>
-                                  <version>1.0.3-SNAPSHOT</version>
                                   <type>zip</type>
                               </artifactItem>
                           </artifactItems>
@@ -253,6 +254,16 @@
               <groupId>com.sun.java.jnlp</groupId>
               <artifactId>jnlp-servlet</artifactId>
               <version>1.6.0.10</version>
+            </dependency>
+            <!-- dependency to ensure BKUWebStart is build prior to BKUOnline;
+             |   transitive dependencies shall not be included in WEB-INF/lib
+             |   and are provided in the BKUWebStart zip -->
+            <dependency>
+              <groupId>at.gv.egiz</groupId>
+              <artifactId>BKUWebStart</artifactId>
+              <version>1.0.4-SNAPSHOT</version>
+              <scope>provided</scope>
+              <type>zip</type>
             </dependency>
           </dependencies>
           

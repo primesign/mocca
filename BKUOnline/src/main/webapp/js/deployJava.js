@@ -36,6 +36,11 @@
  *   (lines 95-99)
  * [#424] Web Start loading via java plugin (Sun deployment script) fails on WinXP
  *   (lines 501-506)
+ *
+ * features:
+ * [#425] Disable WebStart Launch Button for MacOS
+ *   (lines 492-504)
+ *
  */
 
 /*
@@ -75,8 +80,7 @@ var deployJava = {
     mimeType: 'application/npruntime-scriptable-plugin;DeploymentToolkit',
 
     // location of the Java Web Start launch button graphic
-    launchButtonPNG: 'http://java.sun.com/products/jfc/tsc/articles/swing2d/webstart.png',
-
+    launchButtonPNG: 'img/webstart.png',
 
     /**
      * Returns an array of currently-installed JRE version strings.  
@@ -485,11 +489,20 @@ var deployJava = {
                       'if (deployJava.launch(&quot;' + jnlp + '&quot;)) {}' +
                   '}';
 
-        document.write('<' + 'a href="' + url + 
+        // [#425] Disable WebStart Launch Button for MacOS
+        if (navigator.appVersion.toLowerCase().indexOf("mac")!=-1) {
+          document.write('<' + 'a disabled="disabled"' +
+                       ' onMouseOver="window.status=\'\'; ' +
+                       'return true;"><' + 'img class="disabled"' +
+                       'src="' + deployJava.launchButtonPNG + '" ' +
+                       'border="0" /><' + '/' + 'a' + '>');
+        } else {
+          document.write('<' + 'a href="' + url +
                        '" onMouseOver="window.status=\'\'; ' +
                        'return true;"><' + 'img ' +
-                       'src="' + deployJava.launchButtonPNG + '" ' + 
+                       'src="' + deployJava.launchButtonPNG + '" ' +
                        'border="0" /><' + '/' + 'a' + '>');
+        }
     },
 
 
@@ -636,7 +649,7 @@ var deployJava = {
         if (deployJava.debug) {
             alert('userAgent -> ' + browser);
         }
-    
+
         if ((navigator.vendor) && 
             (navigator.vendor.toLowerCase().indexOf('apple') != -1) &&
             (browser.indexOf('safari') != -1)) {
