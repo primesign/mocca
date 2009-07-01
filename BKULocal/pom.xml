@@ -2,19 +2,19 @@
 	<parent>
 		<artifactId>bku</artifactId>
 		<groupId>at.gv.egiz</groupId>
-		<version>1.1.2-SNAPSHOT</version>
+		<version>1.2.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>BKULocal</artifactId>
 	<packaging>war</packaging>
 	<name>BKU Local</name>
-	<version>1.0.5-SNAPSHOT</version>
+	<version>1.0.5</version>
 
 	<scm>
-		<developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKULocal</developerConnection>
-		<connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKULocal</connection>
-		<url>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKULocal</url>
+		<developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.0/BKULocal</developerConnection>
+		<connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.0/BKULocal</connection>
+		<url>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.0/BKULocal</url>
 	</scm>
   <build>
     <plugins>
@@ -56,22 +56,22 @@
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>STAL</artifactId>
-			<version>1.1.2-SNAPSHOT</version>
+			<version>1.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>bkucommon</artifactId>
-			<version>1.1.2-SNAPSHOT</version>
+			<version>1.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>smcc</artifactId>
-			<version>1.1.2-SNAPSHOT</version>
+			<version>1.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>smccSTAL</artifactId>
-			<version>1.1.2-SNAPSHOT</version>
+			<version>1.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -96,12 +96,12 @@
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>BKUApplet</artifactId>
-			<version>1.1.2-SNAPSHOT</version>
+			<version>1.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>BKUViewer</artifactId>
-			<version>1.1.2-SNAPSHOT</version>
+			<version>1.2.0</version>
 		</dependency>
 	</dependencies>
 
