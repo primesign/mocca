@@ -25,6 +25,8 @@ import java.util.Properties;
  */
 public class SMCCConfiguration extends Properties {
 
+  private static final long serialVersionUID = 1L;
+
   public static final String DISABLE_PINPAD_P = "disable.pinpad";
 
   public void setDisablePinpad(String value) {

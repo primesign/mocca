@@ -14,9 +14,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
 package at.gv.egiz.smcc;
 
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
@@ -31,7 +31,7 @@ public class PINSpec {
     
     String rexepPattern_;
     
-    ResourceBundle resourceBundle_;
+    String resourceBundleName_;
     
     String name_;
 
@@ -49,17 +49,17 @@ public class PINSpec {
      * @param kid the keyId for this pin
      */
     public PINSpec(int minLenght, int maxLength, String rexepPattern, 
-        ResourceBundle resourceBundle, String name, byte kid, byte[] contextAID) {
+        String resourceBundleName, String name, byte kid, byte[] contextAID) {
         
         minLength_ = minLenght;
         maxLength_ = maxLength;
         rexepPattern_ = rexepPattern;
-        resourceBundle_ = resourceBundle;
+        resourceBundleName_ = resourceBundleName;
         name_ = name;
         kid_ = kid;
         context_aid_ = contextAID;
     }
-    
+
     public PINSpec(int minLenght, int maxLength, String rexepPattern, 
         String name, byte kid, byte[] contextAID) {
         
@@ -71,14 +71,26 @@ public class PINSpec {
         context_aid_ = contextAID;
     }
     
-    
-    
     public String getLocalizedName() {
+      
+      if (resourceBundleName_ != null) {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle(resourceBundleName_);
+        return resourceBundle.getString(name_);
+      } else {
+        return name_;
+      }
         
-        return (resourceBundle_ != null) 
-            ? resourceBundle_.getString(name_)
-            : name_;
-        
+    }
+    
+    public String getLocalizedName(Locale locale) {
+      
+      if (resourceBundleName_ != null) {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle(resourceBundleName_, locale);
+        return resourceBundle.getString(name_);
+      } else {
+        return name_;
+      }
+      
     }
 
     public int getMaxLength() {

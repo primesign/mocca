@@ -16,9 +16,20 @@
  */
 package at.gv.egiz.smcc.ccid;
 
-import at.gv.egiz.smcc.*;
 import javax.smartcardio.Card;
+import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
+import javax.smartcardio.ResponseAPDU;
+
+import at.gv.egiz.smcc.CancelledException;
+import at.gv.egiz.smcc.ChangePINProvider;
+import at.gv.egiz.smcc.ChangeReferenceDataAPDUSpec;
+import at.gv.egiz.smcc.NewReferenceDataAPDUSpec;
+import at.gv.egiz.smcc.PINOperationAbortedException;
+import at.gv.egiz.smcc.PINProvider;
+import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.SignatureCardException;
+import at.gv.egiz.smcc.VerifyAPDUSpec;
 
 /**
  *
@@ -66,6 +77,16 @@ public interface CCID {
   
   boolean hasFeature(Byte feature);
 
+  ResponseAPDU verify(CardChannel channel, VerifyAPDUSpec apduSpec,
+      PINSpec pinSpec, PINProvider provider, int retries)
+      throws CancelledException, InterruptedException, CardException,
+      SignatureCardException;
+
+  ResponseAPDU modify(CardChannel channel,
+      ChangeReferenceDataAPDUSpec apduSpec, PINSpec pinSpec,
+      ChangePINProvider provider, int retries) throws CancelledException,
+      InterruptedException, CardException, SignatureCardException;
+  
   /**
    * not supported by OMNIKEY CardMan 3621 with ACOS card
    * @param PIN_VERIFY
@@ -107,4 +128,9 @@ public interface CCID {
   byte getwPINMaxExtraDigitL();
   byte getwPINMaxExtraDigitH();
   byte getbEntryValidationCondition();
+
+  ResponseAPDU activate(CardChannel channel, NewReferenceDataAPDUSpec apduSpec,
+      PINSpec pinSpec, PINProvider provider)
+      throws CancelledException, InterruptedException, CardException,
+      SignatureCardException;
 }

@@ -16,41 +16,32 @@
  */
 package at.gv.egiz.bku.smccstal.ext;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.PINManagementGUIFacade;
-import at.gv.egiz.bku.gui.PINManagementGUIFacade.DIALOG;
 import at.gv.egiz.bku.gui.PINManagementGUIFacade.STATUS;
 import at.gv.egiz.bku.smccstal.AbstractRequestHandler;
-import at.gv.egiz.bku.smccstal.PINProviderFactory;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.LockedException;
 import at.gv.egiz.smcc.NotActivatedException;
 import at.gv.egiz.smcc.PINConfirmationException;
 import at.gv.egiz.smcc.PINFormatException;
+import at.gv.egiz.smcc.PINMgmtSignatureCard;
 import at.gv.egiz.smcc.PINOperationAbortedException;
-import at.gv.egiz.smcc.PINProvider;
 import at.gv.egiz.smcc.PINSpec;
-import at.gv.egiz.smcc.STARCOSCard;
-import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.TimeoutException;
-import at.gv.egiz.smcc.VerificationFailedException;
-import at.gv.egiz.smcc.util.SMCCHelper;
+import at.gv.egiz.smcc.PINMgmtSignatureCard.PIN_STATE;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.ext.PINManagementRequest;
 import at.gv.egiz.stal.ext.PINManagementResponse;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.smartcardio.Card;
-import javax.smartcardio.CardChannel;
-import javax.smartcardio.CardException;
-import javax.smartcardio.CommandAPDU;
-import javax.smartcardio.ResponseAPDU;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  *
@@ -60,23 +51,36 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
 
   protected static final Log log = LogFactory.getLog(PINManagementRequestHandler.class);
 
-  protected Map<PINSpec, STATUS> pinStatuses;
+  protected Map<PINSpec, STATUS> pinStates = new HashMap<PINSpec, STATUS>();
 
   @Override
   public STALResponse handleRequest(STALRequest request) throws InterruptedException {
     if (request instanceof PINManagementRequest) {
 
-      PINManagementGUIFacade gui = (PINManagementGUIFacade) this.gui;
-
-      PINSpec selectedPIN = null;
-
-      try {
-
-      pinStatuses = getPINStatuses();
+    PINManagementGUIFacade gui = (PINManagementGUIFacade) this.gui;
       
-      gui.showPINManagementDialog(pinStatuses,
-              this, "activate_enterpin", "change_enterpin", "unblock_enterpuk", "verify_enterpin",
-              this, "cancel");
+    PINSpec selectedPIN = null;
+
+    try {
+
+      if (card instanceof PINMgmtSignatureCard) {
+
+        // update all PIN states
+        for (PINSpec pinSpec : ((PINMgmtSignatureCard) card).getPINSpecs()) {
+          updatePINState(pinSpec, STATUS.UNKNOWN);
+        }
+        
+        gui.showPINManagementDialog(pinStates, this, "activate_enterpin",
+              "change_enterpin", "unblock_enterpuk", "verify_enterpin", this,
+              "cancel");
+        
+      } else {
+        
+        // card does not support PIN management
+        gui.showErrorDialog(PINManagementGUIFacade.ERR_UNSUPPORTED_CARD,
+              null, this, "cancel");
+        
+      }
 
       while (true) {
 
@@ -97,9 +101,9 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
           try {
             if ("activate_enterpin".equals(actionCommand)) {
               log.info("activate " + selectedPIN.getLocalizedName());
-              card.activatePIN(selectedPIN,
+              ((PINMgmtSignatureCard) card).activatePIN(selectedPIN,
                       ppfac.getActivatePINProvider());
-              updatePINStatus(selectedPIN, STATUS.ACTIV);
+              updatePINState(selectedPIN, STATUS.ACTIV);
               gui.showMessageDialog(PINManagementGUIFacade.TITLE_ACTIVATE_SUCCESS,
                       PINManagementGUIFacade.MESSAGE_ACTIVATE_SUCCESS,
                       new Object[] {selectedPIN.getLocalizedName()},
@@ -107,9 +111,9 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
               waitForAction();
             } else if ("change_enterpin".equals(actionCommand)) {
               log.info("change " + selectedPIN.getLocalizedName());
-              card.changePIN(selectedPIN, 
+              ((PINMgmtSignatureCard) card).changePIN(selectedPIN, 
                       ppfac.getChangePINProvider());
-              updatePINStatus(selectedPIN, STATUS.ACTIV);
+              updatePINState(selectedPIN, STATUS.ACTIV);
               gui.showMessageDialog(PINManagementGUIFacade.TITLE_CHANGE_SUCCESS,
                       PINManagementGUIFacade.MESSAGE_CHANGE_SUCCESS,
                       new Object[] {selectedPIN.getLocalizedName()},
@@ -118,13 +122,13 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
 
             } else if ("unblock_enterpuk".equals(actionCommand)) {
               log.info("unblock " + selectedPIN.getLocalizedName());
-              card.unblockPIN(selectedPIN,
+              ((PINMgmtSignatureCard) card).unblockPIN(selectedPIN,
                       ppfac.getUnblockPINProvider());
             } else if ("verify_enterpin".equals(actionCommand)) {
               log.info("verify " + selectedPIN.getLocalizedName());
-              card.verifyPIN(selectedPIN,
+              ((PINMgmtSignatureCard) card).verifyPIN(selectedPIN,
                       ppfac.getVerifyPINProvider());
-              updatePINStatus(selectedPIN, STATUS.ACTIV);
+              updatePINState(selectedPIN, STATUS.ACTIV);
             }
           } catch (CancelledException ex) {
             log.trace("cancelled");
@@ -137,14 +141,14 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
             waitForAction();
           } catch (LockedException ex) {
             log.error(selectedPIN.getLocalizedName() + " locked");
-            updatePINStatus(selectedPIN, STATUS.BLOCKED);
+            updatePINState(selectedPIN, STATUS.BLOCKED);
             gui.showErrorDialog(PINManagementGUIFacade.ERR_LOCKED,
                     new Object[] {selectedPIN.getLocalizedName()},
                     this, null);
             waitForAction();
           } catch (NotActivatedException ex) {
             log.error(selectedPIN.getLocalizedName() + " not active");
-            updatePINStatus(selectedPIN, STATUS.NOT_ACTIV);
+            updatePINState(selectedPIN, STATUS.NOT_ACTIV);
             gui.showErrorDialog(PINManagementGUIFacade.ERR_NOT_ACTIVE,
                     new Object[] {selectedPIN.getLocalizedName()},
                     this, null);
@@ -176,7 +180,7 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
         } // end if
 
         selectedPIN = null;
-        gui.showPINManagementDialog(pinStatuses,
+        gui.showPINManagementDialog(pinStates,
                 this, "activate_enterpin", "change_enterpin", "unblock_enterpuk", "verify_enterpin",
                 this, "cancel");
       } // end while
@@ -206,70 +210,6 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
     return true;
   }
 
-  private Map<PINSpec, STATUS> getPINStatuses() throws GetPINStatusException {
-    HashMap<PINSpec, STATUS> pinStatuses = new HashMap<PINSpec, STATUS>();
-    List<PINSpec> pins = card.getPINSpecs();
-
-    if (card instanceof STARCOSCard) {
-      Card icc = card.getCard();
-      try {
-        icc.beginExclusive();
-        CardChannel channel = icc.getBasicChannel();
-
-        for (PINSpec pinSpec : pins) {
-          byte kid = pinSpec.getKID();
-          byte[] contextAID = pinSpec.getContextAID();
-
-          if (contextAID != null) {
-            CommandAPDU selectAPDU = new CommandAPDU(0x00, 0xa4, 0x04, 0x0c, contextAID);
-            ResponseAPDU responseAPDU = channel.transmit(selectAPDU);
-            if (responseAPDU.getSW() != 0x9000) {
-              icc.endExclusive();
-              String msg = "Select AID " + SMCCHelper.toString(pinSpec.getContextAID()) +
-                  ": SW=" + Integer.toHexString(responseAPDU.getSW());
-              log.error(msg);
-              throw new GetPINStatusException(msg);
-            }
-          }
-
-          CommandAPDU verifyAPDU = new CommandAPDU(new byte[] {
-            (byte) 0x00, (byte) 0x20, (byte) 00, kid });
-          ResponseAPDU responseAPDU = channel.transmit(verifyAPDU);
-
-          STATUS status = STATUS.UNKNOWN;
-          if (responseAPDU.getSW() == 0x6984) {
-            status = STATUS.NOT_ACTIV;
-          } else if (responseAPDU.getSW() == 0x63c0) {
-            status = STATUS.BLOCKED;
-          } else if (responseAPDU.getSW1() == 0x63) {
-            status = STATUS.ACTIV;
-          }
-          if (log.isDebugEnabled()) {
-            log.debug("PIN " + pinSpec.getLocalizedName() +
-                    " status: " + SMCCHelper.toString(responseAPDU.getBytes()));
-          }
-          pinStatuses.put(pinSpec, status);
-        }
-        return pinStatuses;
-
-      } catch (CardException ex) {
-        log.error("Failed to get PIN status: " + ex.getMessage(), ex);
-        throw new GetPINStatusException(ex.getMessage());
-      } finally {
-        try {
-          icc.endExclusive();
-        } catch (CardException ex) {
-          log.trace("failed to end exclusive card access: " + ex.getMessage());
-        }
-      }
-    } else {
-      for (PINSpec pinSpec : pins) {
-        pinStatuses.put(pinSpec, STATUS.UNKNOWN);
-      }
-    }
-    return pinStatuses;
-  }
-
   /**
    * query status for STARCOS card,
    * assume provided status for ACOS card
@@ -277,154 +217,28 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
    * @param status
    * @throws at.gv.egiz.smcc.SignatureCardException if query status fails
    */
-  private void updatePINStatus(PINSpec pinSpec, STATUS status) throws GetPINStatusException {
-    if (card instanceof STARCOSCard) {
-      Card icc = card.getCard();
-      try {
-        icc.beginExclusive();
-        CardChannel channel = icc.getBasicChannel();
+  private void updatePINState(PINSpec pinSpec, STATUS status)
+      throws GetPINStatusException {
 
-          byte kid = pinSpec.getKID();
-          byte[] contextAID = pinSpec.getContextAID();
-
-          if (contextAID != null) {
-            CommandAPDU selectAPDU = new CommandAPDU(0x00, 0xa4, 0x04, 0x0c, contextAID);
-            ResponseAPDU responseAPDU = channel.transmit(selectAPDU);
-            if (responseAPDU.getSW() != 0x9000) {
-              icc.endExclusive();
-              String msg = "Select AID " + SMCCHelper.toString(pinSpec.getContextAID()) +
-                  ": SW=" + Integer.toHexString(responseAPDU.getSW());
-              log.error(msg);
-              throw new GetPINStatusException(msg);
-            }
-          }
-
-          CommandAPDU verifyAPDU = new CommandAPDU(new byte[] {
-            (byte) 0x00, (byte) 0x20, (byte) 00, kid });
-          ResponseAPDU responseAPDU = channel.transmit(verifyAPDU);
-
-          status = STATUS.UNKNOWN;
-          if (responseAPDU.getSW() == 0x6984) {
-            status = STATUS.NOT_ACTIV;
-          } else if (responseAPDU.getSW() == 0x63c0) {
-            status = STATUS.BLOCKED;
-          } else if (responseAPDU.getSW1() == 0x63) {
-            status = STATUS.ACTIV;
-          }
-          if (log.isDebugEnabled()) {
-            log.debug(pinSpec.getLocalizedName() +
-                    " status: " + SMCCHelper.toString(responseAPDU.getBytes()));
-          }
-          pinStatuses.put(pinSpec, status);
-
-      } catch (CardException ex) {
-        log.error("Failed to get PIN status: " + ex.getMessage(), ex);
-        throw new GetPINStatusException(ex.getMessage());
-      } finally {
-        try {
-          icc.endExclusive();
-        } catch (CardException ex) {
-          log.warn("failed to end exclusive card access: " + ex.getMessage());
-        }
-      }
+    PINMgmtSignatureCard pmCard = ((PINMgmtSignatureCard) card);
+    PIN_STATE pinState;
+    try {
+      pinState = pmCard.getPINState(pinSpec);
+    } catch (SignatureCardException e) {
+      String msg = "Failed to get PIN status for pin '"
+          + pinSpec.getLocalizedName() + "'.";
+      log.info(msg, e);
+      throw new GetPINStatusException(msg);
+    }
+    if (pinState == PIN_STATE.ACTIV) {
+      pinStates.put(pinSpec, STATUS.ACTIV);
+    } else if (pinState == PIN_STATE.NOT_ACTIV) {
+      pinStates.put(pinSpec, STATUS.NOT_ACTIV);
+    } else if (pinState == PIN_STATE.BLOCKED) {
+      pinStates.put(pinSpec, STATUS.BLOCKED);
     } else {
-      pinStatuses.put(pinSpec, status);
+      pinStates.put(pinSpec, status);
     }
   }
 
-//  /**
-//   * provides oldPin and newPin from one dialog,
-//   * and don't know whether providePIN() or provideOldPIN() is called first.
-//   */
-//  class SoftwarePinProvider implements PINProvider {
-//
-//    private PINManagementGUIFacade.DIALOG type;
-//    private boolean retry = false;
-//
-//    private char[] newPin;
-//    private char[] oldPin;
-//
-//    public SoftwarePinProvider(DIALOG type) {
-//      this.type = type;
-//    }
-//
-//    @Override
-//    public char[] providePIN(PINSpec spec, int retries)
-//            throws CancelledException, InterruptedException {
-//      if (newPin == null) {
-//        getPINs(spec, retries);
-//      }
-//      char[] pin = newPin;
-//      newPin = null;
-//      return pin;
-//    }
-//
-//    @Override
-//    public char[] provideOldPIN(PINSpec spec, int retries)
-//            throws CancelledException, InterruptedException {
-//      if (oldPin == null) {
-//        getPINs(spec, retries);
-//      }
-//      char[] pin = oldPin;
-//      oldPin = null;
-//      return pin;
-//    }
-//
-//    private void getPINs(PINSpec spec, int retries)
-//            throws InterruptedException, CancelledException {
-//      PINManagementGUIFacade gui =
-//              (PINManagementGUIFacade) PINManagementRequestHandler.this.gui;
-//
-//      if (retry) {
-//        gui.showPINDialog(type, spec, retries,
-//              PINManagementRequestHandler.this, "exec",
-//              PINManagementRequestHandler.this, "back");
-//      } else {
-//        gui.showPINDialog(type, spec,
-//              PINManagementRequestHandler.this, "exec",
-//              PINManagementRequestHandler.this, "back");
-//      }
-//      waitForAction();
-//
-//      if (actionCommand.equals("exec")) {
-//        gui.showWaitDialog(null);
-//        retry = true;
-//        oldPin = gui.getOldPin();
-//        newPin = gui.getPin();
-//      } else if (actionCommand.equals("back")) {
-//        throw new CancelledException();
-//      } else {
-//        log.error("unsupported command " + actionCommand);
-//        throw new CancelledException();
-//      }
-//    }
-//  }
-//
-//
-//  class PinpadPinProvider implements PINProvider {
-//
-//    private PINManagementGUIFacade.DIALOG type;
-//    private boolean retry = false;
-//
-//    public PinpadPinProvider(DIALOG type) {
-//      this.type = type;
-//    }
-//
-//    @Override
-//    public char[] providePIN(PINSpec spec, int retries) {
-//      log.debug("provide pin for " + type);
-//      if (retry) {
-//        ((PINManagementGUIFacade) gui).showPinpadPINDialog(type, spec, retries);
-//      } else {
-//        ((PINManagementGUIFacade) gui).showPinpadPINDialog(type, spec, -1);
-//        retry = true;
-//      }
-//      return null;
-//    }
-//
-//    @Override
-//    public char[] provideOldPIN(PINSpec spec, int retries) {
-//      return null;
-//    }
-//  }
 }

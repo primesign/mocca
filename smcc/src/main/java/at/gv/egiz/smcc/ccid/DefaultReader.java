@@ -16,15 +16,33 @@
  */
 package at.gv.egiz.smcc.ccid;
 
-import at.gv.egiz.smcc.*;
-import at.gv.egiz.smcc.util.SMCCHelper;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.smartcardio.Card;
+import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
+import javax.smartcardio.ResponseAPDU;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import at.gv.egiz.smcc.CancelledException;
+import at.gv.egiz.smcc.ChangePINProvider;
+import at.gv.egiz.smcc.ChangeReferenceDataAPDUSpec;
+import at.gv.egiz.smcc.NewReferenceDataAPDUSpec;
+import at.gv.egiz.smcc.PINFormatException;
+import at.gv.egiz.smcc.PINOperationAbortedException;
+import at.gv.egiz.smcc.PINProvider;
+import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.SignatureCardException;
+import at.gv.egiz.smcc.TimeoutException;
+import at.gv.egiz.smcc.VerifyAPDUSpec;
+import at.gv.egiz.smcc.util.ISO7816Utils;
+import at.gv.egiz.smcc.util.SMCCHelper;
 
 /**
  *
@@ -415,4 +433,339 @@ public class DefaultReader implements CCID {
     }
     return resp;
   }
+  
+  
+  
+  protected byte[] createPINModifyStructure(NewReferenceDataAPDUSpec apduSpec, PINSpec pinSpec) {
+    
+    ByteArrayOutputStream s = new ByteArrayOutputStream();
+    // bTimeOut
+    s.write(getbTimeOut());
+    // bTimeOut2
+    s.write(getbTimeOut2());
+    // bmFormatString
+    s.write(1 << 7 // system unit = byte
+        | (0xF & apduSpec.getPinPosition()) << 3
+        | (0x1 & apduSpec.getPinJustification() << 2)
+        | (0x3 & apduSpec.getPinFormat()));
+    // bmPINBlockString
+    s.write((0xF & apduSpec.getPinLengthSize()) << 4
+        | (0xF & apduSpec.getPinLength()));
+    // bmPINLengthFormat
+    s.write(// system unit = bit
+        (0xF & apduSpec.getPinLengthPos()));
+    // bInsertionOffsetOld
+    s.write(0x00);
+    // bInsertionOffsetNew
+    s.write(apduSpec.getPinInsertionOffsetNew());
+    // wPINMaxExtraDigit
+    s.write(Math.min(pinSpec.getMaxLength(), getwPINMaxExtraDigitL()));
+    s.write(Math.max(pinSpec.getMinLength(), getwPINMaxExtraDigitH()));
+    // bConfirmPIN
+    s.write(0x01);
+    // bEntryValidationCondition
+    s.write(getbEntryValidationCondition());
+    // bNumberMessage
+    s.write(0x02);
+    // wLangId
+    s.write(0x0C);
+    s.write(0x04);
+    // bMsgIndex1
+    s.write(0x01);
+    // bMsgIndex2
+    s.write(0x02);
+    // bMsgIndex3
+    s.write(0x00);
+    
+    // bTeoPrologue
+    s.write(0x00);
+    s.write(0x00);
+    s.write(0x00);
+    // ulDataLength
+    s.write(apduSpec.getApdu().length);
+    s.write(0x00);
+    s.write(0x00);
+    s.write(0x00);
+    // abData
+    try {
+      s.write(apduSpec.getApdu());
+    } catch (IOException e) {
+      // As we are dealing with ByteArrayOutputStreams no exception is to be
+      // expected.
+      throw new RuntimeException(e);
+    }
+    
+    return s.toByteArray();
+
+  }
+  
+  protected byte[] createPINModifyStructure(ChangeReferenceDataAPDUSpec apduSpec, PINSpec pinSpec) {
+    
+    ByteArrayOutputStream s = new ByteArrayOutputStream();
+    // bTimeOut
+    s.write(getbTimeOut());
+    // bTimeOut2
+    s.write(getbTimeOut2());
+    // bmFormatString
+    s.write(1 << 7 // system unit = byte
+        | (0xF & apduSpec.getPinPosition()) << 3
+        | (0x1 & apduSpec.getPinJustification() << 2)
+        | (0x3 & apduSpec.getPinFormat()));
+    // bmPINBlockString
+    s.write((0xF & apduSpec.getPinLengthSize()) << 4
+        | (0xF & apduSpec.getPinLength()));
+    // bmPINLengthFormat
+    s.write(// system unit = bit
+        (0xF & apduSpec.getPinLengthPos()));
+    // bInsertionOffsetOld
+    s.write(apduSpec.getPinInsertionOffsetOld());
+    // bInsertionOffsetNew
+    s.write(apduSpec.getPinInsertionOffsetNew());
+    // wPINMaxExtraDigit
+    s.write(Math.min(pinSpec.getMaxLength(), getwPINMaxExtraDigitL()));
+    s.write(Math.max(pinSpec.getMinLength(), getwPINMaxExtraDigitH()));
+    // bConfirmPIN
+    s.write(0x03);
+    // bEntryValidationCondition
+    s.write(getbEntryValidationCondition());
+    // bNumberMessage
+    s.write(0x03);
+    // wLangId
+    s.write(0x0C);
+    s.write(0x04);
+    // bMsgIndex1
+    s.write(0x00);
+    // bMsgIndex2
+    s.write(0x01);
+    // bMsgIndex3
+    s.write(0x02);
+    
+    // bTeoPrologue
+    s.write(0x00);
+    s.write(0x00);
+    s.write(0x00);
+    // ulDataLength
+    s.write(apduSpec.getApdu().length);
+    s.write(0x00);
+    s.write(0x00);
+    s.write(0x00);
+    // abData
+    try {
+      s.write(apduSpec.getApdu());
+    } catch (IOException e) {
+      // As we are dealing with ByteArrayOutputStreams no exception is to be
+      // expected.
+      throw new RuntimeException(e);
+    }
+    
+    return s.toByteArray();
+
+  }
+  
+  protected byte[] createPINVerifyStructure(VerifyAPDUSpec apduSpec, PINSpec pinSpec) {
+    
+    ByteArrayOutputStream s = new ByteArrayOutputStream();
+    // bTimeOut
+    s.write(getbTimeOut());
+    // bTimeOut2
+    s.write(getbTimeOut2());
+    // bmFormatString
+    s.write(1 << 7 // system unit = byte
+        | (0xF & apduSpec.getPinPosition()) << 3
+        | (0x1 & apduSpec.getPinJustification() << 2)
+        | (0x3 & apduSpec.getPinFormat()));
+    // bmPINBlockString
+    s.write((0xF & apduSpec.getPinLengthSize()) << 4
+        | (0xF & apduSpec.getPinLength()));
+    // bmPINLengthFormat
+    s.write(// system unit = bit
+        (0xF & apduSpec.getPinLengthPos()));
+    // wPINMaxExtraDigit
+    s.write(Math.min(pinSpec.getMaxLength(), getwPINMaxExtraDigitL())); // max PIN length
+    s.write(Math.max(pinSpec.getMinLength(), getwPINMaxExtraDigitH())); // min PIN length
+    // bEntryValidationCondition
+    s.write(getbEntryValidationCondition());
+    // bNumberMessage
+    s.write(0xFF);
+    // wLangId
+    s.write(0x0C);
+    s.write(0x04);
+    // bMsgIndex
+    s.write(0x00);
+    // bTeoPrologue
+    s.write(0x00);
+    s.write(0x00);
+    s.write(0x00);
+    // ulDataLength
+    s.write(apduSpec.getApdu().length);
+    s.write(0x00);
+    s.write(0x00);
+    s.write(0x00);
+    // abData
+    try {
+      s.write(apduSpec.getApdu());
+    } catch (IOException e) {
+      // As we are dealing with ByteArrayOutputStreams no exception is to be
+      // expected.
+      throw new RuntimeException(e);
+    }
+    
+    return s.toByteArray();
+    
+  }
+  
+  @Override
+  public ResponseAPDU verify(CardChannel channel, VerifyAPDUSpec apduSpec,
+      PINSpec pinSpec, PINProvider provider, int retries)
+      throws CancelledException, InterruptedException, CardException,
+      SignatureCardException {
+    
+    char[] pin = provider.providePIN(pinSpec, retries);
+
+    ResponseAPDU resp = null;
+    if (!disablePinpad && hasFeature(FEATURE_MODIFY_PIN_DIRECT)) {
+      log.debug("VERIFY using " + FEATURES[FEATURE_VERIFY_PIN_DIRECT] + ".");
+      byte[] s = createPINVerifyStructure(apduSpec, pinSpec);
+      resp = new ResponseAPDU(verifyPinDirect(s));
+    } else if (!disablePinpad && hasFeature(FEATURE_VERIFY_PIN_START)) {
+      log.debug("VERIFY using " + FEATURES[FEATURE_MODIFY_PIN_START] + ".");
+      byte[] s = createPINVerifyStructure(apduSpec, pinSpec);
+      resp = new ResponseAPDU(verifyPin(s));
+    }
+      
+    if (resp != null) {
+      
+      switch (resp.getSW()) {
+
+      case 0x6400:
+        log.debug("SPE operation timed out.");
+        throw new TimeoutException();
+      case 0x6401:
+        log.debug("SPE operation was cancelled by the 'Cancel' button.");
+        throw new CancelledException();
+      case 0x6103:
+        log.debug("User entered too short or too long PIN "
+            + "regarding MIN/MAX PIN length.");
+        throw new PINFormatException();
+      case 0x6480:
+        log.debug("SPE operation was aborted by the 'Cancel' operation "
+            + "at the host system.");
+      case 0x6b80:
+        log.info("Invalid parameter in passed structure.");
+
+      default:
+        return resp;
+      }
+      
+    } else {
+      log.debug("VERIFY using software pin entry.");
+      return channel.transmit(ISO7816Utils.createVerifyAPDU(apduSpec, pin));
+    }    
+    
+  }
+
+  @Override
+  public ResponseAPDU modify(CardChannel channel,
+      ChangeReferenceDataAPDUSpec apduSpec, PINSpec pinSpec,
+      ChangePINProvider provider, int retries) throws CancelledException,
+      InterruptedException, CardException, SignatureCardException {
+    
+    char[] oldPin = provider.provideOldPIN(pinSpec, retries);
+    char[] newPin = provider.providePIN(pinSpec, retries);
+    
+    ResponseAPDU resp = null;
+    if (!disablePinpad && hasFeature(FEATURE_MODIFY_PIN_DIRECT)) {
+      log.debug("MODIFY using " + FEATURES[FEATURE_MODIFY_PIN_DIRECT] + ".");
+      byte[] s = createPINModifyStructure(apduSpec, pinSpec);
+      resp = new ResponseAPDU(modifyPinDirect(s));
+    } else if (!disablePinpad && hasFeature(FEATURE_MODIFY_PIN_START)) {
+      log.debug("MODIFY using " + FEATURES[FEATURE_MODIFY_PIN_START] + ".");
+      byte[] s = createPINModifyStructure(apduSpec, pinSpec);
+      resp = new ResponseAPDU(modifyPin(s));
+    }
+    
+    if (resp != null) {
+      
+      switch (resp.getSW()) {
+
+      case 0x6400:
+        log.debug("SPE operation timed out.");
+        throw new TimeoutException();
+      case 0x6401:
+        log.debug("SPE operation was cancelled by the 'Cancel' button.");
+        throw new CancelledException();
+      case 0x6103:
+        log.debug("User entered too short or too long PIN "
+            + "regarding MIN/MAX PIN length.");
+        throw new PINFormatException();
+      case 0x6480:
+        log.debug("SPE operation was aborted by the 'Cancel' operation "
+            + "at the host system.");
+      case 0x6b80:
+        log.info("Invalid parameter in passed structure.");
+
+      default:
+        return resp;
+      }
+      
+    } else {
+      log.debug("MODIFY using software pin entry.");
+      return channel.transmit(ISO7816Utils.createChangeReferenceDataAPDU(apduSpec, oldPin, newPin));
+    }
+    
+  }
+  
+  @Override
+  public ResponseAPDU activate(CardChannel channel,
+      NewReferenceDataAPDUSpec apduSpec, PINSpec pinSpec,
+      PINProvider provider) throws CancelledException,
+      InterruptedException, CardException, SignatureCardException {
+    
+    char[] newPin = provider.providePIN(pinSpec, -1);
+    
+    ResponseAPDU resp = null;
+    if (!disablePinpad && hasFeature(FEATURE_MODIFY_PIN_DIRECT)) {
+      log.debug("MODIFY using " + FEATURES[FEATURE_MODIFY_PIN_DIRECT] + ".");
+      byte[] s = createPINModifyStructure(apduSpec, pinSpec);
+      resp = new ResponseAPDU(modifyPinDirect(s));
+    } else if (!disablePinpad && hasFeature(FEATURE_MODIFY_PIN_START)) {
+      log.debug("MODIFY using " + FEATURES[FEATURE_MODIFY_PIN_START] + ".");
+      byte[] s = createPINModifyStructure(apduSpec, pinSpec);
+      resp = new ResponseAPDU(modifyPin(s));
+    }
+    
+    if (resp != null) {
+      
+      switch (resp.getSW()) {
+
+      case 0x6400:
+        log.debug("SPE operation timed out.");
+        throw new TimeoutException();
+      case 0x6401:
+        log.debug("SPE operation was cancelled by the 'Cancel' button.");
+        throw new CancelledException();
+      case 0x6103:
+        log.debug("User entered too short or too long PIN "
+            + "regarding MIN/MAX PIN length.");
+        throw new PINFormatException();
+      case 0x6480:
+        log.debug("SPE operation was aborted by the 'Cancel' operation "
+            + "at the host system.");
+      case 0x6b80:
+        log.info("Invalid parameter in passed structure.");
+
+      default:
+        return resp;
+      }
+      
+    } else {
+      log.debug("MODIFY using software pin entry.");
+      return channel.transmit(ISO7816Utils.createNewReferenceDataAPDU(apduSpec, newPin));
+    }
+    
+  }
+  
+  
+
+  
 }

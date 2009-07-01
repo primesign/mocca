@@ -32,6 +32,11 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>iaik</groupId>
+      <artifactId>iaik_jce_full_signed</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- FIXME just for testing 
     <dependency>
       <groupId>iaik</groupId>

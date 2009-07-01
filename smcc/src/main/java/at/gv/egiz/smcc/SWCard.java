@@ -14,10 +14,8 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
 package at.gv.egiz.smcc;
 
-import at.gv.egiz.smcc.ccid.CCID;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -37,19 +35,19 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 
-import java.util.Map;
 import javax.smartcardio.Card;
+import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
+import javax.smartcardio.ResponseAPDU;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import at.gv.egiz.smcc.ccid.CCID;
 
 /**
  *
@@ -396,31 +394,6 @@ public class SWCard implements SignatureCard {
   }
 
   @Override
-  public List<PINSpec> getPINSpecs() {
-    return new ArrayList<PINSpec>();
-  }
-
-  @Override
-  public void verifyPIN(PINSpec pinSpec, PINProvider pinProvider)
-          throws LockedException, NotActivatedException, SignatureCardException {
-  }
-
-  @Override
-  public void activatePIN(PINSpec pinSpec, PINProvider pinProvider) throws SignatureCardException {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  @Override
-  public void unblockPIN(PINSpec pinSpec, PINProvider pukProvider) throws CancelledException, SignatureCardException, InterruptedException {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  @Override
-  public void changePIN(PINSpec pinSpec, ChangePINProvider pinProvider) throws LockedException, NotActivatedException, CancelledException, SignatureCardException, InterruptedException {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  @Override
   public CCID getReader() {
     return new CCID() {
 
@@ -487,6 +460,32 @@ public class SWCard implements SignatureCard {
       @Override
       public void setDisablePinpad(boolean disable) {
         throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+      @Override
+      public ResponseAPDU verify(CardChannel channel, VerifyAPDUSpec apduSpec,
+          PINSpec pinSpec, PINProvider provider, int retries)
+          throws CancelledException, InterruptedException, CardException,
+          SignatureCardException {
+        throw new UnsupportedOperationException("Not supported yet.");
+      }
+
+      @Override
+      public ResponseAPDU activate(CardChannel channel,
+          NewReferenceDataAPDUSpec apduSpec, PINSpec pinSpec,
+          PINProvider provider) throws CancelledException,
+          InterruptedException, CardException, SignatureCardException {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public ResponseAPDU modify(CardChannel channel,
+          ChangeReferenceDataAPDUSpec apduSpec, PINSpec pinSpec,
+          ChangePINProvider provider, int retries) throws CancelledException,
+          InterruptedException, CardException, SignatureCardException {
+        // TODO Auto-generated method stub
+        return null;
       }
     };
   }

@@ -24,6 +24,8 @@ package at.gv.egiz.smcc;
  */
 public class PINConfirmationException extends SignatureCardException {
 
+  private static final long serialVersionUID = 1L;
+
   public PINConfirmationException() {
     super();
   }

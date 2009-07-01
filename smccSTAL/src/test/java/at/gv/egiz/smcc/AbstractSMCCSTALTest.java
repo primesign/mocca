@@ -1,6 +1,5 @@
 package at.gv.egiz.smcc;
 
-import at.gv.egiz.smcc.ccid.CCID;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -10,17 +9,18 @@ import javax.smartcardio.CardTerminal;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.smccstal.AbstractSMCCSTAL;
 import at.gv.egiz.bku.smccstal.SMCCSTALRequestHandler;
+import at.gv.egiz.smcc.ccid.CCID;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.InfoboxReadResponse;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
-import org.junit.Ignore;
 
 public class AbstractSMCCSTALTest extends AbstractSMCCSTAL implements
     SMCCSTALRequestHandler {
@@ -87,32 +87,11 @@ public class AbstractSMCCSTALTest extends AbstractSMCCSTAL implements
       
     }
 
-
-      @Override
-      public List<PINSpec> getPINSpecs() {
-        return new ArrayList<PINSpec>();
-      }
-
-      @Override
-      public void verifyPIN(PINSpec pinSpec, PINProvider pinProvider) {
-      }
-
-      @Override
-      public void changePIN(PINSpec pinSpec, ChangePINProvider pinProvider) {
-      }
-
-      @Override
-      public void activatePIN(PINSpec pinSpec, PINProvider pinProvider) {
-      }
-
-      @Override
-      public void unblockPIN(PINSpec pinSpec, PINProvider pukProvider) {
-      }
-
-      @Override
-      public CCID getReader() {
-        throw new UnsupportedOperationException("Not supported yet.");
-      }
+    @Override
+    public CCID getReader() {
+      // TODO Auto-generated method stub
+      return null;
+    }
 
    };
     return false;

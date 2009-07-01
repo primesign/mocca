@@ -53,8 +53,8 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
                   .getCardPINProvider(),
                   infoBox.getDomainIdentifier());
           if (resp == null) {
-            log.info("Got null as result->user cancelled");
-            return new ErrorResponse(6001);
+            log.info("Infobox doesn't contain any data. Assume card is not activated.");
+            throw new NotActivatedException();
           } else {
             try {
               resp = DomainIdConverter.convertDomainId(resp, infoBox

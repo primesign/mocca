@@ -24,9 +24,6 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import at.gv.egiz.bku.local.ui.BKUControllerInterface;
-import at.gv.egiz.bku.local.ui.TrayIconDialog;
-import at.gv.egiz.bku.utils.HexDump;
 import at.gv.egiz.bku.utils.StreamUtil;
 
 public class BKULauncher implements BKUControllerInterface {

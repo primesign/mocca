@@ -24,7 +24,7 @@
     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
     <types>
         <xsd:schema targetNamespace="http://www.egiz.gv.at/wsdl/stal">
-            <xsd:import namespace="http://www.egiz.gv.at/stal" schemaLocation="stal-service.xsd"/>
+            <xsd:import namespace="http://www.egiz.gv.at/stal" schemaLocation="stal.xsd"/>
             <!--xsd:import namespace="http://www.egiz.gv.at/stal" schemaLocation="stal-extended.xsd"/-->
         </xsd:schema>
         <!-- test 

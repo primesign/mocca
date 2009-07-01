@@ -1,36 +1,27 @@
-//Copyright (C) 2002 IAIK
-//http://jce.iaik.at
-//
-//Copyright (C) 2003 Stiftung Secure Information and 
-//                 Communication Technologies SIC
-//http://www.sic.st
-//
-//All rights reserved.
-//
-//This source is provided for inspection purposes and recompilation only,
-//unless specified differently in a contract with IAIK. This source has to
-//be kept in strict confidence and must not be disclosed to any third party
-//under any circumstances. Redistribution in source and binary forms, with
-//or without modification, are <not> permitted in any case!
-//
-//THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
-//ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-//IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-//ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
-//FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-//DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-//OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-//HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-//LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-//OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-//SUCH DAMAGE.
-//
-//
+/*
+* Copyright 2008 Federal Chancellery Austria and
+* Graz University of Technology
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
 package at.gv.egiz.smcc;
 
-import at.gv.egiz.smcc.ccid.CCID;
-import at.gv.egiz.smcc.util.SMCCHelper;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
+
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
@@ -39,7 +30,10 @@ import javax.smartcardio.ResponseAPDU;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class STARCOSCard extends AbstractSignatureCard {
+import at.gv.egiz.smcc.util.ISO7816Utils;
+import at.gv.egiz.smcc.util.SMCCHelper;
+
+public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatureCard {
 
   /**
    * Logging facility.
@@ -154,133 +148,131 @@ public class STARCOSCard extends AbstractSignatureCard {
 
   public static final byte KID_PIN_CARD = (byte) 0x01;
 
-  public static final int PINSPEC_CARD = 0;
-  public static final int PINSPEC_SS = 1;
+  private static final PINSpec CARD_PIN_SPEC =
+    new PINSpec(4, 12, "[0-9]", 
+        "at/gv/egiz/smcc/STARCOSCard", "card.pin.name", KID_PIN_CARD, null);
+  
+  private static final PINSpec SS_PIN_SPEC =
+    new PINSpec(6, 12, "[0-9]", 
+        "at/gv/egiz/smcc/STARCOSCard", "sig.pin.name", KID_PIN_SS, AID_DF_SS);
 
   /**
    * Creates an new instance.
    */
   public STARCOSCard() {
     super("at/gv/egiz/smcc/STARCOSCard");
-    pinSpecs.add(PINSPEC_CARD, 
-            new PINSpec(4, 12, "[0-9]",
-              getResourceBundle().getString("card.pin.name"),
-              KID_PIN_CARD, null));
-    pinSpecs.add(PINSPEC_SS,
-            new PINSpec(6, 12, "[0-9]",
-              getResourceBundle().getString("sig.pin.name"),
-              KID_PIN_SS, AID_DF_SS));
+    pinSpecs.add(CARD_PIN_SPEC);
+    pinSpecs.add(SS_PIN_SPEC);
   }
  
   @Override
+  @Exclusive
   public byte[] getCertificate(KeyboxName keyboxName)
       throws SignatureCardException, InterruptedException {
 
+    byte[] aid;
+    byte[] fid;
+    if (keyboxName == KeyboxName.SECURE_SIGNATURE_KEYPAIR) {
+      aid = AID_DF_SS;
+      fid = EF_C_X509_CH_DS;
+    } else if (keyboxName == KeyboxName.CERITIFIED_KEYPAIR) {
+      aid = AID_DF_GS;
+      fid = EF_C_X509_CH_AUT;
+    } else {
+      throw new IllegalArgumentException("Keybox " + keyboxName
+          + " not supported.");
+    }
+
     try {
-      
-      if (keyboxName == KeyboxName.SECURE_SIGNATURE_KEYPAIR) {
-        
-        try {
-          getCard().beginExclusive();
-          return readTLVFile(AID_DF_SS, EF_C_X509_CH_DS, 2000);
-        } catch (FileNotFoundException e) {
-          throw new NotActivatedException();
-        } finally {
-          getCard().endExclusive();
-        }
-        
-      } else if (keyboxName == KeyboxName.CERITIFIED_KEYPAIR) {
-
-        try {
-          getCard().beginExclusive();
-          return readTLVFile(AID_DF_GS, EF_C_X509_CH_AUT, 2000);
-        } catch (FileNotFoundException e) {
-          throw new NotActivatedException();
-        } finally {
-          getCard().endExclusive();
-        }
-
-      } else {
-        throw new IllegalArgumentException("Keybox " + keyboxName
-            + " not supported.");
+      CardChannel channel = getCardChannel();
+      // SELECT application
+      execSELECT_AID(channel, aid);
+      // SELECT file
+      execSELECT_FID(channel, fid);
+      // READ BINARY
+      byte[] certificate = ISO7816Utils.readTransparentFileTLV(channel, -1, (byte) 0x30);
+      if (certificate == null) {
+        throw new NotActivatedException();
       }
-      
+      return certificate;
+    } catch (FileNotFoundException e) {
+      throw new NotActivatedException();
     } catch (CardException e) {
-      log.warn(e);
-      throw new SignatureCardException("Failed to access card.", e);
+      log.info("Failed to get certificate.", e);
+      throw new SignatureCardException(e);
     }
 
   }
   
   @Override
+  @Exclusive
   public byte[] getInfobox(String infobox, PINProvider provider, String domainId)
       throws SignatureCardException, InterruptedException {
   
     try {
       if ("IdentityLink".equals(infobox)) {
 
-        PINSpec spec = pinSpecs.get(PINSPEC_CARD);
-        //new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("card.pin.name"));
-
-        int retries = -1;
-        boolean pinRequired = false;
-
-        do {
-          try {
-            getCard().beginExclusive();
-            if (pinRequired) {
-              char[] pin = provider.providePIN(spec, retries);
-              return readTLVFile(AID_INFOBOX, EF_INFOBOX, pin, spec.getKID(), 2000);
-            } else {
-              return readTLVFile(AID_INFOBOX, EF_INFOBOX, 2000);
-            }
-          } catch (FileNotFoundException e) {
-            throw new NotActivatedException();
-          } catch (SecurityStatusNotSatisfiedException e) {
-            pinRequired = true;
-            retries = verifyPIN(KID_PIN_CARD);
-          } catch (VerificationFailedException e) {
-            pinRequired = true;
-            retries = e.getRetries();
-          } finally {
-            getCard().endExclusive();
-          }
-        } while (retries != 0);
-
-        throw new LockedException();
+        PINSpec spec = CARD_PIN_SPEC;
         
-      } else if ("EHIC".equals(infobox)) {
-        try {
-          getCard().beginExclusive();
-          return readTLVFile(AID_SV_PERSONENDATEN, FID_EHIC, 126);
-        } finally {
-          getCard().endExclusive();
+        CardChannel channel = getCardChannel();
+        // SELECT application
+        execSELECT_AID(channel, AID_INFOBOX);
+        // SELECT file
+        execSELECT_FID(channel, EF_INFOBOX);
+
+        while (true) {
+          try {
+            return ISO7816Utils.readTransparentFileTLV(channel, -1, (byte) 0x30);
+          } catch (SecurityStatusNotSatisfiedException e) {
+            verifyPINLoop(channel, spec, provider);
+          }
         }
-      } else if ("Grunddaten".equals(infobox)) {
-        try {
-          getCard().beginExclusive();
-          return readTLVFile(AID_SV_PERSONENDATEN, FID_GRUNDDATEN, 550);
-        } finally {
-          getCard().endExclusive();
-        }
-      } else if ("SV-Personenbindung".equals(infobox)) {
-        try {
-          getCard().beginExclusive();
-          return readTLVFile(AID_SV_PERSONENDATEN, FID_SV_PERSONENBINDUNG, 500);
-        } finally {
-          getCard().endExclusive();
-        }
+        
       } else if ("Status".equals(infobox)) {
+        
+        CardChannel channel = getCardChannel();
+        // SELECT application
+        execSELECT_AID(channel, AID_SV_PERSONENDATEN);
+        // SELECT file
+        execSELECT_FID(channel, FID_STATUS);
+        // READ RECORDS
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try {
-          getCard().beginExclusive();
-          return readRecords(AID_SV_PERSONENDATEN, FID_STATUS, 1, 5);
-        } finally {
-          getCard().endExclusive();
+          for (int record = 1; record <= 5; record++) {
+            byte[] rb = ISO7816Utils.readRecord(channel, record);
+            bytes.write(rb);
+          }
+        } catch (IOException e) {
+          throw new SignatureCardException("Failed to read infobox '" + infobox
+              + "'.", e);
         }
+        return bytes.toByteArray();
+        
       } else {
-        throw new IllegalArgumentException("Infobox '" + infobox
-            + "' not supported.");
+
+        byte[] fid;
+        
+        if ("EHIC".equals(infobox)) {
+          fid = FID_EHIC;
+        } else if ("Grunddaten".equals(infobox)) {
+          fid = FID_GRUNDDATEN;
+        } else if ("SV-Personenbindung".equals(infobox)) {
+          fid = FID_SV_PERSONENBINDUNG;
+        } else {
+          throw new IllegalArgumentException("Infobox '" + infobox
+              + "' not supported.");
+        }
+       
+        CardChannel channel = getCardChannel();
+        // SELECT application
+        execSELECT_AID(channel, AID_SV_PERSONENDATEN);
+        // SELECT file
+        execSELECT_FID(channel, fid);
+        // READ BINARY
+        return ISO7816Utils.readTransparentFileTLV(channel, -1, (byte) 0x30);
+        
       }
+        
     } catch (CardException e) {
       log.warn(e);
       throw new SignatureCardException("Failed to access card.", e);
@@ -288,6 +280,7 @@ public class STARCOSCard extends AbstractSignatureCard {
   }
 
   @Override
+  @Exclusive
   public byte[] createSignature(byte[] hash, KeyboxName keyboxName,
       PINProvider provider) throws SignatureCardException, InterruptedException {
   
@@ -297,68 +290,44 @@ public class STARCOSCard extends AbstractSignatureCard {
   
     try {
       
+      CardChannel channel = getCardChannel();
+      
       if (KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(keyboxName)) {
 
-        PINSpec spec = pinSpecs.get(PINSPEC_SS);
-        //new PINSpec(6, 10, "[0-9]", getResourceBundle().getString("sig.pin.name"));
+        PINSpec spec = SS_PIN_SPEC;
         
-        int retries = -1;
-        char[] pin = null;
-
-        do {
-          try {
-            getCard().beginExclusive();
-            selectFileAID(AID_DF_SS);
-            retries = verifyPIN(KID_PIN_SS); //, null);
-          } finally {
-            getCard().endExclusive();
-          }
-          pin = provider.providePIN(spec, retries);
-          try {
-            getCard().beginExclusive();
-            return createSignature(hash, AID_DF_SS, pin, KID_PIN_SS, DST_SS);
-          } catch (VerificationFailedException e) {
-            retries = e.getRetries();
-          } catch (PINFormatException e) {
-            log.debug("wrong pin size entered, retry");
-          } finally {
-            getCard().endExclusive();
-          }
-        } while (retries != 0);
-
-        throw new LockedException();
-
- 
+        // SELECT MF
+        execSELECT_MF(channel);
+        // SELECT application
+        execSELECT_AID(channel, AID_DF_SS);
+        // VERIFY
+        verifyPINLoop(channel, spec, provider);
+        // MANAGE SECURITY ENVIRONMENT : SET DST
+        execMSE(channel, 0x41, 0xb6, DST_SS);
+        // PERFORM SECURITY OPERATION : HASH
+        execPSO_HASH(channel, hash);
+        // PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATURE
+        return execPSO_COMPUTE_DIGITAL_SIGNATURE(channel);
+        
       } else if (KeyboxName.CERITIFIED_KEYPAIR.equals(keyboxName)) {
 
-        PINSpec spec = pinSpecs.get(PINSPEC_CARD);
-        //new PINSpec(4, 4, "[0-9]", getResourceBundle().getString("card.pin.name"));
- 
-        int retries = -1;
-        char[] pin = null;
-        boolean pinRequiered = false;
-
-        do {
-          if (pinRequiered) {
-            pin = provider.providePIN(spec, retries);
-          }
+        PINSpec spec = CARD_PIN_SPEC;
+        
+        // SELECT application
+        execSELECT_AID(channel, AID_DF_GS);
+        // MANAGE SECURITY ENVIRONMENT : SET DST
+        execMSE(channel, 0x41, 0xb6, DST_GS);
+        // PERFORM SECURITY OPERATION : HASH
+        execPSO_HASH(channel, hash);
+        
+        while (true) {
           try {
-            getCard().beginExclusive();
-            return createSignature(hash, AID_DF_GS, pin, KID_PIN_CARD, DST_GS);
-          } catch (FileNotFoundException e) {
-            throw new NotActivatedException();
+            // PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATURE
+            return execPSO_COMPUTE_DIGITAL_SIGNATURE(channel);
           } catch (SecurityStatusNotSatisfiedException e) {
-            pinRequiered = true;
-            retries = verifyPIN(KID_PIN_CARD);
-          } catch (VerificationFailedException e) {
-            pinRequiered = true;
-            retries = e.getRetries();
-          } finally {
-            getCard().endExclusive();
+            verifyPINLoop(channel, spec, provider);
           }
-        } while (retries != 0);
-
-        throw new LockedException();
+        }
         
       } else {
         throw new IllegalArgumentException("KeyboxName '" + keyboxName
@@ -372,510 +341,87 @@ public class STARCOSCard extends AbstractSignatureCard {
   
   }
 
-
-  ////////////////////////////////////////////////////////////////////////
-  // PROTECTED METHODS (assume exclusive card access)
-  ////////////////////////////////////////////////////////////////////////
-
-  protected ResponseAPDU selectFileFID(byte[] fid) throws CardException, SignatureCardException {
-    CardChannel channel = getCardChannel();
-    return transmit(channel, new CommandAPDU(0x00, 0xA4, 0x02,
-        0x04, fid, 256));
-  }
-
-  private byte[] createSignature(byte[] hash, byte[] aid, char[] pin, byte kid,
-      byte[] dst) throws CardException, SignatureCardException {
-    
-    // SELECT MF
-    selectMF();
-    // SELECT DF
-    selectFileAID(aid);
-    // VERIFY
-    int retries = verifyPIN(kid, pin);
-    if (retries != -1) {
-      throw new VerificationFailedException(retries);
-    }
-    // MSE: SET DST
-    mseSetDST(dst);
-    // PSO: HASH
-    psoHash(hash);
-    // PSO: COMPUTE DIGITAL SIGNATURE
-    return psoComputDigitalSiganture();
-
-    
-  }
-
-  private void selectMF() throws CardException, SignatureCardException {
-    CardChannel channel = getCardChannel();
-    ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0xA4, 0x00,
-        0x0C));
-    if (resp.getSW() != 0x9000) {
-      throw new SignatureCardException("Failed to select MF: SW="
-          + Integer.toHexString(resp.getSW()) + ".");
-    }
-  }
-
-  private void mseSetDST(byte[] dst) throws CardException, SignatureCardException {
-    CardChannel channel = getCardChannel();
-    ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0x22, 0x41,
-        0xB6, dst));
-    if (resp.getSW() != 0x9000) {
-      throw new SignatureCardException("MSE:SET DST failed: SW="
-          + Integer.toHexString(resp.getSW()));
-    }
-  }
-
-  private void psoHash(byte[] hash) throws CardException, SignatureCardException {
-    byte[] data = new byte[hash.length + 2];
-    data[0] = (byte) 0x90; // tag
-    data[1] = (byte) (hash.length); // length
-    System.arraycopy(hash, 0, data, 2, hash.length);
-
-    CardChannel channel = getCardChannel();
-    ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0x2A, 0x90,
-        0xA0, data));
-    if (resp.getSW() != 0x9000) {
-      throw new SignatureCardException("PSO:HASH failed: SW="
-          + Integer.toHexString(resp.getSW()));
-    }
-  }
-
-  private byte[] psoComputDigitalSiganture() throws CardException,
-      SignatureCardException {
-    CardChannel channel = getCardChannel();
-    ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0x2A, 0x9E,
-        0x9A, 256));
-    if (resp.getSW() != 0x9000) {
-      throw new SignatureCardException(
-          "PSO: COMPUTE DIGITAL SIGNATRE failed: SW="
-              + Integer.toHexString(resp.getSW()));
-    } else {
-      return resp.getData();
-    }
-  }
-
-  @Override
-  protected int verifyPIN(byte kid, char[] pin)
-          throws LockedException, NotActivatedException, TimeoutException, CancelledException, PINFormatException, PINOperationAbortedException, SignatureCardException {
-    try {
-      byte[] sw;
-      if (reader.hasFeature(CCID.FEATURE_VERIFY_PIN_DIRECT)) {
-        log.debug("verify pin on cardreader");
-        sw = reader.verifyPinDirect(getPINVerifyStructure(kid));
-//        int sw = (resp[resp.length-2] & 0xff) << 8 | resp[resp.length-1] & 0xff;
-      } else if (reader.hasFeature(CCID.FEATURE_VERIFY_PIN_START)) {
-        log.debug("verify pin on cardreader");
-        sw = reader.verifyPin(getPINVerifyStructure(kid));
-      } else {
-        byte[] pinBlock = encodePINBlock(pin);
-        CardChannel channel = getCardChannel();
-        ResponseAPDU resp = transmit(channel,
-                new CommandAPDU(0x00, 0x20, 0x00, kid, pinBlock), false);
-        sw = new byte[2];
-        sw[0] = (byte) resp.getSW1();
-        sw[1] = (byte) resp.getSW2();
-      }
-
-      if (sw[0] == (byte) 0x90 && sw[1] == (byte) 0x00) {
-        return -1;
-      } else if (sw[0] == (byte) 0x63 && sw[1] == (byte) 0xc0) {
-        throw new LockedException("[63:c0]");
-      } else if (sw[0] == (byte) 0x63 && (sw[1] & 0xf0) >> 4 == 0xc) {
-        return sw[1] & 0x0f;
-      } else if (sw[0] == (byte) 0x69 && sw[1] == (byte) 0x83) {
-        //Authentisierungsmethode gesperrt
-        throw new LockedException("[69:83]");
-      } else if (sw[0] == (byte) 0x69 && sw[1] == (byte) 0x84) {
-        //referenzierte Daten sind reversibel gesperrt (invalidated)
-        throw new NotActivatedException("[69:84]");
-      } else if (sw[0] == (byte) 0x69 && sw[1] == (byte) 0x85) {
-        //Benutzungsbedingungen nicht erfüllt
-        throw new NotActivatedException("[69:85]");
-      } else if (sw[0] == (byte) 0x64 && sw[1] == (byte) 0x00) {
-        throw new TimeoutException("[64:00]");
-      } else if (sw[0] == (byte) 0x64 && sw[1] == (byte) 0x01) {
-        throw new CancelledException("[64:01]");
-      } else if (sw[0] == (byte) 0x64 && sw[1] == (byte) 0x03) {
-        throw new PINFormatException("[64:03]");
-      }
-      log.error("Failed to verify pin: SW="
-              + SMCCHelper.toString(sw));
-      throw new SignatureCardException(SMCCHelper.toString(sw));
-      
-    } catch (CardException ex) {
-      log.error("smart card communication failed: " + ex.getMessage());
-      throw new SignatureCardException("smart card communication failed: " + ex.getMessage(), ex);
-    }
-  }
-
-  @Override
-  protected int verifyPIN(byte kid)
-          throws LockedException, NotActivatedException, SignatureCardException {
-    try {
-      CardChannel channel = getCardChannel();
-      ResponseAPDU resp = transmit(channel,
-              new CommandAPDU(0x00, 0x20, 0x00, kid), false);
-
-      if (resp.getSW() == 0x9000) {
-        return -1;
-      } else if (resp.getSW() == 0x63c0) {
-        throw new LockedException("[63:c0]");
-      } else if (resp.getSW1() == 0x63 && (resp.getSW2() & 0xf0) >> 4 == 0xc) {
-        return resp.getSW2() & 0x0f;
-      } else if (resp.getSW() == 0x6983) {
-        //Authentisierungsmethode gesperrt
-        throw new LockedException("[69:83]");
-      } else if (resp.getSW() == 0x6984) {
-        //referenzierte Daten sind reversibel gesperrt (invalidated)
-        throw new NotActivatedException("[69:84]");
-      } else if (resp.getSW() == 0x6985) {
-        //Benutzungsbedingungen nicht erfüllt
-        throw new NotActivatedException("[69:85]");
-      }
-      log.error("Failed to verify pin: SW="
-              + Integer.toHexString(resp.getSW()));
-      throw new SignatureCardException("[" + Integer.toHexString(resp.getSW()) + "]");
-
-    } catch (CardException ex) {
-      log.error("smart card communication failed: " + ex.getMessage());
-      throw new SignatureCardException("smart card communication failed: " + ex.getMessage(), ex);
-    }
-  }
-
-  @Override
-  protected int changePIN(byte kid, char[] oldPin, char[] newPin)
-          throws LockedException, CancelledException, PINFormatException, PINConfirmationException, TimeoutException, PINOperationAbortedException, SignatureCardException {
-    try {
-      byte[] sw;
-      if (reader.hasFeature(CCID.FEATURE_MODIFY_PIN_DIRECT)) {
-        log.debug("modify pin on cardreader");
-        sw = reader.modifyPinDirect(getPINModifyStructure(kid));
-      } else if (reader.hasFeature(CCID.FEATURE_MODIFY_PIN_START)) {
-        log.debug("modify pin on cardreader");
-        sw = reader.modifyPin(getPINModifyStructure(kid));
-      } else {
-        byte[] cmd = new byte[16];
-        System.arraycopy(encodePINBlock(oldPin), 0, cmd, 0, 8);
-        System.arraycopy(encodePINBlock(newPin), 0, cmd, 8, 8);
-
-        CardChannel channel = getCardChannel();
-
-        ResponseAPDU resp = transmit(channel,
-                new CommandAPDU(0x00, 0x24, 0x00, kid, cmd), false);
-
-        sw = new byte[2];
-        sw[0] = (byte) resp.getSW1();
-        sw[1] = (byte) resp.getSW2();
-      }
-
-      // activates pin (newPIN) if not active
-      if (sw[0] == (byte) 0x90 && sw[1] == (byte) 0x00) {
-        return -1;
-      } else if (sw[0] == (byte) 0x63 && sw[1] == (byte) 0xc0) {
-        throw new LockedException("[63:c0]");
-      } else if (sw[0] == (byte) 0x63 && (sw[1] & 0xf0) >> 4 == 0xc) {
-        return sw[1] & 0x0f;
-      } else if (sw[0] == (byte) 0x69 && sw[1] == (byte) 0x83) {
-        //Authentisierungsmethode gesperrt
-        throw new LockedException("[69:83]");
-//      } else if (sw[0] == (byte) 0x69 && sw[1] == (byte) 0x84) {
-//        //referenzierte Daten sind reversibel gesperrt (invalidated)
-//        throw new NotActivatedException("[69:84]");
-//      } else if (sw[0] == (byte) 0x69 && sw[1] == (byte) 0x85) {
-//        //Benutzungsbedingungen nicht erfüllt
-//        throw new NotActivatedException("[69:85]");
-      } else if (sw[0] == (byte) 0x64 && sw[1] == (byte) 0x00) {
-        throw new TimeoutException("[64:00]");
-      } else if (sw[0] == (byte) 0x64 && sw[1] == (byte) 0x01) {
-        throw new CancelledException("[64:01]");
-      } else if (sw[0] == (byte) 0x64 && sw[1] == (byte) 0x02) {
-        throw new PINConfirmationException("[64:02]");
-      } else if (sw[0] == (byte) 0x64 && sw[1] == (byte) 0x03) {
-        throw new PINFormatException("[64:03]");
-      } else if (sw[0] == (byte) 0x6a && sw[1] == (byte) 0x80) {
-        log.info("invalid parameter, assume wrong pin size");
-        throw new PINFormatException("[6a:80]");
-      }
-      log.error("Failed to change pin: SW="
-              + SMCCHelper.toString(sw));
-      throw new SignatureCardException(SMCCHelper.toString(sw));
-    } catch (CardException ex) {
-      log.error("smart card communication failed: " + ex.getMessage());
-      throw new SignatureCardException("smart card communication failed: " + ex.getMessage(), ex);
-    }
-  }
-
-  @Override
-  protected void activatePIN(byte kid, char[] pin)
-          throws CancelledException, PINFormatException, PINConfirmationException, TimeoutException, PINOperationAbortedException, SignatureCardException {
-    try {
-      byte[] sw;
-      if (reader.hasFeature(CCID.FEATURE_MODIFY_PIN_DIRECT)) {
-        log.debug("activate pin on cardreader");
-        sw = reader.modifyPinDirect(getActivatePINModifyStructure(kid));
-      } else if (reader.hasFeature(CCID.FEATURE_MODIFY_PIN_START)) {
-        log.debug("activate pin on cardreader");
-        sw = reader.modifyPin(getActivatePINModifyStructure(kid));
-      } else {
-        CardChannel channel = getCardChannel();
-        ResponseAPDU resp = transmit(channel,
-                new CommandAPDU(0x00, 0x24, 0x01, kid, encodePINBlock(pin)), false);
-
-        sw = new byte[2];
-        sw[0] = (byte) resp.getSW1();
-        sw[1] = (byte) resp.getSW2();
-        log.trace("activate pin returned SW=" + Integer.toHexString(resp.getSW()));
-      }
-
-      if (sw[0] == (byte) 0x90 && sw[1] == (byte) 0x00) {
-        return;
-      } else if (sw[0] == (byte) 0x69 && sw[1] == (byte) 0x83) {
-        //Authentisierungsmethode gesperrt
-        throw new LockedException("[69:83]");
-//      } else if (sw[0] == (byte) 0x69 && sw[1] == (byte) 0x84) {
-//        //referenzierte Daten sind reversibel gesperrt (invalidated)
-//        throw new NotActivatedException("[69:84]");
-//      } else if (sw[0] == (byte) 0x69 && sw[1] == (byte) 0x85) {
-//        //Benutzungsbedingungen nicht erfüllt
-//        throw new NotActivatedException("[69:85]");
-      } else if (sw[0] == (byte) 0x64 && sw[1] == (byte) 0x00) {
-        throw new TimeoutException("[64:00]");
-      } else if (sw[0] == (byte) 0x64 && sw[1] == (byte) 0x01) {
-        throw new CancelledException("[64:01]");
-      } else if (sw[0] == (byte) 0x64 && sw[1] == (byte) 0x02) {
-        throw new PINConfirmationException("[64:02]");
-      } else if (sw[0] == (byte) 0x64 && sw[1] == (byte) 0x03) {
-        throw new PINFormatException("[64:03]");
-      }
-      log.error("Failed to activate pin: SW="
-              + SMCCHelper.toString(sw));
-      throw new SignatureCardException(SMCCHelper.toString(sw));
-
-    } catch (CardException ex) {
-      log.error("smart card communication failed: " + ex.getMessage());
-      throw new SignatureCardException("smart card communication failed: " + ex.getMessage(), ex);
-    }
-  }
-
-  /**
-   * BCD encodes the pin, pads with 0xFF and prepends the pins length
-   * @param pin
-   * @return a 8 byte pin block consisting of length byte (0x2X),
-   * the BCD encoded pin and a 0xFF padding
+  /* (non-Javadoc)
+   * @see at.gv.egiz.smcc.AbstractSignatureCard#verifyPIN(at.gv.egiz.smcc.PINSpec, at.gv.egiz.smcc.PINProvider)
    */
   @Override
-  protected byte[] encodePINBlock(char[] pin) throws SignatureCardException {
-    if (pin == null || pin.length > 12) {
-      throw new SignatureCardException("invalid pin: " + pin);
+  @Exclusive
+  public void verifyPIN(PINSpec pinSpec, PINProvider pinProvider)
+      throws LockedException, NotActivatedException, CancelledException,
+      TimeoutException, SignatureCardException, InterruptedException {
+    
+    CardChannel channel = getCardChannel();
+    
+    try {
+      if (pinSpec.getContextAID() != null) {
+        // SELECT application
+        execSELECT_AID(channel, pinSpec.getContextAID());
+      }
+      int retries = verifyPIN(channel, pinSpec, null, 0);
+      verifyPIN(channel, pinSpec, pinProvider, retries);
+    } catch (CardException e) {
+      log.info("Failed to verify PIN.", e);
+      throw new SignatureCardException("Failed to verify PIN.", e);
     }
-    int numDigits = pin.length;
-    int numBytes = (int) Math.ceil(numDigits/2.0);
-
-    byte[] pinBlock = new byte[8];
-    pinBlock[0] = (byte) (0x20 | numDigits);
-
-    for (int i = 0; i < numBytes; i++) {
-      int p1 = 16*Character.digit(pin[i*2], 16);
-      int p2 = (i*2+1 < numDigits) ? Character.digit(pin[i*2+1], 16) : 0xf;
-      pinBlock[i+1] = (byte) (p1 + p2);
-    }
-    Arrays.fill(pinBlock, numBytes + 1, pinBlock.length, (byte) 0xff);
-//    log.trace("BCD encoded PIN block: " + SMCCHelper.toString(pinBlock));
-
-    return pinBlock;
+    
   }
   
-  private byte[] getPINVerifyStructure(byte kid) {
-      byte bTimeOut = reader.getbTimeOut(); 
-      byte bTimeOut2 = reader.getbTimeOut2(); // time out after first entry
-      byte bmFormatString = (byte) 0x89;      // 1 0001 0 01 
-                                              // ^------------ System unit = byte
-                                              //   ^^^^------- PIN position in the frame = 1 byte
-                                              //        ^----- PIN justification left
-                                              //          ^^-- BCD format
-      byte bmPINBlockString = (byte) 0x47;    // 0100 0111
-                                              // ^^^^--------- PIN length size: 4 bits
-                                              //      ^^^^---- Length PIN = 7 bytes
-      byte bmPINLengthFormat = (byte) 0x04;   // 000 0 0100
-                                              //     ^-------- System bit units is bit
-                                              //       ^^^^--- PIN length is at the 4th position bit
-      //TODO compare ints, not bytes
-      byte wPINMaxExtraDigitL =               // Max=12 digits 
-              (reader.getwPINMaxExtraDigitL() < (byte) 0x0c) ?
-                reader.getwPINMaxExtraDigitL() : (byte) 0x0c;
-      byte wPINMaxExtraDigitH =               // Min=4/6 digits TODO card/ss pin (min: 4/6)
-              (reader.getwPINMaxExtraDigitH() > (byte) 0x04) ?
-                reader.getwPINMaxExtraDigitH() : (byte) 0x04;
-      byte bEntryValidationCondition = 
-              reader.getbEntryValidationCondition();  
-      byte bNumberMessage = (byte) 0x00;      // No message
-      byte wLangIdL = (byte) 0x0C;            // - English?
-      byte wLangIdH = (byte) 0x04;            // \
-      byte bMsgIndex = (byte) 0x00;           // Default Msg
-
-      byte[] apdu = new byte[] {
-        (byte) 0x00, (byte) 0x20, (byte) 0x00, kid, (byte) 0x08,  // CLA INS P1 P2 LC
-        (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff,               // Data
-        (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff                // ...
-      };
-
-      int offset = 0;
-      byte[] pinVerifyStructure = new byte[offset + 19 + apdu.length];
-      pinVerifyStructure[offset++] = bTimeOut;
-      pinVerifyStructure[offset++] = bTimeOut2;
-      pinVerifyStructure[offset++] = bmFormatString;
-      pinVerifyStructure[offset++] = bmPINBlockString;
-      pinVerifyStructure[offset++] = bmPINLengthFormat;
-      pinVerifyStructure[offset++] = wPINMaxExtraDigitL;
-      pinVerifyStructure[offset++] = wPINMaxExtraDigitH;
-      pinVerifyStructure[offset++] = bEntryValidationCondition;
-      pinVerifyStructure[offset++] = bNumberMessage;
-      pinVerifyStructure[offset++] = wLangIdL;
-      pinVerifyStructure[offset++] = wLangIdH;
-      pinVerifyStructure[offset++] = bMsgIndex;
-      
-      pinVerifyStructure[offset++] = 0x00;
-      pinVerifyStructure[offset++] = 0x00;
-      pinVerifyStructure[offset++] = 0x00;
-      
-      pinVerifyStructure[offset++] = (byte) apdu.length;
-      pinVerifyStructure[offset++] = 0x00;
-      pinVerifyStructure[offset++] = 0x00;
-      pinVerifyStructure[offset++] = 0x00;
-      System.arraycopy(apdu, 0, pinVerifyStructure, offset, apdu.length);
-
-      return pinVerifyStructure;
+  /* (non-Javadoc)
+   * @see at.gv.egiz.smcc.AbstractSignatureCard#changePIN(at.gv.egiz.smcc.PINSpec, at.gv.egiz.smcc.ChangePINProvider)
+   */
+  @Override
+  @Exclusive
+  public void changePIN(PINSpec pinSpec, ChangePINProvider pinProvider)
+      throws LockedException, NotActivatedException, CancelledException,
+      TimeoutException, SignatureCardException, InterruptedException {
+    
+    CardChannel channel = getCardChannel();
+    
+    try {
+      if (pinSpec.getContextAID() != null) {
+        // SELECT application
+        execSELECT_AID(channel, pinSpec.getContextAID());
+      }
+      int retries = verifyPIN(channel, pinSpec, null, 0);
+      changePIN(channel, pinSpec, pinProvider, retries);
+    } catch (CardException e) {
+      log.info("Failed to change PIN.", e);
+      throw new SignatureCardException("Failed to change PIN.", e);
+    }
+    
   }
 
-  private byte[] getPINModifyStructure(byte kid) {
+  /* (non-Javadoc)
+   * @see at.gv.egiz.smcc.AbstractSignatureCard#activatePIN(at.gv.egiz.smcc.PINSpec, at.gv.egiz.smcc.PINProvider)
+   */
+  @Override
+  @Exclusive
+  public void activatePIN(PINSpec pinSpec, PINProvider pinProvider)
+      throws CancelledException, SignatureCardException, CancelledException,
+      TimeoutException, InterruptedException {
 
-      byte bTimeOut = reader.getbTimeOut();   // s.o.
-      byte bTimeOut2 = reader.getbTimeOut2(); // s.o.
-      byte bmFormatString = (byte) 0x89;      // s.o.
-      byte bmPINBlockString = (byte) 0x47;    // s.o.
-      byte bmPINLengthFormat = (byte) 0x04;   // s.o.
-      byte bInsertionOffsetOld = (byte) 0x00; // insertion position offset in bytes
-      byte bInsertionOffsetNew = (byte) 0x08; // (add 1 from bmFormatString b3)
-      byte wPINMaxExtraDigitL = 
-              (reader.getwPINMaxExtraDigitL() < (byte) 0x0c) ?
-                reader.getwPINMaxExtraDigitL() : (byte) 0x0c;
-      byte wPINMaxExtraDigitH =               // Min=4/6 digits TODO card/ss pin (min: 4/6)
-              (reader.getwPINMaxExtraDigitH() > (byte) 0x04) ?
-                reader.getwPINMaxExtraDigitH() : (byte) 0x04;
-      byte bConfirmPIN = (byte) 0x03;         // current pin entry + confirmation
-      byte bEntryValidationCondition =
-              reader.getbEntryValidationCondition();
-      byte bNumberMessage = (byte) 0x03;      // 3 messages
-      byte wLangIdL = (byte) 0x0C;            
-      byte wLangIdH = (byte) 0x04;            
-      byte bMsgIndex1 = (byte) 0x00;          // insertion
-      byte bMsgIndex2 = (byte) 0x01;          // modification
-      byte bMsgIndex3 = (byte) 0x02;          // confirmation
+    CardChannel channel = getCardChannel();
 
-      byte[] apdu = new byte[] {
-        (byte) 0x00, (byte) 0x24, (byte) 0x00, kid, (byte) 0x10, 
-        (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff,      
-        (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,      
-        (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff,      
-        (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff       
-      };
-
-      int offset = 0;
-      byte[] pinModifyStructure = new byte[offset + 24 + apdu.length];
-      pinModifyStructure[offset++] = bTimeOut;
-      pinModifyStructure[offset++] = bTimeOut2;
-      pinModifyStructure[offset++] = bmFormatString;
-      pinModifyStructure[offset++] = bmPINBlockString;
-      pinModifyStructure[offset++] = bmPINLengthFormat;
-      pinModifyStructure[offset++] = bInsertionOffsetOld;
-      pinModifyStructure[offset++] = bInsertionOffsetNew;
-      pinModifyStructure[offset++] = wPINMaxExtraDigitL;
-      pinModifyStructure[offset++] = wPINMaxExtraDigitH;
-      pinModifyStructure[offset++] = bConfirmPIN;
-      pinModifyStructure[offset++] = bEntryValidationCondition;
-      pinModifyStructure[offset++] = bNumberMessage;
-      pinModifyStructure[offset++] = wLangIdL;
-      pinModifyStructure[offset++] = wLangIdH;
-      pinModifyStructure[offset++] = bMsgIndex1;
-      pinModifyStructure[offset++] = bMsgIndex2;
-      pinModifyStructure[offset++] = bMsgIndex3;
-
-      pinModifyStructure[offset++] = 0x00;
-      pinModifyStructure[offset++] = 0x00;
-      pinModifyStructure[offset++] = 0x00;
-
-      pinModifyStructure[offset++] = (byte) apdu.length;
-      pinModifyStructure[offset++] = 0x00;
-      pinModifyStructure[offset++] = 0x00;
-      pinModifyStructure[offset++] = 0x00;
-      System.arraycopy(apdu, 0, pinModifyStructure, offset, apdu.length);
-
-//      log.debug("PIN MODIFY " + SMCCHelper.toString(pinModifyStructure));
-      return pinModifyStructure;
+    try {
+      if (pinSpec.getContextAID() != null) {
+        // SELECT application
+        execSELECT_AID(channel, pinSpec.getContextAID());
+      }
+      activatePIN(channel, pinSpec, pinProvider);
+    } catch (CardException e) {
+      log.info("Failed to activate PIN.", e);
+      throw new SignatureCardException("Failed to activate PIN.", e);
+    }
+    
   }
-  private byte[] getActivatePINModifyStructure(byte kid) {
 
-      byte bTimeOut = reader.getbTimeOut();   
-      byte bTimeOut2 = reader.getbTimeOut2(); 
-      byte bmFormatString = (byte) 0x89;      
-      byte bmPINBlockString = (byte) 0x47;    
-      byte bmPINLengthFormat = (byte) 0x04;   
-      byte bInsertionOffsetOld = (byte) 0x00; // ignored
-      byte bInsertionOffsetNew = (byte) 0x00; 
-      byte wPINMaxExtraDigitL =
-              (reader.getwPINMaxExtraDigitL() < (byte) 0x12) ?
-                reader.getwPINMaxExtraDigitL() : (byte) 0x12;
-      byte wPINMaxExtraDigitH =               // Min=4/6 digits TODO card/ss pin (min: 4/6)
-              (reader.getwPINMaxExtraDigitH() > (byte) 0x04) ?
-                reader.getwPINMaxExtraDigitH() : (byte) 0x04;
-      byte bConfirmPIN = (byte) 0x01;         // confirm, no current pin entry
-      byte bEntryValidationCondition =
-              reader.getbEntryValidationCondition();
-      byte bNumberMessage = (byte) 0x02;      // 2 messages
-      byte wLangIdL = (byte) 0x0c;
-      byte wLangIdH = (byte) 0x04;
-      byte bMsgIndex1 = (byte) 0x01;          // modification prompt
-      byte bMsgIndex2 = (byte) 0x02;          // confirmation prompt
-      byte bMsgIndex3 = (byte) 0x00;           
-
-      byte[] apdu = new byte[] {
-        (byte) 0x00, (byte) 0x24, (byte) 0x01, kid, (byte) 0x08,
-        (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-        (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff
-      };
-
-      int offset = 0;
-      byte[] pinModifyStructure = new byte[offset + 24 + apdu.length];
-      pinModifyStructure[offset++] = bTimeOut;
-      pinModifyStructure[offset++] = bTimeOut2;
-      pinModifyStructure[offset++] = bmFormatString;
-      pinModifyStructure[offset++] = bmPINBlockString;
-      pinModifyStructure[offset++] = bmPINLengthFormat;
-      pinModifyStructure[offset++] = bInsertionOffsetOld;
-      pinModifyStructure[offset++] = bInsertionOffsetNew;
-      pinModifyStructure[offset++] = wPINMaxExtraDigitL;
-      pinModifyStructure[offset++] = wPINMaxExtraDigitH;
-      pinModifyStructure[offset++] = bConfirmPIN;
-      pinModifyStructure[offset++] = bEntryValidationCondition;
-      pinModifyStructure[offset++] = bNumberMessage;
-      pinModifyStructure[offset++] = wLangIdL;
-      pinModifyStructure[offset++] = wLangIdH;
-      pinModifyStructure[offset++] = bMsgIndex1;
-      pinModifyStructure[offset++] = bMsgIndex2;
-      pinModifyStructure[offset++] = bMsgIndex3;
-
-      pinModifyStructure[offset++] = 0x00;
-      pinModifyStructure[offset++] = 0x00;
-      pinModifyStructure[offset++] = 0x00;
-
-      pinModifyStructure[offset++] = (byte) apdu.length;
-      pinModifyStructure[offset++] = 0x00;
-      pinModifyStructure[offset++] = 0x00;
-      pinModifyStructure[offset++] = 0x00;
-      System.arraycopy(apdu, 0, pinModifyStructure, offset, apdu.length);
-
-//      log.debug("PIN MODIFY " + SMCCHelper.toString(pinModifyStructure));
-      return pinModifyStructure;
+  /* (non-Javadoc)
+   * @see at.gv.egiz.smcc.PINMgmtSignatureCard#unblockPIN(at.gv.egiz.smcc.PINSpec, at.gv.egiz.smcc.PINProvider)
+   */
+  @Override
+  public void unblockPIN(PINSpec pinSpec, PINProvider pukProvider)
+      throws CancelledException, SignatureCardException, InterruptedException {
+    throw new SignatureCardException("Unblock PIN is not supported.");
   }
 
   @Override
@@ -884,7 +430,7 @@ public class STARCOSCard extends AbstractSignatureCard {
       super.reset();
       log.debug("select MF (e-card workaround)");
       CardChannel channel = getCardChannel();
-      ResponseAPDU resp = transmit(channel, new CommandAPDU(0x00, 0xA4, 0x00, 0x0C));
+      ResponseAPDU resp = channel.transmit(new CommandAPDU(0x00, 0xA4, 0x00, 0x0C));
       if (resp.getSW() != 0x9000) {
         throw new SignatureCardException("Failed to select MF after RESET: SW=" + Integer.toHexString(resp.getSW()) + ".");
       }
@@ -894,7 +440,267 @@ public class STARCOSCard extends AbstractSignatureCard {
     }
   }
 
+  /* (non-Javadoc)
+   * @see at.gv.egiz.smcc.PINMgmtSignatureCard#getPINSpecs()
+   */
+  @Override
+  public List<PINSpec> getPINSpecs() {
+    return Arrays.asList(new PINSpec[] {CARD_PIN_SPEC, SS_PIN_SPEC});
+  }
+
+  /* (non-Javadoc)
+   * @see at.gv.egiz.smcc.PINMgmtSignatureCard#getPINStatus(at.gv.egiz.smcc.PINSpec)
+   */
+  @Override
+  public PIN_STATE getPINState(PINSpec pinSpec) throws SignatureCardException {
+    
+    CardChannel channel = getCardChannel();
+    
+    try {
+      if (pinSpec.getContextAID() != null) {
+        // SELECT AID
+        execSELECT_AID(channel, pinSpec.getContextAID());
+      }
+      verifyPIN(channel, pinSpec, null, 0);
+      return PIN_STATE.ACTIV;
+    } catch (InterruptedException e) {
+      return PIN_STATE.UNKNOWN;
+    } catch (LockedException e) {
+      return PIN_STATE.BLOCKED;
+    } catch (NotActivatedException e) {
+      return PIN_STATE.NOT_ACTIV;
+    } catch (CardException e) {
+      log.error("Failed to get PIN status.", e);
+      throw new SignatureCardException("Failed to get PIN status.", e);
+    }
+    
+  }
+
   public String toString() {
     return "e-card";
+  }
+  
+  ////////////////////////////////////////////////////////////////////////
+  // PROTECTED METHODS (assume exclusive card access)
+  ////////////////////////////////////////////////////////////////////////
+  
+  protected void verifyPINLoop(CardChannel channel, PINSpec spec, PINProvider provider)
+      throws LockedException, NotActivatedException, SignatureCardException,
+      InterruptedException, CardException {
+    
+    int retries = verifyPIN(channel, spec, null, -1);
+    do {
+      retries = verifyPIN(channel, spec, provider, retries);
+    } while (retries > 0);
+    
+  }
+  
+  protected int verifyPIN(CardChannel channel, PINSpec pinSpec,
+      PINProvider provider, int retries) throws SignatureCardException,
+      LockedException, NotActivatedException, InterruptedException,
+      CardException {
+    
+    VerifyAPDUSpec apduSpec = new VerifyAPDUSpec(
+        new byte[] {
+            (byte) 0x00, (byte) 0x20, (byte) 0x00, pinSpec.getKID(), (byte) 0x08,
+            (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xff }, 
+        1, VerifyAPDUSpec.PIN_FORMAT_BCD, 7, 4, 4);
+    
+    ResponseAPDU resp;
+    if (provider != null) {
+      resp = reader.verify(channel, apduSpec, pinSpec, provider, retries);
+    } else {
+      resp = channel.transmit(new CommandAPDU(0x00, 0x20, 0x00, pinSpec.getKID()));
+    }
+    
+    if (resp.getSW() == 0x9000) {
+      return -1;
+    }
+    if (resp.getSW() >> 4 == 0x63c) {
+      return 0x0f & resp.getSW();
+    }
+    
+    switch (resp.getSW()) {
+    case 0x6983:
+      // authentication method blocked
+      throw new LockedException();
+    case 0x6984:
+      // reference data not usable
+      throw new NotActivatedException();
+    case 0x6985:
+      // conditions of use not satisfied
+      throw new NotActivatedException();
+  
+    default:
+      String msg = "VERIFY failed. SW=" + Integer.toHexString(resp.getSW()); 
+      log.info(msg);
+      throw new SignatureCardException(msg);
+    }
+    
+  }
+  
+  protected int changePIN(CardChannel channel, PINSpec pinSpec,
+      ChangePINProvider pinProvider, int retries) throws CancelledException,
+      InterruptedException, CardException, SignatureCardException {
+    
+    ChangeReferenceDataAPDUSpec apduSpec = new ChangeReferenceDataAPDUSpec(
+        new byte[] { 
+            (byte) 0x00, (byte) 0x24, (byte) 0x00, pinSpec.getKID(), (byte) 0x10, 
+            (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 
+            (byte) 0xff, (byte) 0xff, (byte) 0xff, 
+            (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 
+            (byte) 0xff, (byte) 0xff, (byte) 0xff }, 
+        1, VerifyAPDUSpec.PIN_FORMAT_BCD, 7, 4, 4, 8);
+    
+    ResponseAPDU resp = reader.modify(channel, apduSpec, pinSpec, pinProvider, retries);
+    
+    if (resp.getSW() == 0x9000) {
+      return -1;
+    }
+    if (resp.getSW() >> 4 == 0x63c) {
+      return 0x0f & resp.getSW();
+    }
+    
+    switch (resp.getSW()) {
+    case 0x6983:
+      // authentication method blocked
+      throw new LockedException();
+  
+    default:
+      String msg = "CHANGE REFERENCE DATA failed. SW=" + Integer.toHexString(resp.getSW()); 
+      log.info(msg);
+      throw new SignatureCardException(msg);
+    }
+   
+    
+  }
+
+  protected int activatePIN(CardChannel channel, PINSpec pinSpec,
+      PINProvider provider) throws SignatureCardException,
+      InterruptedException, CardException {
+    
+    NewReferenceDataAPDUSpec apduSpec = new NewReferenceDataAPDUSpec(
+        new byte[] {
+            (byte) 0x00, (byte) 0x20, (byte) 0x01, pinSpec.getKID(), (byte) 0x08,
+            (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xff }, 
+        1, VerifyAPDUSpec.PIN_FORMAT_BCD, 7, 4, 4);
+    
+    ResponseAPDU resp = reader.activate(channel, apduSpec, pinSpec, provider);
+    
+    switch (resp.getSW()) {
+    
+    case 0x9000:
+      return -1;
+
+    case 0x6983:
+      // authentication method blocked
+      throw new LockedException();
+
+    default:
+      String msg = "CHANGE REFERENCE DATA failed. SW=" + Integer.toHexString(resp.getSW()); 
+      log.info(msg);
+      throw new SignatureCardException(msg);
+    }
+    
+  }
+  
+  protected void execSELECT_MF(CardChannel channel) throws CardException, SignatureCardException {
+    ResponseAPDU resp = channel.transmit(
+        new CommandAPDU(0x00, 0xA4, 0x00, 0x0C));
+    if (resp.getSW() != 0x9000) {
+      throw new SignatureCardException("Failed to select MF: SW="
+          + Integer.toHexString(resp.getSW()) + ".");
+    }
+  }
+
+  protected byte[] execSELECT_AID(CardChannel channel, byte[] aid)
+      throws SignatureCardException, CardException {
+    
+    ResponseAPDU resp = channel.transmit(
+        new CommandAPDU(0x00, 0xA4, 0x04, 0x00, aid, 256));
+    
+    if (resp.getSW() == 0x6A82) {
+      String msg = "File or application not found AID="
+          + SMCCHelper.toString(aid) + " SW="
+          + Integer.toHexString(resp.getSW()) + ".";
+      log.info(msg);
+      throw new FileNotFoundException(msg);
+    } else if (resp.getSW() != 0x9000) {
+      String msg = "Failed to select application AID="
+          + SMCCHelper.toString(aid) + " SW="
+          + Integer.toHexString(resp.getSW()) + ".";
+      log.info(msg);
+      throw new SignatureCardException(msg);
+    } else {
+      return resp.getBytes();
+    }
+    
+  }
+  
+  protected byte[] execSELECT_FID(CardChannel channel, byte[] fid)
+      throws SignatureCardException, CardException {
+    
+    ResponseAPDU resp = channel.transmit(
+        new CommandAPDU(0x00, 0xA4, 0x02, 0x04, fid, 256));
+    
+    if (resp.getSW() == 0x6A82) {
+      String msg = "File or application not found FID="
+          + SMCCHelper.toString(fid) + " SW="
+          + Integer.toHexString(resp.getSW()) + ".";
+      log.info(msg);
+      throw new FileNotFoundException(msg);
+    } else if (resp.getSW() != 0x9000) {
+      String msg = "Failed to select application FID="
+          + SMCCHelper.toString(fid) + " SW="
+          + Integer.toHexString(resp.getSW()) + ".";
+      log.error(msg);
+      throw new SignatureCardException(msg);
+    } else {
+      return resp.getBytes();
+    }
+    
+  }
+  
+  protected void execMSE(CardChannel channel, int p1, int p2, byte[] data)
+      throws CardException, SignatureCardException {
+    ResponseAPDU resp = channel.transmit(
+        new CommandAPDU(0x00, 0x22, p1, p2, data));
+    if (resp.getSW() != 0x9000) {
+      throw new SignatureCardException("MSE:SET DST failed: SW="
+          + Integer.toHexString(resp.getSW()));
+    }
+  }
+  
+  protected void execPSO_HASH(CardChannel channel, byte[] hash) throws CardException, SignatureCardException {
+    byte[] data = new byte[hash.length + 2];
+    data[0] = (byte) 0x90; // tag
+    data[1] = (byte) (hash.length); // length
+    System.arraycopy(hash, 0, data, 2, hash.length);
+
+    ResponseAPDU resp = channel.transmit(
+        new CommandAPDU(0x00, 0x2A, 0x90, 0xA0, data));
+    if (resp.getSW() != 0x9000) {
+      throw new SignatureCardException("PSO:HASH failed: SW="
+          + Integer.toHexString(resp.getSW()));
+    }
+  }
+
+  protected byte[] execPSO_COMPUTE_DIGITAL_SIGNATURE(CardChannel channel)
+      throws CardException, SignatureCardException {
+    ResponseAPDU resp = channel.transmit(
+        new CommandAPDU(0x00, 0x2A, 0x9E, 0x9A, 256));
+    if (resp.getSW() == 0x6982) {
+      throw new SecurityStatusNotSatisfiedException();
+    } else if (resp.getSW() == 0x6983) {
+      throw new LockedException();
+    } else if (resp.getSW() != 0x9000) {
+      throw new SignatureCardException(
+          "PSO: COMPUTE DIGITAL SIGNATRE failed: SW="
+              + Integer.toHexString(resp.getSW()));
+    } else {
+      return resp.getData();
+    }
   }
 }
