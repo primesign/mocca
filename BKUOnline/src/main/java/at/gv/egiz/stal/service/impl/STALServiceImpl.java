@@ -58,7 +58,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author clemens
  */
-@WebService(endpointInterface = "at.gv.egiz.stal.service.STALPortType")
+@WebService(endpointInterface = "at.gv.egiz.stal.service.STALPortType", portName="STALPort", serviceName="STALService", targetNamespace="http://www.egiz.gv.at/wsdl/stal", wsdlLocation="WEB-INF/wsdl/stal.wsdl")
 @UsesJAXBContext(STALXJAXBContextFactory.class)
 public class STALServiceImpl implements STALPortType {
 
