@@ -29,7 +29,7 @@
   <listener>
     <listener-class>at.gv.egiz.bku.online.webapp.SessionTimeout</listener-class>
   </listener>
-  <servlet>
+    <servlet>
     <servlet-name>BKUServlet</servlet-name>
     <servlet-class>at.gv.egiz.bku.online.webapp.BKURequestHandler</servlet-class>
   </servlet>
@@ -54,7 +54,7 @@
     <servlet-name>help</servlet-name>
     <jsp-file>/help.jsp</jsp-file>
   </servlet>
-  <servlet-mapping>
+    <servlet-mapping>
     <servlet-name>BKUServlet</servlet-name>
     <url-pattern>/http-security-layer-request</url-pattern>
   </servlet-mapping>
@@ -110,7 +110,7 @@
   </servlet-mapping>
 	<!--  End STAL Config -->
 
-  <!-- Begin BKU Web Start Config 
+  <!-- Begin BKU Web Start Config
    |   (activate 'include-webstart' profile)
    -->
   <servlet>
@@ -130,14 +130,14 @@
     <servlet-name>JnlpDownloadServlet</servlet-name>
     <url-pattern>/webstart/*</url-pattern>
   </servlet-mapping>
-  
+
   <!-- End BKU Web Start Config -->
 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
-  <session-config>
+    <session-config>
     <session-timeout>5</session-timeout>
   </session-config>
 </web-app>
