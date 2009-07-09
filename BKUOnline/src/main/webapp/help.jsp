@@ -18,23 +18,28 @@
 	pageEncoding="UTF-8"%>
 <%@ page import="java.io.File"%>
 <%
-    String path;
-    String helpDir = "/helpfiles";
+    StringBuilder path = new StringBuilder("/helpfiles/");
 
+    //servlet mapping assures pathInfo[0] == help
+    //expect pathinfo /help/<languagecode>/<helpfile>
     String pathInfo[] = (request.getPathInfo() != null) ? request
       .getPathInfo().split("/") : new String[] {};
     if (pathInfo.length < 2) {
-      path = helpDir + "/index.html";
+      path.append("index.html");
     } else {
-      String language = pathInfo[1].split("_")[0];
-      String filename = pathInfo[2];
-      if ((new File(helpDir + "/"  + language.toLowerCase())).isDirectory()) {
-          path = helpDir + "/"  + language.toLowerCase() + "/" + filename;
-      } else {
-          path = helpDir + "/de/" + filename;
+
+      String language = "de";
+      if (pathInfo.length > 2 && (new File("/helpfiles/"  +
+              pathInfo[1].split("_")[0].toLowerCase())).isDirectory()) {
+        language = pathInfo[1].split("_")[0];
       }
+      path.append(language);
+      path.append('/');
+      
+      String filename = pathInfo[(pathInfo.length > 2) ? 2 : 1];
+      path.append(filename);
     }
     System.out.println(path);
 %>
 
-<jsp:include page="<%=path%>" flush="true"/>
+<jsp:include page="<%=path.toString()%>" flush="true"/>
