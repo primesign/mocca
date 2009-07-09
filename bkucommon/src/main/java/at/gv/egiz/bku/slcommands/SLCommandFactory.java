@@ -27,6 +27,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -48,6 +49,8 @@ import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 import at.gv.egiz.bku.utils.DebugReader;
 import at.gv.egiz.slbinding.RedirectEventFilter;
 import at.gv.egiz.slbinding.RedirectUnmarshallerListener;
+import at.gv.egiz.validation.ValidationEventLogger;
+import javax.xml.bind.ValidationEventHandler;
 
 public class SLCommandFactory {
 
@@ -276,6 +279,7 @@ public class SLCommandFactory {
                 unmarshaller.setSchema(slSchema);
             }
             log.trace("Before unmarshal().");
+            unmarshaller.setEventHandler(new ValidationEventLogger());
             object = unmarshaller.unmarshal(filteredReader);
             log.trace("After unmarshal().");
         } catch (UnmarshalException e) {
