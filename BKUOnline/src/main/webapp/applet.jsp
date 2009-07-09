@@ -36,7 +36,9 @@
                 : (Integer) session.getAttribute("appletWidth"); 
         int height = session.getAttribute("appletHeight") == null ? 130
                 : (Integer) session.getAttribute("appletHeight");
-        String backgroundImg = (String) session.getAttribute("appletBackground");
+        String backgroundImg = session.getAttribute("appletBackground") == null
+                ? "../img/ChipperlingCutoff.png"
+                : (String) session.getAttribute("appletBackground");
         String guiStyle = (String) session.getAttribute("appletGuiStyle");
         String locale = (String) session.getAttribute("locale");
         String extension = (String) session.getAttribute("extension");

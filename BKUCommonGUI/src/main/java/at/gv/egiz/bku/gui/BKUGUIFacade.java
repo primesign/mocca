@@ -42,7 +42,7 @@ public interface BKUGUIFacade {
   public static final String ERR_CONFIG = "error.config";
   
   public static final String MESSAGES_BUNDLE = "at/gv/egiz/bku/gui/Messages";
-  public static final String DEFAULT_BACKGROUND = "/images/BackgroundChipperling.png";
+  public static final String DEFAULT_BACKGROUND = "/images/ChipperlingCutoff.png";
   public static final String DEFAULT_ICON = "/images/ChipperlingLogo.png";
   public static final String HELP_IMG = "/images/help.png";
   public static final String HASHDATA_FONT = "Monospaced";

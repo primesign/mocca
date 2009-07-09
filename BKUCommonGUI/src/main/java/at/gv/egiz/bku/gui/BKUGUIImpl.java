@@ -28,25 +28,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
@@ -153,10 +143,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                     initIconPanel(background);
                     initContentPanel(null);
                   } else {
-                    initContentPanel((background == null) ?
-                      getClass().getResource(DEFAULT_BACKGROUND) :
-                      background
-                    );
+                    initContentPanel(background);
                   }
                   
                   GroupLayout layout = new GroupLayout(contentPane);
@@ -220,20 +207,16 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
     protected void initContentPanel(URL background) { 
 
-//      if (background == null) {
-//        background = getClass().getResource(DEFAULT_BACKGROUND);
-//      }
       if (background == null) {
         log.debug("no background image set");
+//        contentPanel = new ImagePanel(getClass().getResource(DEFAULT_BACKGROUND));
+        contentPanel = new JPanel();
+      } else if ("file".equals(background.getProtocol())) {
+          log.warn("file:// background images not permitted: " + background);
           contentPanel = new JPanel();
       } else {
-          if ("file".equals(background.getProtocol())) {
-            log.warn("file:// background images not permitted: " + background +
-                    ", loading default background");
-            background = getClass().getResource(DEFAULT_BACKGROUND);
-          }
-          log.debug("loading background " + background);
-          contentPanel = new ImagePanel(background);
+        log.debug("loading background " + background);
+        contentPanel = new ImagePanel(background);
       }
       mainPanel = new JPanel();
       mainPanel.setOpaque(false);

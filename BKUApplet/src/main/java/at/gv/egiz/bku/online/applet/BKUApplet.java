@@ -116,7 +116,7 @@ public class BKUApplet extends JApplet {
       backgroundImgURL = getURLParameter(BACKGROUND_IMG, null);
       log.debug("setting background: " + backgroundImgURL);
     } catch (MalformedURLException ex) {
-      log.warn("failed to load applet background image: " + ex.getMessage() + ", using default");
+      log.warn("cannot load applet background image: " + ex.getMessage());
     }
 
     AbstractHelpListener helpListener = null;
@@ -236,7 +236,7 @@ public class BKUApplet extends JApplet {
 
   protected URL getURLParameter(String paramKey, String sessionId) throws MalformedURLException {
     String urlParam = getParameter(paramKey);
-    if (urlParam != null) {
+    if (urlParam != null && !"".equals(urlParam)) {
       URL codebase = getCodeBase();
       try {
         URL url;
