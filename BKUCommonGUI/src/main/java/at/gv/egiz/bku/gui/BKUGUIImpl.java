@@ -39,6 +39,7 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -1509,6 +1510,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
     ////////////////////////////////////////////////////////////////////////////
 
     /**
+     * Load applet messages bundle. Note that getBundle looks for classes based
+     * on the default Locale before it selects the base class!
+     * 
      * Called from constructor.
      * Subclasses may override this method to ensure the message bundle is loaded
      * once initButtonSize (called from constructor as well) is called.
@@ -1517,12 +1521,16 @@ public class BKUGUIImpl implements BKUGUIFacade {
      */
     protected void loadMessageBundle(Locale locale) {
       if (locale != null) {
+        // see [#378] Ignoring post parameter 'locale': bundle resolve-order not correct?!
         Locale lang = new Locale(locale.getLanguage().substring(0, 2));
         log.debug("loading applet resources for language: " + lang.toString());
         messages = ResourceBundle.getBundle(MESSAGES_BUNDLE, lang);
       } else {
+        log.debug("loading default language applet resources");
         messages = ResourceBundle.getBundle(MESSAGES_BUNDLE);
       }
+      // how the f*** you know the default Messages.properties is de?!
+      log.debug("applet messages loaded: " + messages.getLocale());
     }
 
     protected int initButtonSize() {
