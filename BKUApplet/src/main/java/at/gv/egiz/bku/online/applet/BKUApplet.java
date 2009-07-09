@@ -97,6 +97,7 @@ public class BKUApplet extends JApplet {
     if (locale != null) {
       this.setLocale(new Locale(locale));
     }
+    log.trace("default locale: " + Locale.getDefault());
     log.debug("setting locale: " + getLocale());
 
     BKUGUIFacade.Style guiStyle;
