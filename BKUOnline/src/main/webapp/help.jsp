@@ -17,26 +17,31 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ page import="java.io.File"%>
+<%@ page import="java.util.Locale"%>
 <%
-    StringBuilder path = new StringBuilder("/helpfiles/");
+    StringBuilder path = new StringBuilder("/helpfiles");
 
     //servlet mapping assures pathInfo[0] == help
     //expect pathinfo /help/<languagecode>/<helpfile>
     String pathInfo[] = (request.getPathInfo() != null) ? request
       .getPathInfo().split("/") : new String[] {};
     if (pathInfo.length < 2) {
-      path.append("index.html");
+      path.append("/index.html");
     } else {
-
       String language = "de";
-      if (pathInfo.length > 2 && (new File("/helpfiles/"  +
-              pathInfo[1].split("_")[0].toLowerCase())).isDirectory()) {
-        language = pathInfo[1].split("_")[0];
+      //System.out.println("locale " + pathInfo[1] + ": " + pathInfo[1].substring(0, 2).toLowerCase()); //new Locale(pathInfo[1]).getLanguage());
+      //System.out.println("is dir: " + new File("/helpfiles/de").isDirectory());
+              //+ pathInfo[1].substring(0, 2).toLowerCase()).isDirectory());
+      if (pathInfo.length > 2 && new File("/helpfiles/"  // + new Locale(pathInfo[1]).getLanguage()).isDirectory())) {
+              + pathInfo[1].substring(0, 2).toLowerCase()).isDirectory()) {
+        System.out.println("locale " + new Locale(pathInfo[1]));
+        language = new Locale(pathInfo[1]).getLanguage();
       }
-      path.append(language);
       path.append('/');
+      path.append(language);
       
       String filename = pathInfo[(pathInfo.length > 2) ? 2 : 1];
+      path.append('/');
       path.append(filename);
     }
     System.out.println(path);
