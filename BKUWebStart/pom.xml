@@ -11,7 +11,7 @@
   <packaging>jar</packaging>
   <name>BKU Web Start</name>
   <!-- 
-   | IMPORTANT: update jnlp/resources/version.xml and
+   | IMPORTANT: update jnlp/resources/version.xml (BKUWebStart and utils) and
    | include-webstart profile in BKUOnline if version changes
    |-->
   <version>1.0.5-SNAPSHOT</version>

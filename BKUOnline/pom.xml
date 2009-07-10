@@ -261,7 +261,7 @@
             <dependency>
               <groupId>at.gv.egiz</groupId>
               <artifactId>BKUWebStart</artifactId>
-              <version>1.0.4-SNAPSHOT</version>
+              <version>1.0.5-SNAPSHOT</version>
               <scope>provided</scope>
               <type>zip</type>
             </dependency>

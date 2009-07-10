@@ -10,6 +10,14 @@
 
   <resource>
     <pattern>
+      <name>utils-1.2.1-SNAPSHOT.jar</name>
+      <version-id>1.2.1-SNAPSHOT</version-id>
+    </pattern>
+    <file>utils-1.2.1-SNAPSHOT.jar</file>
+  </resource>
+
+  <resource>
+    <pattern>
       <name>commons-logging-1.0.4.jar</name>
       <version-id>1.0.4</version-id>
     </pattern>
@@ -98,12 +106,4 @@
     <file>stax-api-1.0-2.jar</file>
   </resource>
 
-  <resource>
-    <pattern>
-      <name>utils-1.1.2-SNAPSHOT.jar</name>
-      <version-id>1.1.2-SNAPSHOT</version-id>
-    </pattern>
-    <file>utils-1.1.2-SNAPSHOT.jar</file>
-  </resource>
-  
 </jnlp-versions>
