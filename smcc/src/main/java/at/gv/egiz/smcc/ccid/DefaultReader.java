@@ -467,8 +467,8 @@ public class DefaultReader implements CCID {
     s.write(getbEntryValidationCondition());
     // bNumberMessage
     s.write(0x02);
-    // wLangId
-    s.write(0x0C);
+    // wLangId English (United States), see http://www.usb.org/developers/docs/USB_LANGIDs.pdf
+    s.write(0x09);
     s.write(0x04);
     // bMsgIndex1
     s.write(0x01);
@@ -530,8 +530,8 @@ public class DefaultReader implements CCID {
     s.write(getbEntryValidationCondition());
     // bNumberMessage
     s.write(0x03);
-    // wLangId
-    s.write(0x0C);
+    // wLangId English (United States), see http://www.usb.org/developers/docs/USB_LANGIDs.pdf
+    s.write(0x09);
     s.write(0x04);
     // bMsgIndex1
     s.write(0x00);
@@ -586,9 +586,9 @@ public class DefaultReader implements CCID {
     // bEntryValidationCondition
     s.write(getbEntryValidationCondition());
     // bNumberMessage
-    s.write(0xFF);
+    s.write(0x01);
     // wLangId
-    s.write(0x0C);
+    s.write(0x09);
     s.write(0x04);
     // bMsgIndex
     s.write(0x00);

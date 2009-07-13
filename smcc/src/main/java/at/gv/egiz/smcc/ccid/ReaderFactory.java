@@ -62,7 +62,7 @@ public class ReaderFactory {
       //old: REINER SCT CyberJack 00 00
       //new (CCID): 0C4B/0300 Reiner-SCT cyberJack pinpad(a) 00 00
       //display: REINER SCT CyberJack 00 00
-      if(name.startsWith("gemplus gempc pinpad")) {
+      if(name.startsWith("gemplus gempc pinpad") || name.startsWith("gemalto gempc pinpad")) {
         reader = new GemplusGemPCPinpad(icc, ct);
       } else if (name.startsWith("omnikey cardman 3621")) {
         reader = new OMNIKEYCardMan3621(icc, ct);
