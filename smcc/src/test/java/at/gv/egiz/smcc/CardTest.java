@@ -76,6 +76,73 @@ public abstract class CardTest {
   
   }
 
+  public class TestWrongPINProvider implements PINProvider {
+
+    int provided = 0;
+    int numWrongTries = 0;
+
+    char[] pin;
+
+    public TestWrongPINProvider(char[] pin, int numWrongTries) {
+      super();
+      this.pin = pin;
+      this.numWrongTries = numWrongTries;
+    }
+
+    @Override
+    public char[] providePIN(PINSpec spec, int retries)
+        throws CancelledException, InterruptedException {
+      if (provided >= numWrongTries) {
+        throw new CancelledException("Number of wrong tries reached: " + provided);
+      } else {
+        provided++;
+        return pin;
+      }
+    }
+
+    public int getProvided() {
+      return provided;
+    }
+  }
+
+  public class TestWrongChangePINProvider implements ChangePINProvider {
+
+    int provided = 0;
+    int numWrongTries = 0;
+
+    char[] pin;
+    char[] oldPin;
+
+    /** emulate ChangePinProvider */
+    public TestWrongChangePINProvider(char[] oldPin, char[] newPin, int numWrongTries) {
+      super();
+      this.pin = newPin;
+      this.oldPin = oldPin;
+      this.numWrongTries = numWrongTries;
+    }
+
+    @Override
+    public char[] providePIN(PINSpec spec, int retries)
+        throws CancelledException, InterruptedException {
+      return pin;
+    }
+
+    public int getProvided() {
+      return provided;
+    }
+
+    @Override
+    public char[] provideOldPIN(PINSpec spec, int retries)
+        throws CancelledException, InterruptedException {
+      if (provided >= numWrongTries) {
+        throw new CancelledException("Number of wrong tries reached: " + provided);
+      } else {
+        provided++;
+        return oldPin;
+      }
+    }
+  }
+
   public CardTest() {
     super();
   }

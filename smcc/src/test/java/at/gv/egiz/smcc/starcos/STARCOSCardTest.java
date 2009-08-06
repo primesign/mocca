@@ -45,6 +45,7 @@ import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.SignatureCardFactory;
 import at.gv.egiz.smcc.CardTest.TestChangePINProvider;
 import at.gv.egiz.smcc.CardTest.TestPINProvider;
+import at.gv.egiz.smcc.PINProvider;
 import at.gv.egiz.smcc.SignatureCard.KeyboxName;
 import at.gv.egiz.smcc.acos.A03ApplDEC;
 import at.gv.egiz.smcc.acos.A04ApplDEC;
@@ -52,6 +53,7 @@ import at.gv.egiz.smcc.acos.A04ApplSIG;
 import at.gv.egiz.smcc.acos.ACOSAppl;
 import at.gv.egiz.smcc.acos.ACOSApplDEC;
 import at.gv.egiz.smcc.acos.ACOSApplSIG;
+import org.junit.Ignore;
 
 public class STARCOSCardTest extends CardTest {
 
@@ -288,10 +290,63 @@ public class STARCOSCardTest extends CardTest {
         signatureCard.verifyPIN(pinSpec, new TestPINProvider(newPin));
         pin = newPin;
       }
-
     }
-
   }
 
+  @Test
+  public void testVerifyWrongPin() throws CardNotSupportedException,
+      LockedException, NotActivatedException, CancelledException,
+      PINFormatException, SignatureCardException, InterruptedException {
 
+    char[] defaultPin = "123456".toCharArray();
+
+    PINMgmtSignatureCard signatureCard = (PINMgmtSignatureCard) createSignatureCard();
+    CardEmul card = (CardEmul) signatureCard.getCard();
+    STARCOSCardChannelEmul channel = (STARCOSCardChannelEmul) card.getBasicChannel();
+    channel.setPin(STARCOSCardChannelEmul.KID_PIN_Glob, defaultPin);
+    STARCOSApplSichereSignatur appl = (STARCOSApplSichereSignatur) card.getApplication(STARCOSApplSichereSignatur.AID_SichereSignatur);
+    appl.setPin(STARCOSApplSichereSignatur.KID_PIN_SS, defaultPin);
+
+    for (PINSpec pinSpec : signatureCard.getPINSpecs()) {
+
+      char[] wrongPin = "999999".toCharArray();
+      int numWrongTries = 2;
+      TestWrongPINProvider wrongPinProvider = new TestWrongPINProvider(wrongPin, numWrongTries);
+      try {
+        signatureCard.verifyPIN(pinSpec, wrongPinProvider);
+      } catch (CancelledException ex) {
+      } finally {
+        assertTrue(wrongPinProvider.getProvided() == numWrongTries);
+      }
+    }
+  }
+
+  @Test
+  public void testChangeWrongPin() throws CardNotSupportedException,
+      LockedException, NotActivatedException, CancelledException,
+      PINFormatException, SignatureCardException, InterruptedException {
+    char[] defaultPin = "123456".toCharArray();
+
+    PINMgmtSignatureCard signatureCard = (PINMgmtSignatureCard) createSignatureCard();
+    CardEmul card = (CardEmul) signatureCard.getCard();
+    STARCOSCardChannelEmul channel = (STARCOSCardChannelEmul) card.getBasicChannel();
+    channel.setPin(STARCOSCardChannelEmul.KID_PIN_Glob, defaultPin);
+    STARCOSApplSichereSignatur appl = (STARCOSApplSichereSignatur) card.getApplication(STARCOSApplSichereSignatur.AID_SichereSignatur);
+    appl.setPin(STARCOSApplSichereSignatur.KID_PIN_SS, defaultPin);
+
+    for (PINSpec pinSpec : signatureCard.getPINSpecs()) {
+
+      char[] wrongPin = "999999".toCharArray();
+      int numWrongTries = 2;
+      TestWrongChangePINProvider wrongPinProvider =
+              new TestWrongChangePINProvider(wrongPin, defaultPin, numWrongTries);
+
+      try {
+        signatureCard.changePIN(pinSpec, wrongPinProvider);
+      } catch (CancelledException ex) {
+      } finally {
+        assertTrue(wrongPinProvider.getProvided() == numWrongTries);
+      }
+    }
+  }
 }
