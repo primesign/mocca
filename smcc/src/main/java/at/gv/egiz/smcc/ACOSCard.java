@@ -449,7 +449,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
       // SELECT application
       execSELECT_AID(channel, pinSpec.getContextAID());
       // VERIFY
-      verifyPIN(channel, pinSpec, pinProvider, -1);
+      verifyPINLoop(channel, pinSpec, pinProvider);
     } catch (CardException e) {
       log.info("Failed to verify PIN.", e);
       throw new SignatureCardException("Failed to verify PIN.", e);
@@ -471,7 +471,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
       // SELECT application
       execSELECT_AID(channel, pinSpec.getContextAID());
       // CHANGE REFERENCE DATA
-      changePIN(channel, pinSpec, pinProvider, -1);
+      changePINLoop(channel, pinSpec, pinProvider);
     } catch (CardException e) {
       log.info("Failed to change PIN.", e);
       throw new SignatureCardException("Failed to change PIN.", e);
@@ -531,7 +531,17 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
     do {
       retries = verifyPIN(channel, spec, provider, retries);
     } while (retries > 0);
-    
+  }
+
+  protected void changePINLoop(CardChannel channel, PINSpec spec, ChangePINProvider provider)
+      throws InterruptedException, LockedException, NotActivatedException,
+      TimeoutException, PINFormatException, PINOperationAbortedException,
+      SignatureCardException, CardException {
+
+    int retries = -1;
+    do {
+      retries = changePIN(channel, spec, provider, retries);
+    } while (retries > 0);
   }
 
   protected int verifyPIN(CardChannel channel, PINSpec pinSpec,

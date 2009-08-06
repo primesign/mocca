@@ -357,8 +357,12 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         // SELECT application
         execSELECT_AID(channel, pinSpec.getContextAID());
       }
-      int retries = verifyPIN(channel, pinSpec, null, 0);
-      verifyPIN(channel, pinSpec, pinProvider, retries);
+      log.debug("*** verifyPIN loop");
+      verifyPINLoop(channel, pinSpec, pinProvider);
+//      log.debug("*** verifyPIN 0");
+//      int retries = verifyPIN(channel, pinSpec, null, 0);
+//      log.debug("*** verifyPIN " + retries + " tries");
+//      verifyPIN(channel, pinSpec, pinProvider, retries);
     } catch (CardException e) {
       log.info("Failed to verify PIN.", e);
       throw new SignatureCardException("Failed to verify PIN.", e);
@@ -382,8 +386,9 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         // SELECT application
         execSELECT_AID(channel, pinSpec.getContextAID());
       }
-      int retries = verifyPIN(channel, pinSpec, null, 0);
-      changePIN(channel, pinSpec, pinProvider, retries);
+      changePINLoop(channel, pinSpec, pinProvider);
+//      int retries = verifyPIN(channel, pinSpec, null, 0);
+//      changePIN(channel, pinSpec, pinProvider, retries);
     } catch (CardException e) {
       log.info("Failed to change PIN.", e);
       throw new SignatureCardException("Failed to change PIN.", e);
@@ -492,7 +497,16 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     do {
       retries = verifyPIN(channel, spec, provider, retries);
     } while (retries > 0);
-    
+  }
+
+  protected void changePINLoop(CardChannel channel, PINSpec spec, ChangePINProvider provider)
+      throws LockedException, NotActivatedException, SignatureCardException,
+      InterruptedException, CardException {
+
+    int retries = verifyPIN(channel, spec, null, -1);
+    do {
+      retries = changePIN(channel, spec, provider, retries);
+    } while (retries > 0);
   }
   
   protected int verifyPIN(CardChannel channel, PINSpec pinSpec,
