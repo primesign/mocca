@@ -278,9 +278,8 @@ public class IdentityLinkInfoboxImpl extends AbstractBinaryFileInfobox {
                 new Object[] { issuerTemplate });
           }
         }
-      } else {
-        result.setResultBytes(resultBytes.toByteArray());
-      }
+      } 
+      result.setResultBytes(resultBytes.toByteArray());
     }
     
     return result;
