@@ -172,9 +172,29 @@ public class IdentityLinkInfoboxImpl extends AbstractBinaryFileInfobox {
     
     InfoboxReadResultFileImpl result = new InfoboxReadResultFileImpl();
     ByteArrayOutputStream resultBytes = null;
-    Result xmlResult = (isXMLEntity() || getDomainIdentifier() != null) 
-          ? result.getXmlResult(true) 
-          : new StreamResult((resultBytes = new ByteArrayOutputStream()));
+    Result xmlResult;
+    if (isXMLEntity()) {
+      // we will return the result as XML entity
+      xmlResult = result.getXmlResult(true);
+    } else {
+      // we will return the result as binary data
+      if (getDomainIdentifier() != null) {
+        // we need an XML result to be able to replace the domain identifier below
+        Document doc;
+        try {
+          doc = dbf.newDocumentBuilder().newDocument();
+        } catch (ParserConfigurationException e) {
+          // it should always be possible to create a new Document
+          log.error("Failed to create XML document.", e);
+          throw new SLRuntimeException(e);
+        }
+        xmlResult = new DOMResult(doc);
+      } else {
+        resultBytes = new ByteArrayOutputStream();
+        xmlResult = new StreamResult(resultBytes);
+      }
+    }
+          
     try {
       log.trace("Trying to transform identitylink");
       identityLinkTransformer.transformIdLink(issuerTemplate, new DOMSource(document), xmlResult);
@@ -235,23 +255,9 @@ public class IdentityLinkInfoboxImpl extends AbstractBinaryFileInfobox {
     if (!isXMLEntity()) {
       if (resultBytes == null) {
         resultBytes = new ByteArrayOutputStream();
-
         if (xmlResult instanceof DOMResult) {
           Node node = ((DOMResult) xmlResult).getNode();
-          Node nextSibling = ((DOMResult) xmlResult).getNextSibling();
-          
-          DOMSource xmlSource;
-          if (nextSibling != null) {
-            xmlSource = new DOMSource(nextSibling.getPreviousSibling());
-          } else if (node != null) {
-            xmlSource = new DOMSource(node.getFirstChild());
-          } else {
-            log
-                .error("IssuerTemplate transformation returned no node.");
-            throw new SLCommandException(4000,
-                SLExceptionMessages.EC4000_UNCLASSIFIED_IDLINK_TRANSFORMATION_FAILED,
-                new Object[] { issuerTemplate });
-          }
+          DOMSource xmlSource = new DOMSource(node);
           TransformerFactory transformerFactory = TransformerFactory.newInstance();
           try {
             Transformer transformer = transformerFactory.newTransformer();
@@ -267,16 +273,11 @@ public class IdentityLinkInfoboxImpl extends AbstractBinaryFileInfobox {
                 SLExceptionMessages.EC4000_UNCLASSIFIED_IDLINK_TRANSFORMATION_FAILED,
                 new Object[] { issuerTemplate });
           }
-        } else if (xmlResult instanceof StreamResult) {
-          OutputStream outputStream = ((StreamResult) xmlResult).getOutputStream();
-          if (outputStream instanceof ByteArrayOutputStream) {
-            result.setResultBytes(((ByteArrayOutputStream) outputStream).toByteArray());
-          } else {
-            log.error("ContentIsXMLEntity is set to 'false'. However, an XMLResult has already been set.");
-            throw new SLCommandException(4000,
-                SLExceptionMessages.EC4000_UNCLASSIFIED_IDLINK_TRANSFORMATION_FAILED,
-                new Object[] { issuerTemplate });
-          }
+        } else {
+          log.error("ContentIsXMLEntity is set to 'false'. However, an XMLResult has already been set.");
+          throw new SLCommandException(4000,
+              SLExceptionMessages.EC4000_UNCLASSIFIED_IDLINK_TRANSFORMATION_FAILED,
+              new Object[] { issuerTemplate });
         }
       } 
       result.setResultBytes(resultBytes.toByteArray());
