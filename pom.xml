@@ -23,7 +23,8 @@
     <module>STALXService</module>
     <module>BKUAppletExt</module>
     <module>BKUWebStart</module>
-    
+    <module>BKUCertificates</module>
+    <module>BKUHelp</module>
   </modules>
   <developers>
     <developer>
@@ -97,19 +98,26 @@
           <version>1.10</version>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
+          <groupId>org.apache.maven.plugins</groupId>
           <version>2.0-beta-7</version>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
           <artifactId>maven-buildnumber-plugin</artifactId>
+          <groupId>org.codehaus.mojo</groupId>
           <version>0.9.6</version>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.mojo.webstart</groupId>
           <artifactId>webstart-maven-plugin</artifactId>
+          <groupId>org.codehaus.mojo.webstart</groupId>
+          <!-- for pkcs11-sign, use patched webstart-maven-plugin
+          <version>1.0-beta-1-SNAPSHOT</version-->
           <version>1.0-alpha-2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <groupId>org.apache.maven.plugins</groupId>
+          <version>2.2</version>
         </plugin>
       </plugins>
     </pluginManagement>
