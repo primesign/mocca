@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>bku</artifactId>
+    <groupId>at.gv.egiz</groupId>
+    <version>1.2.1-SNAPSHOT</version>
+  </parent>
+  <groupId>at.gv.egiz</groupId>
+  <artifactId>BKUCertificates</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name>BKU Certificates</name>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <configuration>
+          <archive>
+            <!--index>true</index-->
+            <manifest>
+              <!-- BKUWebStart requires Implementation-Version attribute
+               |   BKUWebStart assumes certs to be under at/gv/egiz/bku/certs
+               |-->
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+          </archive>
+          <verbose>true</verbose>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
