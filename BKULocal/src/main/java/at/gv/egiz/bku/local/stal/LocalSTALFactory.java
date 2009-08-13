@@ -27,6 +27,7 @@ import javax.swing.WindowConstants;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUGUIImpl;
 import at.gv.egiz.bku.gui.DefaultHelpListener;
+import at.gv.egiz.bku.local.gui.LocalHelpListener;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
 import java.net.URL;
@@ -47,11 +48,10 @@ public class LocalSTALFactory implements STALFactory {
     if (locale != null) {
       dialog.setLocale(locale);
     }
-    DefaultHelpListener helpListener = null;
+    LocalHelpListener helpListener = null;
     try {
       if (helpURL != null) {
-//        helpListener = new LocalHelpListener(new URL(helpURL), dialog.getLocale());
-        helpListener = new DefaultHelpListener(new URL(helpURL), locale);
+        helpListener = new LocalHelpListener(new URL(helpURL), locale);
       } else {
         log.warn("no HELP URL configured, help system disabled");
       }

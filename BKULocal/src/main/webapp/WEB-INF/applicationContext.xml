@@ -20,7 +20,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
   <bean id="STALFactory" class="at.gv.egiz.bku.local.stal.LocalSTALFactory"
     scope="singleton">
-    <property name="helpURL" value="http://localhost:3495/help"/>
+    <property name="helpURL" value="http://localhost:3495/help/"/>
   </bean>
   
    

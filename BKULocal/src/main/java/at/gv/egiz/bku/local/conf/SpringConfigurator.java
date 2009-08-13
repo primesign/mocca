@@ -134,7 +134,7 @@ public class SpringConfigurator extends Configurator implements
       try {
         return r.getInputStream();
       } catch (IOException e) {
-        log.error("Cannot read manifest data:" + e);
+        log.error("Cannot read manifest data: " + e);
       }
     }
     return null;
