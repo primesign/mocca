@@ -36,7 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class TrayIconDialog implements TrayIconDialogInterface {
-  public static final String TRAYICON_RESOURCE = "at/gv/egiz/bku/webstart/ui/trayicon.png";
+  public static final String TRAYICON_RESOURCE = "at/gv/egiz/bku/webstart/ui/trayicon_32.png";
   public static final String TRAYMENU_SHUTDOWN = "TrayMenu.Shutdown";
   public static final String TRAYMENU_TOOLTIP = "TrayMenu.Tooltip";
 

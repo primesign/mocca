@@ -1,22 +1,28 @@
 package at.gv.egiz.bku.webstart;
 
 import at.gv.egiz.bku.utils.StreamUtil;
+import java.awt.AWTPermission;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilePermission;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.ReflectPermission;
+import java.net.NetPermission;
+import java.net.SocketPermission;
+import java.security.Permissions;
+import java.security.SecurityPermission;
+import java.util.PropertyPermission;
+import javax.smartcardio.CardPermission;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.DefaultHandler;
-import org.mortbay.jetty.handler.HandlerCollection;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.security.SslSocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
@@ -28,11 +34,17 @@ public class Container {
   public static final String HTTPS_PORT_PROPERTY = "mocca.http.port";
 
   private static Log log = LogFactory.getLog(Container.class);
+  static {
+    if (log.isDebugEnabled()) {
+      //Jetty log INFO and WARN, include ignored exceptions
+      //jetty logging may be further restricted by setting level in log4j.properties
+      System.setProperty("VERBOSE", "true");
+      //do not set Jetty DEBUG logging, produces loads of output
+      //System.setProperty("DEBUG", "true");
+    }
+  }
 
   private Server server;
-
-  public Container() {
-  }
 
   public void init() throws IOException {
 //    System.setProperty("DEBUG", "true");
@@ -55,15 +67,15 @@ public class Container {
     sslConnector.setPort(Integer.getInteger(HTTPS_PORT_PROPERTY, 3496).intValue());
     sslConnector.setAcceptors(1);
     sslConnector.setHost("127.0.0.1");
-    File configDir = new File(System.getProperty("user.home") + "/" + BKULauncher.CONFIG_DIR);
-    File keystoreFile = new File(configDir, BKULauncher.KEYSTORE_FILE);
+    File configDir = new File(System.getProperty("user.home") + "/" + Configurator.CONFIG_DIR);
+    File keystoreFile = new File(configDir, Configurator.KEYSTORE_FILE);
     if (!keystoreFile.canRead()) {
       log.error("MOCCA keystore file not readable: " + keystoreFile.getAbsolutePath());
       throw new FileNotFoundException("MOCCA keystore file not readable: " + keystoreFile.getAbsolutePath());
     }
     log.debug("loading MOCCA keystore from " + keystoreFile.getAbsolutePath());
     sslConnector.setKeystore(keystoreFile.getAbsolutePath());
-    File passwdFile = new File(configDir, BKULauncher.PASSWD_FILE);
+    File passwdFile = new File(configDir, Configurator.PASSWD_FILE);
     BufferedReader reader = new BufferedReader(new FileReader(passwdFile));
     String pwd;
     while ((pwd = reader.readLine()) != null) {
@@ -107,7 +119,6 @@ public class Container {
 
     sslConnector.setExcludeCipherSuites(RFC4492CipherSuites);
 
-
     server.setConnectors(new Connector[] { connector, sslConnector });
     
     WebAppContext webapp = new WebAppContext();
@@ -116,12 +127,12 @@ public class Container {
     webapp.setExtractWAR(true); 
     webapp.setParentLoaderPriority(false);
 
-    webapp.setWar(copyWebapp(webapp.getTempDirectory())); //getClass().getClassLoader().getResource("BKULocalWar/").toString());
-
+    webapp.setWar(copyWebapp(webapp.getTempDirectory()));
+    webapp.setPermissions(getPermissions(webapp.getTempDirectory()));
+    
     server.setHandler(webapp);
     server.setGracefulShutdown(1000*3);
   }
-
 
   private String copyWebapp(File webappDir) throws IOException {
     File webapp = new File(webappDir, "BKULocal.war");
@@ -131,6 +142,44 @@ public class Container {
     StreamUtil.copyStream(is, os);
     os.close();
     return webapp.getPath();
+  }
+
+  private Permissions getPermissions(File webappDir) {
+    Permissions perms = new Permissions();
+
+    // jetty-webstart (spring?)
+    perms.add(new RuntimePermission("getClassLoader"));
+
+    // standard permissions
+    perms.add(new PropertyPermission("*", "read"));
+    perms.add(new RuntimePermission("accessDeclaredMembers"));
+    perms.add(new RuntimePermission("accessClassInPackage.*"));
+    perms.add(new RuntimePermission("defineClassInPackage.*"));
+    perms.add(new RuntimePermission("setFactory"));
+    perms.add(new RuntimePermission("getProtectionDomain"));
+    perms.add(new RuntimePermission("modifyThread"));
+    perms.add(new RuntimePermission("modifyThreadGroup"));
+    perms.add(new RuntimePermission("setFactory"));
+    perms.add(new ReflectPermission("suppressAccessChecks"));
+
+    // MOCCA specific
+    perms.add(new SocketPermission("*", "connect,resolve"));
+    perms.add(new NetPermission("specifyStreamHandler"));
+    perms.add(new SecurityPermission("insertProvider.*"));
+    perms.add(new SecurityPermission("putProviderProperty.*"));
+    perms.add(new SecurityPermission("removeProvider.*"));
+    perms.add(new CardPermission("*", "*"));
+    perms.add(new AWTPermission("*"));
+
+    perms.add(new FilePermission(webappDir.getAbsolutePath() + "/-", "read"));
+    perms.add(new FilePermission(new File(System.getProperty("java.home") + "/lib/xalan.properties").getAbsolutePath(), "read"));
+    perms.add(new FilePermission(new File(System.getProperty("java.home") + "/lib/xerces.properties").getAbsolutePath(), "read"));
+    perms.add(new FilePermission(new File(System.getProperty("user.home")).getAbsolutePath(), "read, write"));
+    perms.add(new FilePermission(new File(System.getProperty("user.home") + "/-").getAbsolutePath(), "read, write"));
+    perms.add(new FilePermission(new File(System.getProperty("user.home") + "/.mocca/logs/*").getAbsolutePath(), "read, write,delete"));
+
+
+    return perms;
   }
 
   public void start() throws Exception {

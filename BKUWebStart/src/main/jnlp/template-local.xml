@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="$jnlpspec" codebase="$$codebase" context="$$context" href="$$name">
+<jnlp spec="$jnlpspec" codebase="file:/home/clemens/workspace/bku/BKUWebStart/target/jnlp" href="$outputFile">
 
   <information>
     <!--title>$project.Name</title-->
@@ -10,10 +10,10 @@
     <description>$project.Description (BKU) MOCCA Web Start</description>
     <description kind="short">$project.Description</description>
     <!--icon kind="shortcut" href="img/logo_16.ico" width="16" height="16" version="1.0-SNAPSHOT"/-->
-    <icon kind="shortcut" href="img/logo_32.png" width="32" height="32" version="1.0-SNAPSHOT"/>
-    <icon kind="default" href="img/logo_32.png" width="32" height="32" version="1.0-SNAPSHOT"/>
-    <icon kind="default" href="img/logo_64.png" width="64" height="64" version="1.0-SNAPSHOT"/>
-    <icon kind="splash" href="img/splash.png" version="1.0-SNAPSHOT"/>
+    <icon kind="shortcut" href="img/logo_32.png" width="32" height="32"/>
+    <icon kind="default" href="img/logo_32.png" width="32" height="32"/>
+    <icon kind="default" href="img/logo_64.png" width="64" height="64"/>
+    <icon kind="splash" href="img/splash.png"/>
     <shortcut online="false">
       <desktop/>
       <menu submenu="e-Government"/>
@@ -33,15 +33,8 @@
 
   <update check="timeout" policy="prompt-update"/>
 
-  <resources os="Mac OS X">
-    <java version="$j2seVersion" java-vm-args="-d32"/>
-    <property name="jnlp.versionEnabled" value="true"/>
-     $dependencies
-  </resources>
-
   <resources>
-    <java version="$j2seVersion"/>
-    <property name="jnlp.versionEnabled" value="true"/>
+    <java version="$j2seVersion" java-vm-args="-Djava.security.debug=access,failure"/>
      $dependencies
   </resources>
 
