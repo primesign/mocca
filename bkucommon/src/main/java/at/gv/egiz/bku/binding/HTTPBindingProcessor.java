@@ -347,8 +347,8 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 						srcContex.setSourceUrl(conn.getUrl());
 						currentState = State.PROCESS;
 					} else if (((contentType.startsWith(HttpUtil.TXT_HTML))
-							|| (contentType.startsWith(HttpUtil.TXT_PLAIN)) || (contentType
-							.startsWith(HttpUtil.TXT_XML)))
+							|| (contentType.startsWith(HttpUtil.TXT_PLAIN))
+              || (contentType.startsWith(HttpUtil.TXT_XML)))
 							&& (dataUrlResponse.isHttpResponseXMLOK())) {
 						log.info("Dataurl response matches <ok/> with content type: "
 								+ contentType);
@@ -568,10 +568,10 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 		commandCtx.setSTAL(getSTAL());
 		commandCtx.setURLDereferencerContext(new SimpleFormDataContextImpl(this));
 		commandCtx.setLocale(locale);
-		slCommand = SLCommandFactory.getInstance().createSLCommand(source,
+    slCommand = SLCommandFactory.getInstance().createSLCommand(source,
 				commandCtx);
 		log.debug("Created new command: " + slCommand);
-	}
+  }
 
 	@Override
 	public void run() {

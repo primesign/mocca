@@ -84,6 +84,7 @@ public abstract class Configurator {
         throw new SLRuntimeException(
             "Expecting directory as SSL.caDirectory parameter");
       }
+      log.info("loading trustStore from " + caDir.getAbsolutePath());
       CertificateFactory cf = CertificateFactory.getInstance("X.509");
       for (File f : caDir.listFiles()) {
         try {
@@ -114,6 +115,7 @@ public abstract class Configurator {
         throw new SLRuntimeException(
             "Expecting directory as SSL.certDirectory parameter");
       }
+      log.info("loading certStore from " + certDir.getAbsolutePath());
       List<X509Certificate> certCollection = new LinkedList<X509Certificate>();
       CertificateFactory cf = CertificateFactory.getInstance("X.509");
       for (File f : certDir.listFiles()) {
@@ -256,7 +258,7 @@ public abstract class Configurator {
           log.debug("Setting user agent to: "
               + properties.getProperty(USERAGENT_CONFIG_P));
         } else {
-          log.warn("Cannot read manifest");
+          log.warn("Failed to read manifest, setting user-agent to " + USERAGENT_DEFAULT);
           properties.setProperty(USERAGENT_CONFIG_P, USERAGENT_DEFAULT);
         }
       } catch (IOException e) {
