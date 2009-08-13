@@ -581,11 +581,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 JLabel pinsizeLabel = new JLabel();
                 pinsizeLabel.setFont(pinsizeLabel.getFont().deriveFont(pinsizeLabel.getFont().getStyle() & ~java.awt.Font.BOLD, pinsizeLabel.getFont().getSize()-2));
                 String pinsizePattern = getMessage(LABEL_PINSIZE);
-                String pinSize = String.valueOf(pinSpec.getMinLength());
-                if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
-                    pinSize += "-" + pinSpec.getMaxLength();
-                }
-                pinsizeLabel.setText(MessageFormat.format(pinsizePattern, new Object[]{pinSize}));
+                pinsizeLabel.setText(MessageFormat.format(pinsizePattern, new Object[]{pinSpec.getLocalizedLength()}));
                 
                 GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
                 mainPanel.setLayout(mainPanelLayout);
@@ -750,14 +746,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   helpListener.setHelpTopic(HELP_RETRY);
                 }
 
-                String pinSize = String.valueOf(pinSpec.getMinLength());
-                if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
-                    pinSize += "-" + pinSpec.getMaxLength();
-                }
-
                 String msgPattern = getMessage(MESSAGE_ENTERPIN_PINPAD);
                 String msg = MessageFormat.format(msgPattern, new Object[] {
-                  pinSpec.getLocalizedName(), pinSize });
+                  pinSpec.getLocalizedName(), pinSpec.getLocalizedLength() });
 
                 JLabel msgLabel = new JLabel();
                 msgLabel.setFont(msgLabel.getFont().deriveFont(msgLabel.getFont().getStyle() & ~Font.BOLD));
@@ -906,11 +897,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 JLabel pinsizeLabel = new JLabel();
                 pinsizeLabel.setFont(pinsizeLabel.getFont().deriveFont(pinsizeLabel.getFont().getStyle() & ~java.awt.Font.BOLD, pinsizeLabel.getFont().getSize()-2));
                 String pinsizePattern = getMessage(LABEL_PINSIZE);
-                String pinSize = String.valueOf(pinSpec.getMinLength());
-                if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
-                    pinSize += "-" + pinSpec.getMaxLength();
-                }
-                pinsizeLabel.setText(MessageFormat.format(pinsizePattern, new Object[]{pinSize}));
+                pinsizeLabel.setText(MessageFormat.format(pinsizePattern, new Object[]{pinSpec.getLocalizedLength()}));
 
                 GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
                 mainPanel.setLayout(mainPanelLayout);

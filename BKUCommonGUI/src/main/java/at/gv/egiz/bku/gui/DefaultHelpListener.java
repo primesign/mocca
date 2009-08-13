@@ -60,8 +60,7 @@ public class DefaultHelpListener extends AbstractHelpListener {
    * @param helpTopic ignored
    */
   @Override
-  public void showDocument(final URL helpURL, final String helpTopic)  {
-//    try {
+  public void showDocument(final URL helpURL, final String helpTopic) {
       log.debug("schedule help dialog");
 
       SwingUtilities.invokeLater(new Runnable() {
@@ -72,9 +71,9 @@ public class DefaultHelpListener extends AbstractHelpListener {
           log.debug("show help dialog");
 
           if (ctx == null) {
-            HelpViewer.showHelpDialog(helpURL, messages); // helpTopic, messages);
+            HelpViewer.showHelpDialog(helpURL, messages);
           } else {
-            HelpViewer.showHelpDialog(ctx, helpURL, messages); //helpTopic, messages);
+            HelpViewer.showHelpDialog(ctx, helpURL, messages);
           }
         }
       });
