@@ -2,10 +2,10 @@
 <jnlp-versions>
   <resource>
     <pattern>
-      <name>BKUWebStart-1.0.9-SNAPSHOT.jar</name>
-      <version-id>1.0.9-SNAPSHOT</version-id>
+      <name>BKUWebStart-1.0.10-SNAPSHOT.jar</name>
+      <version-id>1.0.10-SNAPSHOT</version-id>
     </pattern>
-    <file>BKUWebStart-1.0.9-SNAPSHOT.jar</file>
+    <file>BKUWebStart-1.0.10-SNAPSHOT.jar</file>
   </resource>
   <resource>
     <pattern>
