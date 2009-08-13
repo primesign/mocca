@@ -9,7 +9,7 @@
 	<artifactId>BKULocal</artifactId>
 	<packaging>war</packaging>
 	<name>BKU Local</name>
-	<version>1.0.6-SNAPSHOT</version>
+	<version>1.0.10-SNAPSHOT</version>
 
 	<scm>
 		<developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKULocal</developerConnection>
