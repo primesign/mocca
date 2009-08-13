@@ -29,7 +29,10 @@
   <listener>
     <listener-class>at.gv.egiz.bku.online.webapp.SessionTimeout</listener-class>
   </listener>
-    <servlet>
+  <listener>
+    <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
+  </listener>
+  <servlet>
     <servlet-name>BKUServlet</servlet-name>
     <servlet-class>at.gv.egiz.bku.online.webapp.BKURequestHandler</servlet-class>
   </servlet>
@@ -53,6 +56,11 @@
   <servlet>
     <servlet-name>help</servlet-name>
     <jsp-file>/help.jsp</jsp-file>
+  </servlet>
+  <servlet>
+    <servlet-name>STALService</servlet-name>
+    <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
   </servlet>
     <servlet-mapping>
     <servlet-name>BKUServlet</servlet-name>
@@ -93,23 +101,6 @@
 
 	<!--  End BKU Config -->
 
-	<!--  Begin STAL Config -->
-  <listener>
-    <listener-class>
-			com.sun.xml.ws.transport.http.servlet.WSServletContextListener
-    </listener-class>
-  </listener>
-  <servlet>
-    <servlet-name>STALPort</servlet-name>
-    <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>STALPort</servlet-name>
-    <url-pattern>/stal</url-pattern>
-  </servlet-mapping>
-	<!--  End STAL Config -->
-
   <!-- Begin BKU Web Start Config
    |   (activate 'include-webstart' profile)
    -->
@@ -133,11 +124,15 @@
 
   <!-- End BKU Web Start Config -->
 
+  <servlet-mapping>
+    <servlet-name>STALService</servlet-name>
+    <url-pattern>/stal</url-pattern>
+  </servlet-mapping>
+  <session-config>
+    <session-timeout>5</session-timeout>
+  </session-config>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
-    <session-config>
-    <session-timeout>5</session-timeout>
-  </session-config>
 </web-app>
