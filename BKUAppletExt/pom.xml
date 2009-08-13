@@ -37,6 +37,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <executions>
                     <execution>
                         <goals>
@@ -94,4 +95,25 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+      <profile>
+        <id>pkcs11-sign</id>
+        <build>
+          <plugins>
+            <plugin>
+              <artifactId>maven-jar-plugin</artifactId>
+              <groupId>org.apache.maven.plugins</groupId>
+              <version>2.2-mocca</version>
+              <configuration>
+                <keystore>NONE</keystore>
+                <type>PKCS11</type>
+                <providerClass>iaik.pkcs.pkcs11.provider.IAIKPkcs11</providerClass>
+                <alias>a-sit</alias>
+                <storepass></storepass>
+              </configuration>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
+    </profiles>
 </project>
