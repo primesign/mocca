@@ -33,7 +33,10 @@ public class PINSpec {
     
     String resourceBundleName_;
     
-    String name_;
+    String nameKey_;
+
+    /** the localized, i.e. configurable length */
+    String lengthKey_;
 
     byte kid_;
 
@@ -49,13 +52,14 @@ public class PINSpec {
      * @param kid the keyId for this pin
      */
     public PINSpec(int minLenght, int maxLength, String rexepPattern, 
-        String resourceBundleName, String name, byte kid, byte[] contextAID) {
+        String resourceBundleName, String resourceKey, byte kid, byte[] contextAID) {
         
         minLength_ = minLenght;
         maxLength_ = maxLength;
         rexepPattern_ = rexepPattern;
         resourceBundleName_ = resourceBundleName;
-        name_ = name;
+        nameKey_ = resourceKey + ".name";
+        lengthKey_ = resourceKey + ".length";
         kid_ = kid;
         context_aid_ = contextAID;
     }
@@ -66,7 +70,8 @@ public class PINSpec {
         minLength_ = minLenght;
         maxLength_ = maxLength;
         rexepPattern_ = rexepPattern;
-        name_ = name;
+        nameKey_ = name + ".name";
+        lengthKey_ = name + ".length";
         kid_ = kid;
         context_aid_ = contextAID;
     }
@@ -75,9 +80,9 @@ public class PINSpec {
       
       if (resourceBundleName_ != null) {
         ResourceBundle resourceBundle = ResourceBundle.getBundle(resourceBundleName_);
-        return resourceBundle.getString(name_);
+        return resourceBundle.getString(nameKey_);
       } else {
-        return name_;
+        return nameKey_;
       }
         
     }
@@ -86,11 +91,26 @@ public class PINSpec {
       
       if (resourceBundleName_ != null) {
         ResourceBundle resourceBundle = ResourceBundle.getBundle(resourceBundleName_, locale);
-        return resourceBundle.getString(name_);
+        return resourceBundle.getString(nameKey_);
       } else {
-        return name_;
+        return nameKey_;
       }
       
+    }
+
+    public String getLocalizedLength() {
+
+      if (resourceBundleName_ != null) {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle(resourceBundleName_);
+        return resourceBundle.getString(lengthKey_);
+      } else {
+        if (maxLength_ > minLength_) {
+          return minLength_ + "-" + maxLength_;
+        } else {
+          return String.valueOf(minLength_);
+        }
+      }
+
     }
 
     public int getMaxLength() {

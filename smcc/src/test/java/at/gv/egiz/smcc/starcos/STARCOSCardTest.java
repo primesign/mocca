@@ -294,7 +294,7 @@ public class STARCOSCardTest extends CardTest {
   }
 
   @Test
-  public void testVerifyWrongPin() throws CardNotSupportedException,
+  public void testVerifyInvalidPin() throws CardNotSupportedException,
       LockedException, NotActivatedException, CancelledException,
       PINFormatException, SignatureCardException, InterruptedException {
 
@@ -309,20 +309,20 @@ public class STARCOSCardTest extends CardTest {
 
     for (PINSpec pinSpec : signatureCard.getPINSpecs()) {
 
-      char[] wrongPin = "999999".toCharArray();
-      int numWrongTries = 2;
-      TestWrongPINProvider wrongPinProvider = new TestWrongPINProvider(wrongPin, numWrongTries);
+      char[] invalidPin = "999999".toCharArray();
+      int numInvalidTries = 2;
+      TestInvalidPINProvider invalidPinProvider = new TestInvalidPINProvider(invalidPin, numInvalidTries);
       try {
-        signatureCard.verifyPIN(pinSpec, wrongPinProvider);
+        signatureCard.verifyPIN(pinSpec, invalidPinProvider);
       } catch (CancelledException ex) {
       } finally {
-        assertTrue(wrongPinProvider.getProvided() == numWrongTries);
+        assertTrue(invalidPinProvider.getProvided() == numInvalidTries);
       }
     }
   }
 
   @Test
-  public void testChangeWrongPin() throws CardNotSupportedException,
+  public void testChangeInvalidPin() throws CardNotSupportedException,
       LockedException, NotActivatedException, CancelledException,
       PINFormatException, SignatureCardException, InterruptedException {
     char[] defaultPin = "123456".toCharArray();
@@ -336,16 +336,16 @@ public class STARCOSCardTest extends CardTest {
 
     for (PINSpec pinSpec : signatureCard.getPINSpecs()) {
 
-      char[] wrongPin = "999999".toCharArray();
-      int numWrongTries = 2;
-      TestWrongChangePINProvider wrongPinProvider =
-              new TestWrongChangePINProvider(wrongPin, defaultPin, numWrongTries);
+      char[] invalidPin = "999999".toCharArray();
+      int numInvalidTries = 2;
+      TestInvalidChangePINProvider invalidPinProvider =
+              new TestInvalidChangePINProvider(invalidPin, defaultPin, numInvalidTries);
 
       try {
-        signatureCard.changePIN(pinSpec, wrongPinProvider);
+        signatureCard.changePIN(pinSpec, invalidPinProvider);
       } catch (CancelledException ex) {
       } finally {
-        assertTrue(wrongPinProvider.getProvided() == numWrongTries);
+        assertTrue(invalidPinProvider.getProvided() == numInvalidTries);
       }
     }
   }

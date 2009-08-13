@@ -76,14 +76,14 @@ public abstract class CardTest {
   
   }
 
-  public class TestWrongPINProvider implements PINProvider {
+  public class TestInvalidPINProvider implements PINProvider {
 
     int provided = 0;
     int numWrongTries = 0;
 
     char[] pin;
 
-    public TestWrongPINProvider(char[] pin, int numWrongTries) {
+    public TestInvalidPINProvider(char[] pin, int numWrongTries) {
       super();
       this.pin = pin;
       this.numWrongTries = numWrongTries;
@@ -105,7 +105,7 @@ public abstract class CardTest {
     }
   }
 
-  public class TestWrongChangePINProvider implements ChangePINProvider {
+  public class TestInvalidChangePINProvider implements ChangePINProvider {
 
     int provided = 0;
     int numWrongTries = 0;
@@ -114,7 +114,7 @@ public abstract class CardTest {
     char[] oldPin;
 
     /** emulate ChangePinProvider */
-    public TestWrongChangePINProvider(char[] oldPin, char[] newPin, int numWrongTries) {
+    public TestInvalidChangePINProvider(char[] oldPin, char[] newPin, int numWrongTries) {
       super();
       this.pin = newPin;
       this.oldPin = oldPin;

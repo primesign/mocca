@@ -104,13 +104,13 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   };
 
   private static final PINSpec DEC_PIN_SPEC = new PINSpec(0, 8, "[0-9]",
-      "at/gv/egiz/smcc/ACOSCard", "dec.pin.name", KID_PIN_DEC, AID_DEC);
+      "at/gv/egiz/smcc/ACOSCard", "dec.pin", KID_PIN_DEC, AID_DEC);
 
   private static final PINSpec SIG_PIN_SPEC = new PINSpec(0, 8, "[0-9]",
-      "at/gv/egiz/smcc/ACOSCard", "sig.pin.name", KID_PIN_SIG, AID_SIG);
+      "at/gv/egiz/smcc/ACOSCard", "sig.pin", KID_PIN_SIG, AID_SIG);
 
   private static final PINSpec INF_PIN_SPEC = new PINSpec(0, 8, "[0-9]",
-      "at/gv/egiz/smcc/ACOSCard", "inf.pin.name", KID_PIN_INF, AID_DEC);
+      "at/gv/egiz/smcc/ACOSCard", "inf.pin", KID_PIN_INF, AID_DEC);
   
   /**
    * The version of the card's digital signature application.

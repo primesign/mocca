@@ -150,11 +150,11 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
 
   private static final PINSpec CARD_PIN_SPEC =
     new PINSpec(4, 12, "[0-9]", 
-        "at/gv/egiz/smcc/STARCOSCard", "card.pin.name", KID_PIN_CARD, null);
+        "at/gv/egiz/smcc/STARCOSCard", "card.pin", KID_PIN_CARD, null);
   
   private static final PINSpec SS_PIN_SPEC =
     new PINSpec(6, 12, "[0-9]", 
-        "at/gv/egiz/smcc/STARCOSCard", "sig.pin.name", KID_PIN_SS, AID_DF_SS);
+        "at/gv/egiz/smcc/STARCOSCard", "sig.pin", KID_PIN_SS, AID_DF_SS);
 
   /**
    * Creates an new instance.
