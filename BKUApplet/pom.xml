@@ -45,6 +45,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
         <executions>
           <execution>
             <goals>
@@ -63,6 +64,8 @@
           </archive>
           <alias>test-applet signer</alias>
           <keystore>./keystore.ks</keystore>
+          <!-- attention: configuration inherited by pkcs11-sign, uncomment!
+               (removed in maven-jar-pluging-2.2-mocca) -->
           <storepass>storepass</storepass>
           <keypass>keypass</keypass>
           <verify>true</verify>
@@ -70,6 +73,27 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>pkcs11-sign</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+            <groupId>org.apache.maven.plugins</groupId>
+            <version>2.2-mocca</version>
+            <configuration>
+              <keystore>NONE</keystore>
+              <type>PKCS11</type>
+              <providerClass>iaik.pkcs.pkcs11.provider.IAIKPkcs11</providerClass>
+              <alias>a-sit</alias>
+              <storepass></storepass>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <dependencies>
     <dependency>
       <groupId>at.gv.egiz</groupId>
