@@ -188,7 +188,7 @@
             <artifactId>webstart-maven-plugin</artifactId>
             <groupId>org.codehaus.mojo.webstart</groupId>
             <!-- use pkcs11-patched webstart-maven-plugin-->
-            <version>1.0-beta-1-SNAPSHOT</version>
+            <version>1.0-beta-1-mocca</version>
             <configuration>
               <sign>
                 <keystore>NONE</keystore>
