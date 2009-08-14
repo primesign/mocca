@@ -16,6 +16,7 @@
  */
 package at.gv.egiz.bku.binding;
 
+import at.gv.egiz.bku.conf.Configuration;
 import iaik.security.ecc.provider.ECCProvider;
 import iaik.security.provider.IAIK;
 import iaik.xml.crypto.XSecProvider;
@@ -35,6 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import at.gv.egiz.bku.conf.Configurator;
+import at.gv.egiz.bku.conf.DummyConfiguration;
 import at.gv.egiz.bku.slcommands.SLCommandFactory;
 import at.gv.egiz.bku.slcommands.impl.xsect.STALProvider;
 
@@ -51,7 +53,7 @@ public class EmptyMultipartSLRequestTest {
   @Before
   public void setUp() throws MalformedURLException, ClassNotFoundException {
     manager = new BindingProcessorManagerImpl(new DummyStalFactory(),
-        new SLCommandInvokerImpl());
+        new SLCommandInvokerImpl(), new DummyConfiguration());
     HTTPBindingProcessor http = (HTTPBindingProcessor) manager
         .createBindingProcessor("http://www.at/", null);
     Map<String, String> headers = new HashMap<String, String>();

@@ -16,6 +16,7 @@
 */
 package at.gv.egiz.bku.binding;
 
+import at.gv.egiz.bku.conf.Configuration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -64,7 +65,7 @@ public interface BindingProcessor extends Runnable {
   
   public void writeResultTo(OutputStream os, String encoding) throws IOException;
 
-  public void init(STAL aStal, SLCommandInvoker aCommandInvoker);
+  public void init(STAL aStal, SLCommandInvoker aCommandInvoker, Configuration config);
   
   /**
   * Sets the preferred locale for userinteraction.

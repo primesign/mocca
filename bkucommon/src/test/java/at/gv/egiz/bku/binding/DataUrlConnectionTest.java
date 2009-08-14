@@ -20,6 +20,8 @@
  */
 package at.gv.egiz.bku.binding;
 
+import at.gv.egiz.bku.conf.Configuration;
+import at.gv.egiz.bku.conf.DummyConfiguration;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,7 +73,7 @@ public class DataUrlConnectionTest {
 
     log.debug("setting up HTTPBindingProcessor");
     manager = new BindingProcessorManagerImpl(new DummyStalFactory(),
-        new SLCommandInvokerImpl());
+        new SLCommandInvokerImpl(), new DummyConfiguration());
     bindingProcessor = (HTTPBindingProcessor) manager.createBindingProcessor(
         "http://www.iaik.at", null);
     Map<String, String> headers = new HashMap<String, String>();

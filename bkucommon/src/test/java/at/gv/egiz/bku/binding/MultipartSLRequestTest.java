@@ -16,6 +16,7 @@
 */
 package at.gv.egiz.bku.binding;
 
+import at.gv.egiz.bku.conf.DummyConfiguration;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ public class MultipartSLRequestTest {
   @Before
   public void setUp() throws MalformedURLException {
     manager = new BindingProcessorManagerImpl(new DummyStalFactory(),
-        new SLCommandInvokerImpl());
+        new SLCommandInvokerImpl(), new DummyConfiguration());
     HTTPBindingProcessor http = (HTTPBindingProcessor) manager
         .createBindingProcessor("http://www.at/", null);
     Map<String, String> headers = new HashMap<String, String>();

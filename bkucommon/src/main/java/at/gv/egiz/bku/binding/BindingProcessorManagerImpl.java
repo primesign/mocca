@@ -16,6 +16,7 @@
  */
 package at.gv.egiz.bku.binding;
 
+import at.gv.egiz.bku.conf.Configuration;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
@@ -48,6 +49,10 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
       Protocol.HTTPS };
 
   private static Log log = LogFactory.getLog(BindingProcessorManagerImpl.class);
+
+  /** spring injected config
+   * Passed to created bindingprocessors, to replace their configuration */
+  protected Configuration config;
 
   protected STALFactory stalFactory;
   protected SLCommandInvoker commandInvokerClass;
@@ -105,7 +110,7 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
    * @param ci
    *          must not be null (prototype to generate new instances)
    */
-  public BindingProcessorManagerImpl(STALFactory fab, SLCommandInvoker ci) {
+  public BindingProcessorManagerImpl(STALFactory fab, SLCommandInvoker ci, Configuration conf) {
     if (fab == null) {
       throw new NullPointerException("STALFactory must not be null");
     }
@@ -114,6 +119,7 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
       throw new NullPointerException("SLCommandInvoker must not be null");
     }
     commandInvokerClass = ci;
+    config = conf;
     executorService = Executors.newCachedThreadPool();
   }
 
@@ -213,7 +219,7 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager {
         commandInvokerClass.newInstance(), url);
     stalFactory.setLocale(locale);
     STAL stal = stalFactory.createSTAL();
-    bindingProcessor.init(stal, commandInvokerClass.newInstance());
+    bindingProcessor.init(stal, commandInvokerClass.newInstance(), config);
     if (locale != null) {
       bindingProcessor.setLocale(locale);
 //      stal.setLocale(locale);

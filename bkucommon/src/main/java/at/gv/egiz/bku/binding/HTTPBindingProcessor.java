@@ -87,12 +87,6 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 	public final static Collection<String> XML_REQ_TRANSFER_ENCODING = Arrays
 			.asList(new String[] { "binary" });
 
-	/**
-	 * Defines the maximum number of dataurl connects that are allowed within a
-	 * single SL Request processing.
-	 */
-	protected static int MAX_DATAURL_HOPS = 80;
-
 	protected static String XML_MIME_TYPE = "text/xml";
 	protected static String BINARY_MIME_TYPE = "application/octet-stream";
 
@@ -592,7 +586,7 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 						break;
 					case DATAURL:
 						handleDataUrl();
-						if (++hopcounter > MAX_DATAURL_HOPS) {
+						if (++hopcounter > config.getMaxDataUrlHops()) {
 							log.error("Maximum number of dataurl hops reached");
 							bindingProcessorError = new SLBindingException(2000);
 							currentState = State.FINISHED;

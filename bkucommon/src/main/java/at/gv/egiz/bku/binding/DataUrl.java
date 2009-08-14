@@ -16,6 +16,7 @@
  */
 package at.gv.egiz.bku.binding;
 
+import at.gv.egiz.bku.conf.Configuration;
 import at.gv.egiz.bku.conf.Configurator;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -41,6 +42,9 @@ public class DataUrl {
   private static SSLSocketFactory sslSocketFactory;
   private static HostnameVerifier hostNameVerifier;
   private URL url;
+
+  /** spring injected config, to replace configuration */
+  //private Configuration config;
 
   /**
    * Sets the default DataUrlConnection implementation

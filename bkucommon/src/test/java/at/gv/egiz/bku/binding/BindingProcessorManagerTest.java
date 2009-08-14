@@ -16,6 +16,8 @@
 */
 package at.gv.egiz.bku.binding;
 
+import at.gv.egiz.bku.conf.Configuration;
+import at.gv.egiz.bku.conf.DummyConfiguration;
 import static org.junit.Assert.*;
 
 import java.net.MalformedURLException;
@@ -33,7 +35,8 @@ public class BindingProcessorManagerTest {
   
   @Test(expected = MalformedURLException.class)
   public void basicCreationTest() throws MalformedURLException {
-   BindingProcessorManager manager = new BindingProcessorManagerImpl(new DummyStalFactory(), new SLCommandInvokerImpl());
+    //TODO for the moment empty config sufficient (currently only maxDataURLHops configured)
+   BindingProcessorManager manager = new BindingProcessorManagerImpl(new DummyStalFactory(), new SLCommandInvokerImpl(), new DummyConfiguration());
    BindingProcessor bp = manager.createBindingProcessor("http://www.at/", null);
    assertNotNull(bp.getId().toString());
    assertEquals(40, bp.getId().toString().length());

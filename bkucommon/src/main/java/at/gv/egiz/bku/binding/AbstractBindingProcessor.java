@@ -16,6 +16,7 @@
 */
 package at.gv.egiz.bku.binding;
 
+import at.gv.egiz.bku.conf.Configuration;
 import java.io.InputStream;
 import java.util.Date;
 
@@ -24,6 +25,7 @@ import at.gv.egiz.stal.STAL;
 
 public abstract class AbstractBindingProcessor implements BindingProcessor {
   protected Id id;
+  protected Configuration config;
   protected STAL stal;
   protected SLCommandInvoker commandInvoker;
   protected long lastAccessedTime = System.currentTimeMillis();
@@ -72,13 +74,14 @@ public abstract class AbstractBindingProcessor implements BindingProcessor {
    * @param aCommandInvoker
    *          must not be null
    */
-  public void init(STAL aStal, SLCommandInvoker aCommandInvoker) {
+  public void init(STAL aStal, SLCommandInvoker aCommandInvoker, Configuration conf) {
     if (aStal == null) {
       throw new NullPointerException("STAL must not be set to null");
     }
     if (aCommandInvoker == null) {
       throw new NullPointerException("Commandinvoker must not be set to null");
     }
+    config = conf;
     stal = aStal;
     commandInvoker = aCommandInvoker;
     Thread.currentThread().setName("BPID#"+getId().toString());

@@ -33,6 +33,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import at.gv.egiz.bku.binding.MultiTestDataUrlConnection.DataSourceProvider;
+import at.gv.egiz.bku.conf.Configuration;
+import at.gv.egiz.bku.conf.DummyConfiguration;
 import at.gv.egiz.bku.utils.StreamUtil;
 
 public class HttpBindingProcessorTest {
@@ -102,7 +104,7 @@ public class HttpBindingProcessorTest {
     server.setResponseContent("<ok/>");
     server.setResponseHeaders(serverHeaderMap);
     manager = new BindingProcessorManagerImpl(new DummyStalFactory(),
-        new SLCommandInvokerImpl());
+        new SLCommandInvokerImpl(), new DummyConfiguration());
     bindingProcessor = (HTTPBindingProcessor) manager.createBindingProcessor(
         "http://www.iaik.at", null);
     clientHeaderMap = new HashMap<String, String>();

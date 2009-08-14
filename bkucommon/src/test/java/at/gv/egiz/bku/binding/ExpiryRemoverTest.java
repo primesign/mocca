@@ -16,6 +16,8 @@
 */
 package at.gv.egiz.bku.binding;
 
+import at.gv.egiz.bku.conf.Configuration;
+import at.gv.egiz.bku.conf.DummyConfiguration;
 import java.net.MalformedURLException;
 
 import org.junit.Test;
@@ -25,8 +27,9 @@ public class ExpiryRemoverTest {
   
   @Test
   public void testMe() throws InterruptedException, MalformedURLException {
+    //TODO for the moment empty config sufficient (currently only maxDataURLHops configured)
     BindingProcessorManager manager = new BindingProcessorManagerImpl(new DummyStalFactory(),
-        new SLCommandInvokerImpl());
+        new SLCommandInvokerImpl(), new DummyConfiguration());
     BindingProcessor bp = manager.createBindingProcessor("http://www.at", null);
     ExpiryRemover remover = new ExpiryRemover();
     remover.setBindingProcessorManager(manager);
@@ -46,7 +49,7 @@ public class ExpiryRemoverTest {
   @Test
   public void testMe2() throws InterruptedException, MalformedURLException {
     BindingProcessorManager manager = new BindingProcessorManagerImpl(new DummyStalFactory(),
-        new SLCommandInvokerImpl());
+        new SLCommandInvokerImpl(), new DummyConfiguration());
     BindingProcessor bp = manager.createBindingProcessor("http://www.iaik.at", null);
     ExpiryRemover remover = new ExpiryRemover();
     remover.setBindingProcessorManager(manager);
