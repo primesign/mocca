@@ -9,13 +9,14 @@ import javax.swing.JDialog;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.stal.HashDataInput;
+import javax.swing.JFrame;
 
 public class BKUGuiProxy implements BKUGUIFacade {
 
   private BKUGUIFacade delegate;
-  private JDialog dialog;
+  private JFrame dialog;
 
-  public BKUGuiProxy(JDialog dialog, BKUGUIFacade delegate) {
+  public BKUGuiProxy(JFrame dialog, BKUGUIFacade delegate) {
     this.delegate = delegate;
     this.dialog = dialog;
   }

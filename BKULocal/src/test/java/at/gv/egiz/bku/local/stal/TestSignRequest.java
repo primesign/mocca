@@ -29,7 +29,7 @@ import at.gv.egiz.stal.SignRequest;
 
 @Ignore
 public class TestSignRequest {
-  
+
   public void test() throws Exception {
     ByteArrayOutputStream os = new ByteArrayOutputStream();
     StreamUtil.copyStream(getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/local/stal/sigInfo.xml"), os);

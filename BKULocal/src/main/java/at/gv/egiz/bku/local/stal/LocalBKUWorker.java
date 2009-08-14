@@ -24,7 +24,7 @@ import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 
 import java.util.List;
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 
 /**
  *
@@ -32,9 +32,9 @@ import javax.swing.JDialog;
  */
 public class LocalBKUWorker extends AbstractBKUWorker {
 
-  private JDialog container;
+  private JFrame container;
 
-  public LocalBKUWorker(BKUGUIFacade gui, JDialog container) {
+  public LocalBKUWorker(BKUGUIFacade gui, JFrame container) {
     super(gui);
     this.container = container;
     addRequestHandler(SignRequest.class, 

@@ -21,16 +21,15 @@ import java.awt.Toolkit;
 import java.net.MalformedURLException;
 import java.util.Locale;
 
-import javax.swing.JDialog;
-import javax.swing.WindowConstants;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUGUIImpl;
-import at.gv.egiz.bku.gui.DefaultHelpListener;
 import at.gv.egiz.bku.local.gui.LocalHelpListener;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
 import java.net.URL;
+import javax.swing.JFrame;
+import javax.swing.JRootPane;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -44,7 +43,13 @@ public class LocalSTALFactory implements STALFactory {
   public STAL createSTAL() {
 
     LocalBKUWorker stal;
-    JDialog dialog = new JDialog();
+    //http://java.sun.com/docs/books/tutorial/uiswing/misc/focus.html
+    // use undecorated JFrame instead of JWindow,
+    // which creates an invisible owning frame and therefore cannot getFocusInWindow()
+    JFrame dialog = new JFrame();
+    dialog.setUndecorated(true);
+    dialog.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+
     if (locale != null) {
       dialog.setLocale(locale);
     }
@@ -65,8 +70,6 @@ public class LocalSTALFactory implements STALFactory {
             helpListener);
     stal = new LocalBKUWorker(new BKUGuiProxy(dialog, gui), dialog);
     dialog.setPreferredSize(new Dimension(400, 200));
-    dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-    dialog.setTitle("MOCCA");
     dialog.pack();
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     Dimension frameSize = dialog.getSize();

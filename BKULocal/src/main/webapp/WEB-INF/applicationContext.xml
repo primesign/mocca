@@ -28,6 +28,7 @@
     scope="singleton">
     <constructor-arg ref="STALFactory"></constructor-arg>
     <constructor-arg ref="commandInvoker"></constructor-arg>
+    <constructor-arg ref="configuration"></constructor-arg>
   </bean>
   <bean
     class="org.springframework.web.context.support.ServletContextAttributeExporter">
