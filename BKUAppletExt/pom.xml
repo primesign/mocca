@@ -1,36 +1,35 @@
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <artifactId>bku</artifactId>
         <groupId>at.gv.egiz</groupId>
-        <version>1.2.1-SNAPSHOT</version>
+        <version>1.2.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>at.gv.egiz</groupId>
     <artifactId>BKUAppletExt</artifactId>
     <name>BKU Applet Extension</name>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.1</version>
     <description />
     <dependencies>
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>STALExt</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>STALXService</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>smccSTAL</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>BKUApplet</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
+            <version>1.2.1</version>
         </dependency>
     </dependencies>
     <build>
@@ -109,7 +108,7 @@
                 <type>PKCS11</type>
                 <providerClass>iaik.pkcs.pkcs11.provider.IAIKPkcs11</providerClass>
                 <alias>a-sit</alias>
-                <storepass></storepass>
+                <storepass />
               </configuration>
             </plugin>
           </plugins>
