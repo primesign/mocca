@@ -75,7 +75,10 @@
 		scope="singleton">
 		<constructor-arg ref="STALFactory"></constructor-arg>
 		<constructor-arg ref="commandInvoker"></constructor-arg>
+    <constructor-arg ref="configuration"></constructor-arg>
 	</bean>
+
+  <!-- TODO DataURL bean with configuration injected -->
 
 	<bean
 		class="org.springframework.web.context.support.ServletContextAttributeExporter">
@@ -105,8 +108,9 @@
 	</bean>
 
   <!-- Begin MOCCA Configuration [REFACTORED]
-   |   Configuration beans (no conf properties file) should be injected directly to module configurators.
-   |   Currently, only the ReaderFactory configuration is considered.
+   |   Configuration beans (no conf properties file) should be injected directly 
+   |   to module configurators (at.gv.egiz.bku.X.conf.Configuration).
+   |   Currently, only configuration items are considered.
    |-->
   <import resource="mocca-conf.xml"/>
 

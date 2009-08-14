@@ -24,6 +24,18 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
                       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
+  <!-- BKU Common (ie. main) Configuration -->
+  <bean id="configuration" class="at.gv.egiz.bku.conf.Configuration">
+    <property name="maxDataUrlHops" value="50"/>
+
+    <!-- TODO refactor DataURL and inject this bkuCommonConfig to DataURL -->
+    <!-- TODO inject bkuCommonConfig to SpringBKUServlet and SpringSecurityManager
+     |   and replace SpringConfigurator -->
+    <!-- used to construct the User-Agent HTTP header 
+    <property name="implementationName" value="MOCCA"/>
+    <property name="implementationVersion" value="1.0"/-->
+  </bean>
+
   <!--
    |   ReaderFactory configuration not available in Applet
    |
