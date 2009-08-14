@@ -181,7 +181,7 @@ public class Container {
 
     //TODO
     log.trace("granting file read/write permission to MOCCA local");
-    perms.add(new FilePermission("<<ALL_FILES>>", "read, write"));
+    perms.add(new FilePermission("<<ALL FILES>>", "read, write"));
 
     return perms;
   }
