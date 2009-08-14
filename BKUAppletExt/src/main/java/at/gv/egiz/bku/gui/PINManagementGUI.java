@@ -300,8 +300,12 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
             @Override
             public void run() {
 
-              String HELP_TOPIC, TITLE, MESSAGE_MGMT, MESSAGE_MGMT_PARAM;
+              String HELP_TOPIC, TITLE, MESSAGE_MGMT, MESSAGE_MGMT_PARAM, PINSIZE;
               HELP_TOPIC = HELP_PINMGMT;
+
+              PINSIZE = (pinSpec.getMaxLength() > pinSpec.getMinLength()) ?
+                pinSpec.getMinLength() + "-" + pinSpec.getMaxLength() :
+                String.valueOf(pinSpec.getMinLength());
 
               if (retries < 0) {
                 if (type == DIALOG.CHANGE) {
@@ -313,6 +317,7 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                   TITLE = TITLE_ACTIVATE_PIN;
                   MESSAGE_MGMT = MESSAGE_ACTIVATE_PIN;
                   oldPinField = null;
+                  PINSIZE = pinSpec.getLocalizedLength();
                 } else if (type == DIALOG.VERIFY) {
                   log.debug("show verify pin dialog");
                   TITLE = TITLE_VERIFY_PIN;
@@ -385,7 +390,7 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                   pinpadLabel.setFont(mgmtLabel.getFont().deriveFont(mgmtLabel.getFont().getStyle() & ~Font.BOLD));
                   String pinpadPattern = getMessage(MESSAGE_VERIFYPIN_PINPAD);
                   pinpadLabel.setText(MessageFormat.format(pinpadPattern,
-                          new Object[] { pinSpec.getLocalizedName(), pinSpec.getLocalizedLength() }));
+                          new Object[] { pinSpec.getLocalizedName(), PINSIZE }));
                   
                   pinHorizontal = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                           .addComponent(pinpadLabel);
@@ -480,7 +485,7 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 JLabel pinsizeLabel = new JLabel();
                 pinsizeLabel.setFont(pinsizeLabel.getFont().deriveFont(pinsizeLabel.getFont().getStyle() & ~Font.BOLD, pinsizeLabel.getFont().getSize()-2));
                 String pinsizePattern = getMessage(LABEL_PINSIZE);
-                pinsizeLabel.setText(MessageFormat.format(pinsizePattern, new Object[]{pinSpec.getLocalizedLength()}));
+                pinsizeLabel.setText(MessageFormat.format(pinsizePattern, new Object[]{PINSIZE}));
 
                 ////////////////////////////////////////////////////////////////
                 // NON-PINPAD SPECIFIC LAYOUT SECTION
