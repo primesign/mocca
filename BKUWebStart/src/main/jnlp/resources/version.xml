@@ -2,24 +2,24 @@
 <jnlp-versions>
   <resource>
     <pattern>
-      <name>BKUWebStart-1.0.10-SNAPSHOT.jar</name>
-      <version-id>1.0.10-SNAPSHOT</version-id>
+      <name>BKUWebStart-1.0.10.jar</name>
+      <version-id>1.0.10</version-id>
     </pattern>
-    <file>BKUWebStart-1.0.10-SNAPSHOT.jar</file>
+    <file>BKUWebStart-1.0.10.jar</file>
   </resource>
   <resource>
     <pattern>
-      <name>utils-1.2.1-SNAPSHOT.jar</name>
-      <version-id>1.2.1-SNAPSHOT</version-id>
+      <name>utils-1.2.1.jar</name>
+      <version-id>1.2.1</version-id>
     </pattern>
-    <file>utils-1.2.1-SNAPSHOT.jar</file>
+    <file>utils-1.2.1.jar</file>
   </resource>
   <resource>
     <pattern>
-      <name>BKUCertificates-1.0-SNAPSHOT.jar</name>
-      <version-id>1.0-SNAPSHOT</version-id>
+      <name>BKUCertificates-1.0.jar</name>
+      <version-id>1.0</version-id>
     </pattern>
-    <file>BKUCertificates-1.0-SNAPSHOT.jar</file>
+    <file>BKUCertificates-1.0.jar</file>
   </resource>
 
   <resource>
