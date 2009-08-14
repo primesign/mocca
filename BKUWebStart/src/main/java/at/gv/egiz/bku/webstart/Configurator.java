@@ -79,7 +79,7 @@ public class Configurator {
   public static final String PASSWD_FILE = ".secret";
 
   private static final Log log = LogFactory.getLog(Configurator.class);
-  
+
   /** currently installed configuration version */
   private String version;
   private String certsVersion;
@@ -104,7 +104,7 @@ public class Configurator {
         if (log.isDebugEnabled()) {
           log.debug("config directory " + configDir + ", version " + version);
         }
-        if (updateRequired(version)) {
+        if (updateRequired(version, MIN_CONFIG_VERSION)) {
           File moccaDir = configDir.getParentFile();
           File zipFile = new File(moccaDir, "conf-" + version + ".zip");
           ZipOutputStream zipOS = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)));
@@ -135,7 +135,7 @@ public class Configurator {
           log.debug("certificate-store directory " + certsDir + ", version " + certsVersion);
         }
         String newCertsVersion = getCertificatesVersion();
-        if (updateRequiredStrict(certsVersion, newCertsVersion)) {
+        if (updateRequired(certsVersion, newCertsVersion)) {
           File moccaDir = certsDir.getParentFile();
           File zipFile = new File(moccaDir, "certs-" + certsVersion + ".zip");
           ZipOutputStream zipOS = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)));
@@ -174,7 +174,7 @@ public class Configurator {
         String version;
         while ((version = versionReader.readLine().trim()) != null) {
           if (version.length() > 0 && !version.startsWith("#")) {
-            log.debug("configuration version from " + versionFile + ": " + version);
+            log.trace("configuration version from " + versionFile + ": " + version);
             return version;
           }
         }
@@ -221,70 +221,119 @@ public class Configurator {
     return certsResourceVersion;
   }
 
-  protected static boolean updateRequired(String oldVersion) {
-     log.debug("comparing " + oldVersion + " to " + MIN_CONFIG_VERSION);
-     if (oldVersion != null && !UNKOWN_VERSION.equals(oldVersion)) {
-     
-      int majorEnd = oldVersion.indexOf('-');
-      String oldMajor = (majorEnd < 0) ? oldVersion : oldVersion.substring(0, majorEnd);
+  /**
+   * if unknown old, update in any case
+   * if known old and unknown min, don't update
+   * @param oldVersion
+   * @param minVersion
+   * @return
+   */
+  protected static boolean updateRequired(String oldVersion, String minVersion) {
+    log.debug("comparing " + oldVersion + " to " + minVersion);
+    if (oldVersion != null && !UNKOWN_VERSION.equals(oldVersion)) {
+      if (minVersion != null && !UNKOWN_VERSION.equals(minVersion)) {
+        int fromInd = 0;
+        int nextIndOld, nextIndMin;
+        int xOld, xMin;
 
-      String minMajor = MIN_CONFIG_VERSION;
-      boolean releaseRequired = true;
-      if (MIN_CONFIG_VERSION.endsWith("-SNAPSHOT")) {
-        releaseRequired = false;
-        minMajor = minMajor.substring(0, minMajor.length() - 9);
-      }
+        // assume dots '.' appear in major version only (not after "-SNAPSHOT")
+        while ((nextIndOld = oldVersion.indexOf('.', fromInd)) > 0) {
+          nextIndMin = minVersion.indexOf('.', fromInd);
+          if (nextIndMin < 0) {
+            log.debug("installed version newer than minimum required (newer minor version)");
+          }
+          xOld = Integer.valueOf(oldVersion.substring(fromInd, nextIndOld));
+          xMin = Integer.valueOf(minVersion.substring(fromInd, nextIndMin));
+          if (xMin > xOld) {
+            log.debug("update required");
+            return true;
+          } else if (xMin < xOld) {
+            log.debug("installed version newer than minimum required");
+            return false;
+          }
+          fromInd = nextIndOld + 1;
+        }
 
-      int compare = oldMajor.compareTo(minMajor);
-      if (compare < 0 ||
-              // SNAPSHOT versions are pre-releases (update if release required)
-              (compare == 0 && releaseRequired && oldVersion.startsWith("-SNAPSHOT", majorEnd))) {
-        log.debug("configuration update required");
-        return true;
-      } else {
-        log.debug("configuration up to date");
-        return false;
+        // compare last digit of major
+        boolean preRelease = true;
+        int majorEndOld = oldVersion.indexOf("-SNAPSHOT");
+        if (majorEndOld < 0) {
+          preRelease = false;
+          majorEndOld = oldVersion.length();
+        }
+
+        boolean releaseRequired = false;
+        int majorEndMin = minVersion.indexOf("-SNAPSHOT");
+        if (majorEndMin < 0) {
+          releaseRequired = true;
+          majorEndMin = minVersion.length();
+        }
+
+        xOld = Integer.valueOf(oldVersion.substring(fromInd, majorEndOld));
+        boolean hasMoreDigitsMin = true;
+        nextIndMin = minVersion.indexOf('.', fromInd);
+        if (nextIndMin < 0) {
+          hasMoreDigitsMin = false;
+          nextIndMin = majorEndMin;
+        }
+        xMin = Integer.valueOf(minVersion.substring(fromInd, nextIndMin));
+        if (xMin > xOld) {
+          log.debug("update required");
+          return true;
+        } else if (xMin < xOld) {
+          log.debug("installed version newer than minimum required");
+          return false;
+        } else if (hasMoreDigitsMin) { // xMin == xOld
+          log.debug("update required (newer minor version required)");
+          return true;
+        } else if (preRelease && releaseRequired) {
+          log.debug("pre-release installed but release required");
+          return true;
+        } else {
+          log.debug("exact match, no updated required");
+          return false;
+        }
       }
+      log.debug("unknown minimum version, do not update");
+      return false;
     }
-    log.debug("no old version, configuration update required");
+    log.debug("no old version, update required");
     return true;
   }
 
   /**
-   * if unknown old, update in any case
-   * if known old and unknown new, don't update
+
    * @param oldVersion
    * @param newVersion
    * @return
    */
-  private boolean updateRequiredStrict(String oldVersion, String newVersion) {
-    log.debug("comparing " + oldVersion + " to " + newVersion);
-    if (oldVersion != null && !UNKOWN_VERSION.equals(oldVersion)) {
-      if (newVersion != null && !UNKOWN_VERSION.equals(newVersion)) {
-        String[] oldV = oldVersion.split("-");
-        String[] newV = newVersion.split("-");
-        log.trace("comparing " + oldV[0] + " to " + newV[0]);
-        if (oldV[0].compareTo(newV[0]) < 0) {
-          log.debug("update required");
-          return true;
-        } else {
-          log.trace("comparing " + oldV[oldV.length - 1] + " to " + newV[newV.length - 1]);
-          if (oldV[oldV.length - 1].compareTo(newV[newV.length - 1]) < 0) {
-            log.debug("update required");
-            return true;
-          } else {
-            log.debug("no update required");
-            return false;
-          }
-        }
-      }
-      log.debug("unknown new version, do not update");
-      return true;
-    }
-    log.debug("unknown old version, update required");
-    return true;
-  }
-  
+//  private boolean updateRequiredStrict(String oldVersion, String newVersion) {
+//    log.debug("comparing " + oldVersion + " to " + newVersion);
+//    if (oldVersion != null && !UNKOWN_VERSION.equals(oldVersion)) {
+//      if (newVersion != null && !UNKOWN_VERSION.equals(newVersion)) {
+//        String[] oldV = oldVersion.split("-");
+//        String[] newV = newVersion.split("-");
+//        log.trace("comparing " + oldV[0] + " to " + newV[0]);
+//        if (oldV[0].compareTo(newV[0]) < 0) {
+//          log.debug("update required");
+//          return true;
+//        } else {
+//          log.trace("comparing " + oldV[oldV.length - 1] + " to " + newV[newV.length - 1]);
+//          if (oldV[oldV.length - 1].compareTo(newV[newV.length - 1]) < 0) {
+//            log.debug("update required");
+//            return true;
+//          } else {
+//            log.debug("no update required");
+//            return false;
+//          }
+//        }
+//      }
+//      log.debug("unknown new version, do not update");
+//      return true;
+//    }
+//    log.debug("unknown old version, update required");
+//    return true;
+//  }
   protected static void backupAndDelete(File dir, URI relativeTo, ZipOutputStream zip) throws IOException {
     if (dir.isDirectory()) {
       File[] subDirs = dir.listFiles();
@@ -320,7 +369,7 @@ public class Configurator {
 
   private static void createConfig(File configDir, String version) throws IOException {
     if (log.isDebugEnabled()) {
-      log.debug("creating configuration version " + Launcher.version + " in " + configDir );
+      log.debug("creating configuration version " + Launcher.version + " in " + configDir);
     }
     configDir.mkdirs();
     File confTemplateFile = new File(configDir, CONF_TEMPLATE_FILE);
@@ -347,7 +396,7 @@ public class Configurator {
     if (certsURL != null) {
       StringBuilder url = new StringBuilder(certsURL.toExternalForm());
       url = url.replace(url.length() - CERTIFICATES_PKG.length(), url.length(), "META-INF/MANIFEST.MF");
-      log.debug("retrieve certificate resource names from " + url);
+      log.trace("retrieve certificate resource names from " + url);
       certsURL = new URL(url.toString());
       Manifest certsManifest = new Manifest(certsURL.openStream());
       certsDir.mkdirs();

@@ -177,7 +177,11 @@ public class Container {
     perms.add(new FilePermission(new File(System.getProperty("user.home")).getAbsolutePath(), "read, write"));
     perms.add(new FilePermission(new File(System.getProperty("user.home") + "/-").getAbsolutePath(), "read, write"));
     perms.add(new FilePermission(new File(System.getProperty("user.home") + "/.mocca/logs/*").getAbsolutePath(), "read, write,delete"));
+    perms.add(new FilePermission(new File(System.getProperty("user.home") + "/.mocca/certs/-").getAbsolutePath(), "read, write,delete"));
 
+    //TODO
+    log.trace("granting file read/write permission to MOCCA local");
+    perms.add(new FilePermission("<<ALL_FILES>>", "read, write"));
 
     return perms;
   }
