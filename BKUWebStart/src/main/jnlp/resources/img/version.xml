@@ -2,43 +2,29 @@
 <jnlp-versions>
   <resource>
     <pattern>
-      <name>logo_16.xpm</name>
-      <version-id>1.0-SNAPSHOT</version-id>
+      <name>logo_24</name>
+      <version-id>1.0</version-id>
     </pattern>
-    <file>logo_16.xpm</file>
+    <file>logo_24.png</file>
   </resource>
   <resource>
     <pattern>
-      <name>logo_16.ico</name>
-      <version-id>1.0-SNAPSHOT</version-id>
-    </pattern>
-    <file>logo_16.ico</file>
-  </resource>
-  <resource>
-    <pattern>
-      <name>logo_16.png</name>
-      <version-id>1.0-SNAPSHOT</version-id>
-    </pattern>
-    <file>logo_16.png</file>
-  </resource>
-  <resource>
-    <pattern>
-      <name>logo_32.png</name>
-      <version-id>1.0-SNAPSHOT</version-id>
+      <name>logo_32</name>
+      <version-id>1.0</version-id>
     </pattern>
     <file>logo_32.png</file>
   </resource>
   <resource>
     <pattern>
-      <name>logo_64.png</name>
-      <version-id>1.0-SNAPSHOT</version-id>
+      <name>logo_64</name>
+      <version-id>1.0</version-id>
     </pattern>
     <file>logo_64.png</file>
   </resource>
   <resource>
     <pattern>
-      <name>splash.png</name>
-      <version-id>1.0-SNAPSHOT</version-id>
+      <name>splash</name>
+      <version-id>2.0</version-id>
     </pattern>
     <file>splash.png</file>
   </resource>

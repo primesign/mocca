@@ -151,7 +151,7 @@ public class Container {
     perms.add(new RuntimePermission("getClassLoader"));
 
     // standard permissions
-    perms.add(new PropertyPermission("*", "read"));
+    perms.add(new PropertyPermission("*", "read,write"));
     perms.add(new RuntimePermission("accessDeclaredMembers"));
     perms.add(new RuntimePermission("accessClassInPackage.*"));
     perms.add(new RuntimePermission("defineClassInPackage.*"));

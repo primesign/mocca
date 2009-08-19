@@ -43,18 +43,6 @@
                   <overWrite>false</overWrite>
                   <outputDirectory>${project.build.directory}/classes</outputDirectory>
                 </artifactItem>
-                  <!-- 
-                   |   Will be replaced by TSL in IAIK-PKI
-                   |   don't list as dependency, to avoid inclusion in dist zip
-                   |   (BKULocal is of type war, therefore not included in dist)
-                   |
-                <artifactItem>
-                  <groupId>at.gv.egiz</groupId>
-                  <artifactId>BKUCertificates</artifactId>
-                  <version>1.0-SNAPSHOT</version>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>${project.build.directory}/classes</outputDirectory>
-                </artifactItem-->
               </artifactItems>
               <stripVersion>true</stripVersion>
             </configuration>
@@ -89,8 +77,8 @@
           <libPath>lib</libPath-->
           <jnlp>
             <inputTemplateResourcePath>${project.basedir}/src/main/jnlp</inputTemplateResourcePath>
-            <inputTemplate>template-local.xml</inputTemplate>
-            <outputFile>mocca-local.jnlp</outputFile>
+            <inputTemplate>template.xml</inputTemplate>
+            <outputFile>mocca.jnlp</outputFile>
             <mainClass>at.gv.egiz.bku.webstart.Launcher</mainClass>
             <j2seVersion>1.6+</j2seVersion>
             <offlineAllowed>true</offlineAllowed>
@@ -111,7 +99,7 @@
           </sign>
           <pack200>false</pack200>
           <!--gzip>true</gzip-->
-          <outputJarVersions>false</outputJarVersions>
+          <outputJarVersions>true</outputJarVersions>
           <!-- unsign IAIK signed libs -->
           <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
           <verbose>true</verbose>
@@ -165,18 +153,19 @@
               <archive>
                 <manifest>
                   <addClasspath>true</addClasspath>
-                  <mainClass>at.gv.egiz.bku.webstart.BKULauncher</mainClass>
+                  <mainClass>at.gv.egiz.bku.webstart.Launcher</mainClass>
                 </manifest>
                 <manifestEntries>
                   <mode>development</mode>
                   <url>${pom.url}</url>
-                  <SplashScreen-Image>splash_standalone.png</SplashScreen-Image>
+                  <SplashScreen-Image>at/gv/egiz/bku/webstart/splash.png</SplashScreen-Image>
                 </manifestEntries>
               </archive>
             </configuration>
           </plugin>
         </plugins>
       </build>
+      <!-- TODO somehow provide javaws.jar on manifest class-path -->
     </profile>
 
     <profile>
@@ -211,7 +200,8 @@
     </profile>
 
     <profile>
-      <id>include-webstart</id>
+      <!-- development profile -->
+      <id>local-webstart</id>
       <build>
         <plugins>
           <plugin>
@@ -219,12 +209,10 @@
             <groupId>org.codehaus.mojo.webstart</groupId>
             <configuration>
               <jnlp>
-                <inputTemplate>template.xml</inputTemplate>
-                <outputFile>mocca.jnlp</outputFile>
+                <inputTemplate>template-local.xml</inputTemplate>
+                <outputFile>mocca-local.jnlp</outputFile>
               </jnlp>
-              <pack200>false</pack200>
-              <!--gzip>false</gzip-->
-              <outputJarVersions>true</outputJarVersions>
+              <outputJarVersions>false</outputJarVersions>
             </configuration>
           </plugin>
         </plugins>

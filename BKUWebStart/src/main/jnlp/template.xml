@@ -10,10 +10,10 @@
     <description>$project.Description (BKU) MOCCA Web Start</description>
     <description kind="short">$project.Description</description>
     <!--icon kind="shortcut" href="img/logo_16.ico" width="16" height="16" version="1.0-SNAPSHOT"/-->
-    <icon kind="shortcut" href="img/logo_32.png" width="32" height="32" version="1.0-SNAPSHOT"/>
-    <icon kind="default" href="img/logo_32.png" width="32" height="32" version="1.0-SNAPSHOT"/>
-    <icon kind="default" href="img/logo_64.png" width="64" height="64" version="1.0-SNAPSHOT"/>
-    <icon kind="splash" href="img/splash.png" version="1.0-SNAPSHOT"/>
+    <icon kind="shortcut" href="img/logo_32.png" width="32" height="32" version="1.0"/>
+    <icon kind="default" href="img/logo_32.png" width="32" height="32" version="1.0"/>
+    <icon kind="default" href="img/logo_64.png" width="64" height="64" version="1.0"/>
+    <icon kind="splash" href="img/splash.png" version="2.0"/>
     <shortcut online="false">
       <desktop/>
       <menu submenu="e-Government"/>

@@ -18,7 +18,6 @@ package at.gv.egiz.bku.webstart;
 
 import at.gv.egiz.bku.utils.StreamUtil;
 import iaik.asn1.CodingException;
-import iaik.xml.crypto.utils.Utils;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -32,25 +31,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.jdt.core.dom.ThisExpression;
 
 /**
  *
@@ -63,7 +56,7 @@ public class Configurator {
    * configurations with less than this (major) version will be backuped and updated
    * allowed: MAJOR[.MINOR[.X[-SNAPSHOT]]]
    */
-  public static final String MIN_CONFIG_VERSION = "1.0.9-SNAPSHOT";
+  public static final String MIN_CONFIG_VERSION = "1.0.9";
   public static final String CONFIG_DIR = ".mocca/conf/";
   public static final String CERTS_DIR = ".mocca/certs/";
   public static final String VERSION_FILE = ".version";
@@ -259,14 +252,20 @@ public class Configurator {
         int majorEndOld = oldVersion.indexOf("-SNAPSHOT");
         if (majorEndOld < 0) {
           preRelease = false;
-          majorEndOld = oldVersion.length();
+          majorEndOld = oldVersion.indexOf('-'); // 1.0.10-r439
+          if (majorEndOld < 0) {
+            majorEndOld = oldVersion.length();
+          }
         }
 
         boolean releaseRequired = false;
         int majorEndMin = minVersion.indexOf("-SNAPSHOT");
         if (majorEndMin < 0) {
           releaseRequired = true;
-          majorEndMin = minVersion.length();
+          majorEndMin = minVersion.indexOf('-');
+          if (majorEndMin < 0) {
+            majorEndMin = minVersion.length();
+          }
         }
 
         xOld = Integer.valueOf(oldVersion.substring(fromInd, majorEndOld));
@@ -301,39 +300,6 @@ public class Configurator {
     return true;
   }
 
-  /**
-
-   * @param oldVersion
-   * @param newVersion
-   * @return
-   */
-//  private boolean updateRequiredStrict(String oldVersion, String newVersion) {
-//    log.debug("comparing " + oldVersion + " to " + newVersion);
-//    if (oldVersion != null && !UNKOWN_VERSION.equals(oldVersion)) {
-//      if (newVersion != null && !UNKOWN_VERSION.equals(newVersion)) {
-//        String[] oldV = oldVersion.split("-");
-//        String[] newV = newVersion.split("-");
-//        log.trace("comparing " + oldV[0] + " to " + newV[0]);
-//        if (oldV[0].compareTo(newV[0]) < 0) {
-//          log.debug("update required");
-//          return true;
-//        } else {
-//          log.trace("comparing " + oldV[oldV.length - 1] + " to " + newV[newV.length - 1]);
-//          if (oldV[oldV.length - 1].compareTo(newV[newV.length - 1]) < 0) {
-//            log.debug("update required");
-//            return true;
-//          } else {
-//            log.debug("no update required");
-//            return false;
-//          }
-//        }
-//      }
-//      log.debug("unknown new version, do not update");
-//      return true;
-//    }
-//    log.debug("unknown old version, update required");
-//    return true;
-//  }
   protected static void backupAndDelete(File dir, URI relativeTo, ZipOutputStream zip) throws IOException {
     if (dir.isDirectory()) {
       File[] subDirs = dir.listFiles();
@@ -454,8 +420,7 @@ public class Configurator {
     passwdWriter.write(password);
     passwdWriter.close();
     if (!passwdFile.setReadable(false, false) || !passwdFile.setReadable(true, true)) {
-      passwdFile.delete();
-      throw new IOException("failed to make " + passwdFile + " owner readable only, deleting file");
+      log.error("failed to make " + passwdFile + " owner readable only (certain file-systems do not support owner's permissions)");
     }
     TLSServerCA ca = new TLSServerCA();
     KeyStore ks = ca.generateKeyStore(password);

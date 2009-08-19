@@ -14,20 +14,10 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package at.gv.egiz.bku.webstart.ui;
+package at.gv.egiz.bku.webstart.gui;
 
-import java.util.ResourceBundle;
-
-public interface TrayIconDialogInterface {
-
-  public abstract void displayInfo(String captionID, String messageID);
-
-  public abstract void displayWarning(String captionID, String messageID);
-
-  public abstract void displayError(String captionID, String messageID);
-
-  public abstract void init(ResourceBundle resourceBundel);
-
-  public abstract void setShutdownHook(BKUControllerInterface shutDown);
+public interface BKUControllerInterface {
+  
+  public void shutDown();
 
 }

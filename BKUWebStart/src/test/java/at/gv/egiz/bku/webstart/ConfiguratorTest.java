@@ -119,6 +119,30 @@ public class ConfiguratorTest {
     assertEquals(expResult, result);
 
     oldVersion = "1.0.9-SNAPSHOT-r123";
+    minVersion = "1.0.10-r432";
+    expResult = true;
+    result = Configurator.updateRequired(oldVersion, minVersion);
+    assertEquals(expResult, result);
+
+    oldVersion = "1.0.9-r123";
+    minVersion = "1.0.10-SNAPSHOT";
+    expResult = true;
+    result = Configurator.updateRequired(oldVersion, minVersion);
+    assertEquals(expResult, result);
+
+    oldVersion = "1.0.9-r123";
+    minVersion = "1.0.9-SNAPSHOT";
+    expResult = false;
+    result = Configurator.updateRequired(oldVersion, minVersion);
+    assertEquals(expResult, result);
+
+    oldVersion = "1.0.9-SNAPSHOT";
+    minVersion = "1.0.9-r349";
+    expResult = true;
+    result = Configurator.updateRequired(oldVersion, minVersion);
+    assertEquals(expResult, result);
+
+    oldVersion = "1.0.9-SNAPSHOT-r123";
     minVersion = "1.0.10-SNAPSHOT";
     expResult = true;
     result = Configurator.updateRequired(oldVersion, minVersion);

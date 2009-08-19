@@ -1,27 +1,33 @@
 package at.gv.egiz.bku.webstart;
 
+import at.gv.egiz.bku.webstart.gui.BKUControllerInterface;
+import at.gv.egiz.bku.webstart.gui.TrayMenuListener;
 import iaik.asn1.CodingException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Locale;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import javax.jnlp.UnavailableServiceException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import at.gv.egiz.bku.webstart.ui.BKUControllerInterface;
-import at.gv.egiz.bku.webstart.ui.TrayIconDialog;
 import com.sun.javaws.security.JavaWebStartSecurity;
+import java.awt.AWTException;
 import java.awt.Desktop;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
 import java.awt.SplashScreen;
+import java.awt.SystemTray;
+import java.awt.TrayIcon;
 import java.net.BindException;
 import java.net.URI;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import javax.imageio.ImageIO;
 import javax.jnlp.BasicService;
 import javax.jnlp.ServiceManager;
 import org.mortbay.util.MultiException;
@@ -31,18 +37,26 @@ public class Launcher implements BKUControllerInterface {
   public static final String WEBAPP_RESOURCE = "BKULocal.war";
   public static final String CERTIFICATES_RESOURCE = "BKUCertificates.jar";
   public static final String WEBAPP_FILE = "BKULocal.war";
-  public static final String MESSAGES_RESOURCE = "at/gv/egiz/bku/webstart/ui/UIMessages";
+  public static final String MESSAGES_RESOURCE = "at/gv/egiz/bku/webstart/messages";
+  public static final String TRAYICON_RESOURCE = "at/gv/egiz/bku/webstart/logo_";
   /** resource bundle messages */
-  public static final String GREETING_CAPTION = "Greetings.Caption";
-  public static final String GREETING_MESSAGE = "Greetings.Message";
-  public static final String CONFIG_CAPTION = "Config.Caption";
-  public static final String CONFIG_MESSAGE = "Config.Message";
-  public static final String STARTUP_CAPTION = "Startup.Caption";
-  public static final String STARTUP_MESSAGE = "Startup.Message";
-  public static final String ERROR_CAPTION = "Error.Caption";
-  public static final String ERROR_STARTUP_MESSAGE = "Error.Startup.Message";
-  public static final String ERROR_CONF_MESSAGE = "Error.Conf.Message";
-  public static final String ERROR_BIND_MESSAGE = "Error.Bind.Message";
+  public static final String CAPTION_DEFAULT = "tray.caption.default";
+  public static final String CAPTION_ERROR = "tray.caption.error";
+  public static final String MESSAGE_START = "tray.message.start";
+  public static final String MESSAGE_START_OFFLINE = "tray.message.start.offline";
+  public static final String MESSAGE_CONFIG = "tray.message.config";
+  public static final String MESSAGE_CERTS = "tray.message.certs";
+  public static final String MESSAGE_FINISHED = "tray.message.finished";
+  public static final String MESSAGE_SHUTDOWN = "tray.message.shutdown";
+  public static final String ERROR_START = "tray.error.start";
+  public static final String ERROR_CONFIG = "tray.error.config";
+  public static final String ERROR_BIND = "tray.error.bind";
+  public static final String LABEL_SHUTDOWN = "tray.label.shutdown";
+  public static final String LABEL_PIN = "tray.label.pin";
+  public static final String LABEL_ABOUT = "tray.label.about";
+  public static final String TOOLTIP_DEFAULT = "tray.tooltip.default";
+  
+  /** local bku uri */
   public static final URI HTTPS_SECURITY_LAYER_URI;
   private static Log log = LogFactory.getLog(Launcher.class);
 
@@ -56,7 +70,6 @@ public class Launcher implements BKUControllerInterface {
       HTTPS_SECURITY_LAYER_URI = tmp;
     }
   }
-
   public static final String version;
   static {
     String tmp = Configurator.UNKOWN_VERSION;
@@ -78,16 +91,107 @@ public class Launcher implements BKUControllerInterface {
       log.info("BKU Web Start " + version);
     }
   }
-
   private Configurator config;
   private Container server;
   private BasicService basicService;
+  private TrayIcon trayIcon;
+  private ResourceBundle messages;
+  
+  public Launcher() {
+    if (log.isTraceEnabled()) {
+      SecurityManager sm = System.getSecurityManager();
+      if (sm instanceof JavaWebStartSecurity) {
+        System.setSecurityManager(new LogSecurityManager((JavaWebStartSecurity) sm));
+      }
+    }
+    messages = ResourceBundle.getBundle(MESSAGES_RESOURCE, Locale.getDefault());
+    trayIcon = initTrayIcon();
+  }
+
+  public void launch() throws Exception {
+    initStart();
+    try {
+      initConfig();
+    } catch (Exception ex) {
+      log.fatal("Failed to initialize configuration", ex);
+      trayIcon.displayMessage(messages.getString(CAPTION_ERROR),
+              messages.getString(ERROR_CONFIG), TrayIcon.MessageType.ERROR);
+      throw ex;
+    }
+    try {
+      startServer();
+      initFinished();
+    } catch (BindException ex) {
+      log.fatal("Failed to launch server, " + ex.getMessage(), ex);
+      trayIcon.displayMessage(messages.getString(CAPTION_ERROR),
+              messages.getString(ERROR_BIND), TrayIcon.MessageType.ERROR);
+      throw ex;
+    } catch (MultiException ex) {
+      log.fatal("Failed to launch server, " + ex.getMessage(), ex);
+      if (ex.getThrowable(0) instanceof BindException) {
+        trayIcon.displayMessage(messages.getString(CAPTION_ERROR),
+                messages.getString(ERROR_BIND), TrayIcon.MessageType.ERROR);
+      } else {
+        trayIcon.displayMessage(messages.getString(CAPTION_ERROR),
+                messages.getString(ERROR_START), TrayIcon.MessageType.ERROR);
+      }
+      throw ex;
+    } catch (Exception ex) {
+      log.fatal("Failed to launch server, " + ex.getMessage(), ex);
+      trayIcon.displayMessage(messages.getString(CAPTION_ERROR),
+              messages.getString(ERROR_START), TrayIcon.MessageType.ERROR);
+      throw ex;
+    }
+  }
+  
+  private TrayIcon initTrayIcon() { //ResourceBundle messages, BKUControllerInterface bkuHook) {
+    if (SystemTray.isSupported()) {
+      try {
+        // get the SystemTray instance
+        SystemTray tray = SystemTray.getSystemTray();
+        log.debug("TrayIcon size: " + tray.getTrayIconSize());
+        String iconResource = (tray.getTrayIconSize().height < 25)
+                ? TRAYICON_RESOURCE + "24.png"
+                : TRAYICON_RESOURCE + "32.png";
+        Image image = ImageIO.read(Launcher.class.getClassLoader().getResourceAsStream(iconResource));
+
+        TrayMenuListener listener = new TrayMenuListener(this, messages, version);
+        PopupMenu popup = new PopupMenu();
+        
+        MenuItem shutdownItem = new MenuItem(messages.getString(LABEL_SHUTDOWN));
+        shutdownItem.addActionListener(listener);
+        shutdownItem.setActionCommand(TrayMenuListener.SHUTDOWN_COMMAND);
+        popup.add(shutdownItem);
+
+        MenuItem aboutItem = new MenuItem(messages.getString(LABEL_ABOUT));
+        aboutItem.setActionCommand(TrayMenuListener.ABOUT_COMMAND);
+        aboutItem.addActionListener(listener);
+        popup.add(aboutItem);
+
+        TrayIcon ti = new TrayIcon(image, messages.getString(TOOLTIP_DEFAULT), popup);
+        ti.addActionListener(listener);
+        tray.add(ti);
+        return ti;
+      } catch (AWTException ex) {
+        log.error("Failed to init tray icon", ex);
+      } catch (IOException ex) {
+        log.error("Failed to load tray icon image", ex);
+      }
+    } else {
+      log.error("No system tray support");
+    }
+    return null;
+  }
 
   private void initStart() {
     try {
+      trayIcon.displayMessage(messages.getString(CAPTION_DEFAULT),
+            messages.getString(MESSAGE_START), TrayIcon.MessageType.INFO);
       basicService = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
       if (basicService.isOffline()) {
         log.info("launching MOCCA Web Start offline");
+        trayIcon.displayMessage(messages.getString(CAPTION_DEFAULT),
+                messages.getString(MESSAGE_START_OFFLINE), TrayIcon.MessageType.INFO);
       } else {
         log.info("launching MOCCA Web Start online");
       }
@@ -96,30 +200,20 @@ public class Launcher implements BKUControllerInterface {
     }
   }
 
-  private void initTrayIcon() {
-    log.debug("init MOCCA tray icon");
-    Locale loc = Locale.getDefault();
-    ResourceBundle resourceBundle;
-    try {
-      resourceBundle = ResourceBundle.getBundle(
-              MESSAGES_RESOURCE, loc);
-    } catch (MissingResourceException mx) {
-      resourceBundle = ResourceBundle.getBundle(
-              MESSAGES_RESOURCE, Locale.ENGLISH);
-    }
-    TrayIconDialog.getInstance().init(resourceBundle);
-    TrayIconDialog.getInstance().setShutdownHook(this);
-//    TrayIconDialog.getInstance().displayInfo(GREETING_CAPTION, GREETING_MESSAGE);
-  }
-
   private void initConfig() throws IOException, CodingException, GeneralSecurityException {
+    trayIcon.displayMessage(messages.getString(CAPTION_DEFAULT),
+              messages.getString(MESSAGE_CONFIG), TrayIcon.MessageType.INFO);
     config = new Configurator();
     config.ensureConfiguration();
+    trayIcon.displayMessage(messages.getString(CAPTION_DEFAULT),
+              messages.getString(MESSAGE_CERTS), TrayIcon.MessageType.INFO);
     config.ensureCertificates();
   }
 
   private void startServer() throws Exception {
     log.info("init servlet container and MOCCA webapp");
+//    trayIcon.displayMessage(messages.getString(CAPTION_DEFAULT),
+//              messages.getString(MESSAGE_START), TrayIcon.MessageType.INFO);
     server = new Container();
     server.init();
     server.start();
@@ -127,6 +221,8 @@ public class Launcher implements BKUControllerInterface {
 
   private void initFinished() {
     try {
+      trayIcon.displayMessage(messages.getString(CAPTION_DEFAULT),
+              messages.getString(MESSAGE_FINISHED), TrayIcon.MessageType.INFO);
       // standalone (non-webstart) version has splashscreen
       if (SplashScreen.getSplashScreen() != null) {
         try {
@@ -162,6 +258,8 @@ public class Launcher implements BKUControllerInterface {
   @Override
   public void shutDown() {
     log.info("Shutting down server");
+    trayIcon.displayMessage(messages.getString(CAPTION_DEFAULT), 
+            messages.getString(MESSAGE_SHUTDOWN), TrayIcon.MessageType.INFO);
     if ((server != null) && (server.isRunning())) {
       try {
         if (server.isRunning()) {
@@ -179,51 +277,13 @@ public class Launcher implements BKUControllerInterface {
   }
 
   public static void main(String[] args) throws InterruptedException, IOException {
-
-    if (log.isTraceEnabled()) {
-      SecurityManager sm = System.getSecurityManager();
-      if (sm instanceof JavaWebStartSecurity) {
-        System.setSecurityManager(new LogSecurityManager((JavaWebStartSecurity) sm));
-      }
-    }
-
-    Launcher launcher = new Launcher();
-    launcher.initStart();
-    launcher.initTrayIcon(); //keep reference? BKULauncher not garbage collected after main()
-    
     try {
-      TrayIconDialog.getInstance().displayInfo(CONFIG_CAPTION, CONFIG_MESSAGE);
-      launcher.initConfig();
+      Launcher launcher = new Launcher();
+      launcher.launch();
     } catch (Exception ex) {
-      log.fatal("Failed to initialize configuration", ex);
-      TrayIconDialog.getInstance().displayError(ERROR_CAPTION, ERROR_CONF_MESSAGE);
+      log.info("waiting to shutdown...");
       Thread.sleep(5000);
-      System.exit(-1000);
-    }
-
-    try {
-      TrayIconDialog.getInstance().displayInfo(STARTUP_CAPTION, STARTUP_MESSAGE);
-      launcher.startServer();
-      TrayIconDialog.getInstance().displayInfo(GREETING_CAPTION, GREETING_MESSAGE);
-      launcher.initFinished();
-    } catch (BindException ex) {
-      log.fatal("Failed to launch server, " + ex.getMessage(), ex);
-      TrayIconDialog.getInstance().displayError(ERROR_CAPTION, ERROR_BIND_MESSAGE);
-      Thread.sleep(5000);
-      System.exit(-1000);
-    } catch (MultiException ex) {
-      log.fatal("Failed to launch server, " + ex.getMessage(), ex);
-      if (ex.getThrowable(0) instanceof BindException) {
-        TrayIconDialog.getInstance().displayError(ERROR_CAPTION, ERROR_BIND_MESSAGE);
-      } else {
-        TrayIconDialog.getInstance().displayError(ERROR_CAPTION, ERROR_STARTUP_MESSAGE);
-      }
-      Thread.sleep(5000);
-      System.exit(-1000);
-    } catch (Exception e) {
-      log.fatal("Failed to launch server, " + e.getMessage(), e);
-      TrayIconDialog.getInstance().displayError(ERROR_CAPTION, ERROR_STARTUP_MESSAGE);
-      Thread.sleep(5000);
+      log.info("exit");
       System.exit(-1000);
     }
   }
