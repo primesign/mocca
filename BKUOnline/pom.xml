@@ -308,13 +308,13 @@
           <artifactId>webstart-jnlp-servlet</artifactId>
           <version>1.0-6.0.02_ea_b02.1-SNAPSHOT</version>
         </dependency>
-            <!-- dependency to ensure BKUWebStart is build prior to BKUOnline;
-             |   transitive dependencies shall not be included in WEB-INF/lib
-             |   and are provided in the BKUWebStart zip -->
+        <!-- dependency to ensure BKUWebStart is build prior to BKUOnline;
+         |   transitive dependencies shall not be included in WEB-INF/lib
+         |   and are provided in the BKUWebStart zip
+         |   (version defined in super-pom dependencyManagement, version won't be adjusted by release:prepare) -->
         <dependency>
           <groupId>at.gv.egiz</groupId>
           <artifactId>BKUWebStart</artifactId>
-          <version>1.0.10-SNAPSHOT</version>
           <scope>provided</scope>
           <type>zip</type>
         </dependency>
