@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 public class LocalSTALFactory implements STALFactory {
 
   protected static final Log log = LogFactory.getLog(LocalSTALFactory.class);
+  protected static final Dimension PREFERRED_SIZE = new Dimension(300, 189);
   protected String helpURL;
   protected Locale locale;
 
@@ -69,7 +70,7 @@ public class LocalSTALFactory implements STALFactory {
             null,
             helpListener);
     stal = new LocalBKUWorker(new BKUGuiProxy(dialog, gui), dialog);
-    dialog.setPreferredSize(new Dimension(400, 200));
+    dialog.setPreferredSize(PREFERRED_SIZE);
     dialog.pack();
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     Dimension frameSize = dialog.getSize();
