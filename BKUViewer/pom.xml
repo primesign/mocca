@@ -7,7 +7,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>BKUViewer</artifactId>
-	<name>BKU viewer components</name>
+	<name>BKU Viewer</name>
 	<version>1.2.2-SNAPSHOT</version>
 	<description />
 	<dependencies>
