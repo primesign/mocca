@@ -4,7 +4,7 @@
   <groupId>at.gv.egiz</groupId>
   <artifactId>bku</artifactId>
   <packaging>pom</packaging>
-  <version>1.2.2-SNAPSHOT</version>
+  <version>1.2.2</version>
   <name>BKU</name>
   <url>http://bku.egiz.gv.at</url>
   <modules>
@@ -46,9 +46,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.egovlabs.gv.at/svnroot/mocca/trunk</developerConnection>
-    <url>svn://svn.egovlabs.gv.at/svnroot/mocca/trunk</url>
+    <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.2</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.2</developerConnection>
+    <url>svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.2</url>
   </scm>
   <organization>
     <name>E-Government Innovation Center (EGIZ)</name>
@@ -260,6 +260,14 @@
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-impl</artifactId>
         <version>2.1.9</version>
+      </dependency>
+      <!-- version not defined in BKUOnline pom "include-webstart" profile,
+       |   it wouldn't be adjusted by release:prepare -->
+      <dependency>
+        <groupId>at.gv.egiz</groupId>
+        <artifactId>BKUWebStart</artifactId>
+        <version>1.2.2</version>
+        <type>zip</type>
       </dependency>
     </dependencies>
   </dependencyManagement>

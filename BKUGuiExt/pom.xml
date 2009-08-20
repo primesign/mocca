@@ -1,27 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>bku</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.2.2</version>
   </parent>
   <groupId>at.gv.egiz</groupId>
   <artifactId>BKUGuiExt</artifactId>
-  <version>1.2.2-SNAPSHOT</version>
+  <version>1.2.2</version>
   <name>BKU GUI Extension</name>
   <dependencies>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>STALXService</artifactId>
-      <version>1.2.2-SNAPSHOT</version>
+      <version>1.2.2</version>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>smccSTAL</artifactId>
-      <version>1.2.2-SNAPSHOT</version>
+      <version>1.2.2</version>
     </dependency>
   </dependencies>
 </project>
-

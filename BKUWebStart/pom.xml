@@ -2,7 +2,7 @@
   <parent>
     <artifactId>bku</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.2.2</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>at.gv.egiz</groupId>
@@ -13,7 +13,7 @@
    | IMPORTANT: update jnlp/resources/version.xml (BKUWebStart and utils) and
    | include-webstart profile in BKUOnline if version changes
    |-->
-  <version>1.0.11-SNAPSHOT</version>
+  <version>1.2.2</version>
   <url>http://mocca.egovlabs.gv.at/</url>
   <description>Bürgerkartenumgebung</description>
   
@@ -224,7 +224,7 @@
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKULocal</artifactId>
-      <version>1.0.11-SNAPSHOT</version>
+      <version>1.2.2</version>
       <type>war</type>
     </dependency>
     <dependency>
@@ -235,7 +235,7 @@
     <dependency>
       <artifactId>utils</artifactId>
       <groupId>at.gv.egiz</groupId>
-      <version>1.2.2-SNAPSHOT</version>
+      <version>1.2.2</version>
       <exclusions>
         <exclusion>
           <artifactId>iaik_ecc_signed</artifactId>
