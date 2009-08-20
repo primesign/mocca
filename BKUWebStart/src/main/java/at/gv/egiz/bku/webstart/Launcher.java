@@ -171,9 +171,15 @@ public class Launcher implements BKUControllerInterface, ActionListener {
         // get the SystemTray instance
         SystemTray tray = SystemTray.getSystemTray();
         log.debug("TrayIcon size: " + tray.getTrayIconSize());
-        String iconResource = (tray.getTrayIconSize().height < 25)
-                ? TRAYICON_RESOURCE + "24.png"
-                : TRAYICON_RESOURCE + "32.png";
+
+        String iconResource;
+        if (tray.getTrayIconSize().height < 17) {
+          iconResource = TRAYICON_RESOURCE + "16.png";
+        } else if (tray.getTrayIconSize().height < 25) {
+          iconResource = TRAYICON_RESOURCE + "24.png";
+        } else {
+          iconResource = TRAYICON_RESOURCE + "32.png";
+        }
         Image image = ImageIO.read(Launcher.class.getClassLoader().getResourceAsStream(iconResource));
 
         PopupMenu popup = new PopupMenu();
