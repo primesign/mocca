@@ -16,6 +16,7 @@
  */
 package at.gv.egiz.bku.gui;
 
+import at.gv.egiz.bku.gui.*;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.event.ActionListener;

@@ -18,11 +18,16 @@ package at.gv.egiz.bku.online.applet;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.PINManagementGUIFacade;
-import at.gv.egiz.bku.smccstal.ext.PINManagementRequestHandler;
+import at.gv.egiz.bku.smccstal.PINManagementRequestHandler;
 import at.gv.egiz.stal.ErrorResponse;
+import at.gv.egiz.stal.InfoboxReadRequest;
+import at.gv.egiz.stal.QuitRequest;
+import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
+import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.ext.PINManagementRequest;
 import at.gv.egiz.stal.ext.PINManagementResponse;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,7 +41,8 @@ public class PINManagementBKUWorker extends AppletBKUWorker {
 
   public PINManagementBKUWorker(BKUApplet applet, PINManagementGUIFacade gui) {
     super(applet, gui);
-    handlerMap.clear();
+    removeRequestHandler(InfoboxReadRequest.class);
+    removeRequestHandler(SignRequest.class);
     addRequestHandler(PINManagementRequest.class, new PINManagementRequestHandler());
   }
 
@@ -46,7 +52,11 @@ public class PINManagementBKUWorker extends AppletBKUWorker {
             BKUGUIFacade.MESSAGE_WELCOME);
 
     try {
-      List<STALResponse> responses = handleRequest(Collections.singletonList(new PINManagementRequest()));
+
+      ArrayList<STALRequest> reqs = new ArrayList<STALRequest>();
+      reqs.add(new PINManagementRequest());
+      reqs.add(new QuitRequest());
+      List<STALResponse> responses = handleRequest(reqs);
 
       if (responses.size() == 1) {
         STALResponse response = responses.get(0);

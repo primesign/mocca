@@ -24,6 +24,9 @@ import java.util.Locale;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUGUIImpl;
+import at.gv.egiz.bku.gui.PINManagementGUI;
+import at.gv.egiz.bku.gui.PINManagementGUIFacade;
+import at.gv.egiz.bku.local.gui.GUIProxy;
 import at.gv.egiz.bku.local.gui.LocalHelpListener;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
@@ -33,10 +36,16 @@ import javax.swing.JRootPane;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Creates a PINManagementGUI and a LocalBKUWorker, which in turn registers
+ * PINManagementRequestHandler from smccSTALExt.
+ * The RequestHandler expects PINManagementGUIFacade, therefore BKUGUIProxy has to implement the extended GUI.
+ * @author clemens
+ */
 public class LocalSTALFactory implements STALFactory {
 
   protected static final Log log = LogFactory.getLog(LocalSTALFactory.class);
-  protected static final Dimension PREFERRED_SIZE = new Dimension(300, 189);
+  protected static final Dimension PREFERRED_SIZE = new Dimension(318, 200);
   protected String helpURL;
   protected Locale locale;
 
@@ -47,7 +56,7 @@ public class LocalSTALFactory implements STALFactory {
     //http://java.sun.com/docs/books/tutorial/uiswing/misc/focus.html
     // use undecorated JFrame instead of JWindow,
     // which creates an invisible owning frame and therefore cannot getFocusInWindow()
-    JFrame dialog = new JFrame();
+    JFrame dialog = new JFrame("Bürgerkarte");
     dialog.setUndecorated(true);
     dialog.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
 
@@ -64,12 +73,13 @@ public class LocalSTALFactory implements STALFactory {
     } catch (MalformedURLException ex) {
       log.error("failed to configure help listener: " + ex.getMessage(), ex);
     }
-    BKUGUIFacade gui = new BKUGUIImpl(dialog.getContentPane(),
+    PINManagementGUIFacade gui = new PINManagementGUI(dialog.getContentPane(),
             dialog.getLocale(),
             BKUGUIFacade.Style.advanced,
             null,
             helpListener);
-    stal = new LocalBKUWorker(new BKUGuiProxy(dialog, gui), dialog);
+    BKUGUIFacade proxy = (BKUGUIFacade) GUIProxy.newInstance(gui, dialog, new Class[] { PINManagementGUIFacade.class} );
+    stal = new LocalBKUWorker(proxy, dialog);
     dialog.setPreferredSize(PREFERRED_SIZE);
     dialog.pack();
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

@@ -94,6 +94,21 @@
 			<version>1.2.2-SNAPSHOT</version>
 		</dependency>
     <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>BKUGuiExt</artifactId>
+      <version>1.2.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>smccSTALExt</artifactId>
+      <version>1.2.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>BKUViewer</artifactId>
+      <version>1.2.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <artifactId>BKUHelp</artifactId>
       <groupId>at.gv.egiz</groupId>
       <version>1.0</version>
@@ -116,16 +131,6 @@
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>at.gv.egiz</groupId>
-			<artifactId>BKUApplet</artifactId>
-			<version>1.2.2-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>at.gv.egiz</groupId>
-			<artifactId>BKUViewer</artifactId>
-			<version>1.2.2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

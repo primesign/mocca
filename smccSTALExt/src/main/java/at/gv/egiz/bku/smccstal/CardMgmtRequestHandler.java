@@ -17,7 +17,7 @@
 /**
  * 
  */
-package at.gv.egiz.bku.smccstal.ext;
+package at.gv.egiz.bku.smccstal;
 
 import at.gv.egiz.bku.gui.ActivationGUIFacade;
 import java.util.ArrayList;

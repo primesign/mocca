@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package at.gv.egiz.bku.smccstal.ext;
+package at.gv.egiz.bku.smccstal;
 
 import at.gv.egiz.smcc.SignatureCardException;
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package at.gv.egiz.bku.smccstal.ext;
+package at.gv.egiz.bku.smccstal;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.smcc.ChangePINProvider;

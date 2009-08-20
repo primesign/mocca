@@ -17,6 +17,7 @@
 
 package at.gv.egiz.bku.gui;
 
+import at.gv.egiz.bku.gui.*;
 import java.awt.Container;
 import java.net.URL;
 import java.util.Locale;

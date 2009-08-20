@@ -160,6 +160,11 @@ public abstract class AbstractSMCCSTAL implements STAL {
     handlerMap.put(id.getSimpleName(), handler);
   }
 
+  public void removeRequestHandler(Class<? extends STALRequest> id) {
+    log.debug("De-registering STAL request handler: " + id.getSimpleName());
+    handlerMap.remove(id.getSimpleName());
+  }
+
   public SMCCSTALRequestHandler getRequestHandler(
       Class<? extends STALRequest> request) {
     return handlerMap.get(request.getSimpleName());

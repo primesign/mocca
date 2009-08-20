@@ -132,7 +132,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
           log.debug("scheduling gui initialization");
       
-            SwingUtilities.invokeAndWait(new Runnable() {
+            SwingUtilities.invokeLater(new Runnable() {
 
                 @Override
                 public void run() {

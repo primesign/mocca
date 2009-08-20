@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package at.gv.egiz.bku.smccstal.ext;
+package at.gv.egiz.bku.smccstal;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -87,6 +87,7 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
         waitForAction();
 
         if ("cancel".equals(actionCommand)) {
+          log.debug("pin management cancel");
           return new PINManagementResponse();
         } else {
           selectedPIN = gui.getSelectedPINSpec();

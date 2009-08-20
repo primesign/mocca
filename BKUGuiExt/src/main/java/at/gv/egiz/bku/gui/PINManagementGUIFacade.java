@@ -17,6 +17,7 @@
 
 package at.gv.egiz.bku.gui;
 
+import at.gv.egiz.bku.gui.*;
 import at.gv.egiz.smcc.PINSpec;
 import java.awt.event.ActionListener;
 import java.util.Map;

@@ -22,7 +22,7 @@ import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUGUIFacade.Style;
 import at.gv.egiz.bku.online.applet.BKUApplet;
 import at.gv.egiz.bku.smccstal.AbstractSMCCSTAL;
-import at.gv.egiz.bku.smccstal.ext.CardMgmtRequestHandler;
+import at.gv.egiz.bku.smccstal.CardMgmtRequestHandler;
 import at.gv.egiz.stal.ext.APDUScriptRequest;
 import at.gv.egiz.stal.service.STALPortType;
 import at.gv.egiz.stal.service.translator.STALTranslator;

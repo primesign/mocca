@@ -1,10 +1,10 @@
 package at.gv.egiz.bku.webstart;
 
+import at.gv.egiz.bku.webstart.gui.AboutDialog;
 import at.gv.egiz.bku.webstart.gui.BKUControllerInterface;
-import at.gv.egiz.bku.webstart.gui.TrayMenuListener;
+import at.gv.egiz.bku.webstart.gui.PINManagementInvoker;
 import iaik.asn1.CodingException;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -21,8 +21,12 @@ import java.awt.PopupMenu;
 import java.awt.SplashScreen;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.net.BindException;
-import java.net.URI;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.jar.Attributes;
@@ -30,9 +34,10 @@ import java.util.jar.Manifest;
 import javax.imageio.ImageIO;
 import javax.jnlp.BasicService;
 import javax.jnlp.ServiceManager;
+import javax.swing.JFrame;
 import org.mortbay.util.MultiException;
 
-public class Launcher implements BKUControllerInterface {
+public class Launcher implements BKUControllerInterface, ActionListener {
 
   public static final String WEBAPP_RESOURCE = "BKULocal.war";
   public static final String CERTIFICATES_RESOURCE = "BKUCertificates.jar";
@@ -51,23 +56,37 @@ public class Launcher implements BKUControllerInterface {
   public static final String ERROR_START = "tray.error.start";
   public static final String ERROR_CONFIG = "tray.error.config";
   public static final String ERROR_BIND = "tray.error.bind";
+  public static final String ERROR_PIN = "tray.error.pin.connect";
   public static final String LABEL_SHUTDOWN = "tray.label.shutdown";
   public static final String LABEL_PIN = "tray.label.pin";
   public static final String LABEL_ABOUT = "tray.label.about";
   public static final String TOOLTIP_DEFAULT = "tray.tooltip.default";
-  
-  /** local bku uri */
-  public static final URI HTTPS_SECURITY_LAYER_URI;
+
+  /** action commands for tray menu */
+  public static final String SHUTDOWN_COMMAND = "shutdown";
+  public static final String PIN_COMMAND = "pin";
+  public static final String ABOUT_COMMAND = "about";
+
   private static Log log = LogFactory.getLog(Launcher.class);
 
+  /** local bku uri */
+  public static final URL HTTP_SECURITY_LAYER_URL;
+  public static final URL HTTPS_SECURITY_LAYER_URL;
+  public static final URL PIN_MANAGEMENT_URL;
   static {
-    URI tmp = null;
+    URL http = null;
+    URL https = null;
+    URL pin = null;
     try {
-      tmp = new URI("https://localhost:" + Integer.getInteger(Container.HTTPS_PORT_PROPERTY, 3496).intValue());
-    } catch (URISyntaxException ex) {
+      http = new URL("http://localhost:" + Integer.getInteger(Container.HTTPS_PORT_PROPERTY, 3495).intValue());
+      https = new URL("https://localhost:" + Integer.getInteger(Container.HTTPS_PORT_PROPERTY, 3496).intValue());
+      pin = new URL(http, "/PINManagement");
+    } catch (MalformedURLException ex) {
       log.error(ex);
     } finally {
-      HTTPS_SECURITY_LAYER_URI = tmp;
+      HTTP_SECURITY_LAYER_URL = http;
+      HTTPS_SECURITY_LAYER_URL = https;
+      PIN_MANAGEMENT_URL = pin;
     }
   }
   public static final String version;
@@ -96,6 +115,8 @@ public class Launcher implements BKUControllerInterface {
   private BasicService basicService;
   private TrayIcon trayIcon;
   private ResourceBundle messages;
+  private AboutDialog aboutDialog;
+
   
   public Launcher() {
     if (log.isTraceEnabled()) {
@@ -144,7 +165,7 @@ public class Launcher implements BKUControllerInterface {
     }
   }
   
-  private TrayIcon initTrayIcon() { //ResourceBundle messages, BKUControllerInterface bkuHook) {
+  private TrayIcon initTrayIcon() {
     if (SystemTray.isSupported()) {
       try {
         // get the SystemTray instance
@@ -155,21 +176,27 @@ public class Launcher implements BKUControllerInterface {
                 : TRAYICON_RESOURCE + "32.png";
         Image image = ImageIO.read(Launcher.class.getClassLoader().getResourceAsStream(iconResource));
 
-        TrayMenuListener listener = new TrayMenuListener(this, messages, version);
         PopupMenu popup = new PopupMenu();
         
+        MenuItem pinItem = new MenuItem(messages.getString(LABEL_PIN));
+        pinItem.addActionListener(this);
+        pinItem.setActionCommand(PIN_COMMAND);
+        popup.add(pinItem);
+
         MenuItem shutdownItem = new MenuItem(messages.getString(LABEL_SHUTDOWN));
-        shutdownItem.addActionListener(listener);
-        shutdownItem.setActionCommand(TrayMenuListener.SHUTDOWN_COMMAND);
+        shutdownItem.addActionListener(this);
+        shutdownItem.setActionCommand(SHUTDOWN_COMMAND);
         popup.add(shutdownItem);
 
+        popup.addSeparator();
+
         MenuItem aboutItem = new MenuItem(messages.getString(LABEL_ABOUT));
-        aboutItem.setActionCommand(TrayMenuListener.ABOUT_COMMAND);
-        aboutItem.addActionListener(listener);
+        aboutItem.setActionCommand(ABOUT_COMMAND);
+        aboutItem.addActionListener(this);
         popup.add(aboutItem);
 
         TrayIcon ti = new TrayIcon(image, messages.getString(TOOLTIP_DEFAULT), popup);
-        ti.addActionListener(listener);
+        ti.addActionListener(this);
         tray.add(ti);
         return ti;
       } catch (AWTException ex) {
@@ -237,15 +264,15 @@ public class Launcher implements BKUControllerInterface {
           Desktop desktop = Desktop.getDesktop();
           if (desktop.isSupported(Desktop.Action.BROWSE)) {
             try {
-              desktop.browse(HTTPS_SECURITY_LAYER_URI);
+              desktop.browse(HTTPS_SECURITY_LAYER_URL.toURI());
             } catch (Exception ex) {
-              log.error("failed to open system browser, install TLS certificate manually: " + HTTPS_SECURITY_LAYER_URI, ex);
+              log.error("failed to open system browser, install TLS certificate manually: " + HTTPS_SECURITY_LAYER_URL, ex);
             }
           } else {
-            log.error("failed to open system browser, install TLS certificate manually: " + HTTPS_SECURITY_LAYER_URI);
+            log.error("failed to open system browser, install TLS certificate manually: " + HTTPS_SECURITY_LAYER_URL);
           }
         } else {
-          log.error("failed to open system browser, install TLS certificate manually: " + HTTPS_SECURITY_LAYER_URI);
+          log.error("failed to open system browser, install TLS certificate manually: " + HTTPS_SECURITY_LAYER_URL);
         }
       }
       log.info("BKU successfully started");
@@ -274,6 +301,39 @@ public class Launcher implements BKUControllerInterface {
       }
     }
     System.exit(0);
+  }
+
+  /**
+   * Listen for TrayMenu actions (display error messages on trayIcon)
+   * @param e
+   */
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    if (SHUTDOWN_COMMAND.equals(e.getActionCommand())) {
+      log.debug("shutdown requested via tray menu");
+      this.shutDown();
+    } else if (ABOUT_COMMAND.equals(e.getActionCommand())) {
+      log.debug("about dialog requested via tray menu");
+      if (aboutDialog == null) {
+        aboutDialog = new AboutDialog(new JFrame(), true, version);
+        aboutDialog.addWindowListener(new WindowAdapter() {
+
+          @Override
+          public void windowClosing(java.awt.event.WindowEvent e) {
+            aboutDialog.setVisible(false);
+          }
+        });
+      }
+      aboutDialog.setLocationByPlatform(true);
+      aboutDialog.setVisible(true);
+    } else if (PIN_COMMAND.equals(e.getActionCommand())) {
+      log.debug("pin management dialog requested via tray menu");
+
+      new Thread(new PINManagementInvoker(trayIcon, messages)).start();
+      
+    } else {
+      log.error("unknown tray menu command: " + e.getActionCommand());
+    }
   }
 
   public static void main(String[] args) throws InterruptedException, IOException {
