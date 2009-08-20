@@ -3,14 +3,14 @@
   <parent>
     <artifactId>bku</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.2.3-SNAPSHOT</version>
+    <version>1.2.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>at.gv.egiz</groupId>
   <artifactId>BKUOnline</artifactId>
   <packaging>war</packaging>
   <name>BKU Online</name>
-  <version>1.2.3-SNAPSHOT</version>
+  <version>1.2.2-SNAPSHOT</version>
 
   <pluginRepositories>
     <pluginRepository>
@@ -315,7 +315,6 @@
         <dependency>
           <groupId>at.gv.egiz</groupId>
           <artifactId>BKUWebStart</artifactId>
-          <version>${project.version}</version>
           <scope>provided</scope>
           <type>zip</type>
         </dependency>

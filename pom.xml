@@ -4,7 +4,7 @@
   <groupId>at.gv.egiz</groupId>
   <artifactId>bku</artifactId>
   <packaging>pom</packaging>
-  <version>1.2.3-SNAPSHOT</version>
+  <version>1.2.2-SNAPSHOT</version>
   <name>BKU</name>
   <url>http://bku.egiz.gv.at</url>
   <modules>
@@ -260,6 +260,14 @@
         <groupId>com.sun.xml.bind</groupId>
         <artifactId>jaxb-impl</artifactId>
         <version>2.1.9</version>
+      </dependency>
+      <!-- version not defined in BKUOnline pom "include-webstart" profile,
+       |   it wouldn't be adjusted by release:prepare -->
+      <dependency>
+        <groupId>at.gv.egiz</groupId>
+        <artifactId>BKUWebStart</artifactId>
+        <version>1.0.11-SNAPSHOT</version>
+        <type>zip</type>
       </dependency>
     </dependencies>
   </dependencyManagement>
