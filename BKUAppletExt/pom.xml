@@ -118,7 +118,7 @@
                 <type>PKCS11</type>
                 <providerClass>iaik.pkcs.pkcs11.provider.IAIKPkcs11</providerClass>
                 <alias>a-sit</alias>
-                <storepass />
+                <storepass>${pkcs11-pass}</storepass>
               </configuration>
             </plugin>
           </plugins>
