@@ -261,14 +261,6 @@
         <artifactId>jaxb-impl</artifactId>
         <version>2.1.9</version>
       </dependency>
-      <!-- version not defined in BKUOnline pom "include-webstart" profile,
-       |   it wouldn't be adjusted by release:prepare -->
-      <dependency>
-        <groupId>at.gv.egiz</groupId>
-        <artifactId>BKUWebStart</artifactId>
-        <version>1.0.11-SNAPSHOT</version>
-        <type>zip</type>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 </project>

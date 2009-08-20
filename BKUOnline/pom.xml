@@ -315,6 +315,7 @@
         <dependency>
           <groupId>at.gv.egiz</groupId>
           <artifactId>BKUWebStart</artifactId>
+          <version>${project.version}</version>
           <scope>provided</scope>
           <type>zip</type>
         </dependency>
