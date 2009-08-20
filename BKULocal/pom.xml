@@ -2,14 +2,14 @@
 	<parent>
 		<artifactId>bku</artifactId>
 		<groupId>at.gv.egiz</groupId>
-		<version>1.2.2-SNAPSHOT</version>
+		<version>1.2.3-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>BKULocal</artifactId>
 	<packaging>war</packaging>
 	<name>BKU Local</name>
-	<version>1.0.11-SNAPSHOT</version>
+	<version>1.2.3-SNAPSHOT</version>
 
 	<scm>
 		<developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKULocal</developerConnection>
