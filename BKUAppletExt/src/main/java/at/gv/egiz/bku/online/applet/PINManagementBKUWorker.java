@@ -53,11 +53,9 @@ public class PINManagementBKUWorker extends AppletBKUWorker {
 
     try {
 
-      ArrayList<STALRequest> reqs = new ArrayList<STALRequest>();
-      reqs.add(new PINManagementRequest());
-      reqs.add(new QuitRequest());
-      List<STALResponse> responses = handleRequest(reqs);
-
+      List<STALResponse> responses = handleRequest(Collections.singletonList(new PINManagementRequest()));
+      handleRequest(Collections.singletonList(new QuitRequest()));
+      
       if (responses.size() == 1) {
         STALResponse response = responses.get(0);
         if (response instanceof PINManagementResponse) {
