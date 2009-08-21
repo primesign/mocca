@@ -23,7 +23,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>MOCCA Applet</title>
-        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+        <link rel="shortcut icon" href="img/chip16.ico" type="image/x-icon">
         <script type="text/javascript" src="js/deployJava.js"></script>
         <style type="text/css" media="all">@import "css/applet.css";</style>
 
@@ -37,7 +37,7 @@
         int height = session.getAttribute("appletHeight") == null ? 130
                 : (Integer) session.getAttribute("appletHeight");
         String backgroundImg = session.getAttribute("appletBackground") == null
-                ? "../img/ChipperlingCutoff.png"
+                ? "../img/chip32.png"
                 : (String) session.getAttribute("appletBackground");
         String guiStyle = (String) session.getAttribute("appletGuiStyle");
         String locale = (String) session.getAttribute("locale");

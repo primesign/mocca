@@ -34,7 +34,7 @@
  * This file contains workarounds to
  * [#423] Firefox 3.0.11 bug #498132 causes applet loading failure
  *   (lines 95-99)
- * [#424] Web Start loading via java plugin (Sun deployment script) fails on WinXP
+ * [#424] Web Start loading via java plugin (Sun deployment script) fails on WinXP/Vista
  *   (lines 501-506)
  *
  * features:

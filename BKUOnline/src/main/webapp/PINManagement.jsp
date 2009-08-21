@@ -23,7 +23,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>MOCCA PIN Management</title>
-        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+        <link rel="shortcut icon" href="img/chip16.ico" type="image/x-icon">
         <script type="text/javascript" src="js/deployJava.js"></script>
         <style type="text/css" media="all">@import "css/applet.css";</style>
 
