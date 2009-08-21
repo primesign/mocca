@@ -17,30 +17,20 @@
 package at.gv.egiz.bku.local.webapp;
 
 import at.gv.egiz.bku.local.stal.LocalSTALFactory;
-import at.gv.egiz.marshal.MarshallerFactory;
 import at.gv.egiz.stal.QuitRequest;
-import at.gv.egiz.stal.STALRequest;
+import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.ext.PINManagementRequest;
-import at.gv.egiz.stal.ext.PINManagementResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import org.apache.regexp.REUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * PINManagementBKUWorker for non-applet version
@@ -48,8 +38,15 @@ import org.apache.regexp.REUtil;
  */
 public class PINManagementServlet extends HttpServlet {
 
-//  static JAXBContext stalCtx;
-  
+  private static final Log log = LogFactory.getLog(PINManagementServlet.class);
+
+  LocalSTALFactory stalFactory;
+
+  public PINManagementServlet() {
+    stalFactory = new LocalSTALFactory();
+    stalFactory.setHelpURL("http://localhost:3495/help/");
+  }
+
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
    * @param request servlet request
@@ -60,13 +57,12 @@ public class PINManagementServlet extends HttpServlet {
   protected void processRequest(HttpServletRequest request, HttpServletResponse response)
           throws ServletException, IOException {
 
-    LocalSTALFactory sf = new LocalSTALFactory();
-
-    ArrayList<STALRequest> stalReqs = new ArrayList<STALRequest>();
-    stalReqs.add(new PINManagementRequest());
-    stalReqs.add(new QuitRequest());
-
-    List<STALResponse> stalResps = sf.createSTAL().handleRequest(stalReqs); 
+    STAL pinMgmtSTAL = stalFactory.createSTAL();
+    List<STALResponse> stalResps = pinMgmtSTAL.handleRequest(Collections.singletonList(new PINManagementRequest()));
+    if (log.isDebugEnabled()) {
+      log.debug("received STAL reponse " + stalResps.get(0).getClass());
+    }
+    pinMgmtSTAL.handleRequest(Collections.singletonList(new QuitRequest()));
 
     String redirect = request.getParameter("redirect");
     if (redirect != null) {
@@ -77,56 +73,7 @@ public class PINManagementServlet extends HttpServlet {
       response.sendRedirect(redirect);
     } else {
       response.setStatus(HttpServletResponse.SC_OK);
-//      if (stalResps.get(0) != null) {
-//        PrintWriter out = response.getWriter();
-//        try {
-//          response.setContentType("text/xml;charset=UTF-8");
-//          // cannot directly marshal STALResponse, no ObjectFactory in at.gv.egiz.stal
-//          if (stalCtx == null) {
-//            stalCtx = JAXBContext.newInstance("at.gv.egiz.stal:at.gv.egiz.stal.ext");
-//          }
-//          Marshaller m = MarshallerFactory.createMarshaller(stalCtx);
-//          m.marshal(stalResps.get(0), out);
-//          out.close();
-//        } catch (JAXBException ex) {
-//          throw new ServletException("Failed to marshal STAL response", ex);
-//        } finally {
-//          out.close();
-//        }
-//      } else {
-//        throw new ServletException("internal error");
-//      }
     }
-
-    
-//    try {
-//      out.println("<html>");
-//      out.println("<head>");
-//      out.println("<title>Servlet PINManagementServlet</title>");
-//      out.println("</head>");
-//      out.println("<body>");
-//      out.println("<h1>Servlet PINManagementServlet at " + request.getContextPath() + "</h1>");
-//      out.println("<p>" + stalResps.size() + " responses:<ul>");
-//      for (STALResponse resp : stalResps) {
-//        out.println(" <li>" + resp.getClass());
-//      }
-//      Enumeration<String> headers = request.getHeaderNames();
-//      out.println("</ul></p><p> headers: <ul>");
-//      while (headers.hasMoreElements()) {
-//        String header = headers.nextElement();
-//        out.println("<li> " + header + ": " + request.getHeader(header));
-//      }
-//      Enumeration<String> params = request.getParameterNames();
-//      out.println("</ul></p><p> params: <ul>");
-//      while (params.hasMoreElements()) {
-//        String param = params.nextElement();
-//        out.println("<li> " + param + ": " + request.getParameter(param));
-//      }
-//      out.println("</ul></p></body>");
-//      out.println("</html>");
-//    } finally {
-//      out.close();
-//    }
   }
 
   // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
