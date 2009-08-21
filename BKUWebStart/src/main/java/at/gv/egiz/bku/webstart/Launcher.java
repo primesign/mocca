@@ -42,8 +42,9 @@ public class Launcher implements BKUControllerInterface, ActionListener {
   public static final String WEBAPP_RESOURCE = "BKULocal.war";
   public static final String CERTIFICATES_RESOURCE = "BKUCertificates.jar";
   public static final String WEBAPP_FILE = "BKULocal.war";
+  /** no leading slash for messages, but for image */
   public static final String MESSAGES_RESOURCE = "at/gv/egiz/bku/webstart/messages";
-  public static final String TRAYICON_RESOURCE = "at/gv/egiz/bku/webstart/logo_";
+  public static final String TRAYICON_RESOURCE = "/at/gv/egiz/bku/webstart/chip";
   /** resource bundle messages */
   public static final String CAPTION_DEFAULT = "tray.caption.default";
   public static final String CAPTION_ERROR = "tray.caption.error";
@@ -177,10 +178,12 @@ public class Launcher implements BKUControllerInterface, ActionListener {
           iconResource = TRAYICON_RESOURCE + "16.png";
         } else if (tray.getTrayIconSize().height < 25) {
           iconResource = TRAYICON_RESOURCE + "24.png";
-        } else {
+        } else if (tray.getTrayIconSize().height < 33) {
           iconResource = TRAYICON_RESOURCE + "32.png";
+        } else {
+          iconResource = TRAYICON_RESOURCE + "48.png";
         }
-        Image image = ImageIO.read(Launcher.class.getClassLoader().getResourceAsStream(iconResource));
+        Image image = ImageIO.read(getClass().getResourceAsStream(iconResource));
 
         PopupMenu popup = new PopupMenu();
         
@@ -347,6 +350,7 @@ public class Launcher implements BKUControllerInterface, ActionListener {
       Launcher launcher = new Launcher();
       launcher.launch();
     } catch (Exception ex) {
+      log.debug(ex);
       log.info("waiting to shutdown...");
       Thread.sleep(5000);
       log.info("exit");

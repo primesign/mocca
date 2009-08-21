@@ -2,28 +2,49 @@
 <jnlp-versions>
   <resource>
     <pattern>
-      <name>logo_24</name>
-      <version-id>1.0</version-id>
+      <name>logo16.png</name>
+      <version-id>2.0</version-id>
     </pattern>
-    <file>logo_24.png</file>
+    <file>logo16.png</file>
   </resource>
   <resource>
     <pattern>
-      <name>logo_32</name>
-      <version-id>1.0</version-id>
+      <name>logo24.png</name>
+      <version-id>2.0</version-id>
     </pattern>
-    <file>logo_32.png</file>
+    <file>logo24.png</file>
   </resource>
   <resource>
     <pattern>
-      <name>logo_64</name>
-      <version-id>1.0</version-id>
+      <name>logo32.png</name>
+      <version-id>2.0</version-id>
     </pattern>
-    <file>logo_64.png</file>
+    <file>logo32.png</file>
   </resource>
   <resource>
     <pattern>
-      <name>splash</name>
+      <name>logo48.png</name>
+      <version-id>2.0</version-id>
+    </pattern>
+    <file>logo48.png</file>
+  </resource>
+  <resource>
+    <pattern>
+      <name>logo64.png</name>
+      <version-id>2.0</version-id>
+    </pattern>
+    <file>logo64.png</file>
+  </resource>
+  <resource>
+    <pattern>
+      <name>logo128.png</name>
+      <version-id>2.0</version-id>
+    </pattern>
+    <file>logo128.png</file>
+  </resource>
+  <resource>
+    <pattern>
+      <name>splash.png</name>
       <version-id>2.0</version-id>
     </pattern>
     <file>splash.png</file>
