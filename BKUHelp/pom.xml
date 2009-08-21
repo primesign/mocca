@@ -7,6 +7,6 @@
   </parent>
   <groupId>at.gv.egiz</groupId>
   <artifactId>BKUHelp</artifactId>
-  <version>1.0</version>
+  <version>1.1-SNAPSHOT</version>
   <name>BKU Help</name>
 </project>
