@@ -40,11 +40,12 @@ public interface BKUGUIFacade {
   public static final String ERR_VIEWER = "error.viewer";
   public static final String ERR_EXTERNAL_LINK = "error.external.link";
   public static final String ERR_CONFIG = "error.config";
-  
+
+  /** no leading slash for Messages resource, leading slash for images */
   public static final String MESSAGES_BUNDLE = "at/gv/egiz/bku/gui/Messages";
-  public static final String DEFAULT_BACKGROUND = "/images/ChipperlingCutoff.png";
-  public static final String DEFAULT_ICON = "/images/ChipperlingLogo.png";
-  public static final String HELP_IMG = "/images/help.png";
+  public static final String DEFAULT_BACKGROUND = "/at/gv/egiz/bku/gui/chip32.png";
+  public static final String DEFAULT_ICON = "/at/gv/egiz/bku/gui/chiperling105.png";
+  public static final String HELP_IMG = "/at/gv/egiz/bku/gui/help.png";
   public static final String HASHDATA_FONT = "Monospaced";
   public static final Color ERROR_COLOR = Color.RED;
   public static final Color HYPERLINK_COLOR = Color.BLUE;

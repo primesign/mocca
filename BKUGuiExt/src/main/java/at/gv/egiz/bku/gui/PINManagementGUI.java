@@ -17,15 +17,12 @@
 
 package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.bku.gui.*;
 import at.gv.egiz.smcc.PINSpec;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Locale;
