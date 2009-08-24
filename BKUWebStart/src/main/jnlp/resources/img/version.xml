@@ -2,45 +2,45 @@
 <jnlp-versions>
   <resource>
     <pattern>
-      <name>logo16.png</name>
+      <name>chip16.png</name>
       <version-id>2.0</version-id>
     </pattern>
-    <file>logo16.png</file>
+    <file>chip16.png</file>
   </resource>
   <resource>
     <pattern>
-      <name>logo24.png</name>
+      <name>chip24.png</name>
       <version-id>2.0</version-id>
     </pattern>
-    <file>logo24.png</file>
+    <file>chip24.png</file>
   </resource>
   <resource>
     <pattern>
-      <name>logo32.png</name>
+      <name>chip32.png</name>
       <version-id>2.0</version-id>
     </pattern>
-    <file>logo32.png</file>
+    <file>chip32.png</file>
   </resource>
   <resource>
     <pattern>
-      <name>logo48.png</name>
+      <name>chip48.png</name>
       <version-id>2.0</version-id>
     </pattern>
-    <file>logo48.png</file>
+    <file>chip48.png</file>
   </resource>
   <resource>
     <pattern>
-      <name>logo64.png</name>
+      <name>chip64.png</name>
       <version-id>2.0</version-id>
     </pattern>
-    <file>logo64.png</file>
+    <file>chip64.png</file>
   </resource>
   <resource>
     <pattern>
-      <name>logo128.png</name>
+      <name>chip128.png</name>
       <version-id>2.0</version-id>
     </pattern>
-    <file>logo128.png</file>
+    <file>chip128.png</file>
   </resource>
   <resource>
     <pattern>
