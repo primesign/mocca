@@ -132,35 +132,19 @@ public class ManagementPINProviderFactory extends PINProviderFactory {
       } else if (type == PINManagementGUIFacade.DIALOG.VERIFY) {
         title = PINManagementGUIFacade.TITLE_VERIFY_PIN;
         message = BKUGUIFacade.MESSAGE_ENTERPIN_PINPAD;
-        String pinSize = String.valueOf(pinSpec.getMinLength());
-        if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
-          pinSize += "-" + pinSpec.getMaxLength();
-        }
-        params = new Object[]{pinSpec.getLocalizedName(), pinSize};
+        params = new Object[]{pinSpec.getLocalizedName(), pinSpec.getLocalizedLength()};
       } else if (type == PINManagementGUIFacade.DIALOG.ACTIVATE) {
         title = PINManagementGUIFacade.TITLE_ACTIVATE_PIN;
         message = PINManagementGUIFacade.MESSAGE_ACTIVATEPIN_PINPAD;
-        String pinSize = String.valueOf(pinSpec.getMinLength());
-        if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
-          pinSize += "-" + pinSpec.getMaxLength();
-        }
-        params = new Object[]{pinSpec.getLocalizedName(), pinSize};
+        params = new Object[]{pinSpec.getLocalizedName(), pinSpec.getLocalizedLength()};
       } else if (type == PINManagementGUIFacade.DIALOG.CHANGE) {
         title = PINManagementGUIFacade.TITLE_CHANGE_PIN;
         message = PINManagementGUIFacade.MESSAGE_CHANGEPIN_PINPAD;
-        String pinSize = String.valueOf(pinSpec.getMinLength());
-        if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
-          pinSize += "-" + pinSpec.getMaxLength();
-        }
-        params = new Object[]{pinSpec.getLocalizedName(), pinSize};
+        params = new Object[]{pinSpec.getLocalizedName(), pinSpec.getLocalizedLength()};
       } else { //if (type == DIALOG.UNBLOCK) {
         title = PINManagementGUIFacade.TITLE_UNBLOCK_PIN;
         message = PINManagementGUIFacade.MESSAGE_UNBLOCKPIN_PINPAD;
-        String pinSize = String.valueOf(pinSpec.getMinLength());
-        if (pinSpec.getMinLength() != pinSpec.getMaxLength()) {
-          pinSize += "-" + pinSpec.getMaxLength();
-        }
-        params = new Object[]{pinSpec.getLocalizedName(), pinSize};
+        params = new Object[]{pinSpec.getLocalizedName(), pinSpec.getLocalizedLength()};
       }
       gui.showMessageDialog(title, message, params);
     }
