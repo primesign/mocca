@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="$jnlpspec" codebase="$$codebase" context="$$context" href="$$name">
+<jnlp spec="$jnlpspec" codebase="http://localhost:8080/webstart/" context="http://localhost:8080" href="mocca.jnlp">
 
   <information>
     <!--title>$project.Name</title-->
@@ -9,15 +9,15 @@
     <homepage href="$project.Url"/>
     <description>$project.Description (BKU) MOCCA Web Start</description>
     <description kind="short">$project.Description</description>
-    <icon kind="shortcut" href="img/chip16.png" width="16" height="16" version="2.0"/>
-    <icon kind="shortcut" href="img/chip24.png" width="24" height="24" version="2.0"/>
-    <icon kind="shortcut" href="img/chip32.png" width="32" height="32" version="2.0"/>
-    <icon kind="shortcut" href="img/chip48.png" width="48" height="48" version="2.0"/>
-    <icon kind="default" href="img/chip16.png" width="16" height="16" version="2.0"/>
-    <icon kind="default" href="img/chip24.png" width="24" height="24" version="2.0"/>
-    <icon kind="default" href="img/chip32.png" width="32" height="32" version="2.0"/>
-    <icon kind="default" href="img/chip48.png" width="48" height="48" version="2.0"/>
-    <icon kind="splash" href="img/splash.png" version="2.0"/>
+    <icon kind="shortcut" href="img/chip16.png" width="16" height="16"/>
+    <icon kind="shortcut" href="img/chip24.png" width="24" height="24"/>
+    <icon kind="shortcut" href="img/chip32.png" width="32" height="32"/>
+    <icon kind="shortcut" href="img/chip48.png" width="48" height="48"/>
+    <icon kind="default" href="img/chip16.png" width="16" height="16"/>
+    <icon kind="default" href="img/chip24.png" width="24" height="24"/>
+    <icon kind="default" href="img/chip32.png" width="32" height="32"/>
+    <icon kind="default" href="img/chip48.png" width="48" height="48"/>
+    <icon kind="splash" href="img/splash.png"/>
     <shortcut online="false">
       <desktop/>
       <menu submenu="e-Government"/>
@@ -39,13 +39,11 @@
 
   <resources os="Mac OS X">
     <java version="$j2seVersion" java-vm-args="-d32"/>
-    <property name="jnlp.versionEnabled" value="true"/>
      $dependencies
   </resources>
 
   <resources>
     <java version="$j2seVersion"/>
-    <property name="jnlp.versionEnabled" value="true"/>
      $dependencies
   </resources>
 

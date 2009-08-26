@@ -38,6 +38,11 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class AbstractHelpListener implements ActionListener {
 
+  /**
+   * any locale not in the list will be mapped to 'de'
+   */
+  public static final String[] SUPPORTED_LANGUAGES = new String[] { "de" };
+  
   protected final static Log log = LogFactory.getLog(AbstractHelpListener.class);
   protected URL baseURL;
   protected Locale locale;
@@ -71,12 +76,14 @@ public abstract class AbstractHelpListener implements ActionListener {
     URL helpURL = baseURL;
     log.trace("constructing help URL: " + helpURL);
     try {
-      if (locale != null) {
-        helpURL = new URL(helpURL, locale.toString() + "/");
-        log.trace("constructing help URL: " + helpURL);
-      }
+      // not localized for now
+      //check if locale.getLanguage() supported and add default if not
+//      if (locale != null) {
+//        helpURL = new URL(helpURL, locale.toString() + "/");
+//        log.trace("constructing help URL: " + helpURL);
+//      }
       if (helpTopic != null && !"".equals(helpTopic)) {
-        helpURL = new URL(helpURL, helpTopic + ".html");
+        helpURL = new URL(helpURL, "de/" + helpTopic + ".html");
         log.trace("constructing help URL: " + helpURL);
       }
     } catch (MalformedURLException ex) {

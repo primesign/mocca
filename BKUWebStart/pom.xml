@@ -51,9 +51,11 @@
       </plugin>
 
       <!-- Build the web start app
-       |   Default is to build BKUWebStart.zip incl. jnlp for local execution
-       |   If include-webstart is active, the jnlp will contain DownloadServlet specific placeholders (for codebase, etc) and versioning will be enabled.
-       |   If pkcs11-sign is active (ie. the release build), pack200 will be activated, the the PKCS11 keystore will be used (and the adopted version of the plugin will be used).
+       |   Default is to build BKUWebStart.zip incl. mocca.jnlp with versioning enabled and
+       |   containing DownloadServlet specific placeholders (for codebase, etc).
+       |   If pkcs11-sign is active (ie. the release build), pack200/gzip will be activated,
+       |   the the PKCS11 keystore will be used (and the adopted version of the plugin will be used).
+       |   If local-webstart is active, the jnlp will be prepared for local execution (development build)
        |-->
       <plugin>
         <artifactId>webstart-maven-plugin</artifactId>
@@ -98,8 +100,8 @@
             </keystoreConfig>
           </sign>
           <pack200>false</pack200>
-          <!--gzip>true</gzip-->
-          <outputJarVersions>true</outputJarVersions>
+          <gzip>false</gzip>
+          <outputJarVersions>false</outputJarVersions>
           <!-- unsign IAIK signed libs -->
           <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
           <verbose>true</verbose>
@@ -190,9 +192,6 @@
                   <gen>false</gen>
                 </keystoreConfig>
               </sign>
-              <pack200>true</pack200>
-              <!--gzip>false</gzip-->
-              <outputJarVersions>true</outputJarVersions>
             </configuration>
           </plugin>
         </plugins>
@@ -212,7 +211,6 @@
                 <inputTemplate>template-local.xml</inputTemplate>
                 <outputFile>mocca-local.jnlp</outputFile>
               </jnlp>
-              <outputJarVersions>false</outputJarVersions>
             </configuration>
           </plugin>
         </plugins>
@@ -221,6 +219,14 @@
   </profiles>
 
   <dependencies>
+    <!-- ATTENTION update of application descriptor (jnlp file) is special...
+     |   The JNLP Client must use the Last-Modified header field returned by
+     |   the Web Server to determine if a newer JNLP file is present on the Web
+     |   server.
+     |   Don't assume changes to the descriptor (changes in dependencies) to
+     |   appear directly on the client descriptor (even if 'update available'
+     |   was shown to user).
+     |   Note: Download via browser ensures the updated jnlp file is used. -->
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKULocal</artifactId>
@@ -259,12 +265,12 @@
     <!-- JSP support
      |   http://jira.codehaus.org/browse/JETTY-827
      |   jsp-2.1-jetty-6.1.19 depends on the required jsp-2.1-glassfish jars (?)
-     |-->
+     |
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jsp-2.1-jetty</artifactId>
       <version>6.1.19</version>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>

@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class TLSServerCA {
   public static final int CA_VALIDITY_Y = 3;
+  public static final String MOCCA_TLS_SERVER_ALIAS = "server";
   public static final int SERVER_VALIDITY_Y = 3;
   private final static Log log = LogFactory.getLog(TLSServerCA.class);
 
@@ -127,7 +128,7 @@ public class TLSServerCA {
       generateServerCert();
       KeyStore ks = KeyStore.getInstance("JKS");
       ks.load(null, null);
-      ks.setKeyEntry("server", serverKeyPair.getPrivate(), password, new X509Certificate[]{serverCert, caCert});
+      ks.setKeyEntry(MOCCA_TLS_SERVER_ALIAS, serverKeyPair.getPrivate(), password, new X509Certificate[]{serverCert, caCert});
       return ks;
 //    } catch (Exception e) {
 //      log.error("Cannot generate certificate", e);

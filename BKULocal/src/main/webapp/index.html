@@ -14,21 +14,45 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-    <head>
-        <title>BKU Web Start - Willkommen</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <style type="text/css" media="all">@import "css/main.css";</style>
-    </head>
-    <body>
-        <h1>BKU Web Start - Willkommen</h1>
-        <div>
-          <p>Diese Seite installiert das MOCCA Zertifikat in ihrem Browser.
-        In jedem weiteren Browser können sie dieses durch Aufruf <a href="https://localhost:3496/index.html">dieser Seite</a> ebenso installieren.</p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Bürgerkarte - Willkommen</title>
+    <link href="help/help.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="img/chip16.ico" type="image/x-icon"/>
+  </head>
+
+  <body class="twoColElsLtHdr">
+
+    <div id="container">
+      <div id="header">
+        <h1>Bürgerkarte</h1>
+        <!-- end #header --></div>
+      <div id="mainContent" style="margin: 1.5em 1.5em 0 1.5em">
+        <div style="float:left; margin-right:1em">
+          <img src="img/chip48.png" alt="Logo" width="48" height="48"/>
         </div>
-        <div>
-          <a href="PINManagement?redirect=./index.html">PIN Verwaltung</a>
-        </div>
-    </body>
+        <p>Um die Bürgerkartenumgebung zu verwenden installieren Sie bitte
+          zunächst das <a href="installCertificate">CA Zertifikat</a>.
+        </p>
+
+        <p style="float:none">Weiters können Sie</p>
+        <ul>
+          <li>die <a href="help">Hilfe durchsehen</a>,</li>
+          <li>die <a href="PINManagement?redirect=./index.html">PIN Verwaltung starten</a> oder </li>
+          <li>in jedem weiteren Web-Browser das <a href="installCertificate">CA Zertifikat installieren</a>.</li>
+        </ul>
+
+        <p><br class="clearfloat" /></p>
+
+      </div>
+      <div id="footer">
+        <p>
+          <a href="http://www.buergerkarte.at">Österreichische Bürgerkarte</a> | <a href="http://mocca.egovlabs.gv.at">Bürgerkartensoftware MOCCA</a>
+        </p>
+      </div>
+      <!-- end #container --></div>
+  </body>
 </html>
+

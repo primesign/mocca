@@ -91,41 +91,6 @@
   </resource>
   <resource>
     <pattern>
-      <name>jsp-2.1-jetty-6.1.19.jar</name>
-      <version-id>6.1.19</version-id>
-    </pattern>
-    <file>jsp-2.1-jetty-6.1.19.jar</file>
-  </resource>
-  <resource>
-    <pattern>
-      <name>jsp-2.1-glassfish-9.1.1.B60.25.p0.jar</name>
-      <version-id>9.1.1.B60.25.p0</version-id>
-    </pattern>
-    <file>jsp-2.1-glassfish-9.1.1.B60.25.p0.jar</file>
-  </resource>
-  <resource>
-    <pattern>
-      <name>jsp-api-2.1-glassfish-9.1.1.B60.25.p0.jar</name>
-      <version-id>9.1.1.B60.25.p0</version-id>
-    </pattern>
-    <file>jsp-api-2.1-glassfish-9.1.1.B60.25.p0.jar</file>
-  </resource>
-  <resource>
-    <pattern>
-      <name>ant-1.6.5.jar</name>
-      <version-id>1.6.5</version-id>
-    </pattern>
-    <file>ant-1.6.5.jar</file>
-  </resource>
-  <resource>
-    <pattern>
-      <name>core-3.1.1.jar</name>
-      <version-id>3.1.1</version-id>
-    </pattern>
-    <file>core-3.1.1.jar</file>
-  </resource>
-  <resource>
-    <pattern>
       <name>slf4j-api-1.5.8.jar</name>
       <version-id>1.5.8</version-id>
     </pattern>

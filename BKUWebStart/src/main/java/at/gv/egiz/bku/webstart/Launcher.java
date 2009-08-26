@@ -27,6 +27,7 @@ import java.awt.event.WindowAdapter;
 import java.net.BindException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.jar.Attributes;
@@ -73,21 +74,25 @@ public class Launcher implements BKUControllerInterface, ActionListener {
   /** local bku uri */
   public static final URL HTTP_SECURITY_LAYER_URL;
   public static final URL HTTPS_SECURITY_LAYER_URL;
+  public static final URL INSTALL_CERT_URL;
   public static final URL PIN_MANAGEMENT_URL;
   static {
     URL http = null;
     URL https = null;
     URL pin = null;
+    URL cert = null;
     try {
       http = new URL("http://localhost:" + Integer.getInteger(Container.HTTPS_PORT_PROPERTY, 3495).intValue());
       https = new URL("https://localhost:" + Integer.getInteger(Container.HTTPS_PORT_PROPERTY, 3496).intValue());
       pin = new URL(http, "/PINManagement");
+      cert = new URL(http, "/installCertificate");
     } catch (MalformedURLException ex) {
       log.error(ex);
     } finally {
       HTTP_SECURITY_LAYER_URL = http;
       HTTPS_SECURITY_LAYER_URL = https;
       PIN_MANAGEMENT_URL = pin;
+      INSTALL_CERT_URL = cert;
     }
   }
   public static final String version;
@@ -273,7 +278,7 @@ public class Launcher implements BKUControllerInterface, ActionListener {
           Desktop desktop = Desktop.getDesktop();
           if (desktop.isSupported(Desktop.Action.BROWSE)) {
             try {
-              desktop.browse(HTTPS_SECURITY_LAYER_URL.toURI());
+              desktop.browse(HTTP_SECURITY_LAYER_URL.toURI());
             } catch (Exception ex) {
               log.error("failed to open system browser, install TLS certificate manually: " + HTTPS_SECURITY_LAYER_URL, ex);
             }
