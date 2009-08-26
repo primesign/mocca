@@ -54,10 +54,6 @@
     <jsp-file>/applet.jsp</jsp-file>
   </servlet>
   <servlet>
-    <servlet-name>help</servlet-name>
-    <jsp-file>/help.jsp</jsp-file>
-  </servlet>
-  <servlet>
     <servlet-name>STALService</servlet-name>
     <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
@@ -73,10 +69,6 @@
   <servlet-mapping>
     <servlet-name>ResultServlet</servlet-name>
     <url-pattern>/bkuResult</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>help</servlet-name>
-    <url-pattern>/help/*</url-pattern>
   </servlet-mapping>
 
     <!--
@@ -120,7 +112,7 @@
     <servlet-name>JnlpDownloadServlet</servlet-name>
     <url-pattern>/webstart/*</url-pattern>
   </servlet-mapping>
-  -->
+   -->
   <!-- End BKU Web Start Config -->
 
   <servlet-mapping>
