@@ -3,11 +3,11 @@
   <parent>
     <artifactId>bku</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.2.4-SNAPSHOT</version>
+    <version>1.2.4</version>
   </parent>
   <groupId>at.gv.egiz</groupId>
   <artifactId>smccSTALExt</artifactId>
-  <version>1.2.4-SNAPSHOT</version>
+  <version>1.2.4</version>
   <name>smcc STAL Extension</name>
   <dependencies>
     <dependency>
