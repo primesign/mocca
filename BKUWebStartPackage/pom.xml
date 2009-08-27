@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>bku</artifactId>
+    <groupId>at.gv.egiz</groupId>
+    <version>1.2.4-SNAPSHOT</version>
+  </parent>
+  <groupId>at.gv.egiz</groupId>
+  <artifactId>BKUWebStartPackage</artifactId>
+  <version>1.2.4-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>BKU Web Start Package</name>
+  <description>Bürgerkartenumgebung</description>
+  <url>http://mocca.egovlabs.gv.at/</url>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>webstart-maven-plugin</artifactId>
+        <groupId>org.codehaus.mojo.webstart</groupId>
+        <executions>
+          <execution>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>jnlp-download-servlet</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <outputDirectoryName>webstart</outputDirectoryName>
+
+          <excludeTransitive>false</excludeTransitive>
+
+          <jnlpFiles>
+            <jnlpFile>
+              <templateFilename>template.xml</templateFilename>
+              <outputFilename>mocca.jnlp</outputFilename>
+              <jarResources>
+                <jarResource>
+                  <groupId>at.gv.egiz</groupId>
+                  <artifactId>BKUWebStart</artifactId>
+                  <version>${project.version}</version>
+                  <mainClass>at.gv.egiz.bku.webstart.Launcher</mainClass>
+                </jarResource>
+              </jarResources>
+            </jnlpFile>
+          </jnlpFiles>
+
+          <sign>
+            <alias>test-applet signer</alias>
+            <keystore>${project.basedir}/src/main/jnlp/keystore.ks</keystore>
+            <storepass>storepass</storepass>
+            <keypass>keypass</keypass>
+            <verify>true</verify>
+            <keystoreConfig>
+              <delete>false</delete>
+              <gen>false</gen>
+            </keystoreConfig>
+          </sign>
+
+          <unsign>true</unsign>
+          <verifyjar>false</verifyjar>
+
+          <pack200>false</pack200>
+          <gzip>false</gzip>
+          <outputJarVersions>false</outputJarVersions>
+          <verbose>true</verbose>
+
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <descriptors>
+            <descriptor>${basedir}/src/main/assemblies/zip-webstart.xml</descriptor>
+          </descriptors>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <artifactId>BKUWebStart</artifactId>
+      <groupId>at.gv.egiz</groupId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <id>pkcs11-sign</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>webstart-maven-plugin</artifactId>
+            <groupId>org.codehaus.mojo.webstart</groupId>
+            <!-- use pkcs11-patched webstart-maven-plugin-->
+            <version>1.0-beta-1-mocca</version>
+            <configuration>
+              <sign>
+                <keystore>NONE</keystore>
+                <storetype>PKCS11</storetype>
+                <providerClass>iaik.pkcs.pkcs11.provider.IAIKPkcs11</providerClass>
+                <alias>a-sit</alias>
+                <storepass>${pkcs11-pass}</storepass>
+                <verify>true</verify>
+                <keystoreConfig>
+                  <delete>false</delete>
+                  <gen>false</gen>
+                </keystoreConfig>
+              </sign>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <!-- development profile -->
+      <id>local-webstart</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>webstart-maven-plugin</artifactId>
+            <groupId>org.codehaus.mojo.webstart</groupId>
+            <configuration>
+              <jnlpFiles>
+                <jnlpFile>
+                  <templateFilename>template-local.xml</templateFilename>
+                  <outputFilename>mocca-local.jnlp</outputFilename>
+                  <jarResources>
+                    <jarResource>
+                      <groupId>at.gv.egiz</groupId>
+                      <artifactId>BKUWebStart</artifactId>
+                      <version>${project.version}</version>
+                      <mainClass>at.gv.egiz.bku.webstart.Launcher</mainClass>
+                    </jarResource>
+                  </jarResources>
+                </jnlpFile>
+              </jnlpFiles>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    <profile>
+      <id>non-webstart</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+            <groupId>org.apache.maven.plugins</groupId>
+            <configuration>
+              <archive>
+                <manifest>
+                  <addClasspath>true</addClasspath>
+                  <mainClass>at.gv.egiz.bku.webstart.Launcher</mainClass>
+                </manifest>
+                <manifestEntries>
+                  <mode>development</mode>
+                  <url>${pom.url}</url>
+                  <SplashScreen-Image>at/gv/egiz/bku/webstart/splash.png</SplashScreen-Image>
+                </manifestEntries>
+              </archive>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+      <!-- TODO somehow provide javaws.jar on manifest class-path -->
+    </profile>
+  </profiles>
+</project>

@@ -27,6 +27,7 @@
     <module>BKUHelp</module>
     <module>BKUGuiExt</module>
     <module>smccSTALExt</module>
+    <module>BKUWebStartPackage</module>
   </modules>
   <developers>
     <developer>
@@ -83,7 +84,7 @@
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
           <groupId>org.apache.maven.plugins</groupId>
-          <version>2.2-beta-2</version>
+          <version>2.2-beta-4</version>
         </plugin>
         <plugin>
           <artifactId>maven-dependency-plugin</artifactId>
@@ -123,29 +124,6 @@
         </plugin>
       </plugins>
     </pluginManagement>
-    <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>${basedir}/src/main/assemblies/assembly-test.xml</descriptor>
-						<!--
-							descriptor>${basedir}/src/main/assemblies/assembly-online.xml</descriptor>
-							<descriptor>${basedir}/src/main/assemblies/assembly-local.xml</descriptor>
-							<descriptor>${basedir}/src/main/assemblies/assembly-server.xml</descriptor -->
-          </descriptors>
-        </configuration>
-				<!--
-					don't include execution here, but explicitly in the execute command
-					(see custom goals: mvn clean package assembly:assembly) | NOTE:
-					Because of a quirk in Maven 2.0's execution model relating to
-					aggregator mojos and the inheritance hierarchy, | we need to
-					explicitly execute the package phase ahead of the assembly
-					invocation, to ensure all modules have been built. <executions>
-					<execution> <phase>package</phase> <goals> <goal>attached</goal>
-					</goals> </execution> </executions -->
-      </plugin>
-    </plugins>
   </build>
   <repositories>
     <repository>
