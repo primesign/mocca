@@ -5,9 +5,12 @@ import at.gv.egiz.bku.webstart.gui.BKUControllerInterface;
 import at.gv.egiz.bku.webstart.gui.PINManagementInvoker;
 import iaik.asn1.CodingException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.jnlp.UnavailableServiceException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +33,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.security.GeneralSecurityException;
+import java.text.MessageFormat;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import javax.imageio.ImageIO;
@@ -39,6 +43,7 @@ import javax.swing.JFrame;
 import org.mortbay.util.MultiException;
 
 public class Launcher implements BKUControllerInterface, ActionListener {
+  public static final String HELP_COMMAND = "help";
 
   public static final String WEBAPP_RESOURCE = "BKULocal.war";
   public static final String CERTIFICATES_RESOURCE = "BKUCertificates.jar";
@@ -59,8 +64,10 @@ public class Launcher implements BKUControllerInterface, ActionListener {
   public static final String ERROR_CONFIG = "tray.error.config";
   public static final String ERROR_BIND = "tray.error.bind";
   public static final String ERROR_PIN = "tray.error.pin.connect";
+  public static final String ERROR_OPEN_URL = "tray.error.open.url";
   public static final String LABEL_SHUTDOWN = "tray.label.shutdown";
   public static final String LABEL_PIN = "tray.label.pin";
+  public static final String LABEL_HELP = "tray.label.help";
   public static final String LABEL_ABOUT = "tray.label.about";
   public static final String TOOLTIP_DEFAULT = "tray.tooltip.default";
 
@@ -76,16 +83,19 @@ public class Launcher implements BKUControllerInterface, ActionListener {
   public static final URL HTTPS_SECURITY_LAYER_URL;
   public static final URL INSTALL_CERT_URL;
   public static final URL PIN_MANAGEMENT_URL;
+  public static final URL HELP_URL;
   static {
     URL http = null;
     URL https = null;
     URL pin = null;
     URL cert = null;
+    URL help = null;
     try {
       http = new URL("http://localhost:" + Integer.getInteger(Container.HTTPS_PORT_PROPERTY, 3495).intValue());
       https = new URL("https://localhost:" + Integer.getInteger(Container.HTTPS_PORT_PROPERTY, 3496).intValue());
       pin = new URL(http, "/PINManagement");
       cert = new URL(http, "/installCertificate");
+      help = new URL(http, "/help");
     } catch (MalformedURLException ex) {
       log.error(ex);
     } finally {
@@ -93,6 +103,7 @@ public class Launcher implements BKUControllerInterface, ActionListener {
       HTTPS_SECURITY_LAYER_URL = https;
       PIN_MANAGEMENT_URL = pin;
       INSTALL_CERT_URL = cert;
+      HELP_URL = help;
     }
   }
   public static final String version;
@@ -170,6 +181,18 @@ public class Launcher implements BKUControllerInterface, ActionListener {
       throw ex;
     }
   }
+
+  private void browse(URL url) throws IOException, URISyntaxException {
+    // don't use basicService.showDocument(), which causes a java ssl warning dialog
+    if (Desktop.isDesktopSupported()) {
+      Desktop desktop = Desktop.getDesktop();
+      if (desktop.isSupported(Desktop.Action.BROWSE)) {
+        desktop.browse(url.toURI());
+        return;
+      }
+    }
+    throw new IOException("current platform does not support Java Desktop API");
+  }
   
   private TrayIcon initTrayIcon() {
     if (SystemTray.isSupported()) {
@@ -192,6 +215,11 @@ public class Launcher implements BKUControllerInterface, ActionListener {
 
         PopupMenu popup = new PopupMenu();
         
+        MenuItem helpItem = new MenuItem(messages.getString(LABEL_HELP));
+        helpItem.addActionListener(this);
+        helpItem.setActionCommand(HELP_COMMAND);
+        popup.add(helpItem);
+
         MenuItem pinItem = new MenuItem(messages.getString(LABEL_PIN));
         pinItem.addActionListener(this);
         pinItem.setActionCommand(PIN_COMMAND);
@@ -273,20 +301,10 @@ public class Launcher implements BKUControllerInterface, ActionListener {
         }
       }
       if (config.isCertRenewed()) {
-        // don't use basicService.showDocument(), which causes a java ssl warning dialog
-        if (Desktop.isDesktopSupported()) {
-          Desktop desktop = Desktop.getDesktop();
-          if (desktop.isSupported(Desktop.Action.BROWSE)) {
-            try {
-              desktop.browse(HTTP_SECURITY_LAYER_URL.toURI());
-            } catch (Exception ex) {
-              log.error("failed to open system browser, install TLS certificate manually: " + HTTPS_SECURITY_LAYER_URL, ex);
-            }
-          } else {
-            log.error("failed to open system browser, install TLS certificate manually: " + HTTPS_SECURITY_LAYER_URL);
-          }
-        } else {
-          log.error("failed to open system browser, install TLS certificate manually: " + HTTPS_SECURITY_LAYER_URL);
+        try {
+          browse(HTTP_SECURITY_LAYER_URL);
+        } catch (Exception ex) {
+          log.error("failed to open system browser, install TLS certificate manually: " + HTTPS_SECURITY_LAYER_URL, ex);
         }
       }
       log.info("BKU successfully started");
@@ -344,7 +362,15 @@ public class Launcher implements BKUControllerInterface, ActionListener {
       log.debug("pin management dialog requested via tray menu");
 
       new Thread(new PINManagementInvoker(trayIcon, messages)).start();
-      
+    } else if (HELP_COMMAND.equals(e.getActionCommand())) {
+      log.debug("help page requested via tray menu");
+      try {
+        browse(HELP_URL);
+      } catch (Exception ex) {
+        log.error("Failed to open " + HELP_URL, ex);
+        String msg = MessageFormat.format(messages.getString(ERROR_OPEN_URL), HELP_URL);
+        trayIcon.displayMessage(messages.getString(CAPTION_ERROR), msg, TrayIcon.MessageType.ERROR);
+      }
     } else {
       log.error("unknown tray menu command: " + e.getActionCommand());
     }

@@ -18,7 +18,7 @@
     <icon kind="default" href="img/chip32.png" width="32" height="32"/>
     <icon kind="default" href="img/chip48.png" width="48" height="48"/>
     <icon kind="splash" href="img/splash.png"/>
-    <shortcut online="false">
+    <shortcut online="true">
       <desktop/>
       <menu submenu="e-Government"/>
     </shortcut>
