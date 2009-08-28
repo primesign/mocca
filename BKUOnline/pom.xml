@@ -155,37 +155,10 @@
               <stripVersion>true</stripVersion>
             </configuration>
           </execution>
-
-          <!-- seems not to work with release:prepare
           <execution>
             <id>copy-certificates</id>
             <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>at.gv.egiz</groupId>
-                  <artifactId>BKUCertificates</artifactId>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
-                  <excludes>META-INF/</excludes>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>at.gv.egiz</groupId>
-                  <artifactId>BKUHelp</artifactId>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
-                  <excludes>META-INF/</excludes>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-          -->
-
-          <execution>
-            <id>copy-certificates</id>
-            <goals>
+              <!-- unpack does not work with release:prepare -->
               <goal>unpack-dependencies</goal>
             </goals>
             <configuration>

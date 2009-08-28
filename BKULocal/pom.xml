@@ -49,6 +49,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
         <executions>
           <execution>
             <id>copy-help</id>
