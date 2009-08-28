@@ -3,11 +3,11 @@
   <parent>
     <artifactId>bku</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.2.5</version>
+    <version>1.2.6-SNAPSHOT</version>
   </parent>
   <groupId>at.gv.egiz</groupId>
   <artifactId>BKUWebStartPackage</artifactId>
-  <version>1.2.5</version>
+  <version>1.2.6-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>BKU Web Start Package</name>
   <description>Bürgerkartenumgebung</description>
