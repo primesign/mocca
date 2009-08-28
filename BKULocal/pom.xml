@@ -53,18 +53,13 @@
           <execution>
             <id>copy-help</id>
             <goals>
-              <goal>unpack</goal>
+              <goal>unpack-dependencies</goal>
             </goals>
             <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>at.gv.egiz</groupId>
-                  <artifactId>BKUHelp</artifactId>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
-                  <excludes>META-INF/</excludes>
-                </artifactItem>
-              </artifactItems>
+              <includeArtifactIds>BKUHelp</includeArtifactIds>
+              <includeGroupIds>at.gv.egiz</includeGroupIds>
+              <excludes>META-INF/</excludes>
+              <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
             </configuration>
           </execution>
         </executions>
