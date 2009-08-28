@@ -28,19 +28,13 @@
           <execution>
             <id>copy-resources</id>
             <goals>
-              <goal>copy</goal>
+              <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>at.gv.egiz</groupId>
-                  <artifactId>BKULocal</artifactId>
-                  <version>${project.version}</version><!-- make sure BKUWebStart and BKULocal equal -->
-                  <type>war</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>${project.build.directory}/classes</outputDirectory>
-                </artifactItem>
-              </artifactItems>
+              <includeArtifactIds>BKULocal</includeArtifactIds>
+              <includeGroupIds>at.gv.egiz</includeGroupIds>
+              <excludes>META-INF/</excludes>
+              <outputDirectory>${project.build.directory}/classes</outputDirectory>
               <stripVersion>true</stripVersion>
             </configuration>
           </execution>
