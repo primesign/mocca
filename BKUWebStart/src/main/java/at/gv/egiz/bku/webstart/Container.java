@@ -22,7 +22,6 @@ import java.security.KeyStore;
 import java.security.Permissions;
 import java.security.SecurityPermission;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
 import java.util.PropertyPermission;
 import javax.smartcardio.CardPermission;
 import org.apache.commons.logging.Log;
@@ -38,7 +37,6 @@ public class Container {
 
   public static final String HTTP_PORT_PROPERTY = "mocca.http.port";
   public static final String HTTPS_PORT_PROPERTY = "mocca.http.port";
-  public static final String SERVER_CA_CERTIFICATE_ATTRIBUTE = "mocca.tls.server.ca.certificate";
   private static Log log = LogFactory.getLog(Container.class);
 
   static {
@@ -51,6 +49,8 @@ public class Container {
     }
   }
   private Server server;
+  private WebAppContext webapp;
+  private Certificate caCertificate;
 
   public void init() throws IOException {
 //    System.setProperty("DEBUG", "true");
@@ -118,33 +118,19 @@ public class Container {
 
     server.setConnectors(new Connector[]{connector, sslConnector});
 
-    WebAppContext webapp = new WebAppContext();
+    webapp = new WebAppContext();
     webapp.setLogUrlOnStart(true);
     webapp.setContextPath("/");
     webapp.setExtractWAR(true);
     webapp.setParentLoaderPriority(false);
-
-    try {
-      // no way to get certificate from within the servlet (SSLEngine/Jetty SSLSocketConnector/SSLContext?)
-      if (log.isTraceEnabled()) {
-        log.trace("local ca certificate from " + keystoreFile + " in webapp context at " + SERVER_CA_CERTIFICATE_ATTRIBUTE);
-      }
-      BufferedInputStream bis = new BufferedInputStream(new FileInputStream(keystoreFile));
-      KeyStore sslKeyStore = KeyStore.getInstance("JKS");
-      sslKeyStore.load(bis, passwd.toCharArray());
-      Certificate[] sslChain = sslKeyStore.getCertificateChain(TLSServerCA.MOCCA_TLS_SERVER_ALIAS);
-      webapp.setAttribute(SERVER_CA_CERTIFICATE_ATTRIBUTE, sslChain[sslChain.length - 1]);
-      bis.close();
-    } catch (Exception ex) {
-      log.error("Failed to load local ca certificate", ex);
-      log.warn("automated web certificate installation will not be available");
-    }
 
     webapp.setWar(copyWebapp(webapp.getTempDirectory()));
     webapp.setPermissions(getPermissions(webapp.getTempDirectory()));
 
     server.setHandler(webapp);
     server.setGracefulShutdown(1000 * 3);
+    
+    loadCACertificate(keystoreFile, passwd.toCharArray());
   }
 
   /**
@@ -234,6 +220,12 @@ public class Container {
 
   public void start() throws Exception {
     server.start();
+    // webapp.getBaseResource() 
+    File caCertFile = new File(webapp.getTempDirectory(), "webapp/ca.crt");
+    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(caCertFile));
+    bos.write(caCertificate.getEncoded());
+    bos.flush();
+    bos.close();
   }
 
   public boolean isRunning() {
@@ -250,5 +242,22 @@ public class Container {
 
   public void join() throws InterruptedException {
     server.join();
+  }
+
+  private void loadCACertificate(File keystoreFile, char[] passwd) {
+    try {
+      if (log.isTraceEnabled()) {
+        log.trace("local ca certificate from " + keystoreFile);
+      }
+      BufferedInputStream bis = new BufferedInputStream(new FileInputStream(keystoreFile));
+      KeyStore sslKeyStore = KeyStore.getInstance("JKS");
+      sslKeyStore.load(bis, passwd);
+      Certificate[] sslChain = sslKeyStore.getCertificateChain(TLSServerCA.MOCCA_TLS_SERVER_ALIAS);
+      caCertificate = sslChain[sslChain.length - 1];
+      bis.close();
+    } catch (Exception ex) {
+      log.error("Failed to load local ca certificate", ex);
+      log.warn("automated web certificate installation will not be available");
+    }
   }
 }

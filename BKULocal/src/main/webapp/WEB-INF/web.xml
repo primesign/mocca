@@ -39,10 +39,6 @@
         <servlet-name>PINManagementServlet</servlet-name>
         <servlet-class>at.gv.egiz.bku.local.webapp.PINManagementServlet</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>InstallCertificateServlet</servlet-name>
-        <servlet-class>at.gv.egiz.bku.local.webapp.InstallCertificateServlet</servlet-class>
-    </servlet>
     <servlet-mapping>
     <servlet-name>BKUServlet</servlet-name>
     <url-pattern>/http-security-layer-request</url-pattern>
@@ -56,10 +52,6 @@
     <servlet-mapping>
         <servlet-name>PINManagementServlet</servlet-name>
         <url-pattern>/PINManagement</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>InstallCertificateServlet</servlet-name>
-        <url-pattern>/installCertificate</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
     <welcome-file>index.html</welcome-file>

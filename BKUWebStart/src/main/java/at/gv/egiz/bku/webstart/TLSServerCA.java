@@ -64,9 +64,13 @@ public class TLSServerCA {
 
     caCert.addExtension(new SubjectKeyIdentifier(caKeyPair.getPublic()));
 
-    caCert.addExtension(new BasicConstraints(true));
-    caCert.addExtension(new KeyUsage(KeyUsage.keyCertSign | KeyUsage.cRLSign
-        | KeyUsage.digitalSignature));
+    BasicConstraints bc = new BasicConstraints(true);
+    bc.setCritical(true);
+    caCert.addExtension(bc);
+    KeyUsage ku = new KeyUsage(KeyUsage.keyCertSign | KeyUsage.cRLSign
+        | KeyUsage.digitalSignature);
+    ku.setCritical(true);
+    caCert.addExtension(ku);
 
     GregorianCalendar date = new GregorianCalendar();
     date.add(Calendar.HOUR_OF_DAY, -1);

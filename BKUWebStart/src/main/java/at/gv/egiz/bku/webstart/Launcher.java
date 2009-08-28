@@ -9,8 +9,6 @@ import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.jnlp.UnavailableServiceException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,9 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.net.BindException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
@@ -175,6 +171,7 @@ public class Launcher implements BKUControllerInterface, ActionListener {
       }
       throw ex;
     } catch (Exception ex) {
+      ex.printStackTrace();
       log.fatal("Failed to launch server, " + ex.getMessage(), ex);
       trayIcon.displayMessage(messages.getString(CAPTION_ERROR),
               messages.getString(ERROR_START), TrayIcon.MessageType.ERROR);
@@ -381,6 +378,7 @@ public class Launcher implements BKUControllerInterface, ActionListener {
       Launcher launcher = new Launcher();
       launcher.launch();
     } catch (Exception ex) {
+      ex.printStackTrace();
       log.debug(ex);
       log.info("waiting to shutdown...");
       Thread.sleep(5000);
