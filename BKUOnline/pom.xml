@@ -140,6 +140,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
         <executions>
           <execution>
             <id>copy-applet</id>
@@ -154,6 +155,8 @@
               <stripVersion>true</stripVersion>
             </configuration>
           </execution>
+
+          <!-- seems not to work with release:prepare
           <execution>
             <id>copy-certificates</id>
             <goals>
@@ -167,7 +170,6 @@
                   <overWrite>false</overWrite>
                   <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
                   <excludes>META-INF/</excludes>
-                  <!--includes>at/gv/egiz/bku/certs/certStore/**,at/gv/egiz/bku/certs/trustStore/**</includes-->
                 </artifactItem>
                 <artifactItem>
                   <groupId>at.gv.egiz</groupId>
@@ -179,10 +181,8 @@
               </artifactItems>
             </configuration>
           </execution>
+          -->
 
-          <!-- TODO check whether unpack goal's artifact versions are updated by release:prepare
-           |   and use unpack-dependencies if not
-           |
           <execution>
             <id>copy-certificates</id>
             <goals>
@@ -192,12 +192,21 @@
               <includeArtifactIds>BKUCertificates</includeArtifactIds>
               <includeGroupIds>at.gv.egiz</includeGroupIds>
               <excludes>META-INF/</excludes>
-              <outputDirectory>${project.build.directory}/classes/</outputDirectory>
-              <overWriteReleases>false</overWriteReleases>
-              <overWriteSnapshots>false</overWriteSnapshots>
-              <overWriteIfNewer>true</overWriteIfNewer>
+              <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
             </configuration>
-          </execution-->
+          </execution>
+          <execution>
+            <id>copy-help</id>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>BKUHelp</includeArtifactIds>
+              <includeGroupIds>at.gv.egiz</includeGroupIds>
+              <excludes>META-INF/</excludes>
+              <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
 
