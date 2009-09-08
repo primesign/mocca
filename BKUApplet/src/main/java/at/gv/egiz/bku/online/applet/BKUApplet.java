@@ -26,6 +26,7 @@ import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.swing.JApplet;
+import javax.swing.JPanel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,6 +36,7 @@ import at.gv.egiz.bku.gui.BKUGUIImpl;
 import at.gv.egiz.stal.service.STALPortType;
 import at.gv.egiz.stal.service.STALService;
 import java.applet.AppletContext;
+import java.awt.Color;
 import java.awt.Container;
 import javax.xml.namespace.QName;
 
@@ -44,6 +46,8 @@ import javax.xml.namespace.QName;
  */
 public class BKUApplet extends JApplet {
 
+  private static final long serialVersionUID = 1L;
+  
   private static Log log = LogFactory.getLog(BKUApplet.class);
   /**
    * Applet parameter keys
@@ -56,6 +60,7 @@ public class BKUApplet extends JApplet {
   public final static String HELP_URL = "HelpURL";
   public final static String SESSION_ID = "SessionID";
   public static final String BACKGROUND_IMG = "Background";
+  public static final String BACKGROUND_COLOR = "BackgroundColor";
   public static final String REDIRECT_URL = "RedirectURL";
   public static final String REDIRECT_TARGET = "RedirectTarget";
   public static final String HASHDATA_DISPLAY_FRAME = "frame";
@@ -81,6 +86,23 @@ public class BKUApplet extends JApplet {
    */
   protected AppletBKUWorker worker;
   protected Thread workerThread;
+
+  /* (non-Javadoc)
+   * @see java.applet.Applet#getParameterInfo()
+   */
+  @Override
+  public String[][] getParameterInfo() {
+    return new String[][] {
+        {WSDL_URL,          "url",                      "URL of the WSDL of the MOCCA server side STAL"},
+        {REDIRECT_URL,      "url",                      "URL to redirect the browser to when finished"},
+        {REDIRECT_TARGET,   "frame target",             "name of the target frame for redirection when finished"},
+        {LOCALE,            "locale",                   "locale for UI localization (optional, default: system default)"},
+        {GUI_STYLE,         "simple, advanced, tiny",   "GUI style (optional, default: simple)"},
+        {BACKGROUND_COLOR,  "#hhhhhh",                  "background color, e.g. '#333333' (optional, default: look and feel dependend)"},
+        {BACKGROUND_IMG,    "url",                      "URL of a background image for the GUI (optional, default: no image)"},
+        {HELP_URL,          "url",                      "URL for locating help files, e.g. '../help/' (no help provided if missing)"}
+    };
+  }
 
   /**
    * Factory method to create and wire HelpListener, GUI and BKUWorker.
@@ -130,7 +152,24 @@ public class BKUApplet extends JApplet {
       log.warn("failed to load help URL: " + ex.getMessage() + ", disabling help");
     }
 
-    BKUGUIFacade gui = createGUI(getContentPane(), getLocale(),
+    // Note: We need a panel in order to be able to set the background properly.
+    // Setting the background without a panel has side effects with the
+    // different java plugins.
+    JPanel contentPanel = new JPanel();
+    getContentPane().add(contentPanel);
+    
+    String backgroundColor = getParameter(BACKGROUND_COLOR);
+    if (backgroundColor != null && backgroundColor.startsWith("#")) {
+      try {
+        Color color = new Color(Integer.parseInt(backgroundColor.substring(1), 16));
+        log.debug("setting background color to " + color);
+        contentPanel.setBackground(color);
+      } catch (NumberFormatException e) {
+        log.debug("failed to set background color '" + backgroundColor + "'");
+      }
+    }
+    
+    BKUGUIFacade gui = createGUI(contentPanel, getLocale(),
             guiStyle,
             backgroundImgURL,
             helpListener);
@@ -255,8 +294,8 @@ public class BKUApplet extends JApplet {
         throw ex;
       }
     } else {
-      log.error("applet paremeter " + urlParam + " not set");
-      throw new MalformedURLException(urlParam + " not set");
+      log.error("applet paremeter " + paramKey + " not set");
+      throw new MalformedURLException(paramKey + " not set");
     }
   }
 }

@@ -130,6 +130,8 @@ public class BKURequestHandler extends SpringBKUServlet {
         .getFormData("appletHeight"), charset);
     String background = getStringFromStream(bindingProcessor
         .getFormData("appletBackground"), charset);
+    String backgroundColor = getStringFromStream(bindingProcessor
+        .getFormData("appletBackgroundColor"), charset);
     String guiStyle = getStringFromStream(bindingProcessor
         .getFormData("appletGuiStyle"), charset);
     String hashDataDisplay = getStringFromStream(bindingProcessor
@@ -160,6 +162,10 @@ public class BKURequestHandler extends SpringBKUServlet {
     if (background != null) {
       log.trace("Found applet background parameter: " + background);
       session.setAttribute("appletBackground", background);
+    }
+    if (backgroundColor != null) {
+      log.trace("Faund applet background color parameter: " + backgroundColor);
+      session.setAttribute("appletBackgroundColor", backgroundColor);
     }
     if (guiStyle != null) {
       log.trace("Found applet GUI style parameter: " + guiStyle);

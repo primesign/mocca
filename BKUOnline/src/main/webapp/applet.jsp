@@ -36,9 +36,10 @@
                 : (Integer) session.getAttribute("appletWidth"); 
         int height = session.getAttribute("appletHeight") == null ? 130
                 : (Integer) session.getAttribute("appletHeight");
-        String backgroundImg = session.getAttribute("appletBackground") == null
+        String backgroundImg = session.getAttribute("appletBackground") == null 
                 ? "../img/chip32.png"
                 : (String) session.getAttribute("appletBackground");
+        String backgroundColor = (String) session.getAttribute("appletBackgroundColor");
         String guiStyle = (String) session.getAttribute("appletGuiStyle");
         String locale = (String) session.getAttribute("locale");
         String extension = (String) session.getAttribute("extension");
@@ -91,6 +92,7 @@
                       GuiStyle : '<%=guiStyle%>',
                       Locale : '<%=locale%>',
                       Background : '<%=backgroundImg%>',
+                      BackgroundColor : '<%=backgroundColor%>',
                       WSDL_URL :'../stal;jsessionid=<%=session.getId()%>?wsdl',
                       HelpURL : '../help/',
                       SessionID : '<%=session.getId()%>',

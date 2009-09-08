@@ -218,6 +218,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
         log.debug("loading background " + background);
         contentPanel = new ImagePanel(background);
       }
+      contentPanel.setOpaque(false);
       mainPanel = new JPanel();
       mainPanel.setOpaque(false);
       buttonPanel = new JPanel(); 
