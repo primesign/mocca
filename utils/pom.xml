@@ -2,14 +2,14 @@
 	<parent>
 		<artifactId>bku</artifactId>
 		<groupId>at.gv.egiz</groupId>
-		<version>1.2.6</version>
+		<version>1.2.7-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>utils</artifactId>
 	<name>BKU Utils</name>
 	<packaging>jar</packaging>
-	<version>1.2.6</version>
+	<version>1.2.7-SNAPSHOT</version>
 	<url>http://bku.egiz.gv.at</url>
 	<build>
 		<plugins>
