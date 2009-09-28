@@ -122,6 +122,32 @@
         </plugins>
       </build>
     </profile>
+    
+    <profile>
+      <id>non-webstart</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+            <groupId>org.apache.maven.plugins</groupId>
+            <configuration>
+              <archive>
+                <manifest>
+                  <addClasspath>true</addClasspath>
+                  <mainClass>at.gv.egiz.bku.webstart.Launcher</mainClass>
+                </manifest>
+                <manifestEntries>
+                  <mode>development</mode>
+                  <url>${pom.url}</url>
+                  <SplashScreen-Image>at/gv/egiz/bku/webstart/splash.png</SplashScreen-Image>
+                </manifestEntries>
+              </archive>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+      <!-- TODO somehow provide javaws.jar on manifest class-path -->
+    </profile>
   </profiles>
 
   <dependencies>
