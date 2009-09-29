@@ -1,7 +1,9 @@
 package at.gv.egiz.bku.conf;
 
+import iaik.logging.LogConfigurationException;
 import iaik.logging.TransactionId;
 import iaik.logging.impl.TransactionIdImpl;
+import iaik.logging.LoggerConfig;
 import iaik.pki.DefaultPKIConfiguration;
 import iaik.pki.DefaultPKIProfile;
 import iaik.pki.PKIConfiguration;
@@ -18,6 +20,7 @@ import iaik.x509.X509Certificate;
 
 import java.io.File;
 import java.util.Date;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,6 +40,27 @@ public class CertValidatorImpl implements CertValidator {
    * @see at.gv.egiz.bku.conf.CertValidator#init(java.io.File, java.io.File)
    */
   public void init(File certDir, File caDir) {
+    // initialize IAIK logging for PKI module
+    log.debug("Configuring logging for IAIK PKI module");
+    iaik.logging.LogFactory.configure(new LoggerConfig() {
+      
+      @Override
+      public Properties getProperties() throws LogConfigurationException {
+        return null;
+      }
+      
+      @Override
+      public String getNodeId() {
+        return "pki";
+      }
+      
+      @Override
+      public String getFactory() {
+        return IAIKCommonsLogFactory.class.getName();
+      }
+    });
+    
+    
     // the parameters specifying the directory certstore
     CertStoreParameters[] certStoreParameters = { new DefaultDirectoryCertStoreParameters(
         "CS-001", certDir.getAbsolutePath(), true, false) };

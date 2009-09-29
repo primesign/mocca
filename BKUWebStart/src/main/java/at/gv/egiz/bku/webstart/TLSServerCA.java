@@ -16,8 +16,6 @@ import iaik.x509.extensions.SubjectAltName;
 import iaik.x509.extensions.SubjectKeyIdentifier;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -27,14 +25,15 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class TLSServerCA {
   public static final int CA_VALIDITY_Y = 3;
   public static final String MOCCA_TLS_SERVER_ALIAS = "server";
   public static final int SERVER_VALIDITY_Y = 3;
-  private final static Log log = LogFactory.getLog(TLSServerCA.class);
+  private final static Logger log = LoggerFactory.getLogger(TLSServerCA.class);
 
   private KeyPair caKeyPair;
   private X509Certificate caCert;

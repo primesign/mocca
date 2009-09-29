@@ -55,10 +55,10 @@ public class InfoboxReadResultImpl extends SLResultImpl implements InfoboxReadRe
   }
 
   @Override
-  public void writeTo(Result result, Templates templates) {
+  public void writeTo(Result result, Templates templates, boolean fragment) {
     ObjectFactory objectFactory = new ObjectFactory();
     JAXBElement<InfoboxReadResponseType> response = objectFactory.createInfoboxReadResponse(infoboxReadResponse);
-    writeTo(response, result, templates);
+    writeTo(response, result, templates, fragment);
   }
 
 }

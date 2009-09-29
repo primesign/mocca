@@ -21,8 +21,9 @@ import java.awt.TrayIcon;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ResourceBundle;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * GUI is painted using SwingUtilities.invokeLater, but TrayIcon ActionListener Thread (== webstart thread) joined Jetty Thread
@@ -31,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class PINManagementInvoker implements Runnable {
 
-  private static final Log log = LogFactory.getLog(PINManagementInvoker.class);
+  private static final Logger log = LoggerFactory.getLogger(PINManagementInvoker.class);
   
   TrayIcon trayIcon;
   ResourceBundle messages;

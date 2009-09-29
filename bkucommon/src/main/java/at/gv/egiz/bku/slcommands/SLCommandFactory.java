@@ -28,6 +28,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventLocator;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -46,11 +47,11 @@ import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLExceptionMessages;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
+import at.gv.egiz.bku.slexceptions.SLVersionException;
 import at.gv.egiz.bku.utils.DebugReader;
 import at.gv.egiz.slbinding.RedirectEventFilter;
 import at.gv.egiz.slbinding.RedirectUnmarshallerListener;
-import at.gv.egiz.validation.ValidationEventLogger;
-import javax.xml.bind.ValidationEventHandler;
+import at.gv.egiz.validation.ReportingValidationEventHandler;
 
 public class SLCommandFactory {
 
@@ -60,7 +61,9 @@ public class SLCommandFactory {
     public static final String[] SCHEMA_FILES = new String[]{
         "at/gv/egiz/bku/slcommands/schema/xml.xsd",
         "at/gv/egiz/bku/slcommands/schema/xmldsig-core-schema.xsd",
-        "at/gv/egiz/bku/slcommands/schema/Core-1.2.xsd"
+        "at/gv/egiz/bku/slcommands/schema/Core-1.2.xsd",
+        "at/gv/egiz/bku/slcommands/schema/Core.20020225.xsd",
+        "at/gv/egiz/bku/slcommands/schema/Core.20020831.xsd"
     };
     /**
      * Logging facility.
@@ -169,7 +172,10 @@ public class SLCommandFactory {
                 String slPkg = at.buergerkarte.namespaces.securitylayer._1.ObjectFactory.class.getPackage().getName();
                 String xmldsigPkg = org.w3._2000._09.xmldsig_.ObjectFactory.class.getPackage().getName();
                 String cardChannelPkg = at.buergerkarte.namespaces.cardchannel.ObjectFactory.class.getPackage().getName();
-                setJaxbContext(JAXBContext.newInstance(slPkg + ":" + xmldsigPkg + ":" + cardChannelPkg));
+                String slPkgLegacy1_0 = at.buergerkarte.namespaces.securitylayer._20020225_.ObjectFactory.class.getPackage().getName();
+                String slPkgLegacy1_1 = at.buergerkarte.namespaces.securitylayer._20020831_.ObjectFactory.class.getPackage().getName();
+                setJaxbContext(JAXBContext.newInstance(slPkg + ":" + xmldsigPkg + ":" + cardChannelPkg 
+                    + ":" + slPkgLegacy1_0 + ":" + slPkgLegacy1_1));
             } catch (JAXBException e) {
                 log.error("Failed to setup JAXBContext security layer request.", e);
                 throw new SLRuntimeException(e);
@@ -248,26 +254,9 @@ public class SLCommandFactory {
       SLRequestException {
 
         Object object;
+        ReportingValidationEventHandler validationEventHandler = new ReportingValidationEventHandler();
         try {
             
-//            ValidatorHandler validator = slSchema.newValidatorHandler();
-//            validator.getContentHandler();
-//            
-//            SAXParserFactory spf = SAXParserFactory.newInstance();
-//            spf.setNamespaceAware(true);
-//            XMLReader saxReader = spf.newSAXParser().getXMLReader();
-//            //TODO extend validator to implement redirectContentHandler (validate+redirect)
-//            saxReader.setContentHandler(validator);
-//            //TODO get a InputSource
-//            SAXSource saxSource = new SAXSource(saxReader, source);
-//            
-//            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-//            //turn off duplicate jaxb validation 
-//            unmarshaller.setSchema(null);
-//            unmarshaller.setListener(listener);
-//            unmarshaller.unmarshal(saxSource);
-            
-
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLEventReader eventReader = inputFactory.createXMLEventReader(source);
             RedirectEventFilter redirectEventFilter = new RedirectEventFilter();
@@ -279,7 +268,7 @@ public class SLCommandFactory {
                 unmarshaller.setSchema(slSchema);
             }
             log.trace("Before unmarshal().");
-            unmarshaller.setEventHandler(new ValidationEventLogger());
+            unmarshaller.setEventHandler(validationEventHandler);
             object = unmarshaller.unmarshal(filteredReader);
             log.trace("After unmarshal().");
         } catch (UnmarshalException e) {
@@ -287,6 +276,13 @@ public class SLCommandFactory {
                 log.debug("Failed to unmarshall security layer request.", e);
             } else {
                 log.info("Failed to unmarshall security layer request." + e.getMessage());
+            }
+            if (validationEventHandler.getErrorEvent() != null) {
+            	// Validation Error
+            	ValidationEvent errorEvent = validationEventHandler.getErrorEvent();
+            	ValidationEventLocator locator = errorEvent.getLocator();
+                throw new SLRequestException(3002,
+                        SLExceptionMessages.EC3002_INVALID, new Object[]{errorEvent.getMessage()});
             }
             Throwable cause = e.getCause();
             if (cause instanceof SAXParseException) {
@@ -328,10 +324,11 @@ public class SLCommandFactory {
      *           if an unexpected error occurs configuring the unmarshaller, if
      *           unmarshalling fails with an unexpected error or if the
      *           corresponding <code>SLCommand</code> could not be instantiated
+     * @throws SLVersionException 
      */
     @SuppressWarnings("unchecked")
     public SLCommand createSLCommand(Source source, SLCommandContext context)
-      throws SLCommandException, SLRuntimeException, SLRequestException {
+      throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
       
         DebugReader dr = null;
         if (log.isTraceEnabled() && source instanceof StreamSource) {
@@ -361,6 +358,12 @@ public class SLCommandFactory {
         }
 
         QName qName = ((JAXBElement) object).getName();
+        if (!SLCommand.NAMESPACE_URI.equals(qName.getNamespaceURI())) {
+          // security layer request version not supported
+          log.info("Unsupported security layer request version : " + qName.getNamespaceURI());
+          throw new SLVersionException(qName.getNamespaceURI());
+        }
+        
         Class<? extends SLCommand> implClass = getImplClass(qName);
         if (implClass == null) {
             // command not supported

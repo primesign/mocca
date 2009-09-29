@@ -16,8 +16,6 @@
 */
 package at.gv.egiz.bku.slcommands.impl;
 
-import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -39,10 +37,8 @@ import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
 import at.buergerkarte.namespaces.securitylayer._1.XMLContentType;
 import at.gv.egiz.bku.slcommands.InfoboxReadResult;
 import at.gv.egiz.bku.slcommands.SLCommand;
-import at.gv.egiz.bku.slcommands.SLCommandFactory;
+import at.gv.egiz.bku.slcommands.SLMarshallerFactory;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
-import at.gv.egiz.marshal.MarshallerFactory;
-import javax.xml.bind.PropertyException;
 
 /**
  * This class implements the result of the security layer command <code>InfoboxReadRequest</code>.
@@ -98,10 +94,9 @@ public class InfoboxReadResultFileImpl extends SLResultImpl implements
     infoboxReadResponseType.setBinaryFileData(base64XMLContentType);
     
     JAXBElement<InfoboxReadResponseType> infoboxReadResponse = factory.createInfoboxReadResponse(infoboxReadResponseType);
-    
-    JAXBContext context = SLCommandFactory.getInstance().getJaxbContext();
+
+    Marshaller marshaller = SLMarshallerFactory.getInstance().createMarshaller(false);
     try {
-      Marshaller marshaller = MarshallerFactory.createMarshaller(context);
       marshaller.marshal(infoboxReadResponse, doc);
     } catch (JAXBException e) {
       log.error("Failed to marshal 'InfoboxReadResponse' document.", e);
@@ -158,8 +153,8 @@ public class InfoboxReadResultFileImpl extends SLResultImpl implements
   }
   
   @Override
-  public void writeTo(Result result, Templates templates) {
-    writeTo(xmlDocument, result, templates);
+  public void writeTo(Result result, Templates templates, boolean fragment) {
+    writeTo(xmlDocument, result, templates, fragment);
   }
 
 }

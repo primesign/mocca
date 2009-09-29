@@ -45,8 +45,8 @@ public class GetStatusResultImpl extends SLResultImpl implements GetStatusResult
   }
 
   @Override
-  public void writeTo(Result result, Templates templates) {
+  public void writeTo(Result result, Templates templates, boolean fragment) {
     JAXBElement<GetStatusResponseType> response = of.createGetStatusResponse(responseType);
-    writeTo(response, result, templates);
+    writeTo(response, result, templates, fragment);
   }
 }

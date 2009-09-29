@@ -8,8 +8,6 @@ package at.gv.egiz.bku.webstart;
 import java.io.File;
 import java.net.URI;
 import java.util.zip.ZipOutputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

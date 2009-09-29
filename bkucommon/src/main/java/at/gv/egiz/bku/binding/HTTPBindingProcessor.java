@@ -22,6 +22,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import at.gv.egiz.bku.slcommands.ErrorResult;
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLCommandFactory;
@@ -635,7 +637,6 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 				throw new SLBindingException(2006);
 			}
 			InputDecoder id = InputDecoderFactory.getDecoder(cl, is);
-			id.setContentType(cl);
 			if (id == null) {
 				log.error("Cannot get inputdecoder for is");
 				throw new SLException(2006);
@@ -730,9 +731,20 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 			Templates templates) throws IOException {
 		log.debug("Writing error as result");
 		ErrorResultImpl error = new ErrorResultImpl(bindingProcessorError, locale);
-		error.writeTo(new StreamResult(new OutputStreamWriter(os, encoding)), templates);
+		Writer writer = writeXMLDeclarationAndProcessingInstruction(os, encoding);
+		error.writeTo(new StreamResult(writer), templates, true);
 	}
 
+	protected Writer writeXMLDeclarationAndProcessingInstruction(OutputStream os, String encoding) throws IOException {
+      if (encoding == null) {
+        encoding = HttpUtil.DEFAULT_CHARSET;
+      }
+      OutputStreamWriter writer = new OutputStreamWriter(os, encoding);
+      writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
+      writer.write("<?xml-stylesheet type=\"text/css\" href=\"errorresponse.css\"?>\n");
+      return writer;
+	}
+	
 	@Override
 	public void writeResultTo(OutputStream os, String encoding)
 			throws IOException {
@@ -772,9 +784,16 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 			return;
 		} else {
 			log.debug("Getting result from invoker");
-			OutputStreamWriter osw = new OutputStreamWriter(os, encoding);
-			slResult.writeTo(new StreamResult(osw), templates);
-			osw.flush();
+			boolean fragment = false;
+			Writer writer;
+			if (slResult instanceof ErrorResult) {
+			  writer = writeXMLDeclarationAndProcessingInstruction(os, encoding);
+			  fragment = true;
+			} else {
+	          writer = new OutputStreamWriter(os, encoding);
+			}
+			slResult.writeTo(new StreamResult(writer), templates, fragment);
+			writer.flush();
 		}
 	}
 

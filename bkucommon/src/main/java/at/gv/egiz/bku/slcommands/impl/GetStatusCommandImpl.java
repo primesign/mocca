@@ -19,10 +19,8 @@ package at.gv.egiz.bku.slcommands.impl;
 
 import at.buergerkarte.namespaces.securitylayer._1.GetStatusRequestType;
 import at.gv.egiz.bku.slcommands.GetStatusCommand;
-import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLResult;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
-import at.gv.egiz.bku.slexceptions.SLException;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALResponse;

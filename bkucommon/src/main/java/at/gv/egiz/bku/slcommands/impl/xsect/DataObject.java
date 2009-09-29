@@ -81,7 +81,6 @@ import at.gv.egiz.bku.viewer.ValidationException;
 import at.gv.egiz.bku.viewer.Validator;
 import at.gv.egiz.bku.viewer.ValidatorFactory;
 import at.gv.egiz.dom.DOMUtils;
-import at.gv.egiz.marshal.NamespacePrefix;
 import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
 import at.gv.egiz.slbinding.impl.XMLContentType;
 import javax.xml.namespace.NamespaceContext;

@@ -16,7 +16,6 @@
 */
 package at.gv.egiz.bku.slcommands.impl.xsect;
 
-import at.gv.egiz.stal.HashDataInput;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,9 +30,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -87,8 +84,6 @@ import at.gv.egiz.bku.utils.urldereferencer.StreamData;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencerContext;
 import at.gv.egiz.dom.DOMUtils;
-import at.gv.egiz.marshal.NamespacePrefix;
-import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
 import at.gv.egiz.slbinding.impl.XMLContentType;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.xades.QualifyingPropertiesException;
@@ -327,6 +322,8 @@ public class Signature {
    */
   public void buildXMLSignature() throws SLCommandException {
     
+    String signatureId = ctx.getIdValueFactory().createIdValue("Signature");
+
     List<XMLObject> objects = new ArrayList<XMLObject>();
     List<Reference> references = new ArrayList<Reference>();
     
@@ -340,7 +337,7 @@ public class Signature {
       }
     }
 
-    addXAdESObjectAndReference(objects, references);
+    addXAdESObjectAndReference(objects, references, signatureId);
     
     XMLSignatureFactory signatureFactory = ctx.getSignatureFactory();
     AlgorithmMethodFactory algorithmMethodFactory = ctx.getAlgorithmMethodFactory();
@@ -369,7 +366,6 @@ public class Signature {
       ki = kif.newKeyInfo(Collections.singletonList(x509Data));
     }
     
-    String signatureId = ctx.getIdValueFactory().createIdValue("Signature");
     String signatureValueId = ctx.getIdValueFactory().createIdValue("SignatureValue");
     
     xmlSignature = signatureFactory.newXMLSignature(si, ki, objects, signatureId, signatureValueId);
@@ -588,7 +584,7 @@ public class Signature {
    * @param references
    *          the list of <code>ds:References</code> to add the created
    *          <code>ds:Reference</code> to
-   * 
+   * @param signatureId TODO
    * @throws SLCommandException
    *           if creating and adding the XAdES
    *           <code>QualifyingProperties</code> fails
@@ -596,7 +592,7 @@ public class Signature {
    *           if <code>objects</code> or <code>references</code> is
    *           <code>null</code>
    */
-  private void addXAdESObjectAndReference(List<XMLObject> objects, List<Reference> references) throws SLCommandException {
+  private void addXAdESObjectAndReference(List<XMLObject> objects, List<Reference> references, String signatureId) throws SLCommandException {
     
     QualifyingPropertiesFactory factory = QualifyingPropertiesFactory.getInstance();
     
@@ -630,9 +626,11 @@ public class Signature {
       }
     }
     
+    String target = "#" + signatureId;
+    
     JAXBElement<QualifyingPropertiesType> qualifyingProperties;
     try {
-      qualifyingProperties = factory.createQualifyingProperties111(date, signingCertificates, idValue, dataObjectFormats);
+      qualifyingProperties = factory.createQualifyingProperties111(target, date, signingCertificates, idValue, dataObjectFormats);
     } catch (QualifyingPropertiesException e) {
       log.error("Failed to create QualifyingProperties.", e);
       throw new SLCommandException(4000);

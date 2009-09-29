@@ -16,57 +16,23 @@
 */
 package at.gv.egiz.bku.binding;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLDecoder;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.fileupload.ParameterParser;
 
-import at.gv.egiz.bku.slexceptions.SLRuntimeException;
-import at.gv.egiz.bku.utils.StreamUtil;
-
-/**
- * Implementation based on Java's URLDecoder class 
- *
- */
-// FIXME replace this code by a streaming variant
 public class XWWWFormUrlInputDecoder implements InputDecoder {
 
-  public final static String CHAR_SET = "charset";
-  public final static String NAME_VAL_SEP = "=";
-  public final static String SEP = "\\&";
+  /**
+   * The MIME type 'application/x-www-form-urlencoded'.
+   */
+  public static final String CONTENT_TYPE = "application/x-www-form-urlencoded";
 
-  private String contentType;
-  private InputStream dataStream;
-  private String charset = "UTF-8";
-
-  protected List<FormParameter> decodeInput(InputStream is) throws IOException {
-    List<FormParameter> result = new LinkedList<FormParameter>();
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    StreamUtil.copyStream(is, bos);
-    String inputString = new String(bos.toByteArray());
-    String[] nameValuePairs = inputString.split(SEP);
-    //inputString = URLDecoder.decode(inputString, charset);
-    for (int i = 0; i < nameValuePairs.length; i++) {
-      String[] fields = nameValuePairs[i].split(NAME_VAL_SEP, 2);
-      if (fields.length != 2) {
-        throw new SLRuntimeException("Invalid form encoding, missing value");
-      }
-      String name = URLDecoder.decode(fields[0], charset); 
-      String value =URLDecoder.decode(fields[1], charset);
-      ByteArrayInputStream bais = new ByteArrayInputStream(value
-          .getBytes(charset));
-      FormParameterImpl fpi = new FormParameterImpl(contentType, name, bais, null);
-      result.add(fpi);
-    }
-    return result;
-  }
+  /**
+   * The form parameter iterator.
+   */
+  protected XWWWFormUrlInputIterator iterator;
 
   @SuppressWarnings("unchecked")
   @Override
@@ -74,28 +40,19 @@ public class XWWWFormUrlInputDecoder implements InputDecoder {
     ParameterParser pp = new ParameterParser();
     pp.setLowerCaseNames(true);
     Map<String, String> params = pp.parse(contentType, new char[] { ':', ';' });
-    if (!params.containsKey("application/x-www-form-urlencoded")) {
+    if (!params.containsKey(CONTENT_TYPE)) {
       throw new IllegalArgumentException(
           "not a url encoded content type specification: " + contentType);
     }
-    String cs = params.get(CHAR_SET);
-    if (cs != null) {
-      charset = cs;
-    }
-    this.contentType = contentType;
   }
 
   @Override
   public Iterator<FormParameter> getFormParameterIterator() {
-    try {
-      return decodeInput(dataStream).iterator();
-    } catch (IOException e) {
-      throw new SLRuntimeException(e);
-    }
+    return iterator;
   }
 
   @Override
   public void setInputStream(InputStream is) {
-    dataStream = is;
+    iterator = new XWWWFormUrlInputIterator(is);
   }
 }

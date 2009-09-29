@@ -33,7 +33,7 @@ public class NullOperationResultImplTest {
     
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
     StreamResult result = new StreamResult(stream);
-    nullOperationResult.writeTo(result);
+    nullOperationResult.writeTo(result, false);
     
     System.out.println(stream.toString());
     

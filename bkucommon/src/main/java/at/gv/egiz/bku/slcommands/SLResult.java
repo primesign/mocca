@@ -32,12 +32,14 @@ public interface SLResult {
    */
   public String getMimeType();
 
-  public void writeTo(Result aResult);
+  public void writeTo(Result aResult, boolean fragment);
   
   /**
    * 
    * @param result
+   * @param fragment TODO
    * @param transformer may be null.
    */
-  public void writeTo(Result result, Templates templates);
+  public void writeTo(Result result, Templates templates, boolean fragment);
+  
 }

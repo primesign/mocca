@@ -62,7 +62,7 @@ public interface DataUrlConnection {
      * @param transferEncoding may be null
      */
     public void setHTTPFormParameter(String name, InputStream data, String contentType, String charSet, String transferEncoding);
-
+    
     /**
      * @pre httpHeaders != null
      * @throws java.net.SocketTimeoutException

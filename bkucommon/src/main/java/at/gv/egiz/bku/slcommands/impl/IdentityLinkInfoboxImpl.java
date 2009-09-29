@@ -18,7 +18,6 @@ package at.gv.egiz.bku.slcommands.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;

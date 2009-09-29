@@ -23,7 +23,6 @@ import iaik.asn1.CodingException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -42,10 +41,12 @@ import at.gv.egiz.bku.slcommands.InfoboxReadCommand;
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLCommandFactory;
+import at.gv.egiz.bku.slcommands.SLMarshallerFactory;
 import at.gv.egiz.bku.slcommands.SLResult;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
+import at.gv.egiz.bku.slexceptions.SLVersionException;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.dummy.DummySTAL;
 
@@ -93,9 +94,7 @@ public class SVPersonendatenInfoboxImplTest {
     
     JAXBElement<AttributeList> ehic = new ObjectFactory().createEHIC(attributeList);
     
-    JAXBContext jaxbContext = SLCommandFactory.getInstance().getJaxbContext();
-    
-    Marshaller marshaller = jaxbContext.createMarshaller();
+    Marshaller marshaller = SLMarshallerFactory.getInstance().createMarshaller(false);
     
     marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
     
@@ -105,7 +104,7 @@ public class SVPersonendatenInfoboxImplTest {
   
   @Ignore
   @Test
-  public void testInfboxReadRequest() throws SLCommandException, SLRuntimeException, SLRequestException {
+  public void testInfboxReadRequest() throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.xml");
     assertNotNull(inputStream);
     
@@ -115,12 +114,12 @@ public class SVPersonendatenInfoboxImplTest {
     assertTrue(command instanceof InfoboxReadCommand);
     
     SLResult result = command.execute();
-    result.writeTo(new StreamResult(System.out));
+    result.writeTo(new StreamResult(System.out), false);
   }
   
   @Ignore
   @Test(expected=SLCommandException.class)
-  public void testInfboxReadRequestInvalid1() throws SLCommandException, SLRuntimeException, SLRequestException {
+  public void testInfboxReadRequestInvalid1() throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.Invalid-1.xml");
     assertNotNull(inputStream);
     
@@ -131,7 +130,7 @@ public class SVPersonendatenInfoboxImplTest {
   }
 
   @Ignore
-  public void testInfboxReadRequestInvalid2() throws SLCommandException, SLRuntimeException, SLRequestException {
+  public void testInfboxReadRequestInvalid2() throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.Invalid-2.xml");
     assertNotNull(inputStream);
     

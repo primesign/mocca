@@ -1,6 +1,7 @@
 package at.gv.egiz.bku.webstart;
 
-import at.gv.egiz.bku.utils.StreamUtil;
+import iaik.utils.StreamCopier;
+
 import java.awt.AWTPermission;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -24,20 +25,20 @@ import java.security.SecurityPermission;
 import java.security.cert.Certificate;
 import java.util.PropertyPermission;
 import javax.smartcardio.CardPermission;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.security.SslSocketConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.mortbay.thread.QueuedThreadPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Container {
 
   public static final String HTTP_PORT_PROPERTY = "mocca.http.port";
   public static final String HTTPS_PORT_PROPERTY = "mocca.http.port";
-  private static Log log = LogFactory.getLog(Container.class);
+  private static Logger log = LoggerFactory.getLogger(Container.class);
 
   static {
     if (log.isDebugEnabled()) {
@@ -166,7 +167,7 @@ public class Container {
     log.debug("copying BKULocal classpath resource to " + webapp);
     InputStream is = getClass().getClassLoader().getResourceAsStream("BKULocal.war");
     OutputStream os = new BufferedOutputStream(new FileOutputStream(webapp));
-    StreamUtil.copyStream(is, os);
+    new StreamCopier(is, os).copyStream();
     os.close();
     return webapp.getPath();
   }

@@ -36,8 +36,8 @@ public class InfoboxUpdateResultImpl extends SLResultImpl implements
   }
   
   @Override
-  public void writeTo(Result result, Templates templates) {
-    writeTo(RESPONSE, result, templates);
+  public void writeTo(Result result, Templates templates, boolean fragment) {
+    writeTo(RESPONSE, result, templates, fragment);
   }
 
 }

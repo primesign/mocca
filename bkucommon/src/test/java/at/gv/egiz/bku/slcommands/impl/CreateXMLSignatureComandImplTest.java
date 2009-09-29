@@ -41,6 +41,7 @@ import at.gv.egiz.bku.slcommands.impl.xsect.STALProvider;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
+import at.gv.egiz.bku.slexceptions.SLVersionException;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.dummy.DummySTAL;
 //@Ignore
@@ -66,7 +67,7 @@ public class CreateXMLSignatureComandImplTest {
   }
   
   @Test
-  public void testCreateXMLSignatureRequest() throws SLCommandException, SLRuntimeException, SLRequestException {
+  public void testCreateXMLSignatureRequest() throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/createxmlsignaturerequest/CreateXMLSignatureRequest.xml");
     assertNotNull(inputStream);
     
@@ -76,11 +77,11 @@ public class CreateXMLSignatureComandImplTest {
     assertTrue(command instanceof CreateXMLSignatureCommand);
     
     SLResult result = command.execute();
-    result.writeTo(new StreamResult(System.out));
+    result.writeTo(new StreamResult(System.out), false);
   }
   
 //  @Test(expected=SLCommandException.class)
-  public void testInfboxReadRequestInvalid1() throws SLCommandException, SLRuntimeException, SLRequestException {
+  public void testInfboxReadRequestInvalid1() throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.Invalid-1.xml");
     assertNotNull(inputStream);
     
@@ -90,7 +91,7 @@ public class CreateXMLSignatureComandImplTest {
   }
 
 //  @Test(expected=SLCommandException.class)
-  public void testInfboxReadRequestInvalid2() throws SLCommandException, SLRuntimeException, SLRequestException {
+  public void testInfboxReadRequestInvalid2() throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.Invalid-2.xml");
     assertNotNull(inputStream);
     

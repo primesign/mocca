@@ -31,12 +31,16 @@ public class MarshallerFactory {
 
   private static final Log log = LogFactory.getLog(MarshallerFactory.class);
   
-  public static Marshaller createMarshaller(JAXBContext ctx, boolean formattedOutput) throws JAXBException {
+  public static Marshaller createMarshaller(JAXBContext ctx, boolean formattedOutput, boolean fragment) throws JAXBException {
     Marshaller m = ctx.createMarshaller();
     try {
       if (formattedOutput) {
         log.trace("setting marshaller property FORMATTED_OUTPUT");
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+      }
+      if (fragment) {
+        log.trace("setting marshaller property FRAGMENT");
+        m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
       }
       log.trace("setting marshaller property NamespacePrefixMapper");
       m.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NamespacePrefixMapperImpl());
@@ -45,8 +49,12 @@ public class MarshallerFactory {
     }
     return m;
   }
+  
+  public static Marshaller createMarshaller(JAXBContext ctx, boolean formattedOutput) throws JAXBException {
+    return createMarshaller(ctx, formattedOutput, false);
+  }
 
   public static Marshaller createMarshaller(JAXBContext ctx) throws JAXBException {
-    return createMarshaller(ctx, false);
+    return createMarshaller(ctx, false, false);
   }
 }

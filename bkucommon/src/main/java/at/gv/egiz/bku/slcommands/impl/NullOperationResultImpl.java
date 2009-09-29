@@ -41,8 +41,8 @@ public class NullOperationResultImpl extends SLResultImpl implements NullOperati
   }
   
   @Override
-  public void writeTo(Result result, Templates templates) {
-    writeTo(RESPONSE, result, templates);
+  public void writeTo(Result result, Templates templates, boolean fragment) {
+    super.writeTo(RESPONSE, result, templates, fragment);
   }
 
 }

@@ -173,6 +173,12 @@
       <version>1.0</version>
     </dependency>
     <dependency>
+      <groupId>iaik</groupId>
+      <artifactId>iaik_jce_full_signed</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <!--
+    <dependency>
       <artifactId>utils</artifactId>
       <groupId>at.gv.egiz</groupId>
       <version>1.2.7-SNAPSHOT</version>
@@ -187,7 +193,8 @@
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
     </dependency>
-
+    -->
+    
     <!-- Jetty 6.1.15+ required, see
      |   http://jira.codehaus.org/browse/JETTY-843
      |-->
@@ -214,6 +221,11 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <version>1.5.8</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>compile</scope>
     </dependency>
 
     <!-- javax.jnlp.* -->

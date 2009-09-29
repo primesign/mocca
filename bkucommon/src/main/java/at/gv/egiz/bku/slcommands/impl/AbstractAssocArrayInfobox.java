@@ -16,7 +16,6 @@
  */
 package at.gv.egiz.bku.slcommands.impl;
 
-import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
@@ -42,10 +40,8 @@ import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadParamsAssocArrayTy
 import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadParamsAssocArrayType.ReadValue;
 import at.gv.egiz.bku.slcommands.InfoboxReadResult;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
-import at.gv.egiz.bku.slcommands.SLCommandFactory;
+import at.gv.egiz.bku.slcommands.SLMarshallerFactory;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
-import at.gv.egiz.marshal.MarshallerFactory;
-import javax.xml.bind.PropertyException;
 
 /**
  * An abstract base class for {@link Infobox} implementations of type associative array.
@@ -255,13 +251,10 @@ public abstract class AbstractAssocArrayInfobox extends AbstractInfoboxImpl
   }
 
   protected byte[] marshallValue(Object jaxbElement) throws SLCommandException {
-    SLCommandFactory commandFactory = SLCommandFactory.getInstance();
-    JAXBContext jaxbContext = commandFactory.getJaxbContext();
     
-    ByteArrayOutputStream result;
+    Marshaller marshaller = SLMarshallerFactory.getInstance().createMarshaller(false);
+    ByteArrayOutputStream result = new ByteArrayOutputStream();
     try {
-      Marshaller marshaller = MarshallerFactory.createMarshaller(jaxbContext);
-      result = new ByteArrayOutputStream();
       marshaller.marshal(jaxbElement, result);
     } catch (JAXBException e) {
       log.info("Failed to marshall infobox content.", e);

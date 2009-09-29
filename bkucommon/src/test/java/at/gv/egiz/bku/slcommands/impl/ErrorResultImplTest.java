@@ -36,7 +36,7 @@ public class ErrorResultImplTest {
     
     ByteArrayOutputStream stream = new ByteArrayOutputStream();
     StreamResult result = new StreamResult(stream);
-    errorResult.writeTo(result);
+    errorResult.writeTo(result, false);
     
     System.out.println(stream.toString());
     

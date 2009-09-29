@@ -17,6 +17,9 @@
 package at.gv.egiz.marshal;
 
 //import com.sun.xml.internal.bind.marshaller.NamespacePrefixMapper;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,45 +32,32 @@ public class NamespacePrefixMapperImpl extends NamespacePrefixMapper {
 
   private static final Log log = LogFactory.getLog(NamespacePrefixMapperImpl.class);
 
+  protected static final Map<String, String> prefixMap = new HashMap<String, String>();
+  
+  static {
+    prefixMap.put("http://www.w3.org/2001/XMLSchema-instance", "xsi");
+    prefixMap.put("http://www.w3.org/2000/09/xmldsig#", "dsig");
+    prefixMap.put("http://www.buergerkarte.at/namespaces/securitylayer/1.2#", "sl");
+    prefixMap.put("http://www.buergerkarte.at/cardchannel", "cc");
+    prefixMap.put("http://www.w3.org/2001/04/xmldsig-more#", "ecdsa");
+    prefixMap.put("http://reference.e-government.gv.at/namespace/persondata/20020228#", "pr");
+    prefixMap.put("urn:oasis:names:tc:SAML:1.0:assertion", "saml");
+    prefixMap.put("http://uri.etsi.org/01903/v1.1.1#", "xades");
+    prefixMap.put("http://www.buergerkarte.at/namespaces/securitylayer/20020225#", "sl10");
+    prefixMap.put("http://www.buergerkarte.at/namespaces/securitylayer/20020831#", "sl11");
+  }
+  
+  
   @Override
   public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix) {
 
     if (log.isTraceEnabled()) {
       log.trace("prefix for namespace " + namespaceUri + " requested");
     }
-    if ("http://www.w3.org/2001/XMLSchema-instance".equals(namespaceUri)) {
-      return NamespacePrefix.XSI_PREFIX;
-    }
-
-    if ("http://www.w3.org/2000/09/xmldsig#".equals(namespaceUri)) {
-      return NamespacePrefix.XMLDSIG_PREFIX;
-    }
-
-    if ("http://www.buergerkarte.at/namespaces/securitylayer/1.2#".equals(namespaceUri)) {
-      return NamespacePrefix.SL_PREFIX;
-    }
-
-    if ("http://www.buergerkarte.at/cardchannel".equals(namespaceUri)) {
-      return NamespacePrefix.CARDCHANNEL_PREFIX;
-    }
-
-    if ("http://www.w3.org/2001/04/xmldsig-more#".equals(namespaceUri)) {
-      return NamespacePrefix.ECDSA_PREFIX;
-    }
-
-    if ("http://reference.e-government.gv.at/namespace/persondata/20020228#".equals(namespaceUri)) {
-      return NamespacePrefix.PERSONDATA_PREFIX;
-    }
-
-    if ("urn:oasis:names:tc:SAML:1.0:assertion".equals(namespaceUri)) {
-      return NamespacePrefix.SAML10_PREFIX;
-    }
-
-    if ("http://uri.etsi.org/01903/v1.1.1#".equals(namespaceUri)) {
-      return NamespacePrefix.XADES_PREFIX;
-    }
     
-    return suggestion;
+    String prefix = prefixMap.get(namespaceUri);
+    
+    return (prefix != null) ? prefix : suggestion;
   }
 
   /**

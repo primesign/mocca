@@ -16,7 +16,6 @@
  */
 package at.gv.egiz.bku.binding;
 
-import at.gv.egiz.bku.conf.Configuration;
 import at.gv.egiz.bku.conf.Configurator;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -89,13 +88,7 @@ public class DataUrl {
     if (configuration != null) {
       String className = configuration.getProperty(Configurator.DATAURLCONNECTION_CONFIG_P);
       if (className != null) {
-        try {
-          log.info("set DataURLConnection class: " + className);
-          Class c = Class.forName(className);
-          connection = (DataUrlConnectionSPI) c.newInstance();
-        } catch (Exception ex) {
-          log.error("failed to instantiate DataURL connection " + className, ex);
-        }
+        log.warn("Set DataURLConnection class not supported!");
       }
     }
   }

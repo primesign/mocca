@@ -39,6 +39,7 @@ import at.gv.egiz.bku.slcommands.SLResult;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
+import at.gv.egiz.bku.slexceptions.SLVersionException;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.dummy.DummySTAL;
 
@@ -63,7 +64,7 @@ public class InfoboxReadComandImplTest {
   }
   
   @Test
-  public void testInfboxReadRequest() throws SLCommandException, SLRuntimeException, SLRequestException {
+  public void testInfboxReadRequest() throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.xml");
     assertNotNull(inputStream);
     
@@ -73,11 +74,11 @@ public class InfoboxReadComandImplTest {
     assertTrue(command instanceof InfoboxReadCommand);
     
     SLResult result = command.execute();
-    result.writeTo(new StreamResult(System.out));
+    result.writeTo(new StreamResult(System.out), false);
   }
   
   @Test(expected=SLCommandException.class)
-  public void testInfboxReadRequestInvalid1() throws SLCommandException, SLRuntimeException, SLRequestException {
+  public void testInfboxReadRequestInvalid1() throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.Invalid-1.xml");
     assertNotNull(inputStream);
     
@@ -87,7 +88,7 @@ public class InfoboxReadComandImplTest {
     assertTrue(command instanceof InfoboxReadCommand);
   }
 
-  public void testInfboxReadRequestInvalid2() throws SLCommandException, SLRuntimeException, SLRequestException {
+  public void testInfboxReadRequestInvalid2() throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.Invalid-2.xml");
     assertNotNull(inputStream);
     

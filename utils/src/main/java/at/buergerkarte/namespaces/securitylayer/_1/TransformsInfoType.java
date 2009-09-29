@@ -24,11 +24,15 @@
 
 package at.buergerkarte.namespaces.securitylayer._1;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlType;
 import org.w3._2000._09.xmldsig_.TransformsType;
+import org.w3c.dom.Element;
 
 
 /**
@@ -58,8 +62,9 @@ import org.w3._2000._09.xmldsig_.TransformsType;
 })
 public class TransformsInfoType {
 
-    @XmlElement(name = "Transforms", namespace = "http://www.w3.org/2000/09/xmldsig#")
-    protected TransformsType transforms;
+    @XmlElementRef(name = "Transforms", namespace = "http://www.w3.org/2000/09/xmldsig#", type = JAXBElement.class)
+    @XmlAnyElement(lax = true)
+    protected Object transforms;
     @XmlElement(name = "FinalDataMetaInfo", required = true)
     protected MetaInfoType finalDataMetaInfo;
 
@@ -68,10 +73,12 @@ public class TransformsInfoType {
      * 
      * @return
      *     possible object is
-     *     {@link TransformsType }
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
+     * {@link Object }
+     * {@link Element }
      *     
      */
-    public TransformsType getTransforms() {
+    public Object getTransforms() {
         return transforms;
     }
 
@@ -80,10 +87,12 @@ public class TransformsInfoType {
      * 
      * @param value
      *     allowed object is
-     *     {@link TransformsType }
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
+     * {@link Object }
+     * {@link Element }
      *     
      */
-    public void setTransforms(TransformsType value) {
+    public void setTransforms(Object value) {
         this.transforms = value;
     }
 

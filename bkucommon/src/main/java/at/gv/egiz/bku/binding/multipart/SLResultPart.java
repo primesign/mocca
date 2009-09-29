@@ -16,37 +16,56 @@
 */
 package at.gv.egiz.bku.binding.multipart;
 
+import at.gv.egiz.bku.binding.DataUrlConnection;
 import at.gv.egiz.bku.slcommands.SLResult;
+import at.gv.egiz.bku.slcommands.SLResult.SLResultType;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.PartSource;
 
-/**
- * 
- * @author clemens
- */
 public class SLResultPart extends FilePart {
 
   protected SLResult slResult;
   protected String encoding;
 
   public SLResultPart(SLResult slResult, String encoding) {
-    super("XMLResponse",
-        new ByteArrayPartSource(null, "dummySource".getBytes()));
+    super((slResult.getResultType() == SLResultType.XML) 
+            ? DataUrlConnection.FORMPARAM_XMLRESPONSE
+            : DataUrlConnection.FORMPARAM_BINARYRESPONSE, 
+            new PartSource() {
+              
+              @Override
+              public long getLength() {
+                // may return null, as sendData() is overridden
+                return 0;
+              }
+              
+              @Override
+              public String getFileName() {
+                // return null, to prevent content-disposition header 
+                return null;
+              }
+              
+              @Override
+              public InputStream createInputStream() throws IOException {
+                // may return null, as sendData() is overridden below 
+                return null;
+              }
+            }
+         );
     this.slResult = slResult;
     this.encoding = encoding;
   }
 
   @Override
   protected void sendData(OutputStream out) throws IOException {
-    slResult.writeTo(new StreamResult(new OutputStreamWriter(out, encoding)));
-    // slResult.writeTo(new StreamResult(new OutputStreamWriter(System.out,
-    // encoding)));
-    // super.sendData(out);
+    slResult.writeTo(new StreamResult(new OutputStreamWriter(out, encoding)), false);
   }
 }

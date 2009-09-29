@@ -1,0 +1,12 @@
+@CHARSET "UTF-8";
+sl\:ErrorResponse {margin: 0.5em; display: block;}
+sl\:ErrorCode {display: inline;}
+sl\:Info {display: inline;}
+
+ErrorResponse:lang(de):before {content: "Bei der Verarbeitung der Anfrage durch die Bürgerkartenumgebung ist ein Fehler aufgetreten: "; font-weight: bolder;}
+ErrorResponse:before {content: "An error has occoured upon request processing by the citizen card software: "; font-weight: bold;}
+ErrorResponse {margin: 0.5em; display: block;}
+ErrorCode:lang(de):before {content: "Fehler-Code: ";} 
+ErrorCode:before {content: "Error Code: ";} 
+ErrorCode {display: block;}
+Info {display: block;}

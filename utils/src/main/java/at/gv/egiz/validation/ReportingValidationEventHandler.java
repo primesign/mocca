@@ -25,9 +25,11 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class ValidationEventLogger implements ValidationEventHandler {
+public class ReportingValidationEventHandler implements ValidationEventHandler {
 
-  protected static final Log log = LogFactory.getLog(ValidationEventLogger.class);
+  protected static final Log log = LogFactory.getLog(ReportingValidationEventHandler.class);
+  
+  protected ValidationEvent errorEvent;
 
   /**
    *
@@ -43,13 +45,20 @@ public class ValidationEventLogger implements ValidationEventHandler {
         return true;
       case ValidationEvent.ERROR:
         log.warn(event.getMessage());
+        errorEvent = event;
         return false;
       case ValidationEvent.FATAL_ERROR:
         log.error(event.getMessage());
+        errorEvent = event;
         return false;
       default:
         log.debug(event.getMessage());
         return false;
     }
   }
+
+  public ValidationEvent getErrorEvent() {
+    return errorEvent;
+  }
+  
 }

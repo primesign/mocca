@@ -16,8 +16,6 @@
 */
 package at.gv.egiz.bku.slcommands.impl;
 
-import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -33,10 +31,8 @@ import org.w3c.dom.Node;
 
 import at.buergerkarte.namespaces.securitylayer._1.CreateXMLSignatureResponseType;
 import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
-import at.gv.egiz.bku.slcommands.SLCommandFactory;
+import at.gv.egiz.bku.slcommands.SLMarshallerFactory;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
-import at.gv.egiz.marshal.MarshallerFactory;
-import javax.xml.bind.PropertyException;
 
 /**
  * This calls implements the result of the security layer command <code>CreateXMLSignature</code>.
@@ -86,10 +82,9 @@ public class CreateXMLSignatureResultImpl extends SLResultImpl {
     JAXBElement<CreateXMLSignatureResponseType> createCreateXMLSignatureResponse = factory.createCreateXMLSignatureResponse(createCreateXMLSignatureResponseType);
 
     DocumentFragment fragment = doc.createDocumentFragment();
-    
-    JAXBContext jaxbContext = SLCommandFactory.getInstance().getJaxbContext();
+
+    Marshaller marshaller = SLMarshallerFactory.getInstance().createMarshaller(false);
     try {
-      Marshaller marshaller = MarshallerFactory.createMarshaller(jaxbContext);
       marshaller.marshal(createCreateXMLSignatureResponse, fragment);
     } catch (JAXBException e) {
       log.error("Failed to marshall 'CreateXMLSignatureResponse'", e);
@@ -105,8 +100,8 @@ public class CreateXMLSignatureResultImpl extends SLResultImpl {
   }
 
   @Override
-  public void writeTo(Result result, Templates templates) {
-    writeTo(doc, result, templates);
+  public void writeTo(Result result, Templates templates, boolean fragment) {
+    writeTo(doc, result, templates, fragment);
   }
 
 }

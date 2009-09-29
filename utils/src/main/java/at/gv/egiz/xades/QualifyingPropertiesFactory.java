@@ -16,8 +16,6 @@
 */
 package at.gv.egiz.xades;
 
-import at.gv.egiz.marshal.MarshallerFactory;
-import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -50,6 +48,8 @@ import org.etsi.uri._01903.v1_1.SignedSignaturePropertiesType;
 import org.w3._2000._09.xmldsig_.DigestMethodType;
 import org.w3._2000._09.xmldsig_.X509IssuerSerialType;
 import org.w3c.dom.Node;
+
+import at.gv.egiz.marshal.MarshallerFactory;
 
 public class QualifyingPropertiesFactory {
   
@@ -155,7 +155,7 @@ public class QualifyingPropertiesFactory {
     return dataObjectFormatType;
   }
   
-  public JAXBElement<QualifyingPropertiesType> createQualifyingProperties111(Date signingTime, List<X509Certificate> certificates, String idValue, List<DataObjectFormatType> dataObjectFormats) throws QualifyingPropertiesException {
+  public JAXBElement<QualifyingPropertiesType> createQualifyingProperties111(String target, Date signingTime, List<X509Certificate> certificates, String idValue, List<DataObjectFormatType> dataObjectFormats) throws QualifyingPropertiesException {
 
     GregorianCalendar gregorianCalendar = new GregorianCalendar();
     gregorianCalendar.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -205,6 +205,8 @@ public class QualifyingPropertiesFactory {
     // QualifyingProperties
     QualifyingPropertiesType qualifyingPropertiesType = qpFactory.createQualifyingPropertiesType();
     qualifyingPropertiesType.setSignedProperties(signedPropertiesType);
+    
+    qualifyingPropertiesType.setTarget(target);
     
     return qpFactory.createQualifyingProperties(qualifyingPropertiesType);
     

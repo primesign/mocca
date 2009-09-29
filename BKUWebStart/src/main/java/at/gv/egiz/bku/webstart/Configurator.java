@@ -16,8 +16,9 @@
  */
 package at.gv.egiz.bku.webstart;
 
-import at.gv.egiz.bku.utils.StreamUtil;
 import iaik.asn1.CodingException;
+import iaik.utils.StreamCopier;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -42,8 +43,10 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -71,7 +74,7 @@ public class Configurator {
   public static final String KEYSTORE_FILE = "keystore.ks";
   public static final String PASSWD_FILE = ".secret";
 
-  private static final Log log = LogFactory.getLog(Configurator.class);
+  private static final Logger log = LoggerFactory.getLogger(Configurator.class);
 
   /** currently installed configuration version */
   private String version;
@@ -110,6 +113,11 @@ public class Configurator {
     } else {
       initConfig(configDir);
     }
+    // re-configure logging
+    // TODO: move to appropriate place
+    String log4jconfig = configDir.getPath() + File.separatorChar + "log4j.properties";
+    log.debug("Reconfiguring logging with " + log4jconfig);
+    PropertyConfigurator.configureAndWatch(log4jconfig);
   }
 
   /**
@@ -312,7 +320,7 @@ public class Configurator {
       ZipEntry entry = new ZipEntry(relativePath.toString());
       zip.putNextEntry(entry);
       BufferedInputStream entryIS = new BufferedInputStream(new FileInputStream(dir));
-      StreamUtil.copyStream(entryIS, zip);
+      new StreamCopier(entryIS, zip).copyStream();
       entryIS.close();
       zip.closeEntry();
       dir.delete();
@@ -341,7 +349,7 @@ public class Configurator {
     File confTemplateFile = new File(configDir, CONF_TEMPLATE_FILE);
     InputStream is = Configurator.class.getClassLoader().getResourceAsStream(CONF_TEMPLATE_RESOURCE);
     OutputStream os = new BufferedOutputStream(new FileOutputStream(confTemplateFile));
-    StreamUtil.copyStream(is, os);
+    new StreamCopier(is, os).copyStream();
     os.close();
     unzip(confTemplateFile, configDir);
     confTemplateFile.delete();
@@ -374,7 +382,7 @@ public class Configurator {
           new File(certsDir, f.substring(0, f.lastIndexOf('/'))).mkdirs();
           BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(certsDir, f)));
           log.debug(f);
-          StreamUtil.copyStream(Configurator.class.getClassLoader().getResourceAsStream(entry), bos);
+          new StreamCopier(Configurator.class.getClassLoader().getResourceAsStream(entry), bos).copyStream();
           bos.close();
         } else {
           log.trace("ignore " + entry);
@@ -399,8 +407,8 @@ public class Configurator {
       }
       File f = new File(eF.getParent());
       f.mkdirs();
-      StreamUtil.copyStream(zipFile.getInputStream(entry),
-              new FileOutputStream(eF));
+      new StreamCopier(zipFile.getInputStream(entry),
+              new FileOutputStream(eF)).copyStream();
     }
     zipFile.close();
   }

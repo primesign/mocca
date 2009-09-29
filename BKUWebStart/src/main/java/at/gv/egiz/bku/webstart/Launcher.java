@@ -10,8 +10,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.jnlp.UnavailableServiceException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import com.sun.javaws.security.JavaWebStartSecurity;
 import java.awt.AWTException;
@@ -37,6 +35,8 @@ import javax.jnlp.BasicService;
 import javax.jnlp.ServiceManager;
 import javax.swing.JFrame;
 import org.mortbay.util.MultiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Launcher implements BKUControllerInterface, ActionListener {
   public static final String HELP_COMMAND = "help";
@@ -71,9 +71,10 @@ public class Launcher implements BKUControllerInterface, ActionListener {
   public static final String SHUTDOWN_COMMAND = "shutdown";
   public static final String PIN_COMMAND = "pin";
   public static final String ABOUT_COMMAND = "about";
+  
+  private static Logger log = LoggerFactory.getLogger(Launcher.class);
 
-  private static Log log = LogFactory.getLog(Launcher.class);
-
+  
   /** local bku uri */
   public static final URL HTTP_SECURITY_LAYER_URL;
   public static final URL HTTPS_SECURITY_LAYER_URL;
@@ -93,7 +94,7 @@ public class Launcher implements BKUControllerInterface, ActionListener {
       cert = new URL(http, "/installCertificate");
       help = new URL(http, "/help");
     } catch (MalformedURLException ex) {
-      log.error(ex);
+      log.error("Failed to create URL.", ex);
     } finally {
       HTTP_SECURITY_LAYER_URL = http;
       HTTPS_SECURITY_LAYER_URL = https;
@@ -132,6 +133,7 @@ public class Launcher implements BKUControllerInterface, ActionListener {
 
   
   public Launcher() {
+    log.info("Initializing Launcher");
     if (log.isTraceEnabled()) {
       SecurityManager sm = System.getSecurityManager();
       if (sm instanceof JavaWebStartSecurity) {
@@ -147,7 +149,7 @@ public class Launcher implements BKUControllerInterface, ActionListener {
     try {
       initConfig();
     } catch (Exception ex) {
-      log.fatal("Failed to initialize configuration", ex);
+      log.error("Failed to initialize configuration", ex);
       trayIcon.displayMessage(messages.getString(CAPTION_ERROR),
               messages.getString(ERROR_CONFIG), TrayIcon.MessageType.ERROR);
       throw ex;
@@ -156,12 +158,12 @@ public class Launcher implements BKUControllerInterface, ActionListener {
       startServer();
       initFinished();
     } catch (BindException ex) {
-      log.fatal("Failed to launch server, " + ex.getMessage(), ex);
+      log.error("Failed to launch server, " + ex.getMessage(), ex);
       trayIcon.displayMessage(messages.getString(CAPTION_ERROR),
               messages.getString(ERROR_BIND), TrayIcon.MessageType.ERROR);
       throw ex;
     } catch (MultiException ex) {
-      log.fatal("Failed to launch server, " + ex.getMessage(), ex);
+      log.error("Failed to launch server, " + ex.getMessage(), ex);
       if (ex.getThrowable(0) instanceof BindException) {
         trayIcon.displayMessage(messages.getString(CAPTION_ERROR),
                 messages.getString(ERROR_BIND), TrayIcon.MessageType.ERROR);
@@ -172,7 +174,7 @@ public class Launcher implements BKUControllerInterface, ActionListener {
       throw ex;
     } catch (Exception ex) {
       ex.printStackTrace();
-      log.fatal("Failed to launch server, " + ex.getMessage(), ex);
+      log.error("Failed to launch server, " + ex.getMessage(), ex);
       trayIcon.displayMessage(messages.getString(CAPTION_ERROR),
               messages.getString(ERROR_START), TrayIcon.MessageType.ERROR);
       throw ex;
@@ -379,7 +381,7 @@ public class Launcher implements BKUControllerInterface, ActionListener {
       launcher.launch();
     } catch (Exception ex) {
       ex.printStackTrace();
-      log.debug(ex);
+      log.debug("Caught exception " + ex.getMessage(), ex);
       log.info("waiting to shutdown...");
       Thread.sleep(5000);
       log.info("exit");

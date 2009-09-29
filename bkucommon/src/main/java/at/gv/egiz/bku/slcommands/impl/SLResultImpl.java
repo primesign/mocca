@@ -17,12 +17,14 @@
 package at.gv.egiz.bku.slcommands.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.util.Locale;
 
-import javax.xml.bind.JAXBContext;
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -41,17 +43,15 @@ import org.w3c.dom.Node;
 
 import at.buergerkarte.namespaces.securitylayer._1.ErrorResponseType;
 import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
-import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
-import at.gv.egiz.bku.slcommands.SLCommandFactory;
+import at.gv.egiz.bku.slcommands.SLMarshallerFactory;
 import at.gv.egiz.bku.slcommands.SLResult;
 import at.gv.egiz.bku.slexceptions.SLBindingException;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
+import at.gv.egiz.bku.slexceptions.SLVersionException;
 import at.gv.egiz.bku.utils.DebugOutputStream;
 import at.gv.egiz.bku.utils.DebugWriter;
-import at.gv.egiz.marshal.MarshallerFactory;
-import javax.xml.bind.PropertyException;
 
 /**
  * This class serves as an abstract base class for the implementation of a
@@ -90,20 +90,18 @@ public abstract class SLResultImpl implements SLResult {
     return resultingMimeType;
   }
 
-  private Marshaller getMarshaller() {
-    try {
-      JAXBContext context  = SLCommandFactory.getInstance().getJaxbContext();
-      Marshaller marshaller = MarshallerFactory.createMarshaller(context, true);
-      return marshaller;
-    } catch (JAXBException e) {
-      log.fatal("Failed to marshall error response.", e);
-      throw new SLRuntimeException("Failed to marshall error response.", e);
-    }
+  @Override
+  public void writeTo(Result result, boolean fragment) {
+    writeTo(result, null, false);
   }
+
+  @Override
+  public abstract void writeTo(Result result, Templates templates, boolean fragment);
 
   private TransformerHandler getTransformerHandler(Templates templates, Result result) throws SLException {
     try {
       SAXTransformerFactory transformerFactory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
+      transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
       TransformerHandler transformerHandler = transformerFactory.newTransformerHandler(templates);
       transformerHandler.setResult(result);
       return transformerHandler;
@@ -119,12 +117,6 @@ public abstract class SLResultImpl implements SLResult {
     }
   }
 
-  @Override
-  public void writeTo(Result result) {
-    writeTo(result, null);
-  }
-
-
   /**
    * Writes the given <code>response</code> to the SAX <code>result</code> using
    * the given transform <code>templates</code>.
@@ -133,7 +125,7 @@ public abstract class SLResultImpl implements SLResult {
    * @param result
    * @param templates
    */
-  protected void writeTo(JAXBElement<?> response, Result result, Templates templates) {
+  protected void writeTo(JAXBElement<?> response, Result result, Templates templates, boolean fragment) {
     
     DebugWriter dw = null;
     DebugOutputStream ds = null;
@@ -154,11 +146,11 @@ public abstract class SLResultImpl implements SLResult {
       try {
         transformerHandler = getTransformerHandler(templates, result);
       } catch (SLException e) {
-        writeErrorTo(e, result, templates);
+        writeErrorTo(e, result, templates, fragment);
       }
     }
     
-    Marshaller marshaller = getMarshaller();
+    Marshaller marshaller = SLMarshallerFactory.getInstance().createMarshaller(true);
     try {
       if (transformerHandler != null) {
         marshaller.marshal(response, transformerHandler);
@@ -168,7 +160,7 @@ public abstract class SLResultImpl implements SLResult {
     } catch (JAXBException e) {
       log.info("Failed to marshall " + response.getName() + " result." , e);
       SLCommandException commandException = new SLCommandException(4000);
-      writeErrorTo(commandException, result, templates);
+      writeErrorTo(commandException, result, templates, fragment);
     }
     
     if (ds != null) {
@@ -185,7 +177,7 @@ public abstract class SLResultImpl implements SLResult {
     
   }
   
-  protected void writeTo(Node node, Result result, Templates templates) {
+  protected void writeTo(Node node, Result result, Templates templates, boolean fragment) {
 
     DebugWriter dw = null;
     DebugOutputStream ds = null;
@@ -205,24 +197,30 @@ public abstract class SLResultImpl implements SLResult {
       try {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
+        if (fragment) {
+          transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        }
         transformer.transform(new DOMSource(node), result);
       } catch (TransformerConfigurationException e) {
         log.error("Failed to create Transformer.", e);
-        writeErrorTo(new SLException(4000), result, null);
+        writeErrorTo(new SLException(4000), result, null, fragment);
       } catch (TransformerException e) {
         log.error("Failed to transform result.", e);
-        writeErrorTo(new SLException(4000), result, null);
+        writeErrorTo(new SLException(4000), result, null, fragment);
       }
     } else {
       try {
         Transformer transformer = templates.newTransformer();
+        if (fragment) {
+          transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        }
         transformer.transform(new DOMSource(node), result);
       } catch (TransformerConfigurationException e) {
         log.info("Failed to create transformer.", e);
-        writeErrorTo(new SLException(2008), result, templates);
+        writeErrorTo(new SLException(2008), result, templates, fragment);
       } catch (TransformerException e) {
         log.error("Failed to transform result.", e);
-        writeErrorTo(new SLException(2008), result, templates);
+        writeErrorTo(new SLException(2008), result, templates, fragment);
       }
     }
 
@@ -240,11 +238,11 @@ public abstract class SLResultImpl implements SLResult {
 
   }
   
-  protected void writeErrorTo(SLException slException, Result result, Templates templates) {
-    writeErrorTo(slException, result, templates, Locale.getDefault());
+  protected void writeErrorTo(SLException slException, Result result, Templates templates, boolean fragment) {
+    writeErrorTo(slException, result, templates, Locale.getDefault(), fragment);
   }
   
-  protected void writeErrorTo(SLException slException, Result result, Templates templates, Locale locale) {
+  protected void writeErrorTo(SLException slException, Result result, Templates templates, Locale locale, boolean fragment) {
     
     TransformerHandler transformerHandler = null;
     if (templates != null) {
@@ -256,13 +254,33 @@ public abstract class SLResultImpl implements SLResult {
       }
     }
 
-    ObjectFactory factory = new ObjectFactory();
-    ErrorResponseType responseType = factory.createErrorResponseType();
-    responseType.setErrorCode(slException.getErrorCode());
-    responseType.setInfo(slException.getLocalizedMessage(locale));
-    JAXBElement<ErrorResponseType> response = factory.createErrorResponse(responseType);
+    Object response;
     
-    Marshaller marshaller = getMarshaller();
+    Marshaller marshaller;
+    if (slException instanceof SLVersionException
+        && ("http://www.buergerkarte.at/namespaces/securitylayer/20020225#"
+            .equals(((SLVersionException) slException).getNamespaceURI()) || 
+            "http://www.buergerkarte.at/namespaces/securitylayer/20020831#"
+            .equals(((SLVersionException) slException).getNamespaceURI()))) {
+      // issue ErrorResponse in the legacy namespace
+      at.buergerkarte.namespaces.securitylayer._20020225_.ObjectFactory factory 
+          = new at.buergerkarte.namespaces.securitylayer._20020225_.ObjectFactory();
+      at.buergerkarte.namespaces.securitylayer._20020225_.ErrorResponseType errorResponseType = factory
+          .createErrorResponseType();
+      errorResponseType.setErrorCode(BigInteger.valueOf(slException
+          .getErrorCode()));
+      errorResponseType.setInfo(slException.getLocalizedMessage(locale));
+      response = factory.createErrorResponse(errorResponseType);
+      marshaller = SLMarshallerFactory.getInstance().createLegacyMarshaller(true, fragment);
+    } else {
+      ObjectFactory factory = new ObjectFactory();
+      ErrorResponseType responseType = factory.createErrorResponseType();
+      responseType.setErrorCode(slException.getErrorCode());
+      responseType.setInfo(slException.getLocalizedMessage(locale));
+      response = factory.createErrorResponse(responseType);
+      marshaller = SLMarshallerFactory.getInstance().createMarshaller(true, fragment);
+    }
+    
     try {
       if (transformerHandler != null) {
         marshaller.marshal(response, transformerHandler);

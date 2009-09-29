@@ -20,8 +20,9 @@ import com.sun.javaws.security.JavaWebStartSecurity;
 import java.io.FileDescriptor;
 import java.net.InetAddress;
 import java.security.Permission;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JVM argument -Djava.security.debug=access,failure
@@ -31,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class LogSecurityManager extends SecurityManager {
 
-  protected static final Log log = LogFactory.getLog(LogSecurityManager.class);
+  protected static final Logger log = LoggerFactory.getLogger(LogSecurityManager.class);
   JavaWebStartSecurity sm;
 
   public LogSecurityManager(JavaWebStartSecurity sm) {
@@ -182,6 +183,7 @@ public class LogSecurityManager extends SecurityManager {
     }
   }
 
+  @SuppressWarnings("deprecation")
   @Override
   public void checkMulticast(InetAddress maddr, byte ttl) {
     try {
@@ -399,6 +401,7 @@ public class LogSecurityManager extends SecurityManager {
 //  protected Class[] getClassContext() {
 //    log.info("getClassContext"); return sm.getClassContext();
 //  }
+  @SuppressWarnings("deprecation")
   @Override
   public boolean getInCheck() {
     log.info("getInCheck");

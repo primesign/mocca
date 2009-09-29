@@ -56,11 +56,11 @@ public class ErrorResultImpl extends SLResultImpl implements ErrorResult {
   }
 
   @Override
-  public void writeTo(Result result, Templates templates) {
+  public void writeTo(Result result, Templates templates, boolean fragment) {
     if (locale == null) {
-      writeErrorTo(slException, result, templates);
+      writeErrorTo(slException, result, templates, fragment);
     } else {
-      writeErrorTo(slException, result, templates, locale);
+      writeErrorTo(slException, result, templates, locale, fragment);
     }
   }
   

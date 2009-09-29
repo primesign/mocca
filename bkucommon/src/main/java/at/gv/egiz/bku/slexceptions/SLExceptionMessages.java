@@ -47,4 +47,10 @@ public final class SLExceptionMessages {
   
   public static final String EC4011_NOTIMPLEMENTED = "ec4011.notimplemented";
   
+  //
+  // Legacy error codes
+  //
+  
+  public static final String LEC2901_NOTIMPLEMENTED = "lec2901.notimplemented";
+  
 }
