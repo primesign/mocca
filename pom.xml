@@ -27,7 +27,7 @@
     <module>BKUHelp</module>
     <module>BKUGuiExt</module>
     <module>smccSTALExt</module>
-<!--    <module>BKUWebStartPackage</module>-->
+    <module>BKUWebStartPackage</module>
   </modules>
   <developers>
     <developer>
