@@ -122,7 +122,55 @@
         </plugins>
       </build>
     </profile>
-    
+
+    <profile>
+      <id>pkcs11-sign</id>
+      <build>
+        <plugins>
+        <plugin>
+          <artifactId>webstart-maven-plugin</artifactId>
+          <groupId>org.codehaus.mojo.webstart</groupId>
+          <!-- use pkcs11-patched webstart-maven-plugin-->
+          <version>1.0-beta-1-mocca</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>jnlp-inline</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <excludeTransitive>false</excludeTransitive>
+            <jnlp>
+              <inputTemplateResourcePath>${project.basedir}/src/main/jnlp</inputTemplateResourcePath>
+              <inputTemplate>template-unstable.xml</inputTemplate>
+              <outputFile>mocca.jnlp</outputFile>
+              <mainClass>at.gv.egiz.bku.webstart.Launcher</mainClass>
+            </jnlp>
+            <sign>
+              <keystore>NONE</keystore>
+              <storetype>PKCS11</storetype>
+              <providerClass>iaik.pkcs.pkcs11.provider.IAIKPkcs11</providerClass>
+              <alias>a-sit</alias>
+              <storepass>${pkcs11-pass}</storepass>
+              <verify>true</verify>
+              <keystoreConfig>
+                <delete>false</delete>
+                <gen>false</gen>
+              </keystoreConfig>
+            </sign>
+            <pack200>false</pack200>
+            <gzip>false</gzip>
+            <outputJarVersions>false</outputJarVersions>
+            <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
+            <verbose>true</verbose>
+          </configuration>
+        </plugin>
+        </plugins>
+      </build>
+    </profile>
+
     <profile>
       <id>non-webstart</id>
       <build>

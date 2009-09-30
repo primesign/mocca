@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="$jnlpspec" codebase="file:${project.build.directory}/jnlp" href="$outputFile">
+<!--
+ |   To strip versions from jar filenames do
+ |   for JAR in *jar; do mv JAR {JAR/-[0-9]*/.jar}; done
+ |-->
+<jnlp spec="$jnlpspec" codebase="http://localhost/webstart/" context="http://localhost/" href="$outputFile">
 
   <information>
-    <title>MOCCA Developement</title>
+    <title>${project.Description}</title>
     <vendor>E-Government Innovationszentrum (EGIZ)</vendor>
     <homepage href="${project.Url}"/>
-    <description>${project.Description} (BKU) MOCCA Web Start - Developement Version</description>
+    <description>${project.Description} (BKU) MOCCA Web Start</description>
     <description kind="short">${project.Description}</description>
     <icon kind="shortcut" href="img/chip16.png" width="16" height="16"/>
     <icon kind="shortcut" href="img/chip24.png" width="24" height="24"/>
@@ -31,8 +35,13 @@
 
   <update check="timeout" policy="prompt-update"/>
 
+  <resources os="Mac OS X">
+    <java version="1.6+" java-vm-args="-d32"/>
+     $dependencies
+  </resources>
+
   <resources>
-    <java version="1.6+" java-vm-args="-Djava.security.debug=access,failure"/>
+    <java version="1.6+"/>
      $dependencies
   </resources>
 
