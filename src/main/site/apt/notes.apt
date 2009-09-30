@@ -1,0 +1,4 @@
+
+  make include-webstart profile active via settings.xml,
+  otherwise reactor fails to calculate the correct build
+  order (BKUWebStart prior to BKUOnline)
