@@ -239,6 +239,7 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
     }
 
     setVisible(true);
+    toFront();
   }
 
   private JPanel createButtonPanel() { //ActionListener saveListener, String saveCommand) {

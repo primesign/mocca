@@ -33,6 +33,7 @@ import at.gv.egiz.bku.local.gui.LocalHelpListener;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
 import java.awt.Image;
+import java.awt.Window;
 import java.awt.event.WindowAdapter;
 import java.net.URL;
 import java.util.ArrayList;
@@ -85,6 +86,11 @@ public class LocalSTALFactory implements STALFactory {
     // use undecorated JFrame instead of JWindow,
     // which creates an invisible owning frame and therefore cannot getFocusInWindow()
     JFrame dialog = new JFrame("Bürgerkarte");
+    if (log.isTraceEnabled()) {
+      log.debug("alwaysOnTop supported: " + dialog.isAlwaysOnTopSupported());
+    }
+    // [#439] make mocca dialog alwaysOnTop
+    dialog.setAlwaysOnTop(true);
     dialog.setIconImages(icons);
     dialog.setUndecorated(true);
 //    dialog.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
