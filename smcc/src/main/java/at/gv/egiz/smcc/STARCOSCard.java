@@ -596,7 +596,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     
     NewReferenceDataAPDUSpec apduSpec = new NewReferenceDataAPDUSpec(
         new byte[] {
-            (byte) 0x00, (byte) 0x20, (byte) 0x01, pinSpec.getKID(), (byte) 0x08,
+            (byte) 0x00, (byte) 0x24, (byte) 0x01, pinSpec.getKID(), (byte) 0x08,
             (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
             (byte) 0xff, (byte) 0xff, (byte) 0xff }, 
         1, VerifyAPDUSpec.PIN_FORMAT_BCD, 7, 4, 4);
