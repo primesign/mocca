@@ -3,13 +3,13 @@
     <parent>
         <artifactId>bku</artifactId>
         <groupId>at.gv.egiz</groupId>
-        <version>1.2.7-SNAPSHOT</version>
+        <version>1.2.7</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>at.gv.egiz</groupId>
     <artifactId>STAL</artifactId>
     <name>STAL</name>
-    <version>1.2.7-SNAPSHOT</version>
+    <version>1.2.7</version>
     <dependencies>
 		<dependency>
 			<groupId>commons-logging</groupId>
