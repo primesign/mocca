@@ -67,7 +67,7 @@ public class ReaderFactory {
         reader = new GemplusGemPCPinpad(icc, ct);
       } else if (name.startsWith("omnikey cardman 3621")) {
         reader = new OMNIKEYCardMan3621(icc, ct);
-      } else if (name.startsWith("scm microsystems inc. sprx32 usb smart card reader")) {
+      } else if (name.startsWith("scm spr 532") || name.startsWith("scm microsystems inc. sprx32 usb smart card reader")) {
         reader = new SCMMicrosystemsSPRx32(icc, ct);
       } else if (name.startsWith("cherry smartboard xx44")) {
         reader = new CherrySmartBoardXX44(icc, ct);

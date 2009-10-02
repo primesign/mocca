@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -1243,6 +1244,14 @@ public class BKUGUIImpl implements BKUGUIFacade {
       if (secureViewer == null) {
         secureViewer = new SecureViewerDialog(null, messages,
                 helpListener.getActionListener());
+
+        // workaround for [#439]
+        // avoid AlwaysOnTop at least in applet, otherwise make secureViewer AlwaysOnTop since MOCCA Dialog (JFrame created in LocalSTALFactory) is always on top.
+        Window window = SwingUtilities.getWindowAncestor(contentPane);
+        if (window != null && window.isAlwaysOnTop()) {
+          log.debug("make secureViewer alwaysOnTop");
+          secureViewer.setAlwaysOnTop(true);
+        }
       }
       secureViewer.setContent(dataToBeSigned);
       log.trace("show secure viewer returned");

@@ -86,6 +86,7 @@ public class HelpViewer extends JDialog
     }
     dialog = new HelpViewer(frame, messages, ctx, helpURL); //, helpTopic);
     dialog.setVisible(true);
+    dialog.toFront();
   }
 
   private HelpViewer(Frame frame,
