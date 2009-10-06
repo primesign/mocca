@@ -491,7 +491,9 @@ var deployJava = {
 
         // [#425] Disable WebStart Launch Button for MacOS
         if (navigator.appVersion.toLowerCase().indexOf("mac")!=-1 &&
-            navigator.appVersion.toLowerCase().indexOf("os x 10_6")==-1) {
+            navigator.userAgent.toLowerCase().indexOf("os x 10_6")==-1 &&
+            navigator.userAgent.toLowerCase().indexOf("os x 10.6")==-1 )
+        {
           document.write('<' + 'a disabled="disabled"' +
                        ' onMouseOver="window.status=\'\'; ' +
                        'return true;"><' + 'img class="disabled"' +
