@@ -312,12 +312,18 @@ public class XWWWFormUrlInputIterator implements Iterator<FormParameter> {
           } else if (buf[pos] == '+') {
             b[off] = ' ';
           } else if (buf[pos] == '%') {
-            if (++pos == count && (count = in.read(buf)) == -1) {
-              throw new IOException("Invalid URL encoding.");
+            if (++pos == count) {
+              if ((count = in.read(buf)) == -1) {
+                throw new IOException("Invalid URL encoding.");
+              }
+              pos = 0;
             }
             int c1 = Character.digit(buf[pos], 16);
-            if (++pos == count && (count = in.read(buf)) == -1) {
-              throw new IOException("Invalid URL encoding.");
+            if (++pos == count) {
+              if ((count = in.read(buf)) == -1) {
+                throw new IOException("Invalid URL encoding.");
+              }
+              pos = 0;
             }
             int c2 = Character.digit(buf[pos], 16);
             b[off] = (byte) ((c1 << 4) | c2);
