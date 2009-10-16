@@ -88,6 +88,7 @@
                       width : <%=width%>,
                       height :<%=height%>
                     };
+                    
                     var parameters = {
                       GuiStyle : '<%=guiStyle%>',
                       Locale : '<%=locale%>',
