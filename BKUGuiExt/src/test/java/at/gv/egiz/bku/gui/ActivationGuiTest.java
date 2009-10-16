@@ -42,7 +42,7 @@ public class ActivationGuiTest {
         Container contentPane = testFrame.getContentPane();
         contentPane.setPreferredSize(new Dimension(152, 145));
 //        contentPane.setPreferredSize(new Dimension(300, 190));
-        ActivationGUIFacade gui = new ActivationGUI(contentPane, null, BKUGUIFacade.Style.tiny, null, null);
+        ActivationGUIFacade gui = new ActivationGUI(contentPane, null, BKUGUIFacade.Style.tiny, null, null, null);
         BKUGUIWorker worker = new BKUGUIWorker();
         worker.init(gui);
         testFrame.pack();

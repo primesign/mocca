@@ -58,8 +58,9 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
           Locale locale,
           Style guiStyle,
           URL backgroundImgURL,
-          AbstractHelpListener helpListener) {
-    super(contentPane, locale, guiStyle, backgroundImgURL, helpListener);
+          AbstractHelpListener helpListener,
+          SwitchFocusListener switchFocusListener) {
+    super(contentPane, locale, guiStyle, backgroundImgURL, helpListener, switchFocusListener);
   }
 
   @Override
@@ -98,7 +99,9 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
 
-                helpListener.setHelpTopic(HELP_PINMGMT);
+                helpMouseListener.setHelpTopic(HELP_PINMGMT);
+                helpKeyListener.setHelpTopic(HELP_PINMGMT);
+
 
                 JLabel mgmtLabel = new JLabel();
                 mgmtLabel.setFont(mgmtLabel.getFont().deriveFont(mgmtLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
@@ -187,8 +190,10 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 if (!renderHeaderPanel) {
                   messageHorizontal
                           .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                          .addComponent(switchFocusDummyLabel)
                           .addComponent(helpLabel);
                   messageVertical
+                  		  .addComponent(switchFocusDummyLabel)
                           .addComponent(helpLabel);
                 }
 
@@ -225,6 +230,7 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 buttonPanelLayout.setHorizontalGroup(buttonHorizontal);
                 buttonPanelLayout.setVerticalGroup(buttonVertical);
 
+                helpLabel.requestFocus();
                 contentPanel.validate();
         }
       });
@@ -336,7 +342,8 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
 
-                helpListener.setHelpTopic(HELP_TOPIC);
+                helpMouseListener.setHelpTopic(HELP_TOPIC);
+                helpKeyListener.setHelpTopic(HELP_TOPIC);
 
                 JLabel mgmtLabel = new JLabel();
                 if (retries < 0) {
@@ -344,7 +351,8 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 } else {
                   mgmtLabel.setFont(mgmtLabel.getFont().deriveFont(mgmtLabel.getFont().getStyle() | Font.BOLD));
                   mgmtLabel.setForeground(ERROR_COLOR);
-                  helpListener.setHelpTopic(HELP_RETRY);
+                  helpMouseListener.setHelpTopic(HELP_RETRY);
+                  helpKeyListener.setHelpTopic(HELP_RETRY);
                 }
 
                 if (renderHeaderPanel) {
@@ -370,8 +378,10 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 if (!renderHeaderPanel) {
                   infoHorizontal
                           .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
+                          .addComponent(switchFocusDummyLabel)
                           .addComponent(helpLabel);
                   infoVertical
+                  		  .addComponent(switchFocusDummyLabel)
                           .addComponent(helpLabel);
                 }
 
@@ -628,6 +638,7 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                     .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                     .addGroup(pinVertical));
 
+                helpLabel.requestFocus();
                 contentPanel.validate();
 
             }

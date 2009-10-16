@@ -38,8 +38,9 @@ public class CardMgmtGUI extends BKUGUIImpl {
           Locale locale,
           Style guiStyle,
           URL backgroundImgURL,
-          AbstractHelpListener helpListener) {
-    super(contentPane, locale, guiStyle, backgroundImgURL, helpListener);
+          AbstractHelpListener helpListener,
+          SwitchFocusListener switchFocusListener) {
+    super(contentPane, locale, guiStyle, backgroundImgURL, helpListener, switchFocusListener);
 
   }
 

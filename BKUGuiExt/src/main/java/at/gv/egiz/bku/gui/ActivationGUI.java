@@ -50,8 +50,9 @@ public class ActivationGUI extends CardMgmtGUI implements ActivationGUIFacade {
           Locale locale,
           Style guiStyle,
           URL backgroundImgURL,
-          AbstractHelpListener helpListener) {
-    super(contentPane, locale, guiStyle, backgroundImgURL, helpListener);
+          AbstractHelpListener helpListener,
+          SwitchFocusListener switchFocusListener) {
+    super(contentPane, locale, guiStyle, backgroundImgURL, helpListener, switchFocusListener);
 
     progressBar = new JProgressBar();
   }
@@ -84,7 +85,7 @@ public class ActivationGUI extends CardMgmtGUI implements ActivationGUIFacade {
           infoLabel.setText(cardmgmtMessages.getString(TITLE_ACTIVATION));
         }
 
-        helpListener.setHelpTopic(HELP_ACTIVATION);
+        helpMouseListener.setHelpTopic(HELP_ACTIVATION);
 
         progressBar.setIndeterminate(false);
         progressBar.setStringPainted(true);
@@ -187,7 +188,7 @@ public class ActivationGUI extends CardMgmtGUI implements ActivationGUIFacade {
           infoLabel.setText(cardmgmtMessages.getString(TITLE_ACTIVATION));
         }
 
-        helpListener.setHelpTopic(HELP_ACTIVATION);
+        helpMouseListener.setHelpTopic(HELP_ACTIVATION);
 
         progressBar.setIndeterminate(true);
         progressBar.setStringPainted(true);
