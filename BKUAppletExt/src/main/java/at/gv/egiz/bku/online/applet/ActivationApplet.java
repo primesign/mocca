@@ -19,6 +19,7 @@ package at.gv.egiz.bku.online.applet;
 import at.gv.egiz.bku.gui.AbstractHelpListener;
 import at.gv.egiz.bku.gui.ActivationGUI;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.bku.gui.SwitchFocusListener;
 import at.gv.egiz.bku.gui.BKUGUIFacade.Style;
 import at.gv.egiz.bku.online.applet.BKUApplet;
 import at.gv.egiz.bku.smccstal.AbstractSMCCSTAL;
@@ -84,7 +85,8 @@ public class ActivationApplet extends BKUApplet {
           Locale locale,
           Style guiStyle,
           URL backgroundImgURL,
-          AbstractHelpListener helpListener) {
-    return new ActivationGUI(contentPane, locale, guiStyle, backgroundImgURL, helpListener);
+          AbstractHelpListener helpListener,
+          SwitchFocusListener switchFocusListener) {
+    return new ActivationGUI(contentPane, locale, guiStyle, backgroundImgURL, helpListener, switchFocusListener);
   }
 }
