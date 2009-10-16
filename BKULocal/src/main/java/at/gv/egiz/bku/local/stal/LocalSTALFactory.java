@@ -120,7 +120,8 @@ public class LocalSTALFactory implements STALFactory {
             dialog.getLocale(),
             BKUGUIFacade.Style.advanced,
             null,
-            helpListener);
+            helpListener, 
+            null);
     BKUGUIFacade proxy = (BKUGUIFacade) GUIProxy.newInstance(gui, dialog, new Class[] { PINManagementGUIFacade.class} );
     stal = new LocalBKUWorker(proxy, dialog);
     dialog.setPreferredSize(PREFERRED_SIZE);
