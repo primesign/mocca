@@ -1,20 +1,41 @@
 package at.gv.egiz.bku.binding;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.CharBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 
 import org.junit.Ignore;
 import org.junit.Test;
+
+import at.gv.egiz.bku.utils.URLEncodingWriter;
 import static org.junit.Assert.*;
 
 public class XWWWFormUrlInputIteratorTest {
 
+  @Test
+  public void testEmpty() throws IOException {
+    
+    ByteArrayInputStream emptyStream = new ByteArrayInputStream(new byte[] {});
+    
+    XWWWFormUrlInputIterator decoder = new XWWWFormUrlInputIterator(emptyStream);
+    
+    assertFalse(decoder.hasNext());
+    
+  }
+  
   @Test
   public void testOneParam() throws IOException {
     
@@ -148,5 +169,131 @@ public class XWWWFormUrlInputIteratorTest {
     
   }
   
+  @Test
+  public void testURLEnc1() throws IOException {
+    
+    InputStream urlEncStream = new BufferedInputStream(getClass()
+        .getResourceAsStream("XWWWFormUrlEncoded1.txt"));
+    
+    XWWWFormUrlInputIterator decoder = new XWWWFormUrlInputIterator(urlEncStream);
+    
+    assertTrue(decoder.hasNext());
+    FormParameter param = decoder.next();
+    assertNotNull(param);
+    assertEquals("XMLRequest", param.getFormParameterName());
+    InputStream vis = param.getFormParameterValue();
+    assertNotNull(vis);
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    byte[] buf = new byte[1024];
+    for (int l; (l = vis.read(buf)) != -1;) {
+      os.write(buf, 0, l);
+    }
+    assertEquals(-1, vis.read());
+    assertFalse(decoder.hasNext());
+    assertEquals(-1, urlEncStream.read());
+    
+  }
+
+  @Test
+  public void testURLEnc2() throws IOException {
+    
+    InputStream urlEncStream = new BufferedInputStream(getClass()
+        .getResourceAsStream("XWWWFormUrlEncoded2.txt"));
+    
+    XWWWFormUrlInputIterator decoder = new XWWWFormUrlInputIterator(urlEncStream);
+    
+    assertTrue(decoder.hasNext());
+    FormParameter param = decoder.next();
+    assertNotNull(param);
+    assertEquals("XMLRequest", param.getFormParameterName());
+    InputStream vis = param.getFormParameterValue();
+    assertNotNull(vis);
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    byte[] buf = new byte[1024];
+    for (int l; (l = vis.read(buf)) != -1;) {
+      os.write(buf, 0, l);
+    }
+    assertEquals(-1, vis.read());
+    vis.close();
+    
+    assertTrue(decoder.hasNext());
+    param = decoder.next();
+    assertNotNull(param);
+    assertEquals("EmptyParam", param.getFormParameterName());
+    vis = param.getFormParameterValue();
+    assertNotNull(vis);
+    assertEquals(-1, vis.read());
+    vis.close();
+
+    assertTrue(decoder.hasNext());
+    param = decoder.next();
+    assertNotNull(param);
+    assertEquals("TransferParam__", param.getFormParameterName());
+    vis = param.getFormParameterValue();
+    assertNotNull(vis);
+    for (int l = 0; (l = vis.read(buf)) != -1;) {
+      os.write(buf, 0, l);
+    }
+    assertEquals(-1, vis.read());
+    vis.close();
+    
+  }
+  
+  @Ignore
+  @Test
+  public void testURLEncLoremIpsum() throws IOException {
+    
+    InputStream urlEncStream = new BufferedInputStream(getClass()
+        .getResourceAsStream("UrlEncodedLoremIpsum.txt"));
+    
+    XWWWFormUrlInputIterator decoder = new XWWWFormUrlInputIterator(urlEncStream);
+    
+    assertTrue(decoder.hasNext());
+    FormParameter param = decoder.next();
+    assertNotNull(param);
+    assertEquals("LoremIpsum", param.getFormParameterName());
+    InputStream vis = param.getFormParameterValue();
+    assertNotNull(vis);
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    byte[] buf = new byte[1024];
+    for (int l; (l = vis.read(buf)) != -1;) {
+      os.write(buf, 0, l);
+    }
+    assertEquals(-1, vis.read());
+    vis.close();
+    
+    assertFalse(decoder.hasNext());
+    
+  }
+  
+  
+  public static void main(String[] args) throws IOException {
+    
+    URL resource = XWWWFormUrlInputIteratorTest.class
+        .getResource("LoremIpsum.txt");
+    
+    BufferedInputStream is = new BufferedInputStream(resource.openStream());
+    
+    InputStreamReader reader = new InputStreamReader(is, "UTF-8");
+    
+    StringBuilder sb = new StringBuilder();
+    char[] b = new char[1024];
+    for (int l; (l = reader.read(b)) != -1;) {
+      sb.append(b, 0, l);
+    }
+    String li = sb.toString();
+
+    FileOutputStream os = new FileOutputStream("UrlEncodedLoremIpsum.txt");
+    OutputStreamWriter writer = new OutputStreamWriter(new BufferedOutputStream(os), "ISO-8859-1");
+    URLEncodingWriter encoder = new URLEncodingWriter(writer);
+    
+    for (int i = 0; i < 100; i++) {
+      encoder.write(li);
+    }
+    
+    encoder.flush();
+    encoder.close();
+    
+  }
   
 }

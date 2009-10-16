@@ -83,23 +83,25 @@ public class XWWWFormUrlInputIterator implements Iterator<FormParameter> {
     if (done) {
       return false;
     }
-    if (currentParameter != null) {
-      // we have to disconnect the current parameter
-      // to look for further parameters
-      try {
+    try {
+      if (currentParameter != null) {
+        // we have to disconnect the current parameter
+        // to look for further parameters
         currentParameter.formParameterValue.disconnect();
-        // fill buffer if empty
-        if (pos >= count) {
-          if ((count = in.read(buf)) == -1) {
-            // done
-            done = true;
-            return false;
-          }
-          pos = 0;
-        }
-      } catch (IOException e) {
-        deferredIOException = e;
       }
+      // fill buffer if empty
+      if (pos >= count) {
+        if ((count = in.read(buf)) == -1) {
+          // done
+          done = true;
+          return false;
+        }
+        pos = 0;
+      }
+    } catch (IOException e) {
+      deferredIOException = e;
+      // return true to be able to report error
+      return true;
     }
     return true;
   }
@@ -108,7 +110,9 @@ public class XWWWFormUrlInputIterator implements Iterator<FormParameter> {
   public FormParameter next() {
     if (hasNext()) {
       // skip separator
-      pos++;
+      if (buf[pos] == PARAM_SEP) {
+        pos++;
+      }
       currentParameter = new XWWWFormUrlEncodedParameter();
       return currentParameter;
     } else {
