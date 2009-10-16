@@ -26,6 +26,10 @@ import java.awt.Font;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -45,10 +49,13 @@ import javax.swing.JTable;
 import javax.swing.LayoutStyle;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+
 
 /**
  *
@@ -62,7 +69,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
       LEFT, ABOVE
     }
 
-    protected HelpMouseListener helpListener;
+    protected HelpMouseListener helpMouseListener;
+    protected HelpKeyListener helpKeyListener;
+    protected SwitchFocusFocusListener switchFocusKeyListener;
     protected SecureViewerDialog secureViewer;
     
     protected Container contentPane;
@@ -77,6 +86,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
     /** right side fixed labels  */
     protected JLabel titleLabel;
     protected JLabel helpLabel;
+    protected JLabel switchFocusDummyLabel; 
     /** remember the pinfield to return to worker */
     protected JPasswordField pinField;
 
@@ -107,7 +117,8 @@ public class BKUGUIImpl implements BKUGUIFacade {
             Locale locale, 
             Style guiStyle, 
             URL background, 
-            ActionListener helpListener) {
+            ActionListener helpListener,
+            SwitchFocusListener switchFocusListener) {
       this.contentPane = contentPane;
 
       loadMessageBundle(locale);
@@ -122,7 +133,12 @@ public class BKUGUIImpl implements BKUGUIFacade {
         pinLabelPos = PinLabelPosition.ABOVE;
       }
 
+      // ensure that buttons can be fired with enter key too
+      UIManager.put("Button.defaultButtonFollowsFocus", Boolean.TRUE);
+      
       registerHelpListener(helpListener);
+      
+      registerSwitchFocusListener(switchFocusListener);
       
       createGUI(background);
     }
@@ -224,12 +240,35 @@ public class BKUGUIImpl implements BKUGUIFacade {
       mainPanel.setOpaque(false);
       buttonPanel = new JPanel(); 
       buttonPanel.setOpaque(false);
-
+      
       helpLabel = new JLabel();
       helpLabel.setIcon(new ImageIcon(getClass().getResource(HELP_IMG))); 
       helpLabel.getAccessibleContext().setAccessibleName(getMessage(ALT_HELP));
-      helpLabel.addMouseListener(helpListener);
+      helpLabel.setFocusable(true);
+      helpLabel.addMouseListener(helpMouseListener);
+      helpLabel.addKeyListener(helpKeyListener);
+      helpLabel.addFocusListener(new FocusAdapter() {
+    	 
+    	  @Override
+    	  public void focusGained(FocusEvent e) {
+    		     		 
+    		  helpLabel.setIcon(new ImageIcon(getClass().getResource(HELP_IMG_FOCUS)));
+    	  }
+    	  
+    	  @Override
+    	  public void focusLost(FocusEvent e) {
+    		 
+    		  helpLabel.setIcon(new ImageIcon(getClass().getResource(HELP_IMG)));
+    	  }
+    	  
+    	  
+      });
       helpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+      
+      switchFocusDummyLabel = new JLabel();
+      switchFocusDummyLabel.setText("");
+      switchFocusDummyLabel.setFocusable(true);
+      switchFocusDummyLabel.addFocusListener(switchFocusKeyListener);
     
       buttonSize = initButtonSize();
         
@@ -248,11 +287,15 @@ public class BKUGUIImpl implements BKUGUIFacade {
           headerPanelLayout.createSequentialGroup()
             .addComponent(titleLabel, 0, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
             .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-            .addComponent(helpLabel));
+            .addComponent(switchFocusDummyLabel)
+            .addComponent(helpLabel)
+            );
         headerPanelLayout.setVerticalGroup(
           headerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addComponent(titleLabel, 0, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-            .addComponent(helpLabel));
+            .addComponent(switchFocusDummyLabel)
+            .addComponent(helpLabel)
+            );
       }
 
       GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
@@ -566,7 +609,8 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   } else {
                     infoLabel.setText(MessageFormat.format(infoPattern, new Object[] {pinSpec.getLocalizedName()}));
                   }
-                  helpListener.setHelpTopic(HELP_CARDPIN);
+                  helpMouseListener.setHelpTopic(HELP_CARDPIN);
+                  helpKeyListener.setHelpTopic(HELP_CARDPIN);
                 } else {
                   String retryPattern;
                   if (numRetries < 2) {
@@ -577,7 +621,8 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() | java.awt.Font.BOLD));
                   infoLabel.setText(MessageFormat.format(retryPattern, new Object[]{String.valueOf(numRetries)}));
                   infoLabel.setForeground(ERROR_COLOR);
-                  helpListener.setHelpTopic(HELP_RETRY);
+                  helpMouseListener.setHelpTopic(HELP_RETRY);
+                  helpKeyListener.setHelpTopic(HELP_RETRY);
                 }
                 
                 JLabel pinsizeLabel = new JLabel();
@@ -595,9 +640,13 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 if (!renderHeaderPanel) {
                   infoHorizontal
                           .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                          .addComponent(helpLabel);
+                          .addComponent(switchFocusDummyLabel)
+                          .addComponent(helpLabel)
+                          ;
                   infoVertical
-                          .addComponent(helpLabel);
+                          .addComponent(switchFocusDummyLabel)
+                          .addComponent(helpLabel)
+                          ;
                 } 
 
                 // align pinfield and pinsize to the right
@@ -668,7 +717,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 buttonPanelLayout.setHorizontalGroup(buttonHorizontal);
                 buttonPanelLayout.setVerticalGroup(buttonVertical);
 
-                pinField.requestFocusInWindow();
+//                pinField.requestFocusInWindow();
+//                helpLabel.requestFocus();
+                pinField.requestFocus();
                 contentPanel.validate();
 
             }
@@ -715,7 +766,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   }
                 }
 
-                JLabel infoLabel = new JLabel();
+                final JLabel infoLabel = new JLabel();
                 if (numRetries < 0) {
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                   if (shortText) {
@@ -723,6 +774,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   } else {
                     infoLabel.setText(getMessage(MESSAGE_HASHDATALINK));
                   }
+                  infoLabel.setFocusable(true);
                   infoLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                   infoLabel.setForeground(HYPERLINK_COLOR);
                   infoLabel.addMouseListener(new MouseAdapter() {
@@ -733,7 +785,47 @@ public class BKUGUIImpl implements BKUGUIFacade {
                           hashdataListener.actionPerformed(e);
                       }
                   });
-                  helpListener.setHelpTopic(HELP_SIGNPIN);
+                  
+                  infoLabel.addKeyListener(new KeyAdapter() {
+                	  
+                 	 @Override
+                 	 public void keyPressed(KeyEvent e) {
+                 		 
+                 		 if(e.getKeyCode() == KeyEvent.VK_ENTER) {                			 
+                 			 ActionEvent e1 = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, hashdataCommand);
+                              hashdataListener.actionPerformed(e1);
+                 		 }
+                 	 }
+                 	  
+                   });  
+                  
+                  infoLabel.addFocusListener(new FocusAdapter() {
+                	  
+                	  @Override
+                	  public void focusGained(FocusEvent e) {
+                		  
+                          if (shortText) {
+                              infoLabel.setText(getMessage(MESSAGE_HASHDATALINK_TINY_FOCUS));
+                            } else {
+                              infoLabel.setText(getMessage(MESSAGE_HASHDATALINK_FOCUS));
+                            }
+                	  }
+                	  
+                	  @Override
+                	  public void focusLost(FocusEvent e) {
+                		  
+                          if (shortText) {
+                              infoLabel.setText(getMessage(MESSAGE_HASHDATALINK_TINY));
+                            } else {
+                              infoLabel.setText(getMessage(MESSAGE_HASHDATALINK));
+                            }
+                		  
+                	  }                	  
+                	  
+                  });                  
+                  
+                  helpMouseListener.setHelpTopic(HELP_SIGNPIN);
+                  helpKeyListener.setHelpTopic(HELP_SIGNPIN);
                 } else {
                   String retryPattern;
                   if (numRetries < 2) {
@@ -741,10 +833,12 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   } else {
                     retryPattern = getMessage(MESSAGE_RETRIES);
                   }
+                  infoLabel.setFocusable(true);
                   infoLabel.setText(MessageFormat.format(retryPattern, new Object[]{String.valueOf(numRetries)}));
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() | java.awt.Font.BOLD));
                   infoLabel.setForeground(ERROR_COLOR);
-                  helpListener.setHelpTopic(HELP_RETRY);
+                  helpMouseListener.setHelpTopic(HELP_RETRY);
+                  helpKeyListener.setHelpTopic(HELP_RETRY);
                 }
 
                 String msgPattern = getMessage(MESSAGE_ENTERPIN_PINPAD);
@@ -766,9 +860,13 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 if (!renderHeaderPanel) {
                   infoHorizontal
                           .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                          .addComponent(helpLabel);
+                          .addComponent(switchFocusDummyLabel)
+                          .addComponent(helpLabel)
+                          ;
                   infoVertical
-                          .addComponent(helpLabel);
+                          .addComponent(switchFocusDummyLabel)
+                          .addComponent(helpLabel)
+                          ;
                 }
 
                 mainPanelLayout.setHorizontalGroup(
@@ -837,7 +935,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   }
                 }
 
-                JLabel infoLabel = new JLabel();
+                final JLabel infoLabel = new JLabel();
                 if (numRetries < 0) {
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
                   if (shortText) {
@@ -845,6 +943,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   } else {
                     infoLabel.setText(getMessage(MESSAGE_HASHDATALINK));
                   }
+                  infoLabel.setFocusable(true);
                   infoLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                   infoLabel.setForeground(HYPERLINK_COLOR);
                   infoLabel.addMouseListener(new MouseAdapter() {
@@ -855,7 +954,49 @@ public class BKUGUIImpl implements BKUGUIFacade {
                           hashdataListener.actionPerformed(e);
                       }
                   });
-                  helpListener.setHelpTopic(HELP_SIGNPIN);
+                  
+                  infoLabel.addKeyListener(new KeyAdapter() {
+                	  
+                	 @Override
+                	 public void keyPressed(KeyEvent e) {
+                		 
+                		 if(e.getKeyCode() == KeyEvent.VK_ENTER) {                			 
+                			 ActionEvent e1 = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, hashdataCommand);
+                             hashdataListener.actionPerformed(e1);
+                		 }
+                	 }
+                	  
+                  });
+                  
+                  infoLabel.addFocusListener(new FocusAdapter() {
+                	  
+                	  @Override
+                	  public void focusGained(FocusEvent e) {
+                		  
+                		  
+                          if (shortText) {
+                              infoLabel.setText(getMessage(MESSAGE_HASHDATALINK_TINY_FOCUS));
+                            } else {
+                              infoLabel.setText(getMessage(MESSAGE_HASHDATALINK_FOCUS));
+                            }
+                	  }
+                	  
+                	  @Override
+                	  public void focusLost(FocusEvent e) {
+                		  
+                		  
+                          if (shortText) {
+                              infoLabel.setText(getMessage(MESSAGE_HASHDATALINK_TINY));
+                            } else {
+                              infoLabel.setText(getMessage(MESSAGE_HASHDATALINK));
+                            }
+                		  
+                	  }                	  
+                	  
+                  });
+                  
+                  helpMouseListener.setHelpTopic(HELP_SIGNPIN);
+                  helpKeyListener.setHelpTopic(HELP_SIGNPIN);
                 } else {
                   String retryPattern;
                   if (numRetries < 2) {
@@ -863,10 +1004,12 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   } else {
                     retryPattern = getMessage(MESSAGE_RETRIES);
                   }
+                  infoLabel.setFocusable(true);
                   infoLabel.setText(MessageFormat.format(retryPattern, new Object[]{String.valueOf(numRetries)}));
                   infoLabel.setFont(infoLabel.getFont().deriveFont(infoLabel.getFont().getStyle() | java.awt.Font.BOLD));
                   infoLabel.setForeground(ERROR_COLOR);
-                  helpListener.setHelpTopic(HELP_RETRY);
+                  helpMouseListener.setHelpTopic(HELP_RETRY);
+                  helpKeyListener.setHelpTopic(HELP_RETRY);
                 }
 
                 JButton signButton = new JButton();
@@ -895,6 +1038,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                     }
                 });
 
+                
                 JLabel pinsizeLabel = new JLabel();
                 pinsizeLabel.setFont(pinsizeLabel.getFont().deriveFont(pinsizeLabel.getFont().getStyle() & ~java.awt.Font.BOLD, pinsizeLabel.getFont().getSize()-2));
                 pinsizeLabel.setText(MessageFormat.format(getMessage(LABEL_PINSIZE), pinSpec.getLocalizedLength()));
@@ -910,9 +1054,13 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 if (!renderHeaderPanel) {
                   infoHorizontal
                           .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                          .addComponent(helpLabel);
+                          .addComponent(switchFocusDummyLabel)
+                          .addComponent(helpLabel)
+                          ;
                   infoVertical
-                          .addComponent(helpLabel);
+                          .addComponent(switchFocusDummyLabel)
+                          .addComponent(helpLabel)
+                          ;
                 }
 
                 // align pinfield and pinsize to the right
@@ -973,21 +1121,27 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   buttonHorizontal
                           .addComponent(signButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
                           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                          .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE);
+                          .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                          ;
                   buttonVertical = buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                           .addComponent(signButton)
-                          .addComponent(cancelButton);
+                          .addComponent(cancelButton)
+                          ;
                 } else {
                   buttonHorizontal
-                          .addComponent(signButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE);
+                          .addComponent(signButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+                          ;
                   buttonVertical = buttonPanelLayout.createSequentialGroup()
-                          .addComponent(signButton);
+                          .addComponent(signButton)
+                          ;
                 }
 
                 buttonPanelLayout.setHorizontalGroup(buttonHorizontal);
                 buttonPanelLayout.setVerticalGroup(buttonVertical);
 
-                pinField.requestFocusInWindow();
+//                pinField.requestFocusInWindow();
+//                helpLabel.requestFocus();
+                pinField.requestFocus();
                 contentPanel.validate();
 
             }
@@ -1065,7 +1219,8 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   titleLabel.setText(getMessage(titleKey));
                 }
 
-                helpListener.setHelpTopic(msgKey);
+                helpMouseListener.setHelpTopic(msgKey);
+                helpKeyListener.setHelpTopic(msgKey);
 
                 String msgPattern = getMessage(msgKey);
                 String msg = MessageFormat.format(msgPattern, msgParams);
@@ -1080,6 +1235,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 GroupLayout.ParallelGroup mainHorizontal = mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING);
                 GroupLayout.SequentialGroup mainVertical = mainPanelLayout.createSequentialGroup();
 
+                log.debug("focus to contentPanel");
+                contentPanel.requestFocus();
+                
                 if (!renderHeaderPanel) {
                   JLabel titleLabel = new JLabel();
                   titleLabel.setFont(titleLabel.getFont().deriveFont(titleLabel.getFont().getStyle() | Font.BOLD));
@@ -1092,11 +1250,18 @@ public class BKUGUIImpl implements BKUGUIFacade {
                           .addGroup(mainPanelLayout.createSequentialGroup()
                             .addComponent(titleLabel)
                             .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                            .addComponent(helpLabel));
+                            .addComponent(switchFocusDummyLabel)
+                            .addComponent(helpLabel)
+                            );
                   mainVertical
                           .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                             .addComponent(titleLabel)
-                            .addComponent(helpLabel));
+                            .addComponent(switchFocusDummyLabel)
+                            .addComponent(helpLabel)
+                            );
+                  
+                  log.debug("focus to helpLabel");
+                  helpLabel.requestFocus();
                 }
 
                 mainPanelLayout.setHorizontalGroup(mainHorizontal
@@ -1105,6 +1270,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                         .addComponent(msgLabel));
 
                 if (okListener != null) {
+                	
                   JButton okButton = new JButton();
                   okButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle() & ~java.awt.Font.BOLD));
                   okButton.setText(getMessage((buttonKey != null) ? buttonKey : BUTTON_OK));
@@ -1120,6 +1286,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   buttonPanelLayout.setVerticalGroup(
                     buttonPanelLayout.createSequentialGroup()
                       .addComponent(okButton));
+                  
+                  log.debug("focus to ok-button");
+                  okButton.requestFocus();
                 }
 
                 contentPanel.validate();
@@ -1243,7 +1412,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
       log.debug("show secure viewer [" + Thread.currentThread().getName() + "]");
       if (secureViewer == null) {
         secureViewer = new SecureViewerDialog(null, messages,
-                helpListener.getActionListener());
+                helpMouseListener.getActionListener());
 
         // workaround for [#439]
         // avoid AlwaysOnTop at least in applet, otherwise make secureViewer AlwaysOnTop since MOCCA Dialog (JFrame created in LocalSTALFactory) is always on top.
@@ -1276,7 +1445,8 @@ public class BKUGUIImpl implements BKUGUIFacade {
             titleLabel.setText(getMessage(TITLE_HASHDATA));
           }
           
-          helpListener.setHelpTopic(HELP_HASHDATALIST);
+          helpMouseListener.setHelpTopic(HELP_HASHDATALIST);
+          helpKeyListener.setHelpTopic(HELP_HASHDATALIST);
           
           JLabel refIdLabel = new JLabel();
           refIdLabel.setFont(refIdLabel.getFont().deriveFont(refIdLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
@@ -1335,10 +1505,14 @@ public class BKUGUIImpl implements BKUGUIFacade {
           
           if (!renderHeaderPanel) {
             messageHorizontal
-                    .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)
-                    .addComponent(helpLabel);
-            messageVertical
-                    .addComponent(helpLabel);
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0, Short.MAX_VALUE)                    
+                    .addComponent(switchFocusDummyLabel)
+                    .addComponent(helpLabel)
+                    ;
+            messageVertical                    
+                    .addComponent(switchFocusDummyLabel)
+                    .addComponent(helpLabel)
+                    ;
           }
 
           mainPanelLayout.setHorizontalGroup(
@@ -1469,19 +1643,42 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
     private void registerHelpListener(ActionListener helpListener) {
       if (helpListener != null) {
-        this.helpListener = new HelpMouseListener(helpListener);
+        this.helpMouseListener = new HelpMouseListener(helpListener);
+        this.helpKeyListener = new HelpKeyListener(helpListener);
       } else {
         log.error("no help listener provided, will not be able to display help");
-        this.helpListener = new HelpMouseListener(new ActionListener() {
+        this.helpMouseListener = new HelpMouseListener(new ActionListener() {
 
           @Override
           public void actionPerformed(ActionEvent e) {
             log.error("no help listener registered (requested help topic: " + e.getActionCommand() + ")");
           }
         });
+        this.helpKeyListener = new HelpKeyListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              log.error("no help listener registered (requested help topic: " + e.getActionCommand() + ")");
+            }
+          });
       }
     }
 
+    private void registerSwitchFocusListener(ActionListener switchFocusListener) {
+        if (switchFocusListener != null) {
+          this.switchFocusKeyListener = new SwitchFocusFocusListener(switchFocusListener);
+          
+        } else {
+   
+          this.switchFocusKeyListener = new SwitchFocusFocusListener(new ActionListener() {
+
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                log.warn("no switch focus listener registered");
+              }
+            });          
+        }
+      }
 
     ////////////////////////////////////////////////////////////////////////////
     // INITIALIZERS (MAY BE OVERRIDDEN BY SUBCLASSES)
@@ -1539,4 +1736,13 @@ public class BKUGUIImpl implements BKUGUIFacade {
       }
       return bs;
     }
+
+	@Override
+	public void getFocusFromBrowser() {
+		
+		// This method puts the focus to the helpLabel as this 
+		// element is supposed to appear in each dialogue. 			
+		helpLabel.requestFocus();
+		
+	}
 }

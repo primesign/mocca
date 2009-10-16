@@ -46,6 +46,7 @@ public interface BKUGUIFacade {
   public static final String DEFAULT_BACKGROUND = "/at/gv/egiz/bku/gui/chip32.png";
   public static final String DEFAULT_ICON = "/at/gv/egiz/bku/gui/chiperling105.png";
   public static final String HELP_IMG = "/at/gv/egiz/bku/gui/help.png";
+  public static final String HELP_IMG_FOCUS = "/at/gv/egiz/bku/gui/help_focus.png";
   public static final String HASHDATA_FONT = "Monospaced";
   public static final Color ERROR_COLOR = Color.RED;
   public static final Color HYPERLINK_COLOR = Color.BLUE;
@@ -75,6 +76,8 @@ public interface BKUGUIFacade {
   public static final String MESSAGE_ENTERPIN_PINPAD = "enterpin.pinpad";
   public static final String MESSAGE_HASHDATALINK = "hashdatalink";
   public static final String MESSAGE_HASHDATALINK_TINY = "hashdatalink.tiny";
+  public static final String MESSAGE_HASHDATALINK_FOCUS = "hashdatalink.focus";
+  public static final String MESSAGE_HASHDATALINK_TINY_FOCUS = "hashdatalink.tiny.focus";
   public static final String MESSAGE_HASHDATALIST = "hashdatalist";
   public static final String MESSAGE_RETRIES = "retries";
   public static final String MESSAGE_LAST_RETRY = "retries.last";
@@ -153,4 +156,6 @@ public interface BKUGUIFacade {
 
   public void showMessageDialog(String titleKey,
           String msgKey);
+  
+  public void getFocusFromBrowser();
 }

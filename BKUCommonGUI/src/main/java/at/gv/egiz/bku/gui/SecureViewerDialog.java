@@ -24,6 +24,10 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedOutputStream;
@@ -149,7 +153,8 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
     infoVertical.addComponent(viewerLabel);
 
     if (helpListener != null) {
-      JLabel helpLabel = new JLabel();
+      final JLabel helpLabel = new JLabel();
+      helpLabel.setFocusable(true);
       helpLabel.setIcon(new ImageIcon(getClass().getResource(BKUGUIFacade.HELP_IMG)));
       helpLabel.getAccessibleContext().setAccessibleName(messages.getString(BKUGUIFacade.ALT_HELP));
       helpLabel.addMouseListener(new MouseAdapter() {
@@ -159,6 +164,34 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
           ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, BKUGUIFacade.HELP_HASHDATAVIEWER);
           helpListener.actionPerformed(e);
         }
+      });
+      helpLabel.addKeyListener(new KeyAdapter() {
+
+          @Override
+          public void keyPressed(KeyEvent arg0) {
+        	  
+        	  if(arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+	            ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, BKUGUIFacade.HELP_HASHDATAVIEWER);
+	            helpListener.actionPerformed(e);
+        	  }
+          }
+        });      
+      
+      helpLabel.addFocusListener(new FocusAdapter() {
+     	 
+    	  @Override
+    	  public void focusGained(FocusEvent e) {
+    		     		 
+    		  helpLabel.setIcon(new ImageIcon(getClass().getResource(BKUGUIFacade.HELP_IMG_FOCUS)));
+    	  }
+    	  
+    	  @Override
+    	  public void focusLost(FocusEvent e) {
+    		 
+    		  helpLabel.setIcon(new ImageIcon(getClass().getResource(BKUGUIFacade.HELP_IMG)));
+    	  }
+    	  
+    	  
       });
       helpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 

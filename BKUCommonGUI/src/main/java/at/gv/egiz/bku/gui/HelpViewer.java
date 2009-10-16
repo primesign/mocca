@@ -135,6 +135,10 @@ public class HelpViewer extends JDialog
     try {
       viewer.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
       viewer.setPage(helpURL);
+
+      HelpLinkFocusManager editorFocusManager = new HelpLinkFocusManager (viewer);
+      viewer.addKeyListener(editorFocusManager );
+      
       viewer.addHyperlinkListener(new HyperlinkListener() {
 
         @Override
