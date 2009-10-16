@@ -71,8 +71,12 @@
         }
 
     %>
-    <body id="appletpage" style="width:<%=width%>px">
+    <body id="appletpage" style="width:<%=width%>px" onFocus="focusToApplet()">
             <script>
+
+            	// avoid selection of applet before it is completely loaded
+				var allowSelectionByJS = false;
+            
                 if (!deployJava.versionCheck('1.6.0_04+')) {
                     document
                     .write('<p>Diese Anwendung benötigt Version 6 Update 4 oder höher der <a href="" onclick="deployJava.installLatestJRE();">Java&trade; Laufzeitumgebung</a>.</p>');
@@ -86,9 +90,10 @@
                       code : '<%=appletClass%>',
                       archive : '<%=appletArchive +".jar, commons-logging.jar, iaik_jce_me4se.jar"%>',
                       width : <%=width%>,
-                      height :<%=height%>
+                      height :<%=height%>,
+                      name : 'moccaapplet',
+                      id : 'moccaapplet'
                     };
-                    
                     var parameters = {
                       GuiStyle : '<%=guiStyle%>',
                       Locale : '<%=locale%>',
@@ -102,7 +107,37 @@
                     };
                     var version = '1.6.0_04';
                     deployJava.runApplet(attributes, parameters, version);
+
+                    
                 }
+
+
+                
             </script>
+			
     </body>
+    
+    <script>
+
+		function focusToApplet() {
+	
+			//alert('try to set focus to applet');
+			if (document != null && document.moccaapplet != null && allowSelectionByJS) {
+	
+				//alert('set focus to applet.');
+				document.moccaapplet.getFocusFromBrowser();						
+				return true;					
+			}
+			allowSelectionByJS = true;
+		}
+	
+		function focusToBrowser() {
+
+			// put focus to window
+			// focus can be assigned to any focusable field on the embedding website
+			self.focus();
+	
+		}		
+    
+    </script>
 </html>

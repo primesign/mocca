@@ -49,8 +49,12 @@
         }
         String backgroundImg = request.getParameter("appletBackground");
     %>
-    <body id="appletpage" style="width:<%=width%>">
+    <body id="appletpage" style="width:<%=width%>" onFocus="focusToApplet()">
             <script>
+            
+            	// avoid selection of applet before it is completely loaded
+				var allowSelectionByJS = false;            
+            
                 if (!deployJava.versionCheck('1.6.0_04+')) {
                     document
                     .write('<b>Diese Anwendung benötigt die Java Platform Version 1.6.0_04 oder höher.</b>' + '<input type="submit" value="Java Platform 1.6.0_02 installieren" onclick="deployJava.installLatestJRE();">');
@@ -60,7 +64,9 @@
                         code : 'at.gv.egiz.bku.online.applet.PINManagementApplet.class',
                         archive : 'BKUAppletExt.jar, commons-logging.jar, iaik_jce_me4se.jar',
                         width : <%=width%>,
-                        height :<%=height%>
+                        height :<%=height%>,
+                        name : 'moccaapplet',
+                        id : 'moccaapplet'
                     };
                     var parameters = {
                         GuiStyle : '<%=guiStyle%>',
@@ -76,4 +82,29 @@
                 }
             </script>
     </body>
+    
+    <script>
+
+		function focusToApplet() {
+	
+			//alert('try to set focus to applet');
+			if (document != null && document.moccaapplet != null && allowSelectionByJS) {
+	
+				//alert('set focus to applet.');
+				document.moccaapplet.getFocusFromBrowser();						
+				return true;					
+			}
+			allowSelectionByJS = true;
+		}
+	
+		function focusToBrowser() {
+
+			// put focus to window
+			// focus can be assigned to an arbitrary focusable field on the embedding website as well
+			self.focus();
+	
+		}		
+    
+    </script>
+    
 </html>
