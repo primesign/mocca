@@ -216,4 +216,9 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
       log.error(e);
     }
   }
+  
+  public void getFocusFromBrowser() {
+	  
+	  gui.getFocusFromBrowser();
+  }
 }
