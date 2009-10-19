@@ -73,16 +73,8 @@
           <verbose>true</verbose>
         </configuration>
       </plugin>
-    </plugins>
-  </build>
-
-  <profiles>
-    <profile>
-      <!-- development profile -->
-      <id>local-webstart</id>
-      <build>
-        <plugins>
-        <plugin>
+      
+      <plugin>
           <artifactId>webstart-maven-plugin</artifactId>
           <groupId>org.codehaus.mojo.webstart</groupId>
           <executions>
@@ -97,8 +89,8 @@
             <excludeTransitive>false</excludeTransitive>
             <jnlp>
               <inputTemplateResourcePath>${project.basedir}/src/main/jnlp</inputTemplateResourcePath>
-              <inputTemplate>template-local.xml</inputTemplate>
-              <outputFile>mocca-local.jnlp</outputFile>
+              <inputTemplate>template.xml</inputTemplate>
+              <outputFile>mocca.jnlp</outputFile>
               <mainClass>at.gv.egiz.bku.webstart.Launcher</mainClass>
             </jnlp>
             <sign>
@@ -117,6 +109,26 @@
             <outputJarVersions>false</outputJarVersions>
             <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
             <verbose>true</verbose>
+          </configuration>
+        </plugin>
+
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <!-- development profile -->
+      <id>local-webstart</id>
+      <build>
+        <plugins>
+        <plugin>
+          <artifactId>webstart-maven-plugin</artifactId>
+          <groupId>org.codehaus.mojo.webstart</groupId>
+          <configuration>
+            <jnlp>
+              <inputTemplate>template-local.xml</inputTemplate>
+              <outputFile>mocca-local.jnlp</outputFile>
+            </jnlp>
           </configuration>
         </plugin>
         </plugins>
