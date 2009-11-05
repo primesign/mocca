@@ -41,7 +41,7 @@ public class BKUGUITest {
         Container contentPane = testFrame.getContentPane();
 //        contentPane.setPreferredSize(new Dimension(170, 150));
         contentPane.setPreferredSize(new Dimension(290, 190));
-        BKUGUIFacade gui = new BKUGUIImpl(contentPane, null, BKUGUIFacade.Style.advanced, null, null, null);
+        BKUGUIFacade gui = new BKUGUIImpl(contentPane, null, BKUGUIFacade.Style.advanced, null, new DummyFontLoader(), null, null);
         BKUGUIWorker worker = new BKUGUIWorker();
         worker.init(gui);
         testFrame.pack();

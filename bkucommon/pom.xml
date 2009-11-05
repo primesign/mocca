@@ -49,13 +49,19 @@
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>utils</artifactId>
-			<version>1.2.8-SNAPSHOT</version>
+			<version>${version}</version>
 		</dependency>
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>STALExt</artifactId>
-			<version>1.2.8-SNAPSHOT</version>
+			<version>${version}</version>
 		</dependency>
+    <!-- bkucommon implements default FontProvider (ResourceFontLoader) -->
+    <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>BKUCommonGUI</artifactId>
+      <version>${version}</version>
+    </dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>

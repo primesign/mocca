@@ -17,6 +17,8 @@
 package at.gv.egiz.bku.viewer;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -108,14 +110,25 @@ public class ValidatorFactory {
     return null;
     
   }
-  
+
+  /**
+   *
+   * @throws InvocationTargetException if className's (nullary) constructor throws exception
+   */
   private Validator createValidatorInstance(String className)
       throws ClassNotFoundException, InstantiationException,
-      IllegalAccessException {
-    
+      IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+
     try {
-      Class<?> implClass = classLoader.loadClass(className);
-      return (Validator) implClass.newInstance();
+      Constructor<?> implConstructor = classLoader.loadClass(className).getConstructor((Class[])null);
+      return (Validator) implConstructor.newInstance((Object[])null);
+    } catch (InvocationTargetException ex) {
+      //ex from constructor
+      log.error("Failed to initialize validator class '" + className + "': " + ex.getCause().getMessage(), ex.getCause());
+      throw ex;
+    } catch (NoSuchMethodException ex) {
+      log.error("Validator class '" + className + "' has no nullary constructor", ex);
+      throw ex;
     } catch (ClassNotFoundException e) {
       log.error("Validator class '" + className + "' not found.", e);
       throw e;

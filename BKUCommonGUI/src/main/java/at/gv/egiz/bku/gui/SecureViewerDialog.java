@@ -16,6 +16,7 @@
  */
 package at.gv.egiz.bku.gui;
 
+import at.gv.egiz.bku.gui.viewer.FontProvider;
 import at.gv.egiz.stal.HashDataInput;
 import java.awt.Container;
 import java.awt.Cursor;
@@ -53,9 +54,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 import javax.swing.text.StyledEditorKit;
+import javax.swing.text.html.HTMLEditorKit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -65,16 +69,20 @@ import org.apache.commons.logging.LogFactory;
  */
 public class SecureViewerDialog extends JDialog implements ActionListener {
 
-  public static final String PLAINTEXT_FONT = "Monospaced";
+  /** don't import BKUFonts in order not to load BKUFonts.jar
+   * BKUApplet includes BKUFonts as runtime dependency only, the jar is copied to the applet dir in BKUOnline with dependency-plugin
+   * BKUViewer has compile dependency BKUFonts, transitive in BKUOnline and BKULocal
+   */
+  public static final String PLAINTEXT_FONT_RESOURCE = "DejaVuSansMono.ttf";
   public static final Dimension VIEWER_DIMENSION = new Dimension(600, 400);
   protected static final Log log = LogFactory.getLog(SecureViewerDialog.class);
-
 //  private static SecureViewerDialog dialog;
   protected ResourceBundle messages;
   protected JEditorPane viewer;
   protected JLabel viewerLabel;
   protected JScrollPane scrollPane;
   protected HashDataInput content; //remember for save dialog
+  protected FontProvider fontProvider;
 
   /**
    * Create and display a modal SecureViewer dialog.
@@ -97,10 +105,12 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
 //    dialog.setVisible(true);
 //  }
   public SecureViewerDialog(Frame owner, ResourceBundle messages,
-//          ActionListener saveListener, String saveCommand,
-          ActionListener helpListener) {
+          //          ActionListener saveListener, String saveCommand,
+          FontProvider fontProvider, ActionListener helpListener) {
     super(owner, messages.getString(BKUGUIFacade.WINDOWTITLE_VIEWER), true);
+    this.setIconImages(BKUIcons.icons);
     this.messages = messages;
+    this.fontProvider = fontProvider;
 
     initContentPane(VIEWER_DIMENSION,
             createViewerPanel(helpListener),
@@ -135,7 +145,8 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
   private JPanel createViewerPanel(final ActionListener helpListener) {
     viewer = new JEditorPane();
     viewer.setEditable(false);
-
+    viewer.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+    
     scrollPane = new JScrollPane();
 
     JPanel viewerPanel = new JPanel();
@@ -167,31 +178,29 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
       });
       helpLabel.addKeyListener(new KeyAdapter() {
 
-          @Override
-          public void keyPressed(KeyEvent arg0) {
-        	  
-        	  if(arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-	            ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, BKUGUIFacade.HELP_HASHDATAVIEWER);
-	            helpListener.actionPerformed(e);
-        	  }
+        @Override
+        public void keyPressed(KeyEvent arg0) {
+
+          if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+            ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, BKUGUIFacade.HELP_HASHDATAVIEWER);
+            helpListener.actionPerformed(e);
           }
-        });      
-      
+        }
+      });
+
       helpLabel.addFocusListener(new FocusAdapter() {
-     	 
-    	  @Override
-    	  public void focusGained(FocusEvent e) {
-    		     		 
-    		  helpLabel.setIcon(new ImageIcon(getClass().getResource(BKUGUIFacade.HELP_IMG_FOCUS)));
-    	  }
-    	  
-    	  @Override
-    	  public void focusLost(FocusEvent e) {
-    		 
-    		  helpLabel.setIcon(new ImageIcon(getClass().getResource(BKUGUIFacade.HELP_IMG)));
-    	  }
-    	  
-    	  
+
+        @Override
+        public void focusGained(FocusEvent e) {
+
+          helpLabel.setIcon(new ImageIcon(getClass().getResource(BKUGUIFacade.HELP_IMG_FOCUS)));
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+
+          helpLabel.setIcon(new ImageIcon(getClass().getResource(BKUGUIFacade.HELP_IMG)));
+        }
       });
       helpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
@@ -216,9 +225,10 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
 
    * @param hashDataInput
    */
-  public void setContent(HashDataInput hashDataInput) {
+  public void setContent(HashDataInput hashDataInput) { //throws FontProviderException {
 
     this.content = null;
+    viewer.setText(null);
 
     String mimeType = hashDataInput.getMimeType();
     if (mimeType == null) {
@@ -228,20 +238,21 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
     // loads editorkit for text/plain if unrecognized
     viewer.setContentType(mimeType);
 
-    if ("text/plain".equals(mimeType)) {
-      viewer.setEditorKit(new StyledEditorKit());
-      viewer.setFont(new Font(PLAINTEXT_FONT, viewer.getFont().getStyle(), viewer.getFont().getSize()));
-//    } else if ("text/html".equals(mimeType)) {
-//      viewer.setEditorKit(new RestrictedHTMLEditorKit());
-    } else if ("application/xhtml+xml".equals(mimeType)) {
-      viewer.setContentType("text/html");
-    }
-
-    EditorKit editorKit = viewer.getEditorKit();
-    Document document = editorKit.createDefaultDocument();
-//    document.putProperty("IgnoreCharsetDirective", new Boolean(true));
-
     try {
+      
+      if ("text/plain".equals(mimeType)) {
+        viewer.setEditorKit(new StyledEditorKit());
+        viewer.setFont(fontProvider.getFont().deriveFont(Font.PLAIN, viewer.getFont().getSize()));
+      } else if ("application/xhtml+xml".equals(mimeType)) {
+        viewer.setEditorKit(new HTMLEditorKit());
+        //reset font if fontprovider font was set before (TODO also html font from fontprovider)
+        viewer.setFont(new Font("Dialog", Font.PLAIN, viewer.getFont().getSize())); //UIManager.getFont("Label.font"));
+      }
+
+      EditorKit editorKit = viewer.getEditorKit();
+      Document document = editorKit.createDefaultDocument();
+  //    document.putProperty("IgnoreCharsetDirective", new Boolean(true));
+
       Charset cs = (hashDataInput.getEncoding() == null) ? Charset.forName("UTF-8") : Charset.forName(hashDataInput.getEncoding());
       log.debug("secure viewer encoding: " + cs.toString());
 
@@ -252,11 +263,14 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
 
       this.content = hashDataInput;
 
+//    } catch (Exception ex) // fontProvider
 //    } catch (IllegalCharsetNameException ex) {
 //    } catch (UnsupportedCharsetException ex) {
+//    } catch (FontProviderException ex) {
     } catch (Exception ex) {
       log.error(ex.getMessage(), ex);
       String p = messages.getString(BKUGUIFacade.ERR_VIEWER);
+      viewer.setContentType("text/plain");
       viewer.setText(MessageFormat.format(p, ex.getMessage()));
     }
     viewer.setCaretPosition(0);
@@ -280,7 +294,7 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
     closeButton.setText(messages.getString(BKUGUIFacade.BUTTON_CLOSE));
     closeButton.setActionCommand("close");
     closeButton.addActionListener(this);
-    
+
     JButton saveButton = new JButton();
     saveButton.setText(messages.getString(BKUGUIFacade.BUTTON_SAVE));
     saveButton.setActionCommand("save");

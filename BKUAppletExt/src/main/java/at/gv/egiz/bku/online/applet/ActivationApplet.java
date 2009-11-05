@@ -21,6 +21,7 @@ import at.gv.egiz.bku.gui.ActivationGUI;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.SwitchFocusListener;
 import at.gv.egiz.bku.gui.BKUGUIFacade.Style;
+import at.gv.egiz.bku.gui.viewer.FontProvider;
 import at.gv.egiz.bku.online.applet.BKUApplet;
 import at.gv.egiz.bku.smccstal.AbstractSMCCSTAL;
 import at.gv.egiz.bku.smccstal.CardMgmtRequestHandler;
@@ -85,8 +86,9 @@ public class ActivationApplet extends BKUApplet {
           Locale locale,
           Style guiStyle,
           URL backgroundImgURL,
+          FontProvider fontProvider,
           AbstractHelpListener helpListener,
           SwitchFocusListener switchFocusListener) {
-    return new ActivationGUI(contentPane, locale, guiStyle, backgroundImgURL, helpListener, switchFocusListener);
+    return new ActivationGUI(contentPane, locale, guiStyle, backgroundImgURL, fontProvider, helpListener, switchFocusListener);
   }
 }

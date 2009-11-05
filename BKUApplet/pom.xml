@@ -21,6 +21,7 @@
             </goals>
             <configuration>
               <includeGroupIds>at.gv.egiz</includeGroupIds>
+              <!-- don't include transitive dependency BKUFonts [runtime] from BKUCommonGUI -->
               <excludeTransitive>true</excludeTransitive>
               <outputDirectory>${project.build.outputDirectory}</outputDirectory>
               <excludes>META-INF\/</excludes>

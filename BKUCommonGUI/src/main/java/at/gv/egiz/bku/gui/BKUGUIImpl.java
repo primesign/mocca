@@ -17,6 +17,8 @@
 
 package at.gv.egiz.bku.gui;
 
+import at.gv.egiz.bku.gui.viewer.FontProviderException;
+import at.gv.egiz.bku.gui.viewer.FontProvider;
 import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.stal.HashDataInput;
 import java.awt.Color;
@@ -73,6 +75,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
     protected HelpKeyListener helpKeyListener;
     protected SwitchFocusFocusListener switchFocusKeyListener;
     protected SecureViewerDialog secureViewer;
+    protected FontProvider fontProvider;
     
     protected Container contentPane;
     protected ResourceBundle messages;
@@ -115,8 +118,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
      */
     public BKUGUIImpl(Container contentPane, 
             Locale locale, 
-            Style guiStyle, 
+            Style guiStyle,
             URL background, 
+            FontProvider fontProvider,
             ActionListener helpListener,
             SwitchFocusListener switchFocusListener) {
       this.contentPane = contentPane;
@@ -139,7 +143,8 @@ public class BKUGUIImpl implements BKUGUIFacade {
       registerHelpListener(helpListener);
       
       registerSwitchFocusListener(switchFocusListener);
-      
+
+      this.fontProvider = fontProvider;
       createGUI(background);
     }
     
@@ -1386,7 +1391,12 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
             @Override
             public void run() {
-              showSecureViewer(dataToBeSigned.get(0)); 
+              try {
+                showSecureViewer(dataToBeSigned.get(0));
+              } catch (FontProviderException ex) {
+                log.error("failed to display secure viewer", ex);
+                showErrorDialog(ERR_VIEWER, new Object[] {ex.getMessage()}, backListener, backCommand);
+              }
             }
           });
        
@@ -1407,12 +1417,12 @@ public class BKUGUIImpl implements BKUGUIFacade {
      * @param saveListener
      * @param saveCommand
      */
-    private void showSecureViewer(HashDataInput dataToBeSigned) {
+    private void showSecureViewer(HashDataInput dataToBeSigned) throws FontProviderException {
       
       log.debug("show secure viewer [" + Thread.currentThread().getName() + "]");
       if (secureViewer == null) {
         secureViewer = new SecureViewerDialog(null, messages,
-                helpMouseListener.getActionListener());
+                fontProvider, helpMouseListener.getActionListener());
 
         // workaround for [#439]
         // avoid AlwaysOnTop at least in applet, otherwise make secureViewer AlwaysOnTop since MOCCA Dialog (JFrame created in LocalSTALFactory) is always on top.
@@ -1485,7 +1495,12 @@ public class BKUGUIImpl implements BKUGUIFacade {
                   int selectionIdx = lsm.getMinSelectionIndex();
                   if (selectionIdx >= 0) {
                     final HashDataInput selection = signedReferences.get(selectionIdx);
-                    showSecureViewer(selection);
+                    try {
+                      showSecureViewer(selection);
+                    } catch (FontProviderException ex) {
+                      log.error("failed to display secure viewer", ex);
+                      showErrorDialog(ERR_VIEWER, new Object[] {ex.getMessage()}, backListener, backCommand);
+                    }
                   }
                 }
               });

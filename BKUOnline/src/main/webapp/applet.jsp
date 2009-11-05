@@ -72,14 +72,13 @@
 
     %>
     <body id="appletpage" style="width:<%=width%>px" onFocus="focusToApplet()">
-            <script>
+      <script type="text/javascript">
 
             	// avoid selection of applet before it is completely loaded
 				var allowSelectionByJS = false;
             
                 if (!deployJava.versionCheck('1.6.0_04+')) {
-                    document
-                    .write('<p>Diese Anwendung benötigt Version 6 Update 4 oder höher der <a href="" onclick="deployJava.installLatestJRE();">Java&trade; Laufzeitumgebung</a>.</p>');
+                    document.write('<p>Diese Anwendung benötigt Version 6 Update 4 oder höher der <a href="" onclick="deployJava.installLatestJRE();">Java&trade; Laufzeitumgebung</a>.</p>');
                 } else {
                   // to enable applet caching, remove AppletDispatcher servlet,
                   // change codebase to 'applet',
@@ -105,14 +104,8 @@
                       RedirectURL : '../bkuResult',
                       RedirectTarget: '_parent'
                     };
-                    var version = '1.6.0_04';
-                    deployJava.runApplet(attributes, parameters, version);
-
-                    
+                    deployJava.runApplet(attributes, parameters, '1.6.0_04');
                 }
-
-
-                
             </script>
 			
     </body>

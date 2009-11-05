@@ -1,19 +1,19 @@
 /*
-* Copyright 2008 Federal Chancellery Austria and
-* Graz University of Technology
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright 2008 Federal Chancellery Austria and
+ * Graz University of Technology
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package at.gv.egiz.bku.text;
 
 import static org.junit.Assert.*;
@@ -35,7 +35,7 @@ import at.gv.egiz.bku.viewer.ValidatorFactory;
 public class TestTextValidator {
 
   public static byte[] generateText(String encoding) throws UnsupportedEncodingException {
-    
+
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     PrintWriter writer = new PrintWriter(new OutputStreamWriter(bos, encoding));
 
@@ -45,11 +45,15 @@ public class TestTextValidator {
       writer.write(c);
     }
     writer.write("\n");
-    writer.write("C0 Controls and Basic Latin  0x000C-0x000D");
+    // errata: don't include FORM FEED (0x000C)
+    writer.write("C0 Controls and Basic Latin 0x000D");
     writer.write("\n");
-    for (char c = '\f'; c <= '\r'; c++) {
-      writer.write(c);
-    }
+
+//    for (char c = '\f'; c <= '\r'; c++) {
+//      writer.write(c);
+//    }
+
+    writer.write("\r");
     writer.write("\n");
     writer.write("C0 Controls and Basic Latin  0x0020-0x007E");
     writer.write("\n");
@@ -97,23 +101,23 @@ public class TestTextValidator {
     writer.write("\n");
     writer.write("\u20AC");
     writer.flush();
-  
+
     return bos.toByteArray();
-    
+
   }
-  
+
   public void testTextValidation(String encoding) throws ValidationException, UnsupportedEncodingException {
-    
+
     Validator validator = ValidatorFactory.newValidator("text/plain");
-    
+
     assertNotNull(validator);
 
     InputStream is = new ByteArrayInputStream(generateText(encoding));
-    
+
     assertNotNull(is);
-    
+
     validator.validate(is, encoding);
-    
+
   }
 
   @Test
@@ -151,5 +155,64 @@ public class TestTextValidator {
   public void testISO8859_15() throws ValidationException, UnsupportedEncodingException {
     testTextValidation("ISO-8859-15");
   }
-  
+
+  @Test
+  public void testPerformance() throws UnsupportedEncodingException, ValidationException {
+    Validator validator = ValidatorFactory.newValidator("text/plain");
+
+    assertNotNull(validator);
+
+    //!"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿΎΏΐΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩΪΫάέήίΰαβγδεζηθικλμνξοπρςστυφχψωϊϋόύώϐϑϒϓϔϕϖϗϘϙϚϛϜϝϞϟϠϡЀЁЂЃЄЅІЇЈЉЊЋЌЍЎЏАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюяѐёђѓєѕіїјљњћќѝўџҐґҒғҔҕҖҗҘҙҚқҰұҲҳӀӁӂӃӄӐӑӒӓӔӕӖӗӘәӚӛӜӝӞӟӠӡӢӣӤӥӦӧӨөӪӫӬӭӮӯӰӱӲӳӴӵӶӷӸӹ
+
+    StringBuilder data = new StringBuilder();
+    //LATIN
+    for (int i = 0x0021; i <= 0x007e; i++) {
+      data.append((char) i);
+    }
+    //LATIN supplement
+    for (int i = 0x00A1; i <= 0x00FF; i++) {
+      data.append((char) i);
+    }
+    //GREEK
+    for (int i = 0x038e; i <= 0x03a1; i++) {
+      data.append((char) i);
+    }
+    for (int i = 0x03a3; i <= 0x03ce; i++) {
+      data.append((char) i);
+    }
+    for (int i = 0x03d0; i <= 0x03e1; i++) {
+      data.append((char) i);
+    }
+    //CYRILLIC
+    for (int i = 0x0400; i <= 0x045f; i++) {
+      data.append((char) i);
+    }
+    for (int i = 0x0490; i <= 0x049b; i++) {
+      data.append((char) i);
+    }
+    for (int i = 0x04b0; i <= 0x04b3; i++) {
+      data.append((char) i);
+    }
+    for (int i = 0x04c0; i <= 0x04c4; i++) {
+      data.append((char) i);
+    }
+    for (int i = 0x04d0; i <= 0x04f9; i++) {
+      data.append((char) i);
+    }
+
+    StringBuilder aLotOfData = new StringBuilder();
+    for (int i = 0; i < 1000; i++) {
+      aLotOfData.append('\n');
+      aLotOfData.append(data);
+    }
+    String aLotOfText = aLotOfData.toString();
+    System.out.println("validating " + aLotOfText.length() + " weird characters: " + aLotOfText);
+
+    InputStream is = new ByteArrayInputStream(aLotOfText.getBytes("UTF-8"));
+
+    assertNotNull(is);
+
+    validator.validate(is, "UTF-8");
+
+  }
 }

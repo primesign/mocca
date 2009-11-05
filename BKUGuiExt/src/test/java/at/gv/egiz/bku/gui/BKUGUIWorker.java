@@ -20,7 +20,6 @@
  */
 package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.bku.gui.*;
 import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.impl.ByteArrayHashDataInput;

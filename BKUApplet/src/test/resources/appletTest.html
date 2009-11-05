@@ -15,20 +15,25 @@
   limitations under the License.
 -->
 <html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>MOCCA Applet</title>
+    <link rel="shortcut icon" href="img/chip16.ico" type="image/x-icon">
+  </head>
   <body>
-    <center>
-      <applet code="at.gv.egiz.bku.online.applet.BKUApplet.class"
-              archive="../BKUApplet-1.0.5-SNAPSHOT.jar, commons-logging.jar , iaik_jce_me4se.jar"
-              width=152 height=145>
-              <param name="GuiStyle" value="tiny"/>
-              <param name="Locale" value="ja_JA"/>
-              <!--param name="Background" value="jar:file:/home/clemens/workspace/mocca/BKUApplet/target/BKUApplet-1.0-SNAPSHOT.jar!/images/help.png"/-->
-              <!--param name="Background" value="http://localhost:3495/img/BackgroundChipperling.png"/-->
-              <param name="WSDL_URL" value="https://danu.gv.at:3496/stal?wsdl"/>
-              <param name="HelpURL" value="http://apps.egiz.gv.at/bkuonline/help/"/>
-              <param name="SessionId" value="TestSession"/>
-              <param name="RedirectURL" value="http://localhost:3495/bkuResult"/>
-      </applet>
-    </center>
+    <applet code="at.gv.egiz.bku.online.applet.BKUApplet.class"
+            archive="../BKUApplet-1.2.8-SNAPSHOT.jar, commons-logging.jar , iaik_jce_me4se.jar"
+            width=190 height=130 name="moccaapplet" id="moccaapplet">
+      <param name="GuiStyle" value="simple"/>
+      <param name="Locale" value="ja_JA"/>
+      <!--param name="Background" value="jar:file:/home/clemens/workspace/mocca/BKUApplet/target/BKUApplet-1.0-SNAPSHOT.jar!/images/help.png"/-->
+      <!--param name="Background" value="http://localhost:3495/img/BackgroundChipperling.png"/-->
+      <param name="BackgroundColor" value="#ff0000"/>
+      <param name="WSDL_URL" value="https://danu.gv.at:3496/stal?wsdl"/>
+      <param name="HelpURL" value="http://apps.egiz.gv.at/bkuonline/help/"/>
+      <param name="SessionId" value="TestSession"/>
+      <param name="RedirectURL" value="http://localhost:3495/bkuResult"/>
+      <param name="RedirectTarget" value="_parent"/>
+    </applet>
   </body>
 </html>

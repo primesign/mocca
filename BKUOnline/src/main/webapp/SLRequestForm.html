@@ -20,7 +20,7 @@
         <title>Security-Layer v1.2 Request Formular</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <link rel="shortcut icon" href="img/chip16.ico" type="image/x-icon">
-        <script language="JavaScript">
+        <script language="JavaScript" type="text/javascript">
             <!--
             function setAppletDimension(width, height)
             {
@@ -34,13 +34,10 @@
             //-->
         </script>
         <style type="text/css" media="all">@import "css/main.css";</style>
-
-    </head>
-    <body>
-        <h1>Security-Layer v1.2 Request Formular</h1>
         <style type="text/css">
             fieldset {
                 padding: 1em;
+                margin: 1em;
                 font: 80%/ 1 sans-serif;
                 background-color: #F2EFE9;
                 padding-left: 5em;
@@ -72,6 +69,9 @@
             }
         </style>
 
+    </head>
+    <body>
+        <h1>Security-Layer v1.2 Request Formular</h1>
         <p>
         <form action="./http-security-layer-request" method="Post"
               enctype="application/x-www-form-urlencoded" name="slform">
@@ -110,7 +110,7 @@
   <sl:KeyboxIdentifier>SecureSignatureKeypair</sl:KeyboxIdentifier>
    <sl:DataObjectInfo Structure="enveloping">
      <sl:DataObject>
-       <sl:XMLContent>Ich bin ein einfacher Text.</sl:XMLContent>
+       <sl:XMLContent>Ich bin ein einfacher Text. llöäüß€</sl:XMLContent>
      </sl:DataObject>
     <sl:TransformsInfo>
       <sl:FinalDataMetaInfo>
@@ -120,7 +120,27 @@
   </sl:DataObjectInfo>
   <sl:DataObjectInfo Structure="enveloping">
      <sl:DataObject>
-       <sl:XMLContent><html xmlns="http://www.w3.org/1999/xhtml"><head><title>TestXHTML</title><style/></head><body><p>Ich bin ein einfacher Text.</p></body></html></sl:XMLContent>
+       <sl:XMLContent>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>TestXHTML</title>
+    <style type="text/css" media="screen">
+      .heading { font-size: large; font-weight: bold; }
+      .content1 { }
+      .content2 { font-style: italic; }
+      .content3 { font-family: serif; }
+      .footer { font-size: small; }
+    </style>
+  </head>
+  <body>
+    <h3 class="heading">Heading3 large bold llöäüß€</h3>
+    <p class="content1">Ich bin ein einfacher Text. llöäüß€</p>
+    <p class="content2">Ich bin ein einfacher Text. llöäüß€</p>
+    <p class="content3">Ich bin ein einfacher Text. llöäüß€</p>
+    <p class="footer">Ich bin ein einfacher Text. llöäüß€</p>
+  </body>
+</html>
+        </sl:XMLContent>
      </sl:DataObject>
     <sl:TransformsInfo>
       <sl:FinalDataMetaInfo>
@@ -145,7 +165,8 @@
     </sl10:BinaryFileParameters>
 </sl10:InfoboxUpdateRequest>
 -->
-
+            </fieldset>
+            <fieldset><legend>Request Parameters</legend>
                 <p>
                     <label for="appletGuiStyle">GUI Style</label>
                     <input type="radio" name="appletGuiStyle" value="tiny" onclick="setAppletDimension(152, 145)">tiny
@@ -185,8 +206,9 @@
                     name="StylesheetURL" value="" id="StylesheetURL"></p>
                 <p>
 -->
+                
             </fieldset>
-            <fieldset class="submit"><input type="submit" class="submit"></fieldset>
+            <fieldset class="submit"><input type="submit" class="submit"/></fieldset>
         </form>
 
     </body>

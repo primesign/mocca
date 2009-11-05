@@ -16,33 +16,23 @@
  */
 package at.gv.egiz.bku.local.stal;
 
+import at.gv.egiz.bku.viewer.ResourceFontLoader;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Locale;
 
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
-import at.gv.egiz.bku.gui.BKUGUIImpl;
+import at.gv.egiz.bku.gui.BKUIcons;
 import at.gv.egiz.bku.gui.PINManagementGUI;
 import at.gv.egiz.bku.gui.PINManagementGUIFacade;
 import at.gv.egiz.bku.local.gui.GUIProxy;
 import at.gv.egiz.bku.local.gui.LocalHelpListener;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
-import java.awt.Image;
-import java.awt.Window;
-import java.awt.event.WindowAdapter;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JRootPane;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -56,25 +46,6 @@ public class LocalSTALFactory implements STALFactory {
 
   protected static final Log log = LogFactory.getLog(LocalSTALFactory.class);
   protected static final Dimension PREFERRED_SIZE = new Dimension(318, 200);
-  protected static ArrayList<Image> icons = new ArrayList<Image>();
-  static {
-    String[] iconResources = new String[] {
-      "/at/gv/egiz/bku/gui/chip16.png",
-      "/at/gv/egiz/bku/gui/chip24.png",
-      "/at/gv/egiz/bku/gui/chip32.png",
-      "/at/gv/egiz/bku/gui/chip48.png",
-      "/at/gv/egiz/bku/gui/chip128.png" };
-    for (String ir : iconResources) {
-      URL resource = LocalSTALFactory.class.getResource(ir);
-      if (ir != null) {
-        try {
-          icons.add(ImageIO.read(resource));
-        } catch (IOException ex) {
-          log.warn("failed to set ui dialog icon", ex);
-        }
-      }
-    }
-  }
   protected String helpURL;
   protected Locale locale;
 
@@ -91,7 +62,7 @@ public class LocalSTALFactory implements STALFactory {
     }
     // [#439] make mocca dialog alwaysOnTop
     dialog.setAlwaysOnTop(true);
-    dialog.setIconImages(icons);
+    dialog.setIconImages(BKUIcons.icons);
     dialog.setUndecorated(true);
 //    dialog.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
 //    dialog.addWindowListener(new WindowAdapter() {
@@ -120,6 +91,7 @@ public class LocalSTALFactory implements STALFactory {
             dialog.getLocale(),
             BKUGUIFacade.Style.advanced,
             null,
+            new ResourceFontLoader(),
             helpListener, 
             null);
     BKUGUIFacade proxy = (BKUGUIFacade) GUIProxy.newInstance(gui, dialog, new Class[] { PINManagementGUIFacade.class} );

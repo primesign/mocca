@@ -17,7 +17,7 @@
 
 package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.bku.gui.*;
+import at.gv.egiz.bku.gui.viewer.FontProvider;
 import java.awt.Container;
 import java.net.URL;
 import java.util.Locale;
@@ -38,9 +38,10 @@ public class CardMgmtGUI extends BKUGUIImpl {
           Locale locale,
           Style guiStyle,
           URL backgroundImgURL,
+          FontProvider fontProvider,
           AbstractHelpListener helpListener,
           SwitchFocusListener switchFocusListener) {
-    super(contentPane, locale, guiStyle, backgroundImgURL, helpListener, switchFocusListener);
+    super(contentPane, locale, guiStyle, backgroundImgURL, fontProvider, helpListener, switchFocusListener);
 
   }
 

@@ -16,14 +16,13 @@
  */
 package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.bku.gui.*;
+import at.gv.egiz.bku.gui.viewer.FontProvider;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -50,9 +49,10 @@ public class ActivationGUI extends CardMgmtGUI implements ActivationGUIFacade {
           Locale locale,
           Style guiStyle,
           URL backgroundImgURL,
+          FontProvider fontProvider,
           AbstractHelpListener helpListener,
           SwitchFocusListener switchFocusListener) {
-    super(contentPane, locale, guiStyle, backgroundImgURL, helpListener, switchFocusListener);
+    super(contentPane, locale, guiStyle, backgroundImgURL, fontProvider, helpListener, switchFocusListener);
 
     progressBar = new JProgressBar();
   }

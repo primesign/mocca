@@ -28,6 +28,7 @@
     <module>BKUGuiExt</module>
     <module>smccSTALExt</module>
     <!--module>BKUWebStartPackage</module-->
+    <module>BKUFonts</module>
   </modules>
   <developers>
     <developer>

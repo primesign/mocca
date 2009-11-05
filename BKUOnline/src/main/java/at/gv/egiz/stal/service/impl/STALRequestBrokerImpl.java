@@ -33,7 +33,6 @@ import at.gv.egiz.stalx.service.translator.STALXTranslationHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import javax.xml.bind.JAXBElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

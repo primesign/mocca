@@ -21,6 +21,7 @@ import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.PINManagementGUI;
 import at.gv.egiz.bku.gui.PINManagementGUIFacade;
 import at.gv.egiz.bku.gui.SwitchFocusListener;
+import at.gv.egiz.bku.gui.viewer.FontProvider;
 import java.awt.Container;
 import java.net.URL;
 import java.util.Locale;
@@ -41,9 +42,10 @@ public class PINManagementApplet extends BKUApplet {
           Locale locale,
           BKUGUIFacade.Style guiStyle,
           URL backgroundImgURL,
+          FontProvider fontProvider,
           AbstractHelpListener helpListener,
           SwitchFocusListener switchFocusListener) {
-    return new PINManagementGUI(contentPane, locale, guiStyle, backgroundImgURL, helpListener, switchFocusListener);
+    return new PINManagementGUI(contentPane, locale, guiStyle, backgroundImgURL, fontProvider, helpListener, switchFocusListener);
   }
 
   @Override
