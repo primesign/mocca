@@ -32,7 +32,6 @@ import org.junit.Test;
  *
  * @author clemens
  */
-@Ignore
 public class BKUGUITest {
 
     @Test

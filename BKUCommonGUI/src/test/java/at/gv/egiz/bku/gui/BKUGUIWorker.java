@@ -108,9 +108,9 @@ public class BKUGUIWorker implements Runnable {
         //
         List<HashDataInput> signedRefs = new ArrayList();
         signedRefs.add(signedRef1);
-                    signedRefs.add(signedRef2);
-                    signedRefs.add(signedRef3);
-                    signedRefs.add(signedRef4);
+//                    signedRefs.add(signedRef2);
+//                    signedRefs.add(signedRef3);
+//                    signedRefs.add(signedRef4);
 //                    signedRefs.add(signedRef4);
 //                    signedRefs.add(signedRef4);
 //                    signedRefs.add(signedRef4);

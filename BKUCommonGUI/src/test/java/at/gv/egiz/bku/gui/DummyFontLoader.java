@@ -21,14 +21,20 @@ import at.gv.egiz.bku.gui.viewer.FontProviderException;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
 import java.awt.Font;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  *
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class DummyFontLoader implements FontProvider {
 
+  protected final static Log log = LogFactory.getLog(DummyFontLoader.class);
+  
   @Override
   public Font getFont() throws FontProviderException {
+	log.debug("return font");  
     return new Font("monospaced", Font.PLAIN, 10);
   }
 

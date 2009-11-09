@@ -321,11 +321,11 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
   public void actionPerformed(ActionEvent e) {
     if ("close".equals(e.getActionCommand())) {
 //    SecureViewerDialog.dialog.setVisible(false);
-      log.trace("closing secure viewer");
+      log.trace(Thread.currentThread() + " closing secure viewer");
       setVisible(false);
       log.trace("secure viewer closed");
     } else if ("save".equals(e.getActionCommand())) {
-      log.trace("display secure viewer save dialog");
+      log.trace(Thread.currentThread() + " display secure viewer save dialog");
       showSaveDialog(content, null, null);
       log.trace("done secure viewer save");
     } else {

@@ -22,12 +22,14 @@ import at.gv.egiz.bku.gui.DefaultHelpListener;
 import at.gv.egiz.bku.gui.AbstractHelpListener;
 import at.gv.egiz.bku.gui.SwitchFocusListener;
 import at.gv.egiz.stal.service.translator.STALTranslator;
+
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import javax.net.ssl.HttpsURLConnection;
 import javax.swing.JApplet;
 import javax.swing.JPanel;
@@ -79,14 +81,30 @@ public class BKUApplet extends JApplet {
    */
   protected static final String TEST_SESSION_ID = "TestSession";
 
+  public static final String VERSION;
+  public static final String UNKNOWN_VERSION = "UNKNOWN";
+  
   static {
-    if (log.isTraceEnabled()) {
-      log.trace("enabling webservice communication dump");
-      System.setProperty(
-              "com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump",
-              "true");
+    String tmp = UNKNOWN_VERSION;
+    try {
+      String BKUAppletJar = BKUApplet.class.getProtectionDomain().getCodeSource().getLocation().toString();
+      URL manifestURL = new URL("jar:" + BKUAppletJar + "!/META-INF/MANIFEST.MF");
+      if (log.isTraceEnabled()) {
+        log.trace("read version information from " + manifestURL);
+      }
+      Manifest manifest = new Manifest(manifestURL.openStream());
+      Attributes atts = manifest.getMainAttributes();
+      if (atts != null) {
+        tmp = atts.getValue("Implementation-Build");
+      }
+    } catch (IOException ex) {
+      log.error("failed to read version", ex);
+    } finally {
+      VERSION = tmp;
+      log.debug("BKU Applet " + VERSION);
     }
   }
+
   /**
    * STAL
    */
@@ -119,13 +137,14 @@ public class BKUApplet extends JApplet {
                 "URL for locating help files, e.g. '../help/' (no help provided if missing)"}};
   }
 
+  
   /**
    * Factory method to create and wire HelpListener, GUI and BKUWorker.
    * (Config via applet parameters, see BKUApplet.* constants)
    */
   @Override
   public void init() {
-    log.info("Welcome to MOCCA");
+    log.info("Welcome to MOCCA " + VERSION);
     log.trace("Called init()");
     showStatus("Initializing MOCCA applet");
 
