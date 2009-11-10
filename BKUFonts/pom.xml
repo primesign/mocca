@@ -10,7 +10,7 @@
   <groupId>at.gv.egiz</groupId>
   <artifactId>BKUFonts</artifactId>
   <version>1.0</version>
-  <name>BKUFonts</name>
+  <name>BKU Fonts</name>
   <description>
     This module is used in validator(s) and viewer and is a direct dependency of
       - BKUViewer (attention, this is the validator!)
