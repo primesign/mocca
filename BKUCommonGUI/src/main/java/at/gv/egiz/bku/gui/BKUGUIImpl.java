@@ -159,7 +159,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 @Override
                 public void run() {
                   
-                  log.debug("initializing gui [" + Thread.currentThread().getName() + "]");
+                  log.debug("[" + Thread.currentThread().getName() + "] initializing gui");
 
                   if (renderIconPanel) {
                     initIconPanel(background);
@@ -565,7 +565,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
             @Override
             public void run() {
 
-              log.debug("show card-pin dialog [" + Thread.currentThread().getName() + "]");
+              log.debug("[" + Thread.currentThread().getName() + "] show card-pin dialog");
       
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
@@ -758,7 +758,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
             @Override
             public void run() {
 
-              log.debug("show pinpad signature-pin dialog [" + Thread.currentThread().getName() + "]");
+              log.debug("[" + Thread.currentThread().getName() + "] show pinpad signature-pin dialog");
 
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
@@ -927,7 +927,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
             @Override
             public void run() {
               
-              log.debug("show signature-pin dialog [" + Thread.currentThread().getName() + "]");
+              log.debug("[" + Thread.currentThread().getName() + "] show signature-pin dialog");
       
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
@@ -1215,7 +1215,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
           @Override
             public void run() {
 
-                log.debug("show message dialog [" + Thread.currentThread().getName() + "]");
+                log.debug("[" + Thread.currentThread().getName() + "] show message dialog");
 
                 mainPanel.removeAll();
                 buttonPanel.removeAll();
@@ -1385,7 +1385,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 backListener, backCommand);
       } else if (dataToBeSigned.size() == 1) {
         try {
-          log.debug("scheduling secure viewer");
+          log.debug("[" + Thread.currentThread().getName() + "] scheduling secure viewer");
 
           SwingUtilities.invokeLater(new Runnable() {
 
@@ -1419,7 +1419,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
      */
     private void showSecureViewer(HashDataInput dataToBeSigned) throws FontProviderException {
       
-      log.debug("show secure viewer [" + Thread.currentThread().getName() + "]");
+      log.debug("[" + Thread.currentThread().getName() + "] show secure viewer");
       if (secureViewer == null) {
         secureViewer = new SecureViewerDialog(null, messages,
                 fontProvider, helpMouseListener.getActionListener());
@@ -1439,14 +1439,14 @@ public class BKUGUIImpl implements BKUGUIFacade {
     private void showSignedReferencesListDialog(final List<HashDataInput> signedReferences,
             final ActionListener backListener, final String backCommand) {
       
-      log.debug("scheduling signed references list dialog");
+      log.debug("[" + Thread.currentThread().getName() + "] scheduling signed references list dialog");
       
       SwingUtilities.invokeLater(new Runnable() {
 
         @Override
         public void run() {
           
-          log.debug("show signed references list dialog [" + Thread.currentThread().getName() + "]");
+          log.debug("[" + Thread.currentThread().getName() + "] show signed references list dialog");
           
           mainPanel.removeAll();
           buttonPanel.removeAll();

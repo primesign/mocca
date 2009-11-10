@@ -33,8 +33,8 @@ public class SwitchFocusListener implements ActionListener {
 	        ctx.showDocument
 	          (new URL("javascript:" + javascriptFunction));
 	        }
-	      catch (MalformedURLException me) { 
-	    	  
+	      catch (MalformedURLException me) {
+
 	    	  log.warn("Unable to call external javascript function.", me);
 	      }
 		

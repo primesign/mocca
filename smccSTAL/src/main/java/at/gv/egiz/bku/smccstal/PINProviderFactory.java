@@ -116,7 +116,9 @@ public class PINProviderFactory {
               this, "secureViewer");
 
       do {
+        log.debug("[" + Thread.currentThread().getName() + "] wait for action");
         waitForAction();
+        log.debug("[" + Thread.currentThread().getName() + "] received action");
 
         if ("secureViewer".equals(action)) {
           try {
@@ -169,6 +171,7 @@ public class PINProviderFactory {
               this, "ok",
               this, "cancel");
 
+      log.debug("[" + Thread.currentThread().getName() + "] wait for action");
       waitForAction();
 
       gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
@@ -216,7 +219,9 @@ public class PINProviderFactory {
               PinpadSignaturePinProvider.this, "secureViewer");
 
           while (true) {
+            log.debug("[" + Thread.currentThread().getName() + "] wait for action");
             waitForAction();
+            log.debug("[" + Thread.currentThread().getName() + "] received action");
 
             if ("secureViewer".equals(action)) {
               viewer.displayDataToBeSigned(signedInfo,

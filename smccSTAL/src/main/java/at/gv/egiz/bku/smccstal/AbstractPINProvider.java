@@ -47,7 +47,7 @@ public abstract class AbstractPINProvider implements PINProvider, ActionListener
         this.wait();
       }
     } catch (InterruptedException e) {
-      log.error("interrupt in waitForAction");
+      log.error("[" + Thread.currentThread().getName() + "] interrupt in waitForAction");
       throw e;
     }
     actionPerformed = false;
@@ -60,7 +60,7 @@ public abstract class AbstractPINProvider implements PINProvider, ActionListener
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    log.debug("command " + e.getActionCommand());
+    log.debug("[" + Thread.currentThread().getName() + "] action performed - " + e.getActionCommand());
     action = e.getActionCommand();
     actionPerformed();
   }

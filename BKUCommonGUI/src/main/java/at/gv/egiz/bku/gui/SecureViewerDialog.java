@@ -54,8 +54,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 import javax.swing.text.StyledEditorKit;
@@ -73,7 +71,6 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
    * BKUApplet includes BKUFonts as runtime dependency only, the jar is copied to the applet dir in BKUOnline with dependency-plugin
    * BKUViewer has compile dependency BKUFonts, transitive in BKUOnline and BKULocal
    */
-  public static final String PLAINTEXT_FONT_RESOURCE = "DejaVuSansMono.ttf";
   public static final Dimension VIEWER_DIMENSION = new Dimension(600, 400);
   protected static final Log log = LogFactory.getLog(SecureViewerDialog.class);
 //  private static SecureViewerDialog dialog;
@@ -227,6 +224,8 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
    */
   public void setContent(HashDataInput hashDataInput) { //throws FontProviderException {
 
+    log.debug("[" + Thread.currentThread().getName() + "] set viewer content");
+    
     this.content = null;
     viewer.setText(null);
 
@@ -285,6 +284,7 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
       viewerLabel.setText("");
     }
 
+    log.debug("VIEWER FONT: " + viewer.getFont());
     setVisible(true);
     toFront();
   }
@@ -320,12 +320,11 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
   @Override
   public void actionPerformed(ActionEvent e) {
     if ("close".equals(e.getActionCommand())) {
-//    SecureViewerDialog.dialog.setVisible(false);
-      log.trace(Thread.currentThread() + " closing secure viewer");
+      log.trace("[" + Thread.currentThread().getName() + "] closing secure viewer");
       setVisible(false);
       log.trace("secure viewer closed");
     } else if ("save".equals(e.getActionCommand())) {
-      log.trace(Thread.currentThread() + " display secure viewer save dialog");
+      log.trace("[" + Thread.currentThread().getName() + "] display secure viewer save dialog");
       showSaveDialog(content, null, null);
       log.trace("done secure viewer save");
     } else {
@@ -336,14 +335,14 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
   private void showSaveDialog(final HashDataInput hashDataInput,
           final ActionListener okListener, final String okCommand) {
 
-    log.debug("scheduling save dialog [" + Thread.currentThread().getName() + "]");
+    log.debug("[" + Thread.currentThread().getName() + "] scheduling save dialog");
 
     SwingUtilities.invokeLater(new Runnable() {
 
       @Override
       public void run() {
 
-        log.debug("show save dialog [" + Thread.currentThread().getName() + "]");
+        log.debug("[" + Thread.currentThread().getName() + "] show save dialog");
 
         String userHome = System.getProperty("user.home");
 

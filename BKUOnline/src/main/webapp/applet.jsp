@@ -71,7 +71,7 @@
         }
 
     %>
-    <body id="appletpage" style="width:<%=width%>px" onFocus="focusToApplet()">
+    <body id="appletpage" style="width:<%=width%>px">
       <script type="text/javascript">
 
             	// avoid selection of applet before it is completely loaded
@@ -109,28 +109,4 @@
             </script>
 			
     </body>
-    
-    <script>
-
-		function focusToApplet() {
-	
-			//alert('try to set focus to applet');
-			if (document != null && document.moccaapplet != null && allowSelectionByJS) {
-	
-				//alert('set focus to applet.');
-				document.moccaapplet.getFocusFromBrowser();						
-				return true;					
-			}
-			allowSelectionByJS = true;
-		}
-	
-		function focusToBrowser() {
-
-			// put focus to window
-			// focus can be assigned to any focusable field on the embedding website
-			self.focus();
-	
-		}		
-    
-    </script>
 </html>

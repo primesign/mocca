@@ -41,13 +41,13 @@ public class URLFontLoader extends SwingWorker<Font, Object> implements FontProv
   public URLFontLoader(URL codebase) throws MalformedURLException {
     this.fontURL = new URL(codebase, SANSMONO_FONT_RESOURCE);
     if (log.isDebugEnabled()) {
-      log.debug(Thread.currentThread() + " setting font load URL: " + fontURL);
+      log.debug("[" + Thread.currentThread().getName() + "] setting font load URL: " + fontURL);
     }
   }
 
   public void loadInBackground() {
     if (log.isDebugEnabled()) {
-      log.debug(Thread.currentThread() + " scheduling font loading in background: " + fontURL);
+      log.debug("[" + Thread.currentThread().getName() + "] scheduling font loading in background: " + fontURL);
     }
     this.execute();
   }
@@ -55,7 +55,7 @@ public class URLFontLoader extends SwingWorker<Font, Object> implements FontProv
   @Override
   protected Font doInBackground() throws MalformedURLException, FontFormatException, IOException {
     if (log.isDebugEnabled()) {
-      log.debug(Thread.currentThread() + " loading font in background...");
+      log.debug("[" + Thread.currentThread().getName() + "] loading font in background...");
     }
     return Font.createFont(Font.TRUETYPE_FONT, fontURL.openStream());
   }
@@ -67,7 +67,7 @@ public class URLFontLoader extends SwingWorker<Font, Object> implements FontProv
    */
   @Override
   public Font getFont() throws FontProviderException {
-    log.debug(Thread.currentThread() + " get font");
+    log.debug("[" + Thread.currentThread().getName() + "] get font (EDT?)");
     try {
       return get();
     } catch (InterruptedException ex) {

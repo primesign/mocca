@@ -187,9 +187,6 @@ public class BKUApplet extends JApplet {
       log.warn("failed to load help URL: " + ex.getMessage() + ", disabling help");
     }
 
-    SwitchFocusListener switchFocusListener = new SwitchFocusListener(
-            getAppletContext(), "focusToBrowser()");
-
     // Note: We need a panel in order to be able to set the background
     // properly.
     // Setting the background without a panel has side effects with the
@@ -212,7 +209,7 @@ public class BKUApplet extends JApplet {
       URLFontLoader fontProvider = new URLFontLoader(getCodeBase());
       fontProvider.loadInBackground();
       BKUGUIFacade gui = createGUI(contentPanel, getLocale(), guiStyle,
-              backgroundImgURL, fontProvider, helpListener, switchFocusListener);
+              backgroundImgURL, fontProvider, helpListener, null); 
 
       worker = createBKUWorker(this, gui);
     } catch (MalformedURLException ex) {
