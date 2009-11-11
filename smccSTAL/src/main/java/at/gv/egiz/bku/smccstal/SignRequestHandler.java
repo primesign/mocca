@@ -18,9 +18,8 @@ package at.gv.egiz.bku.smccstal;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -44,7 +43,6 @@ import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.SignResponse;
 import at.gv.egiz.stal.signedinfo.ObjectFactory;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
-import at.gv.egiz.stal.util.JCEAlgorithmNames;
 
 public class SignRequestHandler extends AbstractRequestHandler {
 
@@ -77,18 +75,11 @@ public class SignRequestHandler extends AbstractRequestHandler {
                 JAXBElement<SignedInfoType> si = (JAXBElement<SignedInfoType>) unmarshaller.unmarshal(is);
                 String signatureMethod = si.getValue().getSignatureMethod().getAlgorithm();
                 log.debug("Found signature method: " + signatureMethod);
-                String jceName = JCEAlgorithmNames.getJCEHashName(signatureMethod);
-                if (jceName == null) {
-                    log.error("Hash algorithm not supported:");
-                    return new ErrorResponse(4006);
-                }
-                MessageDigest md = MessageDigest.getInstance(jceName);
-                md.update(signReq.getSignedInfo());
                 KeyboxName kb = SignatureCard.KeyboxName.getKeyboxName(signReq.getKeyIdentifier());
 
-                byte[] resp = card.createSignature(md.digest(), kb,
+                byte[] resp = card.createSignature(new ByteArrayInputStream(signReq.getSignedInfo()), kb,
                         new PINProviderFactory(card.getReader(), gui)
-                        .getSignaturePINProvider(secureViewer, si.getValue()));
+                        .getSignaturePINProvider(secureViewer, si.getValue()), signatureMethod);
                 if (resp == null) {
                     return new ErrorResponse(6001);
                 }
@@ -127,9 +118,9 @@ public class SignRequestHandler extends AbstractRequestHandler {
             } catch (JAXBException e) {
                 log.error("Cannot unmarshall signed info", e);
                 return new ErrorResponse(1000);
-            } catch (NoSuchAlgorithmException e) {
-                log.error(e);
-                return new ErrorResponse(1000);
+            } catch (IOException e) {
+              log.error("Error while creating signature: " + e);
+              return new ErrorResponse(4000);
             } 
         } else {
             log.fatal("Got unexpected STAL request: " + request);

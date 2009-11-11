@@ -18,8 +18,15 @@ package at.gv.egiz.bku.slcommands.impl;
 
 import iaik.asn1.CodingException;
 import iaik.asn1.DerCoder;
+import iaik.utils.Base64OutputStream;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -174,7 +181,24 @@ public class STALHelper {
       try {
         certificates.add((X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(cert)));
       } catch (CertificateException e) {
-        log.info("Failed to decode certificate.", e);
+        if (log.isDebugEnabled()) {
+          ByteArrayOutputStream certDump = new ByteArrayOutputStream();
+          OutputStreamWriter writer = new OutputStreamWriter(certDump);
+          try {
+            writer.write("-----BEGIN CERTIFICATE-----\n");
+            writer.flush();
+            Base64OutputStream b64os = new Base64OutputStream(certDump);
+            b64os.write(cert);
+            b64os.flush();
+            writer.write("\n-----END CERTIFICATE-----");
+            writer.flush();
+          } catch (IOException e1) {
+            log.info("Failed to decode certificate.", e);
+          }
+          log.debug("Failed to decode certificate.\n" + certDump.toString(), e);
+        } else {
+          log.info("Failed to decode certificate.", e);
+        }
         throw new SLCommandException(4000,
             SLExceptionMessages.EC4000_UNCLASSIFIED_INFOBOX_INVALID,
             new Object[] { "Certificates" });

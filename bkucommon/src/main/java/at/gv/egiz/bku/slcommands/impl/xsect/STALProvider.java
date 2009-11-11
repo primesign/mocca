@@ -50,6 +50,10 @@ public class STALProvider extends Provider {
         IMPL_PACKAGE_NAME + ".STALSignature");
     map.put("Signature." + XmldsigMore.SIGNATURE_ECDSA_SHA1, 
         IMPL_PACKAGE_NAME + ".STALSignature");
+    map.put("Signature." + XmldsigMore.SIGNATURE_RSA_SHA256, 
+        IMPL_PACKAGE_NAME + ".STALSignature");
+    map.put("Signature." + XmldsigMore.SIGNATURE_ECDSA_SHA256, 
+        IMPL_PACKAGE_NAME + ".STALSignature");
 
     AccessController.doPrivileged(new PrivilegedAction<Void>() {
       @Override

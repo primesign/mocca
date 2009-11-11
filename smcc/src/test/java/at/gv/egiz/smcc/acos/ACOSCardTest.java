@@ -21,6 +21,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -125,7 +127,7 @@ public abstract class ACOSCardTest extends CardTest {
   @Test
   public void testSignSIG() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
 
     char[] pin = "123456".toCharArray();
 
@@ -134,11 +136,9 @@ public abstract class ACOSCardTest extends CardTest {
     ACOSApplSIG appl = (ACOSApplSIG) card.getApplication(ACOSAppl.AID_SIG);
     appl.setPin(ACOSApplSIG.KID_PIN_SIG, pin);
 
-    MessageDigest md = MessageDigest.getInstance("SHA-1");
-    byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
-
-    byte[] signature = signatureCard.createSignature(hash,
-        KeyboxName.SECURE_SIGNATURE_KEYPAIR, new TestPINProvider(pin));
+    byte[] signature = signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+        .getBytes("ASCII")),
+        KeyboxName.SECURE_SIGNATURE_KEYPAIR, new TestPINProvider(pin), null);
 
     assertNotNull(signature);
 
@@ -147,7 +147,7 @@ public abstract class ACOSCardTest extends CardTest {
   @Test
   public void testSignDEC() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
 
     char[] pin = "1234".toCharArray();
 
@@ -156,11 +156,9 @@ public abstract class ACOSCardTest extends CardTest {
     ACOSApplDEC appl = (ACOSApplDEC) card.getApplication(ACOSAppl.AID_DEC);
     appl.setPin(ACOSApplDEC.KID_PIN_DEC, pin);
 
-    MessageDigest md = MessageDigest.getInstance("SHA-1");
-    byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
-
-    byte[] signature = signatureCard.createSignature(hash,
-        KeyboxName.CERITIFIED_KEYPAIR, new TestPINProvider(pin));
+    byte[] signature = signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+        .getBytes("ASCII")),
+        KeyboxName.CERITIFIED_KEYPAIR, new TestPINProvider(pin), null);
 
     assertNotNull(signature);
 
@@ -169,74 +167,66 @@ public abstract class ACOSCardTest extends CardTest {
   @Test(expected = LockedException.class)
   public void testSignSIGInvalidPin() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
 
     SignatureCard signatureCard = createSignatureCard();
 
-    MessageDigest md = MessageDigest.getInstance("SHA-1");
-    byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
-
     TestPINProvider pinProvider = new TestPINProvider("000000".toCharArray());
 
-    signatureCard.createSignature(hash, KeyboxName.SECURE_SIGNATURE_KEYPAIR,
-        pinProvider);
+    signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+        .getBytes("ASCII")), KeyboxName.SECURE_SIGNATURE_KEYPAIR,
+        pinProvider, null);
 
   }
 
   @Test(expected = LockedException.class)
   public void testSignDECInvalidPin() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
 
     SignatureCard signatureCard = createSignatureCard();
 
-    MessageDigest md = MessageDigest.getInstance("SHA-1");
-    byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
-
     TestPINProvider pinProvider = new TestPINProvider("0000".toCharArray());
 
-    signatureCard.createSignature(hash, KeyboxName.CERITIFIED_KEYPAIR,
-        pinProvider);
+    signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+        .getBytes("ASCII")), KeyboxName.CERITIFIED_KEYPAIR,
+        pinProvider, null);
 
   }
 
   @Test(expected = LockedException.class)
   public void testSignSIGBlockedPin() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
 
     SignatureCard signatureCard = createSignatureCard();
     CardEmul card = (CardEmul) signatureCard.getCard();
     ACOSApplSIG appl = (ACOSApplSIG) card.getApplication(ACOSAppl.AID_SIG);
     appl.setPin(ACOSApplSIG.KID_PIN_SIG, null);
 
-    MessageDigest md = MessageDigest.getInstance("SHA-1");
-    byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
-
     TestPINProvider pinProvider = new TestPINProvider("000000".toCharArray());
 
-    signatureCard.createSignature(hash, KeyboxName.SECURE_SIGNATURE_KEYPAIR,
-        pinProvider);
+    signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+        .getBytes("ASCII")), KeyboxName.SECURE_SIGNATURE_KEYPAIR,
+        pinProvider, null);
 
   }
 
   @Test(expected = LockedException.class)
   public void testSignDECBlockedPin() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
 
     SignatureCard signatureCard = createSignatureCard();
     CardEmul card = (CardEmul) signatureCard.getCard();
     ACOSApplDEC appl = (ACOSApplDEC) card.getApplication(ACOSAppl.AID_DEC);
     appl.setPin(ACOSApplDEC.KID_PIN_DEC, null);
 
-    MessageDigest md = MessageDigest.getInstance("SHA-1");
-    byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
-
     TestPINProvider pinProvider = new TestPINProvider("0000".toCharArray());
 
-    signatureCard.createSignature(hash, KeyboxName.CERITIFIED_KEYPAIR,
-        pinProvider);
+    signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+        .getBytes("ASCII")), KeyboxName.CERITIFIED_KEYPAIR,
+        pinProvider, null);
 
   }
 

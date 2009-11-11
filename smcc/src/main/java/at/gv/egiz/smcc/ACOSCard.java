@@ -16,9 +16,13 @@
 */
 package at.gv.egiz.smcc;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -375,12 +379,46 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   
   @Override
   @Exclusive
-  public byte[] createSignature(byte[] hash, KeyboxName keyboxName,
-      PINProvider provider) throws SignatureCardException, InterruptedException {
+  public byte[] createSignature(InputStream input, KeyboxName keyboxName,
+      PINProvider provider, String alg) throws SignatureCardException, InterruptedException, IOException {
   
-    if (hash.length != 20) {
-      throw new IllegalArgumentException("Hash value must be of length 20.");
+    ByteArrayOutputStream dst = new ByteArrayOutputStream();
+    // key ID
+    dst.write(new byte[]{(byte) 0x84, (byte) 0x01, (byte) 0x88});
+    // algorithm ID
+    dst.write(new byte[]{(byte) 0x80, (byte) 0x01});
+    
+    MessageDigest md;
+    try {
+      if ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1".equals(alg)) {
+        dst.write((byte) 0x14); // SHA-1/ECC
+        md = MessageDigest.getInstance("SHA-1");
+      } else if ("http://www.w3.org/2000/09/xmldsig#rsa-sha1".equals(alg)) {
+        dst.write((byte) 0x12); // SHA-1 with padding according to PKCS#1 block type 01
+        md = MessageDigest.getInstance("SHA-1");
+      } else if (KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(keyboxName)
+          && appVersion >= 2
+          && "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256".equals(alg)) {
+        dst.write((byte) 0x44); // SHA-256/ECC
+        md = MessageDigest.getInstance("SHA256");
+      } else if (KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(keyboxName)
+          && appVersion >= 2
+          && "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256".equals(alg)) {
+        dst.write((byte) 0x41); // SHA-256 with padding according to PKCS#1
+        md = MessageDigest.getInstance("SHA256");
+      } else {
+        throw new SignatureCardException("Card does not support signature algorithm " + alg + ".");
+      }
+    } catch (NoSuchAlgorithmException e) {
+      log.error("Failed to get MessageDigest.", e);
+      throw new SignatureCardException(e);
     }
+    
+    byte[] digest = new byte[md.getDigestLength()];
+    for (int l; (l = input.read(digest)) != -1;) {
+      md.update(digest, 0, l);
+    }
+    digest = md.digest();
   
     try {
       
@@ -393,11 +431,11 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
         // SELECT application
         execSELECT_AID(channel, AID_SIG);
         // MANAGE SECURITY ENVIRONMENT : SET DST
-        execMSE(channel, 0x41, 0xb6, DST_SIG);
+        execMSE(channel, 0x41, 0xb6, dst.toByteArray());
         // VERIFY
         verifyPINLoop(channel, spec, provider);
         // PERFORM SECURITY OPERATION : HASH
-        execPSO_HASH(channel, hash);
+        execPSO_HASH(channel, digest);
         // PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATRE
         return execPSO_COMPUTE_DIGITAL_SIGNATURE(channel);
     
@@ -413,7 +451,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
         while (true) {
           try {
             // INTERNAL AUTHENTICATE
-            return execINTERNAL_AUTHENTICATE(channel, hash);
+            return execINTERNAL_AUTHENTICATE(channel, digest);
           } catch (SecurityStatusNotSatisfiedException e) {
             verifyPINLoop(channel, spec, provider);
           }
@@ -711,6 +749,9 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
 
     ResponseAPDU resp = channel.transmit(
         new CommandAPDU(0x00, 0x2A, 0x9E, 0x9A, 256));
+    if (resp.getSW() == 0x6982) {
+      throw new SecurityStatusNotSatisfiedException();
+    }
     if (resp.getSW() != 0x9000) {
       throw new SignatureCardException(
           "PSO - COMPUTE DIGITAL SIGNATRE failed: SW="

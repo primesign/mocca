@@ -104,14 +104,14 @@ public class QualifyingPropertiesFactory {
 
   }
   
-  public DigestAlgAndValueType createDigestAlgAndValueType(X509Certificate certificate) throws QualifyingPropertiesException {
+  public DigestAlgAndValueType createDigestAlgAndValueType(X509Certificate certificate, DigestMethod dm) throws QualifyingPropertiesException {
     
     DigestMethodType digestMethodType = dsFactory.createDigestMethodType();
-    digestMethodType.setAlgorithm(DigestMethod.SHA1);
-
+    digestMethodType.setAlgorithm(dm.getAlgorithm());
+    
     byte[] digest;
     try {
-      MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
+      MessageDigest messageDigest = MessageDigest.getInstance(dm.getAlgorithm());
       digest = messageDigest.digest(certificate.getEncoded());
     } catch (CertificateEncodingException e) {
       throw new QualifyingPropertiesException(e);
@@ -155,7 +155,10 @@ public class QualifyingPropertiesFactory {
     return dataObjectFormatType;
   }
   
-  public JAXBElement<QualifyingPropertiesType> createQualifyingProperties111(String target, Date signingTime, List<X509Certificate> certificates, String idValue, List<DataObjectFormatType> dataObjectFormats) throws QualifyingPropertiesException {
+  public JAXBElement<QualifyingPropertiesType> createQualifyingProperties111(
+      String target, Date signingTime, List<X509Certificate> certificates,
+      String idValue, List<DataObjectFormatType> dataObjectFormats,
+      DigestMethod digestMethod) throws QualifyingPropertiesException {
 
     GregorianCalendar gregorianCalendar = new GregorianCalendar();
     gregorianCalendar.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -175,7 +178,7 @@ public class QualifyingPropertiesFactory {
     for (X509Certificate certificate : certificates) {
       
       CertIDType certIDType = qpFactory.createCertIDType();
-      certIDType.setCertDigest(createDigestAlgAndValueType(certificate));
+      certIDType.setCertDigest(createDigestAlgAndValueType(certificate, digestMethod));
       certIDType.setIssuerSerial(createX509IssuerSerialType(certificate));
       
       certIDs.add(certIDType);

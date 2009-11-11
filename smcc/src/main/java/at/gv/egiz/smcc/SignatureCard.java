@@ -18,6 +18,9 @@
 package at.gv.egiz.smcc;
 
 import at.gv.egiz.smcc.ccid.CCID;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Locale;
 
 import javax.smartcardio.Card;
@@ -101,15 +104,17 @@ public interface SignatureCard {
 
   /**
    * 
-   * @param hash
+   * @param input
    * @param keyboxName
    * @param provider
+   * @param alg TODO
    * @return
    * @throws at.gv.egiz.smcc.SignatureCardException
    * @throws java.lang.InterruptedException if applet is destroyed while in pin dialog
+   * @throws IOException 
    */
-  public byte[] createSignature(byte[] hash, KeyboxName keyboxName,
-      PINProvider provider) throws SignatureCardException, InterruptedException;
+  public byte[] createSignature(InputStream input, KeyboxName keyboxName,
+      PINProvider provider, String alg) throws SignatureCardException, InterruptedException, IOException;
 
   public CCID getReader();
 

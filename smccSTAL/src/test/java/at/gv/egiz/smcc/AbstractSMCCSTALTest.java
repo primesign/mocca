@@ -1,5 +1,6 @@
 package at.gv.egiz.smcc;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -37,8 +38,8 @@ public class AbstractSMCCSTALTest extends AbstractSMCCSTAL implements
    signatureCard = new SignatureCard() {
 
     @Override
-    public byte[] createSignature(byte[] hash, KeyboxName keyboxName,
-        PINProvider provider) throws SignatureCardException {
+    public byte[] createSignature(InputStream input, KeyboxName keyboxName,
+        PINProvider provider, String alg) throws SignatureCardException {
       // TODO Auto-generated method stub
       return null;
     }

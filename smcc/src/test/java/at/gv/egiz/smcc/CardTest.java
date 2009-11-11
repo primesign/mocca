@@ -18,6 +18,8 @@ package at.gv.egiz.smcc;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -178,12 +180,9 @@ public abstract class CardTest {
   @Test(expected = CancelledException.class)
   public void testSignSIGCancel() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
       
         SignatureCard signatureCard = createSignatureCard();
-      
-        MessageDigest md = MessageDigest.getInstance("SHA-1");
-        byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
       
         PINProvider pinProvider = new PINProvider() {
           @Override
@@ -193,20 +192,18 @@ public abstract class CardTest {
           }
         };
       
-        signatureCard.createSignature(hash, KeyboxName.SECURE_SIGNATURE_KEYPAIR,
-            pinProvider);
+    signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+        .getBytes("ASCII")), KeyboxName.SECURE_SIGNATURE_KEYPAIR, pinProvider,
+        null);
       
       }
 
   @Test(expected = CancelledException.class)
   public void testSignDECCancel() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
       
         SignatureCard signatureCard = createSignatureCard();
-      
-        MessageDigest md = MessageDigest.getInstance("SHA-1");
-        byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
       
         PINProvider pinProvider = new PINProvider() {
           @Override
@@ -216,20 +213,18 @@ public abstract class CardTest {
           }
         };
       
-        signatureCard.createSignature(hash, KeyboxName.CERITIFIED_KEYPAIR,
-            pinProvider);
+        signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+            .getBytes("ASCII")), KeyboxName.CERITIFIED_KEYPAIR,
+            pinProvider, null);
       
       }
 
   @Test(expected = InterruptedException.class)
   public void testSignSIGInterrrupted() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
       
         SignatureCard signatureCard = createSignatureCard();
-      
-        MessageDigest md = MessageDigest.getInstance("SHA-1");
-        byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
       
         PINProvider pinProvider = new PINProvider() {
           @Override
@@ -239,20 +234,18 @@ public abstract class CardTest {
           }
         };
       
-        signatureCard.createSignature(hash, KeyboxName.SECURE_SIGNATURE_KEYPAIR,
-            pinProvider);
+        signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+            .getBytes("ASCII")), KeyboxName.SECURE_SIGNATURE_KEYPAIR,
+            pinProvider, null);
       
       }
 
   @Test(expected = InterruptedException.class)
   public void testSignDECInterrrupted() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
       
         SignatureCard signatureCard = createSignatureCard();
-      
-        MessageDigest md = MessageDigest.getInstance("SHA-1");
-        byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
       
         PINProvider pinProvider = new PINProvider() {
           @Override
@@ -262,20 +255,18 @@ public abstract class CardTest {
           }
         };
       
-        signatureCard.createSignature(hash, KeyboxName.CERITIFIED_KEYPAIR,
-            pinProvider);
+        signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+            .getBytes("ASCII")), KeyboxName.CERITIFIED_KEYPAIR,
+            pinProvider, null);
       
       }
 
   @Test(expected = CancelledException.class)
   public void testSignSIGConcurrent() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
       
         final SignatureCard signatureCard = createSignatureCard();
-      
-        MessageDigest md = MessageDigest.getInstance("SHA-1");
-        byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
       
         PINProvider pinProvider = new PINProvider() {
           @Override
@@ -294,20 +285,18 @@ public abstract class CardTest {
           }
         };
       
-        signatureCard.createSignature(hash, KeyboxName.SECURE_SIGNATURE_KEYPAIR,
-            pinProvider);
+        signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+            .getBytes("ASCII")), KeyboxName.SECURE_SIGNATURE_KEYPAIR,
+            pinProvider, null);
       
       }
 
   @Test(expected = CancelledException.class)
   public void testSignDECConcurrent() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
       
         final SignatureCard signatureCard = createSignatureCard();
-      
-        MessageDigest md = MessageDigest.getInstance("SHA-1");
-        byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
       
         PINProvider pinProvider = new PINProvider() {
           @Override
@@ -326,8 +315,9 @@ public abstract class CardTest {
           }
         };
       
-        signatureCard.createSignature(hash, KeyboxName.CERITIFIED_KEYPAIR,
-            pinProvider);
+        signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+            .getBytes("ASCII")), KeyboxName.CERITIFIED_KEYPAIR,
+            pinProvider, null);
       
       }
 

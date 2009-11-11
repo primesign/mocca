@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
@@ -308,7 +309,7 @@ public class SWCard implements SignatureCard {
   }
 
   @Override
-  public byte[] createSignature(byte[] hash, KeyboxName keyboxName, PINProvider provider) throws SignatureCardException, InterruptedException {
+  public byte[] createSignature(InputStream input, KeyboxName keyboxName, PINProvider provider, String alg) throws SignatureCardException, InterruptedException, IOException {
 
     // KeyStore password
     char[] password = getPassword(keyboxName);
@@ -363,7 +364,10 @@ public class SWCard implements SignatureCard {
     try {
       Signature signature = Signature.getInstance(algorithm);
       signature.initSign(privateKey);
-      signature.update(hash);
+      int l;
+      for (byte[] b = new byte[20]; (l = input.read(b)) != -1;) {
+        signature.update(b, 0, l);
+      }
       return signature.sign();
     } catch (NoSuchAlgorithmException e) {
       String msg = "Algorithm + '" + algorithm + "' not supported for signing.";

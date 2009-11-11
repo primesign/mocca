@@ -16,11 +16,16 @@
 */
 package at.gv.egiz.bku.slcommands.impl.xsect;
 
+import iaik.security.ecc.interfaces.ECDSAParams;
 import iaik.xml.crypto.XmldsigMore;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.ECPublicKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.ECParameterSpec;
 
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.crypto.dsig.DigestMethod;
@@ -41,6 +46,11 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
    * The signature algorithm URI.
    */
   private String signatureAlgorithmURI;
+  
+  /**
+   * the digest algorithm URI.
+   */
+  private String digestAlgorithmURI = DigestMethod.SHA1;
 
   /**
    * The algorithm parameters for the signature algorithm.
@@ -51,23 +61,55 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
    * Creates a new AlgrithmMethodFactory with the given
    * <code>signingCertificate</code>.
    * 
-   * @param siginingCertificate
+   * @param signingCertificate
    * 
    * @throws NoSuchAlgorithmException
    *           if the public key algorithm of the given
    *           <code>signingCertificate</code> is not supported
    */
-  public AlgorithmMethodFactoryImpl(X509Certificate siginingCertificate)
+  public AlgorithmMethodFactoryImpl(X509Certificate signingCertificate)
       throws NoSuchAlgorithmException {
 
-    String algorithm = siginingCertificate.getPublicKey().getAlgorithm();
+    PublicKey publicKey = signingCertificate.getPublicKey();
+    String algorithm = publicKey.getAlgorithm();
 
     if ("DSA".equals(algorithm)) {
       signatureAlgorithmURI = SignatureMethod.DSA_SHA1;
     } else if ("RSA".equals(algorithm)) {
-      signatureAlgorithmURI = SignatureMethod.RSA_SHA1;
+      
+      int keyLength = 0;
+      if (publicKey instanceof RSAPublicKey) {
+        keyLength = ((RSAPublicKey) publicKey).getModulus().bitLength();
+      }
+      
+      if (keyLength >= 2048) {
+        signatureAlgorithmURI = XmldsigMore.SIGNATURE_RSA_SHA256;
+        digestAlgorithmURI = DigestMethod.SHA256;
+      } else {
+        signatureAlgorithmURI = SignatureMethod.RSA_SHA1;
+      }
+      
     } else if (("EC".equals(algorithm)) || ("ECDSA".equals(algorithm))) {
-      signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_SHA1;
+      
+      int fieldSize = 0;
+      if (publicKey instanceof iaik.security.ecc.ecdsa.ECPublicKey) {
+        ECDSAParams params = ((iaik.security.ecc.ecdsa.ECPublicKey) publicKey).getParameter();
+        fieldSize = params.getG().getCurve().getField().getSize().bitLength();
+      } else if (publicKey instanceof ECPublicKey) {
+        ECParameterSpec params = ((ECPublicKey) publicKey).getParams();
+        fieldSize = params.getCurve().getField().getFieldSize();
+      }
+      
+      if (fieldSize < 256) {
+        signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_SHA1;
+      } else if (fieldSize < 512) {
+        signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_SHA256;
+        digestAlgorithmURI = DigestMethod.SHA256;
+      } else {
+        signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_SHA512;
+        digestAlgorithmURI = DigestMethod.SHA512;
+      }
+      
     } else {
       throw new NoSuchAlgorithmException("Public key algorithm '" + algorithm
           + "' not supported.");
@@ -104,7 +146,7 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
       throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
 
     return signatureContext.getSignatureFactory().newDigestMethod(
-        DigestMethod.SHA1, (DigestMethodParameterSpec) null);
+        digestAlgorithmURI, (DigestMethodParameterSpec) null);
   }
 
   /*

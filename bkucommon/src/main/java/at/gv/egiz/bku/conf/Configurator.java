@@ -166,31 +166,62 @@ public abstract class Configurator {
 
   protected void configureProviders() {
     log.debug("Registering security providers");
-    Security.insertProviderAt(new IAIK(), 1);
-    Security.insertProviderAt(new ECCProvider(false), 2);
+    
+    IAIK iaikProvider = new IAIK();
+    if (Security.getProvider(iaikProvider.getName()) == null) {
+      // register IAIK provider at first position
+      Security.insertProviderAt(iaikProvider, 1);
+    } else {
+      // IAIK provider already registered
+      log.info("Provider " + iaikProvider.getName() + " already registered.");
+    }
+
+    ECCProvider eccProvider = new ECCProvider(false);
+    if (Security.getProvider(eccProvider.getName()) == null) {
+      // register ECC Provider at second position
+      Security.insertProviderAt(eccProvider, 2);
+    } else {
+      // ECC Provider already registered
+      log.info("Provider " + eccProvider.getName() + " already registered."); 
+    }
 
     // registering STALProvider as delegation provider for XSECT
     STALProvider stalProvider = new STALProvider();
-    Set<Service> services = stalProvider.getServices();
-    StringBuilder sb = new StringBuilder();
-    for (Service service : services) {
-      String algorithm = service.getType() + "." + service.getAlgorithm();
-      XSecProvider.setDelegationProvider(algorithm, stalProvider.getName());
-      sb.append("\n" + algorithm);
-    }
-    log
-        .debug("Registered STALProvider as XSecProvider delegation provider for the following services : "
-            + sb.toString());
+    if (Security.getProvider(stalProvider.getName()) == null) {
+      // register STAL provider
+      Set<Service> services = stalProvider.getServices();
+      StringBuilder sb = new StringBuilder();
+      for (Service service : services) {
+        String algorithm = service.getType() + "." + service.getAlgorithm();
+        XSecProvider.setDelegationProvider(algorithm, stalProvider.getName());
+        sb.append("\n" + algorithm);
+      }
+      log
+          .debug("Registered STALProvider as XSecProvider delegation provider for the following services : "
+              + sb.toString());
 
-    Security.addProvider(stalProvider);
-    XSecProvider.addAsProvider(false);
-    sb = new StringBuilder();
-    sb.append("Registered providers: ");
-    int i = 1;
-    for (Provider prov : Security.getProviders()) {
-      sb.append((i++) + ". : " + prov);
+      Security.addProvider(stalProvider);
+    } else {
+      // STAL Provider already registered
+      log.info("Provider " + stalProvider.getName() + " already registered."); 
     }
-    log.debug(sb.toString());
+    
+    if (Security.getProvider(XSecProvider.NAME) == null) {
+      // register XML Security provider
+      XSecProvider.addAsProvider(false);
+    } else {
+      log.info("Provider " + XSecProvider.NAME + " already registered.");
+    }
+    
+    if (log.isDebugEnabled()) {
+      StringBuilder sb = new StringBuilder();
+      sb.append("Registered providers: ");
+      int i = 1;
+      for (Provider prov : Security.getProviders()) {
+        sb.append((i++) + ". : " + prov);
+      }
+      log.debug(sb.toString());
+    }
   }
 
   protected void configViewer() {

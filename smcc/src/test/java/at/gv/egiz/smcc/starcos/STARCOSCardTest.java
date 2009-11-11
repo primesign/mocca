@@ -20,6 +20,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -147,7 +149,7 @@ public class STARCOSCardTest extends CardTest {
   @Test
   public void testSignSichereSignatur() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
 
     char[] pin = "123456".toCharArray();
 
@@ -156,11 +158,9 @@ public class STARCOSCardTest extends CardTest {
     STARCOSApplSichereSignatur appl = (STARCOSApplSichereSignatur) card.getApplication(STARCOSApplSichereSignatur.AID_SichereSignatur);
     appl.setPin(STARCOSApplSichereSignatur.KID_PIN_SS, pin);
 
-    MessageDigest md = MessageDigest.getInstance("SHA-1");
-    byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
-
-    byte[] signature = signatureCard.createSignature(hash,
-        KeyboxName.SECURE_SIGNATURE_KEYPAIR, new TestPINProvider(pin));
+    byte[] signature = signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+        .getBytes("ASCII")),
+        KeyboxName.SECURE_SIGNATURE_KEYPAIR, new TestPINProvider(pin), null);
 
     assertNotNull(signature);
 
@@ -169,7 +169,7 @@ public class STARCOSCardTest extends CardTest {
   @Test
   public void testSignGewoehnlicheSignatur() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
 
     char[] pin = "1234".toCharArray();
 
@@ -178,11 +178,9 @@ public class STARCOSCardTest extends CardTest {
     STARCOSCardChannelEmul channel = (STARCOSCardChannelEmul) card.getBasicChannel();
     channel.setPin(STARCOSCardChannelEmul.KID_PIN_Glob, pin);
 
-    MessageDigest md = MessageDigest.getInstance("SHA-1");
-    byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
-
-    byte[] signature = signatureCard.createSignature(hash,
-        KeyboxName.CERITIFIED_KEYPAIR, new TestPINProvider(pin));
+    byte[] signature = signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+        .getBytes("ASCII")),
+        KeyboxName.CERITIFIED_KEYPAIR, new TestPINProvider(pin), null);
 
     assertNotNull(signature);
 
@@ -191,75 +189,67 @@ public class STARCOSCardTest extends CardTest {
   @Test(expected = LockedException.class)
   public void testSignSichereSignaturInvalidPin() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
 
     SignatureCard signatureCard = createSignatureCard();
 
-    MessageDigest md = MessageDigest.getInstance("SHA-1");
-    byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
-
     TestPINProvider pinProvider = new TestPINProvider("000000".toCharArray());
 
-    signatureCard.createSignature(hash, KeyboxName.SECURE_SIGNATURE_KEYPAIR,
-        pinProvider);
+    signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+        .getBytes("ASCII")), KeyboxName.SECURE_SIGNATURE_KEYPAIR,
+        pinProvider, null);
 
   }
 
   @Test(expected = LockedException.class)
   public void testSignGewoehnlicheSignaturInvalidPin() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
 
     SignatureCard signatureCard = createSignatureCard();
 
-    MessageDigest md = MessageDigest.getInstance("SHA-1");
-    byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
-
     TestPINProvider pinProvider = new TestPINProvider("1234".toCharArray());
 
-    signatureCard.createSignature(hash, KeyboxName.CERITIFIED_KEYPAIR,
-        pinProvider);
+    signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+        .getBytes("ASCII")), KeyboxName.CERITIFIED_KEYPAIR,
+        pinProvider, null);
 
   }
 
   @Test(expected = LockedException.class)
   public void testSignSichereSignaturBlockedPin() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
 
     SignatureCard signatureCard = createSignatureCard();
     CardEmul card = (CardEmul) signatureCard.getCard();
     STARCOSApplSichereSignatur appl = (STARCOSApplSichereSignatur) card.getApplication(STARCOSApplSichereSignatur.AID_SichereSignatur);
     appl.setPin(STARCOSApplSichereSignatur.KID_PIN_SS, null);
 
-    MessageDigest md = MessageDigest.getInstance("SHA-1");
-    byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
-
     TestPINProvider pinProvider = new TestPINProvider("000000".toCharArray());
     assertTrue(pinProvider.getProvided() <= 0);
 
-    signatureCard.createSignature(hash, KeyboxName.SECURE_SIGNATURE_KEYPAIR,
-        pinProvider);
+    signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+        .getBytes("ASCII")), KeyboxName.SECURE_SIGNATURE_KEYPAIR,
+        pinProvider, null);
 
   }
 
   @Test(expected = LockedException.class)
   public void testSignGewoehnlicheSignaturBlockedPin() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
-      NoSuchAlgorithmException, UnsupportedEncodingException {
+      NoSuchAlgorithmException, IOException {
 
     SignatureCard signatureCard = createSignatureCard();
     CardEmul card = (CardEmul) signatureCard.getCard();
     STARCOSCardChannelEmul channel = (STARCOSCardChannelEmul) card.getBasicChannel();
     channel.setPin(STARCOSCardChannelEmul.KID_PIN_Glob, null);
 
-    MessageDigest md = MessageDigest.getInstance("SHA-1");
-    byte[] hash = md.digest("MOCCA".getBytes("ASCII"));
-
     TestPINProvider pinProvider = new TestPINProvider("0000".toCharArray());
 
-    signatureCard.createSignature(hash, KeyboxName.CERITIFIED_KEYPAIR,
-        pinProvider);
+    signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
+        .getBytes("ASCII")), KeyboxName.CERITIFIED_KEYPAIR,
+        pinProvider, null);
 
   }
   

@@ -19,11 +19,16 @@ package at.gv.egiz.smcc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
+import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
@@ -41,6 +46,8 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
   private static Log log = LogFactory.getLog(STARCOSCard.class);
 
   public static final byte[] MF = new byte[] { (byte) 0x3F, (byte) 0x00 };
+  
+  public static final byte[] EF_VERSION = new byte[] { (byte) 0x00, (byte) 0x32 };
 
   /**
    * Application ID <em>SV-Personendaten</em>.
@@ -106,19 +113,6 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
   public static final byte[] EF_C_X509_CA_CS_DS = new byte[] { (byte) 0xc6,
       (byte) 0x08 };
 
-  public static final byte[] DST_SS = new byte[] { (byte) 0x84, (byte) 0x03, // tag
-      // ,
-      // length
-      // (
-      // key
-      // desc
-      // .
-      // )
-      (byte) 0x80, (byte) 0x02, (byte) 0x00, // local, key ID, key version
-      (byte) 0x89, (byte) 0x03, // tag, length (algorithm ID)
-      (byte) 0x13, (byte) 0x35, (byte) 0x10 // ECDSA
-  };
-
   public static final byte KID_PIN_SS = (byte) 0x81;
 
   // Gewöhnliche Signatur (GS)
@@ -133,19 +127,6 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
   public static final byte[] EF_C_X509_CA_CS = new byte[] { (byte) 0x2f,
       (byte) 0x02 };
 
-  public static final byte[] DST_GS = new byte[] { (byte) 0x84, (byte) 0x03, // tag
-      // ,
-      // length
-      // (
-      // key
-      // desc
-      // .
-      // )
-      (byte) 0x80, (byte) 0x02, (byte) 0x00, // local, key ID, key version
-      (byte) 0x89, (byte) 0x03, // tag, length (algorithm ID)
-      (byte) 0x13, (byte) 0x35, (byte) 0x10 // ECDSA
-  };
-
   public static final byte KID_PIN_CARD = (byte) 0x01;
 
   private static final PINSpec CARD_PIN_SPEC =
@@ -155,9 +136,11 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
   private static final PINSpec SS_PIN_SPEC =
     new PINSpec(6, 12, "[0-9]", 
         "at/gv/egiz/smcc/STARCOSCard", "sig.pin", KID_PIN_SS, AID_DF_SS);
+  
+  protected double version = 1.1;
 
   /**
-   * Creates an new instance.
+   * Creates a new instance.
    */
   public STARCOSCard() {
     super("at/gv/egiz/smcc/STARCOSCard");
@@ -165,6 +148,35 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     pinSpecs.add(SS_PIN_SPEC);
   }
  
+  /* (non-Javadoc)
+   * @see at.gv.egiz.smcc.AbstractSignatureCard#init(javax.smartcardio.Card, javax.smartcardio.CardTerminal)
+   */
+  @Override
+  public void init(Card card, CardTerminal cardTerminal) {
+    super.init(card, cardTerminal);
+    
+    // determine application version
+    CardChannel channel = getCardChannel();
+    try {
+      // SELECT MF
+      execSELECT_MF(channel);
+      // SELECT EF_VERSION
+      execSELECT_FID(channel, EF_VERSION);
+      // READ BINARY
+      byte[] ver = ISO7816Utils.readRecord(channel, 1);
+      if (ver[0] == (byte) 0xa5 && ver[2] == (byte) 0x53) {
+        version = (0x0F & ver[4]) + (0xF0 & ver[5])/160.0 + (0x0F & ver[5])/100.0;
+        String generation = (version < 1.2) ? "<= G2" : "G3";
+        log.info("e-card version=" + version + " (" + generation + ")");
+      }
+    } catch (CardException e) {
+      log.warn(e);
+    } catch (SignatureCardException e) {
+      log.warn(e);
+    }
+    
+  }
+
   @Override
   @Exclusive
   public byte[] getCertificate(KeyboxName keyboxName)
@@ -281,19 +293,57 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
 
   @Override
   @Exclusive
-  public byte[] createSignature(byte[] hash, KeyboxName keyboxName,
-      PINProvider provider) throws SignatureCardException, InterruptedException {
+  public byte[] createSignature(InputStream input, KeyboxName keyboxName,
+      PINProvider provider, String alg) throws SignatureCardException, InterruptedException, IOException {
   
-    if (hash.length != 20) {
-      throw new IllegalArgumentException("Hash value must be of length 20.");
+    ByteArrayOutputStream dst = new ByteArrayOutputStream();
+    byte[] ht = null;
+    
+    MessageDigest md = null;
+    try {
+      if (version < 1.2 && "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1".equals(alg)) {
+        // local key ID '02' version '00'
+        dst.write(new byte[] {(byte) 0x84, (byte) 0x03, (byte) 0x80, (byte) 0x02, (byte) 0x00});
+        // algorithm ID ECDSA with SHA-1
+        dst.write(new byte[] {(byte) 0x89, (byte) 0x03, (byte) 0x13, (byte) 0x35, (byte) 0x10});
+        md = MessageDigest.getInstance("SHA-1");
+      } else if (version >= 1.2 && "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256".equals(alg)) {
+        // local key ID '02' version '00'
+        dst.write(new byte[] {(byte) 0x84, (byte) 0x03, (byte) 0x80, (byte) 0x02, (byte) 0x00});
+        // portable algorithm reference
+        dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x04});
+        // hash template
+        ht = new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x40};
+        md = MessageDigest.getInstance("SHA256");
+      } else if (version >= 1.2 && "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256".equals(alg)) {
+        // local key ID '03' version '00'
+        dst.write(new byte[] {(byte) 0x84, (byte) 0x03, (byte) 0x80, (byte) 0x03, (byte) 0x00});
+        // portable algorithm reference
+        dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x02});
+        // hash template
+        ht = new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x40};
+        md = MessageDigest.getInstance("SHA256");
+      } else {
+        throw new SignatureCardException("e-card versio " + version + " does not support signature algorithm " + alg + ".");
+      }
+    } catch (NoSuchAlgorithmException e) {
+      log.error("Failed to get MessageDigest.", e);
+      throw new SignatureCardException(e);
     }
-  
+    
+    // calculate message digest
+    byte[] digest = new byte[md.getDigestLength()];
+    for (int l; (l = input.read(digest)) != -1;) {
+      md.update(digest, 0, l);
+    }
+    digest = md.digest();
+
     try {
       
       CardChannel channel = getCardChannel();
       
       if (KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(keyboxName)) {
-
+        
         PINSpec spec = SS_PIN_SPEC;
         
         // SELECT MF
@@ -303,11 +353,21 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         // VERIFY
         verifyPINLoop(channel, spec, provider);
         // MANAGE SECURITY ENVIRONMENT : SET DST
-        execMSE(channel, 0x41, 0xb6, DST_SS);
-        // PERFORM SECURITY OPERATION : HASH
-        execPSO_HASH(channel, hash);
-        // PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATURE
-        return execPSO_COMPUTE_DIGITAL_SIGNATURE(channel);
+        execMSE(channel, 0x41, 0xb6, dst.toByteArray());
+        if (ht != null) {
+          // PERFORM SECURITY OPERATION : SET HT
+          execMSE(channel, 0x41, 0xaa, ht);
+        }
+        if (version < 1.2) {
+          // PERFORM SECURITY OPERATION : HASH
+          execPSO_HASH(channel, digest);
+          // PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATURE
+          return execPSO_COMPUTE_DIGITAL_SIGNATURE(channel, null);
+        } else {
+          // PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATURE
+          return execPSO_COMPUTE_DIGITAL_SIGNATURE(channel, digest);
+        }
+        
         
       } else if (KeyboxName.CERITIFIED_KEYPAIR.equals(keyboxName)) {
 
@@ -316,14 +376,17 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         // SELECT application
         execSELECT_AID(channel, AID_DF_GS);
         // MANAGE SECURITY ENVIRONMENT : SET DST
-        execMSE(channel, 0x41, 0xb6, DST_GS);
+        execMSE(channel, 0x41, 0xb6, dst.toByteArray());
+        if (ht != null) {
+          // PERFORM SECURITY OPERATION : SET HT
+          execMSE(channel, 0x41, 0xaa, ht);
+        }
         // PERFORM SECURITY OPERATION : HASH
-        execPSO_HASH(channel, hash);
-        
+        execPSO_HASH(channel, digest);
         while (true) {
           try {
             // PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATURE
-            return execPSO_COMPUTE_DIGITAL_SIGNATURE(channel);
+            return execPSO_COMPUTE_DIGITAL_SIGNATURE(channel, null);
           } catch (SecurityStatusNotSatisfiedException e) {
             verifyPINLoop(channel, spec, provider);
           }
@@ -682,7 +745,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     ResponseAPDU resp = channel.transmit(
         new CommandAPDU(0x00, 0x22, p1, p2, data));
     if (resp.getSW() != 0x9000) {
-      throw new SignatureCardException("MSE:SET DST failed: SW="
+      throw new SignatureCardException("MSE:SET failed: SW="
           + Integer.toHexString(resp.getSW()));
     }
   }
@@ -701,10 +764,47 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     }
   }
 
-  protected byte[] execPSO_COMPUTE_DIGITAL_SIGNATURE(CardChannel channel)
+  protected void execPSO_HASH(CardChannel channel, InputStream input)
+      throws SignatureCardException, CardException {
+    ResponseAPDU resp;
+    int blockSize = 64;
+    byte[] b = new byte[blockSize];
+    try {
+      ByteArrayOutputStream data = new ByteArrayOutputStream();
+      // initialize
+      data.write((byte) 0x90);
+      data.write((byte) 0x00);
+      resp = channel.transmit(
+          new CommandAPDU(0x10, 0x2A, 0x90, 0xA0, data.toByteArray()));
+      data.reset();
+      for (int l; (l = input.read(b)) != -1;) {
+        data.write((byte) 0x80);
+        data.write(l);
+        data.write(b, 0, l);
+        resp = channel.transmit(
+            new CommandAPDU((l == blockSize) ? 0x10 : 0x00, 0x2A, 0x90, 0xA0, data.toByteArray()));
+        if (resp.getSW() != 0x9000) {
+          throw new SignatureCardException("PSO:HASH failed: SW="
+              + Integer.toHexString(resp.getSW()));
+        }
+        data.reset();
+      }
+    } catch (IOException e) {
+      throw new SignatureCardException(e);
+    }
+    
+  }
+
+  protected byte[] execPSO_COMPUTE_DIGITAL_SIGNATURE(CardChannel channel, byte[] hash)
       throws CardException, SignatureCardException {
-    ResponseAPDU resp = channel.transmit(
-        new CommandAPDU(0x00, 0x2A, 0x9E, 0x9A, 256));
+    ResponseAPDU resp;
+    if (hash != null) {
+      resp = channel.transmit(
+          new CommandAPDU(0x00, 0x2A, 0x9E, 0x9A, hash, 256));
+    } else {
+      resp = channel.transmit(
+          new CommandAPDU(0x00, 0x2A, 0x9E, 0x9A, 256));
+    }
     if (resp.getSW() == 0x6982) {
       throw new SecurityStatusNotSatisfiedException();
     } else if (resp.getSW() == 0x6983) {

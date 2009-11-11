@@ -103,6 +103,14 @@ public class ISO7816Utils {
 
     TransparentFileInputStream is = openTransparentFileInputStream(channel,
         maxSize);
+    
+    return readTransparentFileTLV(is, maxSize, expectedType);
+
+  }
+  
+  public static byte[] readTransparentFileTLV(TransparentFileInputStream is, int maxSize,
+      byte expectedType) throws CardException, SignatureCardException {
+
 
     try {
 
@@ -170,7 +178,8 @@ public class ISO7816Utils {
       while (pos < (fcx[1] - 2)) {
         switch (fcx[pos]) {
         
-        case (byte) 0x80: {
+        case (byte) 0x80: 
+        case (byte) 0x81: {
           len = 0xFF & fcx[pos + 2];
           for (int i = 1; i < fcx[pos + 1]; i++) {
             len<<=8;

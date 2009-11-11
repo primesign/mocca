@@ -628,9 +628,20 @@ public class Signature {
     
     String target = "#" + signatureId;
     
+    DigestMethod dm;
+    try {
+      dm = ctx.getAlgorithmMethodFactory().createDigestMethod(ctx);
+    } catch (NoSuchAlgorithmException e) {
+      log.error("Failed to get DigestMethod algorithm.", e);
+      throw new SLCommandException(4006);
+    } catch (InvalidAlgorithmParameterException e) {
+      log.error("Failed to get DigestMethod algorithm.", e);
+      throw new SLCommandException(4006);
+    }
+    
     JAXBElement<QualifyingPropertiesType> qualifyingProperties;
     try {
-      qualifyingProperties = factory.createQualifyingProperties111(target, date, signingCertificates, idValue, dataObjectFormats);
+      qualifyingProperties = factory.createQualifyingProperties111(target, date, signingCertificates, idValue, dataObjectFormats, dm);
     } catch (QualifyingPropertiesException e) {
       log.error("Failed to create QualifyingProperties.", e);
       throw new SLCommandException(4000);
@@ -665,7 +676,10 @@ public class Signature {
     String referenceURI = "#xmlns(xades=http://uri.etsi.org/01903/v1.1.1%23)%20xpointer(id('"
         + objectIdValue
         + "')/child::xades:QualifyingProperties/child::xades:SignedProperties)";
-    DigestMethod dm;
+    
+    String referenceIdValue = ctx.getIdValueFactory().createIdValue("Reference");
+    String referenceType = QualifyingPropertiesFactory.SIGNED_PROPERTIES_REFERENCE_TYPE_V1_1_1;
+    
     try {
       dm = ctx.getAlgorithmMethodFactory().createDigestMethod(ctx);
     } catch (NoSuchAlgorithmException e) {
@@ -675,10 +689,7 @@ public class Signature {
       log.error("Failed to get DigestMethod algorithm.", e);
       throw new SLCommandException(4006);
     }
-    
-    String referenceIdValue = ctx.getIdValueFactory().createIdValue("Reference");
-    String referenceType = QualifyingPropertiesFactory.SIGNED_PROPERTIES_REFERENCE_TYPE_V1_1_1;
-    
+
     Reference reference = ctx.getSignatureFactory().newReference(referenceURI, dm, null, referenceType, referenceIdValue);
     
     references.add(reference);
