@@ -116,6 +116,14 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   private static final PINSpec INF_PIN_SPEC = new PINSpec(0, 8, "[0-9]",
       "at/gv/egiz/smcc/ACOSCard", "inf.pin", KID_PIN_INF, AID_DEC);
   
+  static {
+    if (SignatureCardFactory.ENFORCE_RECOMMENDED_PIN_LENGTH) {
+      DEC_PIN_SPEC.setRecLength(4);
+      SIG_PIN_SPEC.setRecLength(6);
+      INF_PIN_SPEC.setRecLength(4);
+    }
+  }
+  
   /**
    * The version of the card's digital signature application.
    */
@@ -390,10 +398,12 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
     
     MessageDigest md;
     try {
-      if ("http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1".equals(alg)) {
+      if (KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(keyboxName)
+          && (alg == null || "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1".equals(alg))) {
         dst.write((byte) 0x14); // SHA-1/ECC
         md = MessageDigest.getInstance("SHA-1");
-      } else if ("http://www.w3.org/2000/09/xmldsig#rsa-sha1".equals(alg)) {
+      } else if (KeyboxName.CERITIFIED_KEYPAIR.equals(keyboxName)
+          && (alg == null || "http://www.w3.org/2000/09/xmldsig#rsa-sha1".equals(alg))) {
         dst.write((byte) 0x12); // SHA-1 with padding according to PKCS#1 block type 01
         md = MessageDigest.getInstance("SHA-1");
       } else if (KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(keyboxName)
@@ -401,7 +411,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
           && "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256".equals(alg)) {
         dst.write((byte) 0x44); // SHA-256/ECC
         md = MessageDigest.getInstance("SHA256");
-      } else if (KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(keyboxName)
+      } else if (KeyboxName.CERITIFIED_KEYPAIR.equals(keyboxName)
           && appVersion >= 2
           && "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256".equals(alg)) {
         dst.write((byte) 0x41); // SHA-256 with padding according to PKCS#1

@@ -32,6 +32,8 @@ import org.apache.commons.logging.LogFactory;
  * A factory for creating {@link SignatureCard}s from {@link Card}s. 
  */
 public class SignatureCardFactory {
+
+  public static boolean ENFORCE_RECOMMENDED_PIN_LENGTH = false;
   
   /**
    * This class represents a supported smart card. 

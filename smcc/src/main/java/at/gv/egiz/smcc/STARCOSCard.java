@@ -137,6 +137,13 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     new PINSpec(6, 12, "[0-9]", 
         "at/gv/egiz/smcc/STARCOSCard", "sig.pin", KID_PIN_SS, AID_DF_SS);
   
+  static {
+    if (SignatureCardFactory.ENFORCE_RECOMMENDED_PIN_LENGTH) {
+      CARD_PIN_SPEC.setRecLength(4);
+      SS_PIN_SPEC.setRecLength(6);
+    }
+  }
+  
   protected double version = 1.1;
 
   /**
@@ -301,7 +308,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     
     MessageDigest md = null;
     try {
-      if (version < 1.2 && "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1".equals(alg)) {
+      if (version < 1.2 && (alg == null || "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1".equals(alg))) {
         // local key ID '02' version '00'
         dst.write(new byte[] {(byte) 0x84, (byte) 0x03, (byte) 0x80, (byte) 0x02, (byte) 0x00});
         // algorithm ID ECDSA with SHA-1

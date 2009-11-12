@@ -21,12 +21,14 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.net.URL;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 
 public class SSLDataUrlConnectionTest {
   
   @Test
+  @Ignore
   public void testVerisign() throws IOException {
     URL url = new URL("https://www.verisign.com:443");
     DataUrlConnectionImpl uc = new DataUrlConnectionImpl();

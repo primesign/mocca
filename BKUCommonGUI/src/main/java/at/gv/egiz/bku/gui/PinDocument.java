@@ -16,7 +16,6 @@
 */
 package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.smcc.PINSpec;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JButton;
@@ -31,49 +30,60 @@ import javax.swing.text.PlainDocument;
  */
 class PINDocument extends PlainDocument {
 
-        protected PINSpec pinSpec;
-        protected Pattern pinPattern;
-        protected JButton enterButton;
-        protected Document compareTo;
-        protected Document oldPin;
+  private static final long serialVersionUID = 1L;
+  
+  protected Pattern pinPattern;
+  protected int minLength;
+  protected int maxLength;
 
-        public PINDocument(PINSpec pinSpec, JButton enterButton) {
-            this.pinSpec = pinSpec;
-            if (pinSpec.getRexepPattern() != null) {
-                pinPattern = Pattern.compile(pinSpec.getRexepPattern());
-            } else {
-                pinPattern = Pattern.compile(".");
-            }
-            this.enterButton = enterButton;
-        }
+  protected JButton enterButton;
+  protected Document compareTo;
+  protected Document oldPin;        
 
-        /**
-         *
-         * @param pinSpec
-         * @param enterButton 
-         * @param compareTo enable enterButton iff this pinDocument's pin equals to compareTo's pin. may be null
-         */
-        public PINDocument(PINSpec pinSpec, JButton enterButton, Document compareTo) {
-          this(pinSpec, enterButton);
-          this.compareTo = compareTo;
-        }
+  public PINDocument(int minLength, int maxLength, String pattern, JButton enterButton) {
+    if (pattern != null) {
+      pinPattern = Pattern.compile(pattern);
+    } else {
+      pinPattern = Pattern.compile(".");
+    }
+    this.minLength = minLength;
+    this.maxLength = maxLength;
+    this.enterButton = enterButton;
+  }
 
-        /**
-         *
-         * @param pinSpec
-         * @param enterButton may be null
-         * @param compareTo enable enterButton iff this pinDocument's pin equals to compareTo's pin. may be null
-         * @param oldPin enable enterButton iff oldPin meets the pinSpec pin length requirements, may be null
-         */
-        public PINDocument(PINSpec pinSpec, JButton enterButton, Document compareTo, Document oldPin) {
-          this(pinSpec, enterButton);
-          this.compareTo = compareTo;
-          this.oldPin = oldPin;
-        }
+  /**
+   * @param pinSpec
+   * @param enterButton
+   * @param compareTo
+   *          enable enterButton if this pinDocument's pin equals to
+   *          compareTo's pin. may be null
+   */
+  public PINDocument(int minLength, int maxLength, String pattern, JButton enterButton, Document compareTo) {
+    this(minLength, maxLength, pattern, enterButton);
+    this.compareTo = compareTo;
+  }
+
+  /**
+   * @param pinSpec
+   * @param enterButton
+   *          may be null
+   * @param compareTo
+   *          enable enterButton if this pinDocument's pin equals to
+   *          compareTo's pin. may be null
+   * @param oldPin
+   *          enable enterButton if oldPin meets the pinSpec pin length
+   *          requirements, may be null
+   */
+  public PINDocument(int minLength, int maxLength, String pattern,
+      JButton enterButton, Document compareTo, Document oldPin) {
+    this(minLength, maxLength, pattern, enterButton);
+    this.compareTo = compareTo;
+    this.oldPin = oldPin;
+  }
 
         @Override
         public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
-            if (pinSpec.getMaxLength() < 0 || pinSpec.getMaxLength() >= (getLength() + str.length())) {
+            if (maxLength < 0 || maxLength >= (getLength() + str.length())) {
                 boolean matches = true;
                 for (int i = 0; i < str.length(); i++) {
                     Matcher m = pinPattern.matcher(str.substring(i, i + 1));
@@ -87,8 +97,8 @@ class PINDocument extends PlainDocument {
             }
             if (enterButton != null) {
               enterButton.setEnabled(
-                      (oldPin == null || oldPin.getLength() >= pinSpec.getMinLength()) &&
-                      getLength() >= pinSpec.getMinLength() &&
+                      (oldPin == null || oldPin.getLength() >= minLength) &&
+                      getLength() >= minLength &&
                       compare());
             }
         }
@@ -98,8 +108,8 @@ class PINDocument extends PlainDocument {
             super.remove(offs, len);
             if (enterButton != null) {
               enterButton.setEnabled(
-                      (oldPin == null || oldPin.getLength() >= pinSpec.getMinLength()) &&
-                      getLength() >= pinSpec.getMinLength() &&
+                      (oldPin == null || oldPin.getLength() >= minLength) &&
+                      getLength() >= minLength &&
                       compare());
             }
         }

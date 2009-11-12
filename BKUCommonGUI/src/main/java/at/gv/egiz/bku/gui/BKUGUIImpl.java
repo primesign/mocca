@@ -593,7 +593,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
                 pinField = new JPasswordField();
                 pinField.setText("");
-                pinField.setDocument(new PINDocument(pinSpec, okButton));
+                pinField.setDocument(new PINDocument(pinSpec.getMinLength(), pinSpec.getMaxLength(), pinSpec.getRexepPattern(), okButton));
                 pinField.setActionCommand(okCommand);
                 pinField.addActionListener(new ActionListener() {
 
@@ -1031,7 +1031,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
                 pinField = new JPasswordField();
                 pinField.setText("");
-                pinField.setDocument(new PINDocument(pinSpec, signButton));
+                pinField.setDocument(new PINDocument(pinSpec.getMinLength(), pinSpec.getMaxLength(), pinSpec.getRexepPattern(), signButton));
                 pinField.setActionCommand(signCommand);
                 pinField.addActionListener(new ActionListener() {
 

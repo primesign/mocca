@@ -21,6 +21,7 @@ import at.gv.egiz.bku.gui.BKUGUIFacade.Style;
 import at.gv.egiz.bku.gui.DefaultHelpListener;
 import at.gv.egiz.bku.gui.AbstractHelpListener;
 import at.gv.egiz.bku.gui.SwitchFocusListener;
+import at.gv.egiz.smcc.SignatureCardFactory;
 import at.gv.egiz.stal.service.translator.STALTranslator;
 
 import java.io.IOException;
@@ -71,6 +72,7 @@ public class BKUApplet extends JApplet {
   public static final String REDIRECT_URL = "RedirectURL";
   public static final String REDIRECT_TARGET = "RedirectTarget";
   public static final String HASHDATA_DISPLAY_FRAME = "frame";
+  public static final String ENFORCE_RECOMMENDED_PIN_LENGTH = "EnforceRecommendedPINLength";
   /**
    * STAL WSDL namespace and service name
    */
@@ -157,6 +159,11 @@ public class BKUApplet extends JApplet {
     log.trace("default locale: " + Locale.getDefault());
     log.debug("setting locale: " + getLocale());
 
+    if (Boolean.parseBoolean(getParameter(ENFORCE_RECOMMENDED_PIN_LENGTH))) {
+      SignatureCardFactory.ENFORCE_RECOMMENDED_PIN_LENGTH = true;
+      log.debug("enforce recommended pin length = " + SignatureCardFactory.ENFORCE_RECOMMENDED_PIN_LENGTH);
+    }
+    
     BKUGUIFacade.Style guiStyle;
     String guiStyleParam = getParameter(GUI_STYLE);
     if ("advanced".equals(guiStyleParam)) {

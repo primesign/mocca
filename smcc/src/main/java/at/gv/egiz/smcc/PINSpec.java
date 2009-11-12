@@ -17,6 +17,7 @@
 package at.gv.egiz.smcc;
 
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
@@ -25,113 +26,214 @@ import java.util.ResourceBundle;
  */
 public class PINSpec {
 
-    int minLength_ = 0;
+  /**
+   * The minimum PIN length.
+   */
+  protected int minLength = 0;
     
-    int maxLength_ = -1;
+  /**
+   * The maximum PIN length or -1 if not specified.
+   */
+  protected int maxLength = -1;
     
-    String rexepPattern_;
-    
-    String resourceBundleName_;
-    
-    String nameKey_;
+  /**
+   * The recommended PIN length or -1 if not specified.
+   */
+  protected int recLength = -1;
+  
+  /**
+   * The regular expression pattern of a single PIN digit or character.
+   */
+  protected String rexepPattern;
+  
+  /**
+   * The name of the corresponding resource bundle.
+   */
+  protected String resourceBundleName;
+   
+  /**
+   * The key of the PIN name in the resource bundle.
+   */
+  protected String nameKey;
 
-    /** the localized, i.e. configurable length */
-    String lengthKey_;
+  /**
+   * The name of the PIN.
+   */
+  protected String name;
+  
+  /**
+   * The key id to be used in VERIFY or CHANGE REFERENCE DATA APDUs.
+   */
+  protected byte kid;
 
-    byte kid_;
+  /**
+   * The context AID of the key id.
+   */
+  protected byte[] context_aid;
 
-    byte[] context_aid_;
+  /**
+   * Creates a new instance of this PINSpec with the given lengths, regular
+   * expression pattern, the ResourceBundle name and key to lookup the PIN name
+   * and the KID and AID.
+   * 
+   * @param minLenght the minimum length of the PIN
+   * @param maxLength the maximum length of the PIN, or -1 if there is no maximum length
+   * @param rexepPattern the regular expression pattern of a single PIN digit or character
+   * @param resourceBundleName the name of a ResourceBundle for this PIN
+   * @param resourceKey the key to look up the (localized) name of this PIN
+   * @param kid the key id of the PIN
+   * @param contextAID the AID the KID is valid in
+   */
+  public PINSpec(int minLenght, int maxLength, String rexepPattern,
+      String resourceBundleName, String resourceKey, byte kid, byte[] contextAID) {
 
-    /**
-     *
-     * @param minLenght
-     * @param maxLength
-     * @param rexepPattern
-     * @param resourceBundle
-     * @param name
-     * @param kid the keyId for this pin
-     */
-    public PINSpec(int minLenght, int maxLength, String rexepPattern, 
-        String resourceBundleName, String resourceKey, byte kid, byte[] contextAID) {
-        
-        minLength_ = minLenght;
-        maxLength_ = maxLength;
-        rexepPattern_ = rexepPattern;
-        resourceBundleName_ = resourceBundleName;
-        nameKey_ = resourceKey + ".name";
-        lengthKey_ = resourceKey + ".length";
-        kid_ = kid;
-        context_aid_ = contextAID;
-    }
+    this.minLength = minLenght;
+    this.maxLength = maxLength;
+    this.rexepPattern = rexepPattern;
+    this.resourceBundleName = resourceBundleName;
+    this.nameKey = resourceKey + ".name";
+    this.kid = kid;
+    this.context_aid = contextAID;
+  }
 
-    public PINSpec(int minLenght, int maxLength, String rexepPattern, 
-        String name, byte kid, byte[] contextAID) {
-        
-        minLength_ = minLenght;
-        maxLength_ = maxLength;
-        rexepPattern_ = rexepPattern;
-        nameKey_ = name + ".name";
-        lengthKey_ = name + ".length";
-        kid_ = kid;
-        context_aid_ = contextAID;
-    }
-    
-    public String getLocalizedName() {
-      
-      if (resourceBundleName_ != null) {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle(resourceBundleName_);
-        return resourceBundle.getString(nameKey_);
-      } else {
-        return nameKey_;
+  /**
+   * Creates a new instance of this PINSpec with the given lengths, regular 
+   * expression pattern, the name of the PIN and the KID and AID.
+   * 
+   * @param minLenght the minimum length of the PIN
+   * @param maxLength the maximum length of the PIN, or -1 if there is no maximum length
+   * @param rexepPattern the regular expression pattern of a single PIN digit or character
+   * @param name the name of the PIN
+   * @param kid the key id of the PIN
+   * @param contextAID the AID the KID is valid in
+   */
+  public PINSpec(int minLenght, int maxLength, String rexepPattern,
+      String name, byte kid, byte[] contextAID) {
+
+    this.minLength = minLenght;
+    this.maxLength = maxLength;
+    this.rexepPattern = rexepPattern;
+    this.name = name;
+    this.kid = kid;
+    this.context_aid = contextAID;
+  }
+
+  /**
+   * This method sets the recommended PIN length.
+   * 
+   * @param recLength the recommended PIN length
+   */
+  public void setRecLength(int recLength) {
+    this.recLength = recLength;
+  }
+
+  /**
+   * @return the localized (using the default locale) name of the PIN, or the
+   *         name set by
+   *         {@link #PINSpec(int, int, String, String, byte, byte[])}.
+   */
+  public String getLocalizedName() {
+    if (name != null) {
+      return name;
+    } else if (resourceBundleName != null){
+      try {
+        return ResourceBundle.getBundle(resourceBundleName).getString(nameKey);
+      } catch (MissingResourceException e) {
       }
-        
     }
-    
-    public String getLocalizedName(Locale locale) {
-      
-      if (resourceBundleName_ != null) {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle(resourceBundleName_, locale);
-        return resourceBundle.getString(nameKey_);
-      } else {
-        return nameKey_;
+    return nameKey;
+  }
+
+  /**
+   * @param locale the locale for which the name should be returned
+   * @return the localized name of the PIN, or the name set by
+   *         {@link #PINSpec(int, int, String, String, byte, byte[])}
+   */
+  public String getLocalizedName(Locale locale) {
+    if (name != null) {
+      return name;
+    } else if (resourceBundleName != null) {
+      try {
+        return ResourceBundle.getBundle(resourceBundleName, locale).getString(nameKey);
+      } catch (MissingResourceException e) {
       }
-      
     }
+    return nameKey;
+  }
 
-    public String getLocalizedLength() {
-
-      if (resourceBundleName_ != null) {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle(resourceBundleName_);
-        return resourceBundle.getString(lengthKey_);
-      } else {
-        if (maxLength_ > minLength_) {
-          return minLength_ + "-" + maxLength_;
-        } else {
-          return String.valueOf(minLength_);
-        }
-      }
-
-    }
-
-    public int getMaxLength() {
-        return maxLength_;
-    }
-
-    public int getMinLength() {
-        return minLength_;
-    }
-
-    public String getRexepPattern() {
-        return rexepPattern_;
-    }
-
-    public byte getKID() {
-      return kid_;
-    }
-
-    public byte[] getContextAID() {
-      return context_aid_;
-    }
+  /**
+   * @return the recommended PIN length if specified and
+   *         <code>recommended</code> is <code>true</code>, or
+   *         <code>minLength</code>-<code>maxLength</code>
+   */
+  public String getLocalizedLength() {
     
+    if (recLength > 0) {
+      return "" + recLength;
+    } else if (maxLength == minLength) {
+      return "" + minLength;
+    } else if (maxLength > minLength) {
+      return minLength + "-" + maxLength;
+    } else {
+      return minLength + "+";
+    }
+
+  }
+
+  /**
+   * @return the minimum length of the PIN
+   */
+  public int getMinLength() {
+    return minLength;
+  }
+
+  /**
+   * @return the maximum length of the PIN, or -1 if not specified.
+   */
+  public int getMaxLength() {
+    return maxLength;
+  }
+
+  /**
+   * @return the minimum length of the PIN
+   */
+  public int getRecMinLength() {
+    return (recLength >= minLength) ? recLength : minLength;
+  }
+
+  /**
+   * @return the maximum length of the PIN
+   */
+  public int getRecMaxLength() {
+    return (recLength >= minLength) ? recLength : maxLength;
+  }
+  
+  /**
+   * @return the recommended length of the PIN, or -1 if not specified
+   */
+  public int getRecLength() {
+    return recLength;
+  }
+
+  /**
+   * @return the regular expression pattern of one single digit or character
+   */
+  public String getRexepPattern() {
+    return rexepPattern;
+  }
+
+  /**
+   * @return the key id of the PIN
+   */
+  public byte getKID() {
+    return kid;
+  }
+
+  /**
+   * @return the AID the KID is valid in, or <code>null</code> if KID is global
+   */
+  public byte[] getContextAID() {
+    return context_aid;
+  }
     
 }

@@ -436,14 +436,14 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 });
 
                 if (type != DIALOG.VERIFY) {
-                  pinField.setDocument(new PINDocument(pinSpec, null));
+                  pinField.setDocument(
+                      new PINDocument(pinSpec.getRecMinLength(), pinSpec.getRecMaxLength(), pinSpec.getRexepPattern(), null));
                   repeatPinLabel = new JLabel();
                   repeatPinLabel.setFont(pinLabel.getFont());
                   String repeatPinLabelPattern = getMessage(LABEL_REPEAT_PIN);
                   repeatPinLabel.setText(MessageFormat.format(repeatPinLabelPattern, new Object[]{pinSpec.getLocalizedName()}));
 
                   repeatPinField.setText("");
-//                  repeatPinField.setDocument(new PINDocument(pinSpec, okButton, pinField.getDocument()));
                   repeatPinField.setActionCommand(okCommand);
                   repeatPinField.addActionListener(new ActionListener() {
 
@@ -463,7 +463,8 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
 
                     oldPinField = new JPasswordField();
                     oldPinField.setText("");
-                    oldPinField.setDocument(new PINDocument(pinSpec, null));
+                    oldPinField.setDocument(
+                        new PINDocument(pinSpec.getMinLength(), pinSpec.getMaxLength(), pinSpec.getRexepPattern(), null));
                     oldPinField.setActionCommand(okCommand);
                     oldPinField.addActionListener(new ActionListener() {
 
@@ -475,16 +476,18 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                         }
                     });
 
-                    repeatPinField.setDocument(new PINDocument(
-                            pinSpec, okButton,
-                            pinField.getDocument(), oldPinField.getDocument()));
+                    repeatPinField.setDocument(
+                        new PINDocument(pinSpec.getRecMinLength(), pinSpec.getRecMaxLength(), pinSpec.getRexepPattern(), 
+                            okButton, pinField.getDocument(), oldPinField.getDocument()));
                   } else {
                     // else -> ACTIVATE (not verify, not change)
-                    repeatPinField.setDocument(new PINDocument(
-                            pinSpec, okButton, pinField.getDocument()));
+                    repeatPinField.setDocument(
+                        new PINDocument(pinSpec.getRecMinLength(), pinSpec.getRecMaxLength(), pinSpec.getRexepPattern(), 
+                            okButton, pinField.getDocument()));
                   }
                 } else {
-                  pinField.setDocument(new PINDocument(pinSpec, okButton));
+                  pinField.setDocument(
+                      new PINDocument(pinSpec.getMinLength(), pinSpec.getMaxLength(), pinSpec.getRexepPattern(), okButton));
                 }
 
                 JLabel pinsizeLabel = new JLabel();
