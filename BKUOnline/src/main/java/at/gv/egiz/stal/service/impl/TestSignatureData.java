@@ -19,7 +19,7 @@ public final class TestSignatureData {
   public static final Map<String, byte[]> HASHDATA_INPUT = new HashMap<String, byte[]>();
   static {
     try {
-      HASHDATA_INPUT.put(ID[0], "Ich bin ein einfacher Text. llšŠŸ§Û".getBytes(ENCODING));
+      HASHDATA_INPUT.put(ID[0], "Ich bin ein einfacher Text. lll".getBytes(ENCODING));
       HASHDATA_INPUT.put(ID[1], "2te referenz".getBytes(ENCODING));
     } catch (UnsupportedEncodingException ex) {
       log.error("failed to init signature test data", ex);
