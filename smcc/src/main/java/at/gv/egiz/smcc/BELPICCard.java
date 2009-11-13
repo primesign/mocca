@@ -65,7 +65,7 @@ public class BELPICCard extends AbstractSignatureCard implements SignatureCard {
     
   private static final PINSpec SS_PIN_SPEC = 
     new PINSpec(4, 12, "[0-9]",
-      "at/gv/egiz/smcc/BelpicCard", "sig.pin", KID, DF_BELPIC);
+      "at/gv/egiz/smcc/BELPICCard", "sig.pin", KID, DF_BELPIC);
     
   /**
    * Creates a new instance.
