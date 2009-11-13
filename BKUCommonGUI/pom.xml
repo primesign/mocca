@@ -2,23 +2,23 @@
     <parent>
         <artifactId>bku</artifactId>
         <groupId>at.gv.egiz</groupId>
-        <version>1.2.8-SNAPSHOT</version>
+        <version>1.2.8</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>at.gv.egiz</groupId>
     <artifactId>BKUCommonGUI</artifactId>
     <name>BKU GUI</name>
-    <version>1.2.8-SNAPSHOT</version>
+    <version>1.2.8</version>
     <dependencies>
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>smcc</artifactId>
-            <version>1.2.8-SNAPSHOT</version>
+            <version>1.2.8</version>
         </dependency>
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>STAL</artifactId>
-            <version>1.2.8-SNAPSHOT</version>
+            <version>1.2.8</version>
             <scope>compile</scope>
         </dependency>
         <!-- see BKUFonts.pom
