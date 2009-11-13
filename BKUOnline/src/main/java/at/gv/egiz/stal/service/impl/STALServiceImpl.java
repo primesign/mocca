@@ -355,23 +355,6 @@ public class STALServiceImpl implements STALPortType {
       ref.setEncoding(TestSignatureData.ENCODING);
       response.getReference().add(ref);
     }
-//    GetHashDataInputResponseType.Reference ref = new GetHashDataInputResponseType.Reference();
-//    ref.setID("signed-data-reference-0-1214921968-27971781-24309"); //Reference-" + TEST_SESSION_ID + "-001");
-//    ref.setMimeType("text/plain");
-
-//    Charset charset;
-//    try {
-//      charset = Charset.forName("iso-8859-15");
-//      ref.setEncoding("iso-8859-15");
-//    } catch (Exception ex) {
-//      log.warn(ex.getMessage());
-//      charset = Charset.defaultCharset();
-//      ref.setEncoding(charset.toString());
-//    }
-//    ref.setValue("hashdatainput-Ã¶Ã¤Ã¼ÃŸ@â‚¬-00000000001".getBytes(charset));
-    
-//    ref.setValue("Ich bin ein einfacher Text. llšŠŸ§Û".getBytes());
-//    response.getReference().add(ref);
     return response;
   }
   
