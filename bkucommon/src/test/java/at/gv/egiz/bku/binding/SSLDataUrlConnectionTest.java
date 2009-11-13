@@ -24,11 +24,10 @@ import java.net.URL;
 import org.junit.Ignore;
 import org.junit.Test;
 
-
+@Ignore
 public class SSLDataUrlConnectionTest {
   
   @Test
-  @Ignore
   public void testVerisign() throws IOException {
     URL url = new URL("https://www.verisign.com:443");
     DataUrlConnectionImpl uc = new DataUrlConnectionImpl();
