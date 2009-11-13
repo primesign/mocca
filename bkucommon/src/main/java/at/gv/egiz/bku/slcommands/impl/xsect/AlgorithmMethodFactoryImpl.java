@@ -43,6 +43,11 @@ import javax.xml.crypto.dsig.spec.SignatureMethodParameterSpec;
 public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
 
   /**
+   * Use SHA-2?
+   */
+  private static boolean SHA2 = false;
+  
+  /**
    * The signature algorithm URI.
    */
   private String signatureAlgorithmURI;
@@ -82,7 +87,7 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
         keyLength = ((RSAPublicKey) publicKey).getModulus().bitLength();
       }
       
-      if (keyLength >= 2048) {
+      if (SHA2 && keyLength >= 2048) {
         signatureAlgorithmURI = XmldsigMore.SIGNATURE_RSA_SHA256;
         digestAlgorithmURI = DigestMethod.SHA256;
       } else {
@@ -100,14 +105,14 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
         fieldSize = params.getCurve().getField().getFieldSize();
       }
       
-      if (fieldSize < 256) {
-        signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_SHA1;
-      } else if (fieldSize < 512) {
+      if (SHA2 && fieldSize >= 512) {
+        signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_SHA512;
+        digestAlgorithmURI = DigestMethod.SHA512;
+      } else if (SHA2 && fieldSize >= 256) {
         signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_SHA256;
         digestAlgorithmURI = DigestMethod.SHA256;
       } else {
-        signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_SHA512;
-        digestAlgorithmURI = DigestMethod.SHA512;
+        signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_SHA1;
       }
       
     } else {
