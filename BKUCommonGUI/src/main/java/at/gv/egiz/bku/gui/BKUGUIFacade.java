@@ -46,7 +46,7 @@ public interface BKUGUIFacade {
   public static final String DEFAULT_BACKGROUND = "/at/gv/egiz/bku/gui/chip32.png";
   public static final String DEFAULT_ICON = "/at/gv/egiz/bku/gui/chiperling105.png";
   public static final String HELP_IMG = "/at/gv/egiz/bku/gui/help.png";
-  public static final String HELP_IMG_FOCUS = "/at/gv/egiz/bku/gui/help_focus.png";
+  public static final String HELP_IMG_FOCUS = "/at/gv/egiz/bku/gui/help.png"; //help_focus.png";
   public static final String HASHDATA_FONT = "Monospaced";
   public static final Color ERROR_COLOR = Color.RED;
   public static final Color HYPERLINK_COLOR = Color.BLUE;
@@ -56,6 +56,7 @@ public interface BKUGUIFacade {
   public static final String TITLE_CARDPIN = "title.cardpin";
   public static final String TITLE_SIGN = "title.sign";
   public static final String TITLE_ERROR = "title.error";
+  public static final String TITLE_WARNING = "title.warning";
   public static final String TITLE_ENTRY_TIMEOUT = "title.entry.timeout";
   public static final String TITLE_RETRY = "title.retry";
   public static final String TITLE_WAIT = "title.wait";
@@ -79,6 +80,8 @@ public interface BKUGUIFacade {
   public static final String MESSAGE_HASHDATALINK_FOCUS = "hashdatalink.focus";
   public static final String MESSAGE_HASHDATALINK_TINY_FOCUS = "hashdatalink.tiny.focus";
   public static final String MESSAGE_HASHDATALIST = "hashdatalist";
+  public static final String MESSAGE_HASHDATA_VIEWER = "hashdata.viewer";
+  public static final String MESSAGE_UNSUPPORTED_MIMETYPE = "unsupported.mimetype";
   public static final String MESSAGE_RETRIES = "retries";
   public static final String MESSAGE_LAST_RETRY = "retries.last";
   public static final String MESSAGE_RETRIES_PINPAD = "retries.pinpad";

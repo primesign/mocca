@@ -17,12 +17,15 @@
 package at.gv.egiz.bku.gui;
 
 import at.gv.egiz.bku.gui.viewer.FontProvider;
+import at.gv.egiz.bku.gui.viewer.FontProviderException;
+import at.gv.egiz.bku.gui.viewer.SecureViewerSaveDialog;
 import at.gv.egiz.stal.HashDataInput;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -41,6 +44,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -72,6 +78,12 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
    * BKUViewer has compile dependency BKUFonts, transitive in BKUOnline and BKULocal
    */
   public static final Dimension VIEWER_DIMENSION = new Dimension(600, 400);
+  
+  public static final List<String> SUPPORTED_MIME_TYPES = new ArrayList<String>();
+  static {
+    SUPPORTED_MIME_TYPES.add("text/plain");
+    SUPPORTED_MIME_TYPES.add("application/xhtml+xml");
+  }
   protected static final Log log = LogFactory.getLog(SecureViewerDialog.class);
 //  private static SecureViewerDialog dialog;
   protected ResourceBundle messages;
@@ -102,7 +114,7 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
 //    dialog.setVisible(true);
 //  }
   public SecureViewerDialog(Frame owner, ResourceBundle messages,
-          //          ActionListener saveListener, String saveCommand,
+          ActionListener closeListener, String closeCommand,
           FontProvider fontProvider, ActionListener helpListener) {
     super(owner, messages.getString(BKUGUIFacade.WINDOWTITLE_VIEWER), true);
     this.setIconImages(BKUIcons.icons);
@@ -111,7 +123,7 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
 
     initContentPane(VIEWER_DIMENSION,
             createViewerPanel(helpListener),
-            createButtonPanel()); //saveListener, saveCommand));
+            createButtonPanel(closeListener, closeCommand));
 
     pack();
     if (owner != null) {
@@ -289,15 +301,22 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
     toFront();
   }
 
-  private JPanel createButtonPanel() { //ActionListener saveListener, String saveCommand) {
+  private JPanel createButtonPanel(ActionListener closeListener, String closeCommand) {
     JButton closeButton = new JButton();
     closeButton.setText(messages.getString(BKUGUIFacade.BUTTON_CLOSE));
-    closeButton.setActionCommand("close");
-    closeButton.addActionListener(this);
+    closeButton.setActionCommand(closeCommand);
+    closeButton.addActionListener(closeListener);
+    closeButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        log.trace("[" + Thread.currentThread().getName() + "] closing secure viewer");
+        setVisible(false);
+      }
+    });
 
     JButton saveButton = new JButton();
     saveButton.setText(messages.getString(BKUGUIFacade.BUTTON_SAVE));
-    saveButton.setActionCommand("save");
+    saveButton.setActionCommand("save"); //TODO ensure unequal to closeCommand 
     saveButton.addActionListener(this);
 
     int buttonSize = closeButton.getPreferredSize().width;
@@ -319,100 +338,37 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    if ("close".equals(e.getActionCommand())) {
-      log.trace("[" + Thread.currentThread().getName() + "] closing secure viewer");
-      setVisible(false);
-      log.trace("secure viewer closed");
-    } else if ("save".equals(e.getActionCommand())) {
+    if ("save".equals(e.getActionCommand())) {
       log.trace("[" + Thread.currentThread().getName() + "] display secure viewer save dialog");
-      showSaveDialog(content, null, null);
+      SecureViewerSaveDialog.showSaveDialog(content, messages, null, null);
       log.trace("done secure viewer save");
     } else {
       log.warn("unknown action command " + e.getActionCommand());
     }
   }
+  
+  
+//  //TEST
+//  private static SecureViewerDialog secureViewer;
+//  public static void showSecureViewerXXX(HashDataInput dataToBeSigned, ResourceBundle messages, FontProvider fontProvider, ActionListener helpListener, boolean alwaysOnTop) throws FontProviderException {
+//    
+////    ResourceBundle messages = ResourceBundle.getBundle(BKUGUIFacade.MESSAGES_BUNDLE, locale);
+//    
+//    log.debug("[" + Thread.currentThread().getName() + "] show secure viewer");
+//    if (secureViewer == null) {
+//      secureViewer = new SecureViewerDialog(null, messages,
+//              fontProvider, helpListener); 
+//
+//      // workaround for [#439]
+//      // avoid AlwaysOnTop at least in applet, otherwise make secureViewer AlwaysOnTop since MOCCA Dialog (JFrame created in LocalSTALFactory) is always on top.
+////      Window window = SwingUtilities.getWindowAncestor(contentPane);
+////      if (window != null && window.isAlwaysOnTop()) {
+////        log.debug("make secureViewer alwaysOnTop");
+//        secureViewer.setAlwaysOnTop(alwaysOnTop);
+////      }
+//    }
+//    secureViewer.setContent(dataToBeSigned);
+//    log.trace("show secure viewer returned");
+//  }
 
-  private void showSaveDialog(final HashDataInput hashDataInput,
-          final ActionListener okListener, final String okCommand) {
-
-    log.debug("[" + Thread.currentThread().getName() + "] scheduling save dialog");
-
-    SwingUtilities.invokeLater(new Runnable() {
-
-      @Override
-      public void run() {
-
-        log.debug("[" + Thread.currentThread().getName() + "] show save dialog");
-
-        String userHome = System.getProperty("user.home");
-
-        JFileChooser fileDialog = new JFileChooser(userHome);
-        fileDialog.setMultiSelectionEnabled(false);
-        fileDialog.setDialogType(JFileChooser.SAVE_DIALOG);
-        fileDialog.setFileHidingEnabled(true);
-        fileDialog.setDialogTitle(messages.getString(BKUGUIFacade.WINDOWTITLE_SAVE));
-        fileDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        String mimeType = hashDataInput.getMimeType();
-        MimeFilter mimeFilter = new MimeFilter(mimeType, messages);
-        fileDialog.setFileFilter(mimeFilter);
-        String filename = messages.getString(BKUGUIFacade.SAVE_HASHDATAINPUT_PREFIX) +
-                MimeFilter.getExtension(mimeType);
-        fileDialog.setSelectedFile(new File(userHome, filename));
-
-        //parent contentPane -> placed over applet
-        switch (fileDialog.showSaveDialog(fileDialog)) {
-          case JFileChooser.APPROVE_OPTION:
-            File file = fileDialog.getSelectedFile();
-            String id = hashDataInput.getReferenceId();
-            if (file.exists()) {
-              String msgPattern = messages.getString(BKUGUIFacade.MESSAGE_OVERWRITE);
-              int overwrite = JOptionPane.showConfirmDialog(fileDialog,
-                      MessageFormat.format(msgPattern, file),
-                      messages.getString(BKUGUIFacade.WINDOWTITLE_OVERWRITE),
-                      JOptionPane.OK_CANCEL_OPTION);
-              if (overwrite != JOptionPane.OK_OPTION) {
-                return;
-              }
-            }
-            if (log.isDebugEnabled()) {
-              log.debug("writing hashdata input " + id + " (" + mimeType + ") to file " + file);
-            }
-            FileOutputStream fos = null;
-            try {
-              fos = new FileOutputStream(file);
-              BufferedOutputStream bos = new BufferedOutputStream(fos);
-              InputStream hdi = hashDataInput.getHashDataInput();
-              int b;
-              while ((b = hdi.read()) != -1) {
-                bos.write(b);
-              }
-              bos.flush();
-              bos.close();
-            } catch (IOException ex) {
-              log.error("Failed to write " + file + ": " + ex.getMessage());
-              log.debug(ex);
-              String errPattern = messages.getString(BKUGUIFacade.ERR_WRITE_HASHDATA);
-              JOptionPane.showMessageDialog(fileDialog,
-                      MessageFormat.format(errPattern, ex.getMessage()),
-                      messages.getString(BKUGUIFacade.WINDOWTITLE_ERROR),
-                      JOptionPane.ERROR_MESSAGE);
-            } finally {
-              try {
-                if (fos != null) {
-                  fos.close();
-                }
-              } catch (IOException ex) {
-              }
-            }
-            break;
-          case JFileChooser.CANCEL_OPTION:
-            log.debug("cancelled save dialog");
-            break;
-        }
-        if (okListener != null) {
-          okListener.actionPerformed(new ActionEvent(fileDialog, ActionEvent.ACTION_PERFORMED, okCommand));
-        }
-      }
-    });
-  }
 }

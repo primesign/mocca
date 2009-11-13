@@ -14,7 +14,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package at.gv.egiz.bku.gui;
+package at.gv.egiz.bku.gui.viewer;
 
 import java.io.File;
 import java.util.ResourceBundle;
@@ -32,6 +32,7 @@ class MimeFilter extends FileFilter {
   private static final String MIMETYPE_DESC_TXT = "mimetype.desc.txt";
   private static final String MIMETYPE_DESC_PDF = "mimetype.desc.pdf";
   private static final String MIMETYPE_DESC_BIN = "mimetype.desc.bin";
+  private static final String MIMETYPE_DESC_UNKNOWN = "mimetype.desc.unknown";
 
   protected String mimeType;
   protected ResourceBundle messages;
@@ -87,8 +88,10 @@ class MimeFilter extends FileFilter {
       return messages.getString(MIMETYPE_DESC_TXT);
     } else if ("application/pdf".equals(mimeType)) {
       return messages.getString(MIMETYPE_DESC_PDF);
-    } else {
+    } else if ("application/octet-stream".equals(mimeType)) {
       return messages.getString(MIMETYPE_DESC_BIN);
+    } else {
+      return messages.getString(MIMETYPE_DESC_UNKNOWN);
     }
   }
 
@@ -103,8 +106,10 @@ class MimeFilter extends FileFilter {
       return ".txt";
     } else if ("application/pdf".equals(mimeType)) {
       return ".pdf";
-    } else {
+    } else if ("application/octet-stream".equals(mimeType)) {
       return ".bin";
+    } else {
+      return "";
     }
   }
 }

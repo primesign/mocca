@@ -293,8 +293,7 @@ public class DataObject {
         }
         
       } else {
-        log.info("MIME media type '" + mediaType + "' is not a valid digest input.");
-        throw new SLViewerException(5001); 
+        log.debug("MIME media type '" + mediaType + "' is not a s/valid/SUPPORTED digest input, omitting validation.");
       }
     }
     

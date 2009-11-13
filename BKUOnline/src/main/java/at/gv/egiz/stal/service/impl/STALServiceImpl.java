@@ -37,12 +37,16 @@ import at.gv.egiz.stal.service.types.QuitRequestType;
 import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
 import at.gv.egiz.stal.service.types.SignRequestType;
+import at.gv.egiz.stal.service.types.GetHashDataInputType.Reference;
+//import at.gv.egiz.stal.service.types.GetHashDataInputResponseType.Reference;
+
 import com.sun.xml.ws.developer.UsesJAXBContext;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Resource;
@@ -204,113 +208,97 @@ public class STALServiceImpl implements STALPortType {
       log.debug("Received GetHashDataInputRequest for session " + sessionId + " containing " + request.getReference().size() + " reference(s)");
     }
 
+    if (TEST_SESSION_ID.equals(sessionId)) {
+      return getTestSessionHashDataInputResponse(request.getReference());
+    }
+    
     GetHashDataInputResponseType response = new GetHashDataInputResponseType();
     response.setSessionId(sessionId.toString());
 
-    if (TEST_SESSION_ID.equals(sessionId)) {
-      log.debug("Received GetHashDataInput for session " + TEST_SESSION_ID + ", return DummyHashDataInput");
-      GetHashDataInputResponseType.Reference ref = new GetHashDataInputResponseType.Reference();
-      ref.setID("signed-data-reference-0-1214921968-27971781-24309"); //Reference-" + TEST_SESSION_ID + "-001");
-      ref.setMimeType("text/plain");
+    STALRequestBroker stal = getStal(sessionId);
 
-      Charset charset;
-      try {
-        charset = Charset.forName("iso-8859-15");
-        ref.setEncoding("iso-8859-15");
-      } catch (Exception ex) {
-        log.warn(ex.getMessage());
-        charset = Charset.defaultCharset();
-        ref.setEncoding(charset.toString());
-      }
-      ref.setValue("hashdatainput-öäüß@€-00000000001".getBytes(charset));
-      response.getReference().add(ref);
-      return response;
-    } else {
-      STALRequestBroker stal = getStal(sessionId);
+    if (stal != null) {
+      List<HashDataInput> hashDataInputs = stal.getHashDataInput();
 
-      if (stal != null) {
-        List<HashDataInput> hashDataInputs = stal.getHashDataInput();
+      if (hashDataInputs != null) {
 
-        if (hashDataInputs != null) {
-
-          Map<String, HashDataInput> hashDataIdMap = new HashMap<String, HashDataInput>();
-          for (HashDataInput hdi : hashDataInputs) {
-            if (log.isTraceEnabled()) {
-              log.trace("Provided HashDataInput for reference " + hdi.getReferenceId());
-            }
-            hashDataIdMap.put(hdi.getReferenceId(), hdi);
+        Map<String, HashDataInput> hashDataIdMap = new HashMap<String, HashDataInput>();
+        for (HashDataInput hdi : hashDataInputs) {
+          if (log.isTraceEnabled()) {
+            log.trace("Provided HashDataInput for reference " + hdi.getReferenceId());
           }
-
-          List<GetHashDataInputType.Reference> reqRefs = request.getReference();
-          for (GetHashDataInputType.Reference reqRef : reqRefs) {
-            String reqRefId = reqRef.getID();
-            HashDataInput reqHdi = hashDataIdMap.get(reqRefId);
-            if (reqHdi == null) {
-              String msg = "Failed to resolve HashDataInput for reference " + reqRefId;
-              log.error(msg);
-              GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
-              faultInfo.setErrorCode(1);
-              faultInfo.setErrorMessage(msg);
-              throw new GetHashDataInputFault(msg, faultInfo);
-            }
-
-            InputStream hashDataIS = reqHdi.getHashDataInput();
-            if (hashDataIS == null) {
-              //HashDataInput not cached?
-              String msg = "Failed to obtain HashDataInput for reference " + reqRefId + ", reference not cached";
-              log.error(msg);
-              GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
-              faultInfo.setErrorCode(1);
-              faultInfo.setErrorMessage(msg);
-              throw new GetHashDataInputFault(msg, faultInfo);
-            }
-            ByteArrayOutputStream baos = null;
-            try {
-              if (log.isDebugEnabled()) {
-                log.debug("Resolved HashDataInput " + reqRefId + " (" + reqHdi.getMimeType() + ";charset=" + reqHdi.getEncoding() + ")");
-              }
-              baos = new ByteArrayOutputStream(hashDataIS.available());
-              int c;
-              while ((c = hashDataIS.read()) != -1) {
-                baos.write(c);
-              }
-              GetHashDataInputResponseType.Reference ref = new GetHashDataInputResponseType.Reference();
-              ref.setID(reqRefId);
-              ref.setMimeType(reqHdi.getMimeType());
-              ref.setEncoding(reqHdi.getEncoding());
-              ref.setValue(baos.toByteArray());
-              response.getReference().add(ref);
-            } catch (IOException ex) {
-              String msg = "Failed to get HashDataInput for reference " + reqRefId;
-              log.error(msg, ex);
-              GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
-              faultInfo.setErrorCode(1);
-              faultInfo.setErrorMessage(msg);
-              throw new GetHashDataInputFault(msg, faultInfo, ex);
-            } finally {
-              try {
-                baos.close();
-              } catch (IOException ex) {
-              }
-            }
-          }
-          return response;
-        } else {
-          String msg = "Failed to resolve any HashDataInputs for session " + sessionId;
-          log.error(msg);
-          GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
-          faultInfo.setErrorCode(1);
-          faultInfo.setErrorMessage(msg);
-          throw new GetHashDataInputFault(msg, faultInfo);
+          hashDataIdMap.put(hdi.getReferenceId(), hdi);
         }
+
+        List<GetHashDataInputType.Reference> reqRefs = request.getReference();
+        for (GetHashDataInputType.Reference reqRef : reqRefs) {
+          String reqRefId = reqRef.getID();
+          HashDataInput reqHdi = hashDataIdMap.get(reqRefId);
+          if (reqHdi == null) {
+            String msg = "Failed to resolve HashDataInput for reference " + reqRefId;
+            log.error(msg);
+            GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
+            faultInfo.setErrorCode(1);
+            faultInfo.setErrorMessage(msg);
+            throw new GetHashDataInputFault(msg, faultInfo);
+          }
+
+          InputStream hashDataIS = reqHdi.getHashDataInput();
+          if (hashDataIS == null) {
+            //HashDataInput not cached?
+            String msg = "Failed to obtain HashDataInput for reference " + reqRefId + ", reference not cached";
+            log.error(msg);
+            GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
+            faultInfo.setErrorCode(1);
+            faultInfo.setErrorMessage(msg);
+            throw new GetHashDataInputFault(msg, faultInfo);
+          }
+          ByteArrayOutputStream baos = null;
+          try {
+            if (log.isDebugEnabled()) {
+              log.debug("Resolved HashDataInput " + reqRefId + " (" + reqHdi.getMimeType() + ";charset=" + reqHdi.getEncoding() + ")");
+            }
+            baos = new ByteArrayOutputStream(hashDataIS.available());
+            int c;
+            while ((c = hashDataIS.read()) != -1) {
+              baos.write(c);
+            }
+            GetHashDataInputResponseType.Reference ref = new GetHashDataInputResponseType.Reference();
+            ref.setID(reqRefId);
+            ref.setMimeType(reqHdi.getMimeType());
+            ref.setEncoding(reqHdi.getEncoding());
+            ref.setValue(baos.toByteArray());
+            response.getReference().add(ref);
+          } catch (IOException ex) {
+            String msg = "Failed to get HashDataInput for reference " + reqRefId;
+            log.error(msg, ex);
+            GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
+            faultInfo.setErrorCode(1);
+            faultInfo.setErrorMessage(msg);
+            throw new GetHashDataInputFault(msg, faultInfo, ex);
+          } finally {
+            try {
+              baos.close();
+            } catch (IOException ex) {
+            }
+          }
+        }
+        return response;
       } else {
-        String msg = "Session timeout"; //Failed to get STAL for session " + sessionId;
-        log.error(msg + " " + sessionId);
+        String msg = "Failed to resolve any HashDataInputs for session " + sessionId;
+        log.error(msg);
         GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
         faultInfo.setErrorCode(1);
         faultInfo.setErrorMessage(msg);
         throw new GetHashDataInputFault(msg, faultInfo);
       }
+    } else {
+      String msg = "Session timeout"; //Failed to get STAL for session " + sessionId;
+      log.error(msg + " " + sessionId);
+      GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
+      faultInfo.setErrorCode(1);
+      faultInfo.setErrorMessage(msg);
+      throw new GetHashDataInputFault(msg, faultInfo);
     }
   }
 
@@ -332,45 +320,83 @@ public class STALServiceImpl implements STALPortType {
     List<JAXBElement<? extends RequestType>> reqs = response.getInfoboxReadRequestOrSignRequestOrQuitRequest();
 
     if (responsesIn == null) {
-      log.info("[TestSession] received CONNECT, return dummy requests ");
-//      addDummyRequests(reqs);
-      ScriptType scriptT = ccObjFactory.createScriptType();
-      CommandAPDUType cmd = ccObjFactory.createCommandAPDUType();
-      cmd.setValue("TestSession CardChannelCMD 1234".getBytes());
-      scriptT.getResetOrCommandAPDUOrVerifyAPDU().add(cmd);
-      reqs.add(ccObjFactory.createScript(scriptT));
+      log.info("[TestSession] CONNECT");
+//      addTestCardChannelRequest(reqs);
+//      addTestInfoboxReadRequest("IdentityLink", reqs);
+//      addTestInfoboxReadRequest("SecureSignatureKeypair", reqs);
+//      addTestInfoboxReadRequest("CertifiedKeypair", reqs);
+      addTestSignatureRequests("SecureSignatureKeypair", reqs);
     } else if (responsesIn != null && responsesIn.size() > 0 && responsesIn.get(0).getValue() instanceof ErrorResponseType) {
       log.info("[TestSession] received ErrorResponse, return QUIT request");
       QuitRequestType quitT = stalObjFactory.createQuitRequestType();
       reqs.add(stalObjFactory.createGetNextRequestResponseTypeQuitRequest(quitT));
     } else {
-      log.info("[TestSession] received " + responsesIn.size() + " response(s), return dummy requests" );
-      addDummyRequests(reqs);
+      log.info("[TestSession] received " + responsesIn.size() + " response(s), return QUIT" );
+      QuitRequestType quitT = stalObjFactory.createQuitRequestType();
+      reqs.add(stalObjFactory.createGetNextRequestResponseTypeQuitRequest(quitT));
     }
     return response;
   }
+  
+  
+  private GetHashDataInputResponseType getTestSessionHashDataInputResponse(List<Reference> references) {
+    log.debug("[TestSession] received GET_HASHDATAINPUT");
+    
+    GetHashDataInputResponseType response = new GetHashDataInputResponseType();
+    response.setSessionId(TEST_SESSION_ID.toString());
+    
+    for (Reference reference : references) {
+      String refId = reference.getID();
+      log.debug("[TestSession] adding hashdata input for " + refId);
+      GetHashDataInputResponseType.Reference ref = new GetHashDataInputResponseType.Reference();
+      ref.setID(refId);
+      ref.setMimeType(TestSignatureData.HASHDATA_MIMETYPES.get(refId)); //todo resolve from TestSignatureData
+      ref.setValue(TestSignatureData.HASHDATA_INPUT.get(refId));
+      ref.setEncoding(TestSignatureData.ENCODING);
+      response.getReference().add(ref);
+    }
+//    GetHashDataInputResponseType.Reference ref = new GetHashDataInputResponseType.Reference();
+//    ref.setID("signed-data-reference-0-1214921968-27971781-24309"); //Reference-" + TEST_SESSION_ID + "-001");
+//    ref.setMimeType("text/plain");
 
-  private void addDummyRequests(List<JAXBElement<? extends RequestType>> reqs) {
-//    log.info("[TestSession] add READ request for Infobox IdentityLink");
-//    InfoboxReadRequestType ibrT1 = stalObjFactory.createInfoboxReadRequestType();
-//    ibrT1.setInfoboxIdentifier("IdentityLink");
-//    reqs.add(stalObjFactory.createGetNextRequestResponseTypeInfoboxReadRequest(ibrT1));
+//    Charset charset;
+//    try {
+//      charset = Charset.forName("iso-8859-15");
+//      ref.setEncoding("iso-8859-15");
+//    } catch (Exception ex) {
+//      log.warn(ex.getMessage());
+//      charset = Charset.defaultCharset();
+//      ref.setEncoding(charset.toString());
+//    }
+//    ref.setValue("hashdatainput-öäüß@€-00000000001".getBytes(charset));
+    
+//    ref.setValue("Ich bin ein einfacher Text. ll�����".getBytes());
+//    response.getReference().add(ref);
+    return response;
+  }
+  
+  private void addTestCardChannelRequest(List<JAXBElement<? extends RequestType>> requestList) {
+    log.info("[TestSession] add CARDCHANNEL request");
+    ScriptType scriptT = ccObjFactory.createScriptType();
+    CommandAPDUType cmd = ccObjFactory.createCommandAPDUType();
+    cmd.setValue("TestSession CardChannelCMD 1234".getBytes());
+    scriptT.getResetOrCommandAPDUOrVerifyAPDU().add(cmd);
+    requestList.add(ccObjFactory.createScript(scriptT));
+  }
 
-    log.info("[TestSession] add READ request for Infobox CertifiedKeypair");
-    InfoboxReadRequestType ibrT2 = stalObjFactory.createInfoboxReadRequestType();
-    ibrT2.setInfoboxIdentifier("CertifiedKeypair");
-    reqs.add(stalObjFactory.createGetNextRequestResponseTypeInfoboxReadRequest(ibrT2));
-
-    log.info("[TestSession] add READ request for Infobox SecureSignatureKeypair");
-    InfoboxReadRequestType ibrT3 = stalObjFactory.createInfoboxReadRequestType();
-    ibrT3.setInfoboxIdentifier("SecureSignatureKeypair");
-    reqs.add(stalObjFactory.createGetNextRequestResponseTypeInfoboxReadRequest(ibrT3));
-
-    log.info("[TestSession] add SIGN request");
-    SignRequestType sigT1 = stalObjFactory.createSignRequestType();
-    sigT1.setKeyIdentifier("SecureSignatureKeypair");
-    sigT1.setSignedInfo("<dsig:SignedInfo  xmlns:dsig=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:xpf=\"http://www.w3.org/2002/06/xmldsig-filter2\"><dsig:CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\" /> <dsig:SignatureMethod Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1\" /> <dsig:Reference Id=\"signed-data-reference-0-1214921968-27971781-24309\" URI=\"#signed-data-object-0-1214921968-27971781-13578\"><dsig:Transforms> <dsig:Transform Algorithm=\"http://www.w3.org/2002/06/xmldsig-filter2\"> <xpf:XPath xmlns:xpf=\"http://www.w3.org/2002/06/xmldsig-filter2\" Filter=\"intersect\">id('signed-data-object-0-1214921968-27971781-13578')/node()</xpf:XPath></dsig:Transform></dsig:Transforms><dsig:DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\" /> <dsig:DigestValue>H1IePEEfGQ2SG03H6LTzw1TpCuM=</dsig:DigestValue></dsig:Reference><dsig:Reference Id=\"etsi-data-reference-0-1214921968-27971781-25439\" Type=\"http://uri.etsi.org/01903/v1.1.1#SignedProperties\" URI=\"#xmlns(etsi=http://uri.etsi.org/01903/v1.1.1%23)%20xpointer(id('etsi-data-object-0-1214921968-27971781-3095')/child::etsi:QualifyingProperties/child::etsi:SignedProperties)\"><dsig:DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\" /><dsig:DigestValue>yV6Q+I60buqR4mMaxA7fi+CV35A=</dsig:DigestValue></dsig:Reference></dsig:SignedInfo>".getBytes());
-    reqs.add(stalObjFactory.createGetNextRequestResponseTypeSignRequest(sigT1));
+  private void addTestInfoboxReadRequest(String infoboxIdentifier, List<JAXBElement<? extends RequestType>> requestList) {
+    log.info("[TestSession] add READ "+ infoboxIdentifier + " request");
+    InfoboxReadRequestType ibrT = stalObjFactory.createInfoboxReadRequestType();
+    ibrT.setInfoboxIdentifier(infoboxIdentifier);
+    requestList.add(stalObjFactory.createGetNextRequestResponseTypeInfoboxReadRequest(ibrT));
+  }
+  
+  private void addTestSignatureRequests(String keyIdentifier, List<JAXBElement<? extends RequestType>> reqs) {
+    log.info("[TestSession] add SIGN " + keyIdentifier + " request");
+    SignRequestType sigT = stalObjFactory.createSignRequestType();
+    sigT.setKeyIdentifier(keyIdentifier);
+    sigT.setSignedInfo(TestSignatureData.SIGNED_INFO.get(1)); //select! 
+    reqs.add(stalObjFactory.createGetNextRequestResponseTypeSignRequest(sigT));
   }
 
 }

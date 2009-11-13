@@ -185,13 +185,13 @@ public class AppletSecureViewer implements SecureViewer {
           throw new Exception("No hashdata input for reference " + signedRefId + " provided by service");
         }
         if (log.isDebugEnabled()) {
-          log.debug("Got HashDataInput " + signedRefId + " (" + mimeType + ";" + encoding + ")");
+          log.debug("Digesting reference " + signedRefId + " (" + mimeType + ";" + encoding + ")");
         }
 
         byte[] hashDataInputDigest = digest(hdi, signedDigestAlg);
 
         if (log.isDebugEnabled()) {
-          log.debug("Comparing digest values... ");
+          log.debug("Comparing digest to claimed digest value for reference " + signedRefId);
         }
 //        log.warn("***************** DISABLED HASHDATA VERIFICATION");
         if (!Arrays.equals(hashDataInputDigest, signedDigest)) {

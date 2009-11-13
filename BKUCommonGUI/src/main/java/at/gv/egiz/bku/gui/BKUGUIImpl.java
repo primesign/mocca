@@ -19,6 +19,7 @@ package at.gv.egiz.bku.gui;
 
 import at.gv.egiz.bku.gui.viewer.FontProviderException;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
+import at.gv.egiz.bku.gui.viewer.SecureViewerSaveDialog;
 import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.stal.HashDataInput;
 import java.awt.Color;
@@ -1384,26 +1385,34 @@ public class BKUGUIImpl implements BKUGUIFacade {
                 new Object[] {"no signature data provided"},
                 backListener, backCommand);
       } else if (dataToBeSigned.size() == 1) {
-        try {
-          log.debug("[" + Thread.currentThread().getName() + "] scheduling secure viewer");
-
-          SwingUtilities.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-              try {
-                showSecureViewer(dataToBeSigned.get(0));
-              } catch (FontProviderException ex) {
-                log.error("failed to display secure viewer", ex);
-                showErrorDialog(ERR_VIEWER, new Object[] {ex.getMessage()}, backListener, backCommand);
+        //TODO pull out (see also SignedReferencesSelectionListener)
+        if (SecureViewerDialog.SUPPORTED_MIME_TYPES.contains(dataToBeSigned.get(0).getMimeType())) {
+          try {
+            log.debug("[" + Thread.currentThread().getName() + "] scheduling secure viewer");
+  
+            SwingUtilities.invokeLater(new Runnable() {
+  
+              @Override
+              public void run() {
+                try {
+                  showMessageDialog(TITLE_HASHDATA, MESSAGE_HASHDATA_VIEWER);
+                  showSecureViewer(dataToBeSigned.get(0), backListener, backCommand);
+                } catch (FontProviderException ex) {
+                  log.error("failed to display secure viewer", ex);
+                  showErrorDialog(ERR_VIEWER, new Object[] {ex.getMessage()}, backListener, backCommand);
+                }
               }
-            }
-          });
-       
-        } catch (Exception ex) { //InterruptedException InvocationTargetException
-          log.error("Failed to display secure viewer: " + ex.getMessage());
-          log.trace(ex);
-          showErrorDialog(ERR_UNKNOWN, null, backListener, backCommand);
+            });
+         
+          } catch (Exception ex) { //InterruptedException InvocationTargetException
+            log.error("Failed to display secure viewer: " + ex.getMessage());
+            log.trace(ex);
+            showErrorDialog(ERR_UNKNOWN, null, backListener, backCommand);
+          }
+        } else {
+          log.debug("[" + Thread.currentThread().getName() + "] mime-type not supported by secure viewer, scheduling save dialog");
+          showMessageDialog(TITLE_HASHDATA, MESSAGE_UNSUPPORTED_MIMETYPE);
+          SecureViewerSaveDialog.showSaveDialog(dataToBeSigned.get(0), messages, backListener, backCommand); 
         }
       } else {
         showSignedReferencesListDialog(dataToBeSigned, backListener, backCommand);
@@ -1412,29 +1421,47 @@ public class BKUGUIImpl implements BKUGUIFacade {
     
     /**
      * has to be called from event dispatcher thread
-     * This method blocks until the dialog's close button is pressed.
      * @param hashDataText
      * @param saveListener
      * @param saveCommand
      */
-    private void showSecureViewer(HashDataInput dataToBeSigned) throws FontProviderException {
+//    private void showSecureViewer(HashDataInput dataToBeSigned) throws FontProviderException {
+//      
+//      log.debug("[" + Thread.currentThread().getName() + "] show secure viewer");
+//      if (secureViewer == null) {
+//        secureViewer = new SecureViewerDialog(null, messages,
+//                fontProvider, helpMouseListener.getActionListener());
+//
+//        // workaround for [#439]
+//        // avoid AlwaysOnTop at least in applet, otherwise make secureViewer AlwaysOnTop since MOCCA Dialog (JFrame created in LocalSTALFactory) is always on top.
+//        Window window = SwingUtilities.getWindowAncestor(contentPane);
+//        if (window != null && window.isAlwaysOnTop()) {
+//          log.debug("make secureViewer alwaysOnTop");
+//          secureViewer.setAlwaysOnTop(true);
+//        }
+//      }
+//      secureViewer.setContent(dataToBeSigned);
+//      log.trace("show secure viewer returned");
+//    }
+    private void showSecureViewer(HashDataInput dataToBeSigned, ActionListener closeListener, String closeCommand) throws FontProviderException {
       
       log.debug("[" + Thread.currentThread().getName() + "] show secure viewer");
-      if (secureViewer == null) {
-        secureViewer = new SecureViewerDialog(null, messages,
-                fontProvider, helpMouseListener.getActionListener());
-
-        // workaround for [#439]
-        // avoid AlwaysOnTop at least in applet, otherwise make secureViewer AlwaysOnTop since MOCCA Dialog (JFrame created in LocalSTALFactory) is always on top.
-        Window window = SwingUtilities.getWindowAncestor(contentPane);
-        if (window != null && window.isAlwaysOnTop()) {
-          log.debug("make secureViewer alwaysOnTop");
-          secureViewer.setAlwaysOnTop(true);
-        }
+      SecureViewerDialog secureViewer = new SecureViewerDialog(null, messages,
+          closeListener, closeCommand,
+            fontProvider, helpMouseListener.getActionListener());
+        
+      // workaround for [#439]
+      // avoid AlwaysOnTop at least in applet, otherwise make secureViewer AlwaysOnTop since MOCCA Dialog (JFrame created in LocalSTALFactory) is always on top.
+      Window window = SwingUtilities.getWindowAncestor(contentPane);
+      if (window != null && window.isAlwaysOnTop()) {
+        log.debug("make secureViewer alwaysOnTop");
+        secureViewer.setAlwaysOnTop(true);
       }
       secureViewer.setContent(dataToBeSigned);
-      log.trace("show secure viewer returned");
+      log.trace("viewer setContent returned");
     }
+    
+    
     
     private void showSignedReferencesListDialog(final List<HashDataInput> signedReferences,
             final ActionListener backListener, final String backCommand) {
@@ -1468,44 +1495,10 @@ public class BKUGUIImpl implements BKUGUIFacade {
           hashDataTable.setDefaultRenderer(HashDataInput.class, new HyperlinkRenderer(renderRefId));
           hashDataTable.setTableHeader(null);
           
-          // not possible to add mouse listener to TableCellRenderer
-          hashDataTable.addMouseMotionListener(new MouseMotionAdapter() {
-
-            @Override
-            public void mouseMoved(MouseEvent e) {
-              if (hashDataTable.columnAtPoint(e.getPoint()) == 0) {
-                hashDataTable.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-              } else {
-                hashDataTable.setCursor(Cursor.getDefaultCursor());
-              }
-            }
-          });
+          hashDataTable.addMouseMotionListener(new SignedReferencesMouseMotionListener(hashDataTable));
           
           hashDataTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-          hashDataTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-
-            @Override
-            public void valueChanged(final ListSelectionEvent e) {
-              //invoke later to allow thread to paint selection background
-              SwingUtilities.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                  ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-                  int selectionIdx = lsm.getMinSelectionIndex();
-                  if (selectionIdx >= 0) {
-                    final HashDataInput selection = signedReferences.get(selectionIdx);
-                    try {
-                      showSecureViewer(selection);
-                    } catch (FontProviderException ex) {
-                      log.error("failed to display secure viewer", ex);
-                      showErrorDialog(ERR_VIEWER, new Object[] {ex.getMessage()}, backListener, backCommand);
-                    }
-                  }
-                }
-              });
-            }
-          });
+          hashDataTable.getSelectionModel().addListSelectionListener(new SignedReferencesSelectionListener(signedReferences, backListener, backCommand));
           
           JScrollPane hashDataScrollPane = new JScrollPane(hashDataTable);
 
@@ -1560,97 +1553,106 @@ public class BKUGUIImpl implements BKUGUIFacade {
       });
     }
     
+   
+    
     /**
-     * @param okListener may be null
+     * not possible to add mouse listener to TableCellRenderer
+     * to change cursor on specific columns only, use table.columnAtPoint(e.getPoint()) 
+     *
      */
-//    private void showSaveDialog(final List<HashDataInput> signedRefs,
-//            final ActionListener okListener, final String okCommand) {
-//
-//      log.debug("scheduling save dialog");
-//
-//      SwingUtilities.invokeLater(new Runnable() {
-//
-//        @Override
-//        public void run() {
-//
-//          log.debug("show save dialog");
-//
-//          String userHome = System.getProperty("user.home");
-//
-//          JFileChooser fileDialog = new JFileChooser(userHome);
-//          fileDialog.setMultiSelectionEnabled(false);
-//          fileDialog.setDialogType(JFileChooser.SAVE_DIALOG);
-//          fileDialog.setFileHidingEnabled(true);
-//          if (signedRefs.size() == 1) {
-//            fileDialog.setDialogTitle(getMessage(WINDOWTITLE_SAVE));
-//            fileDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
-//            String mimeType = signedRefs.get(0).getMimeType();
-//            MimeFilter mimeFilter = new MimeFilter(mimeType, messages);
-//            fileDialog.setFileFilter(mimeFilter);
-//            String filename = getMessage(SAVE_HASHDATAINPUT_PREFIX) + MimeFilter.getExtension(mimeType);
-//            fileDialog.setSelectedFile(new File(userHome, filename));
-//          } else {
-//            fileDialog.setDialogTitle(getMessage(WINDOWTITLE_SAVEDIR));
-//            fileDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-//          }
-//
-//          //parent contentPane -> placed over applet
-//          switch (fileDialog.showSaveDialog(fileDialog)) {
-//            case JFileChooser.APPROVE_OPTION:
-//              File f = fileDialog.getSelectedFile();
-//              for (HashDataInput hashDataInput : signedRefs) {
-//                String mimeType = hashDataInput.getMimeType();
-//                String id = hashDataInput.getReferenceId();
-//                File file;
-//                if (f.isDirectory()) {
-//                  String filename = getMessage(SAVE_HASHDATAINPUT_PREFIX) + '_' + id + MimeFilter.getExtension(mimeType);
-//                  file = new File(f, filename);
-//                } else {
-//                  file = f;
-//                }
-//                if (file.exists()) {
-//                  String ovrwrt = getMessage(MESSAGE_OVERWRITE);
-//                  int overwrite = JOptionPane.showConfirmDialog(fileDialog, MessageFormat.format(ovrwrt, file), getMessage(WINDOWTITLE_OVERWRITE), JOptionPane.OK_CANCEL_OPTION);
-//                  if (overwrite != JOptionPane.OK_OPTION) {
-//                    continue;
-//                  }
-//                }
-//                if (log.isDebugEnabled()) {
-//                    log.debug("writing hashdata input " + id + " (" + mimeType + ") to file " + file);
-//                }
-//                FileOutputStream fos = null;
-//                try {
-//                    fos = new FileOutputStream(file);
-//                    BufferedOutputStream bos = new BufferedOutputStream(fos);
-//                    InputStream hdi = hashDataInput.getHashDataInput();
-//                    int b;
-//                    while ((b = hdi.read()) != -1) {
-//                        bos.write(b);
-//                    }
-//                    bos.flush();
-//                    bos.close();
-//                } catch (IOException ex) {
-//                    log.error("Failed to write " + file + ": " + ex.getMessage());
-//                    showErrorDialog(ERR_WRITE_HASHDATA, new Object[] {ex.getMessage()}, null, null);
-//                    ex.printStackTrace();
-//                } finally {
-//                    try {
-//                        fos.close();
-//                    } catch (IOException ex) {
-//                    }
-//                }
-//              }
-//              break;
-//            case JFileChooser.CANCEL_OPTION :
-//              log.debug("cancelled save dialog");
-//              break;
-//          }
-//          if (okListener != null) {
-//            okListener.actionPerformed(new ActionEvent(fileDialog, ActionEvent.ACTION_PERFORMED, okCommand));
-//          }
-//        }
-//      });
-//    }
+    private class SignedReferencesMouseMotionListener extends MouseMotionAdapter {
+
+      JTable hashDataTable;
+      
+      public SignedReferencesMouseMotionListener(JTable table) {
+        this.hashDataTable = table;
+      }
+      
+      @Override
+      public void mouseMoved(MouseEvent e) {
+//        if (hashDataTable.columnAtPoint(e.getPoint()) == 0) {
+          hashDataTable.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+      }
+    }
+    
+    ///////////
+    // SignedReferencesList (TODO pull out)
+    
+    public class SignedReferencesSelectionListener implements ListSelectionListener {
+      
+      List<HashDataInput> signedReferences;
+      ActionListener backListener;
+      String backCommand;
+      
+      public SignedReferencesSelectionListener(List<HashDataInput> signedReferences, ActionListener backListener, String backCommand) {
+        this.signedReferences = signedReferences;
+        this.backListener = backListener;
+        this.backCommand = backCommand;
+      }
+      
+      @Override
+      public void valueChanged(ListSelectionEvent event) {
+        
+        if (event.getValueIsAdjusting()) {
+          return;
+        }
+        
+        ListSelectionModel lsm = (ListSelectionModel) event.getSource();
+        int selectionIdx = lsm.getMinSelectionIndex();
+
+        log.debug("[" + Thread.currentThread().getName() + "] reference " + selectionIdx + " selected");
+        
+        if (selectionIdx >= 0) {
+          final HashDataInput selection = signedReferences.get(selectionIdx);
+          final SignedReferencesListDisplayer backToListListener = new SignedReferencesListDisplayer(signedReferences, backListener, backCommand);
+          
+          if (SecureViewerDialog.SUPPORTED_MIME_TYPES.contains(selection.getMimeType())) {
+            log.debug("[" + Thread.currentThread().getName() + "] scheduling secure viewer dialog");
+            SwingUtilities.invokeLater(new Runnable() {
+              
+              @Override
+              public void run() {
+                try {
+                  showMessageDialog(TITLE_HASHDATA, MESSAGE_HASHDATA_VIEWER);
+                  showSecureViewer(selection, backToListListener, null);
+//                  SecureViewerDialog.showSecureViewer(selection, messages, fontProvider, helpMouseListener.getActionListener(), false);
+                } catch (FontProviderException ex) {
+                  log.error("failed to display secure viewer", ex);
+                  showErrorDialog(BKUGUIFacade.ERR_VIEWER, new Object[] {ex.getMessage()}, backToListListener, null);
+                }
+                
+              }
+            });
+          } else {
+            log.debug("[" + Thread.currentThread().getName() + "] mime-type not supported by secure viewer, scheduling save dialog");
+            showMessageDialog(BKUGUIFacade.TITLE_HASHDATA, BKUGUIFacade.MESSAGE_UNSUPPORTED_MIMETYPE);
+            SecureViewerSaveDialog.showSaveDialog(selection, messages, backToListListener, null);
+          }
+        }
+      }
+      
+      /**
+       * ActionListener that returns to signed references list 
+       */
+      private class SignedReferencesListDisplayer implements ActionListener {
+        List<HashDataInput> sr;
+        ActionListener bl;
+        String bc;
+        
+        public SignedReferencesListDisplayer(List<HashDataInput> signedReferences, ActionListener backListener, String backCommand) {
+          sr = signedReferences;
+          bl = backListener;
+          bc = backCommand;
+        }
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+//          log.debug("[" + Thread.currentThread().getName() + "] displaying signed references list");
+          showSignedReferencesListDialog(sr, bl, bc); 
+        }
+      }
+    }
+
 
     ////////////////////////////////////////////////////////////////////////////
     // UTILITY METHODS
