@@ -16,6 +16,8 @@
  */
 package at.gv.egiz.bku.binding;
 
+import iaik.utils.Base64InputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -551,7 +553,20 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 	public InputStream getFormData(String aParameterName) {
 		FormParameter fp = formParameterMap.get(aParameterName);
 		if (fp != null) {
-			return fp.getFormParameterValue();
+		  final String enc = fp.getHeaderValue("Content-Transfer-Encoding");
+		  if (enc == null || "binary".equals(enc)) {
+            return fp.getFormParameterValue();
+		  } else if ("base64".equals(enc)) {
+		    return new Base64InputStream(fp.getFormParameterValue());
+		  } else {
+            return new InputStream() {
+              @Override
+              public int read() throws IOException {
+                throw new IOException("Content-Transfer-Encoding : " + enc
+                    + " is not supported.");
+              }
+            };
+		  }
 		}
 		return null;
 	}
@@ -679,12 +694,6 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 			if (slCommand == null) {
 				throw new SLBindingException(2004);
 			}
-			if (is.read() != -1) {
-				log.error("Request input stream not completely read");
-				// consume rest of stream, should never occur
-				throw new SLRuntimeException(
-						"request input stream not consumed till end");
-			}
 		} catch (SLException slx) {
 			log.info("Error while consuming input stream " + slx);
 			bindingProcessorError = slx;
@@ -693,8 +702,10 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 			bindingProcessorError = new SLException(2000);
 		} finally {
 			try {
-				while (is.read() != -1)
-					;
+			  if (is.read() != -1) {
+			    log.warn("Request input stream not completely read.");
+			    while (is.read() != -1);
+			  }
 			} catch (IOException e) {
 				log.error(e);
 			}
