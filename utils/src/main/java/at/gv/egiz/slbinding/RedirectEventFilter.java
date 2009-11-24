@@ -153,9 +153,6 @@ public class RedirectEventFilter implements EventFilter {
 
   private void redirectEvent(XMLEvent event) {
     try {
-      if (log.isTraceEnabled()) {
-        log.trace("redirecting StAX event " + event);
-      }
       redirectWriter.add(event);
     } catch (XMLStreamException ex) {
       ex.printStackTrace();

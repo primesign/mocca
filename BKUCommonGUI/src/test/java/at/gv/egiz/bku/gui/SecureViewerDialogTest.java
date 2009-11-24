@@ -66,7 +66,7 @@ public class SecureViewerDialogTest {
       String s = new String(bytes, "iso-8859-1");
       System.out.println("read iso-8859-1 bytes " + s);
 
-      secureViewer.setContent(new ByteArrayHashDataInput(s.getBytes("UTF-8"), "id-1", "text/plain", "iso-8859-1"));
+      secureViewer.setContent(new ByteArrayHashDataInput(s.getBytes("UTF-8"), "id-1", "text/plain", "iso-8859-1", "file.txt"));
 
     }
 
@@ -87,7 +87,7 @@ public class SecureViewerDialogTest {
       }
 
       System.out.println(data.toString());
-      secureViewer.setContent(new ByteArrayHashDataInput(data.toString().getBytes("UTF-8"), "id-1", "text/plain", "UTF-8"));
+      secureViewer.setContent(new ByteArrayHashDataInput(data.toString().getBytes("UTF-8"), "id-1", "text/plain", "UTF-8", "file.txt"));
 
     }
 
@@ -146,7 +146,7 @@ public class SecureViewerDialogTest {
 //    byte[] bytes2 = data.getBytes("cp1252");
 //    System.out.println(data + "\t" +  SMCCHelper.toString(bytes2));
 
-    secureViewer.setContent(new ByteArrayHashDataInput(data.toString().getBytes("UTF-8"), "id-1", "text/plain", "UTF-8"));
+    secureViewer.setContent(new ByteArrayHashDataInput(data.toString().getBytes("UTF-8"), "id-1", "text/plain", "UTF-8", "file.txt"));
 
     System.out.println("\n\n=============================\n");
 //

@@ -180,6 +180,7 @@ public class AppletSecureViewer implements SecureViewer {
         byte[] hdi = hashDataInput.getValue();
         String mimeType = hashDataInput.getMimeType();
         String encoding = hashDataInput.getEncoding();
+        String filename = hashDataInput.getFilename();
 
         if (hdi == null) {
           throw new Exception("No hashdata input for reference " + signedRefId + " provided by service");
@@ -199,7 +200,7 @@ public class AppletSecureViewer implements SecureViewer {
           throw new DigestException("Bad digest value for reference " + signedRefId);
         }
 
-        verifiedHashDataInputs.add(new ByteArrayHashDataInput(hdi, signedRefId, mimeType, encoding));
+        verifiedHashDataInputs.add(new ByteArrayHashDataInput(hdi, signedRefId, mimeType, encoding, filename));
       }
     }
 

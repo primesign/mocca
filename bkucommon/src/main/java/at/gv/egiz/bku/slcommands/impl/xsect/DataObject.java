@@ -49,8 +49,6 @@ import javax.xml.crypto.dsig.spec.XPathType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.w3._2000._09.xmldsig_.TransformType;
-import org.w3._2000._09.xmldsig_.TransformsType;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -71,6 +69,7 @@ import at.buergerkarte.namespaces.securitylayer._1.DataObjectInfoType;
 import at.buergerkarte.namespaces.securitylayer._1.MetaInfoType;
 import at.buergerkarte.namespaces.securitylayer._1.TransformsInfoType;
 import at.gv.egiz.bku.binding.HttpUtil;
+import at.gv.egiz.bku.gui.viewer.MimeTypes;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
@@ -81,11 +80,11 @@ import at.gv.egiz.bku.viewer.ValidationException;
 import at.gv.egiz.bku.viewer.Validator;
 import at.gv.egiz.bku.viewer.ValidatorFactory;
 import at.gv.egiz.dom.DOMUtils;
-import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
 import at.gv.egiz.slbinding.impl.XMLContentType;
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 
 /**
  * This class represents a <code>DataObject</code> of an XML-Signature
@@ -184,7 +183,9 @@ public class DataObject {
    * An optional description of the digest input.
    */
   private String description;
-  
+
+  private String filename;
+
   /**
    * Creates a new instance.
    * 
@@ -228,6 +229,10 @@ public class DataObject {
    */
   public String getMimeType() {
     return mimeType;
+  }
+
+  public String getFilename() {
+    return filename;
   }
 
   /**
@@ -336,7 +341,74 @@ public class DataObject {
       
     } 
     // other values are not allowed by the schema and are therefore ignored
-    
+
+    this.filename = deriveFilename();
+  }
+
+  /**
+   * Extract filename from reference URI
+   * or propose reference Id with an apropriate (mime-type) file extension
+   *
+   * @return if neither reference nor id can be extracted return null (or data.extension?)
+   */
+  private String deriveFilename() {
+      
+    String filename = null;
+
+    if (reference != null) {
+      if (reference.getURI() != null && !"".equals(reference.getURI())) {
+        try {
+          log.info("deriving filename from reference URI " + reference.getURI());
+          URI refURI = new URI(reference.getURI());
+
+          if (refURI.isOpaque()) {
+            // could check scheme component, but also allow other schemes (e.g. testlocal)
+            log.trace("opaque reference URI, use scheme-specific part as filename");
+            filename = refURI.getSchemeSpecificPart();
+            if (!hasExtension(filename)) {
+              filename += MimeTypes.getExtension(mimeType);
+            }
+          // else hierarchical URI:
+          // for shorthand xpointer use fragment as filename,
+          // for any other xpointer use reference Id and
+          // for any other hierarchical (absolute or relative) use filename (ignore fragment, see xmldsig section 4.3.3.2: fragments not recommendet)
+          } else if ("".equals(refURI.getPath()) && 
+                  refURI.getFragment() != null &&
+                  refURI.getFragment().indexOf('(') < 0) { // exclude (schemebased) xpointer expressions
+            log.trace("fragment (shorthand xpointer) URI, use fragment as filename");
+            filename = refURI.getFragment();
+            if(!hasExtension(filename)) {
+              filename += MimeTypes.getExtension(mimeType);
+            }
+          } else if (!"".equals(refURI.getPath())) {
+            log.trace("hierarchical URI with path component, use path as filename");
+            File refFile = new File(refURI.getPath());
+            filename = refFile.getName();
+            if(!hasExtension(filename)) {
+              filename += MimeTypes.getExtension(mimeType);
+            }
+          } else {
+            log.info("failed to derive filename from URI '" + refURI + "', derive filename from reference ID");
+            filename = reference.getId() + MimeTypes.getExtension(mimeType);
+          }
+        } catch (URISyntaxException ex) {
+          log.error("failed to derive filename from invalid URI " + ex.getMessage());
+          filename = reference.getId() + MimeTypes.getExtension(mimeType);
+        }
+      } else {
+        log.info("same-document URI, derive filename from reference ID");
+        filename = reference.getId() + MimeTypes.getExtension(mimeType);
+      }
+    } else {
+      log.error("failed to derive filename, no reference created");
+    }
+    log.debug("derived filename for reference " + reference.getId() + ": " + filename);
+    return filename;
+  }
+
+  private static boolean hasExtension(String filename) {
+    int extDelimiterInd = filename.lastIndexOf('.');
+    return extDelimiterInd >= 0 && extDelimiterInd >= filename.length() - 4;
   }
 
   private byte[] getTransformsBytes(at.gv.egiz.slbinding.impl.TransformsInfoType ti) {

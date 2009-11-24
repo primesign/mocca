@@ -23,6 +23,8 @@ package at.gv.egiz.slbinding.impl;
 import at.gv.egiz.slbinding.RedirectCallback;
 import at.gv.egiz.slbinding.RedirectEventFilter;
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
@@ -51,6 +53,13 @@ public class XMLContentType extends at.buergerkarte.namespaces.securitylayer._1.
         log.debug("disabling event redirection for XMLContentType");
         filter.flushRedirectStream();
         filter.setRedirectStream(null);
+        if (log.isDebugEnabled()) {
+          try {
+            log.debug("redirected events (UTF-8): " + redirectOS.toString("UTF-8"));
+          } catch (UnsupportedEncodingException ex) {
+            log.debug("failed to log redirected events", ex);
+          }
+        }
     }
 
     @Override

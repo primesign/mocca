@@ -31,6 +31,8 @@ public interface HashDataInput {
     
     public String getEncoding();
     
+    public String getFilename();
+    
     public InputStream getHashDataInput();
 
 }

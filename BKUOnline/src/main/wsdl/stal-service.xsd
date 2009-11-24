@@ -166,6 +166,7 @@
               <attribute name="ID" type="string"/>
               <attribute name="MimeType" type="string" use="optional"/>
               <attribute name="Encoding" type="string" use="optional"/>
+              <attribute name="Filename" type="string" use="optional"/>
             </extension>
           </simpleContent>
         </complexType>

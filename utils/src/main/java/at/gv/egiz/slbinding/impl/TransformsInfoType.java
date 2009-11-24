@@ -22,6 +22,7 @@ package at.gv.egiz.slbinding.impl;
 
 import at.gv.egiz.slbinding.*;
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.Set;
 import javax.xml.bind.annotation.XmlTransient;
@@ -62,6 +63,13 @@ public class TransformsInfoType extends at.buergerkarte.namespaces.securitylayer
         log.debug("disabling event redirection for TransformsInfoType");
         filter.flushRedirectStream();
         filter.setRedirectStream(null);
+        if (log.isDebugEnabled()) {
+          try {
+            log.debug("redirected events (UTF-8): " + redirectOS.toString("UTF-8"));
+          } catch (UnsupportedEncodingException ex) {
+            log.debug("failed to log redirected events", ex);
+          }
+        }
     }
 
     @Override

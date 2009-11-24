@@ -26,14 +26,6 @@ import javax.swing.filechooser.FileFilter;
  */
 class MimeFilter extends FileFilter {
 
-  private static final String MIMETYPE_DESC_XML = "mimetype.desc.xml";
-  private static final String MIMETYPE_DESC_HTML = "mimetype.desc.html";
-  private static final String MIMETYPE_DESC_XHTML = "mimetype.desc.xhtml";
-  private static final String MIMETYPE_DESC_TXT = "mimetype.desc.txt";
-  private static final String MIMETYPE_DESC_PDF = "mimetype.desc.pdf";
-  private static final String MIMETYPE_DESC_BIN = "mimetype.desc.bin";
-  private static final String MIMETYPE_DESC_UNKNOWN = "mimetype.desc.unknown";
-
   protected String mimeType;
   protected ResourceBundle messages;
 
@@ -48,21 +40,7 @@ class MimeFilter extends FileFilter {
     if (f.isDirectory()) {
       return true;
     }
-
-    String ext = getExtension(f);
-    if ("text/xml".equals(mimeType)) {
-      return "xml".equalsIgnoreCase(ext);
-    } else if ("text/html".equals(mimeType)) {
-      return "html".equalsIgnoreCase(ext) || "htm".equalsIgnoreCase(ext);
-    } else if ("application/xhtml+xml".equals(mimeType)) {
-      return "xhtml".equalsIgnoreCase(ext);
-    } else if ("text/plain".equals(mimeType)) {
-      return "txt".equalsIgnoreCase(ext);
-    } else if ("application/pdf".equals(mimeType)) {
-      return "pdf".equalsIgnoreCase(ext);
-    } else {
-      return true;
-    }
+    return MimeTypes.getExtension(mimeType).equalsIgnoreCase(getExtension(f));
   }
 
   private String getExtension(File f) {
@@ -78,38 +56,10 @@ class MimeFilter extends FileFilter {
 
   @Override
   public String getDescription() {
-    if ("text/xml".equals(mimeType)) {
-      return messages.getString(MIMETYPE_DESC_XML);
-    } else if ("text/html".equals(mimeType)) {
-      return messages.getString(MIMETYPE_DESC_HTML);
-    } else if ("application/xhtml+xml".equals(mimeType)) {
-      return messages.getString(MIMETYPE_DESC_XHTML);
-    } else if ("text/plain".equals(mimeType)) {
-      return messages.getString(MIMETYPE_DESC_TXT);
-    } else if ("application/pdf".equals(mimeType)) {
-      return messages.getString(MIMETYPE_DESC_PDF);
-    } else if ("application/octet-stream".equals(mimeType)) {
-      return messages.getString(MIMETYPE_DESC_BIN);
-    } else {
-      return messages.getString(MIMETYPE_DESC_UNKNOWN);
-    }
+    return messages.getString(MimeTypes.getDescriptionKey(mimeType));
   }
 
   public static String getExtension(String mimeType) {
-    if ("text/xml".equals(mimeType)) {
-      return ".xml";
-    } else if ("text/html".equals(mimeType)) {
-      return ".html";
-    } else if ("application/xhtml+xml".equals(mimeType)) {
-      return ".xhtml";
-    } else if ("text/plain".equals(mimeType)) {
-      return ".txt";
-    } else if ("application/pdf".equals(mimeType)) {
-      return ".pdf";
-    } else if ("application/octet-stream".equals(mimeType)) {
-      return ".bin";
-    } else {
-      return "";
-    }
+    return MimeTypes.getExtension(mimeType);
   }
 }

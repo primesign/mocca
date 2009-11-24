@@ -50,4 +50,10 @@ public class DataObjectHashDataInput implements HashDataInput {
       return HttpUtil.getCharset(dataObject.getMimeType(), false);
     }
 
+    @Override
+    public String getFilename() {
+      //TODO obtain filename from dataObject, if not set return null or get filename (extension!) from mimetype
+      return dataObject.getFilename();
+    }
+
 }

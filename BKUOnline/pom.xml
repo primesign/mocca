@@ -263,7 +263,7 @@
                 <bindingFile>staltypes-custom.xml</bindingFile>
                 <bindingFile>cardchannel-custom.xml</bindingFile>
               </bindingFiles>
-              <wsdlDirectory>${basedir}/src/main/webapp/WEB-INF/wsdl</wsdlDirectory>
+              <!-- wsdlDirectory>${basedir}/src/main/webapp/WEB-INF/wsdl</wsdlDirectory-->
               <wsdlDirectory>${basedir}/src/main/wsdl</wsdlDirectory>
               <wsdlFiles>
                 <wsdlFile>stal-service.wsdl</wsdlFile>

@@ -39,10 +39,14 @@ public class HyperlinkRenderer extends DefaultTableCellRenderer {
   @Override
   protected void setValue(Object value) {
     String hrefText;
-    if (renderReferenceId) {
-      hrefText = ((HashDataInput) value).getReferenceId();
+    if (((HashDataInput) value).getFilename() != null) {
+      hrefText = ((HashDataInput) value).getFilename();
     } else {
-      hrefText = ((HashDataInput) value).getMimeType();
+      if (renderReferenceId) {
+        hrefText = ((HashDataInput) value).getReferenceId();
+      } else {
+        hrefText = ((HashDataInput) value).getMimeType();
+      }
     }
     super.setText("<html><u>" + hrefText + "</u></html>");
     setForeground(BKUGUIFacade.HYPERLINK_COLOR);

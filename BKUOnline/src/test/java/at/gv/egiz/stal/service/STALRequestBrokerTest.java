@@ -126,6 +126,12 @@ public class STALRequestBrokerTest {
             public String getEncoding() {
               return "UTF-8";
             }
+
+
+            @Override
+            public String getFilename() {
+                return "file.txt";
+            }
         };
         r1.setHashDataInput(Collections.singletonList(hdi));
         requests.add(r1);
@@ -171,6 +177,11 @@ public class STALRequestBrokerTest {
             @Override
             public String getEncoding() {
               return "UTF-8";
+            }
+
+            @Override
+            public String getFilename() {
+                return "file.txt";
             }
         };
         r1.setHashDataInput(Collections.singletonList(hdi));
@@ -231,6 +242,11 @@ public class STALRequestBrokerTest {
             public String getEncoding() {
               return "UTF-8";
             }
+
+            @Override
+            public String getFilename() {
+                return "file.txt";
+            }
         };
         r1.setHashDataInput(Collections.singletonList(hdi));
         requests.add(r1);
@@ -258,6 +274,11 @@ public class STALRequestBrokerTest {
             @Override
             public String getEncoding() {
               return "UTF-8";
+            }
+
+            @Override
+            public String getFilename() {
+                return "file.xml";
             }
         };
         r2.setHashDataInput(Collections.singletonList(hdi2));

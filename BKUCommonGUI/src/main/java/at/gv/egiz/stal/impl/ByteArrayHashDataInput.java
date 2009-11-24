@@ -36,8 +36,9 @@ public class ByteArrayHashDataInput implements HashDataInput {
     protected String id;
     protected String mimeType;
     protected String encoding;
+    protected String filename;
 
-    public ByteArrayHashDataInput(byte[] hashData, String id, String mimeType, String encoding) {
+    public ByteArrayHashDataInput(byte[] hashData, String id, String mimeType, String encoding, String filename) {
         if (hashData == null) {
             throw new NullPointerException("HashDataInput not provided.");
         }
@@ -45,6 +46,7 @@ public class ByteArrayHashDataInput implements HashDataInput {
         this.id = id;
         this.mimeType = mimeType;
         this.encoding = encoding;
+        this.filename = filename;
     }
     
     /**
@@ -94,6 +96,11 @@ public class ByteArrayHashDataInput implements HashDataInput {
   @Override
   public String getEncoding() {
     return encoding;
+  }
+
+  @Override
+  public String getFilename() {
+    return filename;
   }
 
     

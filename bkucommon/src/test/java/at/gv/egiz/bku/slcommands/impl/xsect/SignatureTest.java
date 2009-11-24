@@ -443,7 +443,10 @@ public class SignatureTest {
 
   @SuppressWarnings("unchecked")
   @Test
+
   public void testDataObject_XMLContent_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
+
+    System.out.println("\n ****************** testDataObject_XMLContent_1 \n");
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_XMLContent_1.xml");
     
@@ -484,6 +487,8 @@ public class SignatureTest {
   @SuppressWarnings("unchecked")
   @Test
   public void testDataObject_XMLContent_2() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
+
+    System.out.println("\n ****************** testDataObject_XMLContent_2 \n");
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_XMLContent_2.xml");
     
@@ -526,6 +531,8 @@ public class SignatureTest {
   @Test
   public void testDataObject_LocRefContent_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
 
+    System.out.println("\n ****************** testDataObject_LocRefContent_1 \n");
+
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_LocRefContent_1.xml");
     
     Signature signature = new Signature(null, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
@@ -535,7 +542,7 @@ public class SignatureTest {
     }
     
     signature.buildXMLSignature();
-    
+
     signAndMarshalSignature(signature);
 
     List<Reference> references = signature.getReferences();
@@ -563,6 +570,8 @@ public class SignatureTest {
   @SuppressWarnings("unchecked")
   @Test
   public void testDataObject_LocRefContent_2() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
+
+    System.out.println("\n ****************** testDataObject_LocRefContent_2 \n");
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_LocRefContent_2.xml");
     
@@ -602,6 +611,8 @@ public class SignatureTest {
   @Test
   public void testDataObject_Reference_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
 
+    System.out.println("\n ****************** testDataObject_Reference_1 \n");
+
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Reference_1.xml");
     
     Signature signature = new Signature(null, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
@@ -640,6 +651,8 @@ public class SignatureTest {
   @Test
   public void testDataObject_Detached_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
 
+    System.out.println("\n ****************** testDataObject_Detached_1 \n");
+
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Detached_1.xml");
     
     Signature signature = new Signature(null, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
@@ -671,6 +684,8 @@ public class SignatureTest {
   @Test
   public void testDataObject_Detached_Base64Content() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
 
+    System.out.println("\n ****************** testDataObject_Detached_Base64Content \n");
+
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Detached_Base64Content.xml");
     
     Signature signature = new Signature(null, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
@@ -698,6 +713,39 @@ public class SignatureTest {
     
   }
   
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testDataObject_Detached_LocRefContent() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
+
+    System.out.println("\n ****************** testDataObject_Detached_LocRefContent \n");
+
+    List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Detached_LocRefContent.xml");
+
+    Signature signature = new Signature(null, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
+
+    for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
+      signature.addDataObject(dataObjectInfo);
+    }
+
+    signature.buildXMLSignature();
+
+    signAndMarshalSignature(signature);
+
+    List<Reference> references = signature.getReferences();
+    assertTrue(references.size() == 2);
+
+    Reference reference = references.get(0);
+    assertNotNull(reference.getId());
+
+    List<Transform> transforms = reference.getTransforms();
+    assertTrue(transforms.size() == 0);
+
+    List<XMLObject> objects = signature.getXMLObjects();
+    assertNotNull(objects);
+    assertTrue(objects.size() == 1);
+
+  }
+
   //
   //
   // TransformsInfo

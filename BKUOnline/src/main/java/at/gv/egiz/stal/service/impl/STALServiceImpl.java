@@ -267,6 +267,7 @@ public class STALServiceImpl implements STALPortType {
             ref.setID(reqRefId);
             ref.setMimeType(reqHdi.getMimeType());
             ref.setEncoding(reqHdi.getEncoding());
+            ref.setFilename(reqHdi.getFilename());
             ref.setValue(baos.toByteArray());
             response.getReference().add(ref);
           } catch (IOException ex) {

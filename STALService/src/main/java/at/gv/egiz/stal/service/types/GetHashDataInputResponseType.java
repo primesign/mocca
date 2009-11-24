@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlValue;
  *                 &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}string" />
  *                 &lt;attribute name="MimeType" type="{http://www.w3.org/2001/XMLSchema}string" />
  *                 &lt;attribute name="Encoding" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *                 &lt;attribute name="Filename" type="{http://www.w3.org/2001/XMLSchema}string" />
  *               &lt;/extension>
  *             &lt;/simpleContent>
  *           &lt;/complexType>
@@ -118,6 +119,7 @@ public class GetHashDataInputResponseType {
      *       &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}string" />
      *       &lt;attribute name="MimeType" type="{http://www.w3.org/2001/XMLSchema}string" />
      *       &lt;attribute name="Encoding" type="{http://www.w3.org/2001/XMLSchema}string" />
+     *       &lt;attribute name="Filename" type="{http://www.w3.org/2001/XMLSchema}string" />
      *     &lt;/extension>
      *   &lt;/simpleContent>
      * &lt;/complexType>
@@ -139,6 +141,8 @@ public class GetHashDataInputResponseType {
         protected String mimeType;
         @XmlAttribute(name = "Encoding")
         protected String encoding;
+        @XmlAttribute(name = "Filename")
+        protected String filename;
 
         /**
          * Gets the value of the value property.
@@ -232,6 +236,30 @@ public class GetHashDataInputResponseType {
          */
         public void setEncoding(String value) {
             this.encoding = value;
+        }
+
+        /**
+         * Gets the value of the filename property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link String }
+         *     
+         */
+        public String getFilename() {
+            return filename;
+        }
+
+        /**
+         * Sets the value of the filename property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link String }
+         *     
+         */
+        public void setFilename(String value) {
+            this.filename = value;
         }
 
     }

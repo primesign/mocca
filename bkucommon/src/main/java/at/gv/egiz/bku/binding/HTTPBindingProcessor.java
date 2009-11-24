@@ -339,6 +339,7 @@ public class HTTPBindingProcessor extends AbstractBindingProcessor implements
 						// process headers and request
 						setHTTPHeaders(dataUrlResponse.getResponseHeaders());
 						consumeRequestStream(dataUrlResponse.getStream());
+						//TODO check for bindingProcessorError
 						closeDataUrlConnection();
 						srcContex.setSourceCertificate(conn.getServerCertificate());
 						srcContex.setSourceIsDataURL(true);

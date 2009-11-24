@@ -52,8 +52,9 @@ public class SecureViewerSaveDialog {
         String mimeType = hashDataInput.getMimeType();
         MimeFilter mimeFilter = new MimeFilter(mimeType, messages);
         fileDialog.setFileFilter(mimeFilter);
-        String filename = messages
-            .getString(BKUGUIFacade.SAVE_HASHDATAINPUT_PREFIX)
+        String filename = (hashDataInput.getFilename() != null) ?
+          hashDataInput.getFilename() :
+          messages.getString(BKUGUIFacade.SAVE_HASHDATAINPUT_PREFIX)
             + MimeFilter.getExtension(mimeType);
         fileDialog.setSelectedFile(new File(userHome, filename));
 
