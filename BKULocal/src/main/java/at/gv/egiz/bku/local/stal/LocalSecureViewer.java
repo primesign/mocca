@@ -120,7 +120,8 @@ public class LocalSecureViewer implements SecureViewer {
       hashDataInput = new ByteArrayHashDataInput(baos.toByteArray(),
               hashDataInput.getReferenceId(),
               hashDataInput.getMimeType(),
-              hashDataInput.getEncoding());
+              hashDataInput.getEncoding(),
+              hashDataInput.getFilename());
     }
     return hashDataInput;
   }
