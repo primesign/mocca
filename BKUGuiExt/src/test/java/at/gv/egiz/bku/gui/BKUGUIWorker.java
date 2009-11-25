@@ -81,25 +81,29 @@ public class BKUGUIWorker implements Runnable {
                 "Ich bin ein einfacher Text mit Umlauten: öäüßéç@€\n123\n456\n\tHello, world!\n\nlkjsd\nnksdjf".getBytes(), 
                 "ref-id-0000000000000000000000001", 
                 "text/plain", 
-                "UTF-8");
+                "UTF-8",
+                "filename.txt");
         
         HashDataInput signedRef2 = new ByteArrayHashDataInput(
                 "<xml>HashDataInput_002</xml>".getBytes(), 
                 "ref-id-000000002", 
                 "application/xhtml+xml", 
-                "UTF-8");
+                "UTF-8",
+                "filename.xhtml");
         
         HashDataInput signedRef3 = new ByteArrayHashDataInput(
                 "<xml>HashDataInput_003</xml>".getBytes(), 
                 "ref-id-000000003", 
                 "application/xhtml+xml", 
-                "UTF-8");
+                "UTF-8",
+                "filename.xhtml");
 
         HashDataInput signedRef4 = new ByteArrayHashDataInput(
                 "<xml>HashDataInput_004</xml>".getBytes(), 
                 "ref-id-000000004", 
                 "text/xml", 
-                "UTF-8");
+                "UTF-8",
+                "filename.xml");
 
         //
         List<HashDataInput> signedRefs = new ArrayList();
