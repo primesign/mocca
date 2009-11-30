@@ -97,6 +97,12 @@
 			<artifactId>spring-context</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+      <groupId>com.sun.xml.ws</groupId>
+      <artifactId>jaxws-rt</artifactId>
+      <scope>test</scope>
+      <version>2.1.5</version>
+		</dependency>
 		<!-- dependency to ensure NamespacePrefixmapper -->
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>

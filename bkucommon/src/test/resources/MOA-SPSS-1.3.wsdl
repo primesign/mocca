@@ -51,11 +51,7 @@
     </binding>
     <service name="SignatureVerificationService">
         <port name="SignatureVerificationPort" binding="tns:SignatureVerificationBinding">
-      <!--
-        Please note that the location URL must be adapted to the actual service URL.
-      <soap:address location="http://localhost/moa-spss/services/SignatureVerification"/>
-      -->
-            <soap:address location="http://localhost:8080/moa-spss/services/SignatureVerification"/>
+            <soap:address location="http://localhost:8088/moa-spss/services/SignatureVerification"/>
         </port>
     </service>
 </definitions>
