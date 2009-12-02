@@ -4,7 +4,7 @@
   <groupId>at.gv.egiz</groupId>
   <artifactId>bku</artifactId>
   <packaging>pom</packaging>
-  <version>1.2.9-SNAPSHOT</version>
+  <version>1.2.9</version>
   <name>BKU</name>
   <url>http://bku.egiz.gv.at</url>
   <modules>
@@ -48,9 +48,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.egovlabs.gv.at/svnroot/mocca/trunk</developerConnection>
-    <url>svn://svn.egovlabs.gv.at/svnroot/mocca/trunk</url>
+    <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.9</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.9</developerConnection>
+    <url>svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.9</url>
   </scm>
   <organization>
     <name>E-Government Innovation Center (EGIZ)</name>
@@ -250,7 +250,7 @@
       <dependency>
         <groupId>at.gv.egiz</groupId>
         <artifactId>BKUWebStart</artifactId>
-        <version>1.2.9-SNAPSHOT</version>
+        <version>1.2.9</version>
         <type>zip</type>
       </dependency>
     </dependencies>
