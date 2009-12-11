@@ -616,6 +616,10 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     if (resp.getSW() == 0x9000) {
       return -1;
     }
+    if (resp.getSW() == 0x63c0) {
+      // returned by the 'short' VERIFY
+      throw new LockedException();
+    }
     if (resp.getSW() >> 4 == 0x63c) {
       return 0x0f & resp.getSW();
     }
@@ -623,6 +627,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     switch (resp.getSW()) {
     case 0x6983:
       // authentication method blocked
+      // returned by the 'long' VERIFY
       throw new LockedException();
     case 0x6984:
       // reference data not usable
