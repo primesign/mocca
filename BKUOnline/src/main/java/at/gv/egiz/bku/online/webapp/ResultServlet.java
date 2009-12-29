@@ -124,12 +124,14 @@ public class ResultServlet extends SpringBKUServlet {
         bp.writeResultTo(new NullOutputStream(), encoding);
         getBindingProcessorManager().removeBindingProcessor(bp.getId());
       } finally {
-        log.info("Executing deferred browser redirect to: " + redirectUrl);
+          log.info("Executing deferred browser redirect to: " + redirectUrl);
         resp.sendRedirect(redirectUrl);
         session.invalidate();
       }
       return;
     }
+
+    log.trace("setting response code: " + bp.getResponseCode());
     resp.setStatus(bp.getResponseCode());
     resp.setHeader("Cache-Control", "no-store"); // HTTP 1.1
     resp.setHeader("Pragma", "no-cache"); // HTTP 1.0
@@ -137,6 +139,9 @@ public class ResultServlet extends SpringBKUServlet {
     for (Iterator<String> it = bp.getResponseHeaders().keySet().iterator(); it
         .hasNext();) {
       String header = it.next();
+      if (log.isTraceEnabled()) {
+        log.trace("setting response header " + header + ": " + bp.getResponseHeaders().get(header));
+      }
       resp.setHeader(header, bp.getResponseHeaders().get(header));
     }
     resp.setContentType(bp.getResultContentType());
