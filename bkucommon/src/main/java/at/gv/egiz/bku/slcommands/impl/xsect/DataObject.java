@@ -388,7 +388,7 @@ public class DataObject {
               filename += MimeTypes.getExtension(mimeType);
             }
           } else {
-            log.info("failed to derive filename from URI '" + refURI + "', derive filename from reference ID");
+            log.debug("failed to derive filename from URI '" + refURI + "', derive filename from reference ID");
             filename = reference.getId() + MimeTypes.getExtension(mimeType);
           }
         } catch (URISyntaxException ex) {
@@ -396,7 +396,7 @@ public class DataObject {
           filename = reference.getId() + MimeTypes.getExtension(mimeType);
         }
       } else {
-        log.info("same-document URI, derive filename from reference ID");
+        log.debug("same-document URI, derive filename from reference ID");
         filename = reference.getId() + MimeTypes.getExtension(mimeType);
       }
     } else {
