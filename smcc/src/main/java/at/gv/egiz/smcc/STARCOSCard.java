@@ -637,12 +637,13 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
       throw new NotActivatedException();
     } else if (resp.getSW() >> 4 == 0x63c) {
       return 0x0f & resp.getSW();
-    } else if (version > 1.2 && resp.getSW() == 0x6400) {
-      log.warn("cannot query pin status prior to card activation");
-      throw new NotActivatedException();
+    } else if (version >= 1.2 && resp.getSW() == 0x6400) {
+      String msg = "VERIFY failed, card not activated. SW=0x6400";
+      log.error(msg);
+      throw new SignatureCardException(msg);
     } else {
       String msg = "VERIFY failed. SW=" + Integer.toHexString(resp.getSW()); 
-      log.info(msg);
+      log.error(msg);
       throw new SignatureCardException(msg);
     }
   }
@@ -673,7 +674,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
       return 0x0f & resp.getSW();
     } else {
       String msg = "CHANGE REFERENCE DATA failed. SW=" + Integer.toHexString(resp.getSW()); 
-      log.info(msg);
+      log.error(msg);
       throw new SignatureCardException(msg);
     }
   }
@@ -709,7 +710,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
       return -1;
     } else {
       String msg = "CHANGE REFERENCE DATA failed. SW=" + Integer.toHexString(resp.getSW());
-      log.info(msg);
+      log.error(msg);
       throw new SignatureCardException(msg);
     }
   }
@@ -745,7 +746,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
       return 0x0f & resp.getSW();
     } else {
       String msg = "RESET RETRY COUNTER failed. SW=" + Integer.toHexString(resp.getSW());
-      log.info(msg);
+      log.error(msg);
       throw new SignatureCardException(msg);
     }
   }

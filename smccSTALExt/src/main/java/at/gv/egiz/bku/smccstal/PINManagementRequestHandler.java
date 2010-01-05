@@ -39,6 +39,7 @@ import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.TimeoutException;
 import at.gv.egiz.smcc.PINMgmtSignatureCard.PIN_STATE;
+import at.gv.egiz.smcc.SignatureCard.KeyboxName;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
@@ -67,15 +68,24 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
 
       if (card instanceof PINMgmtSignatureCard) {
 
-        // update all PIN states
-        for (PINSpec pinSpec : ((PINMgmtSignatureCard) card).getPINSpecs()) {
-          updatePINState(pinSpec, STATUS.UNKNOWN);
+        try {
+          // check if activated
+          card.getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR);
+
+          // update all PIN states
+          for (PINSpec pinSpec : ((PINMgmtSignatureCard) card).getPINSpecs()) {
+            updatePINState(pinSpec, STATUS.UNKNOWN);
+          }
+
+          gui.showPINManagementDialog(pinStates, this, "activate_enterpin",
+                "change_enterpin", "unblock_enterpuk", "verify_enterpin", this,
+                "cancel");
+
+        } catch (NotActivatedException ex) {
+          log.error("pin management not allowed, card not activated");
+          gui.showErrorDialog(PINManagementGUIFacade.ERR_CARD_NOTACTIVATED,
+              null, this, "cancel");
         }
-        
-        gui.showPINManagementDialog(pinStates, this, "activate_enterpin",
-              "change_enterpin", "unblock_enterpuk", "verify_enterpin", this,
-              "cancel");
-        
       } else {
         
         // card does not support PIN management
