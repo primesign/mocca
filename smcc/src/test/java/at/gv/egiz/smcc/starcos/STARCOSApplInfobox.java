@@ -156,5 +156,10 @@ public class STARCOSApplInfobox extends STARCOSAppl {
     throw new CardException("Not supported.");
   }
 
+  @Override
+  public void setPin(int kid, char[] value) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
   
 }

@@ -17,6 +17,8 @@
 
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.pin.gui.ModifyPINGUI;
+import at.gv.egiz.smcc.pin.gui.PINGUI;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -225,7 +227,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
   
   @Override
   @Exclusive
-  public byte[] getInfobox(String infobox, PINProvider provider, String domainId)
+  public byte[] getInfobox(String infobox, PINGUI pinGUI, String domainId)
       throws SignatureCardException, InterruptedException {
   
     try {
@@ -243,7 +245,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
           try {
             return ISO7816Utils.readTransparentFileTLV(channel, -1, (byte) 0x30);
           } catch (SecurityStatusNotSatisfiedException e) {
-            verifyPINLoop(channel, spec, provider);
+            verifyPINLoop(channel, spec, pinGUI);
           }
         }
         
@@ -301,7 +303,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
   @Override
   @Exclusive
   public byte[] createSignature(InputStream input, KeyboxName keyboxName,
-      PINProvider provider, String alg) throws SignatureCardException, InterruptedException, IOException {
+      PINGUI provider, String alg) throws SignatureCardException, InterruptedException, IOException {
   
     ByteArrayOutputStream dst = new ByteArrayOutputStream();
     byte[] ht = null;
@@ -431,7 +433,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
    */
   @Override
   @Exclusive
-  public void verifyPIN(PINSpec pinSpec, PINProvider pinProvider)
+  public void verifyPIN(PINSpec pinSpec, PINGUI pinProvider)
       throws LockedException, NotActivatedException, CancelledException,
       TimeoutException, SignatureCardException, InterruptedException {
     
@@ -442,12 +444,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         // SELECT application
         execSELECT_AID(channel, pinSpec.getContextAID());
       }
-      log.debug("*** verifyPIN loop");
       verifyPINLoop(channel, pinSpec, pinProvider);
-//      log.debug("*** verifyPIN 0");
-//      int retries = verifyPIN(channel, pinSpec, null, 0);
-//      log.debug("*** verifyPIN " + retries + " tries");
-//      verifyPIN(channel, pinSpec, pinProvider, retries);
     } catch (CardException e) {
       log.info("Failed to verify PIN.", e);
       throw new SignatureCardException("Failed to verify PIN.", e);
@@ -460,7 +457,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
    */
   @Override
   @Exclusive
-  public void changePIN(PINSpec pinSpec, ChangePINProvider pinProvider)
+  public void changePIN(PINSpec pinSpec, ModifyPINGUI pinGUI)
       throws LockedException, NotActivatedException, CancelledException,
       TimeoutException, SignatureCardException, InterruptedException {
     
@@ -471,9 +468,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         // SELECT application
         execSELECT_AID(channel, pinSpec.getContextAID());
       }
-      changePINLoop(channel, pinSpec, pinProvider);
-//      int retries = verifyPIN(channel, pinSpec, null, 0);
-//      changePIN(channel, pinSpec, pinProvider, retries);
+      changePINLoop(channel, pinSpec, pinGUI);
     } catch (CardException e) {
       log.info("Failed to change PIN.", e);
       throw new SignatureCardException("Failed to change PIN.", e);
@@ -486,7 +481,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
    */
   @Override
   @Exclusive
-  public void activatePIN(PINSpec pinSpec, PINProvider pinProvider)
+  public void activatePIN(PINSpec pinSpec, ModifyPINGUI activatePINGUI)
       throws CancelledException, SignatureCardException, CancelledException,
       TimeoutException, InterruptedException {
 
@@ -497,7 +492,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         // SELECT application
         execSELECT_AID(channel, pinSpec.getContextAID());
       }
-      activatePIN(channel, pinSpec, pinProvider);
+      activatePIN(channel, pinSpec, activatePINGUI);
     } catch (CardException e) {
       log.info("Failed to activate PIN.", e);
       throw new SignatureCardException("Failed to activate PIN.", e);
@@ -509,9 +504,16 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
    * @see at.gv.egiz.smcc.PINMgmtSignatureCard#unblockPIN(at.gv.egiz.smcc.PINSpec, at.gv.egiz.smcc.PINProvider)
    */
   @Override
-  public void unblockPIN(PINSpec pinSpec, PINProvider pukProvider)
+  public void unblockPIN(PINSpec pinSpec, ModifyPINGUI pukProvider)
       throws CancelledException, SignatureCardException, InterruptedException {
-    throw new SignatureCardException("Unblock PIN is not supported.");
+    CardChannel channel = getCardChannel();
+
+    try {
+      unblockPINLoop(channel, pinSpec, pukProvider);
+    } catch (CardException e) {
+      log.info("Failed to activate PIN.", e);
+      throw new SignatureCardException("Failed to activate PIN.", e);
+    }
   }
 
   @Override
@@ -574,7 +576,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
   // PROTECTED METHODS (assume exclusive card access)
   ////////////////////////////////////////////////////////////////////////
   
-  protected void verifyPINLoop(CardChannel channel, PINSpec spec, PINProvider provider)
+  protected void verifyPINLoop(CardChannel channel, PINSpec spec, PINGUI provider)
       throws LockedException, NotActivatedException, SignatureCardException,
       InterruptedException, CardException {
     
@@ -584,7 +586,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     } while (retries > 0);
   }
 
-  protected void changePINLoop(CardChannel channel, PINSpec spec, ChangePINProvider provider)
+  protected void changePINLoop(CardChannel channel, PINSpec spec, ModifyPINGUI provider)
       throws LockedException, NotActivatedException, SignatureCardException,
       InterruptedException, CardException {
 
@@ -594,8 +596,19 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     } while (retries > 0);
   }
   
+  protected void unblockPINLoop(CardChannel channel, PINSpec spec, ModifyPINGUI provider)
+      throws LockedException, NotActivatedException, SignatureCardException,
+      InterruptedException, CardException {
+
+    //TODO get PUK retry counter from EF FID 0036 in MF
+    int retries = -1;
+    do {
+      retries = unblockPIN(channel, spec, provider, retries);
+    } while (retries > 0);
+  }
+
   protected int verifyPIN(CardChannel channel, PINSpec pinSpec,
-      PINProvider provider, int retries) throws SignatureCardException,
+      PINGUI provider, int retries) throws SignatureCardException,
       LockedException, NotActivatedException, InterruptedException,
       CardException {
     
@@ -608,108 +621,135 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     
     ResponseAPDU resp;
     if (provider != null) {
-      resp = reader.verify(channel, apduSpec, pinSpec, provider, retries);
+      resp = reader.verify(channel, apduSpec, provider, pinSpec, retries);
     } else {
       resp = channel.transmit(new CommandAPDU(0x00, 0x20, 0x00, pinSpec.getKID()));
     }
-    
+
+
     if (resp.getSW() == 0x9000) {
       return -1;
-    }
-    if (resp.getSW() == 0x63c0) {
-      // returned by the 'short' VERIFY
+    } else if (resp.getSW() == 0x6983 || resp.getSW() == 0x63c0) {
+      // authentication method blocked (0x63c0 returned by 'short' VERIFY)
       throw new LockedException();
-    }
-    if (resp.getSW() >> 4 == 0x63c) {
+    } else if (resp.getSW() == 0x6984 || resp.getSW() == 0x6985) {
+      // reference data not usable; conditions of use not satisfied
+      throw new NotActivatedException();
+    } else if (resp.getSW() >> 4 == 0x63c) {
       return 0x0f & resp.getSW();
-    }
-    
-    switch (resp.getSW()) {
-    case 0x6983:
-      // authentication method blocked
-      // returned by the 'long' VERIFY
-      throw new LockedException();
-    case 0x6984:
-      // reference data not usable
+    } else if (version > 1.2 && resp.getSW() == 0x6400) {
+      log.warn("cannot query pin status prior to card activation");
       throw new NotActivatedException();
-    case 0x6985:
-      // conditions of use not satisfied
-      throw new NotActivatedException();
-  
-    default:
+    } else {
       String msg = "VERIFY failed. SW=" + Integer.toHexString(resp.getSW()); 
       log.info(msg);
       throw new SignatureCardException(msg);
     }
-    
   }
   
   protected int changePIN(CardChannel channel, PINSpec pinSpec,
-      ChangePINProvider pinProvider, int retries) throws CancelledException,
+      ModifyPINGUI pinProvider, int retries) throws CancelledException,
       InterruptedException, CardException, SignatureCardException {
-    
-    ChangeReferenceDataAPDUSpec apduSpec = new ChangeReferenceDataAPDUSpec(
-        new byte[] { 
-            (byte) 0x00, (byte) 0x24, (byte) 0x00, pinSpec.getKID(), (byte) 0x10, 
-            (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 
-            (byte) 0xff, (byte) 0xff, (byte) 0xff, 
-            (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 
-            (byte) 0xff, (byte) 0xff, (byte) 0xff }, 
+
+      ChangeReferenceDataAPDUSpec apduSpec = new ChangeReferenceDataAPDUSpec(
+        new byte[] {
+            (byte) 0x00, (byte) 0x24, (byte) 0x00, pinSpec.getKID(), (byte) 0x10,
+            (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xff },
         1, VerifyAPDUSpec.PIN_FORMAT_BCD, 7, 4, 4, 8);
-    
-    ResponseAPDU resp = reader.modify(channel, apduSpec, pinSpec, pinProvider, retries);
-    
+
+    ResponseAPDU resp = reader.modify(channel, apduSpec, pinProvider, pinSpec, retries);
+
     if (resp.getSW() == 0x9000) {
       return -1;
-    }
-    if (resp.getSW() >> 4 == 0x63c) {
-      return 0x0f & resp.getSW();
-    }
-    
-    switch (resp.getSW()) {
-    case 0x6983:
+    } else if (resp.getSW() == 0x6983) {
       // authentication method blocked
       throw new LockedException();
-  
-    default:
+    } else if (resp.getSW() == 0x6984) {
+      throw new NotActivatedException();
+    } else if (resp.getSW() >> 4 == 0x63c) {
+      return 0x0f & resp.getSW();
+    } else {
       String msg = "CHANGE REFERENCE DATA failed. SW=" + Integer.toHexString(resp.getSW()); 
       log.info(msg);
       throw new SignatureCardException(msg);
     }
-   
-    
   }
 
   protected int activatePIN(CardChannel channel, PINSpec pinSpec,
-      PINProvider provider) throws SignatureCardException,
+      ModifyPINGUI provider) throws SignatureCardException,
       InterruptedException, CardException {
     
-    NewReferenceDataAPDUSpec apduSpec = new NewReferenceDataAPDUSpec(
-        new byte[] {
-            (byte) 0x00, (byte) 0x24, (byte) 0x01, pinSpec.getKID(), (byte) 0x08,
-            (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-            (byte) 0xff, (byte) 0xff, (byte) 0xff }, 
-        1, VerifyAPDUSpec.PIN_FORMAT_BCD, 7, 4, 4);
-    
-    ResponseAPDU resp = reader.activate(channel, apduSpec, pinSpec, provider);
-    
-    switch (resp.getSW()) {
-    
-    case 0x9000:
+    ResponseAPDU resp;
+    if (version < 1.2) {
+      NewReferenceDataAPDUSpec apduSpec = new NewReferenceDataAPDUSpec(
+          new byte[] {
+              (byte) 0x00, (byte) 0x24, (byte) 0x01, pinSpec.getKID(), (byte) 0x08,
+              (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+              (byte) 0xff, (byte) 0xff, (byte) 0xff },
+          1, VerifyAPDUSpec.PIN_FORMAT_BCD, 7, 4, 4);
+
+      resp = reader.modify(channel, apduSpec, provider, pinSpec);
+    } else {
+      NewReferenceDataAPDUSpec apduSpec = new NewReferenceDataAPDUSpec(
+          new byte[] {
+              (byte) 0x00, (byte) 0x24, (byte) 0x00, pinSpec.getKID(), (byte) 0x10,
+              (byte) 0x26, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0xff,
+              (byte) 0xff, (byte) 0xff, (byte) 0xff, 
+              (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+              (byte) 0xff, (byte) 0xff, (byte) 0xff },
+          1, VerifyAPDUSpec.PIN_FORMAT_BCD, 7, 4, 4);
+      apduSpec.setPinInsertionOffsetNew(8);
+      resp = reader.modify(channel, apduSpec, provider, pinSpec);
+    }
+
+    if (resp.getSW() == 0x9000) {
       return -1;
-
-    case 0x6983:
-      // authentication method blocked
-      throw new LockedException();
-
-    default:
-      String msg = "CHANGE REFERENCE DATA failed. SW=" + Integer.toHexString(resp.getSW()); 
+    } else {
+      String msg = "CHANGE REFERENCE DATA failed. SW=" + Integer.toHexString(resp.getSW());
       log.info(msg);
       throw new SignatureCardException(msg);
     }
-    
   }
   
+  protected int unblockPIN(CardChannel channel, PINSpec pinSpec,
+      ModifyPINGUI provider, int retries) throws SignatureCardException,
+      InterruptedException, CardException {
+
+    if (version < 1.2) {
+      // would return 0x6982 (Security status not satisfied)
+      throw new SignatureCardException("RESET RETRY COUNTER is not supported by this card.");
+    }
+
+    ResetRetryCounterAPDUSpec apduSpec = new ResetRetryCounterAPDUSpec(
+        new byte[] {
+            (byte) 0x00, (byte) 0x2c, (byte) 0x00, pinSpec.getKID(), (byte) 0x10,
+            (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+            (byte) 0xff, (byte) 0xff, (byte) 0xff },
+        1, VerifyAPDUSpec.PIN_FORMAT_BCD, 7, 4, 4, 8);
+
+    ResponseAPDU resp = reader.modify(channel, apduSpec, provider, pinSpec, retries);
+
+    if (resp.getSW() == 0x9000) {
+      return -1;
+    } else if (resp.getSW() == 0x6983) {
+      // PUK blocked
+      throw new LockedException();
+    } else if (resp.getSW() == 0x6984) {
+      throw new NotActivatedException();
+    } else if (resp.getSW() >> 4 == 0x63c) {
+      return 0x0f & resp.getSW();
+    } else {
+      String msg = "RESET RETRY COUNTER failed. SW=" + Integer.toHexString(resp.getSW());
+      log.info(msg);
+      throw new SignatureCardException(msg);
+    }
+  }
+
   protected void execSELECT_MF(CardChannel channel) throws CardException, SignatureCardException {
     ResponseAPDU resp = channel.transmit(
         new CommandAPDU(0x00, 0xA4, 0x00, 0x0C));

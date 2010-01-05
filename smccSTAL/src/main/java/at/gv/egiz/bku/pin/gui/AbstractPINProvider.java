@@ -15,31 +15,24 @@
  * limitations under the License.
  */
 
-package at.gv.egiz.bku.smccstal;
+package at.gv.egiz.bku.pin.gui;
 
-import at.gv.egiz.smcc.PINProvider;
+import at.gv.egiz.smcc.pin.gui.PINProvider;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- *
+ * common super class providing action listener for all PIN GUIs
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public abstract class AbstractPINProvider implements PINProvider, ActionListener {
+public abstract class AbstractPINProvider implements ActionListener {
 
   protected static final Log log = LogFactory.getLog(AbstractPINProvider.class);
 
-  protected boolean retry = false;
-
   protected String action;
-
   protected boolean actionPerformed;
-
-//  protected void waitForAction() throws InterruptedException {
-//    super.wait();
-//  }
 
   protected synchronized void waitForAction() throws InterruptedException {
     try {

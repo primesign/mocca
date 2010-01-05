@@ -17,7 +17,6 @@
 package at.gv.egiz.bku.gui;
 
 import at.gv.egiz.bku.gui.viewer.FontProvider;
-import at.gv.egiz.bku.gui.viewer.FontProviderException;
 import at.gv.egiz.bku.gui.viewer.SecureViewerSaveDialog;
 import at.gv.egiz.stal.HashDataInput;
 import java.awt.Container;
@@ -25,7 +24,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -34,32 +32,26 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.BufferedOutputStream;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle;
-import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 import javax.swing.text.StyledEditorKit;
@@ -71,7 +63,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class SecureViewerDialog extends JDialog implements ActionListener {
+public class SecureViewerDialog extends JDialog {
 
   /** don't import BKUFonts in order not to load BKUFonts.jar
    * BKUApplet includes BKUFonts as runtime dependency only, the jar is copied to the applet dir in BKUOnline with dependency-plugin
@@ -100,19 +92,6 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
    * @param owner, dialog is positioned relative to its owner
    * (if null, at default location of native windowing system)
    */
-//  public static void showDataToBeSigned(HashDataInput dataToBeSigned,
-//          ResourceBundle messages,
-//          ActionListener saveListener, String saveCommand,
-//          ActionListener helpListener) {
-//
-////      Frame ownerFrame = (owner != null) ?
-////        JOptionPane.getFrameForComponent(owner) :
-////        null;
-//    dialog = new SecureViewerDialog(null, messages,
-//            saveListener, saveCommand, helpListener);
-//    dialog.setContent(dataToBeSigned);
-//    dialog.setVisible(true);
-//  }
   public SecureViewerDialog(Frame owner, ResourceBundle messages,
           ActionListener closeListener, String closeCommand,
           FontProvider fontProvider, ActionListener helpListener) {
@@ -124,6 +103,10 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
     initContentPane(VIEWER_DIMENSION,
             createViewerPanel(helpListener),
             createButtonPanel(closeListener, closeCommand));
+
+    // also leave defaultWindowClosing HIDE_ON_CLOSE
+    this.addWindowListener(new WindowCloseListener(closeListener, closeCommand));
+    this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
     pack();
     if (owner != null) {
@@ -305,19 +288,11 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
     JButton closeButton = new JButton();
     closeButton.setText(messages.getString(BKUGUIFacade.BUTTON_CLOSE));
     closeButton.setActionCommand(closeCommand);
-    closeButton.addActionListener(closeListener);
-    closeButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        log.trace("[" + Thread.currentThread().getName() + "] closing secure viewer");
-        setVisible(false);
-      }
-    });
+    closeButton.addActionListener(new CloseButtonListener(closeListener));
 
     JButton saveButton = new JButton();
     saveButton.setText(messages.getString(BKUGUIFacade.BUTTON_SAVE));
-    saveButton.setActionCommand("save"); //TODO ensure unequal to closeCommand 
-    saveButton.addActionListener(this);
+    saveButton.addActionListener(new SaveButtonListener());
 
     int buttonSize = closeButton.getPreferredSize().width;
     if (saveButton.getPreferredSize().width > buttonSize) {
@@ -336,39 +311,50 @@ public class SecureViewerDialog extends JDialog implements ActionListener {
     return buttonPanel;
   }
 
-  @Override
-  public void actionPerformed(ActionEvent e) {
-    if ("save".equals(e.getActionCommand())) {
-      log.trace("[" + Thread.currentThread().getName() + "] display secure viewer save dialog");
-      SecureViewerSaveDialog.showSaveDialog(content, messages, null, null);
-      log.trace("done secure viewer save");
-    } else {
-      log.warn("unknown action command " + e.getActionCommand());
+  public class WindowCloseListener extends WindowAdapter {
+
+    ActionListener closeListener;
+    String closeCommand;
+
+    public WindowCloseListener(ActionListener closeListener, String closeCommand) {
+      this.closeListener = closeListener;
+      this.closeCommand = closeCommand;
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+      log.trace("[" + Thread.currentThread().getName() + "] closing secure viewer");
+      setVisible(false);
+      if (closeListener != null) {
+        closeListener.actionPerformed(new ActionEvent(e.getSource(), e.getID(), closeCommand));
+      }
     }
   }
-  
-  
-//  //TEST
-//  private static SecureViewerDialog secureViewer;
-//  public static void showSecureViewerXXX(HashDataInput dataToBeSigned, ResourceBundle messages, FontProvider fontProvider, ActionListener helpListener, boolean alwaysOnTop) throws FontProviderException {
-//    
-////    ResourceBundle messages = ResourceBundle.getBundle(BKUGUIFacade.MESSAGES_BUNDLE, locale);
-//    
-//    log.debug("[" + Thread.currentThread().getName() + "] show secure viewer");
-//    if (secureViewer == null) {
-//      secureViewer = new SecureViewerDialog(null, messages,
-//              fontProvider, helpListener); 
-//
-//      // workaround for [#439]
-//      // avoid AlwaysOnTop at least in applet, otherwise make secureViewer AlwaysOnTop since MOCCA Dialog (JFrame created in LocalSTALFactory) is always on top.
-////      Window window = SwingUtilities.getWindowAncestor(contentPane);
-////      if (window != null && window.isAlwaysOnTop()) {
-////        log.debug("make secureViewer alwaysOnTop");
-//        secureViewer.setAlwaysOnTop(alwaysOnTop);
-////      }
-//    }
-//    secureViewer.setContent(dataToBeSigned);
-//    log.trace("show secure viewer returned");
-//  }
 
+  public class CloseButtonListener implements ActionListener {
+
+    ActionListener closeListener;
+
+    public CloseButtonListener(ActionListener closeListener) {
+      this.closeListener = closeListener;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      log.trace("[" + Thread.currentThread().getName() + "] closing secure viewer");
+      setVisible(false);
+      if (closeListener != null) {
+        closeListener.actionPerformed(e);
+    }
+    }
+  }
+
+  public class SaveButtonListener implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      log.trace("[" + Thread.currentThread().getName() + "] display secure viewer save dialog");
+      SecureViewerSaveDialog.showSaveDialog(content, messages, null, null);
+    }
+  }
 }

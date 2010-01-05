@@ -16,6 +16,8 @@
 */
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.reader.CardReader;
+import at.gv.egiz.smcc.reader.ReaderFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -28,9 +30,6 @@ import javax.smartcardio.CardTerminal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import at.gv.egiz.smcc.ccid.CCID;
-import at.gv.egiz.smcc.ccid.ReaderFactory;
 
 public abstract class AbstractSignatureCard implements SignatureCard {
 
@@ -45,7 +44,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
 
   private Card card_;
   
-  protected CCID reader;
+  protected CardReader reader;
 
   protected AbstractSignatureCard(String resourceBundleName) {
     this.resourceBundleName = resourceBundleName;
@@ -68,7 +67,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
   @Override
   public void init(Card card, CardTerminal cardTerminal) {
     this.card_ = card;
-    this.reader = ReaderFactory.getInstance().getReader(card, cardTerminal);
+    this.reader = ReaderFactory.getReader(card, cardTerminal);
   }
   
   @Override
@@ -78,11 +77,6 @@ public abstract class AbstractSignatureCard implements SignatureCard {
 
   protected CardChannel getCardChannel() {
     return new LogCardChannel(card_.getBasicChannel());
-  }
-
-  @Override
-  public CCID getReader() {
-    return reader;
   }
 
   @Override

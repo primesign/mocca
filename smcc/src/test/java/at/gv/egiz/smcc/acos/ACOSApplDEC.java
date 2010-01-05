@@ -297,7 +297,7 @@ public abstract class ACOSApplDEC extends ACOSAppl {
     System.arraycopy(C_CH_EKEY, 0, EF_C_CH_EKEY, 0, C_CH_EKEY.length);
     putFile(new File(FID_EF_C_CH_EKEY, EF_C_CH_EKEY, FCI_EF_C_CH_EKEY));
     try {
-      pins.put(KID_PIN_DEC, new PIN("1234\0\0\0\0".getBytes("ASCII"), KID_PIN_DEC, 10));
+      pins.put(KID_PIN_DEC, new PIN("1234\0\0\0\0".getBytes("ASCII"), KID_PIN_DEC, 10, PIN.STATE_RESET));
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }

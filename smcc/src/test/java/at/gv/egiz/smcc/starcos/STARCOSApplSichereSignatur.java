@@ -213,16 +213,14 @@ public class STARCOSApplSichereSignatur extends STARCOSAppl {
 
   protected byte[] EF_C_X509_CH_DS = new byte[2000];
   
-  public STARCOSApplSichereSignatur(STARCOSCardChannelEmul channel) {
+  public STARCOSApplSichereSignatur(STARCOSCardChannelEmul channel, byte[] SS_pin, int pinState) {
     super(channel);
     // Files
     System.arraycopy(C_X509_CH_DS, 0, EF_C_X509_CH_DS, 0, C_X509_CH_DS.length);
     putFile(new File(FID_EF_C_X509_CH_DS, EF_C_X509_CH_DS, FCI_EF_C_X509_CH_DS));
     
     // PINs
-    pins.put(KID_PIN_SS, new PIN(new byte[] { (byte) 0x24, (byte) 0x12,
-        (byte) 0x34, (byte) 0x56, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
-        (byte) 0xFF }, KID_PIN_SS, 3));
+    pins.put(KID_PIN_SS, new PIN(SS_pin, KID_PIN_SS, 3, pinState));
   }
 
   @Override
@@ -344,4 +342,34 @@ public class STARCOSApplSichereSignatur extends STARCOSAppl {
   
   }
 
+  /**
+   * set and activate pin
+   * @param value if null, pin will be set to NOTACTIVE
+   */
+  @Override
+  public void setPin(int kid, char[] value) {
+    PIN pin = pins.get(kid);
+    if (pin != null) {
+      if (value == null) {
+//        pin.pin = null;
+        //TransportPIN
+//        pin.pin = new byte[] { (byte) 0x26, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+        pin.state = PIN.STATE_PIN_NOTACTIVE;
+      } else {
+        byte[] b = new byte[8];
+        b[0] = (byte) (0x20 | value.length);
+        for(int i = 1, j = 0; i < b.length; i++) {
+          int h = ((j < value.length)
+                  ? Character.digit(value[j++], 10)
+                  : 0x0F);
+          int l = ((j < value.length)
+                  ? Character.digit(value[j++], 10)
+                  : 0x0F);
+          b[i] = (byte) ((h << 4) | l);
+        }
+        pin.pin = b;
+        pin.state = PIN.STATE_RESET;
+      }
+    }
+  }
 }

@@ -16,6 +16,8 @@
 */
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.pin.gui.ModifyPINGUI;
+import at.gv.egiz.smcc.pin.gui.PINGUI;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -79,9 +81,15 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
 
   public static final byte KID_PIN_SIG = (byte) 0x81;
 
+  public static final byte KID_PUK_SIG = (byte) 0x83;
+
   public static final byte KID_PIN_DEC = (byte) 0x81;
 
+  public static final byte KID_PUK_DEC = (byte) 0x82;
+
   public static final byte KID_PIN_INF = (byte) 0x83;
+
+  public static final byte KID_PUK_INF = (byte) 0x84;
 
   public static final byte[] DST_SIG = new byte[] { (byte) 0x84, (byte) 0x01, // tag
       // ,
@@ -217,7 +225,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
 
   @Override
   @Exclusive
-  public byte[] getInfobox(String infobox, PINProvider provider, String domainId)
+  public byte[] getInfobox(String infobox, PINGUI provider, String domainId)
       throws SignatureCardException, InterruptedException {
     
     if ("IdentityLink".equals(infobox)) {
@@ -233,7 +241,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   
   }
 
-  protected byte[] getIdentityLinkV1(PINProvider provider, String domainId) 
+  protected byte[] getIdentityLinkV1(PINGUI provider, String domainId)
       throws SignatureCardException, InterruptedException {
     
     try {
@@ -262,7 +270,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
     
   }
   
-  protected byte[] getIdentityLinkV2(PINProvider provider, String domainId)
+  protected byte[] getIdentityLinkV2(PINGUI provider, String domainId)
       throws SignatureCardException, InterruptedException {
     
     try {
@@ -388,7 +396,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   @Override
   @Exclusive
   public byte[] createSignature(InputStream input, KeyboxName keyboxName,
-      PINProvider provider, String alg) throws SignatureCardException, InterruptedException, IOException {
+      PINGUI provider, String alg) throws SignatureCardException, InterruptedException, IOException {
   
     ByteArrayOutputStream dst = new ByteArrayOutputStream();
     // key ID
@@ -487,7 +495,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
    * @see at.gv.egiz.smcc.AbstractSignatureCard#verifyPIN(at.gv.egiz.smcc.PINSpec, at.gv.egiz.smcc.PINProvider)
    */
   @Override
-  public void verifyPIN(PINSpec pinSpec, PINProvider pinProvider)
+  public void verifyPIN(PINSpec pinSpec, PINGUI pinProvider)
       throws LockedException, NotActivatedException, CancelledException,
       TimeoutException, SignatureCardException, InterruptedException {
 
@@ -509,7 +517,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
    * @see at.gv.egiz.smcc.AbstractSignatureCard#changePIN(at.gv.egiz.smcc.PINSpec, at.gv.egiz.smcc.ChangePINProvider)
    */
   @Override
-  public void changePIN(PINSpec pinSpec, ChangePINProvider pinProvider)
+  public void changePIN(PINSpec pinSpec, ModifyPINGUI pinProvider)
       throws LockedException, NotActivatedException, CancelledException,
       TimeoutException, SignatureCardException, InterruptedException {
 
@@ -528,7 +536,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   }
 
   @Override
-  public void activatePIN(PINSpec pinSpec, PINProvider pinProvider)
+  public void activatePIN(PINSpec pinSpec, ModifyPINGUI pinGUI)
       throws CancelledException, SignatureCardException, CancelledException,
       TimeoutException, InterruptedException {
     log.error("ACTIVATE PIN not supported by ACOS");
@@ -536,7 +544,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   }
 
   @Override
-  public void unblockPIN(PINSpec pinSpec, PINProvider pinProvider)
+  public void unblockPIN(PINSpec pinSpec, ModifyPINGUI pinGUI)
       throws CancelledException, SignatureCardException, InterruptedException {
     throw new SignatureCardException("Unblock PIN not supported.");
   }
@@ -570,10 +578,8 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   // PROTECTED METHODS (assume exclusive card access)
   ////////////////////////////////////////////////////////////////////////
 
-  protected void verifyPINLoop(CardChannel channel, PINSpec spec, PINProvider provider)
-      throws InterruptedException, LockedException, NotActivatedException,
-      TimeoutException, PINFormatException, PINOperationAbortedException,
-      SignatureCardException, CardException {
+  protected void verifyPINLoop(CardChannel channel, PINSpec spec, PINGUI provider)
+      throws InterruptedException, CardException, SignatureCardException {
     
     int retries = -1;
     do {
@@ -581,10 +587,8 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
     } while (retries > 0);
   }
 
-  protected void changePINLoop(CardChannel channel, PINSpec spec, ChangePINProvider provider)
-      throws InterruptedException, LockedException, NotActivatedException,
-      TimeoutException, PINFormatException, PINOperationAbortedException,
-      SignatureCardException, CardException {
+  protected void changePINLoop(CardChannel channel, PINSpec spec, ModifyPINGUI provider)
+      throws InterruptedException, CardException, SignatureCardException {
 
     int retries = -1;
     do {
@@ -593,7 +597,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   }
 
   protected int verifyPIN(CardChannel channel, PINSpec pinSpec,
-      PINProvider provider, int retries) throws InterruptedException, CardException, SignatureCardException {
+      PINGUI provider, int retries) throws InterruptedException, CardException, SignatureCardException {
     
     VerifyAPDUSpec apduSpec = new VerifyAPDUSpec(
         new byte[] {
@@ -602,7 +606,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
             (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00 }, 
         0, VerifyAPDUSpec.PIN_FORMAT_ASCII, 8);
     
-    ResponseAPDU resp = reader.verify(channel, apduSpec, pinSpec, provider, retries);
+    ResponseAPDU resp = reader.verify(channel, apduSpec, provider, pinSpec, retries);
     
     if (resp.getSW() == 0x9000) {
       return -1;
@@ -625,7 +629,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   }
 
   protected int changePIN(CardChannel channel, PINSpec pinSpec,
-      ChangePINProvider pinProvider, int retries) throws CancelledException, InterruptedException, CardException, SignatureCardException {
+      ModifyPINGUI pinProvider, int retries) throws CancelledException, InterruptedException, CardException, SignatureCardException {
 
     ChangeReferenceDataAPDUSpec apduSpec = new ChangeReferenceDataAPDUSpec(
         new byte[] {
@@ -639,7 +643,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
     
     
     
-    ResponseAPDU resp = reader.modify(channel, apduSpec, pinSpec, pinProvider, retries);
+    ResponseAPDU resp = reader.modify(channel, apduSpec, pinProvider, pinSpec, retries);
     
     if (resp.getSW() == 0x9000) {
       return -1;

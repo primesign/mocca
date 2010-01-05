@@ -23,19 +23,23 @@ public class PIN {
   public static final int STATE_PIN_VERIFIED = 1;
   
   public static final int STATE_PIN_BLOCKED = -1;
+
+  public static final int STATE_PIN_NOTACTIVE = 2;
   
   public byte[] pin;
   
   public int kid;
   
-  public int state = STATE_RESET;
+  public int state; // = STATE_RESET;
   
-  public int kfpc = 10;
+  public int kfpc; // = 10;
 
-  public PIN(byte[] pin, int kid, int kfpc) {
+  //TODO also provde default constructor without state param
+  public PIN(byte[] pin, int kid, int kfpc, int state) {
     this.pin = pin;
     this.kid = kid;
     this.kfpc = kfpc;
+    this.state = state;
   }
 
 }

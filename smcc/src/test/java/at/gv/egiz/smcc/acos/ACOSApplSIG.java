@@ -221,7 +221,7 @@ public abstract class ACOSApplSIG extends ACOSAppl {
     
     // PINs
     try {
-      pins.put(KID_PIN_SIG, new PIN(Arrays.copyOf("123456".getBytes("ASCII"), 8), KID_PIN_SIG, 3));
+      pins.put(KID_PIN_SIG, new PIN(Arrays.copyOf("123456".getBytes("ASCII"), 8), KID_PIN_SIG, 3, PIN.STATE_RESET));
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }

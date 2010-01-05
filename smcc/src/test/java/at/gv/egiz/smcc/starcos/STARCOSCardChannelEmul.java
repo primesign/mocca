@@ -16,7 +16,6 @@
 */
 package at.gv.egiz.smcc.starcos;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -30,6 +29,8 @@ import at.gv.egiz.smcc.CardChannelEmul;
 import at.gv.egiz.smcc.CardEmul;
 import at.gv.egiz.smcc.File;
 import at.gv.egiz.smcc.PIN;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("restriction")
 public class STARCOSCardChannelEmul extends CardChannelEmul {
@@ -40,14 +41,13 @@ public class STARCOSCardChannelEmul extends CardChannelEmul {
    * 
    */
   protected CardEmul cardEmul;
-  
+
+  public final List<File> globalFiles = new ArrayList<File>();
   public final HashMap<Integer, PIN> globalPins = new HashMap<Integer, PIN>();
 
-  public STARCOSCardChannelEmul(CardEmul cardEmul) {
+  public STARCOSCardChannelEmul(CardEmul cardEmul, byte[] Glob_PIN, int PIN_STATE) {
     this.cardEmul = cardEmul;
-    globalPins.put(KID_PIN_Glob, new PIN(new byte[] { (byte) 0x24, (byte) 0x00,
-        (byte) 0x00, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF,
-        (byte) 0xFF }, KID_PIN_Glob, 10));
+    globalPins.put(KID_PIN_Glob, new PIN(Glob_PIN, KID_PIN_Glob, 10, PIN_STATE));
  }
 
   @Override
@@ -78,6 +78,21 @@ public class STARCOSCardChannelEmul extends CardChannelEmul {
           throw new CardException("Not supported.");
         }
         for (File file : currentAppl.getFiles()) {
+          if (Arrays.equals(fid, file.fid)) {
+            currentFile = file;
+            byte[] response = new byte[file.fcx.length + 2];
+            System.arraycopy(file.fcx, 0, response, 0, file.fcx.length);
+            response[file.fcx.length] = (byte) 0x90;
+            response[file.fcx.length + 1] = (byte) 0x00;
+            return new ResponseAPDU(response);
+          }
+        }
+        return new ResponseAPDU(new byte[] {(byte) 0x6A, (byte) 0x82});
+      } else if (globalFiles != null) {
+        if (command.getP2() != 0x04) {
+          throw new CardException("Not supported.");
+        }
+        for (File file : globalFiles) {
           if (Arrays.equals(fid, file.fid)) {
             currentFile = file;
             byte[] response = new byte[file.fcx.length + 2];
@@ -121,6 +136,23 @@ public class STARCOSCardChannelEmul extends CardChannelEmul {
     
   }
   
+  protected ResponseAPDU cmdREAD_RECORD(CommandAPDU command) throws CardException {
+    if (command.getINS() != 0xB2) {
+      throw new IllegalArgumentException("INS has to be 0xB2");
+    }
+    if (currentFile == null) {
+      return new ResponseAPDU(new byte[]{ (byte) 0x69, (byte) 0x86 });
+    }
+    if (command.getP1() != 0x01 || command.getP2() != 0x04) {
+      throw new CardException("Not implemented.");
+    }
+    byte[] response = new byte[currentFile.file.length + 2];
+    System.arraycopy(currentFile.file, 0, response, 0, currentFile.file.length);
+    response[currentFile.file.length] = (byte) 0x90;
+    response[currentFile.file.length + 1] = (byte) 0x00;
+    return new ResponseAPDU(response);
+  }
+
   protected ResponseAPDU cmdREAD_BINARY(CommandAPDU command) throws CardException {
 
     if (command.getINS() != 0xB0) {
@@ -192,6 +224,10 @@ public class STARCOSCardChannelEmul extends CardChannelEmul {
       case 0xB0:
         return cmdREAD_BINARY(command);
       
+      // READ RECORD
+      case 0xB2:
+        return cmdREAD_RECORD(command);
+
       // VERIFY
       case 0x20:
         return cmdVERIFY(command);
@@ -248,9 +284,15 @@ public class STARCOSCardChannelEmul extends CardChannelEmul {
     }
     
     if (pin != null) {
-  
-      if (reference.length == 0) {
-        return new ResponseAPDU(new byte[] { (byte) 0x63, (byte) (pin.kfpc | 0xC0)});
+
+      if (reference == null || reference.length == 0) {
+        if (pin.state == PIN.STATE_PIN_NOTACTIVE) {
+          return new ResponseAPDU(new byte[] { (byte) 0x69, (byte) 0x84 });
+        } else if (pin.state == PIN.STATE_PIN_BLOCKED) {
+          return new ResponseAPDU(new byte[] { (byte) 0x63, (byte) 0xc0 });
+        } else {
+          return new ResponseAPDU(new byte[] { (byte) 0x63, (byte) (pin.kfpc | 0xC0)});
+        }
       }
       
       if (reference.length != 8) {
@@ -264,7 +306,7 @@ public class STARCOSCardChannelEmul extends CardChannelEmul {
   
         case PIN.STATE_RESET:
           pin.state = PIN.STATE_PIN_VERIFIED;
-          
+
         default:
           pin.kfpc = 10;
           return new ResponseAPDU(new byte[] { (byte) 0x90, (byte) 0x00 });
@@ -321,7 +363,20 @@ public class STARCOSCardChannelEmul extends CardChannelEmul {
         return new ResponseAPDU(new byte[] {(byte) 0x67, (byte) 0x00});
       }
       
-      response = verifyPin(0xFF & command.getP2(), data);
+      PIN pin;
+      if (currentAppl != null) {
+        pin = currentAppl.pins.get(command.getP2());
+      } else {
+        pin = globalPins.get(command.getP2());
+      }
+      if (pin.state == PIN.STATE_PIN_NOTACTIVE) {
+        pin.pin = data;
+        pin.state = PIN.STATE_RESET;
+        response = new ResponseAPDU(new byte[] { (byte) 0x90, (byte) 0x00 });
+      } else {
+        // P1 == 0x01 not allowed on active pin (?)
+        response = new ResponseAPDU(new byte[] { (byte) 0x6A, (byte) 0x86});
+      }
 
     } else if (command.getP1() == 0x00) {
       
@@ -330,21 +385,22 @@ public class STARCOSCardChannelEmul extends CardChannelEmul {
       }
   
       response = verifyPin(0xFF & command.getP2(), Arrays.copyOf(data, 8));
-    
+
+      if (response.getSW() == 0x9000) {
+        PIN pin;
+        if (currentAppl != null) {
+          pin = currentAppl.pins.get(command.getP2());
+        } else {
+          pin = globalPins.get(command.getP2());
+        }
+        pin.pin = Arrays.copyOfRange(data, 8, 16);
+        pin.state = PIN.STATE_PIN_VERIFIED;
+      }
+
     } else {
       return new ResponseAPDU(new byte[] { (byte) 0x6A, (byte) 0x81 });
     }
      
-    if (response.getSW() == 0x9000) {
-      PIN pin;
-      if (currentAppl != null) {
-        pin = currentAppl.pins.get(command.getP2());
-      } else {
-        pin = globalPins.get(command.getP2());
-      }
-      pin.pin = Arrays.copyOfRange(data, 8, 16);
-    }
-
     return response;
     
   }
@@ -353,7 +409,10 @@ public class STARCOSCardChannelEmul extends CardChannelEmul {
     PIN pin = globalPins.get(kid);
     if (pin != null) {
       if (value == null) {
-        pin.pin = null;
+//        pin.pin = null;
+        //TransportPIN
+//        pin.pin = new byte[] { (byte) 0x24, (byte) 0x12, (byte) 0x34, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+        pin.state = PIN.STATE_PIN_NOTACTIVE;
       } else {
         byte[] b = new byte[8];
         b[0] = (byte) (0x20 | value.length);

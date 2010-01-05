@@ -28,15 +28,15 @@ import javax.smartcardio.CardException;
 @SuppressWarnings("restriction")
 public abstract class CardEmul extends Card {
 
-  protected Thread exclThread = null;
-  protected CardChannel channel = newCardChannel(this);
+  protected Thread exclThread; // = null;
+  protected CardChannel channel; // = newCardChannel(this);
   protected List<AbstractAppl> applications = new ArrayList<AbstractAppl>();
 
   public CardEmul() {
     super();
   }
 
-  protected abstract CardChannelEmul newCardChannel(CardEmul cardEmul);
+//  protected abstract CardChannelEmul newCardChannel(CardEmul cardEmul);
 
   @Override
   public void beginExclusive() throws CardException {
@@ -71,9 +71,9 @@ public abstract class CardEmul extends Card {
 
   @Override
   public void disconnect(boolean reset) throws CardException {
-    if (reset) {
-      channel = newCardChannel(this);
-    }
+//    if (reset) {
+//      channel = newCardChannel(this);
+//    }
   }
 
   @Override
@@ -93,7 +93,7 @@ public abstract class CardEmul extends Card {
       }
 
   public AbstractAppl getApplication(byte[] fid) {
-    
+
     for(AbstractAppl appl : applications) {
       if (Arrays.equals(appl.getAID(), fid) || Arrays.equals(appl.getFID(), fid)) {
         return appl;

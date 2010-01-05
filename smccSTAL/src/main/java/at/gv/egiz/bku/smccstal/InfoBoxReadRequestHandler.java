@@ -17,14 +17,13 @@
 package at.gv.egiz.bku.smccstal;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.bku.pin.gui.VerifyPINGUI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.LockedException;
 import at.gv.egiz.smcc.NotActivatedException;
-import at.gv.egiz.smcc.PINProvider;
-import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.stal.ErrorResponse;
@@ -49,8 +48,7 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
           newSTALMessage("Message.RequestCaption", "Message.IdentityLink");
           log.debug("Handling identitylink infobox");
           byte[] resp = card.getInfobox(infoBox.getInfoboxIdentifier(),
-                  new PINProviderFactory(card.getReader(), gui)
-                  .getCardPINProvider(),
+                  new VerifyPINGUI(gui),
                   infoBox.getDomainIdentifier());
           if (resp == null) {
             log.info("Infobox doesn't contain any data. Assume card is not activated.");
@@ -97,8 +95,7 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
           log.warn("Unknown infobox identifier: "
               + infoBox.getInfoboxIdentifier() + " trying generic request");
           byte[] resp = card.getInfobox(infoBox.getInfoboxIdentifier(),
-                  new PINProviderFactory(card.getReader(), gui)
-                  .getCardPINProvider(),
+                  new VerifyPINGUI(gui),
                   infoBox.getDomainIdentifier());
           if (resp == null) {
             return new ErrorResponse(6001);

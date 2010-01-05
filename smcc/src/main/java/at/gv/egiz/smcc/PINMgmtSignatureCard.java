@@ -16,6 +16,9 @@
 */
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.pin.gui.ModifyPINGUI;
+
+import at.gv.egiz.smcc.pin.gui.PINGUI;
 import java.util.List;
 
 public interface PINMgmtSignatureCard extends SignatureCard {
@@ -26,16 +29,16 @@ public interface PINMgmtSignatureCard extends SignatureCard {
 
   public PIN_STATE getPINState(PINSpec pinSpec) throws SignatureCardException;
   
-  public void verifyPIN(PINSpec pinSpec, PINProvider pinProvider)
+  public void verifyPIN(PINSpec pinSpec, PINGUI pinGUI)
   throws LockedException, NotActivatedException, CancelledException, SignatureCardException, InterruptedException;
 
-  public void changePIN(PINSpec pinSpec, ChangePINProvider pinProvider)
+  public void changePIN(PINSpec pinSpec, ModifyPINGUI changePINGUI)
   throws LockedException, NotActivatedException, CancelledException, PINFormatException, SignatureCardException, InterruptedException;
 
-  public void activatePIN(PINSpec pinSpec, PINProvider pinProvider)
+  public void activatePIN(PINSpec pinSpec, ModifyPINGUI activatePINGUI)
   throws CancelledException, SignatureCardException, InterruptedException;
 
-  public void unblockPIN(PINSpec pinSpec, PINProvider pukProvider)
+  public void unblockPIN(PINSpec pinSpec, ModifyPINGUI pukGUI)
   throws CancelledException, SignatureCardException, InterruptedException;
 
 }

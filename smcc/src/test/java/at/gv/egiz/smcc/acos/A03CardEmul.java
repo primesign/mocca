@@ -24,13 +24,8 @@ import at.gv.egiz.smcc.CardEmul;
 public class A03CardEmul extends ACOSCardEmul {
 
   public A03CardEmul(A03ApplSIG applSIG, A03ApplDEC applDEC) {
+    channel = new A03CardChannelEmul(this);
     applications.add(applSIG);
     applications.add(applDEC);
   }
-
-  @Override
-  protected CardChannelEmul newCardChannel(CardEmul cardEmul) {
-    return new A03CardChannelEmul(this);
-  }
-
 }

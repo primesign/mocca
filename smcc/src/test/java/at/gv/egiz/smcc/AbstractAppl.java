@@ -51,6 +51,7 @@ public abstract class AbstractAppl implements CardAppl {
     return files;
   }
 
+  @Override
   public abstract void setPin(int kid, char[] value);
   
 }

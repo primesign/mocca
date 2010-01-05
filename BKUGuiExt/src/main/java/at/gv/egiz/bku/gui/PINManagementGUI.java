@@ -239,23 +239,7 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
   }
 
   @Override
-  public void showPINDialog(DIALOG type, PINSpec pinSpec,
-          ActionListener okListener, String okCommand,
-          ActionListener cancelListener, String cancelCommand) {
-    showPINDialog(type, pinSpec, -1, false,
-            okListener, okCommand, cancelListener, cancelCommand);
-  }
-
-  @Override
-  public void showPINDialog(DIALOG type, PINSpec pinSpec, int retries,
-          ActionListener okListener, String okCommand,
-          ActionListener cancelListener, String cancelCommand) {
-    showPINDialog(type, pinSpec, retries, false,
-            okListener, okCommand, cancelListener, cancelCommand);
-  }
-
-  @Override
-  public void showPinpadPINDialog(DIALOG type, PINSpec pinSpec, int retries) {
+  public void showModifyPINDirect(DIALOG type, PINSpec pinSpec, int retries) {
     String title, msg;
     Object[] params;
     if (retries < 0) {
@@ -269,19 +253,19 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
       if (type == DIALOG.CHANGE) {
         log.debug("show change pin dialog");
         title = TITLE_CHANGE_PIN;
-        msg = MESSAGE_CHANGEPIN_PINPAD;
+        msg = MESSAGE_CHANGE_PINPAD_DIREKT;
       } else if (type == DIALOG.ACTIVATE) {
         log.debug("show activate pin dialog");
         title = TITLE_ACTIVATE_PIN;
-        msg = MESSAGE_ENTERPIN_PINPAD;
+        msg = MESSAGE_ACTIVATE_PINPAD_DIREKT;
       } else if (type == DIALOG.VERIFY) {
         log.debug("show verify pin dialog");
-        title = TITLE_VERIFY_PIN;
-        msg = MESSAGE_ENTERPIN_PINPAD;
+        title = TITLE_VERIFY_PINPAD;
+        msg = MESSAGE_ENTERPIN_PINPAD_DIRECT;
       } else {
         log.debug("show unblock pin dialog");
         title = TITLE_UNBLOCK_PIN;
-        msg = MESSAGE_ENTERPIN_PINPAD;
+        msg = MESSAGE_UNBLOCK_PINPAD_DIREKT;
       }
 
     } else {
@@ -293,6 +277,15 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
     }
     showMessageDialog(title, msg, params);
   }
+
+  @Override
+  public void showPINDialog(DIALOG type, PINSpec pinSpec, int retries,
+          ActionListener okListener, String okCommand,
+          ActionListener cancelListener, String cancelCommand) {
+    showPINDialog(type, pinSpec, retries, false,
+            okListener, okCommand, cancelListener, cancelCommand);
+  }
+
 
   private void showPINDialog(final DIALOG type, final PINSpec pinSpec,
           final int retries, final boolean pinpad,
@@ -322,7 +315,7 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 } else if (type == DIALOG.VERIFY) {
                   log.debug("show verify pin dialog");
                   TITLE = TITLE_VERIFY_PIN;
-                  MESSAGE_MGMT = MESSAGE_VERIFY_PIN;
+                  MESSAGE_MGMT = MESSAGE_ENTERPIN;
                 } else {
                   log.debug("show unblock pin dialog");
                   TITLE = TITLE_UNBLOCK_PIN;
@@ -393,7 +386,7 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 if (pinpad) {
                   JLabel pinpadLabel = new JLabel();
                   pinpadLabel.setFont(mgmtLabel.getFont().deriveFont(mgmtLabel.getFont().getStyle() & ~Font.BOLD));
-                  String pinpadPattern = getMessage(MESSAGE_VERIFYPIN_PINPAD);
+                  String pinpadPattern = getMessage(MESSAGE_ENTERPIN_PINPAD);
                   pinpadLabel.setText(MessageFormat.format(pinpadPattern,
                           new Object[] { pinSpec.getLocalizedName(), pinSpec.getLocalizedLength() }));
                   
@@ -403,7 +396,7 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                           .addComponent(pinpadLabel);
                 } else {
 
-                JButton okButton = new JButton();
+                final JButton okButton = new JButton();
                 okButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle() & ~Font.BOLD));
                 okButton.setText(getMessage(BUTTON_OK));
                 okButton.setEnabled(pinSpec.getMinLength() <= 0);
@@ -414,7 +407,7 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 JLabel repeatPinLabel = null;
                 JLabel pinLabel = new JLabel();
                 pinLabel.setFont(pinLabel.getFont().deriveFont(pinLabel.getFont().getStyle() & ~Font.BOLD));
-                String pinLabelPattern = (type == DIALOG.CHANGE) ? getMessage(LABEL_NEW_PIN) : getMessage(LABEL_PIN);
+                String pinLabelPattern = (type == DIALOG.CHANGE || type == DIALOG.UNBLOCK) ? getMessage(LABEL_NEW_PIN) : getMessage(LABEL_PIN);
                 pinLabel.setText(MessageFormat.format(pinLabelPattern, new Object[]{pinSpec.getLocalizedName()}));
 
                 final JPasswordField repeatPinField = new JPasswordField();
@@ -436,8 +429,6 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                 });
 
                 if (type != DIALOG.VERIFY) {
-                  pinField.setDocument(
-                      new PINDocument(pinSpec.getRecMinLength(), pinSpec.getRecMaxLength(), pinSpec.getRexepPattern(), null));
                   repeatPinLabel = new JLabel();
                   repeatPinLabel.setFont(pinLabel.getFont());
                   String repeatPinLabelPattern = getMessage(LABEL_REPEAT_PIN);
@@ -449,22 +440,20 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
 
                       @Override
                       public void actionPerformed(ActionEvent e) {
-                          if (pinField.getPassword().length >= pinSpec.getMinLength()) {
+                          if (okButton.isEnabled()) {
                               okListener.actionPerformed(e);
                           }
                       }
                   });
 
-                  if (type == DIALOG.CHANGE) {
+                  if (type == DIALOG.CHANGE || type == DIALOG.UNBLOCK) {
                     oldPinLabel = new JLabel();
                     oldPinLabel.setFont(oldPinLabel.getFont().deriveFont(oldPinLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-                    String oldPinLabelPattern = getMessage(LABEL_OLD_PIN);
+                    String oldPinLabelPattern = getMessage((type == DIALOG.CHANGE) ? LABEL_OLD_PIN : LABEL_PUK);
                     oldPinLabel.setText(MessageFormat.format(oldPinLabelPattern, new Object[]{pinSpec.getLocalizedName()}));
 
                     oldPinField = new JPasswordField();
                     oldPinField.setText("");
-                    oldPinField.setDocument(
-                        new PINDocument(pinSpec.getMinLength(), pinSpec.getMaxLength(), pinSpec.getRexepPattern(), null));
                     oldPinField.setActionCommand(okCommand);
                     oldPinField.addActionListener(new ActionListener() {
 
@@ -476,16 +465,45 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
                         }
                     });
 
-                    repeatPinField.setDocument(
-                        new PINDocument(pinSpec.getRecMinLength(), pinSpec.getRecMaxLength(), pinSpec.getRexepPattern(), 
-                            okButton, pinField.getDocument(), oldPinField.getDocument()));
+                    ExtendedPinDocument oldPinDocument =
+                        new ExtendedPinDocument(pinSpec.getMinLength(), pinSpec.getMaxLength(),
+                            pinSpec.getRexepPattern(), okButton);
+                    ComparePinDocument newPinDocument =
+                        new ComparePinDocument(pinSpec.getRecMinLength(), pinSpec.getRecMaxLength(), pinSpec.getRexepPattern(),
+                            okButton);
+                    ComparePinDocument confirmPinDocument =
+                        new ComparePinDocument(pinSpec.getRecMinLength(), pinSpec.getRecMaxLength(), pinSpec.getRexepPattern(),
+                            okButton);
+
+                    oldPinDocument.newPIN = newPinDocument;
+                    oldPinDocument.confirmPIN = confirmPinDocument;
+                    
+                    newPinDocument.compareTo = confirmPinDocument;
+                    newPinDocument.currentPIN = oldPinDocument;
+                    confirmPinDocument.compareTo = newPinDocument;
+                    confirmPinDocument.currentPIN = oldPinDocument;
+
+                    oldPinField.setDocument(oldPinDocument);
+                    pinField.setDocument(newPinDocument);
+                    repeatPinField.setDocument(confirmPinDocument);
+
                   } else {
                     // else -> ACTIVATE (not verify, not change)
-                    repeatPinField.setDocument(
-                        new PINDocument(pinSpec.getRecMinLength(), pinSpec.getRecMaxLength(), pinSpec.getRexepPattern(), 
-                            okButton, pinField.getDocument()));
+                    ComparePinDocument newPinDocument =
+                        new ComparePinDocument(pinSpec.getRecMinLength(), pinSpec.getRecMaxLength(), pinSpec.getRexepPattern(),
+                            okButton);
+                    ComparePinDocument confirmPinDocument =
+                        new ComparePinDocument(pinSpec.getRecMinLength(), pinSpec.getRecMaxLength(), pinSpec.getRexepPattern(),
+                            okButton);
+
+                    newPinDocument.compareTo = confirmPinDocument;
+                    confirmPinDocument.compareTo = newPinDocument;
+
+                    pinField.setDocument(newPinDocument);
+                    repeatPinField.setDocument(confirmPinDocument);
                   }
                 } else {
+                  // VERIFY
                   pinField.setDocument(
                       new PINDocument(pinSpec.getMinLength(), pinSpec.getMaxLength(), pinSpec.getRexepPattern(), okButton));
                 }
@@ -534,7 +552,7 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
 //                } else {
 
 
-                  if (type == DIALOG.CHANGE) {
+                  if (type == DIALOG.CHANGE || type == DIALOG.UNBLOCK) {
                     pinHorizontal
                           .addGroup(mainPanelLayout.createSequentialGroup()
                             .addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -673,6 +691,71 @@ public class PINManagementGUI extends CardMgmtGUI implements PINManagementGUIFac
     }
 
     return bs;
+  }
+
+  @Override
+  public void showEnterCurrentPIN(DIALOG type, PINSpec pinSpec, int retries) {
+    String title, message;
+//    Object[] params = null;
+    
+    if (type == PINManagementGUIFacade.DIALOG.VERIFY) {
+      title = PINManagementGUIFacade.TITLE_VERIFY_PINPAD;
+      message = BKUGUIFacade.MESSAGE_ENTERPIN_PINPAD;
+//      params = new Object[]{pinSpec.getLocalizedName(), pinSpec.getLocalizedLength()};
+    } else if (type == PINManagementGUIFacade.DIALOG.ACTIVATE) {
+      title = PINManagementGUIFacade.TITLE_ACTIVATE_PIN;
+      message = PINManagementGUIFacade.MESSAGE_ACTIVATE_PINPAD_CURRENT;
+//      params = new Object[]{pinSpec.getLocalizedName(), pinSpec.getLocalizedLength()};
+    } else if (type == PINManagementGUIFacade.DIALOG.CHANGE) {
+      title = PINManagementGUIFacade.TITLE_CHANGE_PIN;
+      message = PINManagementGUIFacade.MESSAGE_CHANGE_PINPAD_CURRENT;
+//      params = new Object[]{pinSpec.getLocalizedName(), pinSpec.getLocalizedLength()};
+    } else { //if (type == DIALOG.UNBLOCK) {
+      title = PINManagementGUIFacade.TITLE_UNBLOCK_PIN;
+      message = PINManagementGUIFacade.MESSAGE_UNBLOCK_PINPAD_CURRENT;
+//      params = new Object[]{pinSpec.getLocalizedName(), pinSpec.getLocalizedLength()};
+    }
+    showEnterPIN(pinSpec, retries, title, message, null);
+  }
+
+  @Override
+  public void showEnterNewPIN(DIALOG type, PINSpec pinSpec) {
+    String title, message;
+    if (type == PINManagementGUIFacade.DIALOG.ACTIVATE) {
+      title = PINManagementGUIFacade.TITLE_ACTIVATE_PIN;
+      message = PINManagementGUIFacade.MESSAGE_ACTIVATE_PINPAD_NEW;
+    } else if (type == PINManagementGUIFacade.DIALOG.CHANGE) {
+      title = PINManagementGUIFacade.TITLE_CHANGE_PIN;
+      message = PINManagementGUIFacade.MESSAGE_CHANGE_PINPAD_NEW;
+    } else if (type == DIALOG.UNBLOCK) {
+      title = PINManagementGUIFacade.TITLE_UNBLOCK_PIN;
+      message = PINManagementGUIFacade.MESSAGE_UNBLOCK_PINPAD_NEW;
+    } else {
+      log.error("enterNewPIN not supported for dialog type " + type);
+      showErrorDialog(ERR_UNKNOWN, null);
+      return;
+    }
+    showEnterPIN(pinSpec, -1, title, message, null);
+  }
+
+  @Override
+  public void showConfirmNewPIN(DIALOG type, PINSpec pinSpec) {
+    String title, message;
+    if (type == PINManagementGUIFacade.DIALOG.ACTIVATE) {
+      title = PINManagementGUIFacade.TITLE_ACTIVATE_PIN;
+      message = PINManagementGUIFacade.MESSAGE_ACTIVATE_PINPAD_CONFIRM;
+    } else if (type == PINManagementGUIFacade.DIALOG.CHANGE) {
+      title = PINManagementGUIFacade.TITLE_CHANGE_PIN;
+      message = PINManagementGUIFacade.MESSAGE_CHANGE_PINPAD_CONFIRM;
+    } else if (type == DIALOG.UNBLOCK) {
+      title = PINManagementGUIFacade.TITLE_UNBLOCK_PIN;
+      message = PINManagementGUIFacade.MESSAGE_UNBLOCK_PINPAD_CONFIRM;
+    } else {
+      log.error("enterNewPIN not supported for dialog type " + type);
+      showErrorDialog(ERR_UNKNOWN, null);
+      return;
+    }
+    showEnterPIN(pinSpec, -1, title, message, null);
   }
 
 }

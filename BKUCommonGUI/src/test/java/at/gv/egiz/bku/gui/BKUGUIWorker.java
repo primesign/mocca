@@ -45,7 +45,7 @@ public class BKUGUIWorker implements Runnable {
 
   @Override
   public void run() {
-//        try {
+        try {
 
     final PINSpec signPinSpec = new PINSpec(6, 10, "[0-9]", "Test-PIN", (byte) 0x81, null);
     final PINSpec cardPinSpec = new PINSpec(4, 4, "[0-9]", "Test-PIN", (byte) 0x01, null);
@@ -155,7 +155,10 @@ public class BKUGUIWorker implements Runnable {
 //
 //            gui.showSignaturePINDialog(signPinSpec, -1, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
 
-    gui.showPinpadSignaturePINDialog(signPinSpec, -1, hashdataListener, "hashdata");
+    gui.showSignatureDataDialog(signPinSpec, signListener, "sign", cancelListener, "cancel", hashdataListener, "hashdata");
+    Thread.sleep(2000);
+    
+    gui.showEnterPINDirect(signPinSpec, -1);
 //
 //            Thread.sleep(4000);
 //
@@ -189,8 +192,8 @@ public class BKUGUIWorker implements Runnable {
 //            gui.showTextPlainHashDataInput("hallo,\n welt!", "12345", null, "cancel", null, "save");
 //            Thread.sleep(2000);
 
-//        } catch (InterruptedException ex) {
-//            ex.printStackTrace();
-//        }
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
   }
 }

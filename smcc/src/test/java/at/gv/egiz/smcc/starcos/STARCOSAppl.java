@@ -69,27 +69,4 @@ public abstract class STARCOSAppl extends AbstractAppl implements CardAppl {
       pin.next().state = PIN.STATE_RESET;
     }
   }
-  
-  public void setPin(int kid, char[] value) {
-    PIN pin = pins.get(kid);
-    if (pin != null) {
-      if (value == null) {
-        pin.pin = null;
-      } else {
-        byte[] b = new byte[8];
-        b[0] = (byte) (0x20 | value.length);
-        for(int i = 1, j = 0; i < b.length; i++) {
-          int h = ((j < value.length) 
-                  ? Character.digit(value[j++], 10) 
-                  : 0x0F);
-          int l = ((j < value.length) 
-                  ? Character.digit(value[j++], 10) 
-                  : 0x0F);
-          b[i] = (byte) ((h << 4) | l);
-        }
-        pin.pin = b;
-      }
-    }
-  }
-
 }

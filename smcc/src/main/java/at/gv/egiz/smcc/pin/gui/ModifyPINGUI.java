@@ -14,23 +14,23 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package at.gv.egiz.smcc;
+package at.gv.egiz.smcc.pin.gui;
 
-/**
- *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
- */
-public interface ChangePINProvider extends PINProvider {
+import at.gv.egiz.smcc.CancelledException;
+import at.gv.egiz.smcc.PINSpec;
 
-  /**
-   *
-   * @param spec
-   * @param retries
-   * @return null if no old value for this pin
-   * @throws at.gv.egiz.smcc.CancelledException if cancelled by user
-   * @throws java.lang.InterruptedException
-   */
-  public char[] provideOldPIN(PINSpec spec, int retries)
-          throws CancelledException, InterruptedException;
 
+public interface ModifyPINGUI extends ModifyPINProvider {
+
+  void modifyPINDirect(PINSpec spec, int retries) throws CancelledException, InterruptedException;
+  void finishDirect();
+
+  void enterCurrentPIN(PINSpec spec, int retries);
+  void enterNewPIN(PINSpec spec);
+  void confirmNewPIN(PINSpec spec);
+  void validKeyPressed();
+  void correctionButtonPressed();
+  void allKeysCleared();
+  /** called prior to MODIFY_PIN_FINISH control command transmission (clear display or display wait message) */
+  void finish();
 }

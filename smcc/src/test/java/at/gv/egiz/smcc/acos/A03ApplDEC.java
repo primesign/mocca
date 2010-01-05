@@ -40,7 +40,7 @@ public class A03ApplDEC extends ACOSApplDEC {
     putFile(new File(FID_EF_INFOBOX, EF_INFOBOX, FCI_EF_INFOBOX, KID_PIN_INF));
 
     try {
-      pins.put(KID_PIN_INF, new PIN("0000\0\0\0\0".getBytes("ASCII"), KID_PIN_INF, 10));
+      pins.put(KID_PIN_INF, new PIN("0000\0\0\0\0".getBytes("ASCII"), KID_PIN_INF, 10, PIN.STATE_RESET));
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }

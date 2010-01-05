@@ -22,15 +22,16 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import at.gv.egiz.smcc.ACOSCard;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.CardEmul;
 import at.gv.egiz.smcc.CardNotSupportedException;
 import at.gv.egiz.smcc.CardTerminalEmul;
+import at.gv.egiz.smcc.pin.gui.ChangePINProvider;
 import at.gv.egiz.smcc.LockedException;
 import at.gv.egiz.smcc.NotActivatedException;
 import at.gv.egiz.smcc.PINFormatException;
 import at.gv.egiz.smcc.PINMgmtSignatureCard;
+import at.gv.egiz.smcc.pin.gui.SMCCTestPINProvider;
 import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.smcc.SignatureCardException;
@@ -74,12 +75,12 @@ public class A03CardTest extends ACOSCardTest {
       char[] pin = defaultPin;
 
       for (int i = pinSpec.getMinLength(); i <= pinSpec.getMaxLength(); i++) {
-        signatureCard.verifyPIN(pinSpec, new TestPINProvider(pin));
+        signatureCard.verifyPIN(pinSpec, new SMCCTestPINProvider(pin));
         char[] newPin = new char[i];
         Arrays.fill(newPin, '0');
         signatureCard
-            .changePIN(pinSpec, new TestChangePINProvider(pin, newPin));
-        signatureCard.verifyPIN(pinSpec, new TestPINProvider(newPin));
+            .changePIN(pinSpec, new ChangePINProvider(pin, newPin));
+        signatureCard.verifyPIN(pinSpec, new SMCCTestPINProvider(newPin));
         pin = newPin;
       }
 

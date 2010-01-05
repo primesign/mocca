@@ -23,23 +23,4 @@ package at.gv.egiz.smcc;
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class PINConfirmationException extends SignatureCardException {
-
-  private static final long serialVersionUID = 1L;
-
-  public PINConfirmationException() {
-    super();
-  }
-
-  public PINConfirmationException(String message, Throwable cause) {
-    super(message, cause);
-  }
-
-  public PINConfirmationException(String message) {
-    super(message);
-  }
-
-  public PINConfirmationException(Throwable cause) {
-    super(cause);
-  }
-
 }

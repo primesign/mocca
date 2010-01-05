@@ -14,32 +14,35 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package at.gv.egiz.smcc;
+package at.gv.egiz.smcc.pin.gui;
+
+import at.gv.egiz.smcc.CancelledException;
+import at.gv.egiz.smcc.PINSpec;
+
 
 /**
- * The number of retries is not fixed and there is no way (?) to obtain this value.
- * A PINProvider should therefore maintain an internal retry counter or flag
- * to decide whether or not to warn the user (num retries passed in providePIN).
- *
- * Therefore PINProvider objects should not be reused.
- *
- * (ACOS: reload counter: between 0 and 15, where 15 meens deactivated)
- *
+ * user interface for "software pin-entry" of
+ * <ul>
+ * <li> current pin and new pin (change pin)
+ * <li> new pin (pin activation, no current pin)
+ * <li> puk and new pin (probably verify only?)
+ * </ul>
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public interface PINProvider {
+public interface ModifyPINProvider {
 
   /**
    *
    * @param spec
-   * @param retries num of remaining retries or -1 if unknown
-   * (a positive value does <em>not</em> necessarily signify that there was
-   * already an unsuccessful PIN verification)
-   * @return pin != null
-   * @throws at.gv.egiz.smcc.CancelledException
+   * @param retries
+   * @return null if no old value for this pin
+   * @throws at.gv.egiz.smcc.CancelledException if cancelled by user
    * @throws java.lang.InterruptedException
    */
-  public char[] providePIN(PINSpec spec, int retries)
+  public char[] provideCurrentPIN(PINSpec spec, int retries)
+          throws CancelledException, InterruptedException;
+
+  public char[] provideNewPIN(PINSpec spec)
           throws CancelledException, InterruptedException;
 
 }

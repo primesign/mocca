@@ -32,26 +32,39 @@ public interface PINManagementGUIFacade extends BKUGUIFacade {
   public static final String TITLE_PINMGMT = "title.pin.mgmt";
   public static final String TITLE_ACTIVATE_PIN = "title.activate.pin";
   public static final String TITLE_CHANGE_PIN = "title.change.pin";
-  public static final String TITLE_VERIFY_PIN = "title.verify.pin";
+//  public static final String TITLE_VERIFY_PIN = "title.verify.pin";
   public static final String TITLE_UNBLOCK_PIN = "title.unblock.pin";
   public static final String TITLE_ACTIVATE_SUCCESS = "title.activate.success";
+  public static final String TITLE_UNBLOCK_SUCCESS = "title.unblock.success";
   public static final String TITLE_CHANGE_SUCCESS = "title.change.success";
 
   // removed message.* prefix to reuse keys as help keys
   public static final String MESSAGE_ACTIVATE_SUCCESS = "activate.success";
   public static final String MESSAGE_CHANGE_SUCCESS = "change.success";
+  public static final String MESSAGE_UNBLOCK_SUCCESS = "unblock.success";
   public static final String MESSAGE_PINMGMT = "pin.mgmt";
 //  public static final String MESSAGE_PINPAD = "pinpad";
+
   public static final String MESSAGE_ACTIVATE_PIN = "activate.pin";
   public static final String MESSAGE_CHANGE_PIN = "change.pin";
-  public static final String MESSAGE_VERIFY_PIN = "verify.pin";
   public static final String MESSAGE_UNBLOCK_PIN = "unblock.pin";
-  public static final String MESSAGE_ACTIVATEPIN_PINPAD = "activate.pinpad";
-  public static final String MESSAGE_CHANGEPIN_PINPAD = "change.pinpad";
-  public static final String MESSAGE_VERIFYPIN_PINPAD = "verify.pinpad";
-  public static final String MESSAGE_UNBLOCKPIN_PINPAD = "unblock.pinpad";
+
+  public static final String MESSAGE_ACTIVATE_PINPAD_CURRENT = "activate.pinpad.current";
+  public static final String MESSAGE_CHANGE_PINPAD_CURRENT = "change.pinpad.current";
+  public static final String MESSAGE_UNBLOCK_PINPAD_CURRENT = "unblock.pinpad.current";
+  public static final String MESSAGE_ACTIVATE_PINPAD_NEW = "activate.pinpad.new";
+  public static final String MESSAGE_CHANGE_PINPAD_NEW = "change.pinpad.new";
+  public static final String MESSAGE_UNBLOCK_PINPAD_NEW = "unblock.pinpad.new";
+  public static final String MESSAGE_ACTIVATE_PINPAD_CONFIRM = "activate.pinpad.confirm";
+  public static final String MESSAGE_CHANGE_PINPAD_CONFIRM = "change.pinpad.confirm";
+  public static final String MESSAGE_UNBLOCK_PINPAD_CONFIRM = "unblock.pinpad.confirm";
+
+  public static final String MESSAGE_ACTIVATE_PINPAD_DIREKT = "activate.pinpad.direct";
+  public static final String MESSAGE_CHANGE_PINPAD_DIREKT = "change.pinpad.direct";
+  public static final String MESSAGE_UNBLOCK_PINPAD_DIREKT = "unblock.pinpad.direct";
 
   public static final String LABEL_OLD_PIN = "label.old.pin";
+  public static final String LABEL_PUK = "label.puk";
   public static final String LABEL_NEW_PIN = "label.new.pin";
   public static final String LABEL_REPEAT_PIN = "label.repeat.pin";
 
@@ -81,35 +94,34 @@ public interface PINManagementGUIFacade extends BKUGUIFacade {
   public enum STATUS { ACTIV, NOT_ACTIV, BLOCKED, UNKNOWN };
   public enum DIALOG { VERIFY, ACTIVATE, CHANGE, UNBLOCK };
 
+  /**
+   * list pins
+   */
   public void showPINManagementDialog(Map<PINSpec, STATUS> pins,
           ActionListener activateListener, String activateCmd, String changeCmd, String unblockCmd, String verifyCmd,
           ActionListener cancelListener, String cancelCmd);
 
-  public void showPINDialog(DIALOG type, PINSpec pin,
+  /**
+   * "software" pin-entry dialog (activate, change, unblock, verify)
+   */
+  public void showPINDialog(DIALOG type, PINSpec pinSpec, int retries,
           ActionListener okListener, String okCmd,
           ActionListener cancelListener, String cancelCmd);
 
-  public void showPINDialog(DIALOG type, PINSpec pin, int retries,
-          ActionListener okListener, String okCmd,
-          ActionListener cancelListener, String cancelCmd);
+  /**
+   * <b>direct</b> pinpad pin-entry dialog
+   */
+  public void showModifyPINDirect(DIALOG type, PINSpec pinSpec, int retries);
 
-  public void showPinpadPINDialog(DIALOG type, PINSpec pin, int retries);
+  /**
+   * <b>start/finish</b> pinpad pin-entry dialog
+   */
+  public void showEnterCurrentPIN(DIALOG type, PINSpec pinSpec, int retries);
 
-//  public void showActivatePINDialog(PINSpec pin,
-//          ActionListener okListener, String okCmd,
-//          ActionListener cancelListener, String cancelCmd);
-//
-//  public void showChangePINDialog(PINSpec pin,
-//          ActionListener okListener, String okCmd,
-//          ActionListener cancelListener, String cancelCmd);
-//
-//  public void showUnblockPINDialog(PINSpec pin,
-//          ActionListener okListener, String okCmd,
-//          ActionListener cancelListener, String cancelCmd);
-//
-//  public void showVerifyPINDialog(PINSpec pin,
-//          ActionListener okListener, String okCmd,
-//          ActionListener cancelListener, String cancelCmd);
+  public void showEnterNewPIN(DIALOG type, PINSpec pinSpec);
+
+  public void showConfirmNewPIN(DIALOG type, PINSpec pinSpec);
+
 
   public char[] getOldPin();
 

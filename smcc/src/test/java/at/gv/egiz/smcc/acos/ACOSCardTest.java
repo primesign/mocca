@@ -16,26 +16,23 @@
 */
 package at.gv.egiz.smcc.acos;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import org.junit.Test;
 
-import at.gv.egiz.smcc.ACOSCard;
 import at.gv.egiz.smcc.CardEmul;
 import at.gv.egiz.smcc.CardNotSupportedException;
 import at.gv.egiz.smcc.CardTest;
 import at.gv.egiz.smcc.LockedException;
 import at.gv.egiz.smcc.NotActivatedException;
+import at.gv.egiz.smcc.pin.gui.SMCCTestPINProvider;
 import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.SignatureCard.KeyboxName;
@@ -60,7 +57,7 @@ public abstract class ACOSCardTest extends CardTest {
     appl.clearInfobox();
 
     byte[] idlink = signatureCard.getInfobox("IdentityLink",
-        new TestPINProvider(pin), null);
+        new SMCCTestPINProvider(pin), null);
     assertNull(idlink);
 
   }
@@ -76,7 +73,7 @@ public abstract class ACOSCardTest extends CardTest {
     ACOSApplDEC appl = (ACOSApplDEC) card.getApplication(ACOSAppl.AID_DEC);
     appl.setInfoboxHeader((byte) 0xFF);
 
-    signatureCard.getInfobox("IdentityLink", new TestPINProvider(pin), null);
+    signatureCard.getInfobox("IdentityLink", new SMCCTestPINProvider(pin), null);
 
   }
 
@@ -138,7 +135,7 @@ public abstract class ACOSCardTest extends CardTest {
 
     byte[] signature = signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
         .getBytes("ASCII")),
-        KeyboxName.SECURE_SIGNATURE_KEYPAIR, new TestPINProvider(pin), null);
+        KeyboxName.SECURE_SIGNATURE_KEYPAIR, new SMCCTestPINProvider(pin), null);
 
     assertNotNull(signature);
 
@@ -158,7 +155,7 @@ public abstract class ACOSCardTest extends CardTest {
 
     byte[] signature = signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
         .getBytes("ASCII")),
-        KeyboxName.CERITIFIED_KEYPAIR, new TestPINProvider(pin), null);
+        KeyboxName.CERITIFIED_KEYPAIR, new SMCCTestPINProvider(pin), null);
 
     assertNotNull(signature);
 
@@ -171,7 +168,7 @@ public abstract class ACOSCardTest extends CardTest {
 
     SignatureCard signatureCard = createSignatureCard();
 
-    TestPINProvider pinProvider = new TestPINProvider("000000".toCharArray());
+    SMCCTestPINProvider pinProvider = new SMCCTestPINProvider("000000".toCharArray());
 
     signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
         .getBytes("ASCII")), KeyboxName.SECURE_SIGNATURE_KEYPAIR,
@@ -186,7 +183,7 @@ public abstract class ACOSCardTest extends CardTest {
 
     SignatureCard signatureCard = createSignatureCard();
 
-    TestPINProvider pinProvider = new TestPINProvider("0000".toCharArray());
+    SMCCTestPINProvider pinProvider = new SMCCTestPINProvider("0000".toCharArray());
 
     signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
         .getBytes("ASCII")), KeyboxName.CERITIFIED_KEYPAIR,
@@ -204,7 +201,7 @@ public abstract class ACOSCardTest extends CardTest {
     ACOSApplSIG appl = (ACOSApplSIG) card.getApplication(ACOSAppl.AID_SIG);
     appl.setPin(ACOSApplSIG.KID_PIN_SIG, null);
 
-    TestPINProvider pinProvider = new TestPINProvider("000000".toCharArray());
+    SMCCTestPINProvider pinProvider = new SMCCTestPINProvider("000000".toCharArray());
 
     signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
         .getBytes("ASCII")), KeyboxName.SECURE_SIGNATURE_KEYPAIR,
@@ -222,7 +219,7 @@ public abstract class ACOSCardTest extends CardTest {
     ACOSApplDEC appl = (ACOSApplDEC) card.getApplication(ACOSAppl.AID_DEC);
     appl.setPin(ACOSApplDEC.KID_PIN_DEC, null);
 
-    TestPINProvider pinProvider = new TestPINProvider("0000".toCharArray());
+    SMCCTestPINProvider pinProvider = new SMCCTestPINProvider("0000".toCharArray());
 
     signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
         .getBytes("ASCII")), KeyboxName.CERITIFIED_KEYPAIR,

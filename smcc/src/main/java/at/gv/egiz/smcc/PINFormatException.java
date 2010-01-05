@@ -23,23 +23,4 @@ package at.gv.egiz.smcc;
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class PINFormatException extends SignatureCardException {
-
-  private static final long serialVersionUID = 1L;
-
-  public PINFormatException() {
-    super();
-  }
-
-  public PINFormatException(String message, Throwable cause) {
-    super(message, cause);
-  }
-
-  public PINFormatException(String message) {
-    super(message);
-  }
-
-  public PINFormatException(Throwable cause) {
-    super(cause);
-  }
-
 }

@@ -28,7 +28,6 @@ import java.util.Arrays;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import at.gv.egiz.smcc.ACOSCard;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.CardEmul;
 import at.gv.egiz.smcc.CardNotSupportedException;
@@ -41,7 +40,8 @@ import at.gv.egiz.smcc.PINSpec;
 import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.SignatureCardFactory;
-import at.gv.egiz.smcc.CardTest.TestPINProvider;
+import at.gv.egiz.smcc.pin.gui.ChangePINProvider;
+import at.gv.egiz.smcc.pin.gui.SMCCTestPINProvider;
 
 public class A04CardTest extends ACOSCardTest {
 
@@ -88,8 +88,8 @@ public class A04CardTest extends ACOSCardTest {
         char[] newPin = new char[i];
         Arrays.fill(newPin, '0');
         signatureCard
-            .changePIN(pinSpec, new TestChangePINProvider(pin, newPin));
-        signatureCard.verifyPIN(pinSpec, new TestPINProvider(newPin));
+            .changePIN(pinSpec, new ChangePINProvider(pin, newPin));
+        signatureCard.verifyPIN(pinSpec, new SMCCTestPINProvider(newPin));
         pin = newPin;
       }
 
@@ -111,7 +111,7 @@ public class A04CardTest extends ACOSCardTest {
     SignatureCard signatureCard = factory.createSignatureCard(card,
         new CardTerminalEmul(card));
 
-    TestPINProvider pinProvider = new TestPINProvider(pin);
+    SMCCTestPINProvider pinProvider = new SMCCTestPINProvider(pin);
 
     byte[] idlink = signatureCard.getInfobox("IdentityLink",
         pinProvider, null);
@@ -129,7 +129,7 @@ public class A04CardTest extends ACOSCardTest {
     
     SignatureCard signatureCard = createSignatureCard();
     
-    TestPINProvider pinProvider = new TestPINProvider(pin);
+    SMCCTestPINProvider pinProvider = new SMCCTestPINProvider(pin);
 
     byte[] idlink = signatureCard.getInfobox("IdentityLink",
         pinProvider, null);

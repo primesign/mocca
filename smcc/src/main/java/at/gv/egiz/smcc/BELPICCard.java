@@ -18,6 +18,7 @@
 
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.pin.gui.PINGUI;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -110,7 +111,7 @@ public class BELPICCard extends AbstractSignatureCard implements SignatureCard {
 
   @Override
   @Exclusive
-  public byte[] getInfobox(String infobox, PINProvider provider, String domainId)
+  public byte[] getInfobox(String infobox, PINGUI provider, String domainId)
       throws SignatureCardException, InterruptedException {
       
     throw new IllegalArgumentException("Infobox '" + infobox
@@ -120,7 +121,7 @@ public class BELPICCard extends AbstractSignatureCard implements SignatureCard {
   @Override
   @Exclusive
   public byte[] createSignature(InputStream input, KeyboxName keyboxName,
-      PINProvider provider, String alg) throws SignatureCardException, InterruptedException, IOException {
+      PINGUI provider, String alg) throws SignatureCardException, InterruptedException, IOException {
     
     if (KeyboxName.SECURE_SIGNATURE_KEYPAIR != keyboxName) {
       throw new SignatureCardException("Card does not support key " + keyboxName + ".");
@@ -176,7 +177,7 @@ public class BELPICCard extends AbstractSignatureCard implements SignatureCard {
   }
   
   protected void verifyPINLoop(CardChannel channel, PINSpec spec,
-      PINProvider provider) throws LockedException, NotActivatedException,
+      PINGUI provider) throws LockedException, NotActivatedException,
       SignatureCardException, InterruptedException, CardException {
     
     int retries = -1; //verifyPIN(channel, spec, null, -1);
@@ -186,7 +187,7 @@ public class BELPICCard extends AbstractSignatureCard implements SignatureCard {
   }
 
   protected int verifyPIN(CardChannel channel, PINSpec pinSpec,
-      PINProvider provider, int retries) throws SignatureCardException,
+      PINGUI provider, int retries) throws SignatureCardException,
       LockedException, NotActivatedException, InterruptedException,
       CardException {
     
@@ -197,7 +198,7 @@ public class BELPICCard extends AbstractSignatureCard implements SignatureCard {
             (byte) 0xff, (byte) 0xff, (byte) 0xff }, 
         1, VerifyAPDUSpec.PIN_FORMAT_BCD, 7, 4, 4);
     
-    ResponseAPDU resp = reader.verify(channel, apduSpec, pinSpec, provider, retries);
+    ResponseAPDU resp = reader.verify(channel, apduSpec, provider, pinSpec, retries);
     
     if (resp.getSW() == 0x9000) {
       return -1;

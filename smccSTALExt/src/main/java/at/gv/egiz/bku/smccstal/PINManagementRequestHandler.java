@@ -23,9 +23,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.bku.gui.PINManagementGUI;
 import at.gv.egiz.bku.gui.PINManagementGUIFacade;
 import at.gv.egiz.bku.gui.PINManagementGUIFacade.STATUS;
-import at.gv.egiz.bku.smccstal.AbstractRequestHandler;
+import at.gv.egiz.bku.pin.gui.ManagementPINGUI;
+import at.gv.egiz.bku.pin.gui.VerifyPINGUI;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.LockedException;
 import at.gv.egiz.smcc.NotActivatedException;
@@ -96,40 +98,15 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
             throw new NullPointerException("no PIN selected for activation/change");
           }
 
-          ManagementPINProviderFactory ppfac =
-                  new ManagementPINProviderFactory(card.getReader(), gui);
-
           try {
             if ("activate_enterpin".equals(actionCommand)) {
-              log.info("activate " + selectedPIN.getLocalizedName());
-              ((PINMgmtSignatureCard) card).activatePIN(selectedPIN,
-                      ppfac.getActivatePINProvider());
-              updatePINState(selectedPIN, STATUS.ACTIV);
-              gui.showMessageDialog(PINManagementGUIFacade.TITLE_ACTIVATE_SUCCESS,
-                      PINManagementGUIFacade.MESSAGE_ACTIVATE_SUCCESS,
-                      new Object[] {selectedPIN.getLocalizedName()},
-                      BKUGUIFacade.BUTTON_OK, this, "ok");
-              waitForAction();
+              activatePIN(selectedPIN);
             } else if ("change_enterpin".equals(actionCommand)) {
-              log.info("change " + selectedPIN.getLocalizedName());
-              ((PINMgmtSignatureCard) card).changePIN(selectedPIN, 
-                      ppfac.getChangePINProvider());
-              updatePINState(selectedPIN, STATUS.ACTIV);
-              gui.showMessageDialog(PINManagementGUIFacade.TITLE_CHANGE_SUCCESS,
-                      PINManagementGUIFacade.MESSAGE_CHANGE_SUCCESS,
-                      new Object[] {selectedPIN.getLocalizedName()},
-                      BKUGUIFacade.BUTTON_OK, this, "ok");
-              waitForAction();
-
+              changePIN(selectedPIN);
             } else if ("unblock_enterpuk".equals(actionCommand)) {
-              log.info("unblock " + selectedPIN.getLocalizedName());
-              ((PINMgmtSignatureCard) card).unblockPIN(selectedPIN,
-                      ppfac.getUnblockPINProvider());
+              unblockPIN(selectedPIN);
             } else if ("verify_enterpin".equals(actionCommand)) {
-              log.info("verify " + selectedPIN.getLocalizedName());
-              ((PINMgmtSignatureCard) card).verifyPIN(selectedPIN,
-                      ppfac.getVerifyPINProvider());
-              updatePINState(selectedPIN, STATUS.ACTIV);
+              verifyPIN(selectedPIN);
             }
           } catch (CancelledException ex) {
             log.trace("cancelled");
@@ -154,27 +131,15 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
                     new Object[] {selectedPIN.getLocalizedName()},
                     this, null);
             waitForAction();
-          } catch (PINConfirmationException ex) {
-            log.error("confirmation pin does not match new " + selectedPIN.getLocalizedName());
-            gui.showErrorDialog(PINManagementGUIFacade.ERR_PIN_CONFIRMATION,
-                    new Object[] {selectedPIN.getLocalizedName()},
-                    this, null);
-            waitForAction();
+
+            // inner loop for pinConfirmation and pinFormat ex
+//          } catch (PINConfirmationException ex) {
+//          } catch (PINFormatException ex) {
+
           } catch (PINOperationAbortedException ex) {
             log.error("pin operation aborted without further details");
             gui.showErrorDialog(PINManagementGUIFacade.ERR_PIN_OPERATION_ABORTED,
                     new Object[] {selectedPIN.getLocalizedName()},
-                    this, null);
-            waitForAction();
-          } catch (PINFormatException ex) {
-            log.error("wrong format of new " + selectedPIN.getLocalizedName());
-//            updatePINStatus(selectedPIN, STATUS.NOT_ACTIV);
-            String pinSize = String.valueOf(selectedPIN.getMinLength());
-            if (selectedPIN.getMinLength() != selectedPIN.getMaxLength()) {
-                pinSize += "-" + selectedPIN.getMaxLength();
-            }
-            gui.showErrorDialog(PINManagementGUIFacade.ERR_PIN_FORMAT,
-                    new Object[] {selectedPIN.getLocalizedName(), pinSize},
                     this, null);
             waitForAction();
           }
@@ -204,6 +169,157 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
       log.error("Got unexpected STAL request: " + request);
       return new ErrorResponse(1000);
     }
+  }
+
+  private void activatePIN(PINSpec selectedPIN)
+          throws InterruptedException, SignatureCardException, GetPINStatusException {
+
+    log.info("activate " + selectedPIN.getLocalizedName());
+    ManagementPINGUI pinGUI = new ManagementPINGUI((PINManagementGUI) gui,
+            PINManagementGUIFacade.DIALOG.ACTIVATE);
+
+    boolean reentry;
+    do {
+      try {
+        reentry = false;
+        ((PINMgmtSignatureCard) card).activatePIN(selectedPIN, pinGUI);
+      } catch (PINConfirmationException ex) {
+        reentry = true;
+        log.error("confirmation pin does not match new " + selectedPIN.getLocalizedName());
+        gui.showErrorDialog(PINManagementGUIFacade.ERR_PIN_CONFIRMATION,
+                new Object[] {selectedPIN.getLocalizedName()},
+                this, null);
+        waitForAction();
+      } catch (PINFormatException ex) {
+        reentry = true;
+        log.error("wrong format of new " + selectedPIN.getLocalizedName());
+        String pinSize = String.valueOf(selectedPIN.getMinLength());
+        if (selectedPIN.getMinLength() != selectedPIN.getMaxLength()) {
+            pinSize += "-" + selectedPIN.getMaxLength();
+        }
+        gui.showErrorDialog(PINManagementGUIFacade.ERR_PIN_FORMAT,
+                new Object[] {selectedPIN.getLocalizedName(), pinSize},
+                this, null);
+        waitForAction();
+      }
+    } while (reentry);
+
+    updatePINState(selectedPIN, STATUS.ACTIV);
+    gui.showMessageDialog(PINManagementGUIFacade.TITLE_ACTIVATE_SUCCESS,
+            PINManagementGUIFacade.MESSAGE_ACTIVATE_SUCCESS,
+            new Object[]{selectedPIN.getLocalizedName()},
+            BKUGUIFacade.BUTTON_OK, this, "ok");
+    waitForAction();
+  }
+
+  private void verifyPIN(PINSpec selectedPIN)
+          throws InterruptedException, SignatureCardException, GetPINStatusException {
+
+    log.info("verify " + selectedPIN.getLocalizedName());
+    VerifyPINGUI pinGUI = new VerifyPINGUI(gui);
+
+    boolean reentry;
+    do {
+      try {
+        reentry = false;
+        ((PINMgmtSignatureCard) card).verifyPIN(selectedPIN, pinGUI);
+      } catch (PINFormatException ex) {
+        reentry = true;
+        log.error("wrong format of new " + selectedPIN.getLocalizedName());
+        String pinSize = String.valueOf(selectedPIN.getMinLength());
+        if (selectedPIN.getMinLength() != selectedPIN.getMaxLength()) {
+            pinSize += "-" + selectedPIN.getMaxLength();
+        }
+        gui.showErrorDialog(PINManagementGUIFacade.ERR_PIN_FORMAT,
+                new Object[] {selectedPIN.getLocalizedName(), pinSize},
+                this, null);
+        waitForAction();
+      }
+    } while (reentry);
+
+    updatePINState(selectedPIN, STATUS.ACTIV);
+  }
+
+  private void changePIN(PINSpec selectedPIN)
+          throws SignatureCardException, GetPINStatusException, InterruptedException {
+
+    log.info("change " + selectedPIN.getLocalizedName());
+    ManagementPINGUI pinGUI = new ManagementPINGUI((PINManagementGUI) gui,
+            PINManagementGUIFacade.DIALOG.CHANGE);
+
+    boolean reentry;
+    do {
+      try {
+        reentry = false;
+        ((PINMgmtSignatureCard) card).changePIN(selectedPIN, pinGUI);
+      } catch (PINConfirmationException ex) {
+        reentry = true;
+        log.error("confirmation pin does not match new " + selectedPIN.getLocalizedName());
+        gui.showErrorDialog(PINManagementGUIFacade.ERR_PIN_CONFIRMATION,
+                new Object[] {selectedPIN.getLocalizedName()},
+                this, null);
+        waitForAction();
+      } catch (PINFormatException ex) {
+        reentry = true;
+        log.error("wrong format of new " + selectedPIN.getLocalizedName());
+        String pinSize = String.valueOf(selectedPIN.getMinLength());
+        if (selectedPIN.getMinLength() != selectedPIN.getMaxLength()) {
+            pinSize += "-" + selectedPIN.getMaxLength();
+        }
+        gui.showErrorDialog(PINManagementGUIFacade.ERR_PIN_FORMAT,
+                new Object[] {selectedPIN.getLocalizedName(), pinSize},
+                this, null);
+        waitForAction();
+      }
+    } while (reentry);
+
+    updatePINState(selectedPIN, STATUS.ACTIV);
+    gui.showMessageDialog(PINManagementGUIFacade.TITLE_CHANGE_SUCCESS,
+            PINManagementGUIFacade.MESSAGE_CHANGE_SUCCESS,
+            new Object[]{selectedPIN.getLocalizedName()},
+            BKUGUIFacade.BUTTON_OK, this, "ok");
+    waitForAction();
+  }
+
+  private void unblockPIN(PINSpec selectedPIN)
+          throws SignatureCardException, GetPINStatusException, InterruptedException {
+
+    log.info("unblock " + selectedPIN.getLocalizedName());
+    ManagementPINGUI pinGUI = new ManagementPINGUI((PINManagementGUI) gui,
+            PINManagementGUIFacade.DIALOG.UNBLOCK);
+
+    boolean reentry;
+    do {
+      try {
+        reentry = false;
+        ((PINMgmtSignatureCard) card).unblockPIN(selectedPIN, pinGUI);
+      } catch (PINConfirmationException ex) {
+        reentry = true;
+        log.error("confirmation pin does not match new " + selectedPIN.getLocalizedName());
+        gui.showErrorDialog(PINManagementGUIFacade.ERR_PIN_CONFIRMATION,
+                new Object[] {selectedPIN.getLocalizedName()},
+                this, null);
+        waitForAction();
+      } catch (PINFormatException ex) {
+        reentry = true;
+        log.error("wrong format of new " + selectedPIN.getLocalizedName());
+        String pinSize = String.valueOf(selectedPIN.getMinLength());
+        if (selectedPIN.getMinLength() != selectedPIN.getMaxLength()) {
+            pinSize += "-" + selectedPIN.getMaxLength();
+        }
+        gui.showErrorDialog(PINManagementGUIFacade.ERR_PIN_FORMAT,
+                new Object[] {selectedPIN.getLocalizedName(), pinSize},
+                this, null);
+        waitForAction();
+      }
+    } while (reentry);
+
+    updatePINState(selectedPIN, STATUS.ACTIV);
+    gui.showMessageDialog(PINManagementGUIFacade.TITLE_UNBLOCK_SUCCESS,
+            PINManagementGUIFacade.MESSAGE_UNBLOCK_SUCCESS,
+            new Object[]{selectedPIN.getLocalizedName()},
+            BKUGUIFacade.BUTTON_OK, this, "ok");
+    waitForAction();
   }
 
   @Override

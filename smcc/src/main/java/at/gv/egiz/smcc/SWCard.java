@@ -40,15 +40,12 @@ import java.util.Enumeration;
 import java.util.Locale;
 
 import javax.smartcardio.Card;
-import javax.smartcardio.CardChannel;
-import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
-import javax.smartcardio.ResponseAPDU;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import at.gv.egiz.smcc.ccid.CCID;
+import at.gv.egiz.smcc.pin.gui.PINGUI;
 
 /**
  *
@@ -280,7 +277,7 @@ public class SWCard implements SignatureCard {
     
   }
 
-  public byte[] getInfobox(String infobox, PINProvider provider, String domainId) throws SignatureCardException {
+  public byte[] getInfobox(String infobox, PINGUI provider, String domainId) throws SignatureCardException {
     
     String fileName = getFileName(infobox + ".ibx");
     FileInputStream file;
@@ -309,7 +306,7 @@ public class SWCard implements SignatureCard {
   }
 
   @Override
-  public byte[] createSignature(InputStream input, KeyboxName keyboxName, PINProvider provider, String alg) throws SignatureCardException, InterruptedException, IOException {
+  public byte[] createSignature(InputStream input, KeyboxName keyboxName, PINGUI provider, String alg) throws SignatureCardException, InterruptedException, IOException {
 
     // KeyStore password
     char[] password = getPassword(keyboxName);
@@ -395,102 +392,5 @@ public class SWCard implements SignatureCard {
 
   @Override
   public void reset() throws SignatureCardException {
-  }
-
-  @Override
-  public CCID getReader() {
-    return new CCID() {
-
-      @Override
-      public boolean hasFeature(Byte feature) {
-        return false;
-      }
-
-      @Override
-      public byte getbTimeOut() {
-        return 0;
-      }
-
-      @Override
-      public byte getbTimeOut2() {
-        return 0;
-      }
-
-      @Override
-      public byte getwPINMaxExtraDigitL() {
-        return 0x12;
-      }
-
-      @Override
-      public byte getwPINMaxExtraDigitH() {
-        return 0x00;
-      }
-
-      @Override
-      public byte getbEntryValidationCondition() {
-        return 0x02;
-      }
-
-      @Override
-      public Card connect() {
-        return null;
-      }
-
-      @Override
-      public String getName() {
-        return "Software CardReader";
-      }
-
-      @Override
-      public byte[] verifyPin(byte[] PIN_VERIFY) throws CardException {
-        throw new UnsupportedOperationException("Not supported yet.");
-      }
-
-      @Override
-      public byte[] verifyPinDirect(byte[] PIN_VERIFY) throws CardException {
-        throw new UnsupportedOperationException("Not supported yet.");
-      }
-
-      @Override
-      public byte[] modifyPin(byte[] PIN_MODIFY) throws CardException {
-        throw new UnsupportedOperationException("Not supported yet.");
-      }
-
-      @Override
-      public byte[] modifyPinDirect(byte[] PIN_MODIFY) throws CardException {
-        throw new UnsupportedOperationException("Not supported yet.");
-      }
-
-      @Override
-      public void setDisablePinpad(boolean disable) {
-        throw new UnsupportedOperationException("Not supported yet.");
-      }
-
-      @Override
-      public ResponseAPDU verify(CardChannel channel, VerifyAPDUSpec apduSpec,
-          PINSpec pinSpec, PINProvider provider, int retries)
-          throws CancelledException, InterruptedException, CardException,
-          SignatureCardException {
-        throw new UnsupportedOperationException("Not supported yet.");
-      }
-
-      @Override
-      public ResponseAPDU activate(CardChannel channel,
-          NewReferenceDataAPDUSpec apduSpec, PINSpec pinSpec,
-          PINProvider provider) throws CancelledException,
-          InterruptedException, CardException, SignatureCardException {
-        // TODO Auto-generated method stub
-        return null;
-      }
-
-      @Override
-      public ResponseAPDU modify(CardChannel channel,
-          ChangeReferenceDataAPDUSpec apduSpec, PINSpec pinSpec,
-          ChangePINProvider provider, int retries) throws CancelledException,
-          InterruptedException, CardException, SignatureCardException {
-        // TODO Auto-generated method stub
-        return null;
-      }
-    };
   }
 }

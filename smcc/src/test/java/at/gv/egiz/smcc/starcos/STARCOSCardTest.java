@@ -22,12 +22,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import javax.smartcardio.CardChannel;
 
 import org.junit.Test;
 
@@ -36,25 +33,20 @@ import at.gv.egiz.smcc.CardEmul;
 import at.gv.egiz.smcc.CardNotSupportedException;
 import at.gv.egiz.smcc.CardTerminalEmul;
 import at.gv.egiz.smcc.CardTest;
+import at.gv.egiz.smcc.pin.gui.ChangePINProvider;
+import at.gv.egiz.smcc.pin.gui.InvalidChangePINProvider;
+import at.gv.egiz.smcc.pin.gui.InvalidPINProvider;
 import at.gv.egiz.smcc.LockedException;
 import at.gv.egiz.smcc.NotActivatedException;
+import at.gv.egiz.smcc.PIN;
 import at.gv.egiz.smcc.PINFormatException;
 import at.gv.egiz.smcc.PINMgmtSignatureCard;
 import at.gv.egiz.smcc.PINSpec;
-import at.gv.egiz.smcc.STARCOSCard;
 import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.SignatureCardFactory;
-import at.gv.egiz.smcc.CardTest.TestChangePINProvider;
-import at.gv.egiz.smcc.CardTest.TestPINProvider;
-import at.gv.egiz.smcc.PINProvider;
+import at.gv.egiz.smcc.pin.gui.SMCCTestPINProvider;
 import at.gv.egiz.smcc.SignatureCard.KeyboxName;
-import at.gv.egiz.smcc.acos.A03ApplDEC;
-import at.gv.egiz.smcc.acos.A04ApplDEC;
-import at.gv.egiz.smcc.acos.A04ApplSIG;
-import at.gv.egiz.smcc.acos.ACOSAppl;
-import at.gv.egiz.smcc.acos.ACOSApplDEC;
-import at.gv.egiz.smcc.acos.ACOSApplSIG;
 import org.junit.Ignore;
 
 public class STARCOSCardTest extends CardTest {
@@ -69,7 +61,17 @@ public class STARCOSCardTest extends CardTest {
     assertTrue(signatureCard instanceof PINMgmtSignatureCard);
     return signatureCard;
   }
-  
+
+  protected SignatureCard createSignatureCard(byte[] SS_PIN, byte[] Glob_PIN, int pinState)
+      throws CardNotSupportedException {
+    SignatureCardFactory factory = SignatureCardFactory.getInstance();
+    STARCOSCardEmul card = new STARCOSCardEmul(SS_PIN, Glob_PIN, pinState);
+    SignatureCard signatureCard = factory.createSignatureCard(card,
+        new CardTerminalEmul(card));
+    assertTrue(signatureCard instanceof PINMgmtSignatureCard);
+    return signatureCard;
+  }
+
   @Test
   public void testGetInfoboxIdentityLinkEmpty() throws SignatureCardException,
       InterruptedException, CardNotSupportedException {
@@ -82,7 +84,7 @@ public class STARCOSCardTest extends CardTest {
     appl.clearInfobox();
 
     byte[] idlink = signatureCard.getInfobox("IdentityLink",
-        new TestPINProvider(pin), null);
+        new SMCCTestPINProvider(pin), null);
     assertNull(idlink);
 
   }
@@ -98,10 +100,10 @@ public class STARCOSCardTest extends CardTest {
     STARCOSApplInfobox appl = (STARCOSApplInfobox) card.getApplication(STARCOSAppl.AID_Infobox);
     appl.setInfoboxHeader((byte) 0xFF);
 
-    signatureCard.getInfobox("IdentityLink", new TestPINProvider(pin), null);
+    signatureCard.getInfobox("IdentityLink", new SMCCTestPINProvider(pin), null);
 
   }
- 
+
   @Test
   public void testGetCerts() throws SignatureCardException,
       InterruptedException, CardNotSupportedException {
@@ -145,7 +147,7 @@ public class STARCOSCardTest extends CardTest {
     signatureCard.getCertificate(KeyboxName.CERITIFIED_KEYPAIR);
 
   }
-  
+
   @Test
   public void testSignSichereSignatur() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
@@ -160,7 +162,7 @@ public class STARCOSCardTest extends CardTest {
 
     byte[] signature = signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
         .getBytes("ASCII")),
-        KeyboxName.SECURE_SIGNATURE_KEYPAIR, new TestPINProvider(pin), null);
+        KeyboxName.SECURE_SIGNATURE_KEYPAIR, new SMCCTestPINProvider(pin), null);
 
     assertNotNull(signature);
 
@@ -180,12 +182,12 @@ public class STARCOSCardTest extends CardTest {
 
     byte[] signature = signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
         .getBytes("ASCII")),
-        KeyboxName.CERITIFIED_KEYPAIR, new TestPINProvider(pin), null);
+        KeyboxName.CERITIFIED_KEYPAIR, new SMCCTestPINProvider(pin), null);
 
     assertNotNull(signature);
 
   }
-  
+
   @Test(expected = LockedException.class)
   public void testSignSichereSignaturInvalidPin() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
@@ -193,7 +195,7 @@ public class STARCOSCardTest extends CardTest {
 
     SignatureCard signatureCard = createSignatureCard();
 
-    TestPINProvider pinProvider = new TestPINProvider("000000".toCharArray());
+    SMCCTestPINProvider pinProvider = new SMCCTestPINProvider("000000".toCharArray());
 
     signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
         .getBytes("ASCII")), KeyboxName.SECURE_SIGNATURE_KEYPAIR,
@@ -208,7 +210,7 @@ public class STARCOSCardTest extends CardTest {
 
     SignatureCard signatureCard = createSignatureCard();
 
-    TestPINProvider pinProvider = new TestPINProvider("1234".toCharArray());
+    SMCCTestPINProvider pinProvider = new SMCCTestPINProvider("1234".toCharArray());
 
     signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
         .getBytes("ASCII")), KeyboxName.CERITIFIED_KEYPAIR,
@@ -221,12 +223,9 @@ public class STARCOSCardTest extends CardTest {
       InterruptedException, CardNotSupportedException,
       NoSuchAlgorithmException, IOException {
 
-    SignatureCard signatureCard = createSignatureCard();
-    CardEmul card = (CardEmul) signatureCard.getCard();
-    STARCOSApplSichereSignatur appl = (STARCOSApplSichereSignatur) card.getApplication(STARCOSApplSichereSignatur.AID_SichereSignatur);
-    appl.setPin(STARCOSApplSichereSignatur.KID_PIN_SS, null);
+    SignatureCard signatureCard = createSignatureCard(null, null, PIN.STATE_PIN_BLOCKED);
 
-    TestPINProvider pinProvider = new TestPINProvider("000000".toCharArray());
+    SMCCTestPINProvider pinProvider = new SMCCTestPINProvider("000000".toCharArray());
     assertTrue(pinProvider.getProvided() <= 0);
 
     signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
@@ -240,46 +239,64 @@ public class STARCOSCardTest extends CardTest {
       InterruptedException, CardNotSupportedException,
       NoSuchAlgorithmException, IOException {
 
-    SignatureCard signatureCard = createSignatureCard();
-    CardEmul card = (CardEmul) signatureCard.getCard();
-    STARCOSCardChannelEmul channel = (STARCOSCardChannelEmul) card.getBasicChannel();
-    channel.setPin(STARCOSCardChannelEmul.KID_PIN_Glob, null);
-
-    TestPINProvider pinProvider = new TestPINProvider("0000".toCharArray());
+    SignatureCard signatureCard = createSignatureCard(null, null, PIN.STATE_PIN_BLOCKED);
+    
+    SMCCTestPINProvider pinProvider = new SMCCTestPINProvider("0000".toCharArray());
 
     signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
         .getBytes("ASCII")), KeyboxName.CERITIFIED_KEYPAIR,
         pinProvider, null);
 
   }
-  
+
   @Test
   public void testChangePin() throws CardNotSupportedException,
       LockedException, NotActivatedException, CancelledException,
       PINFormatException, SignatureCardException, InterruptedException {
 
-    char[] defaultPin = "123456".toCharArray();
-
-    PINMgmtSignatureCard signatureCard = (PINMgmtSignatureCard) createSignatureCard();
-    CardEmul card = (CardEmul) signatureCard.getCard();
-    STARCOSCardChannelEmul channel = (STARCOSCardChannelEmul) card.getBasicChannel();
-    channel.setPin(STARCOSCardChannelEmul.KID_PIN_Glob, defaultPin);
-    STARCOSApplSichereSignatur appl = (STARCOSApplSichereSignatur) card.getApplication(STARCOSApplSichereSignatur.AID_SichereSignatur);
-    appl.setPin(STARCOSApplSichereSignatur.KID_PIN_SS, defaultPin);
+    // set all initial pins to DEFAULT_SS_PIN (123456)
+    PINMgmtSignatureCard signatureCard = (PINMgmtSignatureCard) createSignatureCard(
+            STARCOSCardEmul.DEFAULT_SS_PIN, STARCOSCardEmul.DEFAULT_SS_PIN, PIN.STATE_RESET);
     
     for (PINSpec pinSpec : signatureCard.getPINSpecs()) {
 
-      char[] pin = defaultPin;
+      char[] pin = "123456".toCharArray();
 
       for (int i = pinSpec.getMinLength(); i <= pinSpec.getMaxLength(); i++) {
-        signatureCard.verifyPIN(pinSpec, new TestPINProvider(pin));
+        signatureCard.verifyPIN(pinSpec, new SMCCTestPINProvider(pin));
         char[] newPin = new char[i];
         Arrays.fill(newPin, '0');
         signatureCard
-            .changePIN(pinSpec, new TestChangePINProvider(pin, newPin));
-        signatureCard.verifyPIN(pinSpec, new TestPINProvider(newPin));
+            .changePIN(pinSpec, new ChangePINProvider(pin, newPin));
+        signatureCard.verifyPIN(pinSpec, new SMCCTestPINProvider(newPin));
         pin = newPin;
       }
+    }
+  }
+
+  @Test
+  @Override
+  public void testActivatePin() throws CardNotSupportedException,
+      LockedException, NotActivatedException, CancelledException,
+      PINFormatException, SignatureCardException, InterruptedException {
+
+    PINMgmtSignatureCard signatureCard = (PINMgmtSignatureCard) createSignatureCard(
+            null, null, PIN.STATE_PIN_NOTACTIVE);
+
+    for (PINSpec pinSpec : signatureCard.getPINSpecs()) {
+
+      char[] pin = "1234567890".substring(0, pinSpec.getMinLength()).toCharArray();
+
+      boolean notActive = false;
+      try {
+        signatureCard.verifyPIN(pinSpec, new SMCCTestPINProvider(pin));
+      } catch (NotActivatedException ex) {
+        notActive = true;
+      }
+      assertTrue(notActive);
+
+      signatureCard.activatePIN(pinSpec, new ChangePINProvider(null, pin));
+      signatureCard.verifyPIN(pinSpec, new SMCCTestPINProvider(pin));
     }
   }
 
@@ -288,20 +305,13 @@ public class STARCOSCardTest extends CardTest {
       LockedException, NotActivatedException, CancelledException,
       PINFormatException, SignatureCardException, InterruptedException {
 
-    char[] defaultPin = "123456".toCharArray();
-
     PINMgmtSignatureCard signatureCard = (PINMgmtSignatureCard) createSignatureCard();
-    CardEmul card = (CardEmul) signatureCard.getCard();
-    STARCOSCardChannelEmul channel = (STARCOSCardChannelEmul) card.getBasicChannel();
-    channel.setPin(STARCOSCardChannelEmul.KID_PIN_Glob, defaultPin);
-    STARCOSApplSichereSignatur appl = (STARCOSApplSichereSignatur) card.getApplication(STARCOSApplSichereSignatur.AID_SichereSignatur);
-    appl.setPin(STARCOSApplSichereSignatur.KID_PIN_SS, defaultPin);
 
     for (PINSpec pinSpec : signatureCard.getPINSpecs()) {
 
       char[] invalidPin = "999999".toCharArray();
       int numInvalidTries = 2;
-      TestInvalidPINProvider invalidPinProvider = new TestInvalidPINProvider(invalidPin, numInvalidTries);
+      InvalidPINProvider invalidPinProvider = new InvalidPINProvider(invalidPin, numInvalidTries);
       try {
         signatureCard.verifyPIN(pinSpec, invalidPinProvider);
       } catch (CancelledException ex) {
@@ -315,21 +325,15 @@ public class STARCOSCardTest extends CardTest {
   public void testChangeInvalidPin() throws CardNotSupportedException,
       LockedException, NotActivatedException, CancelledException,
       PINFormatException, SignatureCardException, InterruptedException {
-    char[] defaultPin = "123456".toCharArray();
 
     PINMgmtSignatureCard signatureCard = (PINMgmtSignatureCard) createSignatureCard();
-    CardEmul card = (CardEmul) signatureCard.getCard();
-    STARCOSCardChannelEmul channel = (STARCOSCardChannelEmul) card.getBasicChannel();
-    channel.setPin(STARCOSCardChannelEmul.KID_PIN_Glob, defaultPin);
-    STARCOSApplSichereSignatur appl = (STARCOSApplSichereSignatur) card.getApplication(STARCOSApplSichereSignatur.AID_SichereSignatur);
-    appl.setPin(STARCOSApplSichereSignatur.KID_PIN_SS, defaultPin);
-
+    
     for (PINSpec pinSpec : signatureCard.getPINSpecs()) {
 
       char[] invalidPin = "999999".toCharArray();
       int numInvalidTries = 2;
-      TestInvalidChangePINProvider invalidPinProvider =
-              new TestInvalidChangePINProvider(invalidPin, defaultPin, numInvalidTries);
+      InvalidChangePINProvider invalidPinProvider =
+              new InvalidChangePINProvider(invalidPin, invalidPin, numInvalidTries);
 
       try {
         signatureCard.changePIN(pinSpec, invalidPinProvider);

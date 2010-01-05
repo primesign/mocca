@@ -17,6 +17,7 @@
 package at.gv.egiz.bku.smccstal;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.bku.pin.gui.SignPINGUI;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -78,8 +79,7 @@ public class SignRequestHandler extends AbstractRequestHandler {
                 KeyboxName kb = SignatureCard.KeyboxName.getKeyboxName(signReq.getKeyIdentifier());
 
                 byte[] resp = card.createSignature(new ByteArrayInputStream(signReq.getSignedInfo()), kb,
-                        new PINProviderFactory(card.getReader(), gui)
-                        .getSignaturePINProvider(secureViewer, si.getValue()), signatureMethod);
+                        new SignPINGUI(gui, secureViewer, si.getValue()), signatureMethod);
                 if (resp == null) {
                     return new ErrorResponse(6001);
                 }

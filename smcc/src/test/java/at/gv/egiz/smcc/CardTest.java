@@ -16,12 +16,14 @@
 */
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.pin.gui.CancelPINProvider;
+import at.gv.egiz.smcc.pin.gui.InterruptPINProvider;
+import at.gv.egiz.smcc.pin.gui.CancelChangePINProvider;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
@@ -32,118 +34,14 @@ import org.junit.Test;
 
 import at.gv.egiz.smcc.SignatureCard.KeyboxName;
 import at.gv.egiz.smcc.acos.A04ApplDEC;
+import at.gv.egiz.smcc.pin.gui.DummyPINGUI;
+import at.gv.egiz.smcc.pin.gui.ModifyPINGUI;
+import at.gv.egiz.smcc.pin.gui.PINGUI;
+import at.gv.egiz.smcc.pin.gui.SMCCTestPINProvider;
+import org.junit.Ignore;
 
 @SuppressWarnings("restriction")
 public abstract class CardTest {
-
-  public class TestPINProvider implements PINProvider {
-    
-    int provided = 0;
-  
-    char[] pin;
-  
-    public TestPINProvider(char[] pin) {
-      super();
-      this.pin = pin;
-    }
-  
-    @Override
-    public char[] providePIN(PINSpec spec, int retries)
-        throws CancelledException, InterruptedException {
-      provided++;
-      return pin;
-    }
-
-    public int getProvided() {
-      return provided;
-    }
-  
-  }
-
-  public class TestChangePINProvider extends TestPINProvider implements
-      ChangePINProvider {
-  
-    char[] oldPin;
-  
-    public TestChangePINProvider(char[] oldPin, char[] pin) {
-      super(pin);
-      this.oldPin = oldPin;
-    }
-  
-    @Override
-    public char[] provideOldPIN(PINSpec spec, int retries)
-        throws CancelledException, InterruptedException {
-      return oldPin;
-    }
-  
-  }
-
-  public class TestInvalidPINProvider implements PINProvider {
-
-    int provided = 0;
-    int numWrongTries = 0;
-
-    char[] pin;
-
-    public TestInvalidPINProvider(char[] pin, int numWrongTries) {
-      super();
-      this.pin = pin;
-      this.numWrongTries = numWrongTries;
-    }
-
-    @Override
-    public char[] providePIN(PINSpec spec, int retries)
-        throws CancelledException, InterruptedException {
-      if (provided >= numWrongTries) {
-        throw new CancelledException("Number of wrong tries reached: " + provided);
-      } else {
-        provided++;
-        return pin;
-      }
-    }
-
-    public int getProvided() {
-      return provided;
-    }
-  }
-
-  public class TestInvalidChangePINProvider implements ChangePINProvider {
-
-    int provided = 0;
-    int numWrongTries = 0;
-
-    char[] pin;
-    char[] oldPin;
-
-    /** emulate ChangePinProvider */
-    public TestInvalidChangePINProvider(char[] oldPin, char[] newPin, int numWrongTries) {
-      super();
-      this.pin = newPin;
-      this.oldPin = oldPin;
-      this.numWrongTries = numWrongTries;
-    }
-
-    @Override
-    public char[] providePIN(PINSpec spec, int retries)
-        throws CancelledException, InterruptedException {
-      return pin;
-    }
-
-    public int getProvided() {
-      return provided;
-    }
-
-    @Override
-    public char[] provideOldPIN(PINSpec spec, int retries)
-        throws CancelledException, InterruptedException {
-      if (provided >= numWrongTries) {
-        throw new CancelledException("Number of wrong tries reached: " + provided);
-      } else {
-        provided++;
-        return oldPin;
-      }
-    }
-  }
 
   public CardTest() {
     super();
@@ -167,7 +65,7 @@ public abstract class CardTest {
     
     SignatureCard signatureCard = createSignatureCard();
     
-    TestPINProvider pinProvider = new TestPINProvider(pin);
+    SMCCTestPINProvider pinProvider = new SMCCTestPINProvider(pin);
 
     byte[] idlink = signatureCard.getInfobox("IdentityLink",
         pinProvider, null);
@@ -184,13 +82,7 @@ public abstract class CardTest {
       
         SignatureCard signatureCard = createSignatureCard();
       
-        PINProvider pinProvider = new PINProvider() {
-          @Override
-          public char[] providePIN(PINSpec spec, int retries)
-              throws CancelledException, InterruptedException {
-            throw new CancelledException();
-          }
-        };
+        PINGUI pinProvider = new CancelPINProvider();
       
     signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
         .getBytes("ASCII")), KeyboxName.SECURE_SIGNATURE_KEYPAIR, pinProvider,
@@ -205,13 +97,7 @@ public abstract class CardTest {
       
         SignatureCard signatureCard = createSignatureCard();
       
-        PINProvider pinProvider = new PINProvider() {
-          @Override
-          public char[] providePIN(PINSpec spec, int retries)
-              throws CancelledException, InterruptedException {
-            throw new CancelledException();
-          }
-        };
+        PINGUI pinProvider = new CancelPINProvider();
       
         signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
             .getBytes("ASCII")), KeyboxName.CERITIFIED_KEYPAIR,
@@ -226,13 +112,7 @@ public abstract class CardTest {
       
         SignatureCard signatureCard = createSignatureCard();
       
-        PINProvider pinProvider = new PINProvider() {
-          @Override
-          public char[] providePIN(PINSpec spec, int retries)
-              throws CancelledException, InterruptedException {
-            throw new InterruptedException();
-          }
-        };
+        PINGUI pinProvider = new InterruptPINProvider();
       
         signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
             .getBytes("ASCII")), KeyboxName.SECURE_SIGNATURE_KEYPAIR,
@@ -247,13 +127,7 @@ public abstract class CardTest {
       
         SignatureCard signatureCard = createSignatureCard();
       
-        PINProvider pinProvider = new PINProvider() {
-          @Override
-          public char[] providePIN(PINSpec spec, int retries)
-              throws CancelledException, InterruptedException {
-            throw new InterruptedException();
-          }
-        };
+        PINGUI pinProvider = new InterruptPINProvider();
       
         signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
             .getBytes("ASCII")), KeyboxName.CERITIFIED_KEYPAIR,
@@ -268,11 +142,11 @@ public abstract class CardTest {
       
         final SignatureCard signatureCard = createSignatureCard();
       
-        PINProvider pinProvider = new PINProvider() {
+        PINGUI pinProvider = new DummyPINGUI() {
           @Override
           public char[] providePIN(PINSpec spec, int retries)
               throws CancelledException, InterruptedException {
-      
+
             try {
               signatureCard.getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR);
               assertTrue(false);
@@ -281,10 +155,10 @@ public abstract class CardTest {
               // expected
               throw new CancelledException();
             }
-      
+
           }
         };
-      
+
         signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
             .getBytes("ASCII")), KeyboxName.SECURE_SIGNATURE_KEYPAIR,
             pinProvider, null);
@@ -298,7 +172,7 @@ public abstract class CardTest {
       
         final SignatureCard signatureCard = createSignatureCard();
       
-        PINProvider pinProvider = new PINProvider() {
+        PINGUI pinProvider = new DummyPINGUI() {
           @Override
           public char[] providePIN(PINSpec spec, int retries)
               throws CancelledException, InterruptedException {
@@ -311,7 +185,6 @@ public abstract class CardTest {
               // expected
               throw new CancelledException();
             }
-      
           }
         };
       
@@ -339,13 +212,7 @@ public abstract class CardTest {
       
         PINMgmtSignatureCard signatureCard = (PINMgmtSignatureCard) createSignatureCard();
       
-        PINProvider pinProvider = new PINProvider() {
-          @Override
-          public char[] providePIN(PINSpec spec, int retries)
-              throws CancelledException, InterruptedException {
-            throw new CancelledException();
-          }
-        };
+        ModifyPINGUI pinProvider = new CancelChangePINProvider();
       
         List<PINSpec> specs = signatureCard.getPINSpecs();
       

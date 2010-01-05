@@ -16,7 +16,7 @@ import org.junit.Test;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.smccstal.AbstractSMCCSTAL;
 import at.gv.egiz.bku.smccstal.SMCCSTALRequestHandler;
-import at.gv.egiz.smcc.ccid.CCID;
+import at.gv.egiz.smcc.pin.gui.PINGUI;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.InfoboxReadResponse;
@@ -39,7 +39,7 @@ public class AbstractSMCCSTALTest extends AbstractSMCCSTAL implements
 
     @Override
     public byte[] createSignature(InputStream input, KeyboxName keyboxName,
-        PINProvider provider, String alg) throws SignatureCardException {
+        PINGUI provider, String alg) throws SignatureCardException {
       // TODO Auto-generated method stub
       return null;
     }
@@ -58,7 +58,7 @@ public class AbstractSMCCSTALTest extends AbstractSMCCSTAL implements
     }
 
     @Override
-    public byte[] getInfobox(String infobox, PINProvider provider,
+    public byte[] getInfobox(String infobox, PINGUI provider,
         String domainId) throws SignatureCardException {
       // TODO Auto-generated method stub
       return null;
@@ -87,13 +87,6 @@ public class AbstractSMCCSTALTest extends AbstractSMCCSTAL implements
       // TODO Auto-generated method stub
       
     }
-
-    @Override
-    public CCID getReader() {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
    };
     return false;
   }

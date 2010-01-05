@@ -16,7 +16,7 @@
  */
 package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.stal.HashDataInput;
+  import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.smcc.PINSpec;
 import java.awt.Color;
 import java.awt.event.ActionListener;
@@ -53,14 +53,15 @@ public interface BKUGUIFacade {
   public static final String TITLE_WELCOME = "title.welcome";
   public static final String TITLE_INSERTCARD = "title.insertcard";
   public static final String TITLE_CARD_NOT_SUPPORTED = "title.cardnotsupported";
-  public static final String TITLE_CARDPIN = "title.cardpin";
+  public static final String TITLE_VERIFY_PIN = "title.verify.pin";
   public static final String TITLE_SIGN = "title.sign";
+  public static final String TITLE_VERIFY_PINPAD = "title.verify.pinpad";
   public static final String TITLE_ERROR = "title.error";
   public static final String TITLE_WARNING = "title.warning";
   public static final String TITLE_ENTRY_TIMEOUT = "title.entry.timeout";
   public static final String TITLE_RETRY = "title.retry";
   public static final String TITLE_WAIT = "title.wait";
-  public static final String TITLE_HASHDATA = "title.hashdata";
+  public static final String TITLE_SIGNATURE_DATA = "title.signature.data";
   public static final String WINDOWTITLE_SAVE = "windowtitle.save";
   public static final String WINDOWTITLE_ERROR = "windowtitle.error";
   public static final String WINDOWTITLE_SAVEDIR = "windowtitle.savedir";
@@ -75,6 +76,7 @@ public interface BKUGUIFacade {
   public static final String MESSAGE_CARD_NOT_SUPPORTED = "cardnotsupported";
   public static final String MESSAGE_ENTERPIN = "enterpin";
   public static final String MESSAGE_ENTERPIN_PINPAD = "enterpin.pinpad";
+  public static final String MESSAGE_ENTERPIN_PINPAD_DIRECT = "enterpin.pinpad.direct";
   public static final String MESSAGE_HASHDATALINK = "hashdatalink";
   public static final String MESSAGE_HASHDATALINK_TINY = "hashdatalink.tiny";
   public static final String MESSAGE_HASHDATALINK_FOCUS = "hashdatalink.focus";
@@ -96,8 +98,9 @@ public interface BKUGUIFacade {
   public static final String HELP_WAIT = "help.wait";
   public static final String HELP_CARDNOTSUPPORTED = "help.cardnotsupported";
   public static final String HELP_INSERTCARD = "help.insertcard";
-  public static final String HELP_CARDPIN = "help.cardpin";
+  public static final String HELP_VERIFY_PIN = "help.cardpin";
   public static final String HELP_SIGNPIN = "help.signpin";
+  public static final String HELP_PINPAD = "help.pinpad";
   public static final String HELP_RETRY = "help.retry";
   public static final String HELP_HASHDATA = "help.hashdata";
   public static final String HELP_HASHDATALIST = "help.hashdatalist";
@@ -111,6 +114,18 @@ public interface BKUGUIFacade {
   public static final String SAVE_HASHDATAINPUT_PREFIX = "save.hashdatainput.prefix";
   public static final String ALT_HELP = "alt.help";
 
+  public void showEnterPINDirect(PINSpec spec, int retries);
+
+  public void showEnterPIN(PINSpec spec, int retries);
+
+  public void showSignatureDataDialog(PINSpec spec, ActionListener listener, String string, ActionListener aThis0, String string0, ActionListener aThis1, String string1);
+
+  public void correctionButtonPressed();
+
+  public void allKeysCleared();
+
+  public void validKeyPressed();
+
   public enum Style { tiny, simple, advanced };
     
   /**
@@ -119,16 +134,13 @@ public interface BKUGUIFacade {
    */
   public Locale getLocale();
 
-  public void showCardPINDialog(PINSpec pinSpec, int numRetries,
+  public void showVerifyPINDialog(PINSpec pinSpec, int numRetries,
           ActionListener okListener, String okCommand,
           ActionListener cancelListener, String cancelCommand);
 
   public void showSignaturePINDialog(PINSpec pinSpec, int numRetries,
           ActionListener signListener, String signCommand,
           ActionListener cancelListener, String cancelCommand,
-          ActionListener viewerListener, String viewerCommand);
-
-  public void showPinpadSignaturePINDialog(PINSpec pinSpec, int numRetries, 
           ActionListener viewerListener, String viewerCommand);
 
   public char[] getPin();

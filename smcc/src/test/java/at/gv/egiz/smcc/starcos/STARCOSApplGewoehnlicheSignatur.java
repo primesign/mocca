@@ -16,7 +16,6 @@
 */
 package at.gv.egiz.smcc.starcos;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -200,12 +199,18 @@ public class STARCOSApplGewoehnlicheSignatur extends STARCOSAppl {
   
 
   protected byte[] EF_C_X509_CH_AUT = new byte[2000];
-  
-  public STARCOSApplGewoehnlicheSignatur(STARCOSCardChannelEmul channel) {
+
+  protected byte[] dst;
+
+  public static final byte[] DST = new byte[] { (byte) 0x84, (byte) 0x03, (byte) 0x80, (byte) 0x02, (byte) 0x00, (byte) 0x89, (byte) 0x03, (byte) 0x13, (byte) 0x35, (byte) 0x10};
+  public static final byte[] DST_G3 = new byte[] { (byte) 0x84, (byte) 0x03, (byte) 0x80, (byte) 0x02, (byte) 0x00, (byte) 0x80, (byte) 0x01, (byte) 0x04 };
+
+  public STARCOSApplGewoehnlicheSignatur(STARCOSCardChannelEmul channel, byte[] dst) {
     super(channel);
     // Files
     System.arraycopy(C_X509_CH_AUT, 0, EF_C_X509_CH_AUT, 0, C_X509_CH_AUT.length);
     putFile(new File(FID_EF_C_X509_CH_AUT, EF_C_X509_CH_AUT, FCI_EF_C_X509_CH_AUT));
+    this.dst = dst;
   }
 
   @Override
@@ -240,12 +245,19 @@ public class STARCOSApplGewoehnlicheSignatur extends STARCOSAppl {
       case 0x81:
         // EXTERNAL AUTHENTICATE
       }
+    case 0xAA:
+      switch (command.getP1()) {
+      case 0x41: 
+        if (Arrays.equals(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x10}, command.getData())) {
+          return new ResponseAPDU(new byte[] {(byte) 0x90, (byte) 0x00});
+        }
+      default:
+        return new ResponseAPDU(new byte[] {(byte) 0x6A, (byte) 0x80});
+      }
     case 0xB6:
       switch (command.getP1()) {
       case 0x41: {
         // PSO - COMPUTE DIGITAL SIGNATURE
-        byte[] dst = new byte[] { (byte) 0x84, (byte) 0x03, (byte) 0x80,
-            (byte) 0x02, (byte) 0x00, (byte) 0x89, (byte) 0x03, (byte) 0x13, (byte) 0x35, (byte) 0x10};
         if (Arrays.equals(dst, command.getData())) {
           securityEnv = command.getData();
           return new ResponseAPDU(new byte[] {(byte) 0x90, (byte) 0x00});
@@ -326,6 +338,11 @@ public class STARCOSApplGewoehnlicheSignatur extends STARCOSAppl {
       return new ResponseAPDU(new byte[] {(byte) 0x6A, (byte) 0x00});
     }
     
+  }
+
+  @Override
+  public void setPin(int kid, char[] value) {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
   
