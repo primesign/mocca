@@ -4,6 +4,9 @@ import iaik.x509.X509Certificate;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.security.cert.CertificateException;
 
 import static org.junit.Assert.*;
@@ -16,11 +19,11 @@ public class CertValidatorTest {
   private CertValidator cv;
   
   @Before
-  public void setUp() {
+  public void setUp() throws URISyntaxException {
     cv = new CertValidatorImpl();
-    String caDir = getClass().getClassLoader().getResource("at/gv/egiz/bku/conf/certs/CACerts").getPath();
-    String certDir = getClass().getClassLoader().getResource("at/gv/egiz/bku/conf/certs/certStore").getPath();
-    cv.init(new File(caDir), new File(certDir));
+    URL caDir = getClass().getClassLoader().getResource("at/gv/egiz/bku/conf/certs/CACerts");
+    URL certDir = getClass().getClassLoader().getResource("at/gv/egiz/bku/conf/certs/certStore");
+    cv.init(new File(caDir.toURI()), new File(certDir.toURI()));
   }
   
   @Test
