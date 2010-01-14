@@ -217,7 +217,43 @@ public class SignatureCardFactory {
                     (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
                     (byte) 0xff, (byte) 0xff },
             "at.gv.egiz.smcc.BELPICCard"));
-    
+    supportedCards.add(new SupportedCard(
+            // ATR [3b:98:_94_:40:_ff_:a5:03:01:01:01:ad:13:_10_]
+            new byte[] { (byte) 0x3b, (byte) 0x98, (byte) 0x94,
+                    (byte) 0x40, (byte) 0xff, (byte) 0xa5, (byte) 0x03,
+                    (byte) 0x01, (byte) 0x01, (byte) 0x01, (byte) 0xad,
+                    (byte) 0x13, (byte) 0x10 },
+            // mask (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
+            new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff },
+            "at.gv.egiz.smcc.BELPICCard"));
+    supportedCards.add(new SupportedCard(
+            // ATR [3b:98:_94_:40:0a:a5:03:01:01:01:ad:13:_10_]
+            new byte[] { (byte) 0x3b, (byte) 0x98, (byte) 0x94,
+                    (byte) 0x40, (byte) 0x0a, (byte) 0xa5, (byte) 0x03,
+                    (byte) 0x01, (byte) 0x01, (byte) 0x01, (byte) 0xad,
+                    (byte) 0x13, (byte) 0x10 },
+            // mask (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
+            new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff },
+            "at.gv.egiz.smcc.BELPICCard"));
+    supportedCards.add(new SupportedCard(
+            // ATR [3b:98:_95_:40:0a:a5:_07_:01:01:01:ad:13:_20_]
+            new byte[] { (byte) 0x3b, (byte) 0x98, (byte) 0x95,
+                    (byte) 0x40, (byte) 0x0a, (byte) 0xa5, (byte) 0x07,
+                    (byte) 0x01, (byte) 0x01, (byte) 0x01, (byte) 0xad,
+                    (byte) 0x13, (byte) 0x20 },
+            // mask (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
+            new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff },
+            "at.gv.egiz.smcc.BELPICCard"));
+
     // ITCards
     supportedCards.add(new SupportedCard(
     // ATR =
