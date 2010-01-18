@@ -166,9 +166,9 @@ public class BKUApplet extends JApplet {
     
     BKUGUIFacade.Style guiStyle;
     String guiStyleParam = getParameter(GUI_STYLE);
-    if ("advanced".equals(guiStyleParam)) {
+    if ("advanced".equalsIgnoreCase(guiStyleParam)) {
       guiStyle = BKUGUIFacade.Style.advanced;
-    } else if ("tiny".equals(guiStyleParam)) {
+    } else if ("tiny".equalsIgnoreCase(guiStyleParam)) {
       guiStyle = BKUGUIFacade.Style.tiny;
     } else {
       guiStyle = BKUGUIFacade.Style.simple;
