@@ -43,7 +43,7 @@
     <property name="disablePinpad" value="true"/>
   </bean>
 
-  <bean id="readerFactory" class="at.gv.egiz.smcc.ccid.ReaderFactory" factory-method="getInstance">
+  <bean id="readerFactory" class="at.gv.egiz.smcc.reader.ReaderFactory">
     <property name="configuration" ref="smccConfiguration"/>
   </bean>
    |-->

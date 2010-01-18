@@ -107,6 +107,6 @@
                     deployJava.runApplet(attributes, parameters, '1.6.0_04');
                 }
             </script>
-			
+
     </body>
 </html>

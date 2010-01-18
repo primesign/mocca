@@ -17,19 +17,29 @@
 
 package at.gv.egiz.smcc.conf;
 
-import java.util.Properties;
-
 /**
  *
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class SMCCConfiguration extends Properties {
+public class SMCCConfiguration {
 
   private static final long serialVersionUID = 1L;
 
-  public static final String DISABLE_PINPAD_P = "disable.pinpad";
+  boolean disablePinpad;
 
-  public void setDisablePinpad(String value) {
-    this.setProperty(DISABLE_PINPAD_P, value);
+  /**
+   * @return the disablePinpad
+   */
+  public boolean isDisablePinpad() {
+    return disablePinpad;
   }
+
+  /**
+   * @param disablePinpad the disablePinpad to set
+   */
+  public void setDisablePinpad(boolean disablePinpad) {
+    this.disablePinpad = disablePinpad;
+  }
+
+  
 }

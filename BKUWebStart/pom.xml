@@ -89,7 +89,7 @@
             <excludeTransitive>false</excludeTransitive>
             <jnlp>
               <inputTemplateResourcePath>${project.basedir}/src/main/jnlp</inputTemplateResourcePath>
-              <inputTemplate>template.xml</inputTemplate>
+              <inputTemplate>template-unstable.xml</inputTemplate>
               <outputFile>mocca.jnlp</outputFile>
               <mainClass>at.gv.egiz.bku.webstart.Launcher</mainClass>
             </jnlp>
@@ -156,7 +156,7 @@
             <excludeTransitive>false</excludeTransitive>
             <jnlp>
               <inputTemplateResourcePath>${project.basedir}/src/main/jnlp</inputTemplateResourcePath>
-              <inputTemplate>template-unstable.xml</inputTemplate>
+              <inputTemplate>template.xml</inputTemplate>
               <outputFile>mocca.jnlp</outputFile>
               <mainClass>at.gv.egiz.bku.webstart.Launcher</mainClass>
             </jnlp>

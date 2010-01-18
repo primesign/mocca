@@ -19,6 +19,7 @@ package at.gv.egiz.smcc.reader;
 
 import at.gv.egiz.smcc.conf.SMCCConfiguration;
 import at.gv.egiz.smcc.util.SMCCHelper;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.smartcardio.Card;
@@ -35,16 +36,16 @@ public class ReaderFactory {
 
   protected final static Log log = LogFactory.getLog(ReaderFactory.class);
   
-  protected SMCCConfiguration configuration;
+  protected static SMCCConfiguration configuration;
 
-  private ReaderFactory() {
-  }
-
-  /**
-   * @param configuration the configuration to set
-   */
   public void setConfiguration(SMCCConfiguration configuration) {
-    this.configuration = configuration;
+    if (configuration != null) {
+      log.debug("reader configuration: disablePinpad=" + configuration.isDisablePinpad());
+    }
+    //spring injects configuration into singleton ReaderFactory instance,
+    //but we access the ReaderFactory statically (getReader)
+    //(we rather should query the application context to obtain a reader factory)
+    ReaderFactory.configuration = configuration;
   }
 
   public static CardReader getReader(Card icc, CardTerminal ct) {
@@ -52,19 +53,15 @@ public class ReaderFactory {
     String name = ct.getName();
     log.info("creating reader " + name);
 
-    Map<Byte, Integer> features = queryFeatures(icc);
-    boolean disablePinpad = false;
+    Map<Byte, Integer> features;
+    if (configuration != null && configuration.isDisablePinpad()) {
+      features = Collections.emptyMap();
+    } else {
+      features = queryFeatures(icc);
+    }
+    
     CardReader reader;
-
-        //TODO query application context for reader config
-//    if (configuration != null) {
-//      String disablePinpad = configuration.getProperty(SMCCConfiguration.DISABLE_PINPAD_P);
-//      log.debug("setting disablePinpad to " + Boolean.parseBoolean(disablePinpad));
-//      reader.setDisablePinpad(Boolean.parseBoolean(disablePinpad));
-//    }
-    log.warn("card reader configuration is not considered");
-
-    if (features.isEmpty() || disablePinpad) {
+    if (features.isEmpty()) {
       reader = new DefaultCardReader(ct);
     } else {
       reader = new PinpadCardReader(ct, features);
