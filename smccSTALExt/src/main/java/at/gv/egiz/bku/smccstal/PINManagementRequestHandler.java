@@ -185,7 +185,7 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
           throws InterruptedException, SignatureCardException, GetPINStatusException {
 
     log.info("activate " + selectedPIN.getLocalizedName());
-    ManagementPINGUI pinGUI = new ManagementPINGUI((PINManagementGUI) gui,
+    ManagementPINGUI pinGUI = new ManagementPINGUI((PINManagementGUIFacade) gui,
             PINManagementGUIFacade.DIALOG.ACTIVATE);
 
     boolean reentry;
@@ -254,7 +254,7 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
           throws SignatureCardException, GetPINStatusException, InterruptedException {
 
     log.info("change " + selectedPIN.getLocalizedName());
-    ManagementPINGUI pinGUI = new ManagementPINGUI((PINManagementGUI) gui,
+    ManagementPINGUI pinGUI = new ManagementPINGUI((PINManagementGUIFacade) gui,
             PINManagementGUIFacade.DIALOG.CHANGE);
 
     boolean reentry;
@@ -295,7 +295,7 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
           throws SignatureCardException, GetPINStatusException, InterruptedException {
 
     log.info("unblock " + selectedPIN.getLocalizedName());
-    ManagementPINGUI pinGUI = new ManagementPINGUI((PINManagementGUI) gui,
+    ManagementPINGUI pinGUI = new ManagementPINGUI((PINManagementGUIFacade) gui,
             PINManagementGUIFacade.DIALOG.UNBLOCK);
 
     boolean reentry;
