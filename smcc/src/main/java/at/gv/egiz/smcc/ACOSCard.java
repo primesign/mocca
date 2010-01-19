@@ -571,7 +571,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
 
   @Override
   public String toString() {
-    return "a-sign premium";
+    return "a-sign premium (version " + getAppVersion() + ")";
   }
 
   ////////////////////////////////////////////////////////////////////////

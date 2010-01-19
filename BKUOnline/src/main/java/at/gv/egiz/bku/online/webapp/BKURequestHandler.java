@@ -19,10 +19,17 @@ package at.gv.egiz.bku.online.webapp;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -46,10 +53,35 @@ import at.gv.egiz.org.apache.tomcat.util.http.AcceptLanguage;
  */
 public class BKURequestHandler extends SpringBKUServlet {
 
+  private static final long serialVersionUID = 1L;
+
   public static final String APPLET_PAGE_P = "appletPage";
   public static final String APPLET_PAGE_DEFAULT = "BKUApplet";
-
-  private static final long serialVersionUID = 1L;
+  
+  public static final String PARAM_APPLET_WIDTH = "appletWidth";
+  public static final String ATTR_APPLET_WIDTH = "appletWidth";
+  
+  public static final String PARAM_APPLET_HEIGHT = "appletHeight";
+  public static final String ATTR_APPLET_HEIGHT = "appletHeight";
+  
+  public static final String PARAM_APPLET_BACKGROUND = "appletBackground";
+  public static final String ATTR_APPLET_BACKGROUND = "appletBackground";
+  
+  public static final String PARAM_APPLET_BACKGROUND_COLOR = "appletBackgroundColor";
+  public static final String ATTR_APPLET_BACKGROUND_COLOR = "appletBackgroundColor";
+  public static final Pattern PATTERM_APPLET_BACKGROUND_COLOR = Pattern.compile("\\#[0-9a-fA-F]{6}");
+  
+  public static final String PARAM_APPLET_GUI_STYLE = "appletGuiStyle";
+  public static final String ATTR_APPLET_GUI_STYLE = "appletGuiStyle";
+  public static final String[] VALUES_APPLET_GUI_STYLE = new String[] {"tiny", "simple", "advanced"};
+  
+  public static final String PARAM_APPLET_EXTENSION = "appletExtension";
+  public static final String ATTR_APPLET_EXTENSION = "appletExtension";
+  public static final String[] VALUES_APPLET_EXTENSION = new String[] {"pin", "activation"};
+  
+  public static final String PARAM_LOCALE = "locale";
+  public static final String ATTR_LOCALE = "locale";
+  public static final Pattern PATTERN_LOCALE = Pattern.compile("[a-zA-Z][a-zA-Z](_[a-zA-Z][a-zA-Z]){0,2}");
 
   public final static String REDIRECT_URL_SESSION_ATTRIBUTE = "redirectUrl";
 
@@ -124,69 +156,127 @@ public class BKURequestHandler extends SpringBKUServlet {
 
     log.trace("Trying to find applet parameters in request");
 
+    // appletWidth
     String width = getStringFromStream(bindingProcessor
-        .getFormData("appletWidth"), charset);
-    String height = getStringFromStream(bindingProcessor
-        .getFormData("appletHeight"), charset);
-    String background = getStringFromStream(bindingProcessor
-        .getFormData("appletBackground"), charset);
-    String backgroundColor = getStringFromStream(bindingProcessor
-        .getFormData("appletBackgroundColor"), charset);
-    String guiStyle = getStringFromStream(bindingProcessor
-        .getFormData("appletGuiStyle"), charset);
-    String hashDataDisplay = getStringFromStream(bindingProcessor
-        .getFormData("appletHashDataDisplay"), charset);
-    String localeFormParam = getStringFromStream(bindingProcessor
-        .getFormData("locale"), charset);
-    String extension = getStringFromStream(bindingProcessor
-        .getFormData("appletExtension"), charset);
-
+        .getFormData(PARAM_APPLET_WIDTH), charset);
     if (width != null) {
       try {
-        log.trace("Found applet width parameter: " + width);
-        int wI = Integer.parseInt(width);
-        session.setAttribute("appletWidth", wI);
+        // must be a valid integer
+        session.setAttribute(ATTR_APPLET_WIDTH, Integer.parseInt(width));
+        log.trace("Found parameter " + PARAM_APPLET_WIDTH + "='" + width +"'.");
       } catch (NumberFormatException nfe) {
-        log.warn(nfe);
+        log.warn("Applet parameter " + PARAM_APPLET_WIDTH + 
+            " does not contain a valid value.", nfe);
       }
     }
+    
+    // appletHeight
+    String height = getStringFromStream(bindingProcessor
+        .getFormData(PARAM_APPLET_HEIGHT), charset);
     if (height != null) {
       try {
-        log.trace("Found applet height parameter: " + height);
-        int hI = Integer.parseInt(height);
-        session.setAttribute("appletHeight", hI);
+        // must be a valid integer
+        session.setAttribute(ATTR_APPLET_HEIGHT, Integer.parseInt(height));
+        log.trace("Found parameter " + PARAM_APPLET_HEIGHT + "='" + height + "'.");
       } catch (NumberFormatException nfe) {
-        log.warn(nfe);
+        log.warn("Applet parameter " + PARAM_APPLET_HEIGHT + 
+            " does not contain a valid value.", nfe);
       }
     }
+    
+    // appletBackground
+    String background = getStringFromStream(bindingProcessor
+        .getFormData(PARAM_APPLET_BACKGROUND), charset);
     if (background != null) {
-      log.trace("Found applet background parameter: " + background);
-      session.setAttribute("appletBackground", background);
+      session.setAttribute(ATTR_APPLET_BACKGROUND, background);
+      try {
+        // must be a valid http or https URL
+        URI backgroundURL = new URI(background);
+        if ("http".equals(backgroundURL.getScheme()) 
+            || "https".equals(backgroundURL.getScheme())) {
+          session.setAttribute(ATTR_APPLET_BACKGROUND, backgroundURL.toASCIIString());
+          log.trace("Found parameter " + PARAM_APPLET_BACKGROUND + "='" 
+              + backgroundURL.toASCIIString() + "'.");
+        } else {
+          log.warn("Applet parameter " + PARAM_APPLET_BACKGROUND + "='" 
+              + background + "' is not a valid http/https URL.");
+        }
+      } catch (URISyntaxException e) {
+        log.warn("Applet parameter " + PARAM_APPLET_BACKGROUND + "='" 
+            + background + "' is not a valid http/https URL.", e);
+      }
     }
+    
+    // appletBackgroundColor
+    String backgroundColor = getStringFromStream(bindingProcessor
+        .getFormData(PARAM_APPLET_BACKGROUND_COLOR), charset);
     if (backgroundColor != null) {
-      log.trace("Faund applet background color parameter: " + backgroundColor);
-      session.setAttribute("appletBackgroundColor", backgroundColor);
+      // must be a valid color definition
+      if (PATTERM_APPLET_BACKGROUND_COLOR.matcher(backgroundColor).matches()) {
+        session.setAttribute(ATTR_APPLET_BACKGROUND_COLOR, backgroundColor);
+        log.trace("Faund parameter " + PARAM_APPLET_BACKGROUND_COLOR + "='" 
+            + backgroundColor + "'.");
+      } else {
+        log.warn("Applet parameter " + PARAM_APPLET_BACKGROUND_COLOR + "='" 
+            + backgroundColor + "' is not a valid color definition (must be of form '#hhhhhh').");
+      }
     }
+    
+    // appletGuiStyle
+    String guiStyle = getStringFromStream(bindingProcessor
+        .getFormData(PARAM_APPLET_GUI_STYLE), charset);
     if (guiStyle != null) {
-      log.trace("Found applet GUI style parameter: " + guiStyle);
-      session.setAttribute("appletGuiStyle", guiStyle);
+      // must be one of VALUES_APPLET_GUI_STYLE
+      String style = guiStyle.toLowerCase();
+      if (Arrays.asList(VALUES_APPLET_GUI_STYLE).contains(style)) {
+        session.setAttribute(ATTR_APPLET_GUI_STYLE, style);
+        log.trace("Found parameter " + PARAM_APPLET_GUI_STYLE + "='" 
+            + style + "'.");
+      } else {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Applet parameter ").append(PARAM_APPLET_GUI_STYLE).append(
+            "='").append(guiStyle).append("' is not valid (must be one of ")
+            .append(Arrays.toString(VALUES_APPLET_GUI_STYLE)).append(").");
+        log.warn(sb);
+      }
     }
-    if (hashDataDisplay != null) {
-      log.trace("Found applet hash data display parameter: " + hashDataDisplay);
-      session.setAttribute("appletHashDataDisplay", hashDataDisplay);
+
+    // appletExtension
+    String extension = getStringFromStream(bindingProcessor
+        .getFormData(PARAM_APPLET_EXTENSION), charset);
+    if (extension != null) {
+      // must be one of VALUES_APPLET_EXTENSION
+      String ext = extension.toLowerCase();
+      if (Arrays.asList(VALUES_APPLET_EXTENSION).contains(ext)) {
+        session.setAttribute(ATTR_APPLET_EXTENSION, ext);
+        log.trace("Found parameter " + PARAM_APPLET_EXTENSION + "='" 
+            + ext + "'.");
+      } else {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Applet parameter ").append(PARAM_APPLET_EXTENSION).append(
+            "='").append(extension).append("' is not valid (must be one of ")
+            .append(Arrays.toString(VALUES_APPLET_EXTENSION)).append(").");
+        log.warn(sb);
+      }
     }
-    if (extension != null && !"".equals(extension)) {
-      log.trace("Found applet extension parameter: " + extension);
-      session.setAttribute("extension", extension);
-    }
+
+    // locale
+    String localeFormParam = getStringFromStream(bindingProcessor
+        .getFormData(PARAM_LOCALE), charset);
     if (localeFormParam != null) {
-      log.debug("overrule accept-language locale " + locale
-          + " with form param " + localeFormParam);
-      locale = new Locale(localeFormParam);
+      // must be a valid locale
+      if (PATTERN_LOCALE.matcher(localeFormParam).matches()) {
+        locale = new Locale(localeFormParam);
+        log.debug("Overrule accept-language header locale " + locale
+            + " with form param " + localeFormParam + ".");
+      } else {
+        log.warn("Parameter " + PARAM_LOCALE + "='" + localeFormParam
+            + "' is not a valid locale definition.");
+      }
     }
     if (locale != null) {
       log.debug("Using locale " + locale);
-      session.setAttribute("locale", locale.toString());
+      session.setAttribute(ATTR_LOCALE, locale.toString());
     }
     
     // handle server side redirect url after processing
