@@ -41,6 +41,8 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -55,6 +57,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -93,7 +97,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
     protected JLabel switchFocusDummyLabel; 
     /** remember the pinfield to return to worker */
     protected JPasswordField pinField;
-    protected JPasswordField pinpadPINField;
+    protected Document pinpadPIN;
 
     protected int buttonSize;
     
@@ -600,9 +604,10 @@ public class BKUGUIImpl implements BKUGUIFacade {
         String pinName = getMessage(LABEL_PIN);
         pinLabel.setText(MessageFormat.format(pinName, new Object[]{pinSpec.getLocalizedName()}));
 
-        pinpadPINField = new JPasswordField();
+        JPasswordField pinpadPINField = new JPasswordField();
         pinpadPINField.setText("");
         pinpadPINField.setEnabled(false);
+        pinpadPIN = pinpadPINField.getDocument();
 
         JLabel pinsizeLabel = new JLabel();
         pinsizeLabel.setFont(pinsizeLabel.getFont().deriveFont(pinsizeLabel.getFont().getStyle() & ~java.awt.Font.BOLD, pinsizeLabel.getFont().getSize()-2));
@@ -850,9 +855,11 @@ public class BKUGUIImpl implements BKUGUIFacade {
   public void correctionButtonPressed() {
     log.debug("[" + Thread.currentThread().getName() + "] correction button pressed");
 
-    if (pinpadPINField != null) {
-      String maskedPIN = pinpadPINField.getText();
-      pinpadPINField.setText(maskedPIN.substring(0, maskedPIN.length() - 1));
+    if (pinpadPIN != null) {
+      try {
+        pinpadPIN.remove(0, 1);
+      } catch (BadLocationException ex) {
+      }
     }
   }
 
@@ -860,8 +867,11 @@ public class BKUGUIImpl implements BKUGUIFacade {
   public void allKeysCleared() {
     log.debug("[" + Thread.currentThread().getName() + "] all keys cleared");
 
-    if (pinpadPINField != null) {
-      pinpadPINField.setText("");
+    if (pinpadPIN != null) {
+      try {
+        pinpadPIN.remove(0, pinpadPIN.getLength());
+      } catch (BadLocationException ex) {
+      }
     }
   }
 
@@ -869,8 +879,11 @@ public class BKUGUIImpl implements BKUGUIFacade {
   public void validKeyPressed() {
     log.debug("[" + Thread.currentThread().getName() + "] valid key pressed");
 
-    if (pinpadPINField != null) {
-      pinpadPINField.setText(pinpadPINField.getText() + '*');
+    if (pinpadPIN != null) {
+      try {
+        pinpadPIN.insertString(0, "*", null);
+      } catch (BadLocationException ex) {
+      }
     }
   }
 
@@ -1265,8 +1278,8 @@ public class BKUGUIImpl implements BKUGUIFacade {
     @Override
     public char[] getPin() {
         if (pinField != null) {
-          char[] pin = pinField.getPassword();
-          pinField = null;
+          char[] pin = pinField.getPassword(); //returns a copy
+          pinField = null; //garbage collect original pin (make sure to clear char[] after use)
           return pin;
         }
         return null;

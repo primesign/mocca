@@ -35,6 +35,7 @@ import at.gv.egiz.smcc.VerifyAPDUSpec;
 import at.gv.egiz.smcc.pin.gui.ModifyPINGUI;
 import at.gv.egiz.smcc.pin.gui.PINGUI;
 import at.gv.egiz.smcc.util.ISO7816Utils;
+import java.util.Arrays;
 
 /**
  *
@@ -61,7 +62,10 @@ public class DefaultCardReader implements CardReader {
         throws SignatureCardException, CardException, InterruptedException {
 
     log.debug("VERIFY");
-    return channel.transmit(ISO7816Utils.createVerifyAPDU(apduSpec, pinGUI.providePIN(pinSpec, retries)));
+    char[] pin = pinGUI.providePIN(pinSpec, retries);
+    ResponseAPDU response = channel.transmit(ISO7816Utils.createVerifyAPDU(apduSpec, pin));
+    Arrays.fill(pin, '0');
+    return response;
   }
 
   @Override
@@ -69,9 +73,12 @@ public class DefaultCardReader implements CardReader {
           ModifyPINGUI pinGUI, PINSpec pinSpec, int retries)
         throws SignatureCardException, CardException, InterruptedException {
     log.debug("MODIFY (CHANGE_REFERENCE_DATA)");
-    char[] oldPin = pinGUI.provideCurrentPIN(pinSpec, retries);
-    char[] newPin = pinGUI.provideNewPIN(pinSpec);
-    return channel.transmit(ISO7816Utils.createChangeReferenceDataAPDU(apduSpec, oldPin, newPin));
+    char[] oldPIN = pinGUI.provideCurrentPIN(pinSpec, retries);
+    char[] newPIN = pinGUI.provideNewPIN(pinSpec);
+    ResponseAPDU response = channel.transmit(ISO7816Utils.createChangeReferenceDataAPDU(apduSpec, oldPIN, newPIN));
+    Arrays.fill(oldPIN, '0');
+    Arrays.fill(newPIN, '0');
+    return response;
   }
 
   @Override
@@ -80,7 +87,9 @@ public class DefaultCardReader implements CardReader {
         throws SignatureCardException, CardException, InterruptedException {
     log.debug("MODIFY (NEW_REFERENCE_DATA)");
     char[] newPIN = pinGUI.provideNewPIN(pinSpec);
-    return channel.transmit(ISO7816Utils.createNewReferenceDataAPDU(apduSpec, newPIN));
+    ResponseAPDU response = channel.transmit(ISO7816Utils.createNewReferenceDataAPDU(apduSpec, newPIN));
+    Arrays.fill(newPIN, '0');
+    return response;
   }
 
   @Override
