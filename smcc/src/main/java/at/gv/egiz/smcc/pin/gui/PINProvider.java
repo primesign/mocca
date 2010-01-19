@@ -34,6 +34,8 @@ import at.gv.egiz.smcc.PINSpec;
 public interface PINProvider {
 
   /**
+   * TODO change interface to void providePIN(char[] pin, pinspec, retries)
+   * to allow caller to clear pin afterwards.
    *
    * @param spec
    * @param retries num of remaining retries or -1 if unknown
