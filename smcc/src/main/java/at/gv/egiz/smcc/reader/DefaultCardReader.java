@@ -35,7 +35,6 @@ import at.gv.egiz.smcc.VerifyAPDUSpec;
 import at.gv.egiz.smcc.pin.gui.ModifyPINGUI;
 import at.gv.egiz.smcc.pin.gui.PINGUI;
 import at.gv.egiz.smcc.util.ISO7816Utils;
-import java.util.Arrays;
 
 /**
  *
@@ -62,10 +61,7 @@ public class DefaultCardReader implements CardReader {
         throws SignatureCardException, CardException, InterruptedException {
 
     log.debug("VERIFY");
-    char[] pin = pinGUI.providePIN(pinSpec, retries);
-    ResponseAPDU response = channel.transmit(ISO7816Utils.createVerifyAPDU(apduSpec, pin));
-    Arrays.fill(pin, '0');
-    return response;
+    return channel.transmit(ISO7816Utils.createVerifyAPDU(apduSpec, pinGUI.providePIN(pinSpec, retries)));
   }
 
   @Override
@@ -75,10 +71,7 @@ public class DefaultCardReader implements CardReader {
     log.debug("MODIFY (CHANGE_REFERENCE_DATA)");
     char[] oldPIN = pinGUI.provideCurrentPIN(pinSpec, retries);
     char[] newPIN = pinGUI.provideNewPIN(pinSpec);
-    ResponseAPDU response = channel.transmit(ISO7816Utils.createChangeReferenceDataAPDU(apduSpec, oldPIN, newPIN));
-    Arrays.fill(oldPIN, '0');
-    Arrays.fill(newPIN, '0');
-    return response;
+    return channel.transmit(ISO7816Utils.createChangeReferenceDataAPDU(apduSpec, oldPIN, newPIN));
   }
 
   @Override
@@ -87,9 +80,7 @@ public class DefaultCardReader implements CardReader {
         throws SignatureCardException, CardException, InterruptedException {
     log.debug("MODIFY (NEW_REFERENCE_DATA)");
     char[] newPIN = pinGUI.provideNewPIN(pinSpec);
-    ResponseAPDU response = channel.transmit(ISO7816Utils.createNewReferenceDataAPDU(apduSpec, newPIN));
-    Arrays.fill(newPIN, '0');
-    return response;
+    return channel.transmit(ISO7816Utils.createNewReferenceDataAPDU(apduSpec, newPIN));
   }
 
   @Override
