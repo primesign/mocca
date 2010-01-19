@@ -38,7 +38,7 @@
     <dependency>
       <artifactId>BKUCertificates</artifactId>
       <groupId>at.gv.egiz</groupId>
-      <version>1.2</version>
+      <version>1.1</version>
     </dependency>
     <dependency>
       <artifactId>BKUHelp</artifactId>
