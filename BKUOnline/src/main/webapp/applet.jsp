@@ -16,7 +16,7 @@
 -->
 <%@ page language="java" contentType="text/html; charset=UTF-8"
   pageEncoding="UTF-8" 
-  import="at.gv.egiz.bku.online.webapp.AppletDispatcher, org.apache.commons.lang.RandomStringUtils" %>
+  import="at.gv.egiz.bku.online.webapp.AppletDispatcher, org.apache.commons.lang.RandomStringUtils, org.apache.commons.lang.StringEscapeUtils" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -32,23 +32,30 @@
         <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
     </head>
     <%
+        String locale = StringEscapeUtils.escapeJavaScript(
+            (String) session.getAttribute("locale"));
+
         int width = session.getAttribute("appletWidth") == null ? 190
                 : (Integer) session.getAttribute("appletWidth"); 
         int height = session.getAttribute("appletHeight") == null ? 130
                 : (Integer) session.getAttribute("appletHeight");
-        String backgroundImg = session.getAttribute("appletBackground") == null 
+        String backgroundImg = StringEscapeUtils.escapeJavaScript(
+            session.getAttribute("appletBackground") == null 
                 ? "../img/chip32.png"
-                : (String) session.getAttribute("appletBackground");
-        String backgroundColor = (String) session.getAttribute("appletBackgroundColor");
-        String guiStyle = (String) session.getAttribute("appletGuiStyle");
-        String locale = (String) session.getAttribute("locale");
-        String extension = (String) session.getAttribute("extension");
-
+                : (String) session.getAttribute("appletBackground"));
+        String backgroundColor = StringEscapeUtils.escapeJavaScript(
+            (String) session.getAttribute("appletBackgroundColor"));
+        String guiStyle = StringEscapeUtils.escapeJavaScript(
+            (String) session.getAttribute("appletGuiStyle"));
+        
+        String sessionId = StringEscapeUtils.escapeJavaScript(session.getId());
+        
+        String extension = (String) session.getAttribute("appletExtension");
         String appletClass, appletArchive;
-        if ("activation".equals(extension)) {
+        if ("activation".equalsIgnoreCase(extension)) {
             appletArchive = "BKUAppletExt";
             appletClass = "at.gv.egiz.bku.online.applet.ActivationApplet.class";
-        } else if ("pin".equals(extension)) {
+        } else if ("pin".equalsIgnoreCase(extension)) {
             appletArchive = "BKUAppletExt";
             appletClass = "at.gv.egiz.bku.online.applet.PINManagementApplet.class";
         } else {
@@ -73,40 +80,32 @@
     %>
     <body id="appletpage" style="width:<%=width%>px">
       <script type="text/javascript">
-
-            	// avoid selection of applet before it is completely loaded
-				var allowSelectionByJS = false;
-            
-                if (!deployJava.versionCheck('1.6.0_04+')) {
-                    document.write('<p>Diese Anwendung benötigt Version 6 Update 4 oder höher der <a href="" onclick="deployJava.installLatestJRE();">Java&trade; Laufzeitumgebung</a>.</p>');
-                } else {
-                  // to enable applet caching, remove AppletDispatcher servlet,
-                  // change codebase to 'applet',
-                  // remove random suffix for appletArchive
-                  // and remove '../' for all URL applet parameters
-                    var attributes = {
-                      codebase :'<%=codebase %>',
-                      code : '<%=appletClass%>',
-                      archive : '<%=appletArchive +".jar, commons-logging.jar, iaik_jce_me4se.jar"%>',
-                      width : <%=width%>,
-                      height :<%=height%>,
-                      name : 'moccaapplet',
-                      id : 'moccaapplet'
-                    };
-                    var parameters = {
-                      GuiStyle : '<%=guiStyle%>',
-                      Locale : '<%=locale%>',
-                      Background : '<%=backgroundImg%>',
-                      BackgroundColor : '<%=backgroundColor%>',
-                      WSDL_URL :'../stal;jsessionid=<%=session.getId()%>?wsdl',
-                      HelpURL : '../help/',
-                      SessionID : '<%=session.getId()%>',
-                      RedirectURL : '../bkuResult',
-                      RedirectTarget: '_parent'
-                    };
-                    deployJava.runApplet(attributes, parameters, '1.6.0_04');
-                }
-            </script>
-
+        if (!deployJava.versionCheck('1.6.0_04+')) {
+          document.write('<p>Diese Anwendung benötigt Version 6 Update 4 oder höher der <a href="" onclick="deployJava.installLatestJRE();">Java&trade; Laufzeitumgebung</a>.</p>');
+        } else {
+          var attributes = {
+            codebase :'<%=codebase%>',
+            code : '<%=appletClass%>',
+            archive : '<%=appletArchive +".jar, commons-logging.jar, iaik_jce_me4se.jar"%>',
+            width : <%=width%>,
+            height :<%=height%>,
+            name : 'moccaapplet',
+            id : 'moccaapplet'
+          };
+          var parameters = {
+            GuiStyle : '<%=guiStyle%>',
+            Locale : '<%=locale%>',
+            Background : '<%=backgroundImg%>',
+            BackgroundColor : '<%=backgroundColor%>',
+            WSDL_URL : '../stal;jsessionid=<%=sessionId%>?wsdl',
+            HelpURL : '../help/',
+            SessionID : '<%=sessionId%>',
+            RedirectURL : '../bkuResult',
+            RedirectTarget: '_parent',
+            EnforceRecommendedPINLength: 'true'
+          };
+          deployJava.runApplet(attributes, parameters, '1.6.0_04');
+        }
+      </script>
     </body>
 </html>
