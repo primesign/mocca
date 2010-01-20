@@ -3,11 +3,11 @@
   <parent>
     <artifactId>bku</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.2.11-SNAPSHOT</version>
+    <version>1.2.11</version>
   </parent>
   <groupId>at.gv.egiz</groupId>
   <artifactId>BKUHelp</artifactId>
-  <version>1.2.11-SNAPSHOT</version>
+  <version>1.2.11</version>
   <name>BKU Help</name>
   <build>
     <resources>
