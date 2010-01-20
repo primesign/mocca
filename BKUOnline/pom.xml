@@ -143,9 +143,9 @@
 
   </dependencies>
   <scm>
-    <developerConnection>scm:svn:svn+ssh://clemenso@svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.11/BKUOnline</developerConnection>
-    <connection>scm:svn:svn+ssh://clemenso@svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.11/BKUOnline</connection>
-    <url>scm:svn:svn+ssh://clemenso@svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.11/BKUOnline</url>
+    <developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.11/BKUOnline</developerConnection>
+    <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.11/BKUOnline</connection>
+    <url>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.11/BKUOnline</url>
   </scm>
   <build>
     <plugins>
