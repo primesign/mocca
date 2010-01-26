@@ -1,5 +1,0 @@
-<PayloadRoot>
-                    <!-- whitespaces are preserved -->
-                    <PayloadChild>line 
-                        feed</PayloadChild>
-                </PayloadRoot>

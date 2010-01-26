@@ -1,1 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><sl:InfoboxReadRequest xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#">  <sl:InfoboxIdentifier>IdentityLink</sl:InfoboxIdentifier>  <sl:BinaryFileParameters ContentIsXMLEntity="true"/>  <sl:BoxSpecificParameters>    <sl:ReadValue Key="SecureSignatureKeyPair"/>  </sl:BoxSpecificParameters></sl:InfoboxReadRequest>

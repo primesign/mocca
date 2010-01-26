@@ -1,37 +1,0 @@
-POST /http-security-layer-request HTTP/1.1
-Host: 127.0.0.1
-User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.5) Gecko/20041107 Firefox/1.0
-Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
-Accept-Language: de-at,de;q=0.7,en;q=0.3
-Accept-Encoding: gzip,deflate
-Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
-Keep-Alive: 300
-Connection: keep-alive
-Content-Type: multipart/form-data; boundary=---------------------------2330864292941
-Content-Length: 1800
-
------------------------------2330864292941
-Content-Disposition: form-data; name="Vorname_"
-
-Thassilo
------------------------------2330864292941
-Content-Disposition: form-data; name="Nachname_"
-
-Tester
------------------------------2330864292941
-Content-Disposition: form-data; name="Beilage_"; filename="Beilage.png"
-Content-Type: image/png
-
-‰PNG
-
-   IHDR        <Œ"¢   tRNS      n¦‘   	pHYs    ÒÝ~ü   	tEXtComment  ‰*?  WIDATxœ­”½NÂPÇ?qö|ŸÁ„÷18XB\HtpëÀ.nºƒpcÀ&°2ºº¢.LþšÓ\n/åzÁ›œ¶çãÿç«­¬¦õÅUŠ ˆ>ÔU6J0®Žd…¦RÖÖÑåsÓDT”*[°jÜM?‚þ{”‚)?¯¶Sl»8X?ªàªÈh‚ÃZÏ&AÇc8röff#Ãì0Á¸Ð¼;ôQ@ÇÉËé#ÛAP0Ý}???û—v.LœkP÷ ÛV–†dvÖuVã¬	€<?üƒ  ÷-?€|~€0¦ š‚ºšSèÄCwçq{øF½óó­-M¦À~¢•?X	G	….®SO»vJ?àí/P4@3ïí›?)6…SœÕôBÃÔìŒj'á,ðóc
-{©À Oþ÷c®ÿä‚!ÿgÆäŠÙcÌÙ¯"¾Æç]u@{C¿Ií$õC¨     IEND®B`‚
------------------------------2330864292941
-Content-Disposition: form-data; name="XMLRequest"
-
-<?xml version="1.0" encoding="UTF-8"?><sl:CreateHashRequest xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#">  <sl:HashInfo RespondHashData="false">    <sl:HashData>      <sl:MetaInfo>        <sl:MimeType>application/octet-stream</sl:MimeType>      </sl:MetaInfo>      <sl:Content Reference="http://www.buergerkarte.at/konzept/securitylayer/spezifikation/20040514/tutorial/examples/bindings/signattachments/Beilage.png"/>    </sl:HashData>    <sl:HashAlgorithm>http://www.w3.org/2000/09/xmldsig#sha1</sl:HashAlgorithm>    <sl:FriendlyName>Beilage zum Formular 0815</sl:FriendlyName>  </sl:HashInfo></sl:CreateHashRequest>
------------------------------2330864292941
-Content-Disposition: form-data; name="DataURL"
-
-http://localhost:18080/SL12Tutorial/SignAttachments;jsessionid=2BAF01A9069F6AF073A25B4D9B8E803E?use=sign
------------------------------2330864292941--
