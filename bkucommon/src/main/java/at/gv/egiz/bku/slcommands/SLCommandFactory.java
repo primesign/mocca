@@ -88,6 +88,11 @@ public class SLCommandFactory {
     private Map<String, Class<? extends SLCommand>> slRequestTypeMap = new HashMap<String, Class<? extends SLCommand>>();
     
     /**
+     * The mapping of a requests's qualified name to a concrete command factories.   
+     */
+    private Map<QName, AbstractSLCommandFactory> slCommandFactories = new HashMap<QName, AbstractSLCommandFactory>();
+
+    /**
      * Configures the singleton instance with command implementations
      * @param commandImplMap
      * @throws ClassNotFoundException 
@@ -101,7 +106,19 @@ public class SLCommandFactory {
         slRequestTypeMap.put(key, impl);
       }
     }
-
+    
+    public void setConcreteFactories(Map<QName, AbstractSLCommandFactory> factories) {
+      if (log.isDebugEnabled()) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Registered sl command factory for");
+        for (QName qname : factories.keySet()) {
+          sb.append("\n  " + qname + " : " + factories.get(qname).getClass());
+        }
+        log.debug(sb);
+      }
+      slCommandFactories = factories;
+    }
+    
     /**
      * Register an {@link SLCommand} implementation class of a Security Layer
      * command with the given <code>namespaceUri</code> and <code>localname</code>
@@ -363,37 +380,16 @@ public class SLCommandFactory {
           log.info("Unsupported security layer request version : " + qName.getNamespaceURI());
           throw new SLVersionException(qName.getNamespaceURI());
         }
-        
-        Class<? extends SLCommand> implClass = getImplClass(qName);
-        if (implClass == null) {
-            // command not supported
-            log.info("Unsupported command received: " + qName.toString());
-            throw new SLCommandException(4011,
-              SLExceptionMessages.EC4011_NOTIMPLEMENTED, new Object[]{qName.toString()});
+
+        AbstractSLCommandFactory concreteFactory = slCommandFactories.get(qName);
+        if (concreteFactory == null) {
+          // command not supported
+          log.info("Unsupported command received: " + qName.toString());
+          throw new SLCommandException(4011,
+            SLExceptionMessages.EC4011_NOTIMPLEMENTED, new Object[]{qName.toString()});
         }
 
-        
-        
-        // try to instantiate
-        SLCommand slCommand;
-        try {
-            slCommand = implClass.newInstance();
-            log.debug("SLCommand " + slCommand.getName() + " created.");
-        } catch (InstantiationException e) {
-            // unexpected error
-            log.error("Failed to instantiate security layer command implementation.",
-              e);
-            throw new SLRuntimeException(e);
-        } catch (IllegalAccessException e) {
-            // unexpected error
-            log.error("Failed to instantiate security layer command implementation.",
-              e);
-            throw new SLRuntimeException(e);
-        }
-
-        slCommand.init(context, (JAXBElement) object);
-
-        return slCommand;
+        return concreteFactory.createSLCommand(context, (JAXBElement<?>) object);
 
     }
 }

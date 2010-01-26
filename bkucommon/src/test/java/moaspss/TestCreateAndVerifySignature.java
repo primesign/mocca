@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
 
 import at.buergerkarte.namespaces.securitylayer._1.ErrorResponseType;
 
-@Ignore
+//@Ignore
 public class TestCreateAndVerifySignature {
 
   protected Element parseCreateXMLSignatureRequest(InputStream is)
@@ -141,7 +141,7 @@ public class TestCreateAndVerifySignature {
     }
 
     MOASPClient spClient = new MOASPClient();
-    JAXBElement<VerifyXMLSignatureResponseType> verifySignature = spClient.verifySignature(cxsResp, ".", "qualifiedSignature");
+    JAXBElement<VerifyXMLSignatureResponseType> verifySignature = spClient.verifySignature(cxsResp, ".", "qualifiedSignature+Test");
     VerifyXMLSignatureResponseType vxsResp = verifySignature.getValue();
     int signatureCheck = vxsResp.getSignatureCheck().getCode().intValue();
     if (signatureCheck != 0) {

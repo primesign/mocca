@@ -75,7 +75,8 @@
                         HelpURL : '../help/',
                         SessionID : '<%=request.getSession().getId()%>',
                         RedirectURL : '../',
-                        RedirectTarget: '_parent'
+                        RedirectTarget: '_parent',
+                        EnforceRecommendedPINLength: 'true'
                     };
                     var version = '1.6.0_04';
                     deployJava.runApplet(attributes, parameters, version);

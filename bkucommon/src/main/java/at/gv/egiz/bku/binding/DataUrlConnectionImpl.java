@@ -274,7 +274,12 @@ public class DataUrlConnectionImpl implements DataUrlConnectionSPI {
         InputStreamReader reader = new InputStreamReader(formParameter.getData(), 
             (formParameter.getCharSet() != null) 
                 ? formParameter.getCharSet()
-                : "UTF-8");  // assume request was application/x-www-form-urlencoded, formParam therefore UTF-8
+                : "UTF-8"); 
+        // Note, using UTF-8 as fallback for decoding is safe.
+        // If the request was x-www-form-urlencoded, 
+        // UTF-8 has been used for encoding of non-ASCII characters.
+        // If the request was multipart/form-data and contains any transfer parameters,
+        // the data URL request is going to be multipart/form-data encoded (see below).
         while ((len = reader.read(cbuf)) != -1) {
           urlEnc.write(cbuf, 0, len);
         }
