@@ -45,7 +45,7 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
   /**
    * Use SHA-2?
    */
-  private static boolean SHA2 = true;
+  private static boolean SHA2 = false;
   
   /**
    * The signature algorithm URI.

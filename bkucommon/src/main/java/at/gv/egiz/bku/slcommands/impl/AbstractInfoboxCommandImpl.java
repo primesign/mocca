@@ -32,25 +32,6 @@ public abstract class AbstractInfoboxCommandImpl<T> extends SLCommandImpl<T> {
    * The infobox implementation.
    */
   protected Infobox infobox;
-
-  /**
-   * The infobox factory.
-   */
-  protected InfoboxFactory infoboxFactory;
-  
-  /**
-   * @return the infoboxFactory
-   */
-  public InfoboxFactory getInfoboxFactory() {
-    return infoboxFactory;
-  }
-
-  /**
-   * @param infoboxFactory the infoboxFactory to set
-   */
-  public void setInfoboxFactory(InfoboxFactory infoboxFactory) {
-    this.infoboxFactory = infoboxFactory;
-  }
   
   @Override
   public void init(SLCommandContext ctx, Object request)
@@ -59,7 +40,7 @@ public abstract class AbstractInfoboxCommandImpl<T> extends SLCommandImpl<T> {
     
     String infoboxIdentifier = getInfoboxIdentifier(getRequestValue());
     
-    infobox = infoboxFactory.createInfobox(infoboxIdentifier);
+    infobox = InfoboxFactory.getInstance().createInfobox(infoboxIdentifier);
   }
   
   /**
