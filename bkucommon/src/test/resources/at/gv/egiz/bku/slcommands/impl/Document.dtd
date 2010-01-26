@@ -1,0 +1,3 @@
+<!ELEMENT XMLDocument (#PCDATA | Paragraph)*>
+<!ELEMENT Paragraph (#PCDATA)>
+<!ATTLIST Paragraph ParaId CDATA #IMPLIED>

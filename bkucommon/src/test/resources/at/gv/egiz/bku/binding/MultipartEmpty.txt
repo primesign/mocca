@@ -1,0 +1,17 @@
+POST /http-security-layer-request HTTP/1.1
+User-Agent: Jakarta Commons-HttpClient/3.0
+Host: 127.0.0.1:13495
+Content-Length: 855
+Content-Type: multipart/form-data; boundary=uW10q_I9UeqKyw-1o5EW4jtEAaGs7-mC6o
+
+--uW10q_I9UeqKyw-1o5EW4jtEAaGs7-mC6o
+Content-Disposition: form-data; name="XMLRequest"
+
+<?xml version="1.0" encoding="UTF-8"?><sl:CreateXMLSignatureRequest xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#"><sl:KeyboxIdentifier>SecureSignatureKeypair</sl:KeyboxIdentifier><sl:DataObjectInfo Structure="detached"><sl:DataObject Reference="urn:Document"><sl:LocRefContent>formdata:fileupload</sl:LocRefContent></sl:DataObject><sl:TransformsInfo><sl:FinalDataMetaInfo><sl:MimeType>text/plain</sl:MimeType></sl:FinalDataMetaInfo></sl:TransformsInfo></sl:DataObjectInfo></sl:CreateXMLSignatureRequest>
+--uW10q_I9UeqKyw-1o5EW4jtEAaGs7-mC6o
+Content-Disposition: form-data; name="fileupload"; filename="myfile.txt"
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: binary
+
+
+--uW10q_I9UeqKyw-1o5EW4jtEAaGs7-mC6o--

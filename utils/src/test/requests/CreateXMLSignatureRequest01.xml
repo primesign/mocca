@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CreateXMLSignatureRequest xmlns="http://www.buergerkarte.at/namespaces/securitylayer/1.2#"
+    xmlns:dsig="http://www.w3.org/2000/09/xmldsig#"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.buergerkarte.at/namespaces/securitylayer/1.2# file:/home/clemens/IAIK/BKU2/SLCore-1.2.xsd">
+    <KeyboxIdentifier/>
+    <DataObjectInfo Structure="enveloping">
+        <DataObject>
+            <XMLContent>
+                <PayloadRoot>
+                    <!-- whitespaces are preserved -->
+                    <PayloadChild>line 
+                        feed</PayloadChild>
+                </PayloadRoot>
+            </XMLContent>
+        </DataObject>
+        <TransformsInfo>
+            <dsig:Transforms>
+                <dsig:Transform Algorithm="transformalgorithm"/>
+            </dsig:Transforms>
+            <FinalDataMetaInfo>
+                <MimeType/>
+                <Description/>
+            </FinalDataMetaInfo>
+        </TransformsInfo>
+    </DataObjectInfo>
+ </CreateXMLSignatureRequest>

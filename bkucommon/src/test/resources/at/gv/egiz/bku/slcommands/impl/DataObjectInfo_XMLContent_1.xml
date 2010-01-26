@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sl:CreateXMLSignatureRequest xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">
+  <sl:DataObjectInfo Structure="enveloping">
+    <sl:DataObject>
+      <sl:XMLContent>I am a simple <funny>funny</funny> text.</sl:XMLContent>
+    </sl:DataObject>
+    <sl:TransformsInfo>
+      <sl:FinalDataMetaInfo>
+      	<sl:MimeType>text/xml</sl:MimeType>
+      	<sl:Description>I am a fancy description.</sl:Description>
+      </sl:FinalDataMetaInfo>
+    </sl:TransformsInfo>
+  </sl:DataObjectInfo>
+</sl:CreateXMLSignatureRequest>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.buergerkarte.at/namespaces/securitylayer/20020831#" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.buergerkarte.at/namespaces/securitylayer/20020831#" xmlns:sl10="http://www.buergerkarte.at/namespaces/securitylayer/20020225#" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.1.0">
+  <xsd:element name="CreateXMLSignatureRequest" type="xsd:anyType"/>
+  <xsd:element name="CreateXMLSignatureResponse" type="xsd:anyType"/>
+  <xsd:element name="VerifyCMSSignatureRequest" type="xsd:anyType"/>
+  <xsd:element name="VerifyCMSSignatureResponse" type="xsd:anyType"/>
+  <xsd:element name="VerifyXMLSignatureRequest" type="xsd:anyType"/>
+  <xsd:element name="VerifyXMLSignatureResponse" type="xsd:anyType"/>
+  <xsd:element name="GetPropertiesResponse" type="xsd:anyType"/>
+</xsd:schema>

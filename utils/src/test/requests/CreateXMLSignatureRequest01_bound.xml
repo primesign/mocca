@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><CreateXMLSignatureRequest xmlns="http://www.buergerkarte.at/namespaces/securitylayer/1.2#" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#"><KeyboxIdentifier></KeyboxIdentifier><DataObjectInfo Structure="enveloping"><DataObject><XMLContent>
+                
+            </XMLContent></DataObject><TransformsInfo><ns2:Transforms><ns2:Transform Algorithm="transformalgorithm"></ns2:Transform></ns2:Transforms><FinalDataMetaInfo><MimeType></MimeType><Description></Description></FinalDataMetaInfo></TransformsInfo></DataObjectInfo></CreateXMLSignatureRequest>

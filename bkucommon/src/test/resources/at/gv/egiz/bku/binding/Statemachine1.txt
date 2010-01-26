@@ -1,0 +1,36 @@
+
+-----------------------------2330864292941
+Content-Disposition: form-data; name="Vorname_"
+Content-Type:text/plain;charset=UTF-8
+
+Thassilo
+-----------------------------2330864292941
+Content-Disposition: form-data; name="Nachname_"
+
+Tester
+-----------------------------2330864292941
+Content-Disposition: form-data; name="Beilage_"; filename="Beilage.png"
+Content-Type: image/png
+
+�PNG
+
+   
+IHDR        <�"�   tRNS      n��   	pHYs    ��~�   	tEXtComment  �*?  WIDATx����N�P�?q�|�D�18XB\Htp��.n�
+�pc�&�2���.L���\n/�z[�����竭����U���>�U6J0��d��R����s�DT
+�*[�j�M?��{��)?��Sl�8X?���h��Z�&A�c8r�ff#��0xм;�Q@����#�AP0�}???�v.L�kP� �V��dv�uV�	�<?�  �-?�|
+~�0������S��Cw�q{�F����-M��~��?X	G	�.�SO�vJ?��/P4@3��?)6�S���B���j'�,��c
+{�� O��c���!�g���c�ٯ"���]u@{C�I�$�C�     IEND�B`�
+-----------------------------2330864292941
+Content-Disposition: form-data; name="XMLRequest"
+Content-Type:text/xml;charset=UTF-8
+
+<?xml version="1.0" encoding="UTF-8"?><sl:NullOperationRequest xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#"/>
+-----------------------------2330864292941
+Content-Disposition: form-data; name="WeitergabeHeader__";
+
+MyHeader:veryUgly
+-----------------------------2330864292941
+Content-Disposition: form-data; name="DataURL"
+
+http://localhost:8080/
+-----------------------------2330864292941--

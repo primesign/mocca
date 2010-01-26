@@ -1,0 +1,20 @@
+<sl:CreateXMLSignatureRequest xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">
+  <sl:SignatureInfo>
+    <sl:SignatureEnvironment>
+      <sl:Base64Content>PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjwhRE9DVFlQRSBYTUxEb2N1
+bWVudCBTWVNURU0gInVybjpEb2N1bWVudC5kdGQiPg0KPFhNTERvY3VtZW50Pg0KICAgIDxQYXJh
+Z3JhcGg+SWNoIGJpbiBkZXIgZXJzdGUgQWJzYXR6IGluIGRpZXNlbSBEb2t1bWVudC48L1BhcmFn
+cmFwaD4NCiAgICA8UGFyYWdyYXBoIFBhcmFJZD0iUGFyYTIiPlVuZCBpY2ggYmluIGRlciB6d2Vp
+dGUgQWJzYXR6IGluIGRpZXNlbSBEb2t1bWVudC4NCiAgICBJY2ggaGFiZSB3ZWl0ZXJzIGVpbiBl
+aWdlbmVucyBJRC1BdHRyaWJ1dCBiZWtvbW1lbi48L1BhcmFncmFwaD4NCjwvWE1MRG9jdW1lbnQ+</sl:Base64Content>
+    </sl:SignatureEnvironment>
+    <sl:SignatureLocation xmlns:doc="urn:document" Index="2">/XMLDocument</sl:SignatureLocation>
+    <sl:Supplement>
+      <sl:Content Reference="urn:Document.dtd">
+      	<sl:Base64Content>PCFFTEVNRU5UIFhNTERvY3VtZW50ICgjUENEQVRBIHwgUGFyYWdyYXBoKSo+DQo8IUVMRU1FTlQg
+UGFyYWdyYXBoICgjUENEQVRBKT4NCjwhQVRUTElTVCBQYXJhZ3JhcGggUGFyYUlkIENEQVRBICNJ
+TVBMSUVEPg==</sl:Base64Content>
+      </sl:Content>
+    </sl:Supplement>
+  </sl:SignatureInfo>
+</sl:CreateXMLSignatureRequest>

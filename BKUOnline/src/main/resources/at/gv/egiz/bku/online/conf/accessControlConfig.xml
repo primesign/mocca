@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright 2008 Federal Chancellery Austria and Graz University of
+    Technology Licensed under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance with the
+    License. You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+    applicable law or agreed to in writing, software distributed under the
+    License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+    CONDITIONS OF ANY KIND, either express or implied. See the License for
+    the specific language governing permissions and limitations under the
+    License.
+  -->
+<AccessControl>
+	<Chains>
+		<!--
+			The input chain defines filters that are applied before command
+			execution
+		-->
+		<Chain Id="InputChain">
+			<Rules>
+				<!-- there is no command implemented that requires input filtering -->
+				<Rule Id="InputChain-AllowAll">
+					<Action>
+						<RuleAction>allow</RuleAction>
+					</Action>
+					<UserInteraction>confirm</UserInteraction>
+				</Rule>
+			</Rules>
+		</Chain>
+
+		<!--
+			The output chain defines filters that are applied after command
+			execution
+		-->
+		<Chain Id="OutputChain">
+			<Rules>
+				<Rule Id="OutputChain-Egov">
+					<AuthClass>certifiedGovAgency</AuthClass>
+					<Action>
+						<RuleAction>allow</RuleAction>
+					</Action>
+					<UserInteraction>confirm</UserInteraction>
+				</Rule>
+				<Rule Id="OutputChain-Command">
+					<AuthClass>anonymous</AuthClass>
+					<Action>
+						<ChainRef>Command</ChainRef>
+					</Action>
+				</Rule>
+			</Rules>
+		</Chain>
+		<Chain Id="Command">
+			<Rules>
+				<Rule Id="cmd-rule-1">
+					<AuthClass>certified</AuthClass>
+					<Command Name="Infobox.*">
+						<Param Name="InfoboxIdentifier">IdentityLink</Param>
+						<Param Name="PersonIdentifier">derived</Param>
+					</Command>
+					<Action>
+						<RuleAction>allow</RuleAction>
+					</Action>
+					<UserInteraction>confirm</UserInteraction>
+				</Rule>
+				<Rule Id="cmd-rule-2">
+					<AuthClass>anonymous</AuthClass>
+					<Command Name="Infobox.*">
+						<Param Name="InfoboxIdentifier">IdentityLink</Param>
+					</Command>
+					<Action>
+						<RuleAction>deny</RuleAction>
+					</Action>
+					<UserInteraction>info</UserInteraction>
+				</Rule>
+				<Rule Id="cmd-rule-3">
+					<Action>
+						<RuleAction>allow</RuleAction>
+					</Action>
+				</Rule>
+			</Rules>
+		</Chain>
+	</Chains>
+</AccessControl>

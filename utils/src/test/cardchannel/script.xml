@@ -1,0 +1,6 @@
+<!--Script>
+    <Reset cold='true' />
+    <CommandAPDU sequence='1' of='2' expectedSW='9000'>00A4000C023F00</CommandAPDU>
+    <CommandAPDU sequence='2' of='2' expectedSW='9000'>00B0820000</CommandAPDU>
+</Script-->
+<Script><Reset/></Script>

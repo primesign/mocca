@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sl:CreateXMLSignatureRequest xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#">
+  <sl:DataObjectInfo Structure="detached">
+    <sl:DataObject Reference="testlocal:DataObject1.xml">
+      <sl:Base64Content>SWNoIGJpbiBlaW4gZWluZmFjaGVyIFRleHQu</sl:Base64Content>
+    </sl:DataObject>
+    <sl:TransformsInfo>
+      <sl:FinalDataMetaInfo>
+      	<sl:MimeType>text/xml</sl:MimeType>
+      </sl:FinalDataMetaInfo>
+    </sl:TransformsInfo>
+  </sl:DataObjectInfo>
+</sl:CreateXMLSignatureRequest>
