@@ -1,0 +1,40 @@
+<!--
+  Copyright 2008 Federal Chancellery Austria and
+  Graz University of Technology
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>MOCCA Applet</title>
+    <link rel="shortcut icon" href="img/chip16.ico" type="image/x-icon">
+  </head>
+  <body>
+  	<p>Run applet test with appletviewer (-J-d32) -J-Djava.security.policy=appletviewer.policy appletTest.html</p>
+    <applet code="at.gv.egiz.bku.online.applet.BKUApplet.class"
+            archive="../BKUApplet-1.2.8-SNAPSHOT.jar, commons-logging.jar , iaik_jce_me4se.jar"
+            width=190 height=130 name="moccaapplet" id="moccaapplet">
+      <param name="GuiStyle" value="simple"/>
+      <param name="Locale" value="ja_JA"/>
+      <!--param name="Background" value="jar:file:/home/clemens/workspace/mocca/BKUApplet/target/BKUApplet-1.0-SNAPSHOT.jar!/images/help.png"/-->
+      <!--param name="Background" value="http://localhost:3495/img/BackgroundChipperling.png"/-->
+      <param name="BackgroundColor" value="#ff0000"/>
+      <param name="WSDL_URL" value="http://localhost:8080/BKUOnline/stal?wsdl"/>
+      <param name="HelpURL" value="http://localhost:8080/BKUOnline/help/"/>
+      <param name="SessionId" value="TestSession"/>
+      <param name="RedirectURL" value="http://www.google.com/bkuResult"/>
+      <param name="RedirectTarget" value="_parent"/>
+    </applet>
+  </body>
+</html>

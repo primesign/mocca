@@ -1,0 +1,17 @@
+MOCCA Project
+Copyright 2008 Federal Chancellery Austria and Graz University of Technology
+
+This product includes software developed at
+E-Government Innovation Center (www.egiz.gv.at). 
+
+E-Government Innovation Center is a joint initiative of
+Federal Chancellery Austria and Graz University of Technology.
+
+
+This product includes software developed by third parties
+and provided under an open source license (www.opensource.org).
+
+
+This product includes software provided by
+Stiftung Secure Information and Communication Technologies SIC 
+(www.sic.st).

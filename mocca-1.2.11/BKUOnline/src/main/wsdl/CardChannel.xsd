@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.buergerkarte.at/cardchannel"
+    xmlns:tns="http://www.buergerkarte.at/cardchannel"
+    elementFormDefault="qualified"
+    xmlns:stal="http://www.egiz.gv.at/stal">
+
+    <xs:import namespace="http://www.egiz.gv.at/stal" schemaLocation="stal-service.xsd"/>
+
+    <xs:annotation>
+        <xs:documentation>Schema for transparent access to cards using a BKU and the CardChannel
+            infobox</xs:documentation>
+    </xs:annotation>
+    
+    <xs:element name="Script" type="tns:ScriptType" substitutionGroup="stal:OtherRequest"/>
+    <xs:element name="Response" type="tns:ResponseType" substitutionGroup="stal:OtherResponse"/>
+    <xs:element name="Grunddaten" type="tns:AttributeList"/>
+    <xs:element name="EHIC" type="tns:AttributeList"/>
+    <xs:element name="Status" type="tns:AttributeList"/>
+    <xs:element name="SV-Personenbindung" type="xs:hexBinary"/>
+    
+    <xs:complexType name="ScriptType">
+        <xs:annotation>
+            <xs:documentation>extends abstract stal:RequestType</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="stal:RequestType">
+                <xs:annotation>
+                    <xs:documentation>Contains the script to be executed by the BKU</xs:documentation>
+                </xs:annotation>
+                <xs:choice maxOccurs="unbounded" minOccurs="1">
+                    <xs:element name="Reset" type="tns:ResetType"/>
+                    <xs:element name="CommandAPDU" type="tns:CommandAPDUType"/>
+                    <xs:element name="VerifyAPDU" type="tns:VerifyAPDUType"/>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="ResponseType">
+        <xs:annotation>
+            <xs:documentation>extends abstract stal:ResponseType</xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="stal:ResponseType">
+                <xs:annotation>
+                    <xs:documentation>Contains the result of the script executed by the
+                        BKU</xs:documentation>
+                </xs:annotation>
+                <xs:choice maxOccurs="unbounded" minOccurs="1">
+                    <xs:element name="ATR" type="tns:ATRType"/>
+                    <xs:element name="ResponseAPDU" type="tns:ResponseAPDUType"/>
+                </xs:choice>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="ResetType">
+        <xs:annotation>
+            <xs:documentation>Reset the icc and sequence counter</xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="cold" type="xs:boolean" default="true"/>
+    </xs:complexType>
+    
+    <xs:complexType name="CommandAPDUType">
+        <xs:annotation>
+            <xs:documentation>Contains a sequence of bytes send as command APDU to the
+                icc</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="xs:hexBinary">
+                <xs:attribute name="sequence" type="xs:positiveInteger" use="required"/>
+                <xs:attribute name="of" type="xs:positiveInteger" use="required"/>
+                <xs:attribute name="expectedSW" type="xs:hexBinary"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    
+    <xs:complexType name="VerifyAPDUType">
+        <xs:annotation>
+            <xs:documentation>Contains a sequence of bytes send as command APDU to the icc after a
+                PIN entered by the user has been incorporated into the APDU</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="xs:hexBinary">
+                <xs:attribute name="sequence" type="xs:positiveInteger" use="required"/>
+                <xs:attribute name="of" type="xs:positiveInteger" use="required"/>
+                <xs:attribute name="expectedSW" type="xs:hexBinary"/>
+                <xs:attribute name="message" type="xs:string" use="required"/>
+                <xs:attribute name="format" type="xs:hexBinary" use="required"/>
+                <xs:attribute name="offset" type="xs:nonNegativeInteger" use="required"/>
+                <xs:attribute name="timeout" type="xs:nonNegativeInteger" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    
+    <xs:complexType name="ATRType">
+        <xs:annotation>
+            <xs:documentation>Contains the ATR received as reponse to a Reset
+                command</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="xs:hexBinary">
+                <xs:attribute name="rc" type="xs:integer" default="0"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    
+    <xs:complexType name="ResponseAPDUType">
+        <xs:annotation>
+            <xs:documentation>Contains a sequence of bytes received from the card as response
+                APDU</xs:documentation>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="xs:hexBinary">
+                <xs:attribute name="sequence" type="xs:positiveInteger" use="required"/>
+                <xs:attribute name="rc" type="xs:integer" default="0"/>
+                <xs:attribute name="SW" type="xs:hexBinary" default="9000"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    
+    <xs:complexType name="AttributeList">
+        <xs:annotation>
+            <xs:documentation>Contains a list of attributes</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Attribute" type="tns:AttributeType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="AttributeType">
+        <xs:annotation>
+            <xs:documentation>Contains an attribute converted from ASN.1</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="Integer" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Latin1String" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="UTF8String" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="NumericString" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="PrintableString" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="GeneralizedTime" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Date" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="oid" type="xs:string" use="required"/>
+    </xs:complexType>
+    
+</xs:schema>

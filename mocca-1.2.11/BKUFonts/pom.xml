@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>bku</artifactId>
+    <groupId>at.gv.egiz</groupId>
+    <version>1.2.11</version>
+  </parent>
+  <groupId>at.gv.egiz</groupId>
+  <artifactId>BKUFonts</artifactId>
+  <version>1.2</version>
+  <name>BKU Fonts</name>
+  <description>
+    This module is used in validator(s) and viewer and is a direct dependency of
+      - BKUViewer (attention, this is the validator!)
+        TextValidator depends on the fonts. (compile scope, make available for BKULocal/Online TextValidator)
+        (TextValidator should rather use a FontProvider)
+      - BKUOnline:
+          - direct/provided if jar inclusion in applet dir, but do not enforce inclusion as WEB-INF/lib
+          - transitive from BKUViewer if unpack-fonts to applet dir
+      - removed the BKUCommonGUI (runtime; propagate dependency to BKUApplet):
+          no real dependency: BKUCommonGUI contains SecureFontProvider interface only
+          (which does not state how fonts are loaded); implementations should depend no BKUFonts
+          (ResourceFontLoader in BKULocal depends on the fonts, however URLFontLoader in BKUApplet doesn't.
+          BKUOnline however depends on BKUFonts for providing the fonts as web-resource for the applet)
+
+
+    at.gv.egiz.bku.text.TextValidator and xxx.LocalFontProvider load fonts from classpath,
+    resource name must be known, TODO: encapsulate resource loading (FontProvider constants?)
+
+    at.gv.egiz.bku.online.applet.URLFontLoader loads (unpacked) font files from applet codebase, 
+    resource names _must_ be known since applet has no BKUFonts dependency
+
+  </description>
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/fonts</directory>
+      </resource>
+    </resources>
+  </build>
+</project>

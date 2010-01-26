@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified"
+           xmlns:xh11d="http://www.w3.org/1999/xhtml/datatypes/">
+
+  <xs:import namespace="http://www.w3.org/1999/xhtml/datatypes/" 
+             schemaLocation="xhtml-datatypes-1.xsd" />
+  <xs:annotation>
+    <xs:documentation>
+      This XML Schema declares changes to the content models
+      of modules included in SLXHTML 1.2
+    </xs:documentation>
+    <xs:documentation source="xhtml-copyright-1.xsd"/>
+  </xs:annotation>
+
+  <xs:annotation>
+    <xs:documentation>
+      Module Content Model Redefinitions 
+      
+      This schema describes the changes (Redefinitions) to the
+      content model of individual modules as they are instantiated as part of 
+      SLXHTML 1.2 Document
+    </xs:documentation>
+  </xs:annotation>
+
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <!-- Changes to common attributes module -->
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+  <xs:include schemaLocation="xhtml-attribs-1.xsd"/>
+
+  <!-- WORKAROUND to [#422] Get rid of Xerces 2.9.1 dependency (SLXHTML validation)
+   |
+  <xs:redefine schemaLocation="xhtml-attribs-1.xsd">
+    
+    <xs:attributeGroup name="xhtml.I18n.attrib">
+      <xs:annotation>
+        <xs:documentation>
+          Redefinition by SLXHTML 1.2: Removed xml:lang attrib.
+        </xs:documentation>
+      </xs:annotation>         
+        <xs:attributeGroup ref="xhtml.I18n.extra.attrib"/>
+      </xs:attributeGroup>
+
+    <xs:attributeGroup name="xhtml.title">
+      <xs:annotation>
+        <xs:documentation>
+          Redefinition by SLXHTML 1.2: Removed title attrib.
+        </xs:documentation>
+      </xs:annotation>         
+    </xs:attributeGroup>
+
+  </xs:redefine>
+   |-->
+
+  <xs:include schemaLocation="xhtml-framework-1.xsd"/>  
+
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <!-- Changes to block phrasal elements module -->
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+  <xs:include schemaLocation="xhtml-blkphras-1.xsd"/>
+
+  <!-- WORKAROUND to [#422] Get rid of Xerces 2.9.1 dependency (SLXHTML validation)
+   |   xercesImpl < 2.9.1 cannot handle redefinition here while schema is included elsewhere without redefinition
+   |
+  <xs:redefine schemaLocation="xhtml-blkphras-1.xsd">
+    
+    <xs:attributeGroup name="xhtml.blockquote.attlist">
+      <xs:annotation>
+        <xs:documentation>
+          Redefinition by SLXHTML 1.2: Removed cite attrib.
+        </xs:documentation>
+      </xs:annotation>         
+      <xs:attributeGroup ref="xhtml.Common.attrib"/>
+    </xs:attributeGroup>
+    
+  </xs:redefine>  
+   |-->
+   
+  <xs:include schemaLocation="xhtml-text-1.xsd"/>
+
+  <xs:include schemaLocation="xhtml-list-1.xsd"/>
+
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <!-- Changes to Structural Module -->
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+  <xs:redefine schemaLocation="xhtml-struct-1.xsd">
+    
+    <xs:attributeGroup name="xhtml.version.attrib">
+      <xs:annotation>
+        <xs:documentation>
+          Redefinition by SLXHTML 1.2: Change value of the version attrib.
+        </xs:documentation>
+      </xs:annotation>         
+      <xs:attribute name="version" type="xh11d:CDATA" fixed="-//www.buergerkarte.at//DOCUMENT SLXHTML 1.2//DE"/>
+    </xs:attributeGroup>
+    
+    <xs:attributeGroup name="xhtml.profile.attrib">
+      <xs:annotation>
+        <xs:documentation>
+          Redefinition by SLXHTML 1.2: Removed profile attrib.
+        </xs:documentation>
+      </xs:annotation>         
+    </xs:attributeGroup>
+  </xs:redefine>  
+  
+  <xs:include schemaLocation="xhtml-pres-1.xsd"/>
+
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <!-- Changes to images module -->
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  
+  <xs:redefine schemaLocation="xhtml-image-1.xsd">
+    
+    <xs:attributeGroup name="xhtml.img.attlist">
+      <xs:annotation>
+        <xs:documentation>
+          Redefinition by SLXHTML 1.2: Removed attributes "longdesc", "height", "width".
+        </xs:documentation>
+      </xs:annotation>         
+      <xs:attributeGroup ref="xhtml.Common.attrib"/>
+      <xs:attribute name="src" type="xh11d:URI" use="required"/>
+      <xs:attribute name="alt" type="xh11d:Text" use="required"/>
+    </xs:attributeGroup>
+    
+  </xs:redefine>  
+  
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <!-- Changes to style module -->
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  
+  <xs:redefine schemaLocation="xhtml-style-1.xsd">
+    
+    <xs:attributeGroup name="xhtml.style.attlist">
+      <xs:annotation>
+        <xs:documentation>
+          Redefinition by SLXHTML 1.2: 
+          Removed attribute group "title"
+          Removed attribute "xml:space"
+          Fixed value of attribute "type"
+          Fixed value of attribute "media"
+        </xs:documentation>
+      </xs:annotation>         
+      <xs:attributeGroup ref="xhtml.I18n.attrib"/>
+      <xs:attribute name="type" type="xh11d:ContentType" use="required" fixed="text/css"/>
+      <xs:attribute name="media" type="xh11d:MediaDesc" fixed="screen"/>
+    </xs:attributeGroup>
+    
+  </xs:redefine>
+
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  <!-- Changes to table module -->
+  <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+  
+  <xs:redefine schemaLocation="xhtml-table-1.xsd">
+    
+    <xs:attributeGroup name="xhtml.td.attlist">
+      <xs:annotation>
+        <xs:documentation>
+          Redefinition by SLXHTML 1.2: 
+          Removed attribute groups "scope.attrib", "CellHAlign.attrib", "CellVAlign.attrib"
+          Removed attributes "abbr", "axis", "headers"
+        </xs:documentation>
+      </xs:annotation>         
+      <xs:attributeGroup ref="xhtml.Common.attrib"/>
+      <xs:attribute name="rowspan" type="xh11d:Number" default="1"/>
+      <xs:attribute name="colspan" type="xh11d:Number" default="1"/>
+    </xs:attributeGroup>
+    
+    <xs:attributeGroup name="xhtml.th.attlist">
+      <xs:annotation>
+        <xs:documentation>
+          Redefinition by SLXHTML 1.2: 
+          Removed attribute groups "scope.attrib", "CellHAlign.attrib", "CellVAlign.attrib"
+          Removed attributes "abbr", "axis", "headers"
+        </xs:documentation>
+      </xs:annotation>
+      <xs:attributeGroup ref="xhtml.Common.attrib"/>
+      <xs:attribute name="rowspan" type="xh11d:Number" default="1"/>
+      <xs:attribute name="colspan" type="xh11d:Number" default="1"/>
+    </xs:attributeGroup>
+    
+    <xs:attributeGroup name="xhtml.tr.attlist">
+      <xs:annotation>
+        <xs:documentation>
+          Redefinition by SLXHTML 1.2: 
+          Removed attribute groups "CellHAlign.attrib", "CellVAlign.attrib"
+        </xs:documentation>
+      </xs:annotation>
+      <xs:attributeGroup ref="xhtml.Common.attrib"/>
+    </xs:attributeGroup>
+    
+    <xs:attributeGroup name="xhtml.col.attlist">
+      <xs:annotation>
+        <xs:documentation>
+          Redefinition by SLXHTML 1.2: 
+          Removed attribute groups "CellHAlign.attrib", "CellVAlign.attrib"
+          Removed attributes "span", "width"
+        </xs:documentation>
+      </xs:annotation>
+      <xs:attributeGroup ref="xhtml.Common.attrib"/>
+    </xs:attributeGroup>
+    
+    <xs:attributeGroup name="xhtml.colgroup.attlist">
+      <xs:annotation>
+        <xs:documentation>
+          Redefinition by SLXHTML 1.2: 
+          Removed attribute groups "CellHAlign.attrib", "CellVAlign.attrib"
+          Removed attributes "span", "width"
+        </xs:documentation>
+      </xs:annotation>
+      <xs:attributeGroup ref="xhtml.Common.attrib"/>
+    </xs:attributeGroup>
+    
+    <xs:attributeGroup name="xhtml.tbody.attlist">
+      <xs:annotation>
+        <xs:documentation>
+          Redefinition by SLXHTML 1.2: 
+          Removed attribute groups "CellHAlign.attrib", "CellVAlign.attrib"
+        </xs:documentation>
+      </xs:annotation>
+      <xs:attributeGroup ref="xhtml.Common.attrib"/>
+    </xs:attributeGroup>
+    
+    <xs:attributeGroup name="xhtml.tfoot.attlist">
+      <xs:annotation>
+        <xs:documentation>
+          Redefinition by SLXHTML 1.2: 
+          Removed attribute groups "CellHAlign.attrib", "CellVAlign.attrib"
+        </xs:documentation>
+      </xs:annotation>
+      <xs:attributeGroup ref="xhtml.Common.attrib"/>
+    </xs:attributeGroup>
+    
+    <xs:attributeGroup name="xhtml.thead.attlist">
+      <xs:annotation>
+        <xs:documentation>
+          Redefinition by SLXHTML 1.2: 
+          Removed attribute groups "CellHAlign.attrib", "CellVAlign.attrib"
+        </xs:documentation>
+      </xs:annotation>
+      <xs:attributeGroup ref="xhtml.Common.attrib"/>
+    </xs:attributeGroup>
+    
+    <xs:attributeGroup name="xhtml.table.attlist">
+      <xs:annotation>
+        <xs:documentation>
+          Redefinition by SLXHTML 1.2: 
+          Removed attribute groups "frame.attrib", "rules.attrib" 
+          Removed attributes "summary", "width", "border", "cellspacing", "cellpadding" 
+        </xs:documentation>
+      </xs:annotation>
+      <xs:attributeGroup ref="xhtml.Common.attrib"/>
+    </xs:attributeGroup>
+  </xs:redefine>
+
+</xs:schema>
