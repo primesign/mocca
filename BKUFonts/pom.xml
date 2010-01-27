@@ -3,7 +3,7 @@
   <parent>
     <artifactId>bku</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.2.11-sha2-SNAPSHOT</version>
+    <version>1.2.11-sha2_1</version>
   </parent>
   <groupId>at.gv.egiz</groupId>
   <artifactId>BKUFonts</artifactId>
