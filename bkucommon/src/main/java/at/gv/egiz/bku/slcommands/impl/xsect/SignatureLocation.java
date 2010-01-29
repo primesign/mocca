@@ -29,7 +29,6 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import at.buergerkarte.namespaces.securitylayer._1.SignatureInfoCreationType;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
@@ -178,16 +177,7 @@ public class SignatureLocation {
    * @throws SLCommandException if the <code>n</code>-th child of <code>parent</code> does not exist
    */
   private Node findNextSibling(Node parent, int n) throws SLCommandException {
-    
-    NodeList childNodes = parent.getChildNodes();
-    Node childNode = childNodes.item(n);
-    if (childNode == null) {
-      log.info("SingatureLocation Index '" +  n + "' not found in document.");
-      throw new SLCommandException(4102);
-    } else {
-      return childNode.getNextSibling();
-    }
-    
+    return parent.getChildNodes().item(n);
   }
 
   /**
