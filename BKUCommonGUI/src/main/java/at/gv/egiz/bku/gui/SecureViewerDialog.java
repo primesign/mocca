@@ -75,6 +75,7 @@ public class SecureViewerDialog extends JDialog {
   static {
     SUPPORTED_MIME_TYPES.add("text/plain");
     SUPPORTED_MIME_TYPES.add("application/xhtml+xml");
+    SUPPORTED_MIME_TYPES.add("text/html");
   }
   protected static final Log log = LogFactory.getLog(SecureViewerDialog.class);
 //  private static SecureViewerDialog dialog;

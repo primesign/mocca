@@ -110,7 +110,8 @@ public class DataObject {
   private static final String[] DEFAULT_PREFFERED_MIME_TYPES = 
     new String[] {
       "text/plain",
-      "application/xhtml+xml" 
+      "application/xhtml+xml",
+      "text/html"
     };
   
   /**
