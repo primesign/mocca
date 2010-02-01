@@ -11,6 +11,7 @@ import iaik.pki.PKIException;
 import iaik.pki.PKIFactory;
 import iaik.pki.PKIModule;
 import iaik.pki.PKIProfile;
+import iaik.pki.revocation.RevocationSourceTypes;
 import iaik.pki.store.certstore.CertStoreParameters;
 import iaik.pki.store.certstore.directory.DefaultDirectoryCertStoreParameters;
 import iaik.pki.store.truststore.DefaultTrustStoreProfile;
@@ -84,6 +85,8 @@ public class CertValidatorImpl implements CertValidator {
         TrustStoreTypes.DIRECTORY, caDir.getAbsolutePath());
     profile = new DefaultPKIProfile(trustProfile);
     ((DefaultPKIProfile)profile).setAutoAddCertificates(true);
+    ((DefaultPKIProfile) profile).setPreferredServiceOrder(new String[] {
+        RevocationSourceTypes.OCSP, RevocationSourceTypes.CRL });
   }
 
   /* (non-Javadoc)
