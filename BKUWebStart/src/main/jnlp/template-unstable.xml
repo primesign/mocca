@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
- |   To strip versions from jar filenames do
- |   for JAR in *jar; do mv JAR {JAR/-[0-9]*/.jar}; done
- |-->
 <jnlp spec="$jnlpspec" codebase="http://localhost:8080/webstart/" context="http://localhost:8080/" href="$outputFile">
 
   <information>
