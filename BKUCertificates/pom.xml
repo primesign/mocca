@@ -8,8 +8,8 @@
   <groupId>at.gv.egiz</groupId>
   <artifactId>BKUCertificates</artifactId>
   <!-- DON'T CHANGE VERSION UNLESS THE INCLUDED CERTIFICATES CHANGED
-   |   DON'T MAKE -SNAPSHOT VERSIONS HERE, THE RELEASE-PLUGIN WILL THEN TRY TO UPDATE 
    |   PLEASE COMMIT CHANGES to src/main/changes/changes.txt
+   |   and don't forget to update depending modules (BKUOnline, BKUWebstart)
    |-->
   <version>1.2-SNAPSHOT</version>
   <name>BKU Certificates</name>

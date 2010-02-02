@@ -230,7 +230,7 @@
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUCertificates</artifactId>
-      <version>1.1</version>
+      <version>1.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>iaik</groupId>
