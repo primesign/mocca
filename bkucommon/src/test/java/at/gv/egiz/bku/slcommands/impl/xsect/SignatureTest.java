@@ -79,6 +79,8 @@ import at.gv.egiz.dom.DOMUtils;
 import at.gv.egiz.slbinding.RedirectEventFilter;
 import at.gv.egiz.slbinding.RedirectUnmarshallerListener;
 import org.junit.Ignore;
+import org.w3c.dom.NodeList;
+import static org.junit.Assert.*;
 
 public class SignatureTest {
 
@@ -271,7 +273,7 @@ public class SignatureTest {
     assertNotNull(nextSibling);
     assertTrue("urn:document".equals(nextSibling.getNamespaceURI()));
     assertTrue("Paragraph".equals(nextSibling.getLocalName()));
-    
+
   }
 
   @Test
@@ -311,7 +313,7 @@ public class SignatureTest {
     
     assertNotNull(nextSibling);
     assertTrue("Paragraph".equals(nextSibling.getLocalName()));
-    
+
   }
 
   @Test
@@ -325,13 +327,13 @@ public class SignatureTest {
     
     Node parent = signature.getParent();
     Node nextSibling = signature.getNextSibling();
-    
+
     assertNotNull(parent);
     assertTrue("urn:document".equals(parent.getNamespaceURI()));
     assertTrue("Whole".equals(parent.getLocalName()));
-    
+
     assertNull(nextSibling);
-    
+
   }
 
   @Test

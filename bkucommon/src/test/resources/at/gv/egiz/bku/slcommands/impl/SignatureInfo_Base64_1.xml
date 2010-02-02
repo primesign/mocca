@@ -18,6 +18,6 @@ cnN0ZSBBYnNhdHogaW4gZGllc2VtIERva3VtZW50LjwvZG9jOlBhcmFncmFwaD4NCiAgPGRvYzpQ
 YXJhZ3JhcGg+VW5kIGljaCBiaW4gZGVyIHp3ZWl0ZSBBYnNhdHogaW4gZGllc2VtIERva3VtZW50
 LjwvZG9jOlBhcmFncmFwaD4NCjwvZG9jOlhNTERvY3VtZW50Pg0K</sl:Base64Content>
     </sl:SignatureEnvironment>
-    <sl:SignatureLocation xmlns:doc="urn:document" Index="2">/doc:XMLDocument</sl:SignatureLocation>
+    <sl:SignatureLocation xmlns:doc="urn:document" Index="1">/doc:XMLDocument</sl:SignatureLocation>
   </sl:SignatureInfo>
 </sl:CreateXMLSignatureRequest>

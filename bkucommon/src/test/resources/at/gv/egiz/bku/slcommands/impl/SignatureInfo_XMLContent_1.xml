@@ -8,6 +8,6 @@
         </doc:Whole>
       </sl:XMLContent>
     </sl:SignatureEnvironment>
-    <sl:SignatureLocation xmlns:doc="urn:document" Index="4">/doc:Whole</sl:SignatureLocation>
+    <sl:SignatureLocation xmlns:doc="urn:document" Index="5">/doc:Whole</sl:SignatureLocation>
   </sl:SignatureInfo>
 </sl:CreateXMLSignatureRequest>
