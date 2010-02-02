@@ -2,24 +2,24 @@
   <parent>
     <artifactId>bku</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.2.12-SNAPSHOT</version>
+    <version>1.2.12</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>at.gv.egiz</groupId>
   <artifactId>STALXService</artifactId>
   <name>STAL-X Service</name>
-  <version>1.2.12-SNAPSHOT</version>
+  <version>1.2.12</version>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
       <artifactId>STALService</artifactId>
       <groupId>at.gv.egiz</groupId>
-      <version>1.2.12-SNAPSHOT</version>
+      <version>1.2.12</version>
     </dependency>
     <dependency>
       <artifactId>STALExt</artifactId>
       <groupId>at.gv.egiz</groupId>
-      <version>1.2.12-SNAPSHOT</version>
+      <version>1.2.12</version>
     </dependency>
   </dependencies>
 </project>
