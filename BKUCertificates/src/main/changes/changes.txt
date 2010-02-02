@@ -1,0 +1,52 @@
+
+BKUCertificates-1.2
+-------------------
+
+*         ... newly added
+!         ... removed
+(TRUSTED) ... also included in truststore
+
+
+[...]
+
+a-cert-advanced.cer (TRUSTED)
+Serial Number: 0 (0x0)
+Issuer:  C=AT, ST=Austria, L=Vienna, O=ARGE DATEN - Austrian Society for Data Protection, OU=A-CERT Certification Service, CN=A-CERT ADVANCED/emailAddress=info@a-cert.at
+Subject: C=AT, ST=Austria, L=Vienna, O=ARGE DATEN - Austrian Society for Data Protection, OU=A-CERT Certification Service, CN=A-CERT ADVANCED/emailAddress=info@a-cert.at
+Not Before: Oct 23 14:14:14 2004 GMT
+Not After : Oct 23 14:14:14 2011 GMT
+
+a-cert-government.cer
+Serial Number: 368 (0x170)
+Issuer:  C=AT, ST=Austria, L=Vienna, O=ARGE DATEN - Austrian Society for Data Protection, OU=A-CERT Certification Service, CN=A-CERT ADVANCED/emailAddress=info@a-cert.at
+Subject: C=AT, ST=Wien, L=Wien, O=ARGE DATEN - \xC3\x96sterreichische Gesellschaft f\xC3\xBCr Datenschutz, CN=A-CERT GOVERNMENT/emailAddress=a-cert@a-cert.at
+Not Before: Oct  1 00:00:00 2005 GMT
+Not After : Oct 23 00:00:00 2011 GMT
+
+A-CERT GLOBALTRUST.cer
+Serial Number: 249 (0xf9)
+Issuer:  C=AT, ST=Austria, L=Vienna, O=ARGE DATEN - Austrian Society for Data Protection, OU=A-CERT Certification Service, CN=A-CERT ADVANCED/emailAddress=info@a-cert.at
+Subject: C=AT, ST=-, L=Vienna, O=ARGE DATEN - Austrian Society for Data Protection and Privacy, CN=A-CERT GLOBALTRUST/emailAddress=info@a-cert.at
+Not Before: Sep 22 00:00:00 2005 GMT
+Not After : Oct 23 00:00:00 2011 GMT
+
+*globaltrust2006.cer (TRUSTED)
+Serial Number: 0 (0x0)
+Issuer:  C=AT, L=Vienna, ST=Austria, O=ARGE DATEN - Austrian Society for Data Protection, OU=GLOBALTRUST Certification Service, CN=GLOBALTRUST/emailAddress=info@globaltrust.info
+Subject: C=AT, L=Vienna, ST=Austria, O=ARGE DATEN - Austrian Society for Data Protection, OU=GLOBALTRUST Certification Service, CN=GLOBALTRUST/emailAddress=info@globaltrust.info
+Not Before: Aug  7 14:12:35 2006 GMT
+Not After : Sep 18 14:12:35 2036 GMT
+
+*a-cert-servercert.cer
+Serial Number: 16 (0x10)
+Issuer:  C=AT, L=Vienna, ST=Austria, O=ARGE DATEN - Austrian Society for Data Protection, OU=GLOBALTRUST Certification Service, CN=GLOBALTRUST/emailAddress=info@globaltrust.info
+Subject: C=AT, L=Wien, O=e-commerce monitoring GmbH, CN=A-CERT SERVERCERT Class 3/emailAddress=info@globaltrust.eu
+Not Before: Jun 15 00:00:00 2009 GMT
+Not After : Sep 18 00:00:00 2036 GMT
+
+*a-cert-government-3.cer
+Serial Number: 14 (0xe)
+Issuer:  C=AT, L=Vienna, ST=Austria, O=ARGE DATEN - Austrian Society for Data Protection, OU=GLOBALTRUST Certification Service, CN=GLOBALTRUST/emailAddress=info@globaltrust.info
+Subject: C=AT, ST=Wien, L=Wien, O=ARGE DATEN - \xC3\x96sterreichische Gesellschaft f\xC3\xBCr Datenschutz, CN=A-CERT GOVERNMENT/emailAddress=info@globaltrust.eu
+Not Before: May  5 00:00:00 2009 GMT
+Not After : Sep 18 00:00:00 2036 GMT

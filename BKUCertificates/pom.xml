@@ -8,8 +8,10 @@
   <groupId>at.gv.egiz</groupId>
   <artifactId>BKUCertificates</artifactId>
   <!-- DON'T CHANGE VERSION UNLESS THE INCLUDED CERTIFICATES CHANGED
-   |   DON'T MAKE -SNAPSHOT VERSIONS HERE, THE RELEASE-PLUGIN WILL THEN TRY TO UPDATE -->
-  <version>1.1</version>
+   |   DON'T MAKE -SNAPSHOT VERSIONS HERE, THE RELEASE-PLUGIN WILL THEN TRY TO UPDATE 
+   |   PLEASE COMMIT CHANGES to src/main/changes/changes.txt
+   |-->
+  <version>1.2-SNAPSHOT</version>
   <name>BKU Certificates</name>
 
   <build>
