@@ -12,9 +12,9 @@
 	<version>1.2.12</version>
 
 	<scm>
-		<developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/branches/pinguin/BKULocal</developerConnection>
-		<connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/branches/pinguin/BKULocal</connection>
-		<url>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/branches/pinguin/BKULocal</url>
+		<developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.12/BKULocal</developerConnection>
+		<connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.12/BKULocal</connection>
+		<url>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.12/BKULocal</url>
 	</scm>
   <build>
     <plugins>
