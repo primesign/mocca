@@ -2,14 +2,14 @@
   <parent>
     <artifactId>bku</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.2.12-pinguin-1-SNAPSHOT</version>
+    <version>1.2.12</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>at.gv.egiz</groupId>
   <artifactId>BKUWebStart</artifactId>
   <packaging>jar</packaging>
   <name>BKU Web Start</name>
-  <version>1.2.12-pinguin-1-SNAPSHOT</version>
+  <version>1.2.12</version>
   <url>http://mocca.egovlabs.gv.at/</url>
   <description>Bürgerkartenumgebung</description>
   
