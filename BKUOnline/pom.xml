@@ -143,9 +143,9 @@
 
   </dependencies>
   <scm>
-    <developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.12/BKUOnline</developerConnection>
-    <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.12/BKUOnline</connection>
-    <url>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/tags/mocca-1.2.12/BKUOnline</url>
+    <developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/branches/pinguin/BKUOnline</developerConnection>
+    <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/branches/pinguin/BKUOnline</connection>
+    <url>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/branches/pinguin/BKUOnline</url>
   </scm>
   <build>
     <plugins>
