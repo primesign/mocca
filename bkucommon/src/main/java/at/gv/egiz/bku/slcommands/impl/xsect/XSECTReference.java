@@ -83,7 +83,12 @@ public class XSECTReference extends ReferenceImpl {
   public Data dereference(XMLCryptoContext context) throws TransformException,
       URIReferenceException {
     if (dereferencer != null) {
-      return dereferencer.dereference(this, context);
+      Data result = dereferencer.dereference(this, context);
+       // apply transforms if any
+      if (transforms_ != null) {
+        result = transforms_.applyTransforms(context, result);
+      }
+      return result;
     } else {
       try {
         return super.dereference(context);
