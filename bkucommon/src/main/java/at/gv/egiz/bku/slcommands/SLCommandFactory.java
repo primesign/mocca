@@ -169,13 +169,19 @@ public class SLCommandFactory {
     private synchronized void ensureJaxbContext() {
         if (jaxbContext == null) {
             try {
+                // add top-level types explicitly to jaxb context, otherwise the unmarshaller won't find them.
+                // cf. http://forums.java.net/jive/thread.jspa?threadID=75778&tstart=0
+                String slImplPkg = at.gv.egiz.slbinding.impl.CreateXMLSignatureResponseType.class.getPackage().getName();
+
                 String slPkg = at.buergerkarte.namespaces.securitylayer._1.ObjectFactory.class.getPackage().getName();
                 String xmldsigPkg = org.w3._2000._09.xmldsig_.ObjectFactory.class.getPackage().getName();
                 String cardChannelPkg = at.buergerkarte.namespaces.cardchannel.ObjectFactory.class.getPackage().getName();
                 String slPkgLegacy1_0 = at.buergerkarte.namespaces.securitylayer._20020225_.ObjectFactory.class.getPackage().getName();
                 String slPkgLegacy1_1 = at.buergerkarte.namespaces.securitylayer._20020831_.ObjectFactory.class.getPackage().getName();
-                setJaxbContext(JAXBContext.newInstance(slPkg + ":" + xmldsigPkg + ":" + cardChannelPkg 
-                    + ":" + slPkgLegacy1_0 + ":" + slPkgLegacy1_1));
+                String contextPath = slImplPkg + ":" + slPkg + ":" + xmldsigPkg + ":" + cardChannelPkg
+                    + ":" + slPkgLegacy1_0 + ":" + slPkgLegacy1_1;
+                log.debug("jaxb context path: " + contextPath);
+                setJaxbContext(JAXBContext.newInstance(contextPath));
             } catch (JAXBException e) {
                 log.error("Failed to setup JAXBContext security layer request.", e);
                 throw new SLRuntimeException(e);
@@ -378,7 +384,7 @@ public class SLCommandFactory {
         SLCommand slCommand;
         try {
             slCommand = implClass.newInstance();
-            log.debug("SLCommand " + slCommand.getName() + " created.");
+            log.debug("SLCommand " + slCommand.getClass().toString() + " created.");
         } catch (InstantiationException e) {
             // unexpected error
             log.error("Failed to instantiate security layer command implementation.",
