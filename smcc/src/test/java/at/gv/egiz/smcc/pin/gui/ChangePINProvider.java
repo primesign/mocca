@@ -17,7 +17,7 @@
 package at.gv.egiz.smcc.pin.gui;
 
 import at.gv.egiz.smcc.CancelledException;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 
 public class ChangePINProvider extends DummyChangePINGUI implements ModifyPINGUI {
 
@@ -35,14 +35,14 @@ public class ChangePINProvider extends DummyChangePINGUI implements ModifyPINGUI
   }
 
   @Override
-  public char[] provideCurrentPIN(PINSpec spec, int retries)
+  public char[] provideCurrentPIN(PinInfo spec, int retries)
           throws CancelledException, InterruptedException {
     provided++;
     return oldPin;
   }
 
   @Override
-  public char[] provideNewPIN(PINSpec spec) {
+  public char[] provideNewPIN(PinInfo spec) {
     return pin;
   }
 

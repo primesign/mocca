@@ -22,10 +22,14 @@ public interface SLCommand {
   
   public final String NAMESPACE_URI = "http://www.buergerkarte.at/namespaces/securitylayer/1.2#";
   
+  public final String NAMESPACE_URI_20020225 = "http://www.buergerkarte.at/namespaces/securitylayer/20020225#";
+  
+  public final String NAMESPACE_URI_20020831 = "http://www.buergerkarte.at/namespaces/securitylayer/20020831#";
+  
   public String getName();
 
-  public void init(SLCommandContext aCtx, Object aUnmarshalledRequest) throws SLCommandException;
+  public void init(Object aUnmarshalledRequest) throws SLCommandException;
 
-  public SLResult execute();
+  public SLResult execute(SLCommandContext commandContext);
 
 }

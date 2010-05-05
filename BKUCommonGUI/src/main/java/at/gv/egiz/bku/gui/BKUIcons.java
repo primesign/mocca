@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,24 +31,23 @@ import org.apache.commons.logging.LogFactory;
  */
 public class BKUIcons {
 
-  protected static final Log log = LogFactory.getLog(BKUIcons.class);
-
-  /** 16x16, 24x24, 32x32, 48x48, 128x128 pixels */
+  /** 128x128, 48x48, 32x32, 24x24, 16x16 pixels */
   public static final ArrayList<Image> icons = new ArrayList<Image>();
 
   static {
     String[] iconResources = new String[] {
-      "/at/gv/egiz/bku/gui/chip16.png",
-      "/at/gv/egiz/bku/gui/chip24.png",
-      "/at/gv/egiz/bku/gui/chip32.png",
+      "/at/gv/egiz/bku/gui/chip128.png",
       "/at/gv/egiz/bku/gui/chip48.png",
-      "/at/gv/egiz/bku/gui/chip128.png" };
+      "/at/gv/egiz/bku/gui/chip32.png",
+      "/at/gv/egiz/bku/gui/chip24.png",
+      "/at/gv/egiz/bku/gui/chip16.png"};
     for (String ir : iconResources) {
       URL resource = BKUIcons.class.getResource(ir);
       if (ir != null) {
         try {
           icons.add(ImageIO.read(resource));
         } catch (IOException ex) {
+          Logger log = LoggerFactory.getLogger(BKUIcons.class);
           log.warn("failed to load mocca icon " + ir, ex);
         }
       }

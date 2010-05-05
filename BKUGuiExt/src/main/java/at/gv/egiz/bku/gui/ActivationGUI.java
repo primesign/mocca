@@ -30,18 +30,23 @@ import javax.swing.JProgressBar;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingUtilities;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  *
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class ActivationGUI extends CardMgmtGUI implements ActivationGUIFacade {
-
+  
   public static final String TITLE_ACTIVATION = "title.activation";
   public static final String LABEL_ACTIVATION = "label.activation";
   public static final String LABEL_ACTIVATION_STEP = "label.activation.step";
   public static final String LABEL_ACTIVATION_IDLE = "label.activation.idle";
 
   public static final String HELP_ACTIVATION = "help.activation";
+
+  private final Logger log = LoggerFactory.getLogger(ActivationGUI.class);
   
   protected JProgressBar progressBar;
   
@@ -50,7 +55,7 @@ public class ActivationGUI extends CardMgmtGUI implements ActivationGUIFacade {
           Style guiStyle,
           URL backgroundImgURL,
           FontProvider fontProvider,
-          AbstractHelpListener helpListener,
+          HelpListener helpListener,
           SwitchFocusListener switchFocusListener) {
     super(contentPane, locale, guiStyle, backgroundImgURL, fontProvider, helpListener, switchFocusListener);
 
@@ -60,14 +65,14 @@ public class ActivationGUI extends CardMgmtGUI implements ActivationGUIFacade {
   @Override
   public void showActivationProgressDialog(final int currentStep, final int maxProgress, final ActionListener cancelListener, final String cancelCommand) {
 
-    log.debug("scheduling activation progress dialog (step " + currentStep + ")");
+    log.debug("Scheduling activation progress dialog (step {}).", currentStep);
 
     SwingUtilities.invokeLater(new Runnable() {
       
       @Override
       public void run() {
 
-        log.debug("show activation progress dialog (step " + currentStep + ")");
+        log.debug("Show activation progress dialog (step {}).", currentStep);
 
         mainPanel.removeAll();
         buttonPanel.removeAll();
@@ -85,7 +90,7 @@ public class ActivationGUI extends CardMgmtGUI implements ActivationGUIFacade {
           infoLabel.setText(cardmgmtMessages.getString(TITLE_ACTIVATION));
         }
 
-        helpMouseListener.setHelpTopic(HELP_ACTIVATION);
+        helpListener.setHelpTopic(HELP_ACTIVATION);
 
         progressBar.setIndeterminate(false);
         progressBar.setStringPainted(true);
@@ -163,14 +168,14 @@ public class ActivationGUI extends CardMgmtGUI implements ActivationGUIFacade {
 
   @Override
   public void showIdleDialog(final ActionListener cancelListener, final String cancelCommand) {
-    log.debug("scheduling idle dialog");
+    log.debug("Scheduling idle dialog.");
 
     SwingUtilities.invokeLater(new Runnable() {
 
       @Override
       public void run() {
 
-        log.debug("show idle dialog");
+        log.debug("Show idle dialog.");
 
         mainPanel.removeAll();
         buttonPanel.removeAll();
@@ -188,7 +193,7 @@ public class ActivationGUI extends CardMgmtGUI implements ActivationGUIFacade {
           infoLabel.setText(cardmgmtMessages.getString(TITLE_ACTIVATION));
         }
 
-        helpMouseListener.setHelpTopic(HELP_ACTIVATION);
+        helpListener.setHelpTopic(HELP_ACTIVATION);
 
         progressBar.setIndeterminate(true);
         progressBar.setStringPainted(true);

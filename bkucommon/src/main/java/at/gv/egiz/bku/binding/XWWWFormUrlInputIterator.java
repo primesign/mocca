@@ -274,6 +274,7 @@ public class XWWWFormUrlInputIterator implements Iterator<FormParameter> {
           pos = 0;
         }
         int c2 = Character.digit(buf[pos], 16);
+        pos++;
         return ((c1 << 4) | c2);
       } else {
         return buf[pos++];

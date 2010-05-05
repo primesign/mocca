@@ -83,6 +83,13 @@ public class SLException extends Exception {
     return localizedMessage;
     
   }
-  
+
+  /* (non-Javadoc)
+   * @see java.lang.Throwable#getMessage()
+   */
+  @Override
+  public String getMessage() {
+    return getLocalizedMessage();
+  }
 
 }

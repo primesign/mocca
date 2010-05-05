@@ -63,5 +63,23 @@ public class ErrorResultImpl extends SLResultImpl implements ErrorResult {
       writeErrorTo(slException, result, templates, locale, fragment);
     }
   }
+
+  @Override
+  public int getErrorCode() {
+    if (slException != null) {
+      return slException.getErrorCode();
+    } else {
+      return -1;
+    }
+  }
+
+  @Override
+  public String getInfo() {
+    if (slException != null) {
+      return slException.getLocalizedMessage(locale);
+    } else {
+      return null;
+    }
+  }
   
 }

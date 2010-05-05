@@ -19,26 +19,26 @@ package at.gv.egiz.smcc;
 import at.gv.egiz.smcc.pin.gui.ModifyPINGUI;
 
 import at.gv.egiz.smcc.pin.gui.PINGUI;
-import java.util.List;
 
 public interface PINMgmtSignatureCard extends SignatureCard {
 
-  public enum PIN_STATE {UNKNOWN, ACTIV, NOT_ACTIV, BLOCKED};
-  
-  public List<PINSpec> getPINSpecs();
+  /**
+   * PinInfo declares protected methods to be used from within card implementations.
+   * DO NOT REFACTOR CARD INTERFACE AND IMPLEMENTATIONS TO SEPARATE PACKAGES
+   * @throws SignatureCardException if the card is STARCOS G3 and not activated (G3 pin activation fails if card not active)
+   */
+  public PinInfo[] getPinInfos() throws SignatureCardException;
 
-  public PIN_STATE getPINState(PINSpec pinSpec) throws SignatureCardException;
-  
-  public void verifyPIN(PINSpec pinSpec, PINGUI pinGUI)
+  public void verifyPIN(PinInfo pinInfo, PINGUI pinGUI)
   throws LockedException, NotActivatedException, CancelledException, SignatureCardException, InterruptedException;
 
-  public void changePIN(PINSpec pinSpec, ModifyPINGUI changePINGUI)
+  public void changePIN(PinInfo pinInfo, ModifyPINGUI changePINGUI)
   throws LockedException, NotActivatedException, CancelledException, PINFormatException, SignatureCardException, InterruptedException;
 
-  public void activatePIN(PINSpec pinSpec, ModifyPINGUI activatePINGUI)
+  public void activatePIN(PinInfo pinInfo, ModifyPINGUI activatePINGUI)
   throws CancelledException, SignatureCardException, InterruptedException;
 
-  public void unblockPIN(PINSpec pinSpec, ModifyPINGUI pukGUI)
+  public void unblockPIN(PinInfo pinInfo, ModifyPINGUI pukGUI)
   throws CancelledException, SignatureCardException, InterruptedException;
 
 }

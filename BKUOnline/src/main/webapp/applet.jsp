@@ -79,14 +79,50 @@
 
     %>
     <body id="appletpage" style="width:<%=width%>px">
+
+
+	<div id="container" style="float: left; width: <%= width %>">
+		
+		  <form name="increaseform" action="javascript:increaseSize()" method="get">
+
+			<!-- increase font size image -->
+			<input type="image" src="img/inc.png" alt="Text vergrößern" width="13px" height="18px" style="float: left;" id="increase_image"/>
+
+		  </form>
+
+
+		  <form name="decreaseform" action="javascript:decreaseSize()" method="get">
+
+			<!-- decrease font size image -->
+			<input type="image" src="img/dec.png" alt="Text verkleinern" width="13px" height="18px" style="float: left;" id="decrease_image"/>		
+
+		  </form>
+		
+
+		
+		  <form name="helpform" action="help/index.html" method="get" target="_new"
+				onsubmit="this.action=document.moccaapplet.getHelpURL(); this.submit(); return false;">
+
+			<!-- invisible input -->
+			<input type="image" src="img/help.png" alt=" " width="0px" height="0px" style="float: left;" onFocus="focusToApplet()"/>
+
+			<!-- help image -->
+			<input type="image" src="img/help.png" alt="Hilfe" width="13px" height="18px" style="float: right;" id="helpimage"/>
+    	
+	  
+	  </form>
+	  
+	
+	  
       <script type="text/javascript">
+
         if (!deployJava.versionCheck('1.6.0_04+')) {
-          document.write('<p>Diese Anwendung benötigt Version 6 Update 4 oder höher der <a href="" onclick="deployJava.installLatestJRE();">Java&trade; Laufzeitumgebung</a>.</p>');
+          document.write('<p>Diese Anwendung benÃ¶tigt Version 6 Update 4 oder hÃ¶her der <a href="" onclick="deployJava.installLatestJRE();">Java&trade; Laufzeitumgebung</a>.</p>');
         } else {
           var attributes = {
             codebase :'<%=codebase%>',
             code : '<%=appletClass%>',
-            archive : '<%=appletArchive +".jar, commons-logging.jar, iaik_jce_me4se.jar"%>',
+            archive : '<%=appletArchive +".jar"%>',
             width : <%=width%>,
             height :<%=height%>,
             name : 'moccaapplet',
@@ -106,6 +142,98 @@
           };
           deployJava.runApplet(attributes, parameters, '1.6.0_04');
         }
+				
       </script>
+
+		
+
+	  </div>
+	  
     </body>
+    
+    <script>
+
+
+    
+		function focusToBrowser() {
+	
+			// put focus to window
+			// focus can be assigned to any focusable field on the embedding website
+			
+			//alert("Put focus to browser..");
+			//self.focus();
+			document.getElementById("helpimage").focus();
+	
+		}
+    
+		function focusToApplet() {
+			
+			//alert('try to set focus to applet');
+			if (document != null && document.moccaapplet != null) {
+	
+				//alert('set focus to applet.');
+				document.moccaapplet.getFocusFromBrowser();						
+				return true;					
+			}
+		}
+
+
+		function increaseSize() {
+
+			var appwidth = document.moccaapplet.width;
+			var appheight = document.moccaapplet.height;
+
+			document.moccaapplet.width = (appwidth * 1.2);
+	    	document.moccaapplet.height = (appheight * 1.2);
+			
+			document.getElementById("container").style.width = (appwidth * 1.2);
+			
+			// TODO: This does not work in firefox, seems that width and height attributes cannot be read
+			//       and set from input of type image
+			var image_width = document.getElementById("increase_image").width;
+			var image_height = document.getElementById("increase_image").height;
+
+
+			document.getElementById("helpimage").width = (image_width * 1.2);
+			document.getElementById("helpimage").height = (image_height * 1.2);
+
+			document.getElementById("increase_image").width = (image_width * 1.2);
+			document.getElementById("increase_image").height = (image_height * 1.2);
+
+			document.getElementById("decrease_image").width = (image_width * 1.2);
+			document.getElementById("decrease_image").height = (image_height * 1.2);
+
+
+		}
+
+		function decreaseSize() {
+
+			var appwidth = document.moccaapplet.width;
+			var appheight = document.moccaapplet.height;
+
+			document.moccaapplet.width = (appwidth * 0.8333333333333);
+	    	document.moccaapplet.height = (appheight * 0.8333333333333);
+
+			document.getElementById("container").style.width = (appwidth * 0.8333333333333);
+
+			// TODO: This does not work in firefox, seems that width and height attributes cannot be read
+			//       and set from input of type image
+			var image_width = document.getElementById("increase_image").width;
+			var image_height = document.getElementById("increase_image").height;
+
+
+			document.getElementById("helpimage").width = (image_width * 0.8333333333333);
+			document.getElementById("helpimage").height = (image_height * 0.8333333333333);
+
+			document.getElementById("increase_image").width = (image_width * 0.8333333333333);
+			document.getElementById("increase_image").height = (image_height * 0.8333333333333);
+
+			document.getElementById("decrease_image").width = (image_width * 0.8333333333333);
+			document.getElementById("decrease_image").height = (image_height * 0.8333333333333);
+
+
+		}
+
+    </script>
+    
 </html>

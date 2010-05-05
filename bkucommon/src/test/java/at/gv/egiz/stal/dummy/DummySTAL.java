@@ -27,10 +27,9 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Locale;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.InfoboxReadRequest;
@@ -43,7 +42,7 @@ import at.gv.egiz.stal.SignResponse;
 
 public class DummySTAL implements STAL { 
 
-  static Log log = LogFactory.getLog(DummySTAL.class);
+  private final Logger log = LoggerFactory.getLogger(DummySTAL.class);
 
   protected X509Certificate cert = null;
   protected PrivateKey privateKey = null;
@@ -66,7 +65,7 @@ public class DummySTAL implements STAL {
         }
       }
     } catch (Exception e) {
-      log.error(e);
+      log.error("Failed to create DummySTAL.", e);
     }
 
   }
@@ -113,7 +112,7 @@ public class DummySTAL implements STAL {
             infoboxReadResponse.setInfoboxValue(cert.getEncoded());
             response = infoboxReadResponse;
           } catch (CertificateEncodingException e) {
-            log.error(e);
+            log.error("Failed to encode certificate.", e);
             response = new ErrorResponse();
           }
         } else {
@@ -136,7 +135,7 @@ public class DummySTAL implements STAL {
           resp.setSignatureValue(sigVal);
           responses.add(resp);
         } catch (Exception e) {
-          log.error(e);
+          log.error("Failed to create signature.", e);
           responses.add(new ErrorResponse());
         }
 

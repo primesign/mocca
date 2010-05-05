@@ -16,5 +16,11 @@
 */
 package at.gv.egiz.bku.slcommands;
 
+
 public interface ErrorResult extends SLResult {
+  
+  public int getErrorCode();
+  
+  public String getInfo();
+  
 }

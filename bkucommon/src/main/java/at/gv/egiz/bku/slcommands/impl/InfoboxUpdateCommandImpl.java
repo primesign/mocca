@@ -16,8 +16,8 @@
 */
 package at.gv.egiz.bku.slcommands.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.buergerkarte.namespaces.securitylayer._1.InfoboxUpdateRequestType;
 import at.gv.egiz.bku.slcommands.InfoboxUpdateCommand;
@@ -28,7 +28,7 @@ import at.gv.egiz.bku.slexceptions.SLCommandException;
 public class InfoboxUpdateCommandImpl extends
     AbstractInfoboxCommandImpl<InfoboxUpdateRequestType> implements InfoboxUpdateCommand {
   
-  private static Log log = LogFactory.getLog(InfoboxUpdateCommandImpl.class);
+  private final Logger log = LoggerFactory.getLogger(InfoboxUpdateCommandImpl.class);
 
   @Override
   public String getName() {
@@ -41,8 +41,8 @@ public class InfoboxUpdateCommandImpl extends
   }
 
   @Override
-  public void init(SLCommandContext ctx, Object request) throws SLCommandException {
-    super.init(ctx, request);
+  public void init(Object request) throws SLCommandException {
+    super.init(request);
     
     InfoboxUpdateRequestType req = getRequestValue();
     
@@ -61,12 +61,12 @@ public class InfoboxUpdateCommandImpl extends
   }
 
   @Override
-  public SLResult execute() {
+  public SLResult execute(SLCommandContext commandContext) {
     
     try {
-      return infobox.update(getRequestValue(), getCmdCtx());
+      return infobox.update(getRequestValue(), commandContext);
     } catch (SLCommandException e) {
-      return new ErrorResultImpl(e, getCmdCtx().getLocale());
+      return new ErrorResultImpl(e, commandContext.getLocale());
     }
     
   }

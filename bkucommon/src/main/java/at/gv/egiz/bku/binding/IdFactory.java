@@ -19,8 +19,8 @@ package at.gv.egiz.bku.binding;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Creates or converts Ids for BindingProcessors.
@@ -29,9 +29,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public class IdFactory {
 
-  public static int DEFAULT_NUMBER_OF_BITS = 168;
+  private final Logger log = LoggerFactory.getLogger(IdFactory.class);
 
-  private static Log log = LogFactory.getLog(IdFactory.class);
+  public static int DEFAULT_NUMBER_OF_BITS = 168;
 
   private static IdFactory instance = new IdFactory();
 
@@ -42,7 +42,7 @@ public class IdFactory {
     try {
       random = SecureRandom.getInstance("SHA1PRNG");
     } catch (NoSuchAlgorithmException e) {
-      log.error("Cannot instantiate secure random" + e);
+      log.error("Cannot instantiate secure random.", e);
     }
   }
 

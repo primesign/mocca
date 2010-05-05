@@ -19,8 +19,6 @@ package at.gv.egiz.bku.gui;
 import at.gv.egiz.stal.HashDataInput;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * 
@@ -28,10 +26,10 @@ import org.apache.commons.logging.LogFactory;
  */
 class HashDataTableModel extends DefaultTableModel {
 
-  protected static final Log log = LogFactory.getLog(HashDataTableModel.class);
-  
+  private static final long serialVersionUID = 1L;
+
   /** HashDataInput in first column, register hyperlinkrenderer only here */
-  protected Class[] types;
+  protected Class<?>[] types;
   protected List<HashDataInput> hashDataInputs;
 
   public HashDataTableModel(List<HashDataInput> hashDataInputs, boolean twoColLayout) {
@@ -52,7 +50,7 @@ class HashDataTableModel extends DefaultTableModel {
   }
 
   @Override
-  public Class getColumnClass(int columnIndex) {
+  public Class<?> getColumnClass(int columnIndex) {
     return types[columnIndex];
   }
 

@@ -20,19 +20,20 @@ import java.io.InputStream;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slcommands.SLSourceContext;
 import at.gv.egiz.bku.slcommands.SLTargetContext;
+import at.gv.egiz.bku.slexceptions.SLException;
 
 /**
  * Facade for the access controller
  */
 public class SecurityManagerFacade {
 
-	private static Log log = LogFactory.getLog(SecurityManagerFacade.class);
+	private final Logger log = LoggerFactory.getLogger(SecurityManagerFacade.class);
 
 	private boolean allowUnmatched = false;
 	private ChainChecker inputFilter = null;
@@ -56,12 +57,12 @@ public class SecurityManagerFacade {
 				} else {
 					return allowUnmatched;
 				}
-			} catch (Exception e) {
-				log.error(e);
+			} catch (SLException e) {
+				log.error("Check failed.", e);
 				return false;
 			}
 		} else {
-			log.warn("No input chain defined");
+			log.warn("No input chain defined.");
 			return allowUnmatched;
 		}
 	}
@@ -84,12 +85,12 @@ public class SecurityManagerFacade {
 				} else {
 					return allowUnmatched;
 				}
-			} catch (Exception e) {
-				log.error(e);
+			} catch (SLException e) {
+				log.error("Check failed.", e);
 				return false;
 			}
 		} else {
-			log.warn("No output chain defined");
+			log.warn("No output chain defined.");
 			return allowUnmatched;
 		}
 	}
@@ -110,7 +111,7 @@ public class SecurityManagerFacade {
 		try {
 			fab.init(is);
 		} catch (JAXBException e) {
-			log.error(e);
+			log.error("Failed to initialize AccessControllerFactory.", e);
 		}
 		inputFilter = fab.getChainChecker(AccessControllerFactory.INPUT_CHAIN);
 		outputFilter = fab.getChainChecker(AccessControllerFactory.OUTPUT_CHAIN);

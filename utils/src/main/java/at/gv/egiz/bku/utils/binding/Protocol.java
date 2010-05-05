@@ -17,7 +17,7 @@
 package at.gv.egiz.bku.utils.binding;
 
 public enum Protocol {
-  HTTP("http"), HTTPS("https");
+  HTTP("http"), HTTPS("https"), SAML("saml");
   
   private String name;
   
@@ -35,6 +35,9 @@ public enum Protocol {
     }
     if (HTTPS.toString().equalsIgnoreCase(protocol)) {
       return HTTPS;
+    }
+    if (SAML.toString().equalsIgnoreCase(protocol)) {
+      return SAML;
     }
     return null;
   }

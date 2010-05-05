@@ -1,3 +1,0 @@
-# add top-level types explicitly to jaxb context, otherwise the unmarshaller won't find them.
-# cf. http://forums.java.net/jive/thread.jspa?threadID=75778&tstart=0
-CreateXMLSignatureResponseType

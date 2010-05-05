@@ -29,8 +29,8 @@ import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
 import javax.smartcardio.CardTerminals.State;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -44,7 +44,7 @@ public class SmartCardIO {
   
   private static final int STATE_TERMINALS = 3;
   
-  private static Log log = LogFactory.getLog(SmartCardIO.class);
+  private final Logger log = LoggerFactory.getLogger(SmartCardIO.class);
   
   final Map<CardTerminal, Card> terminalCard_ = new HashMap<CardTerminal, Card>();
   
@@ -62,7 +62,7 @@ public class SmartCardIO {
       log.info("Failed to get TerminalFactory of type 'PC/SC'.", e);
       terminalFactory = TerminalFactory.getDefault();
     }
-    log.debug("TerminalFactory : " + terminalFactory);
+    log.debug("TerminalFactory : {}.", terminalFactory);
     if ("PC/SC".equals(terminalFactory.getType())) {
       terminalFactory_ = terminalFactory;
     }
@@ -82,7 +82,7 @@ public class SmartCardIO {
     if(terminalFactory_ != null) {
       cardTerminals_ = terminalFactory_.terminals();
     }
-    log.debug("CardTerminals : " + cardTerminals_);
+    log.debug("CardTerminals : {}.", cardTerminals_);
     if (state_ < STATE_TERMINALS) {
       state_ = STATE_TERMINALS;
     }
@@ -136,10 +136,10 @@ public class SmartCardIO {
       log.trace("terminals.list(State.CARD_REMOVAL)");
       for (CardTerminal terminal : cardTerminals_.list(CardTerminals.State.CARD_REMOVAL)) {
         Card card = terminalCard_.remove(terminal);
-        log.trace("card removed : " + card);
+        log.trace("card removed : {}", card);
       }
     } catch (CardException e) {
-      log.debug(e);
+      log.debug("Failed to list terminals.", e);
     }
 
     // check inserted cards
@@ -161,11 +161,11 @@ public class SmartCardIO {
         if (terminalCard_.put(terminal, card) == null) {
           terminalCard_.put(terminal, card);
           newCards.put(terminal, card);
-          log.trace("terminal '" + terminal + "' card inserted : " + card); 
+          log.trace("terminal '{}' card inserted : {}", terminal, card); 
         }
       }
     } catch (CardException e) {
-      log.debug(e);
+      log.debug("Failed to list cards.", e);
     }
     return newCards;
     
@@ -195,7 +195,7 @@ public class SmartCardIO {
       // just waiting for a short period of time to allow for abort
       cardTerminals_.waitForChange(timeout);
     } catch (CardException e) {
-      log.debug("CardTerminals.waitForChange(" + timeout + ") failed.", e);
+      log.debug("CardTerminals.waitForChange({}) failed.", timeout, e);
     }
     Map<CardTerminal, Card> newCards = new HashMap<CardTerminal, Card>();
     newCards.putAll(updateCards());

@@ -21,5 +21,5 @@ import at.gv.egiz.bku.slexceptions.SLRequestException;
 
 public interface CreateXMLSignatureCommand extends SLCommand {
 
-  public void prepareXMLSignature() throws SLCommandException, SLRequestException;
+  public void prepareXMLSignature(SLCommandContext commandContext) throws SLCommandException, SLRequestException;
 }

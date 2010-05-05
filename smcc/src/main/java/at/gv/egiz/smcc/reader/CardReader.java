@@ -23,7 +23,7 @@ import javax.smartcardio.ResponseAPDU;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.ChangeReferenceDataAPDUSpec;
 import at.gv.egiz.smcc.NewReferenceDataAPDUSpec;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.ResetRetryCounterAPDUSpec;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.VerifyAPDUSpec;
@@ -38,7 +38,7 @@ import javax.smartcardio.Card;
 public interface CardReader {
 
 
-  String[] FEATURES = new String[]{"NO_FEATURE",
+  static final String[] FEATURES = new String[]{"NO_FEATURE",
     "FEATURE_VERIFY_PIN_START",
     "FEATURE_VERIFY_PIN_FINISH",
     "FEATURE_MODIFY_PIN_START",
@@ -57,16 +57,16 @@ public interface CardReader {
     "FEATURE_GET_KEY",
     "FEATURE_IFD_DISPLAY_PROPERTIES"};
 
-  Byte FEATURE_VERIFY_PIN_START = new Byte((byte) 0x01);
-  Byte FEATURE_VERIFY_PIN_FINISH = new Byte((byte) 0x02);
-  Byte FEATURE_MODIFY_PIN_START = new Byte((byte) 0x03);
-  Byte FEATURE_MODIFY_PIN_FINISH = new Byte((byte) 0x04);
-  Byte FEATURE_GET_KEY_PRESSED = new Byte((byte) 0x05);
-  Byte FEATURE_VERIFY_PIN_DIRECT = new Byte((byte) 0x06);
-  Byte FEATURE_MODIFY_PIN_DIRECT = new Byte((byte) 0x07);
-  Byte FEATURE_MCT_READER_DIRECT = new Byte((byte) 0x08);
-  Byte FEATURE_MCT_UNIVERSAL = new Byte((byte) 0x09);
-  Byte FEATURE_IFD_PIN_PROPERTIES = new Byte((byte) 0x0a);
+  static final Byte FEATURE_VERIFY_PIN_START = new Byte((byte) 0x01);
+  static final Byte FEATURE_VERIFY_PIN_FINISH = new Byte((byte) 0x02);
+  static final Byte FEATURE_MODIFY_PIN_START = new Byte((byte) 0x03);
+  static final Byte FEATURE_MODIFY_PIN_FINISH = new Byte((byte) 0x04);
+  static final Byte FEATURE_GET_KEY_PRESSED = new Byte((byte) 0x05);
+  static final Byte FEATURE_VERIFY_PIN_DIRECT = new Byte((byte) 0x06);
+  static final Byte FEATURE_MODIFY_PIN_DIRECT = new Byte((byte) 0x07);
+  static final Byte FEATURE_MCT_READER_DIRECT = new Byte((byte) 0x08);
+  static final Byte FEATURE_MCT_UNIVERSAL = new Byte((byte) 0x09);
+  static final Byte FEATURE_IFD_PIN_PROPERTIES = new Byte((byte) 0x0a);
   //TODO continue list
 
 
@@ -75,18 +75,18 @@ public interface CardReader {
   boolean hasFeature(Byte feature);
 
   ResponseAPDU verify(CardChannel channel, VerifyAPDUSpec apduSpec,
-          PINGUI pinGUI, PINSpec pinSpec, int retries)
+          PINGUI pinGUI, PinInfo pinInfo, int retries)
       throws CancelledException, InterruptedException, CardException, SignatureCardException;
 
   ResponseAPDU modify(CardChannel channel, ChangeReferenceDataAPDUSpec apduSpec,
-          ModifyPINGUI pinGUI, PINSpec pinSpec, int retries)
+          ModifyPINGUI pinGUI, PinInfo pinInfo, int retries)
       throws CancelledException, InterruptedException, CardException, SignatureCardException;
 
   ResponseAPDU modify(CardChannel channel, NewReferenceDataAPDUSpec apduSpec,
-          ModifyPINGUI pinGUI, PINSpec pinSpec)
+          ModifyPINGUI pinGUI, PinInfo pinInfo)
       throws CancelledException, InterruptedException, CardException, SignatureCardException;
 
   ResponseAPDU modify(CardChannel channel, ResetRetryCounterAPDUSpec apduSpec,
-          ModifyPINGUI pinGUI, PINSpec pinSpec, int retries)
+          ModifyPINGUI pinGUI, PinInfo pinInfo, int retries)
       throws CancelledException, InterruptedException, CardException, SignatureCardException;
 }

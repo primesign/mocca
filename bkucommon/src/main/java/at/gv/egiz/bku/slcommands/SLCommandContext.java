@@ -18,30 +18,43 @@ package at.gv.egiz.bku.slcommands;
 
 import java.util.Locale;
 
-import at.gv.egiz.bku.utils.urldereferencer.URLDereferencerContext;
+import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 import at.gv.egiz.stal.STAL;
 
 public class SLCommandContext {
   
   private STAL stal;
-  private URLDereferencerContext urlDerefCtx;
+  
+  private URLDereferencer urlDereferencer;
   
   private Locale locale;
+
+  public SLCommandContext(STAL stal, URLDereferencer urlDereferencer) {
+    this.stal = stal;
+    this.urlDereferencer = urlDereferencer;
+  }
+
+  public SLCommandContext(STAL stal, URLDereferencer urlDereferencer,
+      Locale locale) {
+    this.stal = stal;
+    this.urlDereferencer = urlDereferencer;
+    this.locale = locale;
+  }
 
   public void setSTAL(STAL aStal) {
     this.stal = aStal;
   }
 
-  public void setURLDereferencerContext(URLDereferencerContext aCtx) {
-    this.urlDerefCtx = aCtx;
+  public void setURLDereferencer(URLDereferencer urlDereferencer) {
+    this.urlDereferencer = urlDereferencer;
   }
 
   public STAL getSTAL() {
     return stal;
   }
 
-  public URLDereferencerContext getURLDereferencerContext() {
-    return urlDerefCtx;
+  public URLDereferencer getURLDereferencer() {
+    return urlDereferencer;
   }
 
   public Locale getLocale() {

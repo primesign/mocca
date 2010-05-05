@@ -15,19 +15,23 @@
 <web-app id="bkuonline" version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
   <display-name>http-security-layer-request</display-name>
 
-	<!--  Begin Spring Config -->
-  <context-param>
-    <param-name>contextConfigLocation</param-name>
-    <param-value>/WEB-INF/applicationContext.xml</param-value>
-  </context-param>
   <listener>
-    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    <listener-class>at.gv.egiz.bku.online.webapp.MoccaContextListener</listener-class>
   </listener>
+
+	<!--  Begin Spring Config -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<context-param>
+		<param-name>configurationResource</param-name>
+		<param-value></param-value>
+	</context-param>
 	<!--  End Spring Config -->
 
 	<!--  Begin BKU Config -->
   <listener>
-    <listener-class>at.gv.egiz.bku.online.webapp.SessionTimeout</listener-class>
+    <listener-class>at.gv.egiz.bku.online.webapp.SessionListener</listener-class>
   </listener>
   <listener>
     <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
@@ -35,6 +39,14 @@
   <servlet>
     <servlet-name>BKUServlet</servlet-name>
     <servlet-class>at.gv.egiz.bku.online.webapp.BKURequestHandler</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>SAMLServlet</servlet-name>
+    <servlet-class>at.gv.egiz.mocca.id.SAMLRequestHandler</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>DataURLServlet</servlet-name>
+    <servlet-class>at.gv.egiz.mocca.id.DataURLServerServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>ResultServlet</servlet-name>
@@ -45,31 +57,39 @@
     </init-param>
     <init-param>
       <param-name>expiredPage</param-name>
-			<!-- FIXME -->
       <param-value>expired.html</param-value>
     </init-param>
   </servlet>
-  <servlet>
-    <servlet-name>BKUApplet</servlet-name>
-    <jsp-file>/applet.jsp</jsp-file>
-  </servlet>
-    <servlet>
-        <servlet-name>STALService</servlet-name>
-        <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-        </servlet>
-    <servlet-mapping>
-    <servlet-name>BKUServlet</servlet-name>
-    <url-pattern>/http-security-layer-request</url-pattern>
-  </servlet-mapping>
+	<servlet>
+		<servlet-name>STALService</servlet-name>
+		<servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BKUServlet</servlet-name>
+		<url-pattern>/http-security-layer-request</url-pattern>
+	</servlet-mapping>
   <servlet-mapping>
     <servlet-name>BKUServlet</servlet-name>
     <url-pattern>/https-security-layer-request</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
+    <servlet-name>DataURLServlet</servlet-name>
+    <url-pattern>/DataURLServer</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>ResultServlet</servlet-name>
     <url-pattern>/bkuResult</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>SAMLServlet</servlet-name>
+    <url-pattern>/moccaid</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>DataURLServlet</servlet-name>
+    <url-pattern>/DataURLServer</url-pattern>
+  </servlet-mapping>
+  
 
     <!--
      |  Configure alternative applet pages that may be requested

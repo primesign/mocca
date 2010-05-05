@@ -28,10 +28,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
@@ -56,8 +52,8 @@ import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 import javax.swing.text.StyledEditorKit;
 import javax.swing.text.html.HTMLEditorKit;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -65,7 +61,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public class SecureViewerDialog extends JDialog {
 
-  /** don't import BKUFonts in order not to load BKUFonts.jar
+	private static final long serialVersionUID = 1L;
+
+/** don't import BKUFonts in order not to load BKUFonts.jar
    * BKUApplet includes BKUFonts as runtime dependency only, the jar is copied to the applet dir in BKUOnline with dependency-plugin
    * BKUViewer has compile dependency BKUFonts, transitive in BKUOnline and BKULocal
    */
@@ -77,14 +75,25 @@ public class SecureViewerDialog extends JDialog {
     SUPPORTED_MIME_TYPES.add("application/xhtml+xml");
     SUPPORTED_MIME_TYPES.add("text/html");
   }
-  protected static final Log log = LogFactory.getLog(SecureViewerDialog.class);
-//  private static SecureViewerDialog dialog;
+  private final Logger log = LoggerFactory.getLogger(SecureViewerDialog.class);
   protected ResourceBundle messages;
   protected JEditorPane viewer;
   protected JLabel viewerLabel;
   protected JScrollPane scrollPane;
-  protected HashDataInput content; //remember for save dialog
+  protected HashDataInput content; //remember for save dialog and for resizing
   protected FontProvider fontProvider;
+  protected HelpListener helpListener;
+  
+  protected JButton closeButton;
+  protected JButton saveButton;
+  
+  protected int baseFontSize;
+  protected int baseButtonSize;
+  
+  protected float resizeFactor;
+  
+  protected ActionListener closeListener;
+  protected String closeCommand;
 
   /**
    * Create and display a modal SecureViewer dialog.
@@ -95,14 +104,25 @@ public class SecureViewerDialog extends JDialog {
    */
   public SecureViewerDialog(Frame owner, ResourceBundle messages,
           ActionListener closeListener, String closeCommand,
-          FontProvider fontProvider, ActionListener helpListener) {
-    super(owner, messages.getString(BKUGUIFacade.WINDOWTITLE_VIEWER), true);
+          FontProvider fontProvider,
+          HelpListener helpListener, float resizeFactor) {
+    super(owner, messages.getString(BKUGUIFacade.WINDOWTITLE_VIEWER), false);
     this.setIconImages(BKUIcons.icons);
     this.messages = messages;
     this.fontProvider = fontProvider;
-
+    this.helpListener = helpListener;
+    
+    this.baseFontSize = new JLabel().getFont().getSize();
+    
+    this.resizeFactor = 1.0f;
+    this.closeListener = closeListener;
+    this.closeCommand = closeCommand;
+    
+    this.resizeFactor = resizeFactor;
+    
+    
     initContentPane(VIEWER_DIMENSION,
-            createViewerPanel(helpListener),
+            createViewerPanel(),
             createButtonPanel(closeListener, closeCommand));
 
     // also leave defaultWindowClosing HIDE_ON_CLOSE
@@ -115,8 +135,28 @@ public class SecureViewerDialog extends JDialog {
     } else {
       setLocationByPlatform(true);
     }
+    
+    
   }
 
+  public void resize(float resizeFactor) {
+	  
+	  log.debug("Resizing secure viewer ...");
+	  this.resizeFactor = resizeFactor;  
+	  
+	  getContentPane().removeAll();
+	  
+	  initContentPane(VIEWER_DIMENSION,
+	            createViewerPanel(),
+	            createButtonPanel(closeListener, closeCommand));
+	  
+	  this.setContent(content);
+	  
+	  getContentPane().validate();
+	  
+	  
+  }
+  
   private void initContentPane(Dimension preferredSize,
           JPanel viewerPanel, JPanel buttonPanel) {
     Container contentPane = getContentPane();
@@ -135,9 +175,10 @@ public class SecureViewerDialog extends JDialog {
   /**
    * @param helpListener may be null
    */
-  private JPanel createViewerPanel(final ActionListener helpListener) {
+  private JPanel createViewerPanel() {
     viewer = new JEditorPane();
     viewer.setEditable(false);
+    
     viewer.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
     
     scrollPane = new JScrollPane();
@@ -156,30 +197,13 @@ public class SecureViewerDialog extends JDialog {
     infoHorizontal.addComponent(viewerLabel);
     infoVertical.addComponent(viewerLabel);
 
-    if (helpListener != null) {
+    if (helpListener.implementsListener()) {
       final JLabel helpLabel = new JLabel();
       helpLabel.setFocusable(true);
       helpLabel.setIcon(new ImageIcon(getClass().getResource(BKUGUIFacade.HELP_IMG)));
       helpLabel.getAccessibleContext().setAccessibleName(messages.getString(BKUGUIFacade.ALT_HELP));
-      helpLabel.addMouseListener(new MouseAdapter() {
-
-        @Override
-        public void mouseClicked(MouseEvent arg0) {
-          ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, BKUGUIFacade.HELP_HASHDATAVIEWER);
-          helpListener.actionPerformed(e);
-        }
-      });
-      helpLabel.addKeyListener(new KeyAdapter() {
-
-        @Override
-        public void keyPressed(KeyEvent arg0) {
-
-          if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-            ActionEvent e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, BKUGUIFacade.HELP_HASHDATAVIEWER);
-            helpListener.actionPerformed(e);
-          }
-        }
-      });
+      helpLabel.addMouseListener(helpListener);
+      helpLabel.addKeyListener(helpListener);
 
       helpLabel.addFocusListener(new FocusAdapter() {
 
@@ -220,7 +244,9 @@ public class SecureViewerDialog extends JDialog {
    */
   public void setContent(HashDataInput hashDataInput) { //throws FontProviderException {
 
-    log.debug("[" + Thread.currentThread().getName() + "] set viewer content");
+    log.debug("[{}] set viewer content.", Thread.currentThread().getName());
+
+    helpListener.setHelpTopic(BKUGUIFacade.HELP_HASHDATAVIEWER);
     
     this.content = null;
     viewer.setText(null);
@@ -229,7 +255,7 @@ public class SecureViewerDialog extends JDialog {
     if (mimeType == null) {
       mimeType = "text/plain";
     }
-    log.debug("secure viewer mime type: " + mimeType);
+    log.debug("Secure viewer mime type: {}.", mimeType);
     // loads editorkit for text/plain if unrecognized
     viewer.setContentType(mimeType);
 
@@ -237,11 +263,11 @@ public class SecureViewerDialog extends JDialog {
       
       if ("text/plain".equals(mimeType)) {
         viewer.setEditorKit(new StyledEditorKit());
-        viewer.setFont(fontProvider.getFont().deriveFont(Font.PLAIN, viewer.getFont().getSize()));
+        viewer.setFont(fontProvider.getFont().deriveFont(Font.PLAIN, viewer.getFont().getSize() * resizeFactor));
       } else if ("application/xhtml+xml".equals(mimeType)) {
         viewer.setEditorKit(new HTMLEditorKit());
         //reset font if fontprovider font was set before (TODO also html font from fontprovider)
-        viewer.setFont(new Font("Dialog", Font.PLAIN, viewer.getFont().getSize())); //UIManager.getFont("Label.font"));
+        viewer.setFont(new Font("Dialog", Font.PLAIN, (int)(viewer.getFont().getSize() * resizeFactor))); //UIManager.getFont("Label.font"));
       }
 
       EditorKit editorKit = viewer.getEditorKit();
@@ -249,7 +275,7 @@ public class SecureViewerDialog extends JDialog {
   //    document.putProperty("IgnoreCharsetDirective", new Boolean(true));
 
       Charset cs = (hashDataInput.getEncoding() == null) ? Charset.forName("UTF-8") : Charset.forName(hashDataInput.getEncoding());
-      log.debug("secure viewer encoding: " + cs.toString());
+      log.debug("Secure viewer encoding: {}.", cs.toString());
 
       InputStreamReader isr = new InputStreamReader(hashDataInput.getHashDataInput(), cs);
       Reader contentReader = new BufferedReader(isr);
@@ -270,6 +296,11 @@ public class SecureViewerDialog extends JDialog {
     }
     viewer.setCaretPosition(0);
 
+    if (viewer.getText() != null) {
+		viewer.getAccessibleContext().setAccessibleDescription(
+				viewer.getText());
+	}
+    
     scrollPane.setViewportView(viewer);
     scrollPane.setPreferredSize(viewer.getPreferredSize());
     scrollPane.setAlignmentX(LEFT_ALIGNMENT);
@@ -280,21 +311,33 @@ public class SecureViewerDialog extends JDialog {
       viewerLabel.setText("");
     }
 
-    log.debug("VIEWER FONT: " + viewer.getFont());
+    viewer.setFocusable(Boolean.TRUE);
+    
+    log.debug("VIEWER FONT: {}.", viewer.getFont());
     setVisible(true);
     toFront();
+    
+    viewer.requestFocus();
+    
   }
 
   private JPanel createButtonPanel(ActionListener closeListener, String closeCommand) {
-    JButton closeButton = new JButton();
+
+	closeButton = new JButton();
+	
     closeButton.setText(messages.getString(BKUGUIFacade.BUTTON_CLOSE));
     closeButton.setActionCommand(closeCommand);
     closeButton.addActionListener(new CloseButtonListener(closeListener));
-
-    JButton saveButton = new JButton();
+	closeButton.setFont(closeButton.getFont().deriveFont(
+				(float) (baseFontSize * resizeFactor)));
+ 
+    saveButton = new JButton();
     saveButton.setText(messages.getString(BKUGUIFacade.BUTTON_SAVE));
     saveButton.addActionListener(new SaveButtonListener());
+    saveButton.setFont(saveButton.getFont().deriveFont(
+			(float) (baseFontSize * resizeFactor)));
 
+    
     int buttonSize = closeButton.getPreferredSize().width;
     if (saveButton.getPreferredSize().width > buttonSize) {
       buttonSize = saveButton.getPreferredSize().width;
@@ -324,7 +367,7 @@ public class SecureViewerDialog extends JDialog {
 
     @Override
     public void windowClosing(WindowEvent e) {
-      log.trace("[" + Thread.currentThread().getName() + "] closing secure viewer");
+      log.trace("[{}] closing secure viewer.", Thread.currentThread().getName());
       setVisible(false);
       if (closeListener != null) {
         closeListener.actionPerformed(new ActionEvent(e.getSource(), e.getID(), closeCommand));
@@ -342,7 +385,7 @@ public class SecureViewerDialog extends JDialog {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      log.trace("[" + Thread.currentThread().getName() + "] closing secure viewer");
+      log.trace("[{}] closing secure viewer.", Thread.currentThread().getName());
       setVisible(false);
       if (closeListener != null) {
         closeListener.actionPerformed(e);
@@ -354,8 +397,8 @@ public class SecureViewerDialog extends JDialog {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      log.trace("[" + Thread.currentThread().getName() + "] display secure viewer save dialog");
-      SecureViewerSaveDialog.showSaveDialog(content, messages, null, null);
+      log.trace("[{}] display secure viewer save dialog.", Thread.currentThread().getName());
+      SecureViewerSaveDialog.showSaveDialog(content, messages, null, null, closeButton.getFont().getSize());
     }
   }
 }

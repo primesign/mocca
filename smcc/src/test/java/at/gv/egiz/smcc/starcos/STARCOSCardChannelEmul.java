@@ -364,7 +364,7 @@ public class STARCOSCardChannelEmul extends CardChannelEmul {
       }
       
       PIN pin;
-      if (currentAppl != null) {
+      if ((command.getP2() & 0x80) > 0 && currentAppl != null) {
         pin = currentAppl.pins.get(command.getP2());
       } else {
         pin = globalPins.get(command.getP2());
@@ -388,7 +388,7 @@ public class STARCOSCardChannelEmul extends CardChannelEmul {
 
       if (response.getSW() == 0x9000) {
         PIN pin;
-        if (currentAppl != null) {
+        if ((command.getP2() & 0x80) > 0 && currentAppl != null) {
           pin = currentAppl.pins.get(command.getP2());
         } else {
           pin = globalPins.get(command.getP2());

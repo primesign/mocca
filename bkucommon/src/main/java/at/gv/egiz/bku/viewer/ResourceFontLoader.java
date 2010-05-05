@@ -19,8 +19,8 @@ package at.gv.egiz.bku.viewer;
 import at.gv.egiz.bku.gui.viewer.FontProviderException;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
 import java.awt.Font;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Loads font(s) as classpath resource.
@@ -31,7 +31,7 @@ public class ResourceFontLoader implements FontProvider {
   
   public static final String FONT_RESOURCE = "DejaVuLGCSansMono.ttf";
 
-  protected final static Log log = LogFactory.getLog(ResourceFontLoader.class);
+  private final Logger log = LoggerFactory.getLogger(ResourceFontLoader.class);
 
   /** TextValidator and (local) SecureViewerDialog (see LocalStalFactory) use ResourceFontLoader, load resource only once  */
   protected static Font font;

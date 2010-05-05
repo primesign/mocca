@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.smcc.SignatureCard;
@@ -43,7 +43,8 @@ import at.gv.egiz.stal.STALResponse;
  */
 public abstract class AbstractBKUWorker extends AbstractSMCCSTAL implements ActionListener, SMCCSTALRequestHandler {
 
-  protected static Log log = LogFactory.getLog(AbstractBKUWorker.class);
+  private final Logger log = LoggerFactory.getLogger(AbstractBKUWorker.class);
+  
   protected BKUGUIFacade gui;
   protected List<String> actionCommandList = new ArrayList<String>();
   protected Boolean actionPerformed = false;
@@ -68,7 +69,7 @@ public abstract class AbstractBKUWorker extends AbstractSMCCSTAL implements Acti
    */
   @Override
   public void actionPerformed(ActionEvent e) {
-    log.info("Action: " + e);
+    log.info("Action: {}.", e);
     if (actionCommandList != null) {
       if (actionCommandList.contains(e.getActionCommand())) {
         actionOccured();
@@ -83,7 +84,7 @@ public abstract class AbstractBKUWorker extends AbstractSMCCSTAL implements Acti
    * @throws java.lang.InterruptedException
    */
   protected synchronized void waitForAction() throws InterruptedException {
-    log.info("Waiting for Action");
+    log.info("Waiting for Action.");
     while (!actionPerformed) {
       wait();
     }
@@ -91,7 +92,7 @@ public abstract class AbstractBKUWorker extends AbstractSMCCSTAL implements Acti
   }
 
   protected synchronized void actionOccured() {
-    log.info("Received Action");
+    log.info("Received Action.");
     actionPerformed = true;
     notifyAll();
   }
@@ -119,7 +120,6 @@ public abstract class AbstractBKUWorker extends AbstractSMCCSTAL implements Acti
         try {
           waitForAction();
         } catch (InterruptedException e) {
-          log.error(e);
         }
         return true;
       case SMCCHelper.TERMINAL_NOT_PRESENT:
@@ -129,7 +129,6 @@ public abstract class AbstractBKUWorker extends AbstractSMCCSTAL implements Acti
         try {
           waitForAction();
         } catch (InterruptedException e) {
-          log.error(e);
         }
         return true;
       case SMCCHelper.CARD_NOT_SUPPORTED:
@@ -178,10 +177,10 @@ public abstract class AbstractBKUWorker extends AbstractSMCCSTAL implements Acti
   @Override
   public STALResponse handleRequest(STALRequest request) {
     if (request instanceof QuitRequest) {
-      log.info("Setting state to: finished for BKUWorker " + this);
+      log.info("Setting state to: finished for BKUWorker {}.", this);
       finished = true;
     } else {
-      log.error("Unexpected request to handle: " + request);
+      log.error("Unexpected request to handle: {}.", request);
     }
     return null;
   }

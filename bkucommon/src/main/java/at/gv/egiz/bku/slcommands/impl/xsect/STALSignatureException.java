@@ -19,7 +19,7 @@ package at.gv.egiz.bku.slcommands.impl.xsect;
 import java.security.SignatureException;
 
 /**
- * A SignatureException thrown by the {@link STALSignature}.
+ * A SignatureException thrown by the {@link STALSignatureMethod}.
  * 
  * @author mcentner
  */

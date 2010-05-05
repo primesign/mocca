@@ -16,5 +16,10 @@
 */
 package at.gv.egiz.bku.slcommands;
 
+import org.w3c.dom.Element;
+
 public interface CreateXMLSignatureResult extends SLResult {
+  
+  public Element getContent();
+  
 }

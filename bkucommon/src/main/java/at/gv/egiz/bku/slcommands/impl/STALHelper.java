@@ -22,11 +22,8 @@ import iaik.utils.Base64OutputStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -35,8 +32,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLExceptionMessages;
@@ -59,7 +56,7 @@ public class STALHelper {
   /**
    * Logging facility.
    */
-  private static Log log = LogFactory.getLog(STALHelper.class);
+  private final Logger log = LoggerFactory.getLogger(STALHelper.class);
   
   /**
    * The STAL implementation.
@@ -95,11 +92,11 @@ public class STALHelper {
    public void transmitSTALRequest(List<? extends STALRequest> stalRequests) throws SLCommandException {
     List<STALResponse> responses = stal.handleRequest(stalRequests);
     if (responses == null) {
-      Log log = LogFactory.getLog(this.getClass());
+      Logger log = LoggerFactory.getLogger(this.getClass());
       log.info("Received no responses from STAL.");
       throw new SLCommandException(4000);
     } else if (responses.size() != stalRequests.size()) {
-      Log log = LogFactory.getLog(this.getClass());
+      Logger log = LoggerFactory.getLogger(this.getClass());
       log.info("Received invalid count of responses from STAL. Expected "
           + stalRequests.size() + ", but got " + responses.size() + ".");
       // throw new SLCommandException(4000);
@@ -144,7 +141,7 @@ public class STALHelper {
     }
 
     if (!(responseClass.isAssignableFrom(response.getClass()))) {
-      Log log = LogFactory.getLog(this.getClass());
+      Logger log = LoggerFactory.getLogger(this.getClass());
       log.info("Received " + response.getClass() + " from STAL but expected "
           + responseClass);
       throw new SLCommandException(4000);
@@ -195,7 +192,7 @@ public class STALHelper {
           } catch (IOException e1) {
             log.info("Failed to decode certificate.", e);
           }
-          log.debug("Failed to decode certificate.\n" + certDump.toString(), e);
+          log.debug("Failed to decode certificate.\n{}", certDump.toString(), e);
         } else {
           log.info("Failed to decode certificate.", e);
         }

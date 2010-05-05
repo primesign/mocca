@@ -17,7 +17,7 @@
 package at.gv.egiz.smcc.pin.gui;
 
 import at.gv.egiz.smcc.CancelledException;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 
 
 /**
@@ -27,13 +27,13 @@ import at.gv.egiz.smcc.PINSpec;
  */
 public interface PINGUI extends PINProvider {
 
-  void enterPINDirect(PINSpec spec, int retries)
+  void enterPINDirect(PinInfo pinInfo, int retries)
           throws CancelledException, InterruptedException;
   
   /**
    * @throws CancelledException, InterruptedException if signature-data dialog is interrupted or cancelled
    */
-  void enterPIN(PINSpec spec, int retries)
+  void enterPIN(PinInfo pinInfo, int retries)
           throws CancelledException, InterruptedException;
   void validKeyPressed();
   void correctionButtonPressed();

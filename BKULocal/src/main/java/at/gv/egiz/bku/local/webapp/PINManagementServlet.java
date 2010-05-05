@@ -29,8 +29,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * PINManagementBKUWorker for non-applet version
@@ -38,7 +38,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public class PINManagementServlet extends HttpServlet {
 
-  private static final Log log = LogFactory.getLog(PINManagementServlet.class);
+  private static final long serialVersionUID = 1L;
+
+  private final Logger log = LoggerFactory.getLogger(PINManagementServlet.class);
 
   LocalSTALFactory stalFactory;
 
@@ -59,9 +61,7 @@ public class PINManagementServlet extends HttpServlet {
 
     STAL pinMgmtSTAL = stalFactory.createSTAL();
     List<STALResponse> stalResps = pinMgmtSTAL.handleRequest(Collections.singletonList(new PINManagementRequest()));
-    if (log.isDebugEnabled()) {
-      log.debug("received STAL reponse " + stalResps.get(0).getClass());
-    }
+    log.debug("Received STAL reponse {}.", stalResps.get(0).getClass());
     pinMgmtSTAL.handleRequest(Collections.singletonList(new QuitRequest()));
 
     String redirect = request.getParameter("redirect");

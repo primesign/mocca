@@ -17,7 +17,7 @@
 package at.gv.egiz.smcc.pin.gui;
 
 import at.gv.egiz.smcc.CancelledException;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 
 public abstract class DummyChangePINGUI implements ModifyPINGUI {
 
@@ -47,22 +47,22 @@ public abstract class DummyChangePINGUI implements ModifyPINGUI {
   }
 
   @Override
-  public void modifyPINDirect(PINSpec spec, int retries) throws CancelledException, InterruptedException {
+  public void modifyPINDirect(PinInfo spec, int retries) throws CancelledException, InterruptedException {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public void enterCurrentPIN(PINSpec spec, int retries) {
+  public void enterCurrentPIN(PinInfo spec, int retries) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public void enterNewPIN(PINSpec spec) {
+  public void enterNewPIN(PinInfo spec) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public void confirmNewPIN(PINSpec spec) {
+  public void confirmNewPIN(PinInfo spec) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 }

@@ -16,7 +16,6 @@
 */
 package at.gv.egiz.bku.slcommands.impl.xsect;
 
-import at.gv.egiz.stal.HashDataInput;
 import java.security.PrivateKey;
 
 import at.gv.egiz.stal.STAL;
@@ -24,7 +23,7 @@ import at.gv.egiz.stal.STAL;
 import java.util.List;
 
 /**
- * This class implements a private key used by the {@link STALSignature} class. 
+ * This class implements a private key used by the {@link STALSignatureMethod} class. 
  * 
  * @author mcentner
  */

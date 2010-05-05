@@ -16,8 +16,8 @@
 */
 package at.gv.egiz.bku.slcommands.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadParamsBinaryFileType;
 import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadRequestType;
@@ -32,7 +32,7 @@ public abstract class AbstractBinaryFileInfobox extends AbstractInfoboxImpl impl
   /**
    * Logging facility.
    */
-  private static Log log = LogFactory.getLog(AbstractBinaryFileInfobox.class);
+  private final Logger log = LoggerFactory.getLogger(AbstractBinaryFileInfobox.class);
   
   /**
    * Is this infobox' content an XML entity?
@@ -57,7 +57,7 @@ public abstract class AbstractBinaryFileInfobox extends AbstractInfoboxImpl impl
     InfoboxReadParamsBinaryFileType binaryFileParameters = request.getBinaryFileParameters();
     if (binaryFileParameters != null) {
       isXMLEntity = binaryFileParameters.isContentIsXMLEntity();
-      log.debug("Got ContentIsXMLEntity=" + isXMLEntity + ".");
+      log.debug("Got ContentIsXMLEntity={}.", isXMLEntity);
     }
     
   }

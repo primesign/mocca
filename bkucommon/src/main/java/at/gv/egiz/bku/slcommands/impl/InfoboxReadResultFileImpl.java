@@ -16,6 +16,9 @@
 */
 package at.gv.egiz.bku.slcommands.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -25,8 +28,8 @@ import javax.xml.transform.Result;
 import javax.xml.transform.Templates;
 import javax.xml.transform.dom.DOMResult;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -51,12 +54,17 @@ public class InfoboxReadResultFileImpl extends SLResultImpl implements
   /**
    * Logging facility.
    */
-  protected static Log log = LogFactory.getLog(InfoboxReadResultFileImpl.class);
+  protected final Logger log = LoggerFactory.getLogger(InfoboxReadResultFileImpl.class);
 
   /**
    * The XML document containing the infobox content.
    */
   protected Document xmlDocument;
+  
+  /**
+   * Binary content of the infobox (may be <code>null</code>). 
+   */
+  protected byte[] binaryContent;
 
   /**
    * Creates the response document from the given <code>binaryContent</code>.
@@ -147,14 +155,34 @@ public class InfoboxReadResultFileImpl extends SLResultImpl implements
    * @param resultBytes
    */
   public void setResultBytes(byte[] resultBytes) {
-    
-    xmlDocument = createResponseDocument(resultBytes, false);
-    
+    this.binaryContent = resultBytes;
   }
   
   @Override
   public void writeTo(Result result, Templates templates, boolean fragment) {
+    if (xmlDocument == null) {
+      xmlDocument = createResponseDocument(binaryContent, false);
+    }
     writeTo(xmlDocument, result, templates, fragment);
+  }
+
+  @Override
+  public Object getContent() {
+    if (xmlDocument != null) {
+      NodeList nodes = xmlDocument.getElementsByTagNameNS(SLCommand.NAMESPACE_URI, "XMLContent");
+      if (nodes.getLength() > 0) {
+        NodeList children = nodes.item(0).getChildNodes();
+        ArrayList<Node> content = new ArrayList<Node>();
+        for (int i = 0; i < children.getLength(); i++) {
+          content.add(children.item(i));
+        }
+        return Collections.unmodifiableList(content);
+      } else {
+        return null;
+      }
+    } else {
+      return binaryContent;
+    }
   }
 
 }

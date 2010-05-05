@@ -19,7 +19,6 @@ package at.gv.egiz.bku.local.stal;
 import at.gv.egiz.bku.viewer.ResourceFontLoader;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.net.MalformedURLException;
 import java.util.Locale;
 
 
@@ -31,10 +30,11 @@ import at.gv.egiz.bku.local.gui.GUIProxy;
 import at.gv.egiz.bku.local.gui.LocalHelpListener;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
-import java.net.URL;
 import javax.swing.JFrame;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.apache.commons.configuration.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Creates a PINManagementGUI and a LocalBKUWorker, which in turn registers
@@ -44,55 +44,45 @@ import org.apache.commons.logging.LogFactory;
  */
 public class LocalSTALFactory implements STALFactory {
 
-  protected static final Log log = LogFactory.getLog(LocalSTALFactory.class);
+  private final Logger log = LoggerFactory.getLogger(LocalSTALFactory.class);
   protected static final Dimension PREFERRED_SIZE = new Dimension(318, 200);
   protected String helpURL;
   protected Locale locale;
+  
+  protected Configuration configuration;
+  
+  
 
   @Override
   public STAL createSTAL() {
 
-    LocalBKUWorker stal;
+    final LocalBKUWorker stal;
     //http://java.sun.com/docs/books/tutorial/uiswing/misc/focus.html
     // use undecorated JFrame instead of JWindow,
     // which creates an invisible owning frame and therefore cannot getFocusInWindow()
     JFrame dialog = new JFrame("Bürgerkarte");
-    if (log.isTraceEnabled()) {
-      log.debug("alwaysOnTop supported: " + dialog.isAlwaysOnTopSupported());
-    }
+    log.debug("AlwaysOnTop supported: {}.", dialog.isAlwaysOnTopSupported());
     // [#439] make mocca dialog alwaysOnTop
     dialog.setAlwaysOnTop(true);
     dialog.setIconImages(BKUIcons.icons);
-    dialog.setUndecorated(true);
+//    dialog.setUndecorated(true);
 //    dialog.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
-//    dialog.addWindowListener(new WindowAdapter() {
-//
-//      @Override
-//      public void windowClosing(WindowEvent e) {
-//        super.windowClosing(e);
-//        log.debug("closing window ********************");
-//      }
-//
-//    });
+
     if (locale != null) {
       dialog.setLocale(locale);
     }
     LocalHelpListener helpListener = null;
-    try {
-      if (helpURL != null) {
-        helpListener = new LocalHelpListener(new URL(helpURL), locale);
-      } else {
-        log.warn("no HELP URL configured, help system disabled");
-      }
-    } catch (MalformedURLException ex) {
-      log.error("failed to configure help listener: " + ex.getMessage(), ex);
+    if (helpURL != null) {
+      helpListener = new LocalHelpListener(helpURL, locale);
+    } else {
+      log.warn("No HELP URL configured, help system disabled.");
     }
     PINManagementGUIFacade gui = new PINManagementGUI(dialog.getContentPane(),
             dialog.getLocale(),
             BKUGUIFacade.Style.advanced,
             null,
             new ResourceFontLoader(),
-            helpListener, 
+            helpListener,
             null);
     BKUGUIFacade proxy = (BKUGUIFacade) GUIProxy.newInstance(gui, dialog, new Class[] { PINManagementGUIFacade.class} );
     stal = new LocalBKUWorker(proxy, dialog);
@@ -116,11 +106,26 @@ public class LocalSTALFactory implements STALFactory {
     this.locale = locale;
   }
 
-  public String getHelpURL() {
-    return helpURL;
-  }
-
+  /**
+   * spring injects helpURL
+   * @param helpURL
+   */
   public void setHelpURL(String helpURL) {
     this.helpURL = helpURL;
   }
+
+  /**
+   * @return the configuration
+   */
+  public Configuration getConfiguration() {
+    return configuration;
+  }
+
+  /**
+   * @param configuration the configuration to set
+   */
+  public void setConfiguration(Configuration configuration) {
+    this.configuration = configuration;
+  }
+  
 }

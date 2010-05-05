@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?><sl:CreateXMLSignatureResponse xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#"><dsig:Signature Id="Signature-e5381f3d-1" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#"><dsig:SignedInfo Id="SignedInfo-e5381f3d-1"><dsig:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/><dsig:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1"/><dsig:Reference Id="Reference-e5381f3d-1" URI="test.txt"><dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><dsig:DigestValue>7Dp/5KcvUfCnkohkOOzvFaeAIRc=</dsig:DigestValue></dsig:Reference><dsig:Reference Id="Reference-e5381f3d-2" Type="http://uri.etsi.org/01903/v1.1.1#SignedProperties" URI="#xmlns(xades=http://uri.etsi.org/01903/v1.1.1%23)%20xpointer(id('Object-e5381f3d-1')/child::xades:QualifyingProperties/child::xades:SignedProperties)"><dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><dsig:DigestValue>fCbFrz0xI0wiN+PPn4leURvfdIo=</dsig:DigestValue></dsig:Reference></dsig:SignedInfo><dsig:SignatureValue Id="SignatureValue-e5381f3d-1">Zozx+mW/lHUO8q02DBK3Aud/sSpVdWGjfBScZDBjuzLyQyrRlXH2xo3lij5/xJa0</dsig:SignatureValue><dsig:KeyInfo><dsig:X509Data><dsig:X509Certificate>MIIDdzCCAd+gAwIBAgIRMqGxalf5fUuhqgSjs+IArBMwDQYJKoZIhvcNAQEFBQAw
+TTESMBAGA1UEAwwJVlNpZyBDQSAyMSowKAYDVQQKDCFIYXVwdHZlcmJhbmQgw7Zz
+dGVyci4gU296aWFsdmVycy4xCzAJBgNVBAYTAkFUMB4XDTA2MTEwODA1MjYxN1oX
+DTExMTEwODA1MjYxN1owYTEXMBUGA1UEAwwOTWFydGluIENlbnRuZXIxKjAoBgNV
+BAoMIUhhdXB0dmVyYmFuZCDDtnN0ZXJyLiBTb3ppYWx2ZXJzLjENMAsGA1UECwwE
+VlNpZzELMAkGA1UEBhMCQVQwSTATBgcqhkjOPQIBBggqhkjOPQMBAQMyAASZohyZ
+R1JDH+sANEROtE5LQFFepjfo5Xk7eRtrpnfa1MFhEOfYXxElEInOVFU049+jgZgw
+gZUwEwYDVR0jBAwwCoAISGl1XDyvIyowEQYDVR0OBAoECESRXVYYhLE8MA4GA1Ud
+DwEB/wQEAwIGwDAWBgNVHSAEDzANMAsGCSooAAoBBAFmADBDBggrBgEFBQcBAQQ3
+MDUwMwYIKwYBBQUHMAGGJ2h0dHA6Ly9vY3NwLmVjYXJkLnNvemlhbHZlcnNpY2hl
+cnVuZy5hdDANBgkqhkiG9w0BAQUFAAOCAYEAPTDL/MLfmNw0VcHqny3lNi30hL8z
+OtyiwQRo7QFA98Pm+8WPyQjyK0UVIej+NZVIVSU7WdYWVuu+au8bd3B10WBikLMl
+QfEWqYDHGp+bfB4GB4WVeS78tNmXaacXjzLqae/KLALRn/dVBN/acf3C+Ey3kSYw
+/96J+qgbaowlT18OvUTs1ABHgut1x31hLIgTj0R5nzfOOUXXnUN+rWm5SuaNMTHW
+NMNhM6Y4jfACOsudmboeIZfgrmbDtCa2lLU95Mct2dcbBsnMRFUYoZc+9eEI/xCH
+JdzFZp1DAyqzb6Y84YUr+QDCxJT5BVdU0zTI73t0ls64556ifsfq/2sixHeQgMSM
+z/qQfPUC9so32sDPNHHNbKVYx9m0VpPwekWXBEVJWFffQbPe55deZ+uVFLOG4y0G
+c+o3eXV2Vs9te1OoA+KRow8kjL7iil06DNOddeDQVPj7zqRQtoLKMLTJflfZp5pd
+UPEZNM5Pw92T501vzHO9JNv5f/Wp3PTskBNJ</dsig:X509Certificate></dsig:X509Data></dsig:KeyInfo><dsig:Object Id="Object-e5381f3d-1"><xades:QualifyingProperties xmlns:xades="http://uri.etsi.org/01903/v1.1.1#" Target="#Signature-e5381f3d-1" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#"><xades:SignedProperties Id="SignedProperties-e5381f3d-1"><xades:SignedSignatureProperties><xades:SigningTime>2010-04-20T06:08:36Z</xades:SigningTime><xades:SigningCertificate><xades:Cert><xades:CertDigest><xades:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><xades:DigestValue>GF2imE3FjjqwM8BH0RY+VjtiAI8=</xades:DigestValue></xades:CertDigest><xades:IssuerSerial><dsig:X509IssuerName>C=AT,O=Hauptverband österr. Sozialvers.,CN=VSig CA 2</dsig:X509IssuerName><dsig:X509SerialNumber>17229045246817736659347185373920056355859</dsig:X509SerialNumber></xades:IssuerSerial></xades:Cert></xades:SigningCertificate><xades:SignaturePolicyIdentifier><xades:SignaturePolicyImplied/></xades:SignaturePolicyIdentifier></xades:SignedSignatureProperties><xades:SignedDataObjectProperties><xades:DataObjectFormat ObjectReference="#Reference-e5381f3d-1"><xades:MimeType>text/plain</xades:MimeType></xades:DataObjectFormat></xades:SignedDataObjectProperties></xades:SignedProperties></xades:QualifyingProperties></dsig:Object></dsig:Signature></sl:CreateXMLSignatureResponse>

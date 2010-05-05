@@ -18,8 +18,6 @@ package at.gv.egiz.smcc;
 
 import at.gv.egiz.smcc.reader.CardReader;
 import at.gv.egiz.smcc.reader.ReaderFactory;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -28,14 +26,12 @@ import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractSignatureCard implements SignatureCard {
 
-  private static Log log = LogFactory.getLog(AbstractSignatureCard.class);
-
-  protected List<PINSpec> pinSpecs = new ArrayList<PINSpec>();
+  private final Logger log = LoggerFactory.getLogger(AbstractSignatureCard.class);
 
   private ResourceBundle i18n;
   private String resourceBundleName;
@@ -118,4 +114,16 @@ public abstract class AbstractSignatureCard implements SignatureCard {
     }
   }
 
+  public void interfaceMethod(PinInfoTest pinInfo) {
+    
+  }
+
+  int testMember = 3;
+
+  public static class PinInfoTest {
+
+    void setStatus(int status) {
+    }
+
+  }
 }

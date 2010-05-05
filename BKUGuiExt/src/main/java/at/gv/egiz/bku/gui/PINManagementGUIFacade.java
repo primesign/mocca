@@ -17,9 +17,8 @@
 
 package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 import java.awt.event.ActionListener;
-import java.util.Map;
 
 /**
  *
@@ -91,39 +90,40 @@ public interface PINManagementGUIFacade extends BKUGUIFacade {
   public static final String STATUS_NOT_ACTIVE = "status.not.active";
   public static final String STATUS_UNKNOWN = "status.unknown";
 
-  public enum STATUS { ACTIV, NOT_ACTIV, BLOCKED, UNKNOWN };
+//  public enum STATUS { ACTIV, NOT_ACTIV, BLOCKED, UNKNOWN };
   public enum DIALOG { VERIFY, ACTIVATE, CHANGE, UNBLOCK };
 
+  public enum PIN_MANAGEMENT_DIALOG_TYPE {DIALOGUE_UNDEFINED, DIALOGUE_PIN_MANAGEMENT, DIALOGUE_PIN};
   /**
    * list pins
    */
-  public void showPINManagementDialog(Map<PINSpec, STATUS> pins,
+  public void showPINManagementDialog(PinInfo[] pins,
           ActionListener activateListener, String activateCmd, String changeCmd, String unblockCmd, String verifyCmd,
           ActionListener cancelListener, String cancelCmd);
 
   /**
    * "software" pin-entry dialog (activate, change, unblock, verify)
    */
-  public void showPINDialog(DIALOG type, PINSpec pinSpec, int retries,
+  public void showPINDialog(DIALOG type, PinInfo pinSpec, int retries,
           ActionListener okListener, String okCmd,
           ActionListener cancelListener, String cancelCmd);
 
   /**
    * <b>direct</b> pinpad pin-entry dialog
    */
-  public void showModifyPINDirect(DIALOG type, PINSpec pinSpec, int retries);
+  public void showModifyPINDirect(DIALOG type, PinInfo pinSpec, int retries);
 
   /**
    * <b>start/finish</b> pinpad pin-entry dialog
    */
-  public void showEnterCurrentPIN(DIALOG type, PINSpec pinSpec, int retries);
+  public void showEnterCurrentPIN(DIALOG type, PinInfo pinSpec, int retries);
 
-  public void showEnterNewPIN(DIALOG type, PINSpec pinSpec);
+  public void showEnterNewPIN(DIALOG type, PinInfo pinSpec);
 
-  public void showConfirmNewPIN(DIALOG type, PINSpec pinSpec);
+  public void showConfirmNewPIN(DIALOG type, PinInfo pinSpec);
 
 
   public char[] getOldPin();
 
-  public PINSpec getSelectedPINSpec();
+  public PinInfo getSelectedPinInfo();
 }

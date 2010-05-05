@@ -16,13 +16,30 @@
  */
 package at.gv.egiz.stal.service.impl;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.jws.WebService;
+import javax.servlet.ServletContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
+
+import org.slf4j.MDC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import at.buergerkarte.namespaces.cardchannel.service.CommandAPDUType;
 import at.buergerkarte.namespaces.cardchannel.service.ScriptType;
 import at.gv.egiz.bku.binding.BindingProcessor;
 import at.gv.egiz.bku.binding.BindingProcessorManager;
 import at.gv.egiz.bku.binding.Id;
 import at.gv.egiz.bku.binding.IdFactory;
-
 import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.service.GetHashDataInputFault;
 import at.gv.egiz.stal.service.STALPortType;
@@ -38,25 +55,8 @@ import at.gv.egiz.stal.service.types.RequestType;
 import at.gv.egiz.stal.service.types.ResponseType;
 import at.gv.egiz.stal.service.types.SignRequestType;
 import at.gv.egiz.stal.service.types.GetHashDataInputType.Reference;
-//import at.gv.egiz.stal.service.types.GetHashDataInputResponseType.Reference;
 
 import com.sun.xml.ws.developer.UsesJAXBContext;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Resource;
-import javax.jws.WebService;
-import javax.servlet.ServletContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.ws.WebServiceContext;
-import javax.xml.ws.handler.MessageContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * 
@@ -68,10 +68,10 @@ public class STALServiceImpl implements STALPortType {
 
   public static final String BINDING_PROCESSOR_MANAGER = "bindingProcessorManager";
   public static final Id TEST_SESSION_ID = IdFactory.getInstance().createId("TestSession");
-  protected static final Log log = LogFactory.getLog(STALServiceImpl.class);
-
+  private final Logger log = LoggerFactory.getLogger(STALServiceImpl.class);
 
   static {
+    Logger log = LoggerFactory.getLogger(STALServiceImpl.class);
     if (log.isTraceEnabled()) {
       log.trace("enabling webservice communication dump");
       System.setProperty("com.sun.xml.ws.transport.http.HttpAdapter.dump", "true");
@@ -91,227 +91,242 @@ public class STALServiceImpl implements STALPortType {
   public GetNextRequestResponseType connect(String sessId) {
 
     if (sessId == null) {
-      throw new NullPointerException("No session id provided");
+      throw new NullPointerException("No session id provided.");
     }
 
     Id sessionId = idF.createId(sessId);
+    MDC.put("id", sessionId.toString());
 
-    if (log.isDebugEnabled()) {
-      log.debug("Received Connect [" + sessionId + "]");
-    }
-
-    if (TEST_SESSION_ID.equals(sessionId)) {
-      return getTestSessionNextRequestResponse(null);
-    }
-
-    GetNextRequestResponseType response = new GetNextRequestResponseType();
-    response.setSessionId(sessionId.toString());
-
-    STALRequestBroker stal = getStal(sessionId);
-
-    if (stal != null) {
-
-      List<JAXBElement<? extends RequestType>> requestsOut = ((STALRequestBroker) stal).connect();
-      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().addAll(requestsOut);
-
-      if (log.isDebugEnabled()) {
-        StringBuilder sb = new StringBuilder("Returning initial GetNextRequestResponse [");
-        sb.append(sessionId.toString());
-        sb.append("] containing ");
-        sb.append(requestsOut.size());
-        sb.append(" requests: ");
-        for (JAXBElement<? extends RequestType> reqOut : requestsOut) {
-          sb.append(reqOut.getValue().getClass());
-          sb.append(' ');
-        }
-        log.debug(sb.toString());
+    try {
+      log.debug("Received Connect.");
+  
+      if (TEST_SESSION_ID.equals(sessionId)) {
+        return getTestSessionNextRequestResponse(null);
       }
-    } else {
-      log.error("Failed to get STAL for session " + sessionId + ", returning QuitRequest");
-      QuitRequestType quitT = stalObjFactory.createQuitRequestType();
-      JAXBElement<QuitRequestType> quit = stalObjFactory.createGetNextRequestResponseTypeQuitRequest(quitT);
-      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(quit);
+  
+      GetNextRequestResponseType response = new GetNextRequestResponseType();
+      response.setSessionId(sessionId.toString());
+  
+      STALRequestBroker stal = getStal(sessionId);
+  
+      if (stal != null) {
+  
+        List<JAXBElement<? extends RequestType>> requestsOut = ((STALRequestBroker) stal).connect();
+        response.getInfoboxReadRequestOrSignRequestOrQuitRequest().addAll(requestsOut);
+  
+        if (log.isDebugEnabled()) {
+          StringBuilder sb = new StringBuilder("Returning initial GetNextRequestResponse containing ");
+          sb.append(requestsOut.size());
+          sb.append(" requests: ");
+          for (JAXBElement<? extends RequestType> reqOut : requestsOut) {
+            sb.append(reqOut.getValue().getClass());
+            sb.append(' ');
+          }
+          log.debug(sb.toString());
+        }
+      } else {
+        log.error("Failed to get STAL, returning QuitRequest.");
+        QuitRequestType quitT = stalObjFactory.createQuitRequestType();
+        JAXBElement<QuitRequestType> quit = stalObjFactory.createGetNextRequestResponseTypeQuitRequest(quitT);
+        response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(quit);
+      }
+      return response;
+      
+    } finally {
+      MDC.remove("id");
     }
-    return response;
   }
 
   @Override
   public GetNextRequestResponseType getNextRequest(GetNextRequestType request) {
 
     if (request.getSessionId() == null) {
-      throw new NullPointerException("No session id provided");
+      throw new NullPointerException("No session id provided.");
     }
 
     Id sessionId = idF.createId(request.getSessionId());
+    MDC.put("id", sessionId.toString());
 
-    List<JAXBElement<? extends ResponseType>> responsesIn = request.getInfoboxReadResponseOrSignResponseOrErrorResponse();
-//    List<ResponseType> responsesIn = request.getInfoboxReadResponseOrSignResponseOrErrorResponse();//getResponse();
+    try {
 
-    if (log.isDebugEnabled()) {
-      StringBuilder sb = new StringBuilder("Received GetNextRequest [");
-      sb.append(sessionId.toString());
-      sb.append("] containing ");
-      sb.append(responsesIn.size());
-      sb.append(" responses: ");
-      for (JAXBElement<? extends ResponseType> respIn : responsesIn) {
-        sb.append(respIn.getValue().getClass());
-        sb.append(' ');
-      }
-      log.debug(sb.toString());
-    }
-
-    if (TEST_SESSION_ID.equals(sessionId)) {
-      return getTestSessionNextRequestResponse(responsesIn);
-    }
-
-    GetNextRequestResponseType response = new GetNextRequestResponseType();
-    response.setSessionId(sessionId.toString());
-
-    STALRequestBroker stal = getStal(sessionId);
-
-    if (stal != null) {
-
-      List<JAXBElement<? extends RequestType>> requestsOut = ((STALRequestBroker) stal).nextRequest(responsesIn);
-      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().addAll(requestsOut);
+      List<JAXBElement<? extends ResponseType>> responsesIn = request.getInfoboxReadResponseOrSignResponseOrErrorResponse();
 
       if (log.isDebugEnabled()) {
-        StringBuilder sb = new StringBuilder("Returning GetNextRequestResponse [");
-        sb.append(sessionId.toString());
-        sb.append("] containing ");
-        sb.append(requestsOut.size());
-        sb.append(" requests: ");
-        for (JAXBElement<? extends RequestType> reqOut : requestsOut) {
-          sb.append(reqOut.getValue().getClass());
+        StringBuilder sb = new StringBuilder("Received GetNextRequest containing ");
+        sb.append(responsesIn.size());
+        sb.append(" responses: ");
+        for (JAXBElement<? extends ResponseType> respIn : responsesIn) {
+          sb.append(respIn.getValue().getClass());
           sb.append(' ');
         }
         log.debug(sb.toString());
       }
-    } else {
-      log.error("Failed to get STAL for session " + sessionId + ", returning QuitRequest");
-      QuitRequestType quitT = stalObjFactory.createQuitRequestType();
-      JAXBElement<QuitRequestType> quit = stalObjFactory.createGetNextRequestResponseTypeQuitRequest(quitT);
-      response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(quit);
+  
+      if (TEST_SESSION_ID.equals(sessionId)) {
+        return getTestSessionNextRequestResponse(responsesIn);
+      }
+  
+      GetNextRequestResponseType response = new GetNextRequestResponseType();
+      response.setSessionId(sessionId.toString());
+  
+      STALRequestBroker stal = getStal(sessionId);
+  
+      if (stal != null) {
+  
+        List<JAXBElement<? extends RequestType>> requestsOut = ((STALRequestBroker) stal).nextRequest(responsesIn);
+        response.getInfoboxReadRequestOrSignRequestOrQuitRequest().addAll(requestsOut);
+  
+        if (log.isDebugEnabled()) {
+          StringBuilder sb = new StringBuilder("Returning GetNextRequestResponse containing ");
+          sb.append(requestsOut.size());
+          sb.append(" requests: ");
+          for (JAXBElement<? extends RequestType> reqOut : requestsOut) {
+            sb.append(reqOut.getValue().getClass());
+            sb.append(' ');
+          }
+          log.debug(sb.toString());
+        }
+      } else {
+        log.error("Failed to get STAL, returning QuitRequest.");
+        QuitRequestType quitT = stalObjFactory.createQuitRequestType();
+        JAXBElement<QuitRequestType> quit = stalObjFactory.createGetNextRequestResponseTypeQuitRequest(quitT);
+        response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(quit);
+      }
+      return response;
+      
+    } finally {
+      MDC.remove("id");
     }
-    return response;
   }
 
   @Override
   public GetHashDataInputResponseType getHashDataInput(GetHashDataInputType request) throws GetHashDataInputFault {
 
     if (request.getSessionId() == null) {
-      throw new NullPointerException("No session id provided");
+      throw new NullPointerException("No session id provided.");
     }
 
     Id sessionId = idF.createId(request.getSessionId());
+    MDC.put("id", sessionId.toString());
 
-    if (log.isDebugEnabled()) {
-      log.debug("Received GetHashDataInputRequest for session " + sessionId + " containing " + request.getReference().size() + " reference(s)");
-    }
-
-    if (TEST_SESSION_ID.equals(sessionId)) {
-      return getTestSessionHashDataInputResponse(request.getReference());
-    }
-    
-    GetHashDataInputResponseType response = new GetHashDataInputResponseType();
-    response.setSessionId(sessionId.toString());
-
-    STALRequestBroker stal = getStal(sessionId);
-
-    if (stal != null) {
-      List<HashDataInput> hashDataInputs = stal.getHashDataInput();
-
-      if (hashDataInputs != null) {
-
-        Map<String, HashDataInput> hashDataIdMap = new HashMap<String, HashDataInput>();
-        for (HashDataInput hdi : hashDataInputs) {
-          if (log.isTraceEnabled()) {
-            log.trace("Provided HashDataInput for reference " + hdi.getReferenceId());
-          }
-          hashDataIdMap.put(hdi.getReferenceId(), hdi);
-        }
-
-        List<GetHashDataInputType.Reference> reqRefs = request.getReference();
-        for (GetHashDataInputType.Reference reqRef : reqRefs) {
-          String reqRefId = reqRef.getID();
-          HashDataInput reqHdi = hashDataIdMap.get(reqRefId);
-          if (reqHdi == null) {
-            String msg = "Failed to resolve HashDataInput for reference " + reqRefId;
-            log.error(msg);
-            GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
-            faultInfo.setErrorCode(1);
-            faultInfo.setErrorMessage(msg);
-            throw new GetHashDataInputFault(msg, faultInfo);
-          }
-
-          InputStream hashDataIS = reqHdi.getHashDataInput();
-          if (hashDataIS == null) {
-            //HashDataInput not cached?
-            String msg = "Failed to obtain HashDataInput for reference " + reqRefId + ", reference not cached";
-            log.error(msg);
-            GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
-            faultInfo.setErrorCode(1);
-            faultInfo.setErrorMessage(msg);
-            throw new GetHashDataInputFault(msg, faultInfo);
-          }
-          ByteArrayOutputStream baos = null;
-          try {
-            if (log.isDebugEnabled()) {
-              log.debug("Resolved HashDataInput " + reqRefId + " (" + reqHdi.getMimeType() + ";charset=" + reqHdi.getEncoding() + ")");
+    try {
+      
+      if (log.isDebugEnabled()) {
+        log.debug("Received GetHashDataInputRequest containing {} reference(s).", request.getReference().size());
+      }
+  
+      if (TEST_SESSION_ID.equals(sessionId)) {
+        return getTestSessionHashDataInputResponse(request.getReference());
+      }
+      
+      GetHashDataInputResponseType response = new GetHashDataInputResponseType();
+      response.setSessionId(sessionId.toString());
+  
+      STALRequestBroker stal = getStal(sessionId);
+  
+      if (stal != null) {
+        List<HashDataInput> hashDataInputs = stal.getHashDataInput();
+  
+        if (hashDataInputs != null) {
+  
+          Map<String, HashDataInput> hashDataIdMap = new HashMap<String, HashDataInput>();
+          for (HashDataInput hdi : hashDataInputs) {
+            if (log.isTraceEnabled()) {
+              log.trace("Provided HashDataInput for reference {}.", hdi.getReferenceId());
             }
-            baos = new ByteArrayOutputStream(hashDataIS.available());
-            int c;
-            while ((c = hashDataIS.read()) != -1) {
-              baos.write(c);
+            hashDataIdMap.put(hdi.getReferenceId(), hdi);
+          }
+  
+          List<GetHashDataInputType.Reference> reqRefs = request.getReference();
+          for (GetHashDataInputType.Reference reqRef : reqRefs) {
+            String reqRefId = reqRef.getID();
+            HashDataInput reqHdi = hashDataIdMap.get(reqRefId);
+            if (reqHdi == null) {
+              String msg = "Failed to resolve HashDataInput for reference " + reqRefId;
+              log.error(msg);
+              GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
+              faultInfo.setErrorCode(1);
+              faultInfo.setErrorMessage(msg);
+              throw new GetHashDataInputFault(msg, faultInfo);
             }
-            GetHashDataInputResponseType.Reference ref = new GetHashDataInputResponseType.Reference();
-            ref.setID(reqRefId);
-            ref.setMimeType(reqHdi.getMimeType());
-            ref.setEncoding(reqHdi.getEncoding());
-            ref.setFilename(reqHdi.getFilename());
-            ref.setValue(baos.toByteArray());
-            response.getReference().add(ref);
-          } catch (IOException ex) {
-            String msg = "Failed to get HashDataInput for reference " + reqRefId;
-            log.error(msg, ex);
-            GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
-            faultInfo.setErrorCode(1);
-            faultInfo.setErrorMessage(msg);
-            throw new GetHashDataInputFault(msg, faultInfo, ex);
-          } finally {
+  
+            InputStream hashDataIS = reqHdi.getHashDataInput();
+            if (hashDataIS == null) {
+              //HashDataInput not cached?
+              String msg = "Failed to obtain HashDataInput for reference " + reqRefId + ", reference not cached";
+              log.error(msg);
+              GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
+              faultInfo.setErrorCode(1);
+              faultInfo.setErrorMessage(msg);
+              throw new GetHashDataInputFault(msg, faultInfo);
+            }
+            ByteArrayOutputStream baos = null;
             try {
-              baos.close();
+              if (log.isDebugEnabled()) {
+                Object[] args = {reqRefId, reqHdi.getMimeType(), reqHdi.getEncoding()};
+                log.debug("Resolved HashDataInput {} ({};charset={}).", args);
+              }
+              baos = new ByteArrayOutputStream(hashDataIS.available());
+              int c;
+              while ((c = hashDataIS.read()) != -1) {
+                baos.write(c);
+              }
+              GetHashDataInputResponseType.Reference ref = new GetHashDataInputResponseType.Reference();
+              ref.setID(reqRefId);
+              ref.setMimeType(reqHdi.getMimeType());
+              ref.setEncoding(reqHdi.getEncoding());
+              ref.setFilename(reqHdi.getFilename());
+              ref.setValue(baos.toByteArray());
+              response.getReference().add(ref);
             } catch (IOException ex) {
+              String msg = "Failed to get HashDataInput for reference " + reqRefId;
+              log.error(msg, ex);
+              GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
+              faultInfo.setErrorCode(1);
+              faultInfo.setErrorMessage(msg);
+              throw new GetHashDataInputFault(msg, faultInfo, ex);
+            } finally {
+              try {
+                baos.close();
+              } catch (IOException ex) {
+              }
             }
           }
+          return response;
+        } else {
+          String msg = "Failed to resolve any HashDataInputs.";
+          log.error(msg);
+          GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
+          faultInfo.setErrorCode(1);
+          faultInfo.setErrorMessage(msg);
+          throw new GetHashDataInputFault(msg, faultInfo);
         }
-        return response;
       } else {
-        String msg = "Failed to resolve any HashDataInputs for session " + sessionId;
+        String msg = "Session timeout."; //Failed to get STAL for session " + sessionId;
         log.error(msg);
         GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
         faultInfo.setErrorCode(1);
         faultInfo.setErrorMessage(msg);
         throw new GetHashDataInputFault(msg, faultInfo);
       }
-    } else {
-      String msg = "Session timeout"; //Failed to get STAL for session " + sessionId;
-      log.error(msg + " " + sessionId);
-      GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
-      faultInfo.setErrorCode(1);
-      faultInfo.setErrorMessage(msg);
-      throw new GetHashDataInputFault(msg, faultInfo);
+      
+    } finally {
+      MDC.remove("id");
     }
   }
 
   private STALRequestBroker getStal(Id sessionId) {
-    if (log.isTraceEnabled()) {
-      log.trace("resolve STAL for session " + sessionId);
-    }
+    log.trace("Resolve STAL for session [{}].", sessionId);
     MessageContext mCtx = wsContext.getMessageContext();
     ServletContext sCtx = (ServletContext) mCtx.get(MessageContext.SERVLET_CONTEXT);
     BindingProcessorManager bpMgr = (BindingProcessorManager) sCtx.getAttribute(BINDING_PROCESSOR_MANAGER);
-    BindingProcessor bp = bpMgr.getBindingProcessor(sessionId);
-    return (bp == null) ? null : (bp.isFinished() ? null : (STALRequestBroker) bp.getSTAL());
+    BindingProcessor bindingProcessor = bpMgr.getBindingProcessor(sessionId);
+    if (bindingProcessor != null) {
+      if (bindingProcessor.getSTAL() instanceof STALRequestBroker) {
+        return (STALRequestBroker) bindingProcessor.getSTAL();
+      }
+    }
+    return null;
   }
 
   private GetNextRequestResponseType getTestSessionNextRequestResponse(List<JAXBElement<? extends ResponseType>> responsesIn) {
@@ -359,6 +374,7 @@ public class STALServiceImpl implements STALPortType {
     return response;
   }
   
+  @SuppressWarnings("unused")
   private void addTestCardChannelRequest(List<JAXBElement<? extends RequestType>> requestList) {
     log.info("[TestSession] add CARDCHANNEL request");
     ScriptType scriptT = ccObjFactory.createScriptType();
@@ -368,6 +384,7 @@ public class STALServiceImpl implements STALPortType {
     requestList.add(ccObjFactory.createScript(scriptT));
   }
 
+  @SuppressWarnings("unused")
   private void addTestInfoboxReadRequest(String infoboxIdentifier, List<JAXBElement<? extends RequestType>> requestList) {
     log.info("[TestSession] add READ "+ infoboxIdentifier + " request");
     InfoboxReadRequestType ibrT = stalObjFactory.createInfoboxReadRequestType();

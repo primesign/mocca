@@ -29,8 +29,8 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.smcc.util.ISO7816Utils;
 import at.gv.egiz.smcc.util.SMCCHelper;
@@ -40,7 +40,7 @@ public class BELPICCard extends AbstractSignatureCard implements SignatureCard {
     /**
      * Logging facility.
      */
-    private static Log log = LogFactory.getLog(BELPICCard.class);
+    private final Logger log = LoggerFactory.getLogger(BELPICCard.class);
 
     public static final byte[] MF = new byte[] { (byte) 0x3F, (byte) 0x00 };
 
@@ -64,16 +64,15 @@ public class BELPICCard extends AbstractSignatureCard implements SignatureCard {
 
     public static final int PINSPEC_SS = 0;
     
-  private static final PINSpec SS_PIN_SPEC = 
-    new PINSpec(4, 12, "[0-9]",
-      "at/gv/egiz/smcc/BELPICCard", "sig.pin", KID, DF_BELPIC);
+  protected PinInfo ssPinInfo =
+    new PinInfo(4, 12, "[0-9]",
+      "at/gv/egiz/smcc/BELPICCard", "sig.pin", KID, DF_BELPIC, PinInfo.UNKNOWN_RETRIES);
     
   /**
    * Creates a new instance.
    */
   public BELPICCard() {
     super("at/gv/egiz/smcc/BelpicCard");
-    pinSpecs.add(SS_PIN_SPEC);
   }
 
   @Override
@@ -161,12 +160,12 @@ public class BELPICCard extends AbstractSignatureCard implements SignatureCard {
       // VERIFY
       execMSE(channel, 0x41, 0xb6, dst);
       // PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATURE
-      verifyPINLoop(channel, SS_PIN_SPEC, provider);
+      verifyPINLoop(channel, ssPinInfo, provider);
       // MANAGE SECURITY ENVIRONMENT : SET DST
       return execPSO_COMPUTE_DIGITAL_SIGNATURE(channel, digest);
 
     } catch (CardException e) {
-      log.warn(e);
+      log.warn("Failed to execute command.", e);
       throw new SignatureCardException("Failed to access card.", e);
     }
 
@@ -176,7 +175,7 @@ public class BELPICCard extends AbstractSignatureCard implements SignatureCard {
     return "Belpic Card";
   }
   
-  protected void verifyPINLoop(CardChannel channel, PINSpec spec,
+  protected void verifyPINLoop(CardChannel channel, PinInfo spec,
       PINGUI provider) throws LockedException, NotActivatedException,
       SignatureCardException, InterruptedException, CardException {
     
@@ -186,7 +185,7 @@ public class BELPICCard extends AbstractSignatureCard implements SignatureCard {
     } while (retries > 0);
   }
 
-  protected int verifyPIN(CardChannel channel, PINSpec pinSpec,
+  protected int verifyPIN(CardChannel channel, PinInfo pinSpec,
       PINGUI provider, int retries) throws SignatureCardException,
       LockedException, NotActivatedException, InterruptedException,
       CardException {

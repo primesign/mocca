@@ -21,8 +21,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ByteArrayHashDataInput implements HashDataInput {
 
-    private static final Log log = LogFactory.getLog(ByteArrayHashDataInput.class);
+    private final Logger log = LoggerFactory.getLogger(ByteArrayHashDataInput.class);
   
     protected byte[] hashData;
     protected String id;
@@ -66,7 +66,7 @@ public class ByteArrayHashDataInput implements HashDataInput {
         }
         this.hashData = baos.toByteArray();
       } catch (IOException ex) {
-        log.error("Failed to cache provided HashDataInput: " + ex.getMessage(), ex);
+        log.error("Failed to cache provided HashDataInput: {}.", ex.getMessage(), ex);
         this.hashData = new byte[0];
       }
       this.id = hdi.getReferenceId();

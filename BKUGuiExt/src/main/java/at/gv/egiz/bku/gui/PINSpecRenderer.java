@@ -17,10 +17,8 @@
 
 package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 import javax.swing.table.DefaultTableCellRenderer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  *
@@ -28,12 +26,25 @@ import org.apache.commons.logging.LogFactory;
  */
 public class PINSpecRenderer extends DefaultTableCellRenderer {
 
-  private static final Log log = LogFactory.getLog(PINSpecRenderer.class);
+  private static final long serialVersionUID = 1L;
+  
+  protected int fontSize;
+  
+	public PINSpecRenderer() {
 
+		this.fontSize = super.getFont().getSize();
+	}
+  
   @Override
   protected void setValue(Object value) {
-    PINSpec pinSpec = (PINSpec) value;
+    PinInfo pinSpec = (PinInfo) value;
     super.setText(pinSpec.getLocalizedName());
+    super.setFont(super.getFont().deriveFont((float) (fontSize)));
   }
 
+	public void setFontSize(int fontSize) {
+
+		this.fontSize = fontSize;
+	}
+  
 }

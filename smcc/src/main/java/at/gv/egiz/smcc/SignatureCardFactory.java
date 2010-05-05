@@ -25,8 +25,8 @@ import javax.smartcardio.ATR;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardTerminal;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A factory for creating {@link SignatureCard}s from {@link Card}s. 
@@ -127,7 +127,7 @@ public class SignatureCardFactory {
   /**
    * Logging facility.
    */
-  private static Log log = LogFactory.getLog(SignatureCardFactory.class);
+  private final Logger log = LoggerFactory.getLogger(SignatureCardFactory.class);
   
   /**
    * The instance to be returned by {@link #getInstance()}.
@@ -320,7 +320,62 @@ public class SignatureCardFactory {
                 (byte) 0xff, (byte) 0xff, (byte) 0xff },
         "at.gv.egiz.smcc.ITCard"));
 
+    // EstEID cards return different ATRs depending on the reader device
+    supportedCards.add(new SupportedCard(
+            // ATR
+            // (3B:5E:11:FF:45:73:74:45:49:44:20:76:65:72:20:31:2E:30)
+            new byte[] { (byte) 0x3b, (byte) 0x5e, (byte) 0x11,
+                    (byte) 0xff, (byte) 0x45, (byte) 0x73, (byte) 0x74,
+                    (byte) 0x45, (byte) 0x49, (byte) 0x44, (byte) 0x20,
+                    (byte) 0x76, (byte) 0x65, (byte) 0x72, (byte) 0x20,
+                    (byte) 0x31, (byte) 0x2e, (byte) 0x30 },
+            // mask
+            // (ff:ff:ff:00:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:00:00:00:00)
+            new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff },
+            "at.gv.egiz.smcc.EstEIDCard"));
+
+    // EstEID cards return different ATRs depending on the reader device
+    supportedCards.add(new SupportedCard(
+            // ATR
+            // (3B:DE:18:FF:C0:80:B1:FE:45:1F:03:45:73:74:45:49:44:20:76:65:72:20:31:2E:30:2B)
+            new byte[] { (byte) 0x3b, (byte) 0xde, (byte) 0x18,
+                    (byte) 0xff, (byte) 0xc0, (byte) 0x80, (byte) 0xb1,
+                    (byte) 0xfe, (byte) 0x45, (byte) 0x1f, (byte) 0x03,
+                    (byte) 0x45, (byte) 0x73, (byte) 0x74, (byte) 0x45,
+                    (byte) 0x49, (byte) 0x44, (byte) 0x20, (byte) 0x76,
+                    (byte) 0x65, (byte) 0x72, (byte) 0x20, (byte) 0x31,
+                    (byte) 0x2e, (byte) 0x30, (byte) 0x2b },
+            // mask
+            // (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:00:00:00:00)
+            new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                    (byte) 0xff, (byte) 0xff, (byte) 0xff },
+            "at.gv.egiz.smcc.EstEIDCard"));
     
+    supportedCards.add(new SupportedCard(
+        // ATR (3B:7D:95:00:00:80:31:80:65:B0:83:11:C0:A9:83:00:90:00 -
+        // 00:00:00:00)
+        new byte[] { (byte) 0x3b, (byte) 0x7d, (byte) 0x95,
+                (byte) 0x00, (byte) 0x00, (byte) 0x80, (byte) 0x31,
+                (byte) 0x80, (byte) 0x65, (byte) 0xb0, (byte) 0x83,
+                (byte) 0x11, (byte) 0xc0, (byte) 0xa9, (byte) 0x83,
+                (byte) 0x00, (byte) 0x90, (byte) 0x00 },
+        // mask
+        // (ff:ff:ff:00:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:00:00:00:00)
+        new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0x00, (byte) 0xff, (byte) 0x00 },
+        "at.gv.egiz.smcc.PtEidCard"));
     
   }
 

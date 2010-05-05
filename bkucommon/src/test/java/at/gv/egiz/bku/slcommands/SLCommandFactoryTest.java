@@ -34,13 +34,11 @@ import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 import at.gv.egiz.bku.slexceptions.SLVersionException;
-import at.gv.egiz.stal.dummy.DummySTAL;
 
 public class SLCommandFactoryTest {
   
   protected static ApplicationContext appCtx;
-  SLCommandFactory factory;
-  SLCommandContext context;
+  protected SLCommandFactory factory;
   
   @BeforeClass
   public static void setUpClass() {
@@ -49,9 +47,10 @@ public class SLCommandFactoryTest {
   
   @Before
   public void setUp() {
-    factory = SLCommandFactory.getInstance();
-    context = new SLCommandContext();
-    context.setSTAL(new DummySTAL());
+    Object bean = appCtx.getBean("slCommandFactory");
+    assertTrue(bean instanceof SLCommandFactory);
+    
+    factory = (SLCommandFactory) bean;
   }
   
   @Test
@@ -60,7 +59,7 @@ public class SLCommandFactoryTest {
         "<NullOperationRequest xmlns=\"http://www.buergerkarte.at/namespaces/securitylayer/1.2#\"/>");
     Source source = new StreamSource(requestReader);
     
-    SLCommand slCommand = factory.createSLCommand(source, context);
+    SLCommand slCommand = factory.createSLCommand(source);
     
     assertTrue(slCommand instanceof NullOperationCommand);
   }
@@ -71,7 +70,7 @@ public class SLCommandFactoryTest {
       "<CreateCMSSignatureRequest xmlns=\"http://www.buergerkarte.at/namespaces/securitylayer/1.2#\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.buergerkarte.at/namespaces/securitylayer/1.2# file:/home/clemens/IAIK/BKU2/svn/bku/utils/src/main/schema/Core-1.2.xsd\" Structure=\"detached\"><KeyboxIdentifier></KeyboxIdentifier><DataObject><MetaInfo><MimeType></MimeType></MetaInfo><Content><Base64Content></Base64Content></Content></DataObject></CreateCMSSignatureRequest>");
     Source source = new StreamSource(requestReader);
     
-    factory.createSLCommand(source, context);
+    factory.createSLCommand(source);
     
   }
   
@@ -83,7 +82,7 @@ public class SLCommandFactoryTest {
         "</NullOperationRequest>");
     Source source = new StreamSource(requestReader);
     
-    factory.createSLCommand(source, context);
+    factory.createSLCommand(source);
     
   }
   

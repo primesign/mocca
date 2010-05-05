@@ -29,7 +29,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import org.junit.Ignore;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -42,12 +41,11 @@ public class UnmarshalTest {
     JAXBContext ctx = JAXBContext.newInstance(ObjectFactory.class);
     Unmarshaller um = ctx.createUnmarshaller();
 
-    JAXBElement<ScriptType> script = (JAXBElement<ScriptType>) um.unmarshal(new File("src/test/cardchannel/script.xml"));
+    JAXBElement<?> script = (JAXBElement<?>) um.unmarshal(new File("src/test/cardchannel/script.xml"));
 
-    ScriptType scriptT = script.getValue();
+    ScriptType scriptT = (ScriptType) script.getValue();
     System.out.println("script " + scriptT.getClass());
     List<Object> resetOrCommandAPDUOrVerifyAPDU = scriptT.getResetOrCommandAPDUOrVerifyAPDU();
-//    assertEquals(3, resetOrCommandAPDUOrVerifyAPDU.size());
     for (Object object : resetOrCommandAPDUOrVerifyAPDU) {
       System.out.println("script contains: " + object.getClass());
     }
@@ -65,7 +63,7 @@ public class UnmarshalTest {
     s.getResetOrCommandAPDUOrVerifyAPDU().add(r);
     JAXBElement<ScriptType> script = of.createScript(s);
 
-    m.marshal(script, new File("src/test/cardchannel/marshalled.xml"));
+    m.marshal(script, System.out);
     
   }
 }

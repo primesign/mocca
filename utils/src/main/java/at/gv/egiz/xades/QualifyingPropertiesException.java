@@ -18,23 +18,22 @@ package at.gv.egiz.xades;
 
 public class QualifyingPropertiesException extends Exception {
 
+  private static final long serialVersionUID = 1L;
+
   public QualifyingPropertiesException() {
-    // TODO Auto-generated constructor stub
+    super();
   }
 
   public QualifyingPropertiesException(String message) {
     super(message);
-    // TODO Auto-generated constructor stub
   }
 
   public QualifyingPropertiesException(Throwable cause) {
     super(cause);
-    // TODO Auto-generated constructor stub
   }
 
   public QualifyingPropertiesException(String message, Throwable cause) {
     super(message, cause);
-    // TODO Auto-generated constructor stub
   }
 
 }

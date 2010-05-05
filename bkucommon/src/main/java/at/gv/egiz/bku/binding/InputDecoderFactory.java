@@ -20,8 +20,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Factory to get a matching instance for a encoded input stream when reading a http request.
@@ -33,7 +33,6 @@ public class InputDecoderFactory {
   public final static String URL_ENCODED = "application/x-www-form-urlencoded";
 
   private static InputDecoderFactory instance = new InputDecoderFactory();
-  private static Log log = LogFactory.getLog(InputDecoderFactory.class);
 
   private String defaultEncoding = URL_ENCODED;
   private Map<String, Class<? extends InputDecoder>> decoderMap = new HashMap<String, Class<? extends InputDecoder>>();
@@ -54,6 +53,9 @@ public class InputDecoderFactory {
    * @return null if the content type is not supported
    */
   public static InputDecoder getDecoder(String contentType, InputStream is) {
+    
+    Logger log = LoggerFactory.getLogger(InputDecoderFactory.class);
+    
     String prefix = contentType.split(";")[0].trim().toLowerCase();
     Class<? extends InputDecoder> dec = instance.decoderMap.get(prefix);
     if (dec == null) {
@@ -67,11 +69,11 @@ public class InputDecoderFactory {
       id.setInputStream(is);
       return id;
     } catch (InstantiationException e) {
-      log.error(e);
+      log.error("Failed to instantiate InputDecoder.", e);
       throw new IllegalArgumentException(
           "Cannot get an input decoder for content type: " + contentType);
     } catch (IllegalAccessException e) {
-      log.error(e);
+      log.error("Failed to instantiate InputDecoder.", e);
       throw new IllegalArgumentException(
           "Cannot get an input decoder for content type: " + contentType);
     }

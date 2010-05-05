@@ -21,8 +21,8 @@ import at.gv.egiz.bku.gui.viewer.FontProviderException;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
 import java.awt.Font;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -30,11 +30,11 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DummyFontLoader implements FontProvider {
 
-  protected final static Log log = LogFactory.getLog(DummyFontLoader.class);
+  private final Logger log = LoggerFactory.getLogger(DummyFontLoader.class);
   
   @Override
   public Font getFont() throws FontProviderException {
-	log.debug("return font");  
+	log.debug("Return font."); 
     return new Font("monospaced", Font.PLAIN, 10);
   }
 

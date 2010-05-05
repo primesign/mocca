@@ -26,15 +26,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ValidatorFactory {
   
   /**
    * Logging facility.
    */
-  protected static Log log = LogFactory.getLog(ValidatorFactory.class);
+  private final Logger log = LoggerFactory.getLogger(ValidatorFactory.class);
   
   private static final Class<Validator> VALIDATOR_CLASS = Validator.class;
   
@@ -93,7 +93,7 @@ public class ValidatorFactory {
       try {
         properties.load(url.openStream());
       } catch (IOException e) {
-        log.error("Failed to load service properties " + url.toExternalForm());
+        log.error("Failed to load service properties {}.", url.toExternalForm());
         continue;
       }
       String className = properties.getProperty(mimeType);
@@ -124,22 +124,22 @@ public class ValidatorFactory {
       return (Validator) implConstructor.newInstance((Object[])null);
     } catch (InvocationTargetException ex) {
       //ex from constructor
-      log.error("Failed to initialize validator class '" + className + "': " + ex.getCause().getMessage(), ex.getCause());
+      log.error("Failed to initialize validator class '{}'.", className, ex.getCause());
       throw ex;
     } catch (NoSuchMethodException ex) {
-      log.error("Validator class '" + className + "' has no nullary constructor", ex);
+      log.error("Validator class '{}' has no nullary constructor.", className, ex);
       throw ex;
     } catch (ClassNotFoundException e) {
-      log.error("Validator class '" + className + "' not found.", e);
+      log.error("Validator class '{}' not found.", className, e);
       throw e;
     } catch (InstantiationException e) {
-      log.error("Faild to initialize validator class '" + className + "'.", e);
+      log.error("Faild to initialize validator class '{}'.", className, e);
       throw e;
     } catch (IllegalAccessException e) {
-      log.error("Faild to initialize validator class '" + className + "'.", e);
+      log.error("Faild to initialize validator class '{}'.", className, e);
       throw e;
     } catch (ClassCastException e) {
-      log.error("Class '" + className + "' is not a validator implementation.", e);
+      log.error("Class '{}' is not a validator implementation.", className, e);
       throw e;
     }
     
@@ -168,7 +168,7 @@ public class ValidatorFactory {
         
       };
     } catch (IOException e) {
-      log.error("Failed to enumerate resources " + SERVICE_ID);
+      log.error("Failed to enumerate resources {}.", SERVICE_ID);
       List<URL> list = Collections.emptyList(); 
       return list.iterator();
     }

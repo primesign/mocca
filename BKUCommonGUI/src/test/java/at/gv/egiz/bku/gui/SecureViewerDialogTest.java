@@ -7,8 +7,6 @@ package at.gv.egiz.bku.gui;
 
 import at.gv.egiz.stal.impl.ByteArrayHashDataInput;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -35,7 +33,7 @@ public class SecureViewerDialogTest {
   @BeforeClass
   public static void setUpClass() throws Exception {
     messages = ResourceBundle.getBundle("at/gv/egiz/bku/gui/Messages");
-    secureViewer = new SecureViewerDialog(null, messages,null, null, new DummyFontLoader(), null);
+    secureViewer = new SecureViewerDialog(null, messages,null, null, new DummyFontLoader(), new DeafHelpListener("../help", messages.getLocale()), 1f);
   }
 
   @AfterClass

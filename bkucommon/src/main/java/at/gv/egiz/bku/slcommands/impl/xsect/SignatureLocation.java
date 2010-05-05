@@ -26,8 +26,8 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
 import at.buergerkarte.namespaces.securitylayer._1.SignatureInfoCreationType;
@@ -45,7 +45,7 @@ public class SignatureLocation {
   /**
    * Logging facility.
    */
-  private static Log log = LogFactory.getLog(SignatureLocation.class);
+  private final Logger log = LoggerFactory.getLogger(SignatureLocation.class);
   
   /**
    * The SignatureContext for the XML signature
@@ -151,12 +151,12 @@ public class SignatureLocation {
       XPathExpression xpathExpr = xPath.compile(xpath);
       node = (Node) xpathExpr.evaluate(contextNode, XPathConstants.NODE);
     } catch (XPathExpressionException e) {
-      log.info("Failed to evaluate SignatureLocation XPath expression '" + xpath + "' on context node.", e);
+      log.info("Failed to evaluate SignatureLocation XPath expression '{}' on context node.", xpath, e);
       throw new SLCommandException(4102);
     }
 
     if (node == null) {
-      log.info("Failed to evaluate SignatureLocation XPath expression '" + xpath + "'. Result is empty.");
+      log.info("Failed to evaluate SignatureLocation XPath expression '{}'. Result is empty.", xpath);
       throw new SLCommandException(4102);
     }
     
@@ -201,9 +201,9 @@ public class SignatureLocation {
       
       if ((namespaceURI == null || XMLConstants.NULL_NS_URI.equals(namespaceURI)) && "saml".equals(prefix)) {
         namespaceURI = "urn:oasis:names:tc:SAML:1.0:assertion";
-        log.debug("Namespace prefix '" + prefix + "' resolved to '" + namespaceURI + "' (MOA-ID Workaround).");
+        log.debug("Namespace prefix '{}' resolved to '{}' (MOA-ID Workaround).", prefix, namespaceURI);
       } else {
-        log.trace("Namespace prefix '" + prefix + "' resolved to '" + namespaceURI + "'.");
+        log.trace("Namespace prefix '{}' resolved to '{}'.", prefix, namespaceURI);
       }
       
       return namespaceURI;

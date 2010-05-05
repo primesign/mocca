@@ -18,6 +18,8 @@ package at.gv.egiz.bku.slexceptions;
 
 public class SLViewerException extends SLException {
 
+  private static final long serialVersionUID = 1L;
+
   public SLViewerException(int errorCode) {
     super(errorCode);
   }

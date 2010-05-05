@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- NOTE: This is not the official person data schema! -->
+<!-- This is a special version of the person data schema to validate identity links. -->
+<xs:schema targetNamespace="http://reference.e-government.gv.at/namespace/persondata/20020228#"
+  xmlns="http://reference.e-government.gv.at/namespace/persondata/20020228#"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0.0">
+  <xs:element name="Person" type="AbstractPersonType"/>
+  <xs:complexType name="AbstractPersonType" abstract="true">
+    <xs:sequence>
+      <xs:element name="Identification" type="IdentificationType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="PhysicalPerson" type="PhysicalPersonType"/>
+  <xs:complexType name="PhysicalPersonType">
+    <xs:complexContent>
+      <xs:extension base="AbstractPersonType">
+        <xs:sequence>
+          <xs:element name="Name" type="PersonNameType"/>
+          <xs:element name="DateOfBirth" type="DateOfBirthType"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="IdentificationType">
+    <xs:sequence>
+      <xs:element name="Value" type="xs:string"/>
+      <xs:element name="Type" type="xs:anyURI"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="DateOfBirthType">
+    <xs:union memberTypes="xs:date xs:gYearMonth xs:gYear"/>
+  </xs:simpleType>
+  <xs:complexType name="PersonNameType">
+    <xs:sequence>
+      <xs:element name="GivenName" type="xs:string"/>
+      <xs:element name="FamilyName">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="primary" default="undefined">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:enumeration value="true"/>
+                    <xs:enumeration value="false"/>
+                    <xs:enumeration value="undefined"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:attribute>
+              <xs:attribute name="prefix" type="xs:string"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

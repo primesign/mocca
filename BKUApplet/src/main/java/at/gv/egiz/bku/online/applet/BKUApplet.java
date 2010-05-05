@@ -18,8 +18,6 @@ package at.gv.egiz.bku.online.applet;
 
 import at.gv.egiz.bku.online.applet.viewer.URLFontLoader;
 import at.gv.egiz.bku.gui.BKUGUIFacade.Style;
-import at.gv.egiz.bku.gui.DefaultHelpListener;
-import at.gv.egiz.bku.gui.AbstractHelpListener;
 import at.gv.egiz.bku.gui.SwitchFocusListener;
 import at.gv.egiz.smcc.SignatureCardFactory;
 import at.gv.egiz.stal.service.translator.STALTranslator;
@@ -35,11 +33,13 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.swing.JApplet;
 import javax.swing.JPanel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUGUIImpl;
+import at.gv.egiz.bku.gui.DeafHelpListener;
+import at.gv.egiz.bku.gui.HelpListener;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
 import at.gv.egiz.stal.service.STALPortType;
 import at.gv.egiz.stal.service.STALService;
@@ -56,7 +56,9 @@ import javax.xml.namespace.QName;
 public class BKUApplet extends JApplet {
 
   private static final long serialVersionUID = 1L;
-  private static Log log = LogFactory.getLog(BKUApplet.class);
+  
+  private final Logger log = LoggerFactory.getLogger(BKUApplet.class);
+  
   /**
    * Applet parameter keys
    */
@@ -71,8 +73,9 @@ public class BKUApplet extends JApplet {
   public static final String BACKGROUND_COLOR = "BackgroundColor";
   public static final String REDIRECT_URL = "RedirectURL";
   public static final String REDIRECT_TARGET = "RedirectTarget";
-  public static final String HASHDATA_DISPLAY_FRAME = "frame";
   public static final String ENFORCE_RECOMMENDED_PIN_LENGTH = "EnforceRecommendedPINLength";
+
+
   /**
    * STAL WSDL namespace and service name
    */
@@ -88,22 +91,21 @@ public class BKUApplet extends JApplet {
   
   static {
     String tmp = UNKNOWN_VERSION;
+    Logger log = LoggerFactory.getLogger(BKUApplet.class);
     try {
       String BKUAppletJar = BKUApplet.class.getProtectionDomain().getCodeSource().getLocation().toString();
       URL manifestURL = new URL("jar:" + BKUAppletJar + "!/META-INF/MANIFEST.MF");
-      if (log.isTraceEnabled()) {
-        log.trace("read version information from " + manifestURL);
-      }
+      log.trace("Read version information from {}.", manifestURL);
       Manifest manifest = new Manifest(manifestURL.openStream());
       Attributes atts = manifest.getMainAttributes();
       if (atts != null) {
         tmp = atts.getValue("Implementation-Build");
       }
     } catch (IOException ex) {
-      log.error("failed to read version", ex);
+      log.error("Failed to read version.", ex);
     } finally {
       VERSION = tmp;
-      log.debug("BKU Applet " + VERSION);
+      log.debug("BKU Applet {}.", VERSION);
     }
   }
 
@@ -112,6 +114,7 @@ public class BKUApplet extends JApplet {
    */
   protected AppletBKUWorker worker;
   protected Thread workerThread;
+  protected HelpListener helpListener;
 
   /*
    * (non-Javadoc)
@@ -139,16 +142,15 @@ public class BKUApplet extends JApplet {
                 "URL for locating help files, e.g. '../help/' (no help provided if missing)"}};
   }
 
-  
   /**
    * Factory method to create and wire HelpListener, GUI and BKUWorker.
    * (Config via applet parameters, see BKUApplet.* constants)
    */
   @Override
   public void init() {
-    log.info("Welcome to MOCCA " + VERSION);
-    log.trace("Called init()");
-    showStatus("Initializing MOCCA applet");
+    log.info("Welcome to MOCCA {}.", VERSION);
+    log.trace("Called init().");
+    showStatus("Initializing MOCCA applet.");
 
     HttpsURLConnection.setDefaultSSLSocketFactory(InternalSSLSocketFactory.getInstance());
 
@@ -156,12 +158,12 @@ public class BKUApplet extends JApplet {
     if (locale != null) {
       this.setLocale(new Locale(locale));
     }
-    log.trace("default locale: " + Locale.getDefault());
-    log.debug("setting locale: " + getLocale());
+    log.trace("Default locale: {}.", Locale.getDefault());
+    log.debug("Applet locale set to: {}.", getLocale());
 
     if (Boolean.parseBoolean(getParameter(ENFORCE_RECOMMENDED_PIN_LENGTH))) {
       SignatureCardFactory.ENFORCE_RECOMMENDED_PIN_LENGTH = true;
-      log.debug("enforce recommended pin length = " + SignatureCardFactory.ENFORCE_RECOMMENDED_PIN_LENGTH);
+      log.debug("Enforce recommended pin length = {}.", SignatureCardFactory.ENFORCE_RECOMMENDED_PIN_LENGTH);
     }
     
     BKUGUIFacade.Style guiStyle;
@@ -173,27 +175,30 @@ public class BKUApplet extends JApplet {
     } else {
       guiStyle = BKUGUIFacade.Style.simple;
     }
-    log.debug("setting gui-style: " + guiStyle);
+    log.debug("Setting gui-style: {}.", guiStyle);
 
     URL backgroundImgURL = null;
     try {
       backgroundImgURL = getURLParameter(BACKGROUND_IMG, null);
-      log.debug("setting background: " + backgroundImgURL);
+      log.debug("Setting background: {}.", backgroundImgURL);
     } catch (MalformedURLException ex) {
-      log.warn("cannot load applet background image: " + ex.getMessage());
+      log.warn("Cannot load applet background image. {}", ex.getMessage());
     }
 
-    AbstractHelpListener helpListener = null;
-    try {
-      helpListener = new DefaultHelpListener(getAppletContext(),
-              getURLParameter(HELP_URL, null), getLocale());
-      if (log.isDebugEnabled()) {
-        log.debug("setting helpURL: " + getURLParameter(HELP_URL, null));
-      }
-    } catch (MalformedURLException ex) {
-      log.warn("failed to load help URL: " + ex.getMessage() + ", disabling help");
-    }
+    helpListener = new DeafHelpListener(getParameter(HELP_URL), getLocale());
 
+    SwitchFocusListener switchFocusListener = new SwitchFocusListener(
+            getAppletContext(), "focusToBrowser");
+    
+    
+//ViewerHelpListener example:
+//    try {
+//      String absoluteHelpURL = new URL(getCodeBase(), getParameter(HELP_URL)).toString();
+//      helpListener = new ViewerHelpListener(getAppletContext(), absoluteHelpURL, getLocale());
+//    } catch (MalformedURLException ex) {
+//      log.error("invalid help URL, help disabled", ex);
+//    }
+    
     // Note: We need a panel in order to be able to set the background
     // properly.
     // Setting the background without a panel has side effects with the
@@ -205,10 +210,10 @@ public class BKUApplet extends JApplet {
     if (backgroundColor != null && backgroundColor.startsWith("#")) {
       try {
         Color color = new Color(Integer.parseInt(backgroundColor.substring(1), 16));
-        log.debug("setting background color to " + color);
+        log.debug("Setting background color to {}.", color);
         contentPanel.setBackground(color);
       } catch (NumberFormatException e) {
-        log.debug("failed to set background color '" + backgroundColor + "'");
+        log.debug("Failed to set background color '{}'.", backgroundColor);
       }
     }
 
@@ -216,30 +221,30 @@ public class BKUApplet extends JApplet {
       URLFontLoader fontProvider = new URLFontLoader(getCodeBase());
       fontProvider.loadInBackground();
       BKUGUIFacade gui = createGUI(contentPanel, getLocale(), guiStyle,
-              backgroundImgURL, fontProvider, helpListener, null); 
+              backgroundImgURL, fontProvider, helpListener, switchFocusListener);
 
       worker = createBKUWorker(this, gui);
     } catch (MalformedURLException ex) {
-      log.fatal("failed to load font provider URL", ex);
+      log.error("Failed to load font provider URL.", ex);
       System.err.println("invalid font provider URL " + ex.getMessage());
     }
   }
 
   @Override
   public void start() {
-    log.trace("Called start()");
+    log.trace("Called start().");
     if (worker != null) {
       showStatus("Starting MOCCA applet");
       workerThread = new Thread(worker);
       workerThread.start();
     } else {
-      log.debug("cannot start uninitialzed MOCCA applet");
+      log.debug("Cannot start uninitialzed MOCCA applet.");
     }
   }
 
   @Override
   public void stop() {
-    log.trace("Called stop()");
+    log.trace("Called stop().");
     showStatus("Stopping MOCCA applet");
     if ((workerThread != null) && (workerThread.isAlive())) {
       workerThread.interrupt();
@@ -248,7 +253,11 @@ public class BKUApplet extends JApplet {
 
   @Override
   public void destroy() {
-    log.trace("Called destroy()");
+    log.trace("Called destroy().");
+  }
+
+  public String getHelpURL() {
+    return helpListener.getHelpURL();
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -256,7 +265,7 @@ public class BKUApplet extends JApplet {
   // ///////////////////////////////////////////////////////////////////////////
   protected BKUGUIFacade createGUI(Container contentPane, Locale locale,
           Style guiStyle, URL backgroundImgURL,
-          FontProvider fontProvider, AbstractHelpListener helpListener,
+          FontProvider fontProvider, HelpListener helpListener,
           SwitchFocusListener switchFocusListener) {
     return new BKUGUIImpl(contentPane, locale, guiStyle, backgroundImgURL,
             fontProvider, helpListener, switchFocusListener);
@@ -277,7 +286,7 @@ public class BKUApplet extends JApplet {
    */
   public STALPortType getSTALPort() throws MalformedURLException {
     URL wsdlURL = getURLParameter(WSDL_URL, null);
-    log.debug("setting STAL WSDL: " + wsdlURL);
+    log.debug("Setting STAL WSDL: {}.", wsdlURL);
     QName endpointName = new QName(STAL_WSDL_NS, STAL_SERVICE);
     STALService stal = new STALService(wsdlURL, endpointName);
     return stal.getSTALPort();
@@ -304,25 +313,26 @@ public class BKUApplet extends JApplet {
     try {
       AppletContext ctx = getAppletContext();
       if (ctx == null) {
-        log.error("no applet context (applet might already have been destroyed)");
+        log.error("No applet context (applet might already have been destroyed).");
         return;
       }
       URL redirectURL = getURLParameter(REDIRECT_URL, sessionId);
       String redirectTarget = getParameter(REDIRECT_TARGET);
       if (redirectTarget == null) {
-        log.info("Done. Redirecting to " + redirectURL + " ...");
+        log.info("Done. Redirecting to {}.", redirectURL);
         ctx.showDocument(redirectURL);
       } else {
-        log.info("Done. Redirecting to " + redirectURL + " (target=" + redirectTarget + ") ...");
+        log.info("Done. Redirecting to {} (target={}).", redirectURL, redirectTarget);
         ctx.showDocument(redirectURL, redirectTarget);
       }
     } catch (MalformedURLException ex) {
-      log.warn("Failed to redirect: " + ex.getMessage(), ex);
-      // gui.showErrorDialog(errorMsg, okListener, actionCommand)
+      log.warn("Failed to redirect.", ex);
     }
   }
 
   public void getFocusFromBrowser() {
+	  
+	  log.debug("Obtained focus from browser.");
 
     worker.getFocusFromBrowser();
   }
@@ -348,11 +358,11 @@ public class BKUApplet extends JApplet {
         }
         return url;
       } catch (MalformedURLException ex) {
-        log.error("applet paremeter " + urlParam + " is not a valid URL: " + ex.getMessage());
+        log.error("Applet paremeter {} ist not a valid URL. {}", urlParam, ex.getMessage());
         throw ex;
       }
     } else {
-      log.error("applet paremeter " + paramKey + " not set");
+      log.error("Applet paremeter {} not set.", paramKey);
       throw new MalformedURLException(paramKey + " not set");
     }
   }

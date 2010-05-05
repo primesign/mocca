@@ -17,7 +17,7 @@
 package at.gv.egiz.bku.gui;
 
   import at.gv.egiz.stal.HashDataInput;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -46,10 +46,14 @@ public interface BKUGUIFacade {
   public static final String DEFAULT_BACKGROUND = "/at/gv/egiz/bku/gui/chip32.png";
   public static final String DEFAULT_ICON = "/at/gv/egiz/bku/gui/chiperling105.png";
   public static final String HELP_IMG = "/at/gv/egiz/bku/gui/help.png";
+  public static final String HELP_IMG_L = "/at/gv/egiz/bku/gui/help_l.png";
+  public static final String HELP_IMG_XL = "/at/gv/egiz/bku/gui/help_xl.png";
+  public static final String HELP_IMG_XXL = "/at/gv/egiz/bku/gui/help_xxl.png";
   public static final String HELP_IMG_FOCUS = "/at/gv/egiz/bku/gui/help.png"; //help_focus.png";
   public static final String HASHDATA_FONT = "Monospaced";
   public static final Color ERROR_COLOR = Color.RED;
   public static final Color HYPERLINK_COLOR = Color.BLUE;
+  public static final Color HELP_COLOR = new Color(70, 148, 169);
   public static final String TITLE_WELCOME = "title.welcome";
   public static final String TITLE_INSERTCARD = "title.insertcard";
   public static final String TITLE_CARD_NOT_SUPPORTED = "title.cardnotsupported";
@@ -114,11 +118,17 @@ public interface BKUGUIFacade {
   public static final String SAVE_HASHDATAINPUT_PREFIX = "save.hashdatainput.prefix";
   public static final String ALT_HELP = "alt.help";
 
-  public void showEnterPINDirect(PINSpec spec, int retries);
+  public static final String SIGDATA_TOOLTIPTEXT = "dialog.sigpin.infolabel.sigdata.tooltiptext";
+  public static final String SWITCH_FOCUS_DUMMY_LABEL_NAME = "DummyLabel";
+  
+  public enum DIALOG_TYPE {DIALOGUE_UNDEFINED, DIALOGUE_VERIFY_PIN, DIALOGUE_ENTER_PIN, DIALOGUE_SHOW_SIG_DATA, DIALOGUE_SIGNATURE_PIN, DIALOGUE_MESSAGE};
+  
+  
+  public void showEnterPINDirect(PinInfo pinInfo, int retries);
 
-  public void showEnterPIN(PINSpec spec, int retries);
+  public void showEnterPIN(PinInfo pinInfo, int retries);
 
-  public void showSignatureDataDialog(PINSpec spec, ActionListener listener, String string, ActionListener aThis0, String string0, ActionListener aThis1, String string1);
+  public void showSignatureDataDialog(PinInfo pinInfo, ActionListener listener, String string, ActionListener aThis0, String string0, ActionListener aThis1, String string1);
 
   public void correctionButtonPressed();
 
@@ -134,11 +144,11 @@ public interface BKUGUIFacade {
    */
   public Locale getLocale();
 
-  public void showVerifyPINDialog(PINSpec pinSpec, int numRetries,
+  public void showVerifyPINDialog(PinInfo pinSpec, int numRetries,
           ActionListener okListener, String okCommand,
           ActionListener cancelListener, String cancelCommand);
 
-  public void showSignaturePINDialog(PINSpec pinSpec, int numRetries,
+  public void showSignaturePINDialog(PinInfo pinSpec, int numRetries,
           ActionListener signListener, String signCommand,
           ActionListener cancelListener, String cancelCommand,
           ActionListener viewerListener, String viewerCommand);

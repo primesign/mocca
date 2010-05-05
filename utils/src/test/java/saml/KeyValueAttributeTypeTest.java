@@ -17,9 +17,7 @@
 
 package saml;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
@@ -27,7 +25,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.namespace.QName;
 import oasis.names.tc.saml._1_0.assertion.AnyType;
 import oasis.names.tc.saml._1_0.assertion.AssertionType;
 import oasis.names.tc.saml._1_0.assertion.AttributeStatementType;
@@ -38,7 +35,6 @@ import oasis.names.tc.saml._1_0.assertion.StatementAbstractType;
 import oasis.names.tc.saml._1_0.assertion.SubjectType;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.w3._2000._09.xmldsig_.KeyValueType;
 import org.w3._2000._09.xmldsig_.RSAKeyValueType;
 import org.w3c.dom.Element;
 
@@ -54,8 +50,9 @@ public class KeyValueAttributeTypeTest {
     JAXBContext ctx = JAXBContext.newInstance(ObjectFactory.class, org.w3._2000._09.xmldsig_.ObjectFactory.class);
     Unmarshaller um = ctx.createUnmarshaller();
 
-    JAXBElement<AssertionType> assertion = (JAXBElement<AssertionType>) um.unmarshal(new File("/home/clemens/workspace/schema-base/src/main/schema/test/saml10.xml"));
-    List<StatementAbstractType> statements = assertion.getValue().getStatementOrSubjectStatementOrAuthenticationStatement();
+    JAXBElement<?> assertion = (JAXBElement<?>) um.unmarshal(new File("/home/clemens/workspace/schema-base/src/main/schema/test/saml10.xml"));
+    AssertionType value = (AssertionType) assertion.getValue();
+    List<StatementAbstractType> statements = ((AssertionType) value).getStatementOrSubjectStatementOrAuthenticationStatement();
     for (StatementAbstractType stmt : statements) {
       if (stmt instanceof AttributeStatementType) {
         System.out.println("AttributeStatement");

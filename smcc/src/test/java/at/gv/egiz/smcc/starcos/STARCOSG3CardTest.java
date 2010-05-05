@@ -24,7 +24,6 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import at.gv.egiz.smcc.CancelledException;
-import at.gv.egiz.smcc.CardEmul;
 import at.gv.egiz.smcc.CardNotSupportedException;
 import at.gv.egiz.smcc.CardTerminalEmul;
 import at.gv.egiz.smcc.CardTest;
@@ -34,12 +33,11 @@ import at.gv.egiz.smcc.NotActivatedException;
 import at.gv.egiz.smcc.PIN;
 import at.gv.egiz.smcc.PINFormatException;
 import at.gv.egiz.smcc.PINMgmtSignatureCard;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.SignatureCardFactory;
 import at.gv.egiz.smcc.pin.gui.SMCCTestPINProvider;
-import org.junit.Ignore;
 
 public class STARCOSG3CardTest extends CardTest {
 
@@ -72,17 +70,17 @@ public class STARCOSG3CardTest extends CardTest {
     PINMgmtSignatureCard signatureCard = (PINMgmtSignatureCard) createSignatureCard(
             STARCOSG3CardEmul.DEFAULT_SS_PIN, STARCOSG3CardEmul.DEFAULT_SS_PIN, PIN.STATE_RESET);
     
-    for (PINSpec pinSpec : signatureCard.getPINSpecs()) {
+    for (PinInfo pinInfo : signatureCard.getPinInfos()) {
 
       char[] pin = "123456".toCharArray();
 
-      for (int i = pinSpec.getMinLength(); i <= pinSpec.getMaxLength(); i++) {
-        signatureCard.verifyPIN(pinSpec, new SMCCTestPINProvider(pin));
+      for (int i = pinInfo.getMinLength(); i <= pinInfo.getMaxLength(); i++) {
+        signatureCard.verifyPIN(pinInfo, new SMCCTestPINProvider(pin));
         char[] newPin = new char[i];
         Arrays.fill(newPin, '0');
         signatureCard
-            .changePIN(pinSpec, new ChangePINProvider(pin, newPin));
-        signatureCard.verifyPIN(pinSpec, new SMCCTestPINProvider(newPin));
+            .changePIN(pinInfo, new ChangePINProvider(pin, newPin));
+        signatureCard.verifyPIN(pinInfo, new SMCCTestPINProvider(newPin));
         pin = newPin;
       }
     }
@@ -97,21 +95,21 @@ public class STARCOSG3CardTest extends CardTest {
     PINMgmtSignatureCard signatureCard = (PINMgmtSignatureCard) createSignatureCard(
             STARCOSG3CardEmul.TRANSPORT_SS_PIN, STARCOSG3CardEmul.TRANSPORT_SS_PIN, PIN.STATE_PIN_NOTACTIVE);
     
-    for (PINSpec pinSpec : signatureCard.getPINSpecs()) {
+    for (PinInfo pinInfo : signatureCard.getPinInfos()) {
 
-      char[] pin = "123456789".substring(0, pinSpec.getMinLength()).toCharArray();
+      char[] pin = "123456789".substring(0, pinInfo.getMinLength()).toCharArray();
       char[] transportPIN = "123456".toCharArray();
 
       boolean notActive = false;
       try {
-        signatureCard.verifyPIN(pinSpec, new SMCCTestPINProvider(pin));
+        signatureCard.verifyPIN(pinInfo, new SMCCTestPINProvider(pin));
       } catch (NotActivatedException ex) {
         notActive = true;
       }
       assertTrue(notActive);
 
-      signatureCard.activatePIN(pinSpec, new ChangePINProvider(transportPIN, pin));
-      signatureCard.verifyPIN(pinSpec, new SMCCTestPINProvider(pin));
+      signatureCard.activatePIN(pinInfo, new ChangePINProvider(transportPIN, pin));
+      signatureCard.verifyPIN(pinInfo, new SMCCTestPINProvider(pin));
     }
   }
 

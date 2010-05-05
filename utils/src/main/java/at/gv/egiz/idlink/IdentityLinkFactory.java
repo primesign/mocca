@@ -70,14 +70,15 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import oasis.names.tc.saml._1_0.assertion.AnyType;
 import oasis.names.tc.saml._1_0.assertion.AssertionType;
 import oasis.names.tc.saml._1_0.assertion.AttributeStatementType;
 import oasis.names.tc.saml._1_0.assertion.AttributeType;
 import oasis.names.tc.saml._1_0.assertion.SubjectConfirmationType;
 import oasis.names.tc.saml._1_0.assertion.SubjectType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -88,14 +89,12 @@ import at.gv.e_government.reference.namespace.persondata._20020228_.PhysicalPers
 import at.gv.e_government.reference.namespace.persondata._20020228_.IdentificationType.Value;
 import at.gv.e_government.reference.namespace.persondata._20020228_.PersonNameType.FamilyName;
 import at.gv.egiz.marshal.MarshallerFactory;
-import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
 import at.gv.egiz.xmldsig.KeyTypeNotSupportedException;
 import at.gv.egiz.xmldsig.KeyValueFactory;
-import oasis.names.tc.saml._1_0.assertion.AnyType;
 
 public class IdentityLinkFactory {
   
-  private static Log log = LogFactory.getLog(IdentityLinkFactory.class);
+  private final Logger log = LoggerFactory.getLogger(IdentityLinkFactory.class);
   
   /**
    * The instance returned by {@link #getInstance()}.
@@ -380,7 +379,7 @@ public class IdentityLinkFactory {
         log.debug(writer.toString());
         
       } catch (Exception e) {
-        log.debug(e);
+        log.debug("Logging assertion failed.", e);
       }
       
     }

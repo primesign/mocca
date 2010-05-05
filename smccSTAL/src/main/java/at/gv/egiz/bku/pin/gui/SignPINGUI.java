@@ -19,12 +19,12 @@ package at.gv.egiz.bku.pin.gui;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.smccstal.SecureViewer;
 import at.gv.egiz.smcc.CancelledException;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.pin.gui.PINGUI;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
 import java.security.DigestException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The number of retries is not fixed and there is no way (?) to obtain this value.
@@ -39,7 +39,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class SignPINGUI extends SignPINProvider implements PINGUI {
 
-  protected static final Log log = LogFactory.getLog(SignPINGUI.class);
+  private final Logger log = LoggerFactory.getLogger(SignPINGUI.class);
 
   private boolean retry = false;
 
@@ -48,7 +48,7 @@ public class SignPINGUI extends SignPINProvider implements PINGUI {
   }
 
   @Override
-  public void enterPINDirect(PINSpec spec, int retries)
+  public void enterPINDirect(PinInfo spec, int retries)
           throws CancelledException, InterruptedException {
     if (retry) {
       gui.showEnterPINDirect(spec, retries);
@@ -60,7 +60,7 @@ public class SignPINGUI extends SignPINProvider implements PINGUI {
   }
 
   @Override
-  public void enterPIN(PINSpec spec, int retries)
+  public void enterPIN(PinInfo spec, int retries)
           throws CancelledException, InterruptedException {
     if (retry) {
       gui.showEnterPIN(spec, retries);
@@ -71,7 +71,7 @@ public class SignPINGUI extends SignPINProvider implements PINGUI {
     }
   }
 
-  private void showSignatureData(PINSpec spec)
+  private void showSignatureData(PinInfo spec)
           throws CancelledException, InterruptedException {
 
     gui.showSignatureDataDialog(spec,
@@ -80,20 +80,20 @@ public class SignPINGUI extends SignPINProvider implements PINGUI {
             this, "secureViewer");
 
     do {
-      log.trace("[" + Thread.currentThread().getName() + "] wait for action");
+      log.trace("[{}] wait for action.", Thread.currentThread().getName());
       waitForAction();
-      log.trace("[" + Thread.currentThread().getName() + "] received action " + action);
+      log.trace("[{}] received action {}.", Thread.currentThread().getName(), action);
 
       if ("secureViewer".equals(action)) {
         try {
           viewer.displayDataToBeSigned(signedInfo, this, "signatureData");
         } catch (DigestException ex) {
-          log.error("Bad digest value: " + ex.getMessage());
+          log.error("Bad digest value: {}", ex.getMessage());
           gui.showErrorDialog(BKUGUIFacade.ERR_INVALID_HASH,
                   new Object[]{ex.getMessage()},
                   this, "error");
         } catch (Exception ex) {
-          log.error("Could not display hashdata inputs: " +
+          log.error("Could not display hashdata inputs: {}.",
                   ex.getMessage());
           gui.showErrorDialog(BKUGUIFacade.ERR_DISPLAY_HASHDATA,
                   new Object[]{ex.getMessage()},
@@ -113,7 +113,7 @@ public class SignPINGUI extends SignPINProvider implements PINGUI {
         throw new CancelledException(spec.getLocalizedName() +
                 " entry cancelled");
       } else {
-        log.error("unknown action command " + action);
+        log.error("Unknown action command {}.", action);
       }
     } while (true);
   }

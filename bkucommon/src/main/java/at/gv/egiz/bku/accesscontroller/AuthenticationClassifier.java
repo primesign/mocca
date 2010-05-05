@@ -27,18 +27,18 @@ import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AuthenticationClassifier {
 	private static AuthenticationClassifier instance = new AuthenticationClassifier();
-	private static Log log = LogFactory.getLog(AuthenticationClassifier.class);
 	private final static String GOV_DOMAIN = ".gv.at";
 
 	private AuthenticationClassifier() {
 	}
 
 	public static boolean isGovAgency(X509Certificate cert) {
+	    Logger log = LoggerFactory.getLogger(AuthenticationClassifier.class);
 		String[] rdns = (cert.getSubjectX500Principal().getName()).split(",");
 		for (String rdn : rdns) {
 			if (rdn.startsWith("CN=")) {
@@ -63,7 +63,7 @@ public class AuthenticationClassifier {
 				}
 			}
 		} catch (CertificateParsingException e) {
-			log.error(e);
+			log.error("Failed to parse certificate.", e);
 		}
 		if ((cert.getExtensionValue("1.2.40.0.10.1.1.1") != null)
         || (cert.getExtensionValue("1.2.40.0.10.1.1.2") != null)) {

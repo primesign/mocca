@@ -39,8 +39,8 @@ import javax.swing.LayoutStyle;
 import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -49,7 +49,10 @@ import org.apache.commons.logging.LogFactory;
 public class HelpViewer extends JDialog
         implements ActionListener {
 
-  protected static final Log log = LogFactory.getLog(HelpViewer.class);
+  private static final long serialVersionUID = 1L;
+
+  private final Logger log = LoggerFactory.getLogger(HelpViewer.class);
+  
   private static HelpViewer dialog;
   protected ResourceBundle messages;
   protected AppletContext ctx;
@@ -128,7 +131,7 @@ public class HelpViewer extends JDialog
   }
 
   private JPanel createViewerPanel(URL helpURL) {  //String viewerLabelText, 
-    log.debug("viewer dialog: " + helpURL.toString());
+    log.debug("Viewer dialog: {}.", helpURL.toString());
 
     final JEditorPane viewer = new JEditorPane();
     viewer.setEditable(false);
@@ -146,7 +149,7 @@ public class HelpViewer extends JDialog
           final URL url = e.getURL();
           if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
             if (ctx != null) {
-              log.debug("open external link in help viewer: " + url);
+              log.debug("Open external link in help viewer: {}.", url);
               ctx.showDocument(url, "_blank");
             } else {
               SwingUtilities.invokeLater(new Runnable() {

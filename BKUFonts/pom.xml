@@ -1,22 +1,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>bku</artifactId>
+    <artifactId>mocca</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.2.14-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
   </parent>
   <groupId>at.gv.egiz</groupId>
   <artifactId>BKUFonts</artifactId>
-  <version>1.2</version>
+  <version>${mocca.fonts.version}</version>
   <name>BKU Fonts</name>
   <description>
+    <!--
+     |   ResourceFontLoader needs font resources on runtime classpath.
+     |   Runtime dependency on BKUFonts ensures that transitive dependency
+     |   remains (not true for provided), see BKUViewer, BKULocal and
+     |   BKUOnline -->
+
     This module is used in validator(s) and viewer and is a direct dependency of
-      - BKUViewer (attention, this is the validator!)
-        TextValidator depends on the fonts. (compile scope, make available for BKULocal/Online TextValidator)
-        (TextValidator should rather use a FontProvider)
-      - BKUOnline:
-          - direct/provided if jar inclusion in applet dir, but do not enforce inclusion as WEB-INF/lib
-          - transitive from BKUViewer if unpack-fonts to applet dir
+      - bkucommon (direct runtime dependency)
+      - BKUViewer (transitive runtime from bkucommon)
+        TextValidator depends on the fonts. (TextValidator should rather use a FontProvider)
+      - BKUOnline (transitive runtime from bkucommon/bkuviewer)
+        unpack-fonts to applet dir and include jar in WEB-INF/lib
+      - BKULocal (transitive runtime from bkucommon/bkuviewer)
       - removed the BKUCommonGUI (runtime; propagate dependency to BKUApplet):
           no real dependency: BKUCommonGUI contains SecureFontProvider interface only
           (which does not state how fonts are loaded); implementations should depend no BKUFonts

@@ -17,17 +17,17 @@
 package at.gv.egiz.smcc.pin.gui;
 
 import at.gv.egiz.smcc.CancelledException;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 
 
 public interface ModifyPINGUI extends ModifyPINProvider {
 
-  void modifyPINDirect(PINSpec spec, int retries) throws CancelledException, InterruptedException;
+  void modifyPINDirect(PinInfo pinInfo, int retries) throws CancelledException, InterruptedException;
   void finishDirect();
 
-  void enterCurrentPIN(PINSpec spec, int retries);
-  void enterNewPIN(PINSpec spec);
-  void confirmNewPIN(PINSpec spec);
+  void enterCurrentPIN(PinInfo pinInfo, int retries);
+  void enterNewPIN(PinInfo pinInfo);
+  void confirmNewPIN(PinInfo pinInfo);
   void validKeyPressed();
   void correctionButtonPressed();
   void allKeysCleared();

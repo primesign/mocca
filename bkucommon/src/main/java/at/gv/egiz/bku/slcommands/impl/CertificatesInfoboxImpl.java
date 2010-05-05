@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
@@ -42,7 +42,7 @@ public class CertificatesInfoboxImpl extends AbstractAssocArrayInfobox {
   /**
    * Logging facility.
    */
-  private static Log log = LogFactory.getLog(CertificatesInfoboxImpl.class);
+  private final Logger log = LoggerFactory.getLogger(CertificatesInfoboxImpl.class);
 
   /**
    * The valid keys.

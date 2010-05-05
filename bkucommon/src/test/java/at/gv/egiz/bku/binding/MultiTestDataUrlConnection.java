@@ -17,10 +17,15 @@
 package at.gv.egiz.bku.binding;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Map;
 
 public class MultiTestDataUrlConnection extends TestDataUrlConnection {
   
+  public MultiTestDataUrlConnection(URL url) {
+    super(url);
+  }
+
   public static interface DataSourceProvider {
     public Map<String, String> getResponseHeaders();
     public String getResponseContent();

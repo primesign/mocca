@@ -44,8 +44,8 @@ import java.util.TimeZone;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.buergerkarte.namespaces.cardchannel.AttributeList;
 import at.buergerkarte.namespaces.cardchannel.AttributeType;
@@ -68,7 +68,7 @@ public class SVPersonendatenInfoboxImpl extends AbstractAssocArrayInfobox {
   /**
    * Logging facility.
    */
-  private static Log log = LogFactory.getLog(SVPersonendatenInfoboxImpl.class);
+  private final Logger log = LoggerFactory.getLogger(SVPersonendatenInfoboxImpl.class);
 
   public static final String EHIC = "EHIC";
   
@@ -145,7 +145,7 @@ public class SVPersonendatenInfoboxImpl extends AbstractAssocArrayInfobox {
           
         }
       } catch (CodingException e) {
-        log.info("Failed to decode '" + getIdentifier() + "' infobox.", e);
+        log.info("Failed to decode '{}' infobox.", getIdentifier(), e);
         throw new SLCommandException(4000,
             SLExceptionMessages.EC4000_UNCLASSIFIED_INFOBOX_INVALID,
             new Object[] { "IdentityLink" });
@@ -255,6 +255,8 @@ public class SVPersonendatenInfoboxImpl extends AbstractAssocArrayInfobox {
   }
   
   private static void setAttributeValue(AttributeType attributeType, ASN1Object value) {
+    
+    Logger log = LoggerFactory.getLogger(SVPersonendatenInfoboxImpl.class);
     
     if (value.isA(ASN.OCTET_STRING)) {
       

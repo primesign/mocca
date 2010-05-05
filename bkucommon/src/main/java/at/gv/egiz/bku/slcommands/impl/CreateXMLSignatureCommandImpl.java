@@ -26,8 +26,8 @@ import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.URIReferenceException;
 import javax.xml.crypto.dsig.XMLSignatureException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 
@@ -62,8 +62,7 @@ public class CreateXMLSignatureCommandImpl extends
   /**
    * Logging facility.
    */
-  protected static Log log = LogFactory
-      .getLog(CreateXMLSignatureCommandImpl.class);
+  private final Logger log = LoggerFactory.getLogger(CreateXMLSignatureCommandImpl.class);
 
   /**
    * The signing certificate.
@@ -79,15 +78,14 @@ public class CreateXMLSignatureCommandImpl extends
    * The to-be signed signature.
    */
   protected Signature signature;
-
+  
+  /**
+   * Disable hash data input validation?
+   */
+  protected boolean disableHashdataInputValidation;
+  
   @Override
-  public void init(SLCommandContext ctx, Object unmarshalledRequest)
-      throws SLCommandException {
-    super.init(ctx, unmarshalledRequest);
-  }
-
-  @Override
-  public void prepareXMLSignature() throws SLCommandException,
+  public void prepareXMLSignature(SLCommandContext commandContext) throws SLCommandException,
       SLRequestException {
 
     CreateXMLSignatureRequestType request = getRequestValue();
@@ -105,7 +103,7 @@ public class CreateXMLSignatureCommandImpl extends
       throw new SLCommandException(4006);
     }
 
-    signature = new Signature(getCmdCtx().getURLDereferencerContext(),
+    signature = new Signature(commandContext.getURLDereferencer(),
         idValueFactory, algorithmMethodFactory);
 
     // SigningTime
@@ -130,11 +128,12 @@ public class CreateXMLSignatureCommandImpl extends
 
   /**
    * Gets the signing certificate from STAL.
+   * @param commandContext TODO
    * 
    * @throws SLCommandException
    *           if getting the singing certificate fails
    */
-  private void getSigningCertificate() throws SLCommandException {
+  private void getSigningCertificate(SLCommandContext commandContext) throws SLCommandException {
 
     CreateXMLSignatureRequestType request = getRequestValue();
     keyboxIdentifier = request.getKeyboxIdentifier();
@@ -142,6 +141,8 @@ public class CreateXMLSignatureCommandImpl extends
     InfoboxReadRequest stalRequest = new InfoboxReadRequest();
     stalRequest.setInfoboxIdentifier(keyboxIdentifier);
 
+    STALHelper stalHelper = new STALHelper(commandContext.getSTAL());
+    
     stalHelper.transmitSTALRequest(Collections.singletonList((STALRequest) stalRequest));
     List<X509Certificate> certificates = stalHelper.getCertificatesFromResponses();
     if (certificates == null || certificates.size() != 1) {
@@ -154,15 +155,16 @@ public class CreateXMLSignatureCommandImpl extends
 
   /**
    * Signs the signature.
+   * @param commandContext TODO
    * 
    * @throws SLCommandException
    *           if signing the signature fails
    * @throws SLViewerException
    */
-  private void signXMLSignature() throws SLCommandException, SLViewerException {
+  private void signXMLSignature(SLCommandContext commandContext) throws SLCommandException, SLViewerException {
 
     try {
-      signature.sign(getCmdCtx().getSTAL(), keyboxIdentifier);
+      signature.sign(commandContext.getSTAL(), keyboxIdentifier);
     } catch (MarshalException e) {
       log.error("Failed to marshall XMLSignature.", e);
       throw new SLCommandException(4000);
@@ -181,33 +183,42 @@ public class CreateXMLSignatureCommandImpl extends
   }
 
   @Override
-  public SLResult execute() {
+  public SLResult execute(SLCommandContext commandContext) {
     try {
 
       // get certificate in order to select appropriate algorithms for hashing
       // and signing
-      getSigningCertificate();
+      log.info("Requesting signing certificate.");
+      getSigningCertificate(commandContext);
+      if (log.isDebugEnabled()) {
+        log.debug("Got signing certificate. {}", signingCertificate);
+      } else {
+        log.info("Got signing certificate.");
+      }
 
       // prepare the XMLSignature for signing
-      prepareXMLSignature();
+      log.info("Preparing XML signature.");
+      prepareXMLSignature(commandContext);
 
       // sign the XMLSignature
-      signXMLSignature();
-
-      if (log.isTraceEnabled()) {
+      log.info("Signing XML signature.");
+      signXMLSignature(commandContext);
+      if (log.isDebugEnabled()) {
 
         DOMImplementationLS domImplLS = DOMUtils.getDOMImplementationLS();
         LSSerializer serializer = domImplLS.createLSSerializer();
         String debugString = serializer.writeToString(signature.getDocument());
 
-        log.trace(debugString);
+        log.debug(debugString);
 
+      } else {
+        log.info("XML signature signed.");
       }
 
       return new CreateXMLSignatureResultImpl(signature.getDocument());
 
     } catch (SLException e) {
-      return new ErrorResultImpl(e, cmdCtx.getLocale());
+      return new ErrorResultImpl(e, commandContext.getLocale());
     }
   }
 

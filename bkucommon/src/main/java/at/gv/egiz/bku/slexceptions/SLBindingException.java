@@ -21,6 +21,8 @@ package at.gv.egiz.bku.slexceptions;
  */
 public class SLBindingException extends SLException {
 
+  private static final long serialVersionUID = 1L;
+
   public SLBindingException(int errorCode) {
     super(errorCode);
   }

@@ -19,7 +19,6 @@ package at.gv.egiz.bku.binding;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
-import java.net.URL;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -29,11 +28,10 @@ public class SSLDataUrlConnectionTest {
   
   @Test
   public void testVerisign() throws IOException {
-    URL url = new URL("https://www.verisign.com:443");
-    DataUrlConnectionImpl uc = new DataUrlConnectionImpl();
-    uc.init(url);
+    DataUrl dataUrl = new DataUrl("https://www.verisign.com:443");
+    HttpsDataURLConnection uc = (HttpsDataURLConnection) dataUrl.openConnection();
     uc.connect();
-    assertNotNull(uc.getServerCertificate());
+    assertNotNull(uc.getServerCertificates());
     //uc.transmit(null);
   }
 

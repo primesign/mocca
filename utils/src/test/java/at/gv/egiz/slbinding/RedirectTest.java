@@ -52,8 +52,6 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 
 import static org.junit.Assert.*;
-import org.w3._2000._09.xmldsig_.TransformType;
-import org.w3._2000._09.xmldsig_.TransformsType;
 
 /**
  *
@@ -80,13 +78,6 @@ public class RedirectTest {
             JAXBContext jaxbContext = JAXBContext.newInstance(slPkg + ":" + dsigPkg);
             Unmarshaller um = jaxbContext.createUnmarshaller();
 
-//            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-//            File schemaFile = new File(FILENAME_REQ_SCHEMA);
-//            Schema TestRequestLaxSchema = schemaFactory.newSchema(schemaFile);
-//            // validate request
-//            um.setSchema(TestRequestLaxSchema);
-
-
             FileInputStream fis = new FileInputStream(FILENAME_REQ);
             InputStream is = new BufferedInputStream(fis);
 
@@ -97,24 +88,13 @@ public class RedirectTest {
 
             um.setListener(new RedirectUnmarshallerListener(contentFilter));
 
-//            List<Class> redirectTriggers = Arrays.asList(new Class[]{XMLContentType.class, TransformsType.class});
-//            Set<Class<? extends RedirectCallback>> redirectTriggers = new HashSet<Class<? extends RedirectCallback>>(); //{XMLContentType.class, TransformsType.class
-//            redirectTriggers.add(XMLContentType.class);
-//            redirectTriggers.add(TransformsType.class);
-//            ByteArrayRedirectCallback.registerRedirectTriggers(redirectTriggers);
-//
-//            Set<Class<? extends RedirectCallback>> preserveNSContextTriggers = new HashSet<Class<? extends RedirectCallback>>();
-////            preserveNSContextTriggers.add(TransformsType.class);
-//            preserveNSContextTriggers.add(SignatureInfoCreationType.SignatureLocation.class);
-//            ByteArrayRedirectCallback.registerPreserveContextTriggers(preserveNSContextTriggers);
-
-            JAXBElement<CreateXMLSignatureRequestType> req = (JAXBElement<CreateXMLSignatureRequestType>) um.unmarshal(filteredReader);
+            JAXBElement<?> req = (JAXBElement<?>) um.unmarshal(filteredReader);
             is.close();
 
             FileOutputStream fos = new FileOutputStream(FILENAME_REQ + "_redirect.txt");
             OutputStream os = new BufferedOutputStream(fos);
 
-            CreateXMLSignatureRequestType request = req.getValue();
+            CreateXMLSignatureRequestType request = (CreateXMLSignatureRequestType) req.getValue();
             List<DataObjectInfoType> dataObjectInfos = request.getDataObjectInfo();
             Iterator<DataObjectInfoType> doiIt = dataObjectInfos.iterator();
             while (doiIt.hasNext()) {
@@ -133,29 +113,8 @@ public class RedirectTest {
                 Iterator<TransformsInfoType> tiIt = transformsInfos.iterator();
                 while (tiIt.hasNext()) {
                     at.gv.egiz.slbinding.impl.TransformsInfoType ti = (at.gv.egiz.slbinding.impl.TransformsInfoType) tiIt.next();
-//                    TransformsInfoType ti = tiIt.next();
                     assertNotNull(ti);
                     System.out.println("found sl:TransformsInfo: " + ti.getClass().getName()); //at.gv.egiz.slbinding.impl.TransformsInfoType TransformsInfo");
-//                    TransformsType ts = ti.getTransforms();
-//                    assertNotNull(ts);
-//                    System.out.println("found dsig:Transforms " + ts.getClass().getName()); //org.w3._2000._09.xmldsig_.TransformsType dsig:Transforms");
-//                    List<TransformType> tL = ts.getTransform();
-//                    assertNotNull(tL);
-//                    System.out.println("found " + tL.size() + " org.w3._2000._09.xmldsig_.TransformType dsig:Transform");
-//                    for (TransformType t : tL) {
-//                      if (t instanceof at.gv.egiz.slbinding.impl.TransformType) {
-//                        System.out.println("found at.gv.egiz.slbinding.impl.TransformType");
-//                        byte[] redirectedBytes = ((at.gv.egiz.slbinding.impl.TransformType) t).getRedirectedStream().toByteArray();
-//                        if (redirectedBytes != null && redirectedBytes.length > 0) {
-//                          System.out.println("reading redirected stream...");
-//                          os.write("--- redirected Transform ---".getBytes());
-//                          os.write(redirectedBytes);
-//                          os.write("\n".getBytes());
-//                        } else {
-//                          System.out.println("no redirected stream");
-//                        }
-//                      }
-//                    }
 
                     ByteArrayOutputStream dsigTransforms = ti.getRedirectedStream();
                     os.write("--- redirected TransformsInfo content ---".getBytes());
@@ -177,16 +136,6 @@ public class RedirectTest {
             }
             SignatureInfoCreationType si = request.getSignatureInfo();
             if (si != null) {
-//                Base64XMLOptRefContentType sigEnv = si.getSignatureEnvironment();
-//                XMLContentType sigEnvXML = sigEnv.getXMLContent();
-//                if (sigEnvXML != null) {
-//                    System.out.println("found SignatureEnvironment XMLContent");
-//                    ByteArrayOutputStream xmlContent = sigEnvXML.getRedirectedStream();
-//                    os.write(xmlContent.toByteArray());
-//                    os.write("\n".getBytes());
-//                }
-//                
-//                SignatureInfoCreationType.SignatureLocation sigLocation = si.getSignatureLocation();
                 SignatureLocationType sigLocation = (SignatureLocationType) si.getSignatureLocation();
                 assertNotNull(sigLocation);
                 System.out.println("found at.gv.egiz.slbinding.impl.SignatureLocationType SignatureLocation");

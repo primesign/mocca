@@ -37,8 +37,8 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -68,13 +68,30 @@ public class IdentityLinkInfoboxImpl extends AbstractBinaryFileInfobox {
   /**
    * Logging facility.
    */
-  private static Log log = LogFactory.getLog(IdentityLinkInfoboxImpl.class);
+  private final Logger log = LoggerFactory.getLogger(IdentityLinkInfoboxImpl.class);
 
   /**
    * The box specific parameter <code>IdentityLinkDomainIdentifier</code>.
    */
   public static final String BOX_SPECIFIC_PARAMETER_IDENTITY_LINK_DOMAIN_IDENTIFIER = "IdentityLinkDomainIdentifier";
   
+  private IdentityLinkTransformer identityLinkTransformer;
+  
+  /**
+   * @return the identityLinkTransformer
+   */
+  public IdentityLinkTransformer getIdentityLinkTransformer() {
+    return identityLinkTransformer;
+  }
+
+  /**
+   * @param identityLinkTransformer the identityLinkTransformer to set
+   */
+  public void setIdentityLinkTransformer(
+      IdentityLinkTransformer identityLinkTransformer) {
+    this.identityLinkTransformer = identityLinkTransformer;
+  }
+
   /**
    * The value of the box specific parameter <code>IdentityLinkDomainIdentifier</code>.
    */
@@ -147,7 +164,6 @@ public class IdentityLinkInfoboxImpl extends AbstractBinaryFileInfobox {
     JAXBElement<CompressedIdentityLinkType> compressedIdentityLink = idLinkFactory
         .createCompressedIdentityLink(identityLink, certificates, getDomainIdentifier());
 
-    IdentityLinkTransformer identityLinkTransformer = IdentityLinkTransformer.getInstance();
     String issuerTemplate = identityLink.getIssuerTemplate();
     
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -262,12 +278,12 @@ public class IdentityLinkInfoboxImpl extends AbstractBinaryFileInfobox {
             Transformer transformer = transformerFactory.newTransformer();
             transformer.transform(xmlSource, new StreamResult(resultBytes));
           } catch (TransformerConfigurationException e) {
-            log.error(e);
+            log.error("Failed to transform identity link.", e);
             throw new SLCommandException(4000,
                 SLExceptionMessages.EC4000_UNCLASSIFIED_IDLINK_TRANSFORMATION_FAILED,
                 new Object[] { issuerTemplate });
           } catch (TransformerException e) {
-            log.error(e);
+            log.error("Failed to transform identity link.", e);
             throw new SLCommandException(4000,
                 SLExceptionMessages.EC4000_UNCLASSIFIED_IDLINK_TRANSFORMATION_FAILED,
                 new Object[] { issuerTemplate });

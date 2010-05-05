@@ -6,12 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class TestSignatureData {
-  
-  protected final static Log log = LogFactory.getLog(TestSignatureData.class);
   
   public static final String[] ID = new String[] {"signed-data-reference-0-1214921968-27971781-24309", "signed-data-reference-1"};
   public static final String ENCODING = "UTF-8";
@@ -22,6 +20,7 @@ public final class TestSignatureData {
       HASHDATA_INPUT.put(ID[0], "Ich bin ein einfacher Text. lläöüß€".getBytes(ENCODING));
       HASHDATA_INPUT.put(ID[1], "2te referenz".getBytes(ENCODING));
     } catch (UnsupportedEncodingException ex) {
+      Logger log = LoggerFactory.getLogger(TestSignatureData.class);
       log.error("failed to init signature test data", ex);
     }
   }

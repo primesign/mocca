@@ -25,8 +25,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Adapter to make the Urldereferencer work as URIResolver for
@@ -37,10 +37,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public class URIResolverAdapter implements URIResolver {
   
-  private static Log log = LogFactory.getLog(URIResolverAdapter.class);
+  private final Logger log = LoggerFactory.getLogger(URIResolverAdapter.class);
 
   private URLDereferencer urlDereferencer;
-  private URLDereferencerContext ctx;
 
   /**
    * 
@@ -48,18 +47,16 @@ public class URIResolverAdapter implements URIResolver {
    *          must not be null
    * @param ctx may be null
    */
-  public URIResolverAdapter(URLDereferencer deferecencer,
-      URLDereferencerContext ctx) {
+  public URIResolverAdapter(URLDereferencer deferecencer) {
     if (deferecencer == null) {
       throw new NullPointerException("Urlderefencer must not be set to null");
     }
     this.urlDereferencer = deferecencer;
-    this.ctx = ctx;
   }
 
   @Override
   public Source resolve(String href, String base) throws TransformerException {
-    log.debug("Resolving href: "+href+" base: "+base);
+    log.debug("Resolving href: {} base: {}", href, base);
     try {
       URI baseUri = null;
       URI hrefUri = new URI(href);
@@ -75,7 +72,7 @@ public class URIResolverAdapter implements URIResolver {
       if (!abs.isAbsolute()) {
         throw new TransformerException("Only absolute URLs are supported");
       }
-      return new StreamSource(urlDereferencer.dereference(abs.toString(), ctx)
+      return new StreamSource(urlDereferencer.dereference(abs.toString())
           .getStream());
     } catch (URISyntaxException e) {
       throw new TransformerException("Cannot resolve URI: base:" + base
@@ -86,11 +83,4 @@ public class URIResolverAdapter implements URIResolver {
     }
   }
 
-  public URLDereferencerContext getCtx() {
-    return ctx;
-  }
-
-  public void setCtx(URLDereferencerContext ctx) {
-    this.ctx = ctx;
-  }
 }

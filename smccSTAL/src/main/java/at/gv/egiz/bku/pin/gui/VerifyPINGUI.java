@@ -18,10 +18,8 @@ package at.gv.egiz.bku.pin.gui;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.smcc.CancelledException;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.pin.gui.PINGUI;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * The number of retries is not fixed and there is no way (?) to obtain this value.
@@ -36,8 +34,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public class VerifyPINGUI extends VerifyPINProvider implements PINGUI {
 
-  protected static final Log log = LogFactory.getLog(VerifyPINGUI.class);
-
   private boolean retry = false;
 
   public VerifyPINGUI(BKUGUIFacade gui) {
@@ -45,15 +41,15 @@ public class VerifyPINGUI extends VerifyPINProvider implements PINGUI {
   }
 
   @Override
-  public void enterPINDirect(PINSpec spec, int retries)
+  public void enterPINDirect(PinInfo pinInfo, int retries)
           throws CancelledException, InterruptedException {    
-    gui.showEnterPINDirect(spec, (retry) ? retries : -1);
+    gui.showEnterPINDirect(pinInfo, (retry) ? retries : -1);
     retry = true;
   }
 
   @Override
-  public void enterPIN(PINSpec spec, int retries) {
-    gui.showEnterPIN(spec, (retry) ? retries : -1);
+  public void enterPIN(PinInfo pinInfo, int retries) {
+    gui.showEnterPIN(pinInfo, (retry) ? retries : -1);
     retry = true;
   }
 

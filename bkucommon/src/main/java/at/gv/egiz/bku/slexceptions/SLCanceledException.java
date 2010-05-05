@@ -19,6 +19,8 @@ package at.gv.egiz.bku.slexceptions;
 public class SLCanceledException extends
     at.gv.egiz.bku.slexceptions.SLException {
 
+  private static final long serialVersionUID = 1L;
+
   public SLCanceledException(int errorCode, String msg, Object[] args) {
     super(errorCode, msg, args);
     // TODO Auto-generated constructor stub

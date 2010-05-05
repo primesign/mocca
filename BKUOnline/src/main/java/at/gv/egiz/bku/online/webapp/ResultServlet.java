@@ -25,13 +25,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
+import at.gv.egiz.bku.binding.BindingProcessor;
 import at.gv.egiz.bku.binding.HTTPBindingProcessor;
-import at.gv.egiz.bku.binding.HttpUtil;
+import at.gv.egiz.bku.binding.Id;
 import at.gv.egiz.bku.binding.IdFactory;
-import at.gv.egiz.bku.conf.Configurator;
 import at.gv.egiz.bku.utils.NullOutputStream;
 
 /**
@@ -40,7 +41,9 @@ import at.gv.egiz.bku.utils.NullOutputStream;
  */
 public class ResultServlet extends SpringBKUServlet {
 
-  private final static Log log = LogFactory.getLog(ResultServlet.class);
+  private static final long serialVersionUID = 1L;
+
+  private final Logger log = LoggerFactory.getLogger(ResultServlet.class);
 
   private String encoding = "UTF-8";
   private String expiredPage = "./expiredError.jsp";
@@ -51,12 +54,12 @@ public class ResultServlet extends SpringBKUServlet {
   private void myInit() {
     String enc = getServletContext().getInitParameter("responseEncoding");
     if (enc != null) {
-      log.debug("Init default encoding to: " + enc);
+      log.trace("Init default encoding to: {}.", enc);
       encoding = enc;
     }
     String expP = getServletConfig().getInitParameter("expiredPage");
     if (expP != null) {
-      log.debug("Init expired page to: " + expP);
+      log.trace("Init expired page to: {}.", expP);
       expiredPage = expP;
     }
   }
@@ -80,75 +83,65 @@ public class ResultServlet extends SpringBKUServlet {
 
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, java.io.IOException { 
-    String version = configurator.getProperty(Configurator.SIGNATURE_LAYOUT);
-    if ((version != null) && (!"".equals(version.trim()))) {
-      log.debug("setting SignatureLayout header to " + version);
-      resp.setHeader(Configurator.SIGNATURE_LAYOUT, version);
-    } else {
-      log.debug("do not set SignatureLayout header");
-    }
-      
-    if (configurator.getProperty(Configurator.USERAGENT_CONFIG_P) != null) {
-      resp.setHeader(HttpUtil.HTTP_HEADER_SERVER, configurator
-          .getProperty(Configurator.USERAGENT_CONFIG_P));
-    } else {
-      resp.setHeader(HttpUtil.HTTP_HEADER_SERVER,
-              Configurator.USERAGENT_DEFAULT);
-    }
 
     HttpSession session = req.getSession(false);
     if (session == null) {
       resp.sendRedirect(expiredPage);
       return;
     }
-    String sessionId = session.getId();
-    if (sessionId == null) {
-      resp.sendRedirect(expiredPage);
-      return;
-    }
-    log.debug("Got a result request for session: " + sessionId);
-    HTTPBindingProcessor bp = (HTTPBindingProcessor) getBindingProcessorManager()
-        .getBindingProcessor(IdFactory.getInstance().createId(sessionId));
-    if (bp == null) {
+
+    Id id = IdFactory.getInstance().createId(session.getId());
+
+    HTTPBindingProcessor bp;
+    BindingProcessor bindingProcessor = getBindingProcessorManager().getBindingProcessor(id);
+    if (bindingProcessor instanceof HTTPBindingProcessor) {
+      bp = (HTTPBindingProcessor) bindingProcessor;
+    } else {
       session.invalidate();
       resp.sendRedirect(expiredPage);
       return;
     }
-    String redirectUrl = (String) session
-        .getAttribute(BKURequestHandler.REDIRECT_URL_SESSION_ATTRIBUTE);
-    if (redirectUrl == null) {
-      redirectUrl = bp.getRedirectURL();
-    }
-    if (redirectUrl != null) {
-      try {
-        bp.writeResultTo(new NullOutputStream(), encoding);
-        getBindingProcessorManager().removeBindingProcessor(bp.getId());
-      } finally {
-          log.info("Executing deferred browser redirect to: " + redirectUrl);
-        resp.sendRedirect(redirectUrl);
-        session.invalidate();
+    MDC.put("id", id.toString());
+    
+    try {
+      String redirectUrl = (String) session
+          .getAttribute(AbstractWebRequestHandler.REDIRECT_URL_SESSION_ATTRIBUTE);
+      if (redirectUrl == null) {
+        redirectUrl = bp.getRedirectURL();
       }
-      return;
-    }
-
-    log.trace("setting response code: " + bp.getResponseCode());
-    resp.setStatus(bp.getResponseCode());
-    resp.setHeader("Cache-Control", "no-store"); // HTTP 1.1
-    resp.setHeader("Pragma", "no-cache"); // HTTP 1.0
-    resp.setDateHeader("Expires", 0);
-    for (Iterator<String> it = bp.getResponseHeaders().keySet().iterator(); it
-        .hasNext();) {
-      String header = it.next();
-      if (log.isTraceEnabled()) {
-        log.trace("setting response header " + header + ": " + bp.getResponseHeaders().get(header));
+      if (redirectUrl != null) {
+        try {
+          bp.writeResultTo(new NullOutputStream(), encoding);
+          getBindingProcessorManager().removeBindingProcessor(bp.getId());
+        } finally {
+          log.info("Sending deferred redirect, RedirectURL={}.", redirectUrl);
+          resp.sendRedirect(redirectUrl);
+          session.invalidate();
+        }
+        return;
       }
-      resp.setHeader(header, bp.getResponseHeaders().get(header));
+  
+      log.trace("Setting response code: {}.", bp.getResponseCode());
+      resp.setStatus(bp.getResponseCode());
+      resp.setHeader("Cache-Control", "no-store"); // HTTP 1.1
+      resp.setHeader("Pragma", "no-cache"); // HTTP 1.0
+      resp.setDateHeader("Expires", 0);
+      for (Iterator<String> it = bp.getResponseHeaders().keySet().iterator(); it
+          .hasNext();) {
+        String header = it.next();
+        log.trace("Setting response header {}: {}.", header, bp.getResponseHeaders().get(header));
+        resp.setHeader(header, bp.getResponseHeaders().get(header));
+      }
+      resp.setContentType(bp.getResultContentType());
+      resp.setCharacterEncoding(encoding);
+      log.info("Sending result.");
+      bp.writeResultTo(resp.getOutputStream(), encoding);
+      resp.getOutputStream().flush();
+      session.invalidate();
+      getBindingProcessorManager().removeBindingProcessor(bp.getId());
+      
+    } finally {
+      MDC.remove("id");
     }
-    resp.setContentType(bp.getResultContentType());
-    resp.setCharacterEncoding(encoding);
-    bp.writeResultTo(resp.getOutputStream(), encoding);
-    resp.getOutputStream().flush();
-    session.invalidate();
-    getBindingProcessorManager().removeBindingProcessor(bp.getId());
   }
 }

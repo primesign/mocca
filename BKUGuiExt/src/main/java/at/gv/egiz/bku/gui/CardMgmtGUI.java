@@ -23,6 +23,9 @@ import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Common superclass for Activation and PinManagement GUIs
  * 
@@ -39,10 +42,9 @@ public class CardMgmtGUI extends BKUGUIImpl {
           Style guiStyle,
           URL backgroundImgURL,
           FontProvider fontProvider,
-          AbstractHelpListener helpListener,
+          HelpListener helpListener,
           SwitchFocusListener switchFocusListener) {
-    super(contentPane, locale, guiStyle, backgroundImgURL, fontProvider, helpListener, switchFocusListener);
-
+	  super(contentPane, locale, guiStyle, backgroundImgURL, fontProvider, helpListener, switchFocusListener);  
   }
 
   @Override
@@ -51,7 +53,8 @@ public class CardMgmtGUI extends BKUGUIImpl {
 
     if (locale != null) {
         Locale lang = new Locale(locale.getLanguage().substring(0,2));
-        log.debug("loading applet resources for language: " + lang.toString());
+        Logger log = LoggerFactory.getLogger(CardMgmtGUI.class);
+        log.debug("Loading applet resources for language: {}.", lang);
         cardmgmtMessages = ResourceBundle.getBundle(CARDMGMT_MESSAGES_BUNDLE, lang);
     } else {
         cardmgmtMessages = ResourceBundle.getBundle(CARDMGMT_MESSAGES_BUNDLE);

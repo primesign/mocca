@@ -16,12 +16,12 @@
 */
 package at.gv.egiz.bku.slcommands.impl.xsect;
 
-import javax.xml.crypto.dsig.DigestMethod;
+import javax.xml.crypto.AlgorithmMethod;
 import javax.xml.crypto.dsig.XMLSignatureFactory;
 
 import org.w3c.dom.Document;
 
-import at.gv.egiz.bku.utils.urldereferencer.URLDereferencerContext;
+import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 
 /**
  * An instance of this class carries context information for a XML-Signature
@@ -47,14 +47,14 @@ public class SignatureContext {
   private XMLSignatureFactory signatureFactory;
   
   /**
-   * The URLDereferencerContext for dereferencing URLs.
+   * The URLDereferencer to dereference URLs with.
    */
-  private URLDereferencerContext dereferencerContext;
+  private URLDereferencer urlDereferencer;
   
   /**
-   * The DigestMethodFactory to create {@link DigestMethod} objects.
+   * The AlgorithmMethodFactory to create {@link AlgorithmMethod} objects.
    */
-  private AlgorithmMethodFactory digestMethodFactory;
+  private AlgorithmMethodFactory algorithmMethodFactory;
 
   /**
    * @return the document
@@ -99,31 +99,31 @@ public class SignatureContext {
   }
 
   /**
-   * @return the dereferencerContext
-   */
-  public URLDereferencerContext getDereferencerContext() {
-    return dereferencerContext;
-  }
-
-  /**
-   * @param dereferencerContext the dereferencerContext to set
-   */
-  public void setDereferencerContext(URLDereferencerContext dereferencerContext) {
-    this.dereferencerContext = dereferencerContext;
-  }
-
-  /**
    * @return the digestMethodFactory
    */
   public AlgorithmMethodFactory getAlgorithmMethodFactory() {
-    return digestMethodFactory;
+    return algorithmMethodFactory;
   }
 
   /**
    * @param digestMethodFactory the digestMethodFactory to set
    */
   public void setAlgorithmMethodFactory(AlgorithmMethodFactory digestMethodFactory) {
-    this.digestMethodFactory = digestMethodFactory;
+    this.algorithmMethodFactory = digestMethodFactory;
+  }
+
+  /**
+   * @return the urlDereferencer
+   */
+  public URLDereferencer getUrlDereferencer() {
+    return urlDereferencer;
+  }
+
+  /**
+   * @param urlDereferencer the urlDereferencer to set
+   */
+  public void setUrlDereferencer(URLDereferencer urlDereferencer) {
+    this.urlDereferencer = urlDereferencer;
   }
 
 }

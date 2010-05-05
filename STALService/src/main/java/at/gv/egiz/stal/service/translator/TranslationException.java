@@ -22,13 +22,18 @@ package at.gv.egiz.stal.service.translator;
  */
 public class TranslationException extends Exception {
 
-  private Class unknownClass;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+  
+  private Class<?> unknownClass;
 
   /**
    * Creates a new instance of <code>TranslationException</code> without detail message.
    * @param unknownClass the class that could not be translated
    */
-  public TranslationException(Class unkownClass) {
+  public TranslationException(Class<?> unkownClass) {
     this.unknownClass = unkownClass;
   }
 

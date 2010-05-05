@@ -20,8 +20,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -29,23 +29,22 @@ import org.apache.commons.logging.LogFactory;
  */
 public class MarshallerFactory {
 
-  private static final Log log = LogFactory.getLog(MarshallerFactory.class);
-  
   public static Marshaller createMarshaller(JAXBContext ctx, boolean formattedOutput, boolean fragment) throws JAXBException {
+    Logger log = LoggerFactory.getLogger(MarshallerFactory.class);
     Marshaller m = ctx.createMarshaller();
     try {
       if (formattedOutput) {
-        log.trace("setting marshaller property FORMATTED_OUTPUT");
+        log.trace("Setting marshaller property FORMATTED_OUTPUT.");
         m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
       }
       if (fragment) {
-        log.trace("setting marshaller property FRAGMENT");
+        log.trace("Setting marshaller property FRAGMENT.");
         m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
       }
-      log.trace("setting marshaller property NamespacePrefixMapper");
+      log.trace("Setting marshaller property NamespacePrefixMapper.");
       m.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NamespacePrefixMapperImpl());
     } catch (PropertyException ex) {
-      log.info("failed to set marshaller property: " + ex.getMessage());
+      log.info("Failed to set marshaller property: {}.", ex.getMessage());
     }
     return m;
   }

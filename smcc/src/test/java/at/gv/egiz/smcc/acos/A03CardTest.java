@@ -32,7 +32,7 @@ import at.gv.egiz.smcc.NotActivatedException;
 import at.gv.egiz.smcc.PINFormatException;
 import at.gv.egiz.smcc.PINMgmtSignatureCard;
 import at.gv.egiz.smcc.pin.gui.SMCCTestPINProvider;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.SignatureCardFactory;
@@ -70,7 +70,7 @@ public class A03CardTest extends ACOSCardTest {
     applDEC.setPin(ACOSApplDEC.KID_PIN_DEC, defaultPin);
     applDEC.setPin(A03ApplDEC.KID_PIN_INF, defaultPin);
 
-    for (PINSpec pinSpec : signatureCard.getPINSpecs()) {
+    for (PinInfo pinSpec : signatureCard.getPinInfos()) {
 
       char[] pin = defaultPin;
 

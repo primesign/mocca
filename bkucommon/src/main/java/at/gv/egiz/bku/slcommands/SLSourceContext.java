@@ -19,9 +19,6 @@ package at.gv.egiz.bku.slcommands;
 import java.net.URL;
 import java.security.cert.X509Certificate;
 
-import at.gv.egiz.bku.utils.binding.Protocol;
-
-
 public class SLSourceContext {
   
   private URL sourceUrl;

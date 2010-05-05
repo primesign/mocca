@@ -19,15 +19,16 @@ package at.gv.egiz.bku.accesscontroller;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.slcommands.InfoboxReadCommand;
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 
 public class InfoboxParamChecker extends CommandParamChecker {
-	private static Log log = LogFactory.getLog(InfoboxParamChecker.class);
+	
+    private final Logger log = LoggerFactory.getLogger(InfoboxParamChecker.class);
 
 	public final static String INFOBOX_ID = "InfoboxIdentifier";
 	public final static String PERSON_ID = "PersonIdentifier";
@@ -66,7 +67,7 @@ public class InfoboxParamChecker extends CommandParamChecker {
 			}
 			return true;
 		} else {
-			log.error("Cannot handle parameter for command: " + cmd.getName());
+			log.error("Cannot handle parameter for command: {}.", cmd.getName());
 			throw new SLRuntimeException("Cannot handle parameters for command: "
 					+ cmd.getName());
 		}

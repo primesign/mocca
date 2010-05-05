@@ -30,6 +30,8 @@ import javax.swing.JPanel;
  */
 public class ImagePanel extends JPanel {
 
+  private static final long serialVersionUID = 1L;
+  
   protected Image backgroundImg;
 
   public ImagePanel(URL background) {

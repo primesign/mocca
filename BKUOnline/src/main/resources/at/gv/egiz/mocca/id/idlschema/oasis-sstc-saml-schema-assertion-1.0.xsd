@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v3.5 NT (http://www.xmlspy.com) by Phill Hallam-Baker (VeriSign Inc.) -->
+<schema targetNamespace="urn:oasis:names:tc:SAML:1.0:assertion" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:saml="urn:oasis:names:tc:SAML:1.0:assertion" xmlns:pr="http://reference.e-government.gv.at/namespace/persondata/20020228#" xmlns:ecdsa="http://www.w3.org/2001/04/xmldsig-more#" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified">
+        <import namespace="http://reference.e-government.gv.at/namespace/persondata/20020228#" schemaLocation="PersonData.xsd"/>
+        <import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig-core-schema.xsd"/>
+        <import namespace="http://www.w3.org/2001/04/xmldsig-more#" schemaLocation="xmldsig-more.xsd"/>
+        <element name="Assertion" type="saml:AssertionType"/>
+        <complexType name="AssertionType">
+                <sequence>
+                        <element ref="saml:AttributeStatement"/>
+                        <element ref="ds:Signature" minOccurs="0"/>
+                </sequence>
+                <attribute name="MajorVersion" type="integer" use="required" fixed="1"/>
+                <attribute name="MinorVersion" type="integer" use="required" fixed="0"/>
+                <attribute name="AssertionID" type="saml:IDType" use="required"/>
+                <attribute name="Issuer" type="string" use="required"/>
+                <attribute name="IssueInstant" type="dateTime" use="required"/>
+        </complexType>
+        <simpleType name="IDType">
+                <restriction base="string"/>
+        </simpleType>
+        <element name="AttributeStatement" type="saml:AttributeStatementType"/>
+        <complexType name="AttributeStatementType">
+                <complexContent>
+                        <extension base="saml:SubjectStatementAbstractType1">
+                                <sequence>
+                                        <element ref="saml:Attribute" maxOccurs="unbounded"/>
+                                </sequence>
+                        </extension>
+                </complexContent>
+        </complexType>
+        <complexType name="SubjectStatementAbstractType1" abstract="true">
+                <complexContent>
+                        <extension base="saml:StatementAbstractType">
+                                <sequence>
+                                        <element ref="saml:Subject"/>
+                                </sequence>
+                        </extension>
+                </complexContent>
+        </complexType>
+        <complexType name="StatementAbstractType" abstract="true"/>
+        <element name="Subject" type="saml:SubjectType"/>
+        <complexType name="SubjectType">
+                <choice>
+                        <sequence>
+                                <element ref="saml:NameIdentifier"/>
+                                <element ref="saml:SubjectConfirmation"/>
+                        </sequence>
+                        <element ref="saml:SubjectConfirmation"/>
+                </choice>
+        </complexType>
+        <element name="NameIdentifier" type="saml:NameIdentifierType"/>
+        <complexType name="NameIdentifierType">
+                <simpleContent>
+                        <extension base="string">
+                                <attribute name="NameQualifier" type="string" use="optional"/>
+                                <attribute name="Format" type="anyURI" use="optional"/>
+                        </extension>
+                </simpleContent>
+        </complexType>
+        <element name="SubjectConfirmation" type="saml:SubjectConfirmationType"/>
+        <complexType name="SubjectConfirmationType">
+                <sequence>
+                        <element ref="saml:ConfirmationMethod"/>
+                        <element ref="saml:SubjectConfirmationData"/>
+                </sequence>
+        </complexType>
+        <element name="SubjectConfirmationData">
+                <complexType>
+                        <sequence>
+                                <element ref="pr:Person"/>
+                        </sequence>
+                </complexType>
+        </element>
+        <element name="ConfirmationMethod">
+                <simpleType>
+                        <restriction base="anyURI">
+                                <enumeration value="urn:oasis:names:tc:SAML:1.0:cm:sender-vouches"/>
+                        </restriction>
+                </simpleType>
+        </element>
+        <element name="Attribute" type="saml:AttributeType"/>
+        <complexType name="AttributeType">
+                <complexContent>
+                        <extension base="saml:AttributeDesignatorType">
+                                <sequence>
+                                        <element ref="saml:AttributeValue" maxOccurs="unbounded"/>
+                                </sequence>
+                        </extension>
+                </complexContent>
+        </complexType>
+        <complexType name="AttributeDesignatorType">
+                <attribute name="AttributeName" type="string" use="required" fixed="CitizenPublicKey"/>
+                <attribute name="AttributeNamespace" type="anyURI" use="required" fixed="urn:publicid:gv.at:namespaces:identitylink:1.2"/>
+        </complexType>
+        <element name="AttributeValue">
+                <complexType>
+                        <choice>
+                                <element ref="ds:DSAKeyValue"/>
+                                <element ref="ds:RSAKeyValue"/>
+                                <element ref="ecdsa:ECDSAKeyValue"/>
+                        </choice>
+                </complexType>
+        </element>
+</schema>

@@ -29,7 +29,8 @@ import javax.swing.text.html.HTMLEditorKit;
  */
 public class RestrictedHTMLEditorKit extends HTMLEditorKit {
   
- 
+  private static final long serialVersionUID = 1L;
+
   public static class RestrictedHTMLFactory extends HTMLFactory {
 
     @Override

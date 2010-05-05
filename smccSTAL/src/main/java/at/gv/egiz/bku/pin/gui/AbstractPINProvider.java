@@ -17,11 +17,10 @@
 
 package at.gv.egiz.bku.pin.gui;
 
-import at.gv.egiz.smcc.pin.gui.PINProvider;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * common super class providing action listener for all PIN GUIs
@@ -29,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class AbstractPINProvider implements ActionListener {
 
-  protected static final Log log = LogFactory.getLog(AbstractPINProvider.class);
+  private final Logger log = LoggerFactory.getLogger(AbstractPINProvider.class);
 
   protected String action;
   protected boolean actionPerformed;
@@ -40,7 +39,7 @@ public abstract class AbstractPINProvider implements ActionListener {
         this.wait();
       }
     } catch (InterruptedException e) {
-      log.error("[" + Thread.currentThread().getName() + "] interrupt in waitForAction");
+      log.error("[{}] interrupt in waitForAction.", Thread.currentThread().getName());
       throw e;
     }
     actionPerformed = false;
@@ -53,7 +52,7 @@ public abstract class AbstractPINProvider implements ActionListener {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    log.debug("[" + Thread.currentThread().getName() + "] action performed - " + e.getActionCommand());
+    log.debug("[{}] action performed - {}", Thread.currentThread().getName(), e.getActionCommand());
     action = e.getActionCommand();
     actionPerformed();
   }

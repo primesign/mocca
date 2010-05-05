@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
-		<artifactId>bku</artifactId>
+		<artifactId>mocca</artifactId>
 		<groupId>at.gv.egiz</groupId>
-		<version>1.2.14-SNAPSHOT</version>
+		<version>1.3.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>bkucommon</artifactId>
 	<name>BKU Common</name>
-	<version>1.2.14-SNAPSHOT</version>
+	<version>${project.parent.version}</version>
 
 	<build>
 		<plugins>
@@ -44,26 +44,39 @@
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>utils</artifactId>
-			<version>${version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>STALExt</artifactId>
-			<version>${version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>
     <!-- bkucommon implements default FontProvider (ResourceFontLoader) -->
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUCommonGUI</artifactId>
-      <version>${version}</version>
+      <version>${project.parent.version}</version>
     </dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-		</dependency>
+
+    <!--
+     |   ResourceFontLoader needs font resources on runtime classpath.
+     |   Runtime dependency on BKUFonts ensures that transitive dependency 
+     |   remains (not true for provided), see BKUViewer, BKULocal and
+     |   BKUOnline -->
+    <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>BKUFonts</artifactId>
+      <version>${mocca.fonts.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    
 		<dependency>
 			<groupId>iaik</groupId>
 			<artifactId>iaik_jce_full_signed</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>iaik</groupId>
+			<artifactId>iaik_ecc_signed</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-fileupload</groupId>
@@ -95,7 +108,8 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<scope>test</scope>
+			<scope>compile</scope>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
       <groupId>com.sun.xml.ws</groupId>
@@ -107,6 +121,18 @@
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>

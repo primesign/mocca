@@ -30,7 +30,7 @@ public class GUIProxy implements InvocationHandler {
   JFrame frame;
   BKUGUIFacade delegate;
 
-  static public Object newInstance(BKUGUIFacade gui, JFrame frame, Class[] interfaces) {
+  static public Object newInstance(BKUGUIFacade gui, JFrame frame, Class<?>[] interfaces) {
     return java.lang.reflect.Proxy.newProxyInstance(gui.getClass().getClassLoader(),
             interfaces,
             new GUIProxy(gui, frame));

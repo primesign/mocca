@@ -16,8 +16,8 @@
 */
 package at.gv.egiz.bku.slcommands.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadRequestType;
 import at.gv.egiz.bku.slcommands.InfoboxReadCommand;
@@ -41,7 +41,7 @@ public class InfoboxReadCommandImpl extends AbstractInfoboxCommandImpl<InfoboxRe
   /**
    * Logging facility.
    */
-  protected static Log log = LogFactory.getLog(InfoboxReadCommandImpl.class);
+  protected final Logger log = LoggerFactory.getLogger(InfoboxReadCommandImpl.class);
   
   @Override
   public String getName() {
@@ -54,8 +54,8 @@ public class InfoboxReadCommandImpl extends AbstractInfoboxCommandImpl<InfoboxRe
   }
 
   @Override
-  public void init(SLCommandContext ctx, Object request) throws SLCommandException {
-    super.init(ctx, request);
+  public void init(Object request) throws SLCommandException {
+    super.init(request);
     
     InfoboxReadRequestType req = getRequestValue();
     
@@ -74,12 +74,12 @@ public class InfoboxReadCommandImpl extends AbstractInfoboxCommandImpl<InfoboxRe
   }
 
   @Override
-  public SLResult execute() {
+  public SLResult execute(SLCommandContext commandContext) {
     
     try {
-      return infobox.read(getRequestValue(), getCmdCtx());
+      return infobox.read(getRequestValue(), commandContext);
     } catch (SLCommandException e) {
-      return new ErrorResultImpl(e, getCmdCtx().getLocale());
+      return new ErrorResultImpl(e, commandContext.getLocale());
     }
     
   }

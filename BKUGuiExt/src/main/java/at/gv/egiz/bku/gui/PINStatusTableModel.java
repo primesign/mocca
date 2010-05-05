@@ -16,9 +16,7 @@
  */
 package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.bku.gui.PINManagementGUIFacade.STATUS;
-import at.gv.egiz.smcc.PINSpec;
-import java.util.Map;
+import at.gv.egiz.smcc.PinInfo;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -27,27 +25,20 @@ import javax.swing.table.DefaultTableModel;
  */
 public class PINStatusTableModel extends DefaultTableModel {
 
-//  protected static final Log log = LogFactory.getLog(PINStatusTableModel.class);
-  protected Class[] types;
+  private static final long serialVersionUID = 1L;
 
-  public PINStatusTableModel(Map<PINSpec, STATUS> pinStatuses) {
+  protected Class<?>[] types;
+
+  public PINStatusTableModel(PinInfo[] pinSpecs) {
     super(0, 2);
-    if (pinStatuses == null) {
-      throw new RuntimeException("pinStatuses must not be null");
+    types = new Class<?>[] { String.class, PinInfo.class };
+    for (PinInfo pinSpec : pinSpecs) {
+      addRow(new Object[] { pinSpec.getLocalizedName(), pinSpec });
     }
-//    log.trace(pinStatuses.size() + " PINs");
-    types = new Class[] { PINSpec.class, STATUS.class };
-    for (PINSpec pinSpec : pinStatuses.keySet()) {
-      addRow(new Object[] { pinSpec, pinStatuses.get(pinSpec) });
-    }
-//    PINSpec activePIN = new PINSpec(0, 1, null, "active-PIN", (byte) 0x01);
-//    PINSpec blockedPIN = new PINSpec(0, 1, null, "blocked-PIN", (byte) 0x01);
-//    addRow(new Object[] { activePIN, PINStatusProvider.STATUS.ACTIV });
-//    addRow(new Object[] { blockedPIN, PINStatusProvider.STATUS.BLOCKED });
   }
 
   @Override
-  public Class getColumnClass(int columnIndex) {
+  public Class<?> getColumnClass(int columnIndex) {
     return types[columnIndex];
   }
 

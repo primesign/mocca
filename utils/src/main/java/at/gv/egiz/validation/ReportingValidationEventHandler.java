@@ -18,8 +18,8 @@ package at.gv.egiz.validation;
 
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ReportingValidationEventHandler implements ValidationEventHandler {
 
-  protected static final Log log = LogFactory.getLog(ReportingValidationEventHandler.class);
+  private final Logger log = LoggerFactory.getLogger(ReportingValidationEventHandler.class);
   
   protected ValidationEvent errorEvent;
 

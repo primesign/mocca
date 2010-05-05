@@ -31,8 +31,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -40,8 +40,8 @@ import org.apache.commons.logging.LogFactory;
  */
 public class LocalSecureViewer implements SecureViewer {
 
-  private static final Log log = LogFactory.getLog(LocalSignRequestHandler.class);
-  private List<HashDataInput> hashDataInputs = Collections.EMPTY_LIST;
+  private final Logger log = LoggerFactory.getLogger(LocalSignRequestHandler.class);
+  private List<HashDataInput> hashDataInputs = Collections.emptyList();
 
   protected BKUGUIFacade gui;
 
@@ -63,8 +63,8 @@ public class LocalSecureViewer implements SecureViewer {
           ActionListener okListener, String okCommand)
           throws Exception {
     if (signedInfo.getReference().size() == 0) {
-      log.error("No hashdata input selected to be displayed: null");
-      throw new Exception("No HashData Input selected to be displayed");
+      log.error("No hashdata input selected to be displayed: null.");
+      throw new Exception("No HashData Input selected to be displayed.");
     }
 
     ArrayList<HashDataInput> selectedHashDataInputs = new ArrayList<HashDataInput>();
@@ -76,8 +76,8 @@ public class LocalSecureViewer implements SecureViewer {
           boolean hdiAvailable = false;
           for (HashDataInput hashDataInput : hashDataInputs) {
             if (dsigRefId.equals(hashDataInput.getReferenceId())) {
-              log.debug("display hashdata input for dsig:SignedReference " +
-                      dsigRefId);
+              log.debug("Display hashdata input for dsig:SignedReference {}.",
+                  dsigRefId);
               selectedHashDataInputs.add(
                       ensureCachedHashDataInput(hashDataInput));
               hdiAvailable = true;
@@ -85,7 +85,7 @@ public class LocalSecureViewer implements SecureViewer {
             }
           }
           if (!hdiAvailable) {
-            log.error("no hashdata input for dsig:SignedReference " + dsigRefId);
+            log.error("No hashdata input for dsig:SignedReference {}.", dsigRefId);
             throw new Exception(
               "No HashDataInput available for dsig:SignedReference " + dsigRefId);
           }
@@ -97,8 +97,8 @@ public class LocalSecureViewer implements SecureViewer {
     }
 
     if (selectedHashDataInputs.size() < 1) {
-      log.error("dsig:SignedInfo does not contain a data reference");
-      throw new Exception("dsig:SignedInfo does not contain a data reference");
+      log.error("dsig:SignedInfo does not contain a data reference.");
+      throw new Exception("dsig:SignedInfo does not contain a data reference.");
     }
     gui.showSecureViewer(selectedHashDataInputs, okListener, okCommand);
   }
@@ -108,7 +108,7 @@ public class LocalSecureViewer implements SecureViewer {
           throws IOException {
     if (!(hashDataInput instanceof DataObjectHashDataInput)) {
       
-      log.warn("expected DataObjectHashDataInput for LocalSignRequestHandler, got " +
+      log.warn("Expected DataObjectHashDataInput for LocalSignRequestHandler, got {}.",
               hashDataInput.getClass().getName());
 
       InputStream hdIs = hashDataInput.getHashDataInput();

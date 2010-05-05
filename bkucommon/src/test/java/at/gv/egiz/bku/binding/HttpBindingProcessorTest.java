@@ -21,23 +21,18 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import at.gv.egiz.bku.binding.MultiTestDataUrlConnection.DataSourceProvider;
-import at.gv.egiz.bku.conf.Configuration;
-import at.gv.egiz.bku.conf.DummyConfiguration;
-import at.gv.egiz.bku.utils.StreamUtil;
 
-public class HttpBindingProcessorTest {
+public class HttpBindingProcessorTest extends AbstractBindingProcessorTest {
 
   public static class TestDataSource implements DataSourceProvider {
 
@@ -80,33 +75,32 @@ public class HttpBindingProcessorTest {
     }
   }
 
-  protected BindingProcessorManager manager;
-  protected HTTPBindingProcessor bindingProcessor;
+  protected static String requestUrl = "http://localhost:3495/http-security-layer-request";
+  protected static String dataUrl = "http://localhost:8080/dataUrl";
+
+  protected HTTPBindingProcessorImpl bindingProcessor;
   protected Map<String, String> serverHeaderMap;
   protected Map<String, String> clientHeaderMap;
   protected TestDataUrlConnection server;
 
-  protected static ApplicationContext appCtx;
-  
-  @BeforeClass
-  public static void setUpClass() {
-    appCtx = new ClassPathXmlApplicationContext("at/gv/egiz/bku/slcommands/testApplicationContext.xml");
-  }
-  
-  
   @Before
   public void setUp() throws IOException {
-    server = new TestDataUrlConnection();
-    DataUrl.setDataUrlConnectionImpl(server);
+
+    DataUrl.setConnectionFactory(new DataURLConnectionFactory() {
+      @Override
+      public DataUrlConnection openConnection(URL url) {
+        return server;
+      }
+    });
     serverHeaderMap = new HashMap<String, String>();
     serverHeaderMap.put("Content-Type", HttpUtil.TXT_XML);
+    server = new TestDataUrlConnection(new URL(dataUrl));
     server.setResponseCode(200);
     server.setResponseContent("<ok/>");
     server.setResponseHeaders(serverHeaderMap);
-    manager = new BindingProcessorManagerImpl(new DummyStalFactory(),
-        new SLCommandInvokerImpl(), new DummyConfiguration());
-    bindingProcessor = (HTTPBindingProcessor) manager.createBindingProcessor(
-        "http://www.iaik.at", null);
+
+    bindingProcessor = (HTTPBindingProcessorImpl) createBindingProcessor("http");
+    
     clientHeaderMap = new HashMap<String, String>();
     clientHeaderMap.put("Content-Type",
         "application/x-www-form-urlencoded;charset=utf8");
@@ -123,12 +117,14 @@ public class HttpBindingProcessorTest {
   public void testWithoutDataUrlWithoutStylesheet() throws IOException {
     RequestFactory rf = new RequestFactory();
     rf.addForm("Haßnsi", "Wüurzel");
-    bindingProcessor.consumeRequestStream(rf.getURLencoded());
+    bindingProcessor.consumeRequestStream(requestUrl, rf.getURLencoded());
     bindingProcessor.run();
     assertEquals(HttpUtil.TXT_XML, bindingProcessor.getResultContentType());
+    String result = resultAsString("UTF-8");
+    System.out.println(result);
     assertTrue(resultAsString("UTF-8").indexOf("NullOperationResponse") != -1);
     assertEquals(200, bindingProcessor.getResponseCode());
-    assertEquals(0, bindingProcessor.getResponseHeaders().size());
+    assertEquals(2, bindingProcessor.getResponseHeaders().size());
   }
 
   @Test
@@ -137,19 +133,19 @@ public class HttpBindingProcessorTest {
     rf.addForm("Hansi", "Wurzel");
     rf.addFormAsResource("Styleshit", "at/gv/egiz/bku/binding/stylesheet.xslt");
     rf.addForm(RequestFactory.STYLESHEETURL, "formdata:Styleshit");
-    bindingProcessor.consumeRequestStream(rf.getURLencoded());
+    bindingProcessor.consumeRequestStream(requestUrl, rf.getURLencoded());
     bindingProcessor.run();
     assertEquals(HttpUtil.TXT_HTML, bindingProcessor.getResultContentType());
     assertTrue(resultAsString("UTF-8").indexOf("NullKommaJosef") != -1);
     assertEquals(200, bindingProcessor.getResponseCode());
-    assertEquals(0, bindingProcessor.getResponseHeaders().size());
+    assertEquals(2, bindingProcessor.getResponseHeaders().size());
   }
 
   @Test
   public void testWithDataUrl301WithStylesheet() throws IOException {
     RequestFactory rf = new RequestFactory();
     rf.addForm(RequestFactory.DATAURL, "http://localhost:8080");
-    bindingProcessor.consumeRequestStream(rf.getURLencoded());
+    bindingProcessor.consumeRequestStream(requestUrl, rf.getURLencoded());
     server.setResponseCode(301);
     rf = new RequestFactory();
     rf.addFormAsResource("Styleshit", "at/gv/egiz/bku/binding/stylesheet.xslt");
@@ -166,7 +162,7 @@ public class HttpBindingProcessorTest {
   public void testWithDataUrl302WithStylesheet() throws IOException {
     RequestFactory rf = new RequestFactory();
     rf.addForm(RequestFactory.DATAURL, "http://localhost:8080");
-    bindingProcessor.consumeRequestStream(rf.getURLencoded());
+    bindingProcessor.consumeRequestStream(requestUrl, rf.getURLencoded());
     server.setResponseCode(302);
     rf = new RequestFactory();
     rf.addFormAsResource("Styleshit", "at/gv/egiz/bku/binding/stylesheet.xslt");
@@ -183,7 +179,7 @@ public class HttpBindingProcessorTest {
   public void testWithDataUrl303WithStylesheet() throws IOException {
     RequestFactory rf = new RequestFactory();
     rf.addForm(RequestFactory.DATAURL, "http://localhost:8080");
-    bindingProcessor.consumeRequestStream(rf.getURLencoded());
+    bindingProcessor.consumeRequestStream(requestUrl, rf.getURLencoded());
     server.setResponseCode(303);
     rf = new RequestFactory();
     rf.addFormAsResource("Styleshit", "at/gv/egiz/bku/binding/stylesheet.xslt");
@@ -200,7 +196,7 @@ public class HttpBindingProcessorTest {
   public void testWithDataUrl306WithStylesheet() throws IOException {
     RequestFactory rf = new RequestFactory();
     rf.addForm(RequestFactory.DATAURL, "http://localhost:8080");
-    bindingProcessor.consumeRequestStream(rf.getURLencoded());
+    bindingProcessor.consumeRequestStream(requestUrl, rf.getURLencoded());
     server.setResponseCode(306);
     rf = new RequestFactory();
     rf.addFormAsResource("Styleshit", "at/gv/egiz/bku/binding/stylesheet.xslt");
@@ -210,14 +206,14 @@ public class HttpBindingProcessorTest {
     assertEquals(HttpUtil.TXT_XML, bindingProcessor.getResultContentType());
     assertTrue(resultAsString("UTF-8").indexOf("ErrorResponse") != -1);
     assertEquals(200, bindingProcessor.getResponseCode());
-    assertTrue(bindingProcessor.getResponseHeaders().size() == 0);
+    assertTrue(bindingProcessor.getResponseHeaders().size() == 2);
   }
 
   @Test
   public void testWithDataUrl307NonXML() throws IOException {
     RequestFactory rf = new RequestFactory();
     rf.addForm(RequestFactory.DATAURL, "http://localhost:8080");
-    bindingProcessor.consumeRequestStream(rf.getURLencoded());
+    bindingProcessor.consumeRequestStream(requestUrl, rf.getURLencoded());
     server.setResponseCode(307);
     serverHeaderMap.put("Content-Type", HttpUtil.TXT_PLAIN);
     server.setResponseHeaders(serverHeaderMap);
@@ -229,14 +225,14 @@ public class HttpBindingProcessorTest {
     assertEquals(HttpUtil.TXT_PLAIN, bindingProcessor.getResultContentType());
     assertTrue(resultAsString("UTF-8").indexOf("NullOperationRequest") != -1);
     assertEquals(307, bindingProcessor.getResponseCode());
-    assertTrue(bindingProcessor.getResponseHeaders().size() > 0);
+    assertTrue(bindingProcessor.getResponseHeaders().size() > 2);
   }
 
   @Test
   public void testWithInvalidDataUrl307XML() throws IOException {
     RequestFactory rf = new RequestFactory();
     rf.addForm(RequestFactory.DATAURL, "http://localhost:8080");
-    bindingProcessor.consumeRequestStream(rf.getURLencoded());
+    bindingProcessor.consumeRequestStream(requestUrl, rf.getURLencoded());
     server.setResponseCode(307);
     serverHeaderMap.put("Content-Type", HttpUtil.TXT_XML);
     serverHeaderMap.put("Location", "noUrl");
@@ -247,13 +243,12 @@ public class HttpBindingProcessorTest {
     assertEquals(HttpUtil.TXT_XML, bindingProcessor.getResultContentType());
     assertTrue(resultAsString("UTF-8").indexOf("ErrorResponse") != -1);
     assertEquals(200, bindingProcessor.getResponseCode());
-    assertTrue(bindingProcessor.getResponseHeaders().size() == 0);
+    assertTrue(bindingProcessor.getResponseHeaders().size() == 2);
   }
   
   @Test
   public void testWithValidDataUrl307XML() throws IOException, InterruptedException {
-    server = new MultiTestDataUrlConnection();
-    DataUrl.setDataUrlConnectionImpl(server);
+    server = new MultiTestDataUrlConnection(null);
     TestDataSource tds = new TestDataSource();
     ((MultiTestDataUrlConnection)server).setDataSource(tds);
     
@@ -275,7 +270,7 @@ public class HttpBindingProcessorTest {
     
     rf = new RequestFactory();
     rf.addForm(RequestFactory.DATAURL, "http://localhost:8080");
-    bindingProcessor.consumeRequestStream(rf.getURLencoded());
+    bindingProcessor.consumeRequestStream(requestUrl, rf.getURLencoded());
     bindingProcessor.run();
     
     assertTrue(bindingProcessor.getResponseHeaders().size()>0);
@@ -290,7 +285,7 @@ public class HttpBindingProcessorTest {
     RequestFactory rf = new RequestFactory();
     rf = new RequestFactory();
     rf.addForm(RequestFactory.DATAURL, "http://localhost:8080");
-    bindingProcessor.consumeRequestStream(rf.getURLencoded());
+    bindingProcessor.consumeRequestStream(requestUrl, rf.getURLencoded());
     server.setResponseCode(200);
     rf = new RequestFactory();
     rf.addFormAsResource("Styleshit", "at/gv/egiz/bku/binding/stylesheet.xslt");
@@ -298,7 +293,7 @@ public class HttpBindingProcessorTest {
     server.setResponseHeaders(serverHeaderMap);
     server.setResponseContent(rf.getURLencodedAsString());
     bindingProcessor.run();
-    assertTrue(bindingProcessor.getResponseHeaders().size()==0);
+    assertTrue(bindingProcessor.getResponseHeaders().size() == 2);
     assertEquals(200,bindingProcessor.getResponseCode());
     assertEquals(HttpUtil.TXT_XML, bindingProcessor.getResultContentType());
     assertTrue(resultAsString("UTF-8").indexOf("NullOperationResponse") != -1);
@@ -309,7 +304,7 @@ public class HttpBindingProcessorTest {
     RequestFactory rf = new RequestFactory();
     rf = new RequestFactory();
     rf.addForm(RequestFactory.DATAURL, "http://localhost:8080");
-    bindingProcessor.consumeRequestStream(rf.getURLencoded());
+    bindingProcessor.consumeRequestStream(requestUrl, rf.getURLencoded());
     server.setResponseCode(200);
     rf = new RequestFactory();
     rf.addFormAsResource("Styleshit", "at/gv/egiz/bku/binding/stylesheet.xslt");
@@ -318,7 +313,7 @@ public class HttpBindingProcessorTest {
     server.setResponseHeaders(serverHeaderMap);
     server.setResponseContent(rf.getURLencodedAsString());
     bindingProcessor.run();
-    assertTrue(bindingProcessor.getResponseHeaders().size()==0);
+    assertTrue(bindingProcessor.getResponseHeaders().size() == 2);
     assertEquals(200,bindingProcessor.getResponseCode());
     assertEquals(HttpUtil.TXT_HTML, bindingProcessor.getResultContentType());
     assertTrue(resultAsString("UTF-8").indexOf("NullKommaJosef") != -1);

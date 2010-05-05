@@ -17,7 +17,6 @@
 package at.gv.egiz.bku.utils.urldereferencer;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
@@ -26,12 +25,11 @@ import javax.net.ssl.SSLSocketFactory;
 public interface URLProtocolHandler {
   /**
    * 
-   * @param aUrl
-   * @param aContext
+   * @param url
    * @return the streamdata of this url or null if the url cannot be resolved.
    * @throws IOException
    */
-  public StreamData dereference(String aUrl, URLDereferencerContext aContext) throws IOException;
+  public StreamData dereference(String url) throws IOException;
   
   public void setSSLSocketFactory(SSLSocketFactory socketFactory);
   

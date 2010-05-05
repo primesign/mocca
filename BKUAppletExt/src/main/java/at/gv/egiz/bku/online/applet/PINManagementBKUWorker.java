@@ -22,14 +22,15 @@ import at.gv.egiz.bku.smccstal.PINManagementRequestHandler;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.QuitRequest;
-import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.ext.PINManagementRequest;
 import at.gv.egiz.stal.ext.PINManagementResponse;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This BKU Worker does not connect to STAL webservice
@@ -38,6 +39,8 @@ import java.util.List;
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class PINManagementBKUWorker extends AppletBKUWorker {
+  
+  private final Logger log = LoggerFactory.getLogger(PINManagementBKUWorker.class);
 
   public PINManagementBKUWorker(BKUApplet applet, PINManagementGUIFacade gui) {
     super(applet, gui);
@@ -59,9 +62,9 @@ public class PINManagementBKUWorker extends AppletBKUWorker {
       if (responses.size() == 1) {
         STALResponse response = responses.get(0);
         if (response instanceof PINManagementResponse) {
-          log.debug("PIN management dialog terminated");
+          log.debug("PIN management dialog terminated.");
         } else if (response instanceof ErrorResponse) {
-          log.debug("PIN management dialog terminated with error");
+          log.debug("PIN management dialog terminated with error.");
         } else {
           throw new RuntimeException("Invalid STAL response: " + response.getClass().getName());
         }

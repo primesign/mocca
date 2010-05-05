@@ -20,14 +20,14 @@ import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.PINManagementGUIFacade;
 import at.gv.egiz.bku.gui.PINManagementGUIFacade.DIALOG;
 import at.gv.egiz.smcc.CancelledException;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.pin.gui.ModifyPINGUI;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ManagementPINGUI extends ManagementPINProvider implements ModifyPINGUI {
 
-  protected static final Log log = LogFactory.getLog(ManagementPINGUI.class);
+  protected static final Logger log = LoggerFactory.getLogger(ManagementPINGUI.class);
 
   private boolean retry = false;
 
@@ -36,7 +36,7 @@ public class ManagementPINGUI extends ManagementPINProvider implements ModifyPIN
   }
 
   @Override
-  public void modifyPINDirect(PINSpec spec, int retries)
+  public void modifyPINDirect(PinInfo spec, int retries)
           throws CancelledException, InterruptedException {    
     gui.showModifyPINDirect(type, spec, (retry) ? retries : -1);
     retry = true;
@@ -48,19 +48,19 @@ public class ManagementPINGUI extends ManagementPINProvider implements ModifyPIN
   }
 
   @Override
-  public void enterCurrentPIN(PINSpec spec, int retries) {
+  public void enterCurrentPIN(PinInfo spec, int retries) {
     gui.showEnterCurrentPIN(type, spec, (retry) ? retries : -1);
     retry = true;
   }
 
   @Override
-  public void enterNewPIN(PINSpec spec) {
+  public void enterNewPIN(PinInfo spec) {
     gui.showEnterNewPIN(type, spec);
     retry = true;
   }
 
   @Override
-  public void confirmNewPIN(PINSpec spec) {
+  public void confirmNewPIN(PinInfo spec) {
     gui.showConfirmNewPIN(type, spec);
     retry = true;
   }

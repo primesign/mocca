@@ -165,8 +165,7 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
   public SignatureMethod createSignatureMethod(SignatureContext signatureContext)
       throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
 
-    return signatureContext.getSignatureFactory().newSignatureMethod(
-        signatureAlgorithmURI, signatureMethodParameterSpec);
+    return new STALSignatureMethod(signatureAlgorithmURI, signatureMethodParameterSpec);
   }
 
 }

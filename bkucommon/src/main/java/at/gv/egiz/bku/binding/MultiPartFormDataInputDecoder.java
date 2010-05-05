@@ -25,8 +25,8 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.RequestContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 
@@ -41,8 +41,7 @@ import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 public class MultiPartFormDataInputDecoder implements InputDecoder,
     RequestContext {
 
-  private static Log log = LogFactory
-      .getLog(MultiPartFormDataInputDecoder.class);
+  private final Logger log = LoggerFactory.getLogger(MultiPartFormDataInputDecoder.class);
 
   private String contentType;
   private InputStream stream;
@@ -91,6 +90,8 @@ public class MultiPartFormDataInputDecoder implements InputDecoder,
 
   static class IteratorDelegator implements Iterator<FormParameter> {
 
+    private final Logger log = LoggerFactory.getLogger(MultiPartFormDataInputDecoder.class);
+    
     private FileItemIterator fileItemIterator;
 
     public IteratorDelegator(FileItemIterator fit) {
@@ -102,10 +103,10 @@ public class MultiPartFormDataInputDecoder implements InputDecoder,
       try {
         return fileItemIterator.hasNext();
       } catch (FileUploadException e) {
-        log.error(e);
+        log.error("Failed to get next file item.", e);
         throw new SLRuntimeException(e);
       } catch (IOException e) {
-        log.error(e);
+        log.error("Failed to get next file item.", e);
         throw new SLRuntimeException(e);
       }
     }
@@ -117,10 +118,10 @@ public class MultiPartFormDataInputDecoder implements InputDecoder,
         return new FormParameterImpl(item.getContentType(),
             item.getFieldName(), item.openStream(), item.getHeaders());
       } catch (FileUploadException e) {
-        log.error(e);
+        log.error("Failed to get next file item.", e);
         throw new SLRuntimeException(e);
       } catch (IOException e) {
-        log.error(e);
+        log.error("Failed to get next file item.", e);
         throw new SLRuntimeException(e);
       }
     }

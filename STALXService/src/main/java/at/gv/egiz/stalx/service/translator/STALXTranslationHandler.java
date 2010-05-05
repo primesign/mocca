@@ -37,8 +37,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -46,7 +46,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class STALXTranslationHandler implements STALTranslator.TranslationHandler {
 
-  private static final Log log = LogFactory.getLog(STALXTranslationHandler.class);
+  private final Logger log = LoggerFactory.getLogger(STALXTranslationHandler.class);
   ObjectFactory of;
 
   public STALXTranslationHandler() {
@@ -54,8 +54,8 @@ public class STALXTranslationHandler implements STALTranslator.TranslationHandle
   }
 
   @Override
-  public List<Class> getSupportedTypes() {
-    return Arrays.asList(new Class[]{ScriptType.class,
+  public List<Class<?>> getSupportedTypes() {
+    return Arrays.asList(new Class<?>[]{ScriptType.class,
               at.buergerkarte.namespaces.cardchannel.service.ResponseType.class,
               APDUScriptRequest.class,
               APDUScriptResponse.class});
@@ -64,7 +64,7 @@ public class STALXTranslationHandler implements STALTranslator.TranslationHandle
   @Override
   public JAXBElement<? extends RequestType> translate(STALRequest request) throws TranslationException {
     if (request instanceof APDUScriptRequest) {
-      log.trace("translate at.gv.egiz.stal.ext.APDUScriptRequest -> at.buergerkarte.namespaces.cardchannel.service.ScriptType");
+      log.trace("Translate at.gv.egiz.stal.ext.APDUScriptRequest -> at.buergerkarte.namespaces.cardchannel.service.ScriptType.");
 
       ScriptType scriptT = of.createScriptType();
 
@@ -80,14 +80,14 @@ public class STALXTranslationHandler implements STALTranslator.TranslationHandle
           commandAPDUType.setExpectedSW(cmd.getExpectedSW());
           scriptT.getResetOrCommandAPDUOrVerifyAPDU().add(commandAPDUType);
         } else {
-          log.error("invalid requestScriptElement " + requestScriptElement.getClass());
+          log.error("Invalid requestScriptElement {}.", requestScriptElement.getClass());
           throw new TranslationException(requestScriptElement.getClass());
         }
       }
 
       return of.createScript(scriptT);
     } else {
-      log.error("cannot translate " + request.getClass());
+      log.error("Cannot translate {}.", request.getClass());
       throw new TranslationException(request.getClass());
     }
   }
@@ -96,7 +96,7 @@ public class STALXTranslationHandler implements STALTranslator.TranslationHandle
   public STALRequest translate(RequestType request) throws TranslationException {
     if (request instanceof ScriptType) {
 
-      log.trace("translate at.buergerkarte.namespaces.cardchannel.service.ScriptType -> at.gv.egiz.stal.ext.APDUScriptRequest");
+      log.trace("Translate at.buergerkarte.namespaces.cardchannel.service.ScriptType -> at.gv.egiz.stal.ext.APDUScriptRequest.");
 
       List<Object> resetOrCommandAPDUOrVerifyAPDU = ((ScriptType) request).getResetOrCommandAPDUOrVerifyAPDU();
       List<APDUScriptRequest.RequestScriptElement> requestScript = new ArrayList<APDUScriptRequest.RequestScriptElement>();
@@ -124,7 +124,7 @@ public class STALXTranslationHandler implements STALTranslator.TranslationHandle
           log.error("CardChannel script command 'VerifyAPDU' not implemented.");
           throw new TranslationException(VerifyAPDUType.class);
         } else {
-          log.error("invalid requestScriptElement element " + element.getClass());
+          log.error("Invalid requestScriptElement element {}.", element.getClass());
           throw new TranslationException(element.getClass());
         }
       }
@@ -132,7 +132,7 @@ public class STALXTranslationHandler implements STALTranslator.TranslationHandle
       return new APDUScriptRequest(requestScript);
 
     } else {
-      log.error("cannot translate " + request.getClass());
+      log.error("Cannot translate {}.", request.getClass());
       throw new TranslationException(request.getClass());
     }
   }
@@ -140,7 +140,7 @@ public class STALXTranslationHandler implements STALTranslator.TranslationHandle
   @Override
   public JAXBElement<? extends ResponseType> translate(STALResponse response) throws TranslationException {
     if (response instanceof APDUScriptResponse) {
-      log.trace("translate at.gv.egiz.stal.ext.APDUScriptResponse -> at.buergerkarte.namespaces.cardchannel.service.ResponseType");
+      log.trace("Translate at.gv.egiz.stal.ext.APDUScriptResponse -> at.buergerkarte.namespaces.cardchannel.service.ResponseType.");
       at.buergerkarte.namespaces.cardchannel.service.ResponseType responseT = of.createResponseType();
       List<APDUScriptResponse.ResponseScriptElement> responseScript = ((APDUScriptResponse) response).getScript();
 
@@ -167,13 +167,13 @@ public class STALXTranslationHandler implements STALTranslator.TranslationHandle
 
           responseT.getATROrResponseAPDU().add(responseAPDUType);
         } else {
-          log.error("invalid responseScriptElement " + element.getClass());
+          log.error("Invalid responseScriptElement {}.", element.getClass());
           throw new TranslationException(element.getClass());
         }
       }
       return of.createResponse(responseT);
     } else {
-      log.error("cannot translate " + response.getClass());
+      log.error("Cannot translate {}." + response.getClass());
       throw new TranslationException(response.getClass());
     }
   }
@@ -181,7 +181,7 @@ public class STALXTranslationHandler implements STALTranslator.TranslationHandle
   @Override
   public STALResponse translate(ResponseType response) throws TranslationException {
     if (response instanceof at.buergerkarte.namespaces.cardchannel.service.ResponseType) {
-      log.trace("translate at.buergerkarte.namespaces.cardchannel.service.ResponseType -> at.gv.egiz.stal.ext.APDUScriptResponse");
+      log.trace("Translate at.buergerkarte.namespaces.cardchannel.service.ResponseType -> at.gv.egiz.stal.ext.APDUScriptResponse.");
 
       List<Object> atrOrResponseAPDU = ((at.buergerkarte.namespaces.cardchannel.service.ResponseType) response).getATROrResponseAPDU();
       List<APDUScriptResponse.ResponseScriptElement> responseScript = new ArrayList<APDUScriptResponse.ResponseScriptElement>();
@@ -203,14 +203,14 @@ public class STALXTranslationHandler implements STALTranslator.TranslationHandle
                   respAPDU.getSW(),
                   rc));
         } else {
-          log.error("invalid responseScriptElement " + object.getClass());
+          log.error("Invalid responseScriptElement {}.", object.getClass());
           throw new TranslationException(object.getClass());
         }
       }
       return new APDUScriptResponse(responseScript);
 
     } else {
-      log.error("cannot translate " + response.getClass());
+      log.error("Cannot translate {}.", response.getClass());
       throw new TranslationException(response.getClass());
     }
   }

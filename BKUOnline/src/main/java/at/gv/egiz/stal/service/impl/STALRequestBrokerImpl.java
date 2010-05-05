@@ -34,8 +34,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An instance of STALRequestBroker is shared between a producer thread (SLCommand)
@@ -50,7 +50,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class STALRequestBrokerImpl implements STALRequestBroker {
 
-    private static final Log log = LogFactory.getLog(STALRequestBrokerImpl.class);
+    private final Logger log = LoggerFactory.getLogger(STALRequestBrokerImpl.class);
 
     private ObjectFactory of = new ObjectFactory();
     private STALTranslator translator = new STALTranslator();
@@ -173,7 +173,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                 log.trace("waiting to consume response");
                 responses.wait(timeout);
                 if (System.currentTimeMillis() - beforeWait >= timeout) {
-                    log.warn("timeout while waiting to consume response, cleanup requests");
+                    log.warn("Timeout while waiting to consume response, cleanup requests.");
                     requests.clear(); 
                     hashDataInputs.clear();
                     return Collections.singletonList((STALResponse) new ErrorResponse(ERR_4500));
@@ -218,7 +218,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                 log.trace("waiting to consume request");
                 requests.wait(timeout);
                 if (System.currentTimeMillis() - beforeWait >= timeout) {
-                    log.warn("timeout while waiting to consume request");
+                    log.warn("Timeout while waiting to consume request.");
                     return createSingleQuitRequest();
                 }
             }
@@ -250,11 +250,11 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
       }
         try {
           synchronized (requests) {
-            log.trace("received responses, now consume request");
+            log.trace("Received responses, now consume request.");
             if (requests.size() != 0) {
               requests.clear();
             } else {
-              log.warn("requests queue is empty, response might have already been produced previously ");
+              log.warn("Requests queue is empty, response might have already been produced previously.");
               // return QUIT?
             }
           }
@@ -266,7 +266,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                     log.trace("waiting to produce response");
                     responses.wait(timeout);
                     if (System.currentTimeMillis() - beforeWait >= timeout) {
-                        log.warn("timeout while waiting to produce response");
+                        log.warn("Timeout while waiting to produce response.");
                         return createSingleQuitRequest();
                     }
                 }
@@ -281,7 +281,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                 log.trace("notifying response consumers");
                 responses.notify();
             } else {
-              log.error("Received NextRequest without responses, return QUIT");
+              log.error("Received NextRequest without responses, return QUIT.");
               return createSingleQuitRequest();
             }
           }
@@ -292,11 +292,11 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                 log.trace("waiting to consume request");
                 requests.wait(timeout);
                 if (System.currentTimeMillis() - beforeWait >= timeout) {
-                    log.warn("timeout while waiting to consume request");
+                    log.warn("Timeout while waiting to consume request.");
                     return createSingleQuitRequest();
                 }
             }
-            log.trace("don't consume request now, but on next response delivery");
+            log.trace("Don't consume request now, but on next response delivery.");
             return requests;
           }
         } catch (InterruptedException ex) {
@@ -309,7 +309,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
     @Override
     public List<HashDataInput> getHashDataInput() {
       synchronized (requests) {
-        log.trace("return " + hashDataInputs.size() + " current HashDataInput(s) ");
+        log.trace("Return {} current HashDataInput(s).", hashDataInputs.size());
         return hashDataInputs;
       }
     }

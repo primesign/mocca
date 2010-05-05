@@ -19,7 +19,6 @@ package at.gv.egiz.bku.slcommands.impl;
 import javax.xml.bind.JAXBElement;
 
 import at.gv.egiz.bku.slcommands.SLCommand;
-import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 
 /**
@@ -34,30 +33,15 @@ import at.gv.egiz.bku.slexceptions.SLCommandException;
 public abstract class SLCommandImpl<T> implements SLCommand {
 
   /**
-   * The <code>SLCommandContext</code> for this <code>SLCommand</code>.
-   */
-  protected SLCommandContext cmdCtx;
-  
-  /**
-   * The STAL helper.
-   */
-  protected STALHelper stalHelper;
-
-  /**
    * The request element of this command.
    */
   protected JAXBElement<T> request;
 
   @SuppressWarnings("unchecked")
   @Override
-  public void init(SLCommandContext ctx, Object request)
+  public void init(Object request)
       throws SLCommandException {
-
     this.request = (JAXBElement<T>) request;
-
-    this.cmdCtx = ctx;
-    stalHelper = new STALHelper(cmdCtx.getSTAL());
-
   }
 
   /**
@@ -73,9 +57,10 @@ public abstract class SLCommandImpl<T> implements SLCommand {
   }
 
   /**
-   * @return the corresponding <code>SLCommandContext</code>
+   * @return the request
    */
-  protected SLCommandContext getCmdCtx() {
-    return cmdCtx;
+  public JAXBElement<T> getRequest() {
+    return request;
   }
+
 }

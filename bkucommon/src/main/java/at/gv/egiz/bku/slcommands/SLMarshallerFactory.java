@@ -20,15 +20,15 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 import at.gv.egiz.marshal.MarshallerFactory;
 
 public class SLMarshallerFactory {
   
-  static Log log = LogFactory.getLog(SLMarshallerFactory.class);
+  private final Logger log = LoggerFactory.getLogger(SLMarshallerFactory.class);
 
   /**
    * The JAXBContext used for result marshaling.
@@ -98,6 +98,7 @@ public class SLMarshallerFactory {
         String cardChannelPkg = at.buergerkarte.namespaces.cardchannel.ObjectFactory.class.getPackage().getName();
         legacyContext = JAXBContext.newInstance(slPkgLegacy1_0 + ":" + slPkgLegacy1_1 + ":" + xmldsigPkg + ":" + cardChannelPkg);
       } catch (JAXBException e) {
+        Logger log = LoggerFactory.getLogger(SLMarshallerFactory.class);
         log.error("Failed to setup JAXBContext security layer request.", e);
         throw new SLRuntimeException(e);
       }
@@ -131,7 +132,7 @@ public class SLMarshallerFactory {
     try {
       return MarshallerFactory.createMarshaller(context, formattedOutput, fragment);
     } catch (JAXBException e) {
-      log.fatal("Failed to marshall error response.", e);
+      log.error("Failed to marshall error response.", e);
       throw new SLRuntimeException("Failed to marshall error response.", e);
     }
   }
@@ -164,7 +165,7 @@ public class SLMarshallerFactory {
       ensureLegacyContext();
       return MarshallerFactory.createMarshaller(legacyContext, formattedOutput, fragment);
     } catch (JAXBException e) {
-      log.fatal("Failed to marshall error response.", e);
+      log.error("Failed to marshall error response.", e);
       throw new SLRuntimeException("Failed to marshall error response.", e);
     }
   }

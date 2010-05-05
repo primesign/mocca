@@ -29,8 +29,8 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.smcc.util.ISO7816Utils;
 import at.gv.egiz.smcc.util.SMCCHelper;
@@ -40,7 +40,7 @@ public class ITCard extends AbstractSignatureCard {
   /**
    * Logging facility.
    */
-  private static Log log = LogFactory.getLog(STARCOSCard.class);
+  private final Logger log = LoggerFactory.getLogger(STARCOSCard.class);
   
   public static final byte[] MF = new byte[] { (byte) 0x3F, (byte) 0x00 };
   
@@ -48,17 +48,15 @@ public class ITCard extends AbstractSignatureCard {
   
   public static final byte[] EF_C_Carta = new byte[] { (byte) 0x11, (byte) 0x01 };
   
-  private static final PINSpec SS_PIN_SPEC = 
-    new PINSpec(5, 8, "[0-9]", 
-        "at/gv/egiz/smcc/ITCard", "sig.pin", (byte) 0x10, 
-        new byte[] { (byte) 0x11, (byte) 0x00 });
-
+  protected PinInfo ssPinInfo = new PinInfo(5, 8, "[0-9]",
+          "at/gv/egiz/smcc/ITCard", "sig.pin", (byte) 0x10,
+          new byte[] { (byte) 0x11, (byte) 0x00 }, PinInfo.UNKNOWN_RETRIES);
+    
   /**
    * Creates a new instance.
    */
   public ITCard() {
     super("at/gv/egiz/smcc/ITCard");
-    pinSpecs.add(SS_PIN_SPEC);
   }
 
   @Override
@@ -144,7 +142,7 @@ public class ITCard extends AbstractSignatureCard {
       // SELECT MF
       execSELECT_FID(channel, MF);
       // VERIFY
-      verifyPINLoop(channel, SS_PIN_SPEC, provider);
+      verifyPINLoop(channel, ssPinInfo, provider);
       // MANAGE SECURITY ENVIRONMENT : RESTORE SE
       execMSE(channel, 0xF3, 0x03, null);
       // MANAGE SECURITY ENVIRONMENT : SET DST
@@ -153,13 +151,13 @@ public class ITCard extends AbstractSignatureCard {
       return execPSO_COMPUTE_DIGITAL_SIGNATURE(channel, digest);
 
     } catch (CardException e) {
-      log.warn(e);
+      log.warn("Failed to execute command.", e);
       throw new SignatureCardException("Failed to access card.", e);
     }
 
   }
 
-  protected void verifyPINLoop(CardChannel channel, PINSpec spec,
+  protected void verifyPINLoop(CardChannel channel, PinInfo spec,
       PINGUI provider) throws LockedException, NotActivatedException,
       SignatureCardException, InterruptedException, CardException {
     
@@ -169,7 +167,7 @@ public class ITCard extends AbstractSignatureCard {
     } while (retries >= -1);
   }
 
-  protected int verifyPIN(CardChannel channel, PINSpec pinSpec,
+  protected int verifyPIN(CardChannel channel, PinInfo pinSpec,
       PINGUI provider, int retries) throws SignatureCardException,
       LockedException, NotActivatedException, InterruptedException,
       CardException {

@@ -286,12 +286,18 @@ public class ISO7816Utils {
   public static CommandAPDU createVerifyAPDU(VerifyAPDUSpec apduSpec, char[] pin) {
 
     // format pin
-    byte[] fpin = new byte[apduSpec.getPinLength()];
-    byte[] mask = new byte[apduSpec.getPinLength()];
+    int l = (apduSpec.getPinLength() > 0) ? apduSpec.getPinLength() : pin.length;
+    byte[] fpin = new byte[l];
+    byte[] mask = new byte[l];
     formatPIN(apduSpec.getPinFormat(), apduSpec.getPinJustification(), fpin, mask, pin);
 
-    byte[] apdu = apduSpec.getApdu();
-
+    byte[] template = apduSpec.getApdu();
+    byte[] apdu = new byte[Math.max(template.length, 5 + apduSpec.getPinPosition() + l)];
+    System.arraycopy(template, 0, apdu, 0, template.length);
+    if (template.length < 5) {
+      apdu[4] = (byte) (apdu.length - 5);
+    }
+    
     // insert formated pin
     insertPIN(apdu, apduSpec.getPinPosition() + 5, fpin, mask);
 
@@ -307,13 +313,24 @@ public class ISO7816Utils {
   public static CommandAPDU createChangeReferenceDataAPDU(
       ChangeReferenceDataAPDUSpec apduSpec, char[] oldPin, char[] newPin) {
     
+    int lo = (apduSpec.getPinLength() > 0) ? apduSpec.getPinLength() : oldPin.length;
+    int ln = (apduSpec.getPinLength() > 0) ? apduSpec.getPinLength() : newPin.length;
+
     // format old pin
-    byte[] fpin = new byte[apduSpec.getPinLength()];
-    byte[] mask = new byte[apduSpec.getPinLength()];
+    byte[] fpin = new byte[lo];
+    byte[] mask = new byte[lo];
     formatPIN(apduSpec.getPinFormat(), apduSpec.getPinJustification(), fpin, mask, oldPin);
 
-    byte[] apdu = apduSpec.getApdu();
-    
+    byte[] template = apduSpec.getApdu();
+    byte[] apdu = new byte[Math.max(template.length,
+        5 + apduSpec.getPinPosition()
+        + Math.max(apduSpec.getPinInsertionOffsetOld() + lo,
+        apduSpec.getPinInsertionOffsetNew() + ln))];
+    System.arraycopy(template, 0, apdu, 0, template.length);
+    if (template.length < 5) {
+      apdu[4] = (byte) (apdu.length - 5);
+    }
+
     // insert formated old pin
     insertPIN(apdu, apduSpec.getPinPosition() + apduSpec.getPinInsertionOffsetOld() + 5, fpin, mask);
 
@@ -324,8 +341,8 @@ public class ISO7816Utils {
     }
 
     // format new pin
-    fpin = new byte[apduSpec.getPinLength()];
-    mask = new byte[apduSpec.getPinLength()];
+    fpin = new byte[ln];
+    mask = new byte[ln];
     formatPIN(apduSpec.getPinFormat(), apduSpec.getPinJustification(), fpin, mask, newPin);
     
     // insert formated new pin
@@ -345,12 +362,18 @@ public class ISO7816Utils {
       NewReferenceDataAPDUSpec apduSpec, char[] newPin) {
     
     // format old pin
-    byte[] fpin = new byte[apduSpec.getPinLength()];
-    byte[] mask = new byte[apduSpec.getPinLength()];
+    int l = (apduSpec.getPinLength() > 0) ? apduSpec.getPinLength() : newPin.length;
+    byte[] fpin = new byte[l];
+    byte[] mask = new byte[l];
     formatPIN(apduSpec.getPinFormat(), apduSpec.getPinJustification(), fpin, mask, newPin);
 
-    byte[] apdu = apduSpec.getApdu();
-    
+    byte[] template = apduSpec.getApdu();
+    byte[] apdu = new byte[Math.max(template.length, 5 + apduSpec.getPinPosition() + l)];
+    System.arraycopy(template, 0, apdu, 0, template.length);
+    if (template.length < 5) {
+      apdu[4] = (byte) (apdu.length - 5);
+    }
+
     // insert formated new pin
     insertPIN(apdu, apduSpec.getPinPosition() + apduSpec.getPinInsertionOffsetNew() + 5, fpin, mask);
 

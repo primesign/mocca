@@ -16,6 +16,16 @@
  */
 package at.gv.egiz.stal.service.translator;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.bind.JAXBElement;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.InfoboxReadResponse;
@@ -37,13 +47,6 @@ import at.gv.egiz.stal.service.types.SignRequestType;
 import at.gv.egiz.stal.service.types.SignResponseType;
 import at.gv.egiz.stal.service.types.StatusRequestType;
 import at.gv.egiz.stal.service.types.StatusResponseType;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.xml.bind.JAXBElement;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  *
@@ -51,8 +54,8 @@ import org.apache.commons.logging.LogFactory;
  */
 public class STALTranslator {
 
-  private static final Log log = LogFactory.getLog(STALTranslator.class);
-  protected Map<Class, TranslationHandler> handlerMap = new HashMap<Class, TranslationHandler>();
+  private final Logger log = LoggerFactory.getLogger(STALTranslator.class);
+  protected Map<Class<?>, TranslationHandler> handlerMap = new HashMap<Class<?>, TranslationHandler>();
 
   public STALTranslator() {
     registerTranslationHandler(new DefaultTranslationHandler());
@@ -63,9 +66,9 @@ public class STALTranslator {
    * @param handler
    */
   public void registerTranslationHandler(TranslationHandler handler) {
-    for (Class t : handler.getSupportedTypes()) {
-      if (log.isDebugEnabled()) {
-        log.debug("register " + t + " with translation handler " + handler.getClass());
+    for (Class<?> t : handler.getSupportedTypes()) {
+      if (log.isTraceEnabled()) {
+        log.trace("Register {} with translation handler {}.", t, handler.getClass());
       }
       handlerMap.put(t, handler);
     }
@@ -85,7 +88,7 @@ public class STALTranslator {
         return r;
       }
     }
-    log.error("unknown STAL request type " + request.getClass());
+    log.error("Unknown STAL request type {}.", request.getClass());
     throw new TranslationException(request.getClass());
   }
 
@@ -107,7 +110,7 @@ public class STALTranslator {
         return stalRequest;
       }
     }
-    log.error("unknown request type " + req.getClass());
+    log.error("Unknown request type {}.", req.getClass());
     throw new TranslationException(req.getClass());
   }
 
@@ -125,7 +128,7 @@ public class STALTranslator {
         return r;
       }
     }
-    log.error("unknown STAL response type " + response.getClass());
+    log.error("Unknown STAL response type {}.", response.getClass());
     throw new TranslationException(response.getClass());
   }
 
@@ -147,7 +150,7 @@ public class STALTranslator {
         return stalResponse;
       }
     }
-    log.error("unknown response type " + resp.getClass());
+    log.error("Unknown response type {}.", resp.getClass());
     throw new TranslationException(resp.getClass());
   }
 
@@ -156,7 +159,7 @@ public class STALTranslator {
    */
   public static interface TranslationHandler {
 
-    List<Class> getSupportedTypes();
+    List<Class<?>> getSupportedTypes();
 
     JAXBElement<? extends RequestType> translate(STALRequest request) throws TranslationException;
 
@@ -173,7 +176,7 @@ public class STALTranslator {
    */
   protected static class DefaultTranslationHandler implements TranslationHandler {
 
-    private static final Log log = LogFactory.getLog(DefaultTranslationHandler.class);
+    private final Logger log = LoggerFactory.getLogger(DefaultTranslationHandler.class);
     private ObjectFactory of;
 
     public DefaultTranslationHandler() {
@@ -181,8 +184,8 @@ public class STALTranslator {
     }
 
     @Override
-    public List<Class> getSupportedTypes() {
-      return Arrays.asList(new Class[]{InfoboxReadRequest.class,
+    public List<Class<?>> getSupportedTypes() {
+      return Arrays.asList(new Class<?>[]{InfoboxReadRequest.class,
                 SignRequest.class,
                 QuitRequest.class,
                 StatusRequest.class,

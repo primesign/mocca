@@ -18,8 +18,8 @@ package at.gv.egiz.bku.smccstal;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.pin.gui.VerifyPINGUI;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.LockedException;
@@ -34,7 +34,7 @@ import at.gv.egiz.stal.STALResponse;
 
 public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
 
-  private static Log log = LogFactory.getLog(InfoBoxReadRequestHandler.class);
+  private final Logger log = LoggerFactory.getLogger(InfoBoxReadRequestHandler.class);
 
 //  protected PINProviderFactory pinProviderFactory;
 
@@ -46,7 +46,7 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
       try {
         if (infoBox.getInfoboxIdentifier().equals("IdentityLink")) {
           newSTALMessage("Message.RequestCaption", "Message.IdentityLink");
-          log.debug("Handling identitylink infobox");
+          log.debug("Handling identitylink infobox.");
           byte[] resp = card.getInfobox(infoBox.getInfoboxIdentifier(),
                   new VerifyPINGUI(gui),
                   infoBox.getDomainIdentifier());
@@ -58,7 +58,7 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
               resp = DomainIdConverter.convertDomainId(resp, infoBox
                   .getDomainIdentifier());
             } catch (Exception e) {
-              log.error("Cannot convert domain specific id", e);
+              log.error("Cannot convert domain specific id.", e);
               return new ErrorResponse(1000);
             }
           }
@@ -68,7 +68,7 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
         } else if (SignatureCard.KeyboxName.CERITIFIED_KEYPAIR.equals(infoBox
             .getInfoboxIdentifier())) {
           newSTALMessage("Message.RequestCaption", "Message.CertifiedKeypair");
-          log.debug("Handling certified keypair infobox");
+          log.debug("Handling certified keypair infobox.");
           byte[] resp = card
               .getCertificate(SignatureCard.KeyboxName.CERITIFIED_KEYPAIR);
           if (resp == null) {
@@ -81,7 +81,7 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
             .equals(infoBox.getInfoboxIdentifier())) {
           newSTALMessage("Message.RequestCaption",
               "Message.SecureSignatureKeypair");
-          log.debug("Handling secure signature keypair infobox");
+          log.debug("Handling secure signature keypair infobox.");
           byte[] resp = card
               .getCertificate(SignatureCard.KeyboxName.SECURE_SIGNATURE_KEYPAIR);
           if (resp == null) {
@@ -92,8 +92,8 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
           return stalResp;
         } else {
           newSTALMessage("Message.RequestCaption", "Message.InfoboxReadRequest");
-          log.warn("Unknown infobox identifier: "
-              + infoBox.getInfoboxIdentifier() + " trying generic request");
+          log.warn("Unknown infobox identifier: {} trying generic request.",
+              infoBox.getInfoboxIdentifier());
           byte[] resp = card.getInfobox(infoBox.getInfoboxIdentifier(),
                   new VerifyPINGUI(gui),
                   infoBox.getDomainIdentifier());
@@ -105,7 +105,7 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
           return stalResp;
         }
       } catch (IllegalArgumentException e) {
-        log.info("Infobox " + infoBox.getInfoboxIdentifier() + " not supported.");
+        log.info("Infobox {} not supported.", infoBox.getInfoboxIdentifier());
         return new ErrorResponse(4002);
       } catch (NotActivatedException e) {
         log.info("Citizen card not activated.", e);
@@ -122,14 +122,14 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
                 BKUGUIFacade.MESSAGE_WAIT);
         return new ErrorResponse(6001);
       } catch (CancelledException cx) {
-        log.debug("User cancelled request", cx);
+        log.debug("User cancelled request.", cx);
         return new ErrorResponse(6001);
       } catch (SignatureCardException e) {
-        log.info("Error while reading infobox: " + e);
+        log.info("Error while reading infobox. " + e);
         return new ErrorResponse(4000);
       }
     } else {
-      log.fatal("Got unexpected STAL request: " + request);
+      log.error("Got unexpected STAL request: {}.", request);
       return new ErrorResponse(1000);
     }
   }

@@ -11,7 +11,7 @@ import java.util.ResourceBundle;
 
 import javax.jnlp.UnavailableServiceException;
 
-import com.sun.javaws.security.JavaWebStartSecurity;
+//import com.sun.javaws.security.JavaWebStartSecurity;
 import java.awt.AWTException;
 import java.awt.Desktop;
 import java.awt.Image;
@@ -88,11 +88,11 @@ public class Launcher implements BKUControllerInterface, ActionListener {
     URL cert = null;
     URL help = null;
     try {
-      http = new URL("http://localhost:" + Integer.getInteger(Container.HTTPS_PORT_PROPERTY, 3495).intValue());
-      https = new URL("https://localhost:" + Integer.getInteger(Container.HTTPS_PORT_PROPERTY, 3496).intValue());
+      http = new URL("http://localhost:" + Integer.getInteger(Container.HTTPS_PORT_PROPERTY, 3495).intValue() + '/');
+      https = new URL("https://localhost:" + Integer.getInteger(Container.HTTPS_PORT_PROPERTY, 3496).intValue() + '/');
       pin = new URL(http, "/PINManagement");
-      cert = new URL(http, "/installCertificate");
-      help = new URL(http, "/help");
+      cert = new URL(http, "/ca.crt");
+      help = new URL(http, "/help/");
     } catch (MalformedURLException ex) {
       log.error("Failed to create URL.", ex);
     } finally {
@@ -134,13 +134,15 @@ public class Launcher implements BKUControllerInterface, ActionListener {
   
   public Launcher() {
     log.info("Initializing Launcher");
-    if (log.isTraceEnabled()) {
-      SecurityManager sm = System.getSecurityManager();
-      if (sm instanceof JavaWebStartSecurity) {
-        System.setSecurityManager(new LogSecurityManager((JavaWebStartSecurity) sm));
-      }
-    }
+
+    // SocketPerm * required (DataURL), FilePermission * write (JFileChooser) required,
+    // jetty does not allow fine-grained permission config (codeBase?)
+    // ie. we don't need a security manager
+    log.trace("disabling (JNLP) security manager");
+    System.setSecurityManager(null);
+
     messages = ResourceBundle.getBundle(MESSAGES_RESOURCE, Locale.getDefault());
+    //TODO replace with statusNotifier
     trayIcon = initTrayIcon();
   }
 
@@ -213,7 +215,7 @@ public class Launcher implements BKUControllerInterface, ActionListener {
         Image image = ImageIO.read(getClass().getResourceAsStream(iconResource));
 
         PopupMenu popup = new PopupMenu();
-        
+
         MenuItem helpItem = new MenuItem(messages.getString(LABEL_HELP));
         helpItem.addActionListener(this);
         helpItem.setActionCommand(HELP_COMMAND);
@@ -237,6 +239,7 @@ public class Launcher implements BKUControllerInterface, ActionListener {
         popup.add(aboutItem);
 
         TrayIcon ti = new TrayIcon(image, messages.getString(TOOLTIP_DEFAULT), popup);
+        ti.setImageAutoSize(true);
         ti.addActionListener(this);
         tray.add(ti);
         return ti;
@@ -301,7 +304,11 @@ public class Launcher implements BKUControllerInterface, ActionListener {
       }
       if (config.isCertRenewed()) {
         try {
-          browse(HTTP_SECURITY_LAYER_URL);
+          if ("".equals(messages.getLocale().getLanguage())) {
+            browse(HTTP_SECURITY_LAYER_URL);
+          } else {
+            browse(new URL(HTTP_SECURITY_LAYER_URL, messages.getLocale().getLanguage()));
+          }
         } catch (Exception ex) {
           log.error("failed to open system browser, install TLS certificate manually: " + HTTPS_SECURITY_LAYER_URL, ex);
         }
@@ -364,7 +371,11 @@ public class Launcher implements BKUControllerInterface, ActionListener {
     } else if (HELP_COMMAND.equals(e.getActionCommand())) {
       log.debug("help page requested via tray menu");
       try {
-        browse(HELP_URL);
+        if ("".equals(messages.getLocale().getLanguage())) {
+          browse(HELP_URL);
+        } else {
+          browse(new URL(HELP_URL, messages.getLocale().getLanguage()));
+        }
       } catch (Exception ex) {
         log.error("Failed to open " + HELP_URL, ex);
         String msg = MessageFormat.format(messages.getString(ERROR_OPEN_URL), HELP_URL);

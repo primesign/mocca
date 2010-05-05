@@ -1,21 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
-		<artifactId>bku</artifactId>
+		<artifactId>mocca</artifactId>
 		<groupId>at.gv.egiz</groupId>
-		<version>1.2.14-SNAPSHOT</version>
+		<version>1.3.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>BKULocal</artifactId>
 	<packaging>war</packaging>
 	<name>BKU Local</name>
-	<version>1.2.14-SNAPSHOT</version>
+	<version>${project.parent.version}</version>
 
-	<scm>
-		<developerConnection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKULocal</developerConnection>
-		<connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKULocal</connection>
-		<url>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk/BKULocal</url>
-	</scm>
   <build>
     <plugins>
       <plugin>
@@ -72,42 +67,54 @@
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>STAL</artifactId>
-			<version>1.2.14-SNAPSHOT</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>bkucommon</artifactId>
-			<version>1.2.14-SNAPSHOT</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>smcc</artifactId>
-			<version>1.2.14-SNAPSHOT</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>at.gv.egiz</groupId>
 			<artifactId>smccSTAL</artifactId>
-			<version>1.2.14-SNAPSHOT</version>
+			<version>${project.parent.version}</version>
 		</dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUGuiExt</artifactId>
-      <version>1.2.14-SNAPSHOT</version>
+      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>smccSTALExt</artifactId>
-      <version>1.2.14-SNAPSHOT</version>
+      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUViewer</artifactId>
-      <version>1.2.14-SNAPSHOT</version>
+      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
       <artifactId>BKUHelp</artifactId>
       <groupId>at.gv.egiz</groupId>
-      <version>1.2.14-SNAPSHOT</version>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>iaik</groupId>
+      <artifactId>iaik_xsect</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>iaik</groupId>
+      <artifactId>iaik_jce_full_signed</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>iaik</groupId>
+      <artifactId>iaik_ecc_signed</artifactId>
     </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -116,21 +123,42 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>2.5.5</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 
-	<properties>
-        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
-    </properties>
+    <profiles>
+      <profile>
+        <id>tomcat-deploy</id>
+        <dependencies>
+          <dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+            <scope>compile</scope>
+          </dependency>
+        </dependencies>
+        <properties>
+          <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
+        </properties>
+      </profile>
+    </profiles>
 </project>

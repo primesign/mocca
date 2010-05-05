@@ -32,6 +32,7 @@ public class HttpUtil {
   public static final String HTTP_HEADER_USER_AGENT = "User-Agent";
   public static final String HTTP_HEADER_SERVER = "Server";
   public final static String HTTP_HEADER_REFERER = "Referer";
+  public static final String HTTP_HEADER_SIGNATURE_LAYOUT = "SignatureLayout";
   public final static String CONTENT_TRANSFER_ENCODING = "Content-Transfer-Encoding";
   public final static String MULTIPART_FOTMDATA = "multipart/form-data";
   public final static String MULTIPART_FOTMDATA_BOUNDARY = "boundary";

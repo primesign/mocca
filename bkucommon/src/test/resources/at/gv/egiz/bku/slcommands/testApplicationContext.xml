@@ -15,38 +15,134 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
-	
-	<bean id="slCommandFactory" class="at.gv.egiz.bku.slcommands.SLCommandFactory"
-		factory-method="getInstance">
-		<property name="commandImpl">
-			<map>
-				<entry
-					key="http://www.buergerkarte.at/namespaces/securitylayer/1.2#:NullOperationRequest"
-					value="at.gv.egiz.bku.slcommands.impl.NullOperationCommandImpl" />
-				<entry
-					key="http://www.buergerkarte.at/namespaces/securitylayer/1.2#:InfoboxReadRequest"
-					value="at.gv.egiz.bku.slcommands.impl.InfoboxReadCommandImpl" />
-				<entry
-					key="http://www.buergerkarte.at/namespaces/securitylayer/1.2#:CreateXMLSignatureRequest"
-					value="at.gv.egiz.bku.slcommands.impl.CreateXMLSignatureCommandImpl" />
-			</map>
-		</property>
-	</bean>
-	
-	<bean id="infoboxFactory" class="at.gv.egiz.bku.slcommands.impl.InfoboxFactory"
-    factory-method="getInstance">
-    <property name="infoboxImpl">
+  <bean id="configuration" class="org.apache.commons.configuration.MapConfiguration">
+    <constructor-arg>
       <map>
-        <entry
-          key="Certificates"
-          value="at.gv.egiz.bku.slcommands.impl.CertificatesInfoboxImpl" />
-        <entry
-          key="IdentityLink"
-          value="at.gv.egiz.bku.slcommands.impl.IdentityLinkInfoboxImpl" />
-        <!--<entry
-          key="CardChannel"
-          value="at.gv.egiz.bku.slcommands.impl.CardChannel" />
-      --></map>
+        <entry key="ValidateHashDataInputs" value="false"/>
+      </map>
+    </constructor-arg>
+  </bean>
+
+  <!-- URL dereferencer -->
+  <bean id="urlDereferencer" class="at.gv.egiz.bku.utils.urldereferencer.URLDereferencerImpl"
+    factory-method="getInstance"/>
+
+  <!-- command invoker -->
+  <bean id="slCommandInvoker" class="at.gv.egiz.bku.binding.SLCommandInvokerImpl">
+  </bean>
+
+  <!-- Security Layer command factory -->
+
+  <bean id="abstractCommandFactory" class="at.gv.egiz.bku.slcommands.AbstractSLCommandFactory"
+    abstract="true">
+    <property name="configuration" ref="configuration"/>
+  </bean>
+
+  <bean id="certificatesInfoboxFactory"
+    class="at.gv.egiz.bku.slcommands.impl.CertificatesInfoboxFactory" />
+  <bean id="identityLinkInfoboxFactory"
+    class="at.gv.egiz.bku.slcommands.impl.IdentityLinkInfoboxFactory">
+    <property name="identityLinkTransformer">
+      <bean class="at.gv.egiz.idlink.IdentityLinkTransformer">
+        <property name="urlDereferencer" ref="urlDereferencer"/>
+      </bean>
+    </property>
+  </bean>
+  <bean id="cardChannelInfoboxFactory"
+    class="at.gv.egiz.bku.slcommands.impl.CardChannelInfoboxFactory" />
+  <bean id="svPersonendatenInfoboxFactory"
+    class="at.gv.egiz.bku.slcommands.impl.SVPersonendatenInfoboxFactory" />
+
+  <bean id="infoboxFactory" class="at.gv.egiz.bku.slcommands.impl.InfoboxFactory">
+    <property name="infoboxFactories">
+      <map>
+        <entry key="Certificates" value-ref="certificatesInfoboxFactory" />
+        <entry key="IdentityLink" value-ref="identityLinkInfoboxFactory" />
+        <entry key="CardChannel" value-ref="cardChannelInfoboxFactory" />
+        <entry key="SV-Personendaten" value-ref="svPersonendatenInfoboxFactory" />
+      </map>
+    </property>
+  </bean>
+
+  <bean id="nullOperationCommandFactory"
+    class="at.gv.egiz.bku.slcommands.impl.NullOperationCommandFactory"
+    parent="abstractCommandFactory" />
+  <bean id="nullOperationRequest" class="javax.xml.namespace.QName">
+    <constructor-arg
+      value="http://www.buergerkarte.at/namespaces/securitylayer/1.2#" />
+    <constructor-arg value="NullOperationRequest" />
+  </bean>
+  <bean id="infoboxReadCommandFactory"
+    class="at.gv.egiz.bku.slcommands.impl.InfoboxReadCommandFactory"
+    parent="abstractCommandFactory">
+    <property name="infoboxFactory" ref="infoboxFactory" />
+  </bean>
+  <bean id="infoboxReadRequest" class="javax.xml.namespace.QName">
+    <constructor-arg
+      value="http://www.buergerkarte.at/namespaces/securitylayer/1.2#" />
+    <constructor-arg value="InfoboxReadRequest" />
+  </bean>
+  <bean id="infoboxUpdateCommandFactory"
+    class="at.gv.egiz.bku.slcommands.impl.InfoboxUpdateCommandFactory"
+    parent="abstractCommandFactory">
+    <property name="infoboxFactory" ref="infoboxFactory" />
+  </bean>
+  <bean id="infoboxUpdateRequest" class="javax.xml.namespace.QName">
+    <constructor-arg
+      value="http://www.buergerkarte.at/namespaces/securitylayer/1.2#" />
+    <constructor-arg value="InfoboxUpdateRequest" />
+  </bean>
+  <bean id="createXMLSignatureCommandFactory"
+    class="at.gv.egiz.bku.slcommands.impl.CreateXMLSignatureCommandFactory"
+    parent="abstractCommandFactory" />
+  <bean id="createXMLSignatureRequest" class="javax.xml.namespace.QName">
+    <constructor-arg
+      value="http://www.buergerkarte.at/namespaces/securitylayer/1.2#" />
+    <constructor-arg value="CreateXMLSignatureRequest" />
+  </bean>
+  <bean id="getStatusCommandFactory" class="at.gv.egiz.bku.slcommands.impl.GetStatusCommandFactory"
+    parent="abstractCommandFactory" />
+  <bean id="getStatusRequest" class="javax.xml.namespace.QName">
+    <constructor-arg
+      value="http://www.buergerkarte.at/namespaces/securitylayer/1.2#" />
+    <constructor-arg value="GetStatusRequest" />
+  </bean>
+
+  <bean id="slCommandFactory" class="at.gv.egiz.bku.slcommands.SLCommandFactory"
+    factory-method="getInstance">
+    <property name="concreteFactories">
+      <map>
+        <entry key-ref="nullOperationRequest" value-ref="nullOperationCommandFactory" />
+        <entry key-ref="infoboxReadRequest" value-ref="infoboxReadCommandFactory" />
+        <entry key-ref="infoboxUpdateRequest" value-ref="infoboxUpdateCommandFactory" />
+        <entry key-ref="createXMLSignatureRequest" value-ref="createXMLSignatureCommandFactory" />
+        <entry key-ref="getStatusRequest" value-ref="getStatusCommandFactory" />
+      </map>
+    </property>
+  </bean>
+  
+  <!-- STAL factory -->
+	<bean id="stalFactory" class="at.gv.egiz.stal.dummy.DummyStalFactory"
+		scope="singleton">
+	</bean>
+  
+  <!-- binding processor factories -->
+  <bean id="httpBindingProcessorFactory" class="at.gv.egiz.bku.binding.HTTPBindingProcessorFactory">
+    <property name="configuration" ref="configuration" />
+    <property name="slCommandFactory" ref="slCommandFactory" />
+    <property name="urlDereferencer" ref="urlDereferencer" />
+  </bean>
+
+  <!-- binding processor manager -->
+  <bean id="bindingProcessorManager" class="at.gv.egiz.bku.binding.BindingProcessorManagerImpl"
+    scope="singleton">
+    <property name="configuration" ref="configuration" />
+    <property name="stalFactory" ref="stalFactory" />
+    <property name="slCommandInvoker" ref="slCommandInvoker" />
+    <property name="factories">
+      <list>
+        <ref bean="httpBindingProcessorFactory"/>
+      </list>
     </property>
   </bean>
 

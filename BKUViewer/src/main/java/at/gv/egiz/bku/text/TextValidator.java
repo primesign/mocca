@@ -25,8 +25,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.viewer.ValidationException;
 import at.gv.egiz.bku.viewer.Validator;
@@ -37,7 +37,7 @@ public class TextValidator implements Validator {
   /**
    * Logging facility.
    */
-  protected static Log log = LogFactory.getLog(TextValidator.class);
+  protected static Logger log = LoggerFactory.getLogger(TextValidator.class);
 
   protected Font viewerFont;
 
@@ -46,7 +46,7 @@ public class TextValidator implements Validator {
   }
 
   private void invalid(char c) throws ValidationException {
-    log.info("Invalid character (0x" + Integer.toHexString(c) + ") found.");
+    log.info("Invalid character (0x{}) found.", Integer.toHexString(c));
     // TODO: localize
     throw new ValidationException();
   }
@@ -60,7 +60,7 @@ public class TextValidator implements Validator {
       try {
         reader = new InputStreamReader(is, charset);
       } catch (UnsupportedEncodingException e) {
-        log.info("Charset '" + charset + "' not supported.", e);
+        log.info("Charset '{}' not supported.", charset, e);
         // TODO: localize
         throw new ValidationException(e);
       }

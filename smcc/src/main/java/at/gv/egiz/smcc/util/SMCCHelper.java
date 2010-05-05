@@ -19,12 +19,11 @@ package at.gv.egiz.smcc.util;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.smartcardio.ATR;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardTerminal;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.smcc.CardNotSupportedException;
 import at.gv.egiz.smcc.SignatureCard;
@@ -38,7 +37,7 @@ public class SMCCHelper {
   public final static int CARD_NOT_SUPPORTED = 3;
   public final static int CARD_FOUND = 4;
 
-  private final static Log log = LogFactory.getLog(SMCCHelper.class);
+  private final Logger log = LoggerFactory.getLogger(SMCCHelper.class);
 
   protected SmartCardIO smartCardIO = new SmartCardIO();
   protected int resultCode = NO_CARD;
@@ -84,23 +83,24 @@ public class SMCCHelper {
               throw new CardNotSupportedException();
             }
             signatureCard = factory.createSignatureCard(c, cardTerminal);
-            ATR atr = newCards.get(cardTerminal).getATR();
-            log.trace("Found supported card (" + signatureCard.toString() + ") "
-                + "in terminal '" + cardTerminal.getName() + "', ATR = "
-                + toString(atr.getBytes()) + ".");
+            if (log.isTraceEnabled()) {
+              Object[] args = { signatureCard, cardTerminal.getName(),
+                  toString(newCards.get(cardTerminal).getATR().getBytes()) };
+              log.trace("Found supported card ({}) in terminal '{}', ATR = {}.", args);
+            }
             resultCode = CARD_FOUND;
             break;
 
           } catch (CardNotSupportedException e) {
             Card c = newCards.get(cardTerminal);
             if (c != null) {
-              ATR atr = c.getATR();
-              log.info("Found unsupported card" + " in terminal '"
-                  + cardTerminal.getName() + "', ATR = "
-                  + toString(atr.getBytes()) + ".");
+              Object[] args = { cardTerminal.getName(),
+                  toString(c.getATR().getBytes()) };
+              log.info("Found unsupported card in terminal '{}', ATR = {}.",
+                  args);
             } else {
-              log.info("Found unsupported card in terminal '"
-                  + cardTerminal.getName() + "' without ATR");
+              log.info("Found unsupported card in terminal '{}' without ATR.",
+                  cardTerminal.getName());
             }
             resultCode = CARD_NOT_SUPPORTED;
           }

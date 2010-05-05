@@ -16,36 +16,19 @@
 */
 package at.gv.egiz.bku.binding;
 
-import at.gv.egiz.bku.conf.Configuration;
-import at.gv.egiz.bku.conf.DummyConfiguration;
 import static org.junit.Assert.*;
 
 import java.net.MalformedURLException;
 
-import org.junit.Before;
 import org.junit.Test;
 
-public class BindingProcessorManagerTest {
+public class BindingProcessorManagerTest extends AbstractBindingProcessorTest {
   
-  @Before
-  public void setUp() {
-    IdFactory.getInstance().setNumberOfBits(24*10);
-  }
-
-  
-  @Test(expected = MalformedURLException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void basicCreationTest() throws MalformedURLException {
-    //TODO for the moment empty config sufficient (currently only maxDataURLHops configured)
-   BindingProcessorManager manager = new BindingProcessorManagerImpl(new DummyStalFactory(), new SLCommandInvokerImpl(), new DummyConfiguration());
-   BindingProcessor bp = manager.createBindingProcessor("http://www.at/", null);
-   assertNotNull(bp.getId().toString());
-   assertEquals(40, bp.getId().toString().length());
-   String hansi = "Hansi";
-   bp = manager.createBindingProcessor("http://www.iaik.at",hansi);
-   assertEquals(hansi, bp.getId().toString()); 
-   bp = manager.createBindingProcessor("HtTp://www.iaik.at", null);
-   assertNotNull(bp);
-   manager.createBindingProcessor("seppl", null);
+    assertNotNull(createBindingProcessor("http"));
+    assertNotNull(createBindingProcessor("HtTp"));
+    createBindingProcessor("seppl");
   }
   
 }

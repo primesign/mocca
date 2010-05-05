@@ -26,7 +26,6 @@ import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -40,8 +39,8 @@ import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.smcc.util.ISO7816Utils;
 import at.gv.egiz.smcc.util.SMCCHelper;
@@ -49,7 +48,7 @@ import at.gv.egiz.smcc.util.TransparentFileInputStream;
 
 public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureCard {
 
-  private static Log log = LogFactory.getLog(ACOSCard.class);
+  private final Logger log = LoggerFactory.getLogger(ACOSCard.class);
 
   public static final byte[] AID_DEC = new byte[] { (byte) 0xA0, (byte) 0x00,
       (byte) 0x00, (byte) 0x01, (byte) 0x18, (byte) 0x45, (byte) 0x4E };
@@ -115,22 +114,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
       (byte) 0x01 // RSA // TODO: Not verified yet
   };
 
-  private static final PINSpec DEC_PIN_SPEC = new PINSpec(0, 8, "[0-9]",
-      "at/gv/egiz/smcc/ACOSCard", "dec.pin", KID_PIN_DEC, AID_DEC);
-
-  private static final PINSpec SIG_PIN_SPEC = new PINSpec(0, 8, "[0-9]",
-      "at/gv/egiz/smcc/ACOSCard", "sig.pin", KID_PIN_SIG, AID_SIG);
-
-  private static final PINSpec INF_PIN_SPEC = new PINSpec(0, 8, "[0-9]",
-      "at/gv/egiz/smcc/ACOSCard", "inf.pin", KID_PIN_INF, AID_DEC);
-  
-  static {
-    if (SignatureCardFactory.ENFORCE_RECOMMENDED_PIN_LENGTH) {
-      DEC_PIN_SPEC.setRecLength(4);
-      SIG_PIN_SPEC.setRecLength(6);
-      INF_PIN_SPEC.setRecLength(4);
-    }
-  }
+  protected PinInfo decPinInfo, sigPinInfo, infPinInfo;
   
   /**
    * The version of the card's digital signature application.
@@ -160,20 +144,29 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
       appVersion = 1;
       log.info("a-sign premium application version = " + appVersion);
     } catch (SignatureCardException e) {
-      log.warn(e);
+      log.warn("Failed to execute command.", e);
       appVersion = 0;
     } catch (IOException e) {
-      log.warn(e);
+      log.warn("Failed to execute command.", e);
       appVersion = 0;
     } catch (CardException e) {
-      log.warn(e);
+      log.warn("Failed to execute command.", e);
       appVersion = 0;
-    } 
-    
-    pinSpecs.add(DEC_PIN_SPEC);
-    pinSpecs.add(SIG_PIN_SPEC);
-    if (appVersion < 2) {
-      pinSpecs.add(INF_PIN_SPEC);
+    }
+
+    decPinInfo = new PinInfo(0, 8, "[0-9]",
+      "at/gv/egiz/smcc/ACOSCard", "dec.pin", KID_PIN_DEC, AID_DEC, 10);
+
+    sigPinInfo = new PinInfo(0, 8, "[0-9]",
+      "at/gv/egiz/smcc/ACOSCard", "sig.pin", KID_PIN_SIG, AID_SIG, 10);
+
+    infPinInfo= new PinInfo(0, 8, "[0-9]",
+      "at/gv/egiz/smcc/ACOSCard", "inf.pin", KID_PIN_INF, AID_DEC, 10);
+
+    if (SignatureCardFactory.ENFORCE_RECOMMENDED_PIN_LENGTH) {
+      decPinInfo.setRecLength(4);
+      sigPinInfo.setRecLength(6);
+      infPinInfo.setRecLength(4);
     }
 
   }
@@ -205,7 +198,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
         int maxSize = -1;
         if (getAppVersion() < 2) {
           maxSize = ISO7816Utils.getLengthFromFCx(fcx);
-          log.debug("Size of selected file = " + maxSize);
+          log.debug("Size of selected file = {}.", maxSize);
         }
         // READ BINARY
         byte[] certificate = ISO7816Utils.readTransparentFileTLV(channel, maxSize, (byte) 0x30);
@@ -251,13 +244,13 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
       // SELECT file
       byte[] fcx = execSELECT_FID(channel, EF_INFOBOX);
       int maxSize = ISO7816Utils.getLengthFromFCx(fcx);
-      log.debug("Size of selected file = " + maxSize);
+      log.debug("Size of selected file = {}.", maxSize);
       // READ BINARY
       while(true) {
         try {
           return ISO7816Utils.readTransparentFileTLV(channel, maxSize, (byte) 0x30);
         } catch (SecurityStatusNotSatisfiedException e) {
-          verifyPINLoop(channel, INF_PIN_SPEC, provider);
+          verifyPINLoop(channel, infPinInfo, provider);
         }
       }
       
@@ -295,7 +288,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
         
       b = is.read();
       if (b != 0x01) {
-        String msg = "Infobox structure v" + b + " not supported.";
+        String msg = "Infobox structure v{}" + b + " not supported.";
         log.info(msg);
         throw new SignatureCardException(msg);
       }
@@ -348,7 +341,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
           plainKey = execPSO_DECIPHER(channel, key);
           break;
         } catch(SecurityStatusNotSatisfiedException e) {
-          verifyPINLoop(channel, DEC_PIN_SPEC, provider);
+          verifyPINLoop(channel, decPinInfo, provider);
         }
       }
       
@@ -444,14 +437,12 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
 
       if (KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(keyboxName)) {
 
-        PINSpec spec = SIG_PIN_SPEC;
-        
         // SELECT application
         execSELECT_AID(channel, AID_SIG);
         // MANAGE SECURITY ENVIRONMENT : SET DST
         execMSE(channel, 0x41, 0xb6, dst.toByteArray());
         // VERIFY
-        verifyPINLoop(channel, spec, provider);
+        verifyPINLoop(channel, sigPinInfo, provider);
         // PERFORM SECURITY OPERATION : HASH
         execPSO_HASH(channel, digest);
         // PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATRE
@@ -459,8 +450,6 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
     
       } else if (KeyboxName.CERITIFIED_KEYPAIR.equals(keyboxName)) {
         
-        PINSpec spec = DEC_PIN_SPEC;
-
         // SELECT application
         execSELECT_AID(channel, AID_DEC);
         // MANAGE SECURITY ENVIRONMENT : SET AT
@@ -471,7 +460,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
             // INTERNAL AUTHENTICATE
             return execINTERNAL_AUTHENTICATE(channel, digest);
           } catch (SecurityStatusNotSatisfiedException e) {
-            verifyPINLoop(channel, spec, provider);
+            verifyPINLoop(channel, decPinInfo, provider);
           }
         }
 
@@ -481,7 +470,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
       }
       
     } catch (CardException e) {
-      log.warn(e);
+      log.warn("Failed to execute command.", e);
       throw new SignatureCardException("Failed to access card.", e);
     } 
       
@@ -492,10 +481,10 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   }
 
   /* (non-Javadoc)
-   * @see at.gv.egiz.smcc.AbstractSignatureCard#verifyPIN(at.gv.egiz.smcc.PINSpec, at.gv.egiz.smcc.PINProvider)
+   * @see at.gv.egiz.smcc.AbstractSignatureCard#verifyPIN(at.gv.egiz.smcc.pinInfo, at.gv.egiz.smcc.PINProvider)
    */
   @Override
-  public void verifyPIN(PINSpec pinSpec, PINGUI pinProvider)
+  public void verifyPIN(PinInfo pinInfo, PINGUI pinProvider)
       throws LockedException, NotActivatedException, CancelledException,
       TimeoutException, SignatureCardException, InterruptedException {
 
@@ -503,9 +492,9 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
     
     try {
       // SELECT application
-      execSELECT_AID(channel, pinSpec.getContextAID());
+      execSELECT_AID(channel, pinInfo.getContextAID());
       // VERIFY
-      verifyPINLoop(channel, pinSpec, pinProvider);
+      verifyPINLoop(channel, pinInfo, pinProvider);
     } catch (CardException e) {
       log.info("Failed to verify PIN.", e);
       throw new SignatureCardException("Failed to verify PIN.", e);
@@ -514,10 +503,10 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   }
   
   /* (non-Javadoc)
-   * @see at.gv.egiz.smcc.AbstractSignatureCard#changePIN(at.gv.egiz.smcc.PINSpec, at.gv.egiz.smcc.ChangePINProvider)
+   * @see at.gv.egiz.smcc.AbstractSignatureCard#changePIN(at.gv.egiz.smcc.pinInfo, at.gv.egiz.smcc.ChangePINProvider)
    */
   @Override
-  public void changePIN(PINSpec pinSpec, ModifyPINGUI pinProvider)
+  public void changePIN(PinInfo pinInfo, ModifyPINGUI pinProvider)
       throws LockedException, NotActivatedException, CancelledException,
       TimeoutException, SignatureCardException, InterruptedException {
 
@@ -525,9 +514,9 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
     
     try {
       // SELECT application
-      execSELECT_AID(channel, pinSpec.getContextAID());
+      execSELECT_AID(channel, pinInfo.getContextAID());
       // CHANGE REFERENCE DATA
-      changePINLoop(channel, pinSpec, pinProvider);
+      changePINLoop(channel, pinInfo, pinProvider);
     } catch (CardException e) {
       log.info("Failed to change PIN.", e);
       throw new SignatureCardException("Failed to change PIN.", e);
@@ -536,7 +525,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   }
 
   @Override
-  public void activatePIN(PINSpec pinSpec, ModifyPINGUI pinGUI)
+  public void activatePIN(PinInfo pinInfo, ModifyPINGUI pinGUI)
       throws CancelledException, SignatureCardException, CancelledException,
       TimeoutException, InterruptedException {
     log.error("ACTIVATE PIN not supported by ACOS");
@@ -544,29 +533,20 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   }
 
   @Override
-  public void unblockPIN(PINSpec pinSpec, ModifyPINGUI pinGUI)
+  public void unblockPIN(PinInfo pinInfo, ModifyPINGUI pinGUI)
       throws CancelledException, SignatureCardException, InterruptedException {
     throw new SignatureCardException("Unblock PIN not supported.");
   }
   
   /* (non-Javadoc)
-   * @see at.gv.egiz.smcc.PINMgmtSignatureCard#getPINSpecs()
+   * @see at.gv.egiz.smcc.PINMgmtSignatureCard#getpinInfos()
    */
   @Override
-  public List<PINSpec> getPINSpecs() {
-    if (getAppVersion() < 2) {
-      return Arrays.asList(new PINSpec[] {DEC_PIN_SPEC, SIG_PIN_SPEC, INF_PIN_SPEC});
-    } else {
-      return Arrays.asList(new PINSpec[] {DEC_PIN_SPEC, SIG_PIN_SPEC});
+  public PinInfo[] getPinInfos() {
+    if (appVersion < 2) {
+      return new PinInfo[] {decPinInfo, sigPinInfo, infPinInfo };
     }
-  }
-
-  /* (non-Javadoc)
-   * @see at.gv.egiz.smcc.PINMgmtSignatureCard#getPINStatus(at.gv.egiz.smcc.PINSpec)
-   */
-  @Override
-  public PIN_STATE getPINState(PINSpec pinSpec) throws SignatureCardException {
-    return PIN_STATE.UNKNOWN;
+    return new PinInfo[] {decPinInfo, sigPinInfo };
   }
 
   @Override
@@ -578,7 +558,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   // PROTECTED METHODS (assume exclusive card access)
   ////////////////////////////////////////////////////////////////////////
 
-  protected void verifyPINLoop(CardChannel channel, PINSpec spec, PINGUI provider)
+  protected void verifyPINLoop(CardChannel channel, PinInfo spec, PINGUI provider)
       throws InterruptedException, CardException, SignatureCardException {
     
     int retries = -1;
@@ -587,7 +567,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
     } while (retries > 0);
   }
 
-  protected void changePINLoop(CardChannel channel, PINSpec spec, ModifyPINGUI provider)
+  protected void changePINLoop(CardChannel channel, PinInfo spec, ModifyPINGUI provider)
       throws InterruptedException, CardException, SignatureCardException {
 
     int retries = -1;
@@ -596,44 +576,48 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
     } while (retries > 0);
   }
 
-  protected int verifyPIN(CardChannel channel, PINSpec pinSpec,
+  protected int verifyPIN(CardChannel channel, PinInfo pinInfo,
       PINGUI provider, int retries) throws InterruptedException, CardException, SignatureCardException {
     
     VerifyAPDUSpec apduSpec = new VerifyAPDUSpec(
         new byte[] {
-            (byte) 0x00, (byte) 0x20, (byte) 0x00, pinSpec.getKID(), (byte) 0x08,
+            (byte) 0x00, (byte) 0x20, (byte) 0x00, pinInfo.getKID(), (byte) 0x08,
             (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, 
             (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00 }, 
         0, VerifyAPDUSpec.PIN_FORMAT_ASCII, 8);
     
-    ResponseAPDU resp = reader.verify(channel, apduSpec, provider, pinSpec, retries);
+    ResponseAPDU resp = reader.verify(channel, apduSpec, provider, pinInfo, retries);
     
     if (resp.getSW() == 0x9000) {
+      pinInfo.setActive(pinInfo.maxRetries);
       return -1;
     }
     if (resp.getSW() >> 4 == 0x63c) {
+      pinInfo.setActive(0x0f & resp.getSW());
       return 0x0f & resp.getSW();
     }
 
     switch (resp.getSW()) {
     case 0x6983:
       // authentication method blocked
+      pinInfo.setBlocked();
       throw new LockedException();
   
     default:
       String msg = "VERIFY failed. SW=" + Integer.toHexString(resp.getSW()); 
       log.info(msg);
+      pinInfo.setUnknown();
       throw new SignatureCardException(msg);
     }
 
   }
 
-  protected int changePIN(CardChannel channel, PINSpec pinSpec,
+  protected int changePIN(CardChannel channel, PinInfo pinInfo,
       ModifyPINGUI pinProvider, int retries) throws CancelledException, InterruptedException, CardException, SignatureCardException {
 
     ChangeReferenceDataAPDUSpec apduSpec = new ChangeReferenceDataAPDUSpec(
         new byte[] {
-            (byte) 0x00, (byte) 0x24, (byte) 0x00, pinSpec.getKID(), (byte) 0x10,  
+            (byte) 0x00, (byte) 0x24, (byte) 0x00, pinInfo.getKID(), (byte) 0x10,
             (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,       
             (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,       
             (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,       
@@ -643,23 +627,27 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
     
     
     
-    ResponseAPDU resp = reader.modify(channel, apduSpec, pinProvider, pinSpec, retries);
+    ResponseAPDU resp = reader.modify(channel, apduSpec, pinProvider, pinInfo, retries);
     
     if (resp.getSW() == 0x9000) {
+      pinInfo.setActive(pinInfo.maxRetries);
       return -1;
     }
     if (resp.getSW() >> 4 == 0x63c) {
+      pinInfo.setActive(0x0f & resp.getSW());
       return 0x0f & resp.getSW();
     }
     
     switch (resp.getSW()) {
     case 0x6983:
       // authentication method blocked
+      pinInfo.setBlocked();
       throw new LockedException();
   
     default:
       String msg = "CHANGE REFERENCE DATA failed. SW=" + Integer.toHexString(resp.getSW()); 
       log.info(msg);
+      pinInfo.setUnknown();
       throw new SignatureCardException(msg);
     }
     

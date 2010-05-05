@@ -17,7 +17,7 @@
 
 package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.bku.gui.PINManagementGUIFacade.STATUS;
+import at.gv.egiz.smcc.PinInfo;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.ResourceBundle;
@@ -29,33 +29,45 @@ import javax.swing.table.DefaultTableCellRenderer;
  */
 public class PINStatusRenderer extends DefaultTableCellRenderer {
   
-//  private static final Log log = LogFactory.getLog(PINStatusRenderer.class);
-
+  private static final long serialVersionUID = 1L;
+  
   public static final Color RED = new Color(0.9f, 0.0f, 0.0f);
   public static final Color GREEN = new Color(0.0f, 0.8f, 0.0f);
   protected ResourceBundle messages;
+  protected int fontSize;
 
   public PINStatusRenderer(ResourceBundle messages) {
     this.messages = messages;
+    this.fontSize = super.getFont().getSize();
   }
 
   @Override
   protected void setValue(Object value) {
-    STATUS pinStatus = (STATUS) value;
+    PinInfo.STATE pinStatus = ((PinInfo) value).getState();
+    
     super.setFont(super.getFont().deriveFont(super.getFont().getStyle() | Font.BOLD));
+    super.setFont(super.getFont().deriveFont((float) (fontSize)));
       
-    if (pinStatus == STATUS.NOT_ACTIV) {
+    if (pinStatus == PinInfo.STATE.NOT_ACTIV) {
       super.setForeground(RED);
-      super.setText("<html>" + messages.getString(PINManagementGUIFacade.STATUS_NOT_ACTIVE) + "</html>");
-    } else if (pinStatus == STATUS.ACTIV) {
+      super.setText("<html>" + messages.getString(PINManagementGUIFacade.STATUS_NOT_ACTIVE));
+    } else if (pinStatus == PinInfo.STATE.ACTIV) {
       super.setForeground(GREEN);
-      super.setText("<html>" + messages.getString(PINManagementGUIFacade.STATUS_ACTIVE) + "</html>");
-    } else if (pinStatus == STATUS.BLOCKED) {
+      super.setText("<html>" + messages.getString(PINManagementGUIFacade.STATUS_ACTIVE) + " (" + ((PinInfo) value).getRetries() + ")");
+    } else if (pinStatus == PinInfo.STATE.BLOCKED) {
       super.setForeground(RED);
-      super.setText("<html>" + messages.getString(PINManagementGUIFacade.STATUS_BLOCKED) + "</html>");
-    } else {
+      super.setText("<html>" + messages.getString(PINManagementGUIFacade.STATUS_BLOCKED));
+    } else if (pinStatus == PinInfo.STATE.UNKNOWN) {
       super.setForeground(Color.BLACK);
-      super.setText("<html>" + messages.getString(PINManagementGUIFacade.STATUS_UNKNOWN) + "</html>");
+      super.setText("<html>" + messages.getString(PINManagementGUIFacade.STATUS_UNKNOWN));
+    } else {
+      super.setForeground(Color.RED);
+      super.setText("<html>" + messages.getString(PINManagementGUIFacade.STATUS_UNKNOWN));
     }
   }
+  
+	public void setFontSize(int fontSize) {
+		
+		this.fontSize = fontSize;
+	}
 }

@@ -36,7 +36,7 @@ public interface SLCommandInvoker {
    */
   public SLResult getResult(SLTargetContext aContext) throws SLException;
 
-  public void setCommand(at.gv.egiz.bku.slcommands.SLCommand aCmd);
+  public void setCommand(SLCommandContext commandContext, at.gv.egiz.bku.slcommands.SLCommand aCmd);
   
   /**
    * Prototype creation 

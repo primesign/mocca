@@ -24,12 +24,12 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LogCardChannel extends CardChannel {
   
-  protected static Log log = LogFactory.getLog(LogCardChannel.class);
+  private final Logger log = LoggerFactory.getLogger(LogCardChannel.class);
   
   private CardChannel channel;
   
@@ -61,11 +61,11 @@ public class LogCardChannel extends CardChannel {
       switch (command.getINS()) {
       case 0x20:    // VERIFY
       case 0x21:    // VERIFY
-      case 0x24: {  // CHANGE REFERENCE DATA 
-        // Don't log possibly sensitive command data 
+      case 0x24: {  // CHANGE REFERENCE DATA
+        // Don't log possibly sensitive command data
         StringBuilder sb = new StringBuilder();
         sb.append(command);
-        sb.append('\n');
+        sb.append("\n-> ");
         byte[] c = new byte[4];
         c[0] = (byte) command.getCLA();
         c[1] = (byte) command.getINS();
@@ -87,12 +87,12 @@ public class LogCardChannel extends CardChannel {
       }; break;
 
       default:
-        log.trace(command + "\n" + toString(command.getBytes()));
+        log.trace(command + "\n-> " + toString(command.getBytes()));
       }
       long t0 = System.currentTimeMillis();
       ResponseAPDU response = channel.transmit(command);
       long t1 = System.currentTimeMillis();
-      log.trace(response + " [" + (t1 - t0) + "ms]\n" + toString(response.getBytes()));
+      log.trace(response + " [" + (t1 - t0) + "ms]\n<- " + toString(response.getBytes()));
       return response;
     } else {
       return channel.transmit(command);

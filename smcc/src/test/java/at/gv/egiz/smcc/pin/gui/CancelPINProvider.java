@@ -17,12 +17,12 @@
 package at.gv.egiz.smcc.pin.gui;
 
 import at.gv.egiz.smcc.CancelledException;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 
 public class CancelPINProvider extends DummyPINGUI implements PINGUI {
 
   @Override
-  public char[] providePIN(PINSpec spec, int retries)
+  public char[] providePIN(PinInfo spec, int retries)
           throws CancelledException, InterruptedException {
     throw new CancelledException("cancelled by cancelPINProvider");
   }

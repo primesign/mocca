@@ -16,7 +16,6 @@
  */
 package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.bku.gui.*;
 import java.awt.event.ActionListener;
 
 /**

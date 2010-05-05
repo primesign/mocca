@@ -34,8 +34,8 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.ValidatorHandler;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -78,7 +78,7 @@ public class SLXHTMLValidator implements at.gv.egiz.bku.viewer.Validator {
   /**
    * Logging facility.
    */
-  private static Log log = LogFactory.getLog(SLXHTMLValidator.class);
+  private static Logger log = LoggerFactory.getLogger(SLXHTMLValidator.class);
 
   private static Schema slSchema;
   
@@ -91,11 +91,11 @@ public class SLXHTMLValidator implements at.gv.egiz.bku.viewer.Validator {
               SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
               ClassLoader cl = SLXHTMLValidator.class.getClassLoader();
               URL schemaURL = cl.getResource(SLXHTML_SCHEMA_FILE);
-              log.debug("Trying to create SLXHTML schema from URL '" + schemaURL + "'.");
+              log.debug("Trying to create SLXHTML schema from URL '{}'.", schemaURL);
               long t0 = System.currentTimeMillis();
               slSchema = schemaFactory.newSchema(schemaURL);
               long t1 = System.currentTimeMillis();
-              log.debug("SLXHTML schema successfully created in " + (t1 - t0) + "ms.");
+              log.debug("SLXHTML schema successfully created in {}ms.", (t1 - t0));
           } catch (SAXException e) {
               log.error("Failed to load security layer XHTML schema.", e);
               throw new RuntimeException("Failed to load security layer XHTML schema.", e);

@@ -23,15 +23,15 @@ import java.net.UnknownHostException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 
 public class RuleChecker implements AccessChecker {
 
-	private static Log log = LogFactory.getLog(RuleChecker.class);
+	private final Logger log = LoggerFactory.getLogger(RuleChecker.class);
 
 	public static enum PEER_TYPE {
 		HOST, IP, URL
@@ -162,7 +162,7 @@ public class RuleChecker implements AccessChecker {
 						Matcher matcher = peerIdPattern.matcher(hostName);
 						return matcher.matches();
 					} catch (UnknownHostException e) {
-						log.error("Cannot resolve hostname", e);
+						log.error("Cannot resolve hostname.", e);
 						return false;
 					}
 				} else {
@@ -172,12 +172,12 @@ public class RuleChecker implements AccessChecker {
 						Matcher matcher = peerIdPattern.matcher(hostAddr);
 						return matcher.matches();
 					} catch (UnknownHostException e) {
-						log.error("Cannot resolve host address", e);
+						log.error("Cannot resolve host address.", e);
 						return false;
 					}
 				}
 			} catch (MalformedURLException e) {
-				log.error("Cannot parse url", e);
+				log.error("Cannot parse url.", e);
 				return false;
 			}
 		}
@@ -185,14 +185,14 @@ public class RuleChecker implements AccessChecker {
 
 	@Override
 	public RuleResult check(AccessCheckerContext checkCtx) {
-		log.debug("Processing rule: " + id);
+		log.debug("Processing rule: {}.", id);
 		if (matchAuthenticationClass(checkCtx.getAuthenticationClass())
 				&& matchCommandName(checkCtx.getCommand())
 				&& matchPeerId(checkCtx.getPeerUrl())) {
-			log.debug("Match found for rule: " + id);
+			log.debug("Match found for rule: {}.", id);
 			return new RuleResult(action, userAction, true, chainId);
 		}
-		log.debug("No match found for rule: " + id);
+		log.debug("No match found for rule: {}", id);
 		return new RuleResult(action, userAction, false, chainId);
 	}
 

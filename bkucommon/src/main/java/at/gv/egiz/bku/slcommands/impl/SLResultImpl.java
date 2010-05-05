@@ -37,8 +37,8 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
 import at.buergerkarte.namespaces.securitylayer._1.ErrorResponseType;
@@ -64,7 +64,7 @@ public abstract class SLResultImpl implements SLResult {
   /**
    * Logging facility.
    */
-  private static Log log = LogFactory.getLog(SLResult.class);
+  private final Logger log = LoggerFactory.getLogger(SLResult.class);
 
   /**
    * The security layer result type (default = XML).
@@ -158,21 +158,21 @@ public abstract class SLResultImpl implements SLResult {
         marshaller.marshal(response, result);
       }
     } catch (JAXBException e) {
-      log.info("Failed to marshall " + response.getName() + " result." , e);
+      log.info("Failed to marshall {} result.", response.getName(), e);
       SLCommandException commandException = new SLCommandException(4000);
       writeErrorTo(commandException, result, templates, fragment);
     }
     
     if (ds != null) {
       try {
-        log.trace("Marshalled result:\n" + new String(ds.getBufferedBytes(), "UTF-8"));
+        log.trace("Marshalled result:\n{}", new String(ds.getBufferedBytes(), "UTF-8"));
       } catch (UnsupportedEncodingException e) {
         log.trace(e.getMessage());
       }
     }
     
     if (dw != null) {
-      log.trace("Marshalled result:\n" + dw.getBufferedString());
+      log.trace("Marshalled result:\n{}", dw.getBufferedString());
     }
     
   }
@@ -226,14 +226,14 @@ public abstract class SLResultImpl implements SLResult {
 
     if (ds != null) {
       try {
-        log.trace("Marshalled result:\n" + new String(ds.getBufferedBytes(), "UTF-8"));
+        log.trace("Marshalled result:\n{}", new String(ds.getBufferedBytes(), "UTF-8"));
       } catch (UnsupportedEncodingException e) {
         log.trace(e.getMessage());
       }
     }
     
     if (dw != null) {
-      log.trace("Marshalled result:\n" + dw.getBufferedString());
+      log.trace("Marshalled result:\n{}", dw.getBufferedString());
     }
 
   }
@@ -288,7 +288,7 @@ public abstract class SLResultImpl implements SLResult {
         marshaller.marshal(response, result);
       }
     } catch (JAXBException e) {
-      log.fatal("Failed to marshall error result." , e);
+      log.error("Failed to marshall error result." , e);
       throw new SLRuntimeException("Failed to marshall error result.");
     }
     

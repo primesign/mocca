@@ -18,16 +18,18 @@
 <web-app id="bkulocal" version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
   <display-name>http-security-layer-request</display-name>
   
-  <!--  Begin Spring Config -->
-  <context-param>
-    <param-name>contextConfigLocation</param-name>
-    <param-value>/WEB-INF/applicationContext.xml</param-value>
-  </context-param>
   <listener>
-    <listener-class>
-      org.springframework.web.context.ContextLoaderListener 
-    </listener-class>
+    <listener-class>at.gv.egiz.bku.local.webapp.MoccaContextListener</listener-class>
   </listener>
+  
+  <!--  Begin Spring Config -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<context-param>
+		<param-name>configurationResource</param-name>
+		<param-value>file:${user.home}/.mocca/conf/configuration.xml</param-value>
+	</context-param>
   <!--  End Spring Config -->
   
   <!--  Begin BKU Config -->

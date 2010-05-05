@@ -41,7 +41,7 @@ import at.gv.egiz.smcc.NotActivatedException;
 import at.gv.egiz.smcc.PIN;
 import at.gv.egiz.smcc.PINFormatException;
 import at.gv.egiz.smcc.PINMgmtSignatureCard;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.SignatureCardFactory;
@@ -258,17 +258,17 @@ public class STARCOSCardTest extends CardTest {
     PINMgmtSignatureCard signatureCard = (PINMgmtSignatureCard) createSignatureCard(
             STARCOSCardEmul.DEFAULT_SS_PIN, STARCOSCardEmul.DEFAULT_SS_PIN, PIN.STATE_RESET);
     
-    for (PINSpec pinSpec : signatureCard.getPINSpecs()) {
+    for (PinInfo pinInfo : signatureCard.getPinInfos()) {
 
       char[] pin = "123456".toCharArray();
 
-      for (int i = pinSpec.getMinLength(); i <= pinSpec.getMaxLength(); i++) {
-        signatureCard.verifyPIN(pinSpec, new SMCCTestPINProvider(pin));
+      for (int i = pinInfo.getMinLength(); i <= pinInfo.getMaxLength(); i++) {
+        signatureCard.verifyPIN(pinInfo, new SMCCTestPINProvider(pin));
         char[] newPin = new char[i];
         Arrays.fill(newPin, '0');
         signatureCard
-            .changePIN(pinSpec, new ChangePINProvider(pin, newPin));
-        signatureCard.verifyPIN(pinSpec, new SMCCTestPINProvider(newPin));
+            .changePIN(pinInfo, new ChangePINProvider(pin, newPin));
+        signatureCard.verifyPIN(pinInfo, new SMCCTestPINProvider(newPin));
         pin = newPin;
       }
     }
@@ -283,20 +283,20 @@ public class STARCOSCardTest extends CardTest {
     PINMgmtSignatureCard signatureCard = (PINMgmtSignatureCard) createSignatureCard(
             null, null, PIN.STATE_PIN_NOTACTIVE);
 
-    for (PINSpec pinSpec : signatureCard.getPINSpecs()) {
+    for (PinInfo pinInfo : signatureCard.getPinInfos()) {
 
-      char[] pin = "1234567890".substring(0, pinSpec.getMinLength()).toCharArray();
+      char[] pin = "1234567890".substring(0, pinInfo.getMinLength()).toCharArray();
 
       boolean notActive = false;
       try {
-        signatureCard.verifyPIN(pinSpec, new SMCCTestPINProvider(pin));
+        signatureCard.verifyPIN(pinInfo, new SMCCTestPINProvider(pin));
       } catch (NotActivatedException ex) {
         notActive = true;
       }
       assertTrue(notActive);
 
-      signatureCard.activatePIN(pinSpec, new ChangePINProvider(null, pin));
-      signatureCard.verifyPIN(pinSpec, new SMCCTestPINProvider(pin));
+      signatureCard.activatePIN(pinInfo, new ChangePINProvider(null, pin));
+      signatureCard.verifyPIN(pinInfo, new SMCCTestPINProvider(pin));
     }
   }
 
@@ -307,13 +307,13 @@ public class STARCOSCardTest extends CardTest {
 
     PINMgmtSignatureCard signatureCard = (PINMgmtSignatureCard) createSignatureCard();
 
-    for (PINSpec pinSpec : signatureCard.getPINSpecs()) {
+    for (PinInfo pinInfo : signatureCard.getPinInfos()) {
 
       char[] invalidPin = "999999".toCharArray();
       int numInvalidTries = 2;
       InvalidPINProvider invalidPinProvider = new InvalidPINProvider(invalidPin, numInvalidTries);
       try {
-        signatureCard.verifyPIN(pinSpec, invalidPinProvider);
+        signatureCard.verifyPIN(pinInfo, invalidPinProvider);
       } catch (CancelledException ex) {
       } finally {
         assertTrue(invalidPinProvider.getProvided() == numInvalidTries);
@@ -328,7 +328,7 @@ public class STARCOSCardTest extends CardTest {
 
     PINMgmtSignatureCard signatureCard = (PINMgmtSignatureCard) createSignatureCard();
     
-    for (PINSpec pinSpec : signatureCard.getPINSpecs()) {
+    for (PinInfo pinInfo : signatureCard.getPinInfos()) {
 
       char[] invalidPin = "999999".toCharArray();
       int numInvalidTries = 2;
@@ -336,7 +336,7 @@ public class STARCOSCardTest extends CardTest {
               new InvalidChangePINProvider(invalidPin, invalidPin, numInvalidTries);
 
       try {
-        signatureCard.changePIN(pinSpec, invalidPinProvider);
+        signatureCard.changePIN(pinInfo, invalidPinProvider);
       } catch (CancelledException ex) {
       } finally {
         assertTrue(invalidPinProvider.getProvided() == numInvalidTries);

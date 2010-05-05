@@ -20,9 +20,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.InputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Ignore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Test;
 
 import at.gv.egiz.bku.viewer.ValidationException;
@@ -32,7 +31,7 @@ import at.gv.egiz.bku.viewer.ValidatorFactory;
 //@Ignore
 public class ValidatorTest {
   
-  private static Log log = LogFactory.getLog(ValidatorTest.class);
+  private static Logger log = LoggerFactory.getLogger(ValidatorTest.class);
   
   @Test
   public void testGetInstance() {
@@ -60,7 +59,7 @@ public class ValidatorTest {
       throw e;
     }
     long t1 = System.currentTimeMillis();
-    log.info("Validated SLXHTML file '" + slxhtmlFile + "' in " + (t1 - t0) + "ms.");
+    log.info("Validated SLXHTML file '{}' in {}ms.", slxhtmlFile, t1 - t0);
     
   }
   

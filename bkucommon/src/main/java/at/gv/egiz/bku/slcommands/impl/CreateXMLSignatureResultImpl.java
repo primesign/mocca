@@ -22,8 +22,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.transform.Result;
 import javax.xml.transform.Templates;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
@@ -31,6 +31,7 @@ import org.w3c.dom.Node;
 
 import at.buergerkarte.namespaces.securitylayer._1.CreateXMLSignatureResponseType;
 import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
+import at.gv.egiz.bku.slcommands.CreateXMLSignatureResult;
 import at.gv.egiz.bku.slcommands.SLMarshallerFactory;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 
@@ -39,17 +40,22 @@ import at.gv.egiz.bku.slexceptions.SLRuntimeException;
  * 
  * @author mcentner
  */
-public class CreateXMLSignatureResultImpl extends SLResultImpl {
+public class CreateXMLSignatureResultImpl extends SLResultImpl implements CreateXMLSignatureResult {
 
   /**
    * Logging facility.
    */
-  private static Log log = LogFactory.getLog(CreateXMLSignatureResultImpl.class);
+  private final Logger log = LoggerFactory.getLogger(CreateXMLSignatureResultImpl.class);
   
   /**
    * The document containing the XMLSignature.
    */
   protected Document doc;
+  
+  /**
+   * The content of the CreateXMLSignatureResponse.
+   */
+  protected Element content;
   
   /**
    * Creates a new instance of this CreateXMLSignatureResultImpl with the given
@@ -67,6 +73,7 @@ public class CreateXMLSignatureResultImpl extends SLResultImpl {
     }
     
     this.doc = document;
+    this.content = document.getDocumentElement();
     
     marshallCreateXMLSignatureResponse();
   }
@@ -78,7 +85,7 @@ public class CreateXMLSignatureResultImpl extends SLResultImpl {
 
     ObjectFactory factory = new ObjectFactory();
     
-    CreateXMLSignatureResponseType createCreateXMLSignatureResponseType = factory.createCreateXMLSignatureResponseType();
+    at.gv.egiz.slbinding.impl.CreateXMLSignatureResponseType createCreateXMLSignatureResponseType = factory.createCreateXMLSignatureResponseType();
     JAXBElement<CreateXMLSignatureResponseType> createCreateXMLSignatureResponse = factory.createCreateXMLSignatureResponse(createCreateXMLSignatureResponseType);
 
     DocumentFragment fragment = doc.createDocumentFragment();
@@ -87,14 +94,13 @@ public class CreateXMLSignatureResultImpl extends SLResultImpl {
     try {
       marshaller.marshal(createCreateXMLSignatureResponse, fragment);
     } catch (JAXBException e) {
-      log.error("Failed to marshall 'CreateXMLSignatureResponse'", e);
+      log.error("Failed to marshall 'CreateXMLSignatureResponse'.", e);
       throw new SLRuntimeException(e);
     }
 
     Node child = fragment.getFirstChild();
     if (child instanceof Element) {
-      Node node = doc.replaceChild(child, doc.getDocumentElement());
-      child.appendChild(node);
+      child.appendChild(doc.replaceChild(child, content));
     }
     
   }
@@ -102,6 +108,11 @@ public class CreateXMLSignatureResultImpl extends SLResultImpl {
   @Override
   public void writeTo(Result result, Templates templates, boolean fragment) {
     writeTo(doc, result, templates, fragment);
+  }
+
+  @Override
+  public Element getContent() {
+    return content;
   }
 
 }

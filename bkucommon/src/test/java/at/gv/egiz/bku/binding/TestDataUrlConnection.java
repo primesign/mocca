@@ -21,49 +21,41 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocketFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Ignore;
 
 import at.gv.egiz.bku.slcommands.SLResult;
 
 @Ignore
-public class TestDataUrlConnection implements DataUrlConnectionSPI {
+public class TestDataUrlConnection extends HttpsDataURLConnection {
   
-
-  protected Log log = LogFactory.getLog(TestDataUrlConnection.class);
+  protected final Logger log = LoggerFactory.getLogger(TestDataUrlConnection.class);
   protected X509Certificate serverCertificate;
-  protected Map<String, String> responseHeaders = Collections.EMPTY_MAP;
+  protected Map<String, String> responseHeaders = Collections.emptyMap();
   protected Map<String, String> requestHeaders = new HashMap<String, String>();
   protected String responseContent = "";
   protected int responseCode = 200;
     
-  protected URL url;
-  
-  @Override
-  public void init(URL url) {
-    log.debug("Init Testdataurlconnection to url: " + url);
-    this.url = url;
+  public TestDataUrlConnection(URL url) {
+    super(url);
   }
+  
 
   @Override
   public void connect() throws SocketTimeoutException, IOException {
     log.debug("Dummy connect to Testdataurlconnection to url: " + url);
 
-  }
-
-  @Override
-  public String getProtocol() {
-    return url.getProtocol();
   }
 
   @Override
@@ -74,20 +66,14 @@ public class TestDataUrlConnection implements DataUrlConnectionSPI {
     } else {
       ct = HttpUtil.DEFAULT_CHARSET;
     }
-    DataUrlResponse response = new DataUrlResponse(url.toString(), responseCode, new ByteArrayInputStream(responseContent.getBytes(ct)));
+    DataUrlResponse response = new DataUrlResponse("" + url, responseCode, new ByteArrayInputStream(responseContent.getBytes(ct)));
     response.setResponseHttpHeaders(responseHeaders);
     return response;
   }
 
   @Override
-  public X509Certificate getServerCertificate() {
-    return serverCertificate;
-  }
-
-  @Override
   public void setHTTPFormParameter(String name, InputStream data,
       String contentType, String charSet, String transferEncoding) {
-    // TODO Auto-generated method stub
   }
 
   @Override
@@ -121,30 +107,18 @@ public class TestDataUrlConnection implements DataUrlConnectionSPI {
   }
 
   @Override
-  public DataUrlConnectionSPI newInstance() {
-    return this;
-  }
-
-	@Override
-	public URL getUrl() {
-		return url;
-	}
-
-  @Override
-  public void setConfiguration(Properties config) {
-    // TODO Auto-generated method stub
-    
-  }
-
-  @Override
   public void setHostnameVerifier(HostnameVerifier hostnameVerifier) {
-    // TODO Auto-generated method stub
-    
   }
 
   @Override
   public void setSSLSocketFactory(SSLSocketFactory socketFactory) {
-    // TODO Auto-generated method stub
-    
   }
+
+
+  @Override
+  public Certificate[] getServerCertificates()
+      throws SSLPeerUnverifiedException, IllegalStateException {
+    return new Certificate[] {serverCertificate};
+  }
+  
  }

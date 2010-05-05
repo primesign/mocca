@@ -19,6 +19,7 @@ package at.gv.egiz.bku.slcommands.impl;
 
 import at.buergerkarte.namespaces.securitylayer._1.GetStatusRequestType;
 import at.gv.egiz.bku.slcommands.GetStatusCommand;
+import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLResult;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.stal.ErrorResponse;
@@ -28,8 +29,8 @@ import at.gv.egiz.stal.StatusRequest;
 import at.gv.egiz.stal.StatusResponse;
 import java.util.Collections;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -37,7 +38,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class GetStatusCommandImpl extends SLCommandImpl<GetStatusRequestType> implements GetStatusCommand {
 
-  protected static Log log = LogFactory.getLog(GetStatusCommandImpl.class);
+  protected final Logger log = LoggerFactory.getLogger(GetStatusCommandImpl.class);
 
   @Override
   public String getName() {
@@ -45,16 +46,15 @@ public class GetStatusCommandImpl extends SLCommandImpl<GetStatusRequestType> im
   }
 
   @Override
-  public SLResult execute() {
+  public SLResult execute(SLCommandContext commandContext) {
 
     //ignore maxDelay and TokenStatus
-//    GetStatusRequestType req = getRequestValue();
 
-    log.debug("execute GetStatusRequest");
+    log.debug("Execute GetStatusRequest.");
 
     StatusRequest stalRequest = new StatusRequest();
 
-    STAL stal = cmdCtx.getSTAL();
+    STAL stal = commandContext.getSTAL();
 
     List<STALResponse> responses = stal.handleRequest(Collections.singletonList(stalRequest));
     
@@ -62,16 +62,16 @@ public class GetStatusCommandImpl extends SLCommandImpl<GetStatusRequestType> im
       STALResponse stalResponse = responses.get(0);
       if (stalResponse instanceof StatusResponse) {
         boolean ready = ((StatusResponse) stalResponse).isCardReady();
-        log.trace("received status response cardReady: " + ready);
+        log.trace("Received status response cardReady: {}.", ready);
         return new GetStatusResultImpl(ready);
       } else if (stalResponse instanceof ErrorResponse) {
-        log.debug("received error response");
+        log.debug("Received error response.");
         SLCommandException ex = new SLCommandException(((ErrorResponse) stalResponse).getErrorCode());
-        return new ErrorResultImpl(ex, cmdCtx.getLocale());
+        return new ErrorResultImpl(ex, commandContext.getLocale());
       }
     }
-    log.error("received unexpected responses");
-    return new ErrorResultImpl(new SLCommandException(4000), cmdCtx.getLocale());
+    log.error("Received unexpected responses.");
+    return new ErrorResultImpl(new SLCommandException(4000), commandContext.getLocale());
 
   }
 }

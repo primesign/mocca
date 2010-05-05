@@ -31,8 +31,8 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InternalSSLSocketFactory extends SSLSocketFactory {
 
@@ -40,8 +40,7 @@ public class InternalSSLSocketFactory extends SSLSocketFactory {
 
   private static InternalSSLSocketFactory instance = new InternalSSLSocketFactory();
 
-  private final static Log log = LogFactory
-      .getLog(InternalSSLSocketFactory.class);
+  private final Logger log = LoggerFactory.getLogger(InternalSSLSocketFactory.class);
 
   private SSLSocket sslSocket;
 
@@ -107,19 +106,19 @@ public class InternalSSLSocketFactory extends SSLSocketFactory {
   }
 
   public boolean isEgovAgency() {
-    log.info("Checking if server is egov agency");
+    log.info("Checking if server is egov agency.");
     if (sslSocket != null) {
       try {
         X509Certificate cert = (X509Certificate) sslSocket.getSession()
             .getPeerCertificates()[0];
-        log.info("Server cert: " + cert);
+        log.info("Server cert: {}.", cert);
         return isGovAgency(cert);
       } catch (SSLPeerUnverifiedException e) {
-        log.error(e);
+        log.error("Failed to check server cert.", e);
         return false;
       }
     }
-    log.info("Not a SSL connection");
+    log.info("Not a SSL connection.");
     return false;
   }
 
@@ -146,7 +145,8 @@ public class InternalSSLSocketFactory extends SSLSocketFactory {
         }
       }
     } catch (CertificateParsingException e) {
-      log.error(e);
+      Logger log = LoggerFactory.getLogger(InternalSSLSocketFactory.class);
+      log.error("Failed to parse certificate.", e);
     }
     if ((cert.getExtensionValue("1.2.40.0.10.1.1.1") != null)
         || (cert.getExtensionValue("1.2.40.0.10.1.1.2") != null)) {

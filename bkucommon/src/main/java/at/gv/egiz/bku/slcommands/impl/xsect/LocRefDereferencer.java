@@ -27,12 +27,11 @@ import javax.xml.crypto.URIReference;
 import javax.xml.crypto.URIReferenceException;
 import javax.xml.crypto.XMLCryptoContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.utils.urldereferencer.StreamData;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
-import at.gv.egiz.bku.utils.urldereferencer.URLDereferencerContext;
 
 /**
  * An URIDereferencer implementation that dereferences <code>LocRef</code>
@@ -45,7 +44,7 @@ public class LocRefDereferencer implements URIDereferencer {
   /**
    * Logging facility.
    */
-  private static Log log = LogFactory.getLog(LocRefDereferencer.class);
+  private final Logger log = LoggerFactory.getLogger(LocRefDereferencer.class);
 
   /**
    * The <code>LocRef</code>-reference to be dereferenced by
@@ -54,15 +53,15 @@ public class LocRefDereferencer implements URIDereferencer {
   protected String locRef;
 
   /**
-   * The context to be used for dereferencing.
+   * The URLDereferencer to be used for dereferencing.
    */
-  protected URLDereferencerContext dereferencerContext;
+  protected URLDereferencer dereferencer;
 
   /**
    * Creates a new instance of this LocRefDereferencer with the given
    * <code>dereferencerContext</code> and <code>locRef</code> reference.
    * 
-   * @param dereferencerContext
+   * @param dereferencer
    *          the context to be used for dereferencing
    * @param locRef
    *          the <code>LocRef</code>-reference (must be an absolute URI)
@@ -70,10 +69,10 @@ public class LocRefDereferencer implements URIDereferencer {
    * @throws URISyntaxException
    *           if <code>LocRef</code> is not an absolute URI
    */
-  public LocRefDereferencer(URLDereferencerContext dereferencerContext,
+  public LocRefDereferencer(URLDereferencer dereferencer,
       String locRef) throws URISyntaxException {
 
-    this.dereferencerContext = dereferencerContext;
+    this.dereferencer = dereferencer;
 
     URI locRefUri = new URI(locRef);
     if (locRefUri.isAbsolute()) {
@@ -95,13 +94,11 @@ public class LocRefDereferencer implements URIDereferencer {
   public Data dereference(URIReference uriReference, XMLCryptoContext context)
       throws URIReferenceException {
 
-    URLDereferencer dereferencer = URLDereferencer.getInstance();
     StreamData streamData;
     try {
-      streamData = dereferencer.dereference(locRef, dereferencerContext);
+      streamData = dereferencer.dereference(locRef);
     } catch (IOException e) {
-      log.info("Failed to dereference URI'" + locRef + "'. " + e.getMessage(),
-          e);
+      log.info("Failed to dereference URI '{}'.", locRef, e);
       throw new URIReferenceException("Failed to dereference URI '" + locRef
           + "'. " + e.getMessage(), e);
     }

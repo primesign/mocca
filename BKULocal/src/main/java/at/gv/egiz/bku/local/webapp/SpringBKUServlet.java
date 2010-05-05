@@ -19,21 +19,16 @@ package at.gv.egiz.bku.local.webapp;
 import javax.servlet.http.HttpServlet;
 
 import at.gv.egiz.bku.binding.BindingProcessorManager;
-import at.gv.egiz.bku.conf.Configurator;
 
 public abstract class SpringBKUServlet extends HttpServlet {
 
-  public final static String BEAN_NAME = "bindingProcessorManager";
+  private static final long serialVersionUID = 1L;
 
-  protected static Configurator configurator;
+  public final static String BEAN_NAME = "bindingProcessorManager";
 
   protected BindingProcessorManager getBindingProcessorManager() {
     return (BindingProcessorManager) getServletContext()
         .getAttribute(BEAN_NAME);
-  }
-
-  public static void setConfigurator(Configurator conf) {
-    configurator = conf;
   }
 
 }

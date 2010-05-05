@@ -26,10 +26,14 @@ import javax.swing.table.DefaultTableCellRenderer;
  */
 public class HyperlinkRenderer extends DefaultTableCellRenderer {
 
+  private static final long serialVersionUID = 1L;
+  
   protected boolean renderReferenceId;
+  protected int fontSize;
 
   public HyperlinkRenderer(boolean renderReferenceId) {
     this.renderReferenceId = renderReferenceId;
+    this.fontSize = super.getFont().getSize();
   }
 
   /**
@@ -49,6 +53,13 @@ public class HyperlinkRenderer extends DefaultTableCellRenderer {
       }
     }
     super.setText("<html><u>" + hrefText + "</u></html>");
+    super.setFont(super.getFont().deriveFont((float) (fontSize)));
     setForeground(BKUGUIFacade.HYPERLINK_COLOR);
   }
+  
+	public void setFontSize(int fontSize) {
+		
+		this.fontSize = fontSize;
+	}
+  
 }

@@ -24,8 +24,8 @@ import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.StatusRequest;
 import at.gv.egiz.stal.StatusResponse;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class StatusRequestHandler extends AbstractRequestHandler {
 
-  protected static final Log log = LogFactory.getLog(StatusRequestHandler.class);
+  private final Logger log = LoggerFactory.getLogger(StatusRequestHandler.class);
 
   @Override
   public void init(SignatureCard sc, BKUGUIFacade gui) {
@@ -45,13 +45,13 @@ public class StatusRequestHandler extends AbstractRequestHandler {
   public STALResponse handleRequest(STALRequest request) throws InterruptedException {
 
     if (request instanceof StatusRequest) {
-      log.info("handling STATUS request");
+      log.info("Handling STATUS request.");
       SMCCHelper smccHelper = new SMCCHelper();
       StatusResponse response = new StatusResponse();
       if (log.isTraceEnabled()) {
-        log.trace("SMCC result code: " + smccHelper.getResultCode() + 
-                ", cardReady: " +
-                (smccHelper.getResultCode() == SMCCHelper.CARD_FOUND));
+        log.trace("SMCC result code: {}, cardReady: {}.", smccHelper
+            .getResultCode(),
+            (smccHelper.getResultCode() == SMCCHelper.CARD_FOUND));
       }
       if (smccHelper.getResultCode() == SMCCHelper.CARD_FOUND) {
         response.setCardReady(Boolean.TRUE);
@@ -60,7 +60,7 @@ public class StatusRequestHandler extends AbstractRequestHandler {
       }
       return response;
     } else {
-      log.error("Got unexpected STAL request: " + request);
+      log.error("Got unexpected STAL request: {}.", request);
       return new ErrorResponse(1000);
     }
   }

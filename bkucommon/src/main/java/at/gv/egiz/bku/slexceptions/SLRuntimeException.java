@@ -18,6 +18,8 @@ package at.gv.egiz.bku.slexceptions;
 
 public class SLRuntimeException extends RuntimeException {
 
+  private static final long serialVersionUID = 1L;
+
   public SLRuntimeException(String message, Throwable cause) {
     super(message, cause);
   }

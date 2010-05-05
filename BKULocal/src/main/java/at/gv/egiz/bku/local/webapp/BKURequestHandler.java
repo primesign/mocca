@@ -16,98 +16,139 @@
  */
 package at.gv.egiz.bku.local.webapp;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import at.gv.egiz.bku.binding.HTTPBindingProcessor;
+import at.gv.egiz.bku.binding.BindingProcessorFuture;
+import at.gv.egiz.bku.binding.BindingProcessorManager;
+import at.gv.egiz.bku.binding.HTTPBindingProcessorImpl;
 import at.gv.egiz.bku.binding.HttpUtil;
-import at.gv.egiz.bku.conf.Configurator;
+import at.gv.egiz.bku.binding.Id;
+import at.gv.egiz.bku.binding.IdFactory;
+import at.gv.egiz.bku.binding.InputDecoderFactory;
 import at.gv.egiz.org.apache.tomcat.util.http.AcceptLanguage;
 
 public class BKURequestHandler extends SpringBKUServlet {
 
-	public final static String ENCODING = "UTF-8";
+  private static final long serialVersionUID = 1L;
 
-	protected Log log = LogFactory.getLog(BKURequestHandler.class);
+  public final static String ENCODING = "UTF-8";
 
+	private final Logger log = LoggerFactory.getLogger(BKURequestHandler.class);
+
+	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, java.io.IOException {
 
-        log.debug("Received SecurityLayer request");
-
         String acceptLanguage = req.getHeader("Accept-Language");
         Locale locale = AcceptLanguage.getLocale(acceptLanguage);
-        log.debug("Accept-Language locale: " + locale);
+        log.info("Received request. Accept-Language locale: {}.", locale);
 
-        HTTPBindingProcessor bindingProcessor;
-        bindingProcessor = (HTTPBindingProcessor) getBindingProcessorManager()
-            .createBindingProcessor(req.getRequestURL().toString(), null, locale);
+        BindingProcessorManager bindingProcessorManager = getBindingProcessorManager();
+        
+        HTTPBindingProcessorImpl bindingProcessor;
+        bindingProcessor = (HTTPBindingProcessorImpl) bindingProcessorManager
+            .createBindingProcessor("HTTP", locale);
         Map<String, String> headerMap = new HashMap<String, String>();
-        for (Enumeration<String> headerName = req.getHeaderNames(); headerName
+        for (Enumeration<?> headerName = req.getHeaderNames(); headerName
             .hasMoreElements();) {
-          String header = headerName.nextElement();
+          String header = (String) headerName.nextElement();
           if (header != null) {
             headerMap.put(header, req.getHeader(header));
           }
         }
-        String charset = req.getCharacterEncoding();
-        String contentType = req.getContentType();
-        if (charset != null) {
-          contentType += ";" + charset;
-        }
-        headerMap.put(HttpUtil.HTTP_HEADER_CONTENT_TYPE, contentType);
-        bindingProcessor.setHTTPHeaders(headerMap);
-        bindingProcessor.consumeRequestStream(req.getInputStream());
-
-		// fixxme just for testing
-		bindingProcessor.run();
-		if (bindingProcessor.getRedirectURL() != null) {
-			resp.sendRedirect(bindingProcessor.getRedirectURL());
-			return;
-		}
-		resp.setStatus(bindingProcessor.getResponseCode());
-		for (Iterator<String> it = bindingProcessor.getResponseHeaders().keySet()
-				.iterator(); it.hasNext();) {
-			String header = it.next();
-			resp.setHeader(header, bindingProcessor.getResponseHeaders().get(header));
-		}
-		String version = configurator.getProperty(Configurator.SIGNATURE_LAYOUT);
-		if ((version != null) && (!"".equals(version.trim()))) {
-		  log.debug("setting SignatureLayout header to " + version);
-		  resp.setHeader(Configurator.SIGNATURE_LAYOUT, version);
-		} else {
-		  log.debug("do not set SignatureLayout header");
-		}
-			
-        if (configurator.getProperty(Configurator.USERAGENT_CONFIG_P) != null) {
-          resp.setHeader(HttpUtil.HTTP_HEADER_SERVER, configurator
-              .getProperty(Configurator.USERAGENT_CONFIG_P));
+        
+        InputStream inputStream;
+        String charset;
+        if (req.getMethod().equals("POST")) {
+          charset = req.getCharacterEncoding();
+          String contentType = req.getContentType();
+          if (charset != null) {
+            contentType += ";" + charset;
+          }
+          headerMap.put(HttpUtil.HTTP_HEADER_CONTENT_TYPE, contentType);
+          inputStream = req.getInputStream();
         } else {
-          resp.setHeader(HttpUtil.HTTP_HEADER_SERVER,
-                  Configurator.USERAGENT_DEFAULT);
+          charset = "UTF-8";
+          headerMap.put(HttpUtil.HTTP_HEADER_CONTENT_TYPE,
+              InputDecoderFactory.URL_ENCODED);
+          String queryString = req.getQueryString();
+          if (queryString != null) {
+            inputStream = new ByteArrayInputStream(queryString.getBytes(charset));
+          } else {
+            inputStream = new ByteArrayInputStream(new byte[] {});
+          }
         }
+        bindingProcessor.setHTTPHeaders(headerMap);
+        bindingProcessor.consumeRequestStream(req.getRequestURL().toString(), inputStream);
+        req.getInputStream().close();
+
+        String redirectURL = bindingProcessor.getRedirectURL();
+
+        Id id = IdFactory.getInstance().createId();
+        BindingProcessorFuture bindingProcessorFuture = bindingProcessorManager
+            .process(id, bindingProcessor);
+
+        if (redirectURL != null) {
+          // send redirect and return
+          resp.sendRedirect(redirectURL);
+          return;
+        }
+        
+        // wait for the binding processor to finish processing
+        try {
+          bindingProcessorFuture.get();
+        } catch (InterruptedException e) {
+          resp.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+          return;
+        } catch (ExecutionException e) {
+          log.error("Request processing failed.", e);
+          resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+          return;
+        }
+        
+		resp.setStatus(bindingProcessor.getResponseCode());
+
+		// set response headers
+		Map<String, String> responseHeaders = bindingProcessor.getResponseHeaders();
+		for (String header : responseHeaders.keySet()) {
+		  resp.setHeader(header, responseHeaders.get(header));
+		}
+		String serverHeader = bindingProcessor.getServerHeaderValue();
+		if (serverHeader != null && !serverHeader.isEmpty()) {
+		  resp.setHeader(HttpUtil.HTTP_HEADER_SERVER, serverHeader);
+		}
+		String signatureLayout = bindingProcessor.getSignatureLayoutHeaderValue();
+		if (signatureLayout != null && !signatureLayout.isEmpty()) {
+		  resp.setHeader("SignatureLayout", signatureLayout);
+		}
 		
 		resp.setContentType(bindingProcessor.getResultContentType());
 		resp.setCharacterEncoding(ENCODING);
 		bindingProcessor.writeResultTo(resp.getOutputStream(), ENCODING);
-		req.getInputStream().close();
+		
 		resp.getOutputStream().flush();
 		resp.getOutputStream().close();
-		log.debug("Finished Request");
+		log.debug("Finished Request.");
 	}
 
+	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, java.io.IOException {
 		doPost(req, resp);
 	}
+	
+	
 }

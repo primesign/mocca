@@ -51,8 +51,8 @@ import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.etsi.uri._01903.v1_1.DataObjectFormatType;
 import org.etsi.uri._01903.v1_1.QualifyingPropertiesType;
 import org.w3c.dom.DOMConfiguration;
@@ -82,7 +82,6 @@ import at.gv.egiz.bku.slexceptions.SLViewerException;
 import at.gv.egiz.bku.utils.HexDump;
 import at.gv.egiz.bku.utils.urldereferencer.StreamData;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
-import at.gv.egiz.bku.utils.urldereferencer.URLDereferencerContext;
 import at.gv.egiz.dom.DOMUtils;
 import at.gv.egiz.slbinding.impl.XMLContentType;
 import at.gv.egiz.stal.STAL;
@@ -101,7 +100,7 @@ public class Signature {
   /**
    * Logging facility.
    */
-  private static Log log = LogFactory.getLog(Signature.class);
+  private final Logger log = LoggerFactory.getLogger(Signature.class);
 
   /**
    * The DOM implementation used.
@@ -151,8 +150,9 @@ public class Signature {
   
   /**
    * Creates a new SLXMLSignature instance.
+   * @param urlDereferencer TODO
    */
-  public Signature(URLDereferencerContext dereferencerContext,
+  public Signature(URLDereferencer urlDereferencer,
       IdValueFactory idValueFactory,
       AlgorithmMethodFactory algorithmMethodFactory) {
     
@@ -162,7 +162,7 @@ public class Signature {
   
     ctx.setSignatureFactory(XMLSignatureFactory.getInstance());
 
-    ctx.setDereferencerContext(dereferencerContext);
+    ctx.setUrlDereferencer(urlDereferencer);
     ctx.setIdValueFactory(idValueFactory);
     ctx.setAlgorithmMethodFactory(algorithmMethodFactory);
     
@@ -408,7 +408,7 @@ public class Signature {
     
     signContext.putNamespacePrefix(XMLSignature.XMLNS,XMLDSIG_PREFIX); 
     
-    signContext.setURIDereferencer(new URIDereferncerAdapter(ctx.getDereferencerContext()));
+    signContext.setURIDereferencer(new URIDereferncerAdapter(ctx.getUrlDereferencer()));
     
     try {
       xmlSignature.sign(signContext);
@@ -455,7 +455,7 @@ public class Signature {
               sb.append(HexDump.hexDump(digestInputStream));
             }
           } catch (IOException e) {
-            log.error(e);
+            log.error("Failed to log DigestInput.", e);
           }
           log.trace(sb.toString());
         } else {
@@ -478,7 +478,7 @@ public class Signature {
                 sb.append(new String(b, 0, l));
               }
             } catch (IOException e) {
-              log.error(e);
+              log.error("Failed to log DigestInput.", e);
             }
             log.trace(sb.toString());
           } else {
@@ -735,7 +735,7 @@ public class Signature {
     LSInput input;
     try {
       if (signatureEnvironment.getReference() != null) {
-        log.debug("SignatureEnvironment contains Reference " + signatureEnvironment.getReference() + ".");
+        log.debug("SignatureEnvironment contains Reference '{}'.", signatureEnvironment.getReference());
         input = createLSInput(signatureEnvironment.getReference());
       } else if (signatureEnvironment.getBase64Content() != null) {
         log.debug("SignatureEnvironment contains Base64Content.");
@@ -784,11 +784,12 @@ public class Signature {
       if (log.isInfoEnabled()) {
         List<String> errorMessages = errorHandler.getErrorMessages();
         StringBuffer sb = new StringBuffer();
+        sb.append("XML document in which the signature is to be integrated cannot be parsed.");
         for (String errorMessage : errorMessages) {
           sb.append(" ");
           sb.append(errorMessage);
         }
-        log.info("XML document in which the signature is to be integrated cannot be parsed." + sb.toString());
+        log.info(sb.toString());
       }
       throw new SLCommandException(4101);
     }
@@ -826,8 +827,8 @@ public class Signature {
    */
   private LSInput createLSInput(String reference) throws IOException {
     
-    URLDereferencer urlDereferencer = URLDereferencer.getInstance();
-    StreamData streamData = urlDereferencer.dereference(reference, ctx.getDereferencerContext());
+    URLDereferencer urlDereferencer = ctx.getUrlDereferencer();
+    StreamData streamData = urlDereferencer.dereference(reference);
 
     String contentType = streamData.getContentType();
     String charset = HttpUtil.getCharset(contentType, true);
@@ -835,7 +836,7 @@ public class Signature {
     try {
       streamReader = new InputStreamReader(streamData.getStream(), charset);
     } catch (UnsupportedEncodingException e) {
-      log.info("Charset " + charset + " not supported. Using default.");
+      log.info("Charset {} not supported. Using default.", charset);
       streamReader = new InputStreamReader(streamData.getStream());
     }
 
@@ -942,7 +943,7 @@ public class Signature {
   
       if (systemId != null) {
 
-        log.debug("Resolve resource '" + systemId + "'.");
+        log.debug("Resolve resource '{}'.", systemId);
         
         for (DataObjectAssociationType supplement : supplements) {
           
@@ -954,23 +955,23 @@ public class Signature {
               
               try {
                 if (content.getLocRefContent() != null) {
-                  log.trace("Resolved resource '" + reference + "' to supplement with LocRefContent.");
+                  log.trace("Resolved resource '{}' to supplement with LocRefContent.", reference);
                   return createLSInput(content.getLocRefContent());
                 } else if (content.getBase64Content() != null) {
-                  log.trace("Resolved resource '" + reference + "' to supplement with Base64Content.");
+                  log.trace("Resolved resource '{}' to supplement with Base64Content.", reference);
                   return createLSInput(content.getBase64Content());
                 } else if (content.getXMLContent() != null) {
-                  log.trace("Resolved resource '" + reference + "' to supplement with XMLContent.");
+                  log.trace("Resolved resource '{}' to supplement with XMLContent.", reference);
                   return createLSInput((XMLContentType) content.getXMLContent());
                 } else {
                   return null;
                 }
               } catch (IOException e) {
-                log.info("Failed to resolve resource '" + systemId + "' to supplement.", e);
+                log.info("Failed to resolve resource '{}' to supplement.", systemId, e);
                 error = e;
                 return null;
               } catch (XMLStreamException e) {
-                log.info("Failed to resolve resource '" + systemId + "' to supplement.", e);
+                log.info("Failed to resolve resource '{}' to supplement.", systemId, e);
                 error = e;
                 return null;
               }
@@ -981,7 +982,7 @@ public class Signature {
           
         }
 
-        log.info("Failed to resolve resource '" + systemId + "' to supplement. No such supplement.");
+        log.info("Failed to resolve resource '{}' to supplement. No such supplement.", systemId);
         
       }
   

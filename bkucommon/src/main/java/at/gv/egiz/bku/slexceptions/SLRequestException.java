@@ -18,6 +18,8 @@ package at.gv.egiz.bku.slexceptions;
 
 public class SLRequestException extends SLException {
 
+  private static final long serialVersionUID = 1L;
+
   public SLRequestException(int errorCode) {
     super(errorCode);
     // TODO Auto-generated constructor stub

@@ -24,8 +24,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * prevent applet caching, 
@@ -35,7 +35,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public class AppletDispatcher extends HttpServlet {
 
-  protected final static Log log = LogFactory.getLog(AppletDispatcher.class);
+  private static final long serialVersionUID = 1L;
+
+  private final Logger log = LoggerFactory.getLogger(AppletDispatcher.class);
 
   public static final String DISPATCH_CTX = "dispatch/";
   public static final String RAND_PREFIX = "__";
@@ -65,10 +67,7 @@ public class AppletDispatcher extends HttpServlet {
       uri = archivePattern.matcher(uri).replaceAll(".jar");
 //      log.trace("removing random suffix " + uri);
       
-      if (log.isTraceEnabled()) {
-        log.trace("dispatching request URI " + request.getRequestURI() +
-                " to " + uri);
-      }
+      log.trace("Dispatching request URI {} to {}.", request.getRequestURI(), uri);
       
       RequestDispatcher dispatcher = getServletContext().getRequestDispatcher(uri);
       dispatcher.forward(request, response);

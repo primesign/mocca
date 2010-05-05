@@ -42,8 +42,8 @@ import java.util.Locale;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardTerminal;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.smcc.pin.gui.PINGUI;
 
@@ -71,7 +71,7 @@ public class SWCard implements SignatureCard {
   
   private static String swCardDir;
 
-  private static Log log = LogFactory.getLog(SWCard.class);
+  private final Logger log = LoggerFactory.getLogger(SWCard.class);
 
   private KeyStore certifiedKeyStore;
   
@@ -170,7 +170,7 @@ public class SWCard implements SignatureCard {
 
     // try to load KeyStore file
     String fileName = getFileName(keyStoreFileName);
-    log.info("Trying to load KeyStore from file '" + fileName + "'.");
+    log.info("Trying to load KeyStore from file '{}'.", fileName);
     
     FileInputStream keyStoreFile;
     try {
@@ -313,7 +313,7 @@ public class SWCard implements SignatureCard {
 
     if (password == null) {
 
-      PINSpec pinSpec = new PINSpec(0, -1, ".", "KeyStore-Password", (byte) 0x01, null);
+      PinInfo pinSpec = new PinInfo(0, -1, ".", "at/gv/egiz/smcc/SWCard", "sw.pin", (byte) 0x01, null, PinInfo.UNKNOWN_RETRIES);
       
       password = provider.providePIN(pinSpec, -1);
       
@@ -331,7 +331,7 @@ public class SWCard implements SignatureCard {
       for (Enumeration<String> aliases = keyStore.aliases(); aliases
           .hasMoreElements() && privateKey == null;) {
         String alias = aliases.nextElement();
-        log.debug("Found alias '" + alias + "' in keystore");
+        log.debug("Found alias '{}' in keystore.", alias);
         if (keyStore.isKeyEntry(alias)) {
           Key key = null;
           while (key == null) {

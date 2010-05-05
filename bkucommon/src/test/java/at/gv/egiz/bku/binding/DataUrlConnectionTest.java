@@ -20,8 +20,8 @@
  */
 package at.gv.egiz.bku.binding;
 
-import at.gv.egiz.bku.conf.Configuration;
-import at.gv.egiz.bku.conf.DummyConfiguration;
+import static org.junit.Assert.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,12 +35,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import at.gv.egiz.bku.slexceptions.SLException;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -51,20 +53,20 @@ import com.sun.net.httpserver.HttpServer;
  * 
  * @author clemens
  */
-public class DataUrlConnectionTest {
+public class DataUrlConnectionTest extends AbstractBindingProcessorTest {
 
   public static final String REQUEST_RESOURCE = "at/gv/egiz/bku/binding/NOPMultipartDataUrl.txt";
 
-  private static final Log log = LogFactory.getLog(DataUrlConnectionTest.class);
+  private final Logger log = LoggerFactory.getLogger(DataUrlConnectionTest.class);
 
   static HttpServer server;
-  static BindingProcessor bindingProcessor;
-  static BindingProcessorManager manager;
+  static HTTPBindingProcessorImpl bindingProcessor;
 
   protected InputStream requestStream;
 
   @BeforeClass
   public static void setUpHTTPServer() throws IOException {
+    Logger log = LoggerFactory.getLogger(DataUrlConnectionTest.class);
     log.debug("setting up HTTPServer");
     InetSocketAddress addr = new InetSocketAddress("localhost", 8081);
     server = HttpServer.create(addr, 0);
@@ -72,14 +74,12 @@ public class DataUrlConnectionTest {
     server.start();
 
     log.debug("setting up HTTPBindingProcessor");
-    manager = new BindingProcessorManagerImpl(new DummyStalFactory(),
-        new SLCommandInvokerImpl(), new DummyConfiguration());
-    bindingProcessor = (HTTPBindingProcessor) manager.createBindingProcessor(
-        "http://www.iaik.at", null);
+    bindingProcessor = (HTTPBindingProcessorImpl) createBindingProcessor("http");
+    
     Map<String, String> headers = new HashMap<String, String>();
     headers.put("Content-Type", InputDecoderFactory.MULTIPART_FORMDATA
         + ";boundary=---------------------------2330864292941");
-    ((HTTPBindingProcessor) bindingProcessor).setHTTPHeaders(headers);
+    ((HTTPBindingProcessorImpl) bindingProcessor).setHTTPHeaders(headers);
   }
 
   @Before
@@ -91,6 +91,7 @@ public class DataUrlConnectionTest {
   @AfterClass
   public static void stopServer() {
     if (server != null) {
+      Logger log = LoggerFactory.getLogger(DataUrlConnectionTest.class);
       log.debug("stopping HTTPServer");
       server.stop(0);
     }
@@ -98,9 +99,12 @@ public class DataUrlConnectionTest {
 
   @Test
   public void testBasicNop() {
-    bindingProcessor.consumeRequestStream(requestStream);
-    // manager.process(bindingProcessor);
+    bindingProcessor.consumeRequestStream("http://localhost:3495/http-security-layer-request", requestStream);
     bindingProcessor.run();
+    SLException e = bindingProcessor.bindingProcessorError;
+    if (e != null) {
+      fail(e.getMessage());
+    }
   }
 
 //  @Test
@@ -109,8 +113,7 @@ public class DataUrlConnectionTest {
     URL dataUrl = new URL("http://localhost:8081/");
 
     log.debug("creating DataUrlConnection " + dataUrl.toString());
-    DataUrlConnectionImpl c = new DataUrlConnectionImpl();
-    c.init(dataUrl);
+    DataUrlConnectionImpl c = new DataUrlConnectionImpl(dataUrl);
 
     c.setHTTPHeader("httpHeader_1", "001");
     ByteArrayInputStream bais = new ByteArrayInputStream("Hello, world!"
@@ -124,6 +127,8 @@ public class DataUrlConnectionTest {
 
   static class DataUrlHandler implements HttpHandler {
 
+    private final Logger log = LoggerFactory.getLogger(DataUrlConnectionTest.class);
+    
     public DataUrlHandler() {
       log.debug("setting up DataUrlHandler");
     }

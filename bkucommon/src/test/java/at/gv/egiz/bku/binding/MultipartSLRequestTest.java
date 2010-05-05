@@ -16,44 +16,80 @@
 */
 package at.gv.egiz.bku.binding;
 
-import at.gv.egiz.bku.conf.DummyConfiguration;
+import static org.junit.Assert.*;
+
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
 
-public class MultipartSLRequestTest {
+public class MultipartSLRequestTest extends AbstractBindingProcessorTest {
 
-  protected String resourceName = "at/gv/egiz/bku/binding/MultipartFromTutorial.txt";
+  @Test
+  public void testMultipartFromTutorial() throws MalformedURLException {
 
-  protected BindingProcessor bindingProcessor;
-  protected InputStream dataStream;
-  protected BindingProcessorManager manager;
+    HTTPBindingProcessorImpl http = (HTTPBindingProcessorImpl) createBindingProcessor("http");
 
-  @Before
-  public void setUp() throws MalformedURLException {
-    manager = new BindingProcessorManagerImpl(new DummyStalFactory(),
-        new SLCommandInvokerImpl(), new DummyConfiguration());
-    HTTPBindingProcessor http = (HTTPBindingProcessor) manager
-        .createBindingProcessor("http://www.at/", null);
     Map<String, String> headers = new HashMap<String, String>();
     headers.put("Content-Type", InputDecoderFactory.MULTIPART_FORMDATA
         + ";boundary=---------------------------2330864292941");
     http.setHTTPHeaders(headers);
-    dataStream = getClass().getClassLoader().getResourceAsStream(resourceName);
-    bindingProcessor = http;
+
+    InputStream dataStream = getClass().getClassLoader().getResourceAsStream(
+        "at/gv/egiz/bku/binding/MultipartFromTutorial.txt");
+
+    http.consumeRequestStream("http://localhost:3495/http-security-layer-request", dataStream);
+    http.run();
+    
+    assertNotNull(http.bindingProcessorError);
+    assertEquals(4011, http.bindingProcessorError.getErrorCode());
+
   }
 
   @Test
-  public void testBasicNop() {
-    bindingProcessor.consumeRequestStream(dataStream);
-    // manager.process(bindingProcessor);
-    bindingProcessor.run();
+  public void testMultipartEmpty() throws MalformedURLException, ClassNotFoundException {
+
+    HTTPBindingProcessorImpl http = (HTTPBindingProcessorImpl) createBindingProcessor("http");
+    
+    Map<String, String> headers = new HashMap<String, String>();
+    headers.put("Content-Type", InputDecoderFactory.MULTIPART_FORMDATA
+        + ";boundary=uW10q_I9UeqKyw-1o5EW4jtEAaGs7-mC6o");
+    http.setHTTPHeaders(headers);
+   
+    InputStream dataStream = getClass().getClassLoader().getResourceAsStream(
+        "at/gv/egiz/bku/binding/MultipartEmpty.txt");
+    
+    http.consumeRequestStream("http://localhost:3495/http-security-layer-request", dataStream);
+    http.run();
+    
+    if (http.bindingProcessorError != null) {
+      fail(http.bindingProcessorError.getMessage());
+    }
+    
   }
 
+  @Test
+  public void testNulloperationRequest() throws MalformedURLException, ClassNotFoundException {
+
+    HTTPBindingProcessorImpl http = (HTTPBindingProcessorImpl) createBindingProcessor("http");
+    
+    Map<String, String> headers = new HashMap<String, String>();
+    headers.put("Content-Type", "application/x-www-form-urlencoded");
+    http.setHTTPHeaders(headers);
+   
+    InputStream dataStream = getClass().getClassLoader().getResourceAsStream(
+        "at/gv/egiz/bku/binding/NulloperationRequest.txt.bin");
+    
+    http.consumeRequestStream("http://localhost:3495/http-security-layer-request", dataStream);
+    http.run();
+    
+    if (http.bindingProcessorError != null) {
+      fail(http.bindingProcessorError.getMessage());
+    }
+    
+  }
+
+  
 }

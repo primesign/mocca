@@ -30,8 +30,8 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.buergerkarte.namespaces.cardchannel.ATRType;
 import at.buergerkarte.namespaces.cardchannel.CommandAPDUType;
@@ -58,7 +58,7 @@ import at.gv.egiz.stal.ext.APDUScriptResponse.ResponseScriptElement;
 
 public class CardChannelInfoboxImpl extends AbstractBinaryFileInfobox {
   
-  private static Log log = LogFactory.getLog(CardChannelInfoboxImpl.class);
+  private final Logger log = LoggerFactory.getLogger(CardChannelInfoboxImpl.class);
   
   private static WeakHashMap<STAL, JAXBElement<ResponseType>> scriptResults = new WeakHashMap<STAL, JAXBElement<ResponseType>>();
   
@@ -149,7 +149,7 @@ public class CardChannelInfoboxImpl extends AbstractBinaryFileInfobox {
 
     
     }
-    log.info("Infobox identifier is '" + getIdentifier() + "' but XMLContent does not contain 'Script'.");
+    log.info("Infobox identifier is '{}' but XMLContent does not contain 'Script'.", getIdentifier());
     throw new SLCommandException(4010);
     
   }
@@ -217,9 +217,7 @@ public class CardChannelInfoboxImpl extends AbstractBinaryFileInfobox {
         
         ResponseAPDUType responseAPDUType = objectFactory.createResponseAPDUType();
         responseAPDUType.setSequence(BigInteger.valueOf(response.getSequence()));
-//        if (response.getRc() != 0) {
-          responseAPDUType.setRc(BigInteger.valueOf(response.getRc()));
-//        }
+        responseAPDUType.setRc(BigInteger.valueOf(response.getRc()));
         responseAPDUType.setSw(response.getSw());
         responseAPDUType.setValue(response.getApdu());
         

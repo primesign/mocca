@@ -16,11 +16,14 @@
  */
 package at.gv.egiz.bku.binding;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.accesscontroller.SecurityManagerFacade;
+import at.gv.egiz.bku.jmx.ComponentMXBean;
+import at.gv.egiz.bku.jmx.ComponentState;
 import at.gv.egiz.bku.slcommands.SLCommand;
+import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLCommandInvoker;
 import at.gv.egiz.bku.slcommands.SLResult;
 import at.gv.egiz.bku.slcommands.SLSourceContext;
@@ -31,10 +34,11 @@ import at.gv.egiz.bku.slexceptions.SLException;
  * This class implements the entry point for the CCEs security management.
  * 
  */
-public class SLCommandInvokerImpl implements SLCommandInvoker {
+public class SLCommandInvokerImpl implements SLCommandInvoker, ComponentMXBean {
 
-	private static Log log = LogFactory.getLog(SLCommandInvokerImpl.class);
+	private final Logger log = LoggerFactory.getLogger(SLCommandInvokerImpl.class);
 
+	protected SLCommandContext commandContext;
 	protected SLCommand command;
 	protected SLResult result;
 	protected SecurityManagerFacade securityManager;
@@ -46,12 +50,11 @@ public class SLCommandInvokerImpl implements SLCommandInvoker {
 	 */
 	public void invoke(SLSourceContext aContext) throws SLException {
 		if (securityManager == null) {
-			log.warn("Security policy not implemented yet, invoking command: "
-					+ command);
-			result = command.execute();
+			log.warn("Security policy not implemented yet, invoking command: {}.", command);
+			result = command.execute(commandContext);
 		} else {
 			if (securityManager.mayInvokeCommand(command, aContext)) {
-				result = command.execute();
+				result = command.execute(commandContext);
 			} else {
 				throw new SLException(6002);
 			}
@@ -60,9 +63,7 @@ public class SLCommandInvokerImpl implements SLCommandInvoker {
 
 	public SLResult getResult(SLTargetContext aContext) throws SLException {
 		if (securityManager == null) {
-			log
-					.warn("Security policy not implemented yet, getting result of command: "
-							+ command);
+			log.warn("Security policy not implemented yet, getting result of command: {}.", command);
 			return result;
 		} else {
 			if (securityManager.maySendResult(command, aContext)) {
@@ -73,7 +74,8 @@ public class SLCommandInvokerImpl implements SLCommandInvoker {
 		}
 	}
 
-	public void setCommand(SLCommand aCmd) {
+	public void setCommand(SLCommandContext commandContext, SLCommand aCmd) {
+	  this.commandContext = commandContext;
 		command = aCmd;
 	}
 
@@ -91,5 +93,10 @@ public class SLCommandInvokerImpl implements SLCommandInvoker {
 	public void setSecurityManager(SecurityManagerFacade securityManager) {
 		this.securityManager = securityManager;
 	}
+
+  @Override
+  public ComponentState checkComponentState() {
+    return new ComponentState(true);
+  }
 
 }

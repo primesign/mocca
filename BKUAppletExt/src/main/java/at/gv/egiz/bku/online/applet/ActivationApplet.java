@@ -16,13 +16,12 @@
  */
 package at.gv.egiz.bku.online.applet;
 
-import at.gv.egiz.bku.gui.AbstractHelpListener;
 import at.gv.egiz.bku.gui.ActivationGUI;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.SwitchFocusListener;
 import at.gv.egiz.bku.gui.BKUGUIFacade.Style;
+import at.gv.egiz.bku.gui.HelpListener;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
-import at.gv.egiz.bku.online.applet.BKUApplet;
 import at.gv.egiz.bku.smccstal.AbstractSMCCSTAL;
 import at.gv.egiz.bku.smccstal.CardMgmtRequestHandler;
 import at.gv.egiz.stal.ext.APDUScriptRequest;
@@ -35,8 +34,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
 import javax.xml.namespace.QName;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -45,7 +44,7 @@ import org.apache.commons.logging.LogFactory;
 public class ActivationApplet extends BKUApplet {
 
   private static final long serialVersionUID = 1L;
-  private static Log log = LogFactory.getLog(ActivationApplet.class);
+  private final Logger log = LoggerFactory.getLogger(ActivationApplet.class);
 
   @Override
   public void init() {
@@ -53,7 +52,7 @@ public class ActivationApplet extends BKUApplet {
     if (worker instanceof AbstractSMCCSTAL) {
       CardMgmtRequestHandler handler = new CardMgmtRequestHandler();
       ((AbstractSMCCSTAL) worker).addRequestHandler(APDUScriptRequest.class, handler);
-      log.debug("Registered CardMgmtRequestHandler");
+      log.debug("Registered CardMgmtRequestHandler.");
     } else {
       log.warn("Cannot register CardMgmtRequestHandler.");
     }
@@ -67,9 +66,9 @@ public class ActivationApplet extends BKUApplet {
   @Override
   public STALPortType getSTALPort() throws MalformedURLException {
     URL wsdlURL = getURLParameter(WSDL_URL, null);
-    log.debug("setting STAL WSDL: " + wsdlURL);
+    log.debug("Setting STAL WSDL: {}.", wsdlURL);
     QName endpointName = new QName(STAL_WSDL_NS, STAL_SERVICE);
-    log.info("creating STAL-X enabled webservice port");
+    log.info("Creating STAL-X enabled webservice port.");
     STALService stal = new STALService(wsdlURL, endpointName);
     return stal.getSTALPort();
   }
@@ -87,7 +86,7 @@ public class ActivationApplet extends BKUApplet {
           Style guiStyle,
           URL backgroundImgURL,
           FontProvider fontProvider,
-          AbstractHelpListener helpListener,
+          HelpListener helpListener,
           SwitchFocusListener switchFocusListener) {
     return new ActivationGUI(contentPane, locale, guiStyle, backgroundImgURL, fontProvider, helpListener, switchFocusListener);
   }

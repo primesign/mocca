@@ -23,6 +23,8 @@ package at.gv.egiz.bku.gui.viewer;
  */
 public class FontProviderException extends Exception {
 
+  private static final long serialVersionUID = 1L;
+
   public FontProviderException(String msg, Throwable cause) {
     super(msg, cause);
   }

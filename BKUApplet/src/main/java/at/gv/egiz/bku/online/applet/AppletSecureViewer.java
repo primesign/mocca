@@ -33,8 +33,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -42,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class AppletSecureViewer implements SecureViewer {
 
-  private static final Log log = LogFactory.getLog(AppletSecureViewer.class);
+  private static final Logger log = LoggerFactory.getLogger(AppletSecureViewer.class);
 
   protected BKUGUIFacade gui;
   protected STALPortType stalPort;
@@ -81,8 +81,7 @@ public class AppletSecureViewer implements SecureViewer {
           throws DigestException, Exception {
     
     if (verifiedDataToBeSigned == null) {
-      log.info("retrieve data to be signed for dsig:SignedInfo " +
-              signedInfo.getId());
+      log.info("Retrieve data to be signed for dsig:SignedInfo {}.", signedInfo.getId());
       List<GetHashDataInputResponseType.Reference> hdi = 
               getHashDataInput(signedInfo.getReference());
       verifiedDataToBeSigned = verifyHashDataInput(signedInfo.getReference(),
@@ -106,16 +105,12 @@ public class AppletSecureViewer implements SecureViewer {
     GetHashDataInputType request = new GetHashDataInputType();
     request.setSessionId(sessId);
 
-//    HashMap<String, ReferenceType> idSignedRefMap = new HashMap<String, ReferenceType>();
     for (ReferenceType signedRef : signedReferences) {
       //don't get Manifest, QualifyingProperties, ...
       if (signedRef.getType() == null) {
         String signedRefId = signedRef.getId();
         if (signedRefId != null) {
-          if (log.isTraceEnabled()) {
-            log.trace("requesting hashdata input for reference " + signedRefId);
-          }
-//          idSignedRefMap.put(signedRefId, signedRef);
+          log.trace("Requesting hashdata input for reference {}.", signedRefId);
           GetHashDataInputType.Reference ref = new GetHashDataInputType.Reference();
           ref.setID(signedRefId);
           request.getReference().add(ref);
@@ -127,12 +122,14 @@ public class AppletSecureViewer implements SecureViewer {
     }
 
     if (request.getReference().size() < 1) {
-      log.error("No signature data (apart from any QualifyingProperties or a Manifest) for session " + sessId);
+      log.error("No signature data (apart from any QualifyingProperties or a Manifest) for session {}.", sessId);
       throw new Exception("No signature data (apart from any QualifyingProperties or a Manifest)");
     }
 
     if (log.isDebugEnabled()) {
-      log.debug("WebService call GetHashDataInput for " + request.getReference().size() + " references in session " + sessId);
+      log.debug(
+          "WebService call GetHashDataInput for {} references in session {}.",
+          request.getReference().size(), sessId);
     }
     GetHashDataInputResponseType response = stalPort.getHashDataInput(request);
     return response.getReference();
@@ -154,7 +151,7 @@ public class AppletSecureViewer implements SecureViewer {
 
     for (ReferenceType signedRef : signedReferences) {
       if (signedRef.getType() == null) {
-        log.info("Verifying digest for signed reference " + signedRef.getId());
+        log.info("Verifying digest for signed reference {}.", signedRef.getId());
 
         String signedRefId = signedRef.getId();
         byte[] signedDigest = signedRef.getDigestValue();
@@ -191,12 +188,9 @@ public class AppletSecureViewer implements SecureViewer {
 
         byte[] hashDataInputDigest = digest(hdi, signedDigestAlg);
 
-        if (log.isDebugEnabled()) {
-          log.debug("Comparing digest to claimed digest value for reference " + signedRefId);
-        }
-//        log.warn("***************** DISABLED HASHDATA VERIFICATION");
+        log.debug("Comparing digest to claimed digest value for reference {}.", signedRefId);
         if (!Arrays.equals(hashDataInputDigest, signedDigest)) {
-          log.error("Bad digest value for reference " + signedRefId);
+          log.error("Bad digest value for reference {}.", signedRefId);
           throw new DigestException("Bad digest value for reference " + signedRefId);
         }
 
@@ -207,7 +201,6 @@ public class AppletSecureViewer implements SecureViewer {
     return verifiedHashDataInputs;
   }
 
-  //TODO
   private byte[] digest(byte[] hashDataInput, String mdAlg) throws NoSuchAlgorithmException {
     if ("http://www.w3.org/2000/09/xmldsig#sha1".equals(mdAlg)) {
       mdAlg = "SHA-1";

@@ -16,8 +16,8 @@
  */
 package at.gv.egiz.bku.online.applet;
 
-import at.gv.egiz.bku.gui.AbstractHelpListener;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.bku.gui.HelpListener;
 import at.gv.egiz.bku.gui.PINManagementGUI;
 import at.gv.egiz.bku.gui.PINManagementGUIFacade;
 import at.gv.egiz.bku.gui.SwitchFocusListener;
@@ -25,31 +25,29 @@ import at.gv.egiz.bku.gui.viewer.FontProvider;
 import java.awt.Container;
 import java.net.URL;
 import java.util.Locale;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
- *
+ * 
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class PINManagementApplet extends BKUApplet {
 
-  private static final long serialVersionUID = 1L;
-  private static Log log = LogFactory.getLog(PINManagementApplet.class);
+	private static final long serialVersionUID = 1L;
+	
+	@Override
+	protected BKUGUIFacade createGUI(Container contentPane, Locale locale,
+			BKUGUIFacade.Style guiStyle, URL backgroundImgURL,
+			FontProvider fontProvider, HelpListener helpListener,
+			SwitchFocusListener switchFocusListener) {
+		return new PINManagementGUI(contentPane, locale, guiStyle,
+				backgroundImgURL, fontProvider, helpListener,
+				switchFocusListener);
+	}
 
-  @Override
-  protected BKUGUIFacade createGUI(Container contentPane,
-          Locale locale,
-          BKUGUIFacade.Style guiStyle,
-          URL backgroundImgURL,
-          FontProvider fontProvider,
-          AbstractHelpListener helpListener,
-          SwitchFocusListener switchFocusListener) {
-    return new PINManagementGUI(contentPane, locale, guiStyle, backgroundImgURL, fontProvider, helpListener, switchFocusListener);
-  }
+	@Override
+	protected AppletBKUWorker createBKUWorker(BKUApplet applet, BKUGUIFacade gui) {
+		return new PINManagementBKUWorker(applet, (PINManagementGUIFacade) gui);
+	}
 
-  @Override
-  protected AppletBKUWorker createBKUWorker(BKUApplet applet, BKUGUIFacade gui) {
-    return new PINManagementBKUWorker(applet, (PINManagementGUIFacade) gui);
-  }
+
 }

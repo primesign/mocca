@@ -16,74 +16,119 @@
 */
 package at.gv.egiz.bku.binding;
 
-import at.gv.egiz.bku.conf.Configuration;
-import java.io.InputStream;
 import java.util.Date;
+import java.util.Locale;
 
+import org.apache.commons.configuration.Configuration;
+import org.slf4j.MDC;
+
+import at.gv.egiz.bku.slcommands.SLCommandFactory;
 import at.gv.egiz.bku.slcommands.SLCommandInvoker;
+import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 import at.gv.egiz.stal.STAL;
 
 public abstract class AbstractBindingProcessor implements BindingProcessor {
+  
+  protected Configuration configuration;
+
+  protected SLCommandFactory slCommandFactory;
+
+  protected Locale locale = Locale.getDefault();
+
   protected Id id;
-  protected Configuration config;
   protected STAL stal;
   protected SLCommandInvoker commandInvoker;
+  
   protected long lastAccessedTime = System.currentTimeMillis();
 
-  public AbstractBindingProcessor(String idString) {
-    this.id = IdFactory.getInstance().createId(idString);
+  protected URLDereferencer urlDereferencer;
+
+  public void setConfiguration(Configuration configuration) {
+    this.configuration = configuration;
   }
 
-  /**
-   * @see java.lang.Thread#run()
-   */
-  public abstract void run();
+  @Override
+  public void setSlCommandFactory(SLCommandFactory slCommandFactory) {
+    this.slCommandFactory = slCommandFactory;
+  }
 
-  /**
-   * The caller is advised to check the result in case an error occurred.
-   * 
-   * @see #getResult()
-   */
-  public abstract void consumeRequestStream(InputStream aIs);
+  @Override
+  public void setLocale(Locale locale) {
+  	if (locale == null) {
+  		throw new NullPointerException("Locale must not be set to null.");
+  	}
+  	this.locale = locale;
+  }
 
+  @Override
+  public void init(String id, STAL stal, SLCommandInvoker commandInvoker) {
+    if (id == null) {
+      throw new NullPointerException("Id must not be null.");
+    }
+    if (stal == null) {
+      throw new NullPointerException("STAL must not null.");
+    }
+    if (commandInvoker == null) {
+      throw new NullPointerException("CommandInvoker must null.");
+    }
+    this.id = IdFactory.getInstance().createId(id);
+    this.stal = stal;
+    this.commandInvoker = commandInvoker;
+  }
+
+  @Override
   public Id getId() {
     return id;
   }
 
+  @Override
   public STAL getSTAL() {
     return stal;
   }
 
+  @Override
   public SLCommandInvoker getCommandInvoker() {
     return commandInvoker;
   }
-  
+
+  @Override
   public void updateLastAccessTime() {
     lastAccessedTime = System.currentTimeMillis();
   }
 
+  @Override
   public Date getLastAccessTime() {
     return new Date(lastAccessedTime);
   }
 
-  /**
-   * To be called after object creation.
-   * 
-   * @param aStal
-   *          must not be null
-   * @param aCommandInvoker
-   *          must not be null
-   */
-  public void init(STAL aStal, SLCommandInvoker aCommandInvoker, Configuration conf) {
-    if (aStal == null) {
-      throw new NullPointerException("STAL must not be set to null");
+  @Override
+  public void run() {
+    
+    if (this.id != null) {
+      MDC.put("id", this.id.toString());
     }
-    if (aCommandInvoker == null) {
-      throw new NullPointerException("Commandinvoker must not be set to null");
+    try {
+      process();
+    } finally {
+      MDC.remove("id");
     }
-    config = conf;
-    stal = aStal;
-    commandInvoker = aCommandInvoker;
-    Thread.currentThread().setName("BPID#"+getId().toString());
+    
   }
+  
+  public abstract void process();
+
+  /**
+   * @return the urlDereferencer
+   */
+  public URLDereferencer getUrlDereferencer() {
+    return urlDereferencer;
+  }
+
+  /**
+   * @param urlDereferencer the urlDereferencer to set
+   */
+  public void setUrlDereferencer(URLDereferencer urlDereferencer) {
+    this.urlDereferencer = urlDereferencer;
+  }
+  
 }

@@ -26,12 +26,12 @@ import javax.smartcardio.Card;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExclSignatureCardProxy implements InvocationHandler {
   
-  private static Log log = LogFactory.getLog(ExclSignatureCardProxy.class);
+  private final Logger log = LoggerFactory.getLogger(ExclSignatureCardProxy.class);
 
   private static final Method init;
   
@@ -85,11 +85,10 @@ public class ExclSignatureCardProxy implements InvocationHandler {
     
     if (card != null) {
       try {
-        log.trace("Invoking method " + method.getName() + "() with exclusive access.");
+        log.trace("Invoking method {}() with exclusive access.", method.getName());
         card.beginExclusive();
       } catch (CardException e) {
-        log.info("Failed to get exclusive access to signature card "
-            + signatureCard.toString() + ".");
+        log.info("Failed to get exclusive access to signature card {}.", signatureCard);
         throw new SignatureCardException(e);
       }
     }

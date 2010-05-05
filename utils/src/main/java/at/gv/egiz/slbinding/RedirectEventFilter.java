@@ -30,8 +30,6 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /*
  * TODO: don't set redirect stream from caller (caller does not know whether redirection will be triggered)
@@ -40,7 +38,6 @@ import org.apache.commons.logging.LogFactory;
 public class RedirectEventFilter implements EventFilter {
 
   public static final String DEFAULT_ENCODING = "UTF-8";
-  private static Log log = LogFactory.getLog(RedirectEventFilter.class);
   protected XMLEventWriter redirectWriter = null;
   protected Set<QName> redirectTriggers = null;
   private int depth = -1;

@@ -26,11 +26,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.Set;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -39,7 +38,7 @@ import org.apache.commons.logging.LogFactory;
 public class TransformsInfoType extends at.buergerkarte.namespaces.securitylayer._1.TransformsInfoType implements RedirectCallback {
 
     @XmlTransient
-    private static Log log = LogFactory.getLog(TransformsInfoType.class);
+    private final Logger log = LoggerFactory.getLogger(TransformsInfoType.class);
     @XmlTransient
     private static final Set<QName> redirectTriggers = initRedirectTriggers(); 
     @XmlTransient
@@ -53,21 +52,21 @@ public class TransformsInfoType extends at.buergerkarte.namespaces.securitylayer
     
     @Override
     public void enableRedirect(RedirectEventFilter filter) throws XMLStreamException {
-        log.debug("enabling event redirection for TransformsInfoType");
+        log.trace("enabling event redirection for TransformsInfoType");
         redirectOS = new ByteArrayOutputStream();
         filter.setRedirectStream(redirectOS, redirectTriggers); 
     }
 
     @Override
     public void disableRedirect(RedirectEventFilter filter) throws XMLStreamException {
-        log.debug("disabling event redirection for TransformsInfoType");
+        log.trace("disabling event redirection for TransformsInfoType");
         filter.flushRedirectStream();
         filter.setRedirectStream(null);
-        if (log.isDebugEnabled()) {
+        if (log.isTraceEnabled()) {
           try {
-            log.debug("redirected events (UTF-8): " + redirectOS.toString("UTF-8"));
+            log.trace("redirected events (UTF-8): " + redirectOS.toString("UTF-8"));
           } catch (UnsupportedEncodingException ex) {
-            log.debug("failed to log redirected events", ex);
+            log.error("failed to log redirected events", ex);
           }
         }
     }

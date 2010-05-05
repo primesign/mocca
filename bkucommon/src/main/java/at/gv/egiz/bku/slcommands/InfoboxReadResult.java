@@ -17,4 +17,7 @@
 package at.gv.egiz.bku.slcommands;
 
 public interface InfoboxReadResult extends SLResult {
+  
+  public Object getContent();
+  
 }

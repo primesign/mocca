@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class NamespacePrefixMapperImpl extends NamespacePrefixMapper {
 
-  private static final Log log = LogFactory.getLog(NamespacePrefixMapperImpl.class);
+  private final Logger log = LoggerFactory.getLogger(NamespacePrefixMapperImpl.class);
 
   protected static final Map<String, String> prefixMap = new HashMap<String, String>();
   
@@ -51,9 +51,7 @@ public class NamespacePrefixMapperImpl extends NamespacePrefixMapper {
   @Override
   public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix) {
 
-    if (log.isTraceEnabled()) {
-      log.trace("prefix for namespace " + namespaceUri + " requested");
-    }
+    log.trace("Prefix for namespace {} reqested.", namespaceUri);
     
     String prefix = prefixMap.get(namespaceUri);
     

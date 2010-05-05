@@ -19,12 +19,12 @@ package at.gv.egiz.bku.pin.gui;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.smccstal.SecureViewer;
 import at.gv.egiz.smcc.CancelledException;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.pin.gui.PINProvider;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
 import java.security.DigestException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The number of retries is not fixed and there is no way (?) to obtain this value.
@@ -39,7 +39,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class SignPINProvider extends AbstractPINProvider implements PINProvider {
 
-  protected static final Log log = LogFactory.getLog(SignPINProvider.class);
+  private final Logger log = LoggerFactory.getLogger(SignPINProvider.class);
 
   protected BKUGUIFacade gui;
   protected SecureViewer viewer;
@@ -53,7 +53,7 @@ public class SignPINProvider extends AbstractPINProvider implements PINProvider 
   }
 
   @Override
-  public char[] providePIN(PINSpec spec, int retries)
+  public char[] providePIN(PinInfo spec, int retries)
           throws CancelledException, InterruptedException {
 
     gui.showSignaturePINDialog(spec, (retry) ? retries : -1,
@@ -62,20 +62,20 @@ public class SignPINProvider extends AbstractPINProvider implements PINProvider 
             this, "secureViewer");
 
     do {
-      log.trace("[" + Thread.currentThread().getName() + "] wait for action");
+      log.trace("[{}] wait for action.", Thread.currentThread().getName());
       waitForAction();
-      log.trace("[" + Thread.currentThread().getName() + "] received action " + action);
+      log.trace("[{}] received action {}.", Thread.currentThread().getName(), action);
 
       if ("secureViewer".equals(action)) {
         try {
           viewer.displayDataToBeSigned(signedInfo, this, "pinEntry");
         } catch (DigestException ex) {
-          log.error("Bad digest value: " + ex.getMessage());
+          log.error("Bad digest value: {}", ex.getMessage());
           gui.showErrorDialog(BKUGUIFacade.ERR_INVALID_HASH,
                   new Object[]{ex.getMessage()},
                   this, "error");
         } catch (Exception ex) {
-          log.error("Could not display hashdata inputs: " +
+          log.error("Could not display hashdata inputs: {}",
                   ex.getMessage());
           gui.showErrorDialog(BKUGUIFacade.ERR_DISPLAY_HASHDATA,
                   new Object[]{ex.getMessage()},
@@ -98,7 +98,7 @@ public class SignPINProvider extends AbstractPINProvider implements PINProvider 
         throw new CancelledException(spec.getLocalizedName() +
                 " entry cancelled");
       } else {
-        log.error("unknown action command " + action);
+        log.error("Unknown action command {}.", action);
       }
     } while (true);
   }

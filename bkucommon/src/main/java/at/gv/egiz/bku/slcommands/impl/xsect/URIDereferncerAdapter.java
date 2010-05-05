@@ -31,7 +31,6 @@ import javax.xml.crypto.XMLCryptoContext;
 
 import at.gv.egiz.bku.utils.urldereferencer.StreamData;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
-import at.gv.egiz.bku.utils.urldereferencer.URLDereferencerContext;
 
 /**
  * An URIDereferencer implementation that uses an {@link URLDereferencer} to
@@ -44,17 +43,17 @@ public class URIDereferncerAdapter implements URIDereferencer {
   /**
    * The context for dereferencing.
    */
-  protected URLDereferencerContext urlDereferencerContext;
+  protected URLDereferencer dereferencer;
 
   /**
    * Creates a new URIDereferencerAdapter instance with the given
    * <code>urlDereferencerContext</code>.
    * 
-   * @param urlDereferencerContext the context to be used for dereferencing
+   * @param urlDereferencer the context to be used for dereferencing
    */
-  public URIDereferncerAdapter(URLDereferencerContext urlDereferencerContext) {
+  public URIDereferncerAdapter(URLDereferencer urlDereferencer) {
     super();
-    this.urlDereferencerContext = urlDereferencerContext;
+    this.dereferencer = urlDereferencer;
   }
 
   /* (non-Javadoc)
@@ -78,10 +77,9 @@ public class URIDereferncerAdapter implements URIDereferencer {
     
     if (uri.isAbsolute()) {
 
-      URLDereferencer dereferencer = URLDereferencer.getInstance();
       StreamData streamData;
       try {
-        streamData = dereferencer.dereference(uriString, urlDereferencerContext);
+        streamData = dereferencer.dereference(uriString);
       } catch (IOException e) {
         throw new URIReferenceException(e.getMessage(), e);
       }

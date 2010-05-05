@@ -687,7 +687,7 @@ public class ObjectFactory {
      * Create an instance of {@link at.buergerkarte.namespaces.securitylayer._1.CreateXMLSignatureResponseType }
      *
      */
-    public at.buergerkarte.namespaces.securitylayer._1.CreateXMLSignatureResponseType createCreateXMLSignatureResponseType() {
+    public at.gv.egiz.slbinding.impl.CreateXMLSignatureResponseType createCreateXMLSignatureResponseType() {
         return new at.gv.egiz.slbinding.impl.CreateXMLSignatureResponseType();
     }
 
@@ -1204,8 +1204,8 @@ public class ObjectFactory {
      *
      */
     @XmlElementDecl(namespace = "http://www.buergerkarte.at/namespaces/securitylayer/1.2#", name = "CreateXMLSignatureResponse")
-    public JAXBElement<at.buergerkarte.namespaces.securitylayer._1.CreateXMLSignatureResponseType> createCreateXMLSignatureResponse(at.buergerkarte.namespaces.securitylayer._1.CreateXMLSignatureResponseType value) {
-        return new JAXBElement<at.buergerkarte.namespaces.securitylayer._1.CreateXMLSignatureResponseType>(_CreateXMLSignatureResponse_QNAME, ((Class) at.gv.egiz.slbinding.impl.CreateXMLSignatureResponseType.class), null, ((at.gv.egiz.slbinding.impl.CreateXMLSignatureResponseType) value));
+    public JAXBElement<CreateXMLSignatureResponseType> createCreateXMLSignatureResponse(at.gv.egiz.slbinding.impl.CreateXMLSignatureResponseType value) {
+      return new JAXBElement<CreateXMLSignatureResponseType>(_CreateXMLSignatureResponse_QNAME, CreateXMLSignatureResponseType.class, null, value);
     }
 
     /**

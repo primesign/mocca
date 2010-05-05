@@ -20,11 +20,13 @@ import iaik.xml.crypto.dom.DOMCryptoContext;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.security.InvalidAlgorithmParameterException;
@@ -36,6 +38,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.dom.DOMStructure;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
@@ -46,15 +51,17 @@ import javax.xml.crypto.dsig.XMLObject;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 import javax.xml.crypto.dsig.spec.XPathFilter2ParameterSpec;
 import javax.xml.crypto.dsig.spec.XPathType;
+import javax.xml.namespace.QName;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -70,6 +77,7 @@ import at.buergerkarte.namespaces.securitylayer._1.MetaInfoType;
 import at.buergerkarte.namespaces.securitylayer._1.TransformsInfoType;
 import at.gv.egiz.bku.binding.HttpUtil;
 import at.gv.egiz.bku.gui.viewer.MimeTypes;
+import at.gv.egiz.bku.slcommands.SLMarshallerFactory;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
@@ -81,10 +89,6 @@ import at.gv.egiz.bku.viewer.Validator;
 import at.gv.egiz.bku.viewer.ValidatorFactory;
 import at.gv.egiz.dom.DOMUtils;
 import at.gv.egiz.slbinding.impl.XMLContentType;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 
 /**
  * This class represents a <code>DataObject</code> of an XML-Signature
@@ -97,7 +101,7 @@ public class DataObject {
   /**
    * Logging facility.
    */
-  private static Log log = LogFactory.getLog(DataObject.class);
+  private final Logger log = LoggerFactory.getLogger(DataObject.class);
   
   /**
    * DOM Implementation.
@@ -205,7 +209,7 @@ public class DataObject {
 
     domImplLS = (DOMImplementationLS) registry.getDOMImplementation(DOM_LS_3_0);
     if (domImplLS == null) {
-      log.error("Failed to get DOMImplementation " + DOM_LS_3_0);
+      log.error("Failed to get DOMImplementation {}.", DOM_LS_3_0);
       throw new SLRuntimeException("Failed to get DOMImplementation " + DOM_LS_3_0);
     }
 
@@ -276,7 +280,7 @@ public class DataObject {
         try {
           validator = ValidatorFactory.newValidator(mediaType);
         } catch (IllegalArgumentException e) {
-          log.error("No validator found for mime type '" + mediaType + "'.");
+          log.error("No validator found for mime type '{}'.", mediaType, e);
           throw new SLViewerException(5000);
         }
         
@@ -299,7 +303,7 @@ public class DataObject {
         }
         
       } else {
-        log.debug("MIME media type '" + mediaType + "' is not a s/valid/SUPPORTED digest input, omitting validation.");
+        log.debug("MIME media type '{}' is not a s/valid/SUPPORTED digest input, omitting validation.", mediaType);
       }
     }
     
@@ -359,12 +363,12 @@ public class DataObject {
     if (reference != null) {
       if (reference.getURI() != null && !"".equals(reference.getURI())) {
         try {
-          log.info("deriving filename from reference URI " + reference.getURI());
+          log.info("Deriving filename from reference URI {}.", reference.getURI());
           URI refURI = new URI(reference.getURI());
 
           if (refURI.isOpaque()) {
             // could check scheme component, but also allow other schemes (e.g. testlocal)
-            log.trace("opaque reference URI, use scheme-specific part as filename");
+            log.trace("Opaque reference URI, use scheme-specific part as filename.");
             filename = refURI.getSchemeSpecificPart();
             if (!hasExtension(filename)) {
               filename += MimeTypes.getExtension(mimeType);
@@ -376,34 +380,34 @@ public class DataObject {
           } else if ("".equals(refURI.getPath()) && 
                   refURI.getFragment() != null &&
                   refURI.getFragment().indexOf('(') < 0) { // exclude (schemebased) xpointer expressions
-            log.trace("fragment (shorthand xpointer) URI, use fragment as filename");
+            log.trace("Fragment (shorthand xpointer) URI, use fragment as filename.");
             filename = refURI.getFragment();
             if(!hasExtension(filename)) {
               filename += MimeTypes.getExtension(mimeType);
             }
           } else if (!"".equals(refURI.getPath())) {
-            log.trace("hierarchical URI with path component, use path as filename");
+            log.trace("Hierarchical URI with path component, use path as filename.");
             File refFile = new File(refURI.getPath());
             filename = refFile.getName();
             if(!hasExtension(filename)) {
               filename += MimeTypes.getExtension(mimeType);
             }
           } else {
-            log.debug("failed to derive filename from URI '" + refURI + "', derive filename from reference ID");
+            log.debug("Failed to derive filename from URI '{}', derive filename from reference ID.", refURI);
             filename = reference.getId() + MimeTypes.getExtension(mimeType);
           }
         } catch (URISyntaxException ex) {
-          log.error("failed to derive filename from invalid URI " + ex.getMessage());
+          log.error("Failed to derive filename from invalid URI {}.", ex.getMessage());
           filename = reference.getId() + MimeTypes.getExtension(mimeType);
         }
       } else {
-        log.debug("same-document URI, derive filename from reference ID");
+        log.debug("Same-document URI, derive filename from reference ID.");
         filename = reference.getId() + MimeTypes.getExtension(mimeType);
       }
     } else {
-      log.error("failed to derive filename, no reference created");
+      log.error("Failed to derive filename, no reference created.");
     }
-    log.debug("derived filename for reference " + reference.getId() + ": " + filename);
+    log.debug("Derived filename for reference {}: {}.", reference.getId(), filename);
     return filename;
   }
 
@@ -413,30 +417,12 @@ public class DataObject {
   }
 
   private byte[] getTransformsBytes(at.gv.egiz.slbinding.impl.TransformsInfoType ti) {
-    return ti.getRedirectedStream().toByteArray();
-//    byte[] transformsBytes = ti.getRedirectedStream().toByteArray();
-//
-//    if (transformsBytes == null || transformsBytes.length == 0) {
-//      return null;
-//    }
-//
-//    String dsigPrefix = ti.getNamespaceContext().getNamespaceURI("http://www.w3.org/2000/09/xmldsig#");
-//    byte[] pre, post;
-//    if (dsigPrefix == null) {
-//      log.trace("XMLDSig not declared in outside dsig:Transforms");
-//      pre = "<AssureDSigNS>".getBytes();
-//      post = "</AssureDSigNS>".getBytes();
-//    } else {
-//      log.trace("XMLDSig bound to prefix " + dsigPrefix);
-//       pre = ("<AssureDSigNS xmlns:" + dsigPrefix + "=\"http://www.w3.org/2000/09/xmldsig#\">").getBytes();
-//       post = "</AssureDSigNS>".getBytes();
-//    }
-//
-//    byte[] workaround = new byte[pre.length + transformsBytes.length + post.length];
-//    System.arraycopy(pre, 0, workaround, 0, pre.length);
-//    System.arraycopy(transformsBytes, 0, workaround, pre.length, transformsBytes.length);
-//    System.arraycopy(post, 0, workaround, pre.length + transformsBytes.length, post.length);
-//    return workaround;
+    ByteArrayOutputStream redirectedStream = ti.getRedirectedStream();
+    if (redirectedStream != null) {
+      return redirectedStream.toByteArray();
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -487,9 +473,8 @@ public class DataObject {
 
         // create XMLObject
         DocumentFragment content = parseDataObject((XMLContentType) dataObject.getXMLContent());
-        XMLObject xmlObject = createXMLObject(content);
         
-        setXMLObjectAndReferenceXML(xmlObject, transforms);
+        setXMLObjectAndReferenceXML(createXMLObject(content), transforms);
         
       } else if (dataObject.getLocRefContent() != null) {
         
@@ -521,7 +506,7 @@ public class DataObject {
         // The content of sl:DataObject remains empty
         //
         
-        log.debug("Adding DataObject from reference URI '" + reference + "'.");
+        log.debug("Adding DataObject from reference URI '{}'.", reference);
         
         setEnvelopedDataObject(reference, transforms);
         
@@ -564,13 +549,13 @@ public class DataObject {
     }
     
     // dereference URL
-    URLDereferencer dereferencer = URLDereferencer.getInstance();
+    URLDereferencer dereferencer = ctx.getUrlDereferencer();
     
     StreamData streamData;
     try {
-      streamData = dereferencer.dereference(reference, ctx.getDereferencerContext());
+      streamData = dereferencer.dereference(reference);
     } catch (IOException e) {
-      log.info("Failed to dereference XMLObject from '" + reference + "'.", e);
+      log.info("Failed to dereference XMLObject from '{}'.", reference, e);
       throw new SLCommandException(4110);
     }
 
@@ -587,7 +572,7 @@ public class DataObject {
       childNode = doc.getDocumentElement();
       
       if (childNode == null) {
-        log.info("Failed to parse XMLObject from '" + reference + "'.");
+        log.info("Failed to parse XMLObject from '{}'.", reference);
         throw new SLCommandException(4111);
       }
       
@@ -666,12 +651,12 @@ public class DataObject {
       if (dataObject.getLocRefContent() != null) {
         String locRef = dataObject.getLocRefContent();
         try {
-          this.reference.setDereferencer(new LocRefDereferencer(ctx.getDereferencerContext(), locRef));
+          this.reference.setDereferencer(new LocRefDereferencer(ctx.getUrlDereferencer(), locRef));
         } catch (URISyntaxException e) {
-          log.info("Invalid URI '" + locRef + "' in DataObject.", e);
+          log.info("Invalid URI '{}' in DataObject.", locRef, e);
           throw new SLCommandException(4003);
         } catch (IllegalArgumentException e) {
-          log.info("LocRef URI of '" + locRef + "' not supported in DataObject. ", e);
+          log.info("LocRef URI of '{}' not supported in DataObject. ", locRef, e);
           throw new SLCommandException(4003);
         }
       } else if (dataObject.getBase64Content() != null) {
@@ -734,7 +719,7 @@ public class DataObject {
     }
 
     if (debugString != null) {
-      log.debug(debugString);
+      log.debug(debugString.toString());
     }
 
     // look for preferred transform
@@ -778,7 +763,7 @@ public class DataObject {
         StringBuilder sb = new StringBuilder();
         sb.append("Trying to parse transforms:\n");
         sb.append(new String(transforms, Charset.forName("UTF-8")));
-        log.trace(sb);
+        log.trace(sb.toString());
       }
 
       DOMImplementationLS domImplLS = DOMUtils.getDOMImplementationLS();
@@ -933,8 +918,7 @@ public class DataObject {
       } catch (MarshalException e) {
       
         String mimeType = preferredTransformsInfo.getFinalDataMetaInfo().getMimeType();
-        log.info("Failed to unmarshal preferred transformation path (MIME-Type="
-            + mimeType + ").", e);
+        log.info("Failed to unmarshal preferred transformation path (MIME-Type={}).", mimeType, e);
       
       }
 
@@ -950,8 +934,7 @@ public class DataObject {
       } catch (MarshalException e) {
 
         String mimeType = transformsInfoType.getFinalDataMetaInfo().getMimeType();
-        log.info("Failed to unmarshal transformation path (MIME-Type="
-            + mimeType + ").", e);
+        log.info("Failed to unmarshal transformation path (MIME-Type={}).", mimeType, e);
       }
       
     }
@@ -975,7 +958,7 @@ public class DataObject {
     try {
       textNode = at.gv.egiz.dom.DOMUtils.createBase64Text(content, ctx.getDocument());
     } catch (IOException e) {
-      log.error(e);
+      log.error("Failed to create XMLObject.", e);
       throw new SLRuntimeException(e);
     }
 
@@ -1170,36 +1153,68 @@ public class DataObject {
     // content of the redirect stream as the content has already been parsed
     // and serialized again to the redirect stream.
     
-    List<InputStream> inputStreams = new ArrayList<InputStream>();
-    try {
-      // dummy start element
-      inputStreams.add(new ByteArrayInputStream("<dummy>".getBytes("UTF-8")));
-  
-      // content
-      inputStreams.add(new ByteArrayInputStream(redirectedStream.toByteArray()));
+    DocumentFragment fragment;
+    if (redirectedStream != null) {
+    
+      List<InputStream> inputStreams = new ArrayList<InputStream>();
+      try {
+        // dummy start element
+        inputStreams.add(new ByteArrayInputStream("<dummy>".getBytes("UTF-8")));
+    
+        // content
+        inputStreams.add(new ByteArrayInputStream(redirectedStream.toByteArray()));
+        
+        // dummy end element
+        inputStreams.add(new ByteArrayInputStream("</dummy>".getBytes("UTF-8")));
+      } catch (UnsupportedEncodingException e) {
+        throw new SLRuntimeException(e);
+      }
       
-      // dummy end element
-      inputStreams.add(new ByteArrayInputStream("</dummy>".getBytes("UTF-8")));
-    } catch (UnsupportedEncodingException e) {
-      throw new SLRuntimeException(e);
-    }
+      SequenceInputStream inputStream = new SequenceInputStream(Collections.enumeration(inputStreams));
     
-    SequenceInputStream inputStream = new SequenceInputStream(Collections.enumeration(inputStreams));
-  
-    // parse DataObject
-    Document doc = parseDataObject(inputStream, "UTF-8");
+      // parse DataObject
+      Document doc = parseDataObject(inputStream, "UTF-8");
+      
+      Element documentElement = doc.getDocumentElement();
     
-    Element documentElement = doc.getDocumentElement();
-  
-    if (documentElement == null ||
-        !"dummy".equals(documentElement.getLocalName())) {
-      log.info("Failed to parse DataObject XMLContent.");
-      throw new SLCommandException(4111);
-    }
-    
-    DocumentFragment fragment = doc.createDocumentFragment();
-    while (documentElement.getFirstChild() != null) {
-      fragment.appendChild(documentElement.getFirstChild());
+      if (documentElement == null ||
+          !"dummy".equals(documentElement.getLocalName())) {
+        log.info("Failed to parse DataObject XMLContent.");
+        throw new SLCommandException(4111);
+      }
+      
+      fragment = doc.createDocumentFragment();
+      while (documentElement.getFirstChild() != null) {
+        fragment.appendChild(documentElement.getFirstChild());
+      }
+
+    } else {
+      
+      fragment = ctx.getDocument().createDocumentFragment();
+      Marshaller marshaller = SLMarshallerFactory.getInstance().createMarshaller(false);
+      
+      JAXBElement<at.buergerkarte.namespaces.securitylayer._1.XMLContentType> element = 
+        new JAXBElement<at.buergerkarte.namespaces.securitylayer._1.XMLContentType>(
+          new QName("dummy"),
+          at.buergerkarte.namespaces.securitylayer._1.XMLContentType.class,
+          xmlContent);
+      
+      try {
+        marshaller.marshal(element, fragment);
+      } catch (JAXBException e) {
+        log.info("Failed to marshal DataObject (XMLContent).", e);
+        throw new SLCommandException(4111);
+      }
+      
+      Node dummy = fragment.getFirstChild();
+      if (dummy != null) {
+        NodeList nodes = dummy.getChildNodes();
+        for (int i = 0; i < nodes.getLength(); i++) {
+          fragment.appendChild(nodes.item(i));
+        }
+        fragment.removeChild(dummy);
+      }
+
     }
     
     // log parsed document
@@ -1256,6 +1271,8 @@ public class DataObject {
     SimpleDOMErrorHandler errorHandler = new SimpleDOMErrorHandler();
     domConfig.setParameter("error-handler", errorHandler);
     domConfig.setParameter("validate", Boolean.FALSE);
+    domConfig.setParameter("entities", Boolean.TRUE);
+    
 
     Document doc;
     try {

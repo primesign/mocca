@@ -47,11 +47,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.*;
 
@@ -62,11 +62,12 @@ import static org.junit.Assert.*;
 @Ignore
 public class STALRequestBrokerTest {
 
-    private static final Log log = LogFactory.getLog(STALRequestBrokerTest.class);
+    private final Logger log = LoggerFactory.getLogger(STALRequestBrokerTest.class);
     protected static STALRequestBroker stal;
 
     @BeforeClass
     public static void setUp() {
+        Logger log = LoggerFactory.getLogger(STALRequestBrokerTest.class);
         RequestBrokerSTALFactory fac = new RequestBrokerSTALFactory();
         stal = (STALRequestBrokerImpl) fac.createSTAL();
         log.debug("Created STAL " + stal.getClass().getName());

@@ -23,8 +23,8 @@ package at.gv.egiz.slbinding;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Enables event redirection before marshalling a target of type RedirectCallback.
@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class RedirectUnmarshallerListener extends Unmarshaller.Listener {
 
-    private static Log log = LogFactory.getLog(RedirectUnmarshallerListener.class);
+    private final Logger log = LoggerFactory.getLogger(RedirectUnmarshallerListener.class);
     protected RedirectEventFilter eventFilter;
 
     public RedirectUnmarshallerListener(RedirectEventFilter eventFilter) {

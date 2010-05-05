@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.smartcardio.Card;
 
@@ -38,7 +37,6 @@ import at.gv.egiz.smcc.pin.gui.DummyPINGUI;
 import at.gv.egiz.smcc.pin.gui.ModifyPINGUI;
 import at.gv.egiz.smcc.pin.gui.PINGUI;
 import at.gv.egiz.smcc.pin.gui.SMCCTestPINProvider;
-import org.junit.Ignore;
 
 @SuppressWarnings("restriction")
 public abstract class CardTest {
@@ -144,7 +142,7 @@ public abstract class CardTest {
       
         PINGUI pinProvider = new DummyPINGUI() {
           @Override
-          public char[] providePIN(PINSpec spec, int retries)
+          public char[] providePIN(PinInfo spec, int retries)
               throws CancelledException, InterruptedException {
 
             try {
@@ -174,7 +172,7 @@ public abstract class CardTest {
       
         PINGUI pinProvider = new DummyPINGUI() {
           @Override
-          public char[] providePIN(PINSpec spec, int retries)
+          public char[] providePIN(PinInfo spec, int retries)
               throws CancelledException, InterruptedException {
       
             try {
@@ -195,13 +193,13 @@ public abstract class CardTest {
       }
 
   @Test
-  public void testGetPinSpecs() throws CardNotSupportedException {
+  public void testGetPinSpecs() throws CardNotSupportedException, SignatureCardException {
   
     PINMgmtSignatureCard signatureCard = (PINMgmtSignatureCard) createSignatureCard();
   
-    List<PINSpec> specs = signatureCard.getPINSpecs();
+    PinInfo[] specs = signatureCard.getPinInfos();
     assertNotNull(specs);
-    assertTrue(specs.size() > 0);
+    assertTrue(specs.length > 0);
   
   }
 
@@ -214,9 +212,9 @@ public abstract class CardTest {
       
         ModifyPINGUI pinProvider = new CancelChangePINProvider();
       
-        List<PINSpec> specs = signatureCard.getPINSpecs();
+        PinInfo[] specs = signatureCard.getPinInfos();
       
-        signatureCard.activatePIN(specs.get(0), pinProvider);
+        signatureCard.activatePIN(specs[0], pinProvider);
       }
 
 }

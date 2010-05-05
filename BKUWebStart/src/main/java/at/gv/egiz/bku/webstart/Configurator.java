@@ -225,6 +225,12 @@ public class Configurator {
   /**
    * if unknown old, update in any case
    * if known old and unknown min, don't update
+   * 
+   * VERSION := MAJOR[-SNAPSHOT]-rREV
+   * MAJOR   := [0-9\.]*[-BRANCH[-BRANCHVERSION]]
+   *
+   * assume dots '.' appear in major version only (not after "-SNAPSHOT")
+   *
    * @param oldVersion
    * @param minVersion
    * @return
@@ -257,10 +263,10 @@ public class Configurator {
 
         // compare last digit of major
         boolean preRelease = true;
-        int majorEndOld = oldVersion.indexOf("-SNAPSHOT");
+        int majorEndOld = oldVersion.indexOf("-SNAPSHOT"); // 1.0.10-SNAPSHOT-r438, 1.2.12-pinguin-1-SNAPSHOT-r635
         if (majorEndOld < 0) {
           preRelease = false;
-          majorEndOld = oldVersion.indexOf('-'); // 1.0.10-r439
+          majorEndOld = oldVersion.lastIndexOf('-'); // 1.0.10-r439, 1.2.12-pinguin-1-r635
           if (majorEndOld < 0) {
             majorEndOld = oldVersion.length();
           }
@@ -270,7 +276,7 @@ public class Configurator {
         int majorEndMin = minVersion.indexOf("-SNAPSHOT");
         if (majorEndMin < 0) {
           releaseRequired = true;
-          majorEndMin = minVersion.indexOf('-');
+          majorEndMin = minVersion.lastIndexOf('-');
           if (majorEndMin < 0) {
             majorEndMin = minVersion.length();
           }

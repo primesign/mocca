@@ -52,7 +52,6 @@ import at.gv.egiz.idlink.ans1.IdentityLink;
 import at.gv.egiz.idlink.ans1.PersonData;
 import at.gv.egiz.idlink.ans1.PhysicalPersonData;
 import at.gv.egiz.marshal.MarshallerFactory;
-import at.gv.egiz.marshal.NamespacePrefixMapperImpl;
 import at.gv.egiz.xmldsig.KeyTypeNotSupportedException;
 import at.gv.egiz.xmldsig.KeyValueFactory;
 

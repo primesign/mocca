@@ -19,6 +19,7 @@ package at.gv.egiz.bku.slcommands.impl;
 import at.buergerkarte.namespaces.securitylayer._1.NullOperationRequestType;
 import at.gv.egiz.bku.slcommands.NullOperationCommand;
 import at.gv.egiz.bku.slcommands.NullOperationResult;
+import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLResult;
 
 /**
@@ -31,7 +32,7 @@ public class NullOperationCommandImpl extends SLCommandImpl<NullOperationRequest
   protected static NullOperationResult RESULT = new NullOperationResultImpl();
   
   @Override
-  public SLResult execute() {
+  public SLResult execute(SLCommandContext commandContext) {
     return RESULT;
   }
 

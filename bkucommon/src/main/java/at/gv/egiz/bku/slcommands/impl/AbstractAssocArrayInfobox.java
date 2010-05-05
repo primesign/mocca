@@ -26,8 +26,8 @@ import java.util.regex.Pattern;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.buergerkarte.namespaces.securitylayer._1.InfoboxAssocArrayPairType;
 import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadDataAssocArrayType;
@@ -54,7 +54,7 @@ public abstract class AbstractAssocArrayInfobox extends AbstractInfoboxImpl
   /**
    * Logging facility.
    */
-  private static Log log = LogFactory.getLog(AbstractAssocArrayInfobox.class);
+  private final Logger log = LoggerFactory.getLogger(AbstractAssocArrayInfobox.class);
 
   /**
    * The search string pattern.
@@ -113,7 +113,7 @@ public abstract class AbstractAssocArrayInfobox extends AbstractInfoboxImpl
       // TODO : build pattern
       return Collections.emptyList();
     } else {
-      log.info("Got invalid search string '" + searchString + "'");
+      log.info("Got invalid search string '{}'.", searchString);
       throw new SLCommandException(4010);
     }
     
@@ -170,14 +170,14 @@ public abstract class AbstractAssocArrayInfobox extends AbstractInfoboxImpl
   protected InfoboxReadResult readPairs(ReadPairs readPairs, SLCommandContext cmdCtx) throws SLCommandException {
     
     if (readPairs.isValuesAreXMLEntities() && !isValuesAreXMLEntities()) {
-      log.info("Got valuesAreXMLEntities=" + readPairs.isValuesAreXMLEntities() + " but infobox type is binary.");
+      log.info("Got valuesAreXMLEntities={} but infobox type is binary.", readPairs.isValuesAreXMLEntities());
       throw new SLCommandException(4010);
     }
     
     List<String> selectedKeys = selectKeys(readPairs.getSearchString());
     
     if (readPairs.isUserMakesUnique() && selectedKeys.size() > 1) {
-      log.info("UserMakesUnique not supported");
+      log.info("UserMakesUnique not supported.");
       // TODO: give more specific error message
       throw new SLCommandException(4010);
     }
@@ -202,7 +202,7 @@ public abstract class AbstractAssocArrayInfobox extends AbstractInfoboxImpl
   protected InfoboxReadResult readValue(ReadValue readValue, SLCommandContext cmdCtx) throws SLCommandException {
     
     if (readValue.isValueIsXMLEntity() && !isValuesAreXMLEntities()) {
-      log.info("Got valuesAreXMLEntities=" + readValue.isValueIsXMLEntity() + " but infobox type is binary.");
+      log.info("Got valuesAreXMLEntities={} but infobox type is binary.", readValue.isValueIsXMLEntity());
       throw new SLCommandException(4010);
     }
     
@@ -232,7 +232,7 @@ public abstract class AbstractAssocArrayInfobox extends AbstractInfoboxImpl
       Object value = values.get(key);
       if (areXMLEntities) {
         if (value instanceof byte[]) {
-          log.info("Got valuesAreXMLEntities=" + areXMLEntities + " but infobox type is binary.");
+          log.info("Got valuesAreXMLEntities={} but infobox type is binary.", areXMLEntities);
           throw new SLCommandException(4122);
         } else {
           XMLContentType contentType = objectFactory.createXMLContentType();

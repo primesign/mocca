@@ -17,17 +17,17 @@
 package at.gv.egiz.smcc.pin.gui;
 
 import at.gv.egiz.smcc.CancelledException;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 
 public abstract class DummyPINGUI implements PINGUI {
 
    @Override
-  public void enterPINDirect(PINSpec spec, int retries) throws CancelledException, InterruptedException {
+  public void enterPINDirect(PinInfo spec, int retries) throws CancelledException, InterruptedException {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public void enterPIN(PINSpec spec, int retries) throws CancelledException, InterruptedException {
+  public void enterPIN(PinInfo spec, int retries) throws CancelledException, InterruptedException {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 

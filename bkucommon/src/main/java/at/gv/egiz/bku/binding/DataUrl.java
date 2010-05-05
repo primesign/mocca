@@ -16,18 +16,9 @@
  */
 package at.gv.egiz.bku.binding;
 
-import at.gv.egiz.bku.conf.Configurator;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Properties;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSocketFactory;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 
 /**
  * Used to handle DataUrl connections as specified in the CCE's HTTP protocol binding. 
@@ -35,77 +26,37 @@ import at.gv.egiz.bku.slexceptions.SLRuntimeException;
  */
 public class DataUrl {
 
-  private static Log log = LogFactory.getLog(DataUrl.class);
-  private static DataUrlConnectionSPI connection;
-  private static Properties configuration;
-  private static SSLSocketFactory sslSocketFactory;
-  private static HostnameVerifier hostNameVerifier;
+  private static DataURLConnectionFactory connectionFactory;
+  
+  /**
+   * @return the connectionFactory
+   */
+  public static DataURLConnectionFactory getConnectionFactory() {
+    return connectionFactory;
+  }
+
+  /**
+   * @param connectionFactory the connectionFactory to set
+   */
+  public static void setConnectionFactory(
+      DataURLConnectionFactory connectionFactory) {
+    DataUrl.connectionFactory = connectionFactory;
+  }
+
+  /**
+   * The URL.
+   */
   private URL url;
 
-  /** spring injected config, to replace configuration */
-  //private Configuration config;
+  public DataUrl(String spec) throws MalformedURLException {
+    url = new URL(spec);
+  }
 
-  /**
-   * Sets the default DataUrlConnection implementation
-   * @param aClass must not be null
-   */
-  static void setDataUrlConnectionImpl(DataUrlConnectionSPI conn) {
-    if (conn != null) {
-      connection = conn;
+  public DataUrlConnection openConnection() throws IOException {
+    if (connectionFactory != null) {
+      return connectionFactory.openConnection(url);
+    } else {
+      return new DataUrlConnectionImpl(url);
     }
-  }
-
-  public DataUrl(String aUrlString) throws MalformedURLException {
-    url = new URL(aUrlString);
-    if (connection == null) {
-      log.debug("Using default DataURLConnection class");
-      connection = new DataUrlConnectionImpl();
-    }
-    connection.setConfiguration(configuration);
-    connection.setSSLSocketFactory(sslSocketFactory);
-    connection.setHostnameVerifier(hostNameVerifier);
-  }
-
-  public DataUrlConnection openConnection() {
-    try {
-      log.debug("Opening dataurl connection");
-      DataUrlConnectionSPI retVal = connection.newInstance();
-      retVal.init(url);
-      return retVal;
-    } catch (Exception e) {
-      log.error(e);
-      throw new SLRuntimeException("Cannot instantiate a dataurlconnection:", e);
-    }
-  }
-
-
-  /**
-   * set configuration for all subsequently instantiated DataURL objects
-   * @param props
-   */
-  public static void setConfiguration(Properties props) {
-    configuration = props;
-    if (configuration != null) {
-      String className = configuration.getProperty(Configurator.DATAURLCONNECTION_CONFIG_P);
-      if (className != null) {
-        log.warn("Set DataURLConnection class not supported!");
-      }
-    }
-  }
-
-  /**
-   * set SSLSocketFactory for all subsequently instantiated DataURL objects
-   * @param socketFactory
-   */
-  public static void setSSLSocketFactory(SSLSocketFactory socketFactory) {
-    sslSocketFactory = socketFactory;
-  }
-
-  /**
-   * set HostnameVerifier for all subsequently instantiated DataURL objects
-   * @param hostNameVerifier
-   */
-  public static void setHostNameVerifier(HostnameVerifier hostNameVerifier) {
-    DataUrl.hostNameVerifier = hostNameVerifier;
   }
 }

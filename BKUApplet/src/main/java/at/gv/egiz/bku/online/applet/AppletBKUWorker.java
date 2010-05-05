@@ -37,12 +37,17 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.ws.WebServiceException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
 
+  private final Logger log = LoggerFactory.getLogger(AbstractBKUWorker.class);
+  
   protected BKUApplet applet;
   protected String sessionId;
 
@@ -55,7 +60,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
     sessionId = applet.getParameter(BKUApplet.SESSION_ID);
     if (sessionId == null) {
       sessionId = "TestSession";
-      log.warn("using dummy sessionId " + sessionId);
+      log.warn("Using dummy sessionId {}.", sessionId);
     }
   }
 
@@ -85,7 +90,8 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
 
           // (rather use validator)
           if (requests.size() == 0) {
-            log.error("Received empty NextRequestResponse: no STAL requests to handle. (STAL-X requests might not have gotten unmarshalled)");
+            log.error("Received empty NextRequestResponse: no STAL requests to handle. " +
+            		"(STAL-X requests might not have gotten unmarshalled)");
             throw new RuntimeException("No STAL requests to handle.");
           }
 
@@ -105,7 +111,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
             try {
               stalRequests.add(stalTranslator.translate(req));
             } catch (TranslationException ex) {
-              log.error("Received unknown request from server STAL: " + ex.getMessage());
+              log.error("Received unknown request from server STAL. {}", ex.getMessage());
               throw new RuntimeException(ex);
             }
           }
@@ -117,7 +123,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
             try {
               responses.add(stalTranslator.translate(stalResponse));
             } catch (TranslationException ex) {
-              log.error("Received unknown response from STAL: " + ex.getMessage());
+              log.error("Received unknown response from STAL.{}", ex.getMessage());
               throw new RuntimeException(ex);
             }
           }
@@ -131,7 +137,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
           } else {
             Throwable cause = ex.getCause();
             if (cause != null && cause instanceof InterruptedException) {
-              log.info("do not return error response, client might want to resume session");
+              log.info("Do not return error response, client might want to resume session.");
               finished = true;
             }
             err.setErrorCode(4000);
@@ -160,13 +166,13 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
 
 
       } while (!finished);
-      log.info("Finished " + Thread.currentThread().getName());
+      log.info("Finished {}.", Thread.currentThread().getName());
 
     } catch (WebServiceException ex) {
-      log.fatal("communication error with server STAL: " + ex.getMessage(), ex);
+      log.error("Communication error with server STAL: {}.", ex.getMessage(), ex);
       showErrorDialog(BKUGUIFacade.ERR_SERVICE_UNREACHABLE, ex);
     } catch (MalformedURLException ex) {
-      log.fatal(ex.getMessage(), ex);
+      log.error(ex.getMessage(), ex);
       showErrorDialog(BKUGUIFacade.ERR_CONFIG, ex);
     } catch (Exception ex) {
       log.error(ex.getMessage(), ex);
@@ -213,7 +219,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
     try {
       waitForAction();
     } catch (InterruptedException e) {
-      log.error(e);
+      log.error("Interrupted.", e);
     }
   }
   

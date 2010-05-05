@@ -1,5 +1,8 @@
 package at.gv.egiz.bku.gui.viewer;
 
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedOutputStream;
@@ -8,39 +11,51 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.stal.HashDataInput;
 
 public class SecureViewerSaveDialog {
 
-  protected static final Log log = LogFactory.getLog(SecureViewerSaveDialog.class);
-    
+	private static void setFileChooserFont(Component[] comp, Font font) {
+		for (int i = 0; i < comp.length; i++) {
+			if (comp[i] instanceof Container)
+				setFileChooserFont(((Container) comp[i]).getComponents(), font);
+			try {
+				comp[i].setFont(font);
+			} catch (Exception e) {
+			    Logger log = LoggerFactory.getLogger(SecureViewerSaveDialog.class);
+				log.warn("FileChooser component font could not be set");
+			}
+		}
+	}
+  
   public static void showSaveDialog(final HashDataInput hashDataInput, final ResourceBundle messages,
-      final ActionListener okListener, final String okCommand) {
-
-    log.debug("[" + Thread.currentThread().getName()
-        + "] scheduling save dialog");
+      final ActionListener okListener, final String okCommand, final int fontSize) {
+    
+    final Logger log = LoggerFactory.getLogger(SecureViewerSaveDialog.class);
+    log.debug("[{}] Scheduling save dialog.", Thread.currentThread().getName());
 
     SwingUtilities.invokeLater(new Runnable() {
 
       @Override
       public void run() {
 
-        log
-            .debug("[" + Thread.currentThread().getName()
-                + "] show save dialog");
+        log.debug("[{}] Show save dialog.", Thread.currentThread().getName());
 
         String userHome = System.getProperty("user.home");
+        
+        UIManager.put("Button.defaultButtonFollowsFocus", Boolean.TRUE);
 
         JFileChooser fileDialog = new JFileChooser(userHome);
         fileDialog.setMultiSelectionEnabled(false);
@@ -58,6 +73,9 @@ public class SecureViewerSaveDialog {
             + MimeFilter.getExtension(mimeType);
         fileDialog.setSelectedFile(new File(userHome, filename));
 
+		setFileChooserFont(fileDialog.getComponents(), new JLabel()
+				.getFont().deriveFont((float) fontSize));        
+        
         // parent contentPane -> placed over applet
         switch (fileDialog.showSaveDialog(fileDialog)) {
         case JFileChooser.APPROVE_OPTION:
@@ -75,8 +93,8 @@ public class SecureViewerSaveDialog {
             }
           }
           if (log.isDebugEnabled()) {
-            log.debug("writing hashdata input " + id + " (" + mimeType
-                + ") to file " + file);
+            Object[] args = {id, mimeType, file};
+            log.debug("Writing hashdata input {} ({}) to file {}.", args);
           }
           FileOutputStream fos = null;
           try {
@@ -90,8 +108,7 @@ public class SecureViewerSaveDialog {
             bos.flush();
             bos.close();
           } catch (IOException ex) {
-            log.error("Failed to write " + file + ": " + ex.getMessage());
-            log.debug(ex);
+            log.error("Failed to write.", ex);
             String errPattern = messages
                 .getString(BKUGUIFacade.ERR_WRITE_HASHDATA);
             JOptionPane.showMessageDialog(fileDialog, MessageFormat.format(
@@ -108,7 +125,7 @@ public class SecureViewerSaveDialog {
           }
           break;
         case JFileChooser.CANCEL_OPTION:
-          log.debug("cancelled save dialog");
+          log.debug("Cancelled save dialog.");
           break;
         }
         if (okListener != null) {

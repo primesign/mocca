@@ -24,8 +24,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.accesscontrol.config.AccessControl;
 import at.gv.egiz.bku.accesscontrol.config.Chain;
@@ -39,8 +39,8 @@ import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 public class AccessControllerFactory {
 
 	private static AccessControllerFactory instance = new AccessControllerFactory();
-	private static Log log = LogFactory.getLog(AccessControllerFactory.class);
-	private static JAXBContext jaxbContext;
+    private static JAXBContext jaxbContext;
+	private final Logger log = LoggerFactory.getLogger(AccessControllerFactory.class);
 	public static String INPUT_CHAIN = "InputChain";
 	public static String OUTPUT_CHAIN = "OutputChain";
 
@@ -49,7 +49,8 @@ public class AccessControllerFactory {
 			jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage()
 					.getName());
 		} catch (JAXBException e) {
-			log.fatal("Cannot init jaxbContext", e);
+		    Logger log = LoggerFactory.getLogger(AccessControllerFactory.class);
+			log.error("Cannot init jaxbContext.", e);
 		}
 	}
 
@@ -120,16 +121,14 @@ public class AccessControllerFactory {
 		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 		AccessControl ac = (AccessControl) unmarshaller.unmarshal(is);
 		List<Chain> chainList = ac.getChains().getChain();
-		log.debug("Found " + chainList.size() + " chains in config");
+		log.debug("Found {} chains in config.", chainList.size());
 		for (Chain chain : chainList) {
-			log.trace("Creating chain: " + chain.getId());
+			log.trace("Creating chain: {}.", chain.getId());
 			ChainChecker cc = createChainChecker(chain.getId(), false);
 			List<Rule> ruleList = chain.getRules().getRule();
-			log
-					.debug("Found " + ruleList.size() + " rules in chain "
-							+ chain.getId());
+			log.debug("Found {} rules in chain {}.", ruleList.size(), chain.getId());
 			for (Rule rule : ruleList) {
-				log.trace("Creating rule: " + rule.getId());
+				log.trace("Creating rule: {}.", rule.getId());
 				cc.addRule(createRuleChecker(rule));
 			}
 			registerChainChecker(cc);
@@ -141,7 +140,7 @@ public class AccessControllerFactory {
 		for (ChainChecker chain : chainTable.values()) {
 			for (RuleChecker rule : chain.getRules()) {
 				if (rule.getChainId() != null) {
-					log.trace("Checking reference to chain: "+rule.getChainId());
+					log.trace("Checking reference to chain: {}.", rule.getChainId());
 					if (getChainChecker(rule.getChainId()) == null) {
 						throw new SLRuntimeException("Invalid reference to unknown chain: "+rule.getChainId());
 					}

@@ -16,7 +16,6 @@
 */
 package at.gv.egiz.bku.slcommands.impl;
 
-import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 
 /**
@@ -32,15 +31,34 @@ public abstract class AbstractInfoboxCommandImpl<T> extends SLCommandImpl<T> {
    * The infobox implementation.
    */
   protected Infobox infobox;
+
+  /**
+   * The infobox factory.
+   */
+  protected InfoboxFactory infoboxFactory;
+  
+  /**
+   * @return the infoboxFactory
+   */
+  public InfoboxFactory getInfoboxFactory() {
+    return infoboxFactory;
+  }
+
+  /**
+   * @param infoboxFactory the infoboxFactory to set
+   */
+  public void setInfoboxFactory(InfoboxFactory infoboxFactory) {
+    this.infoboxFactory = infoboxFactory;
+  }
   
   @Override
-  public void init(SLCommandContext ctx, Object request)
+  public void init(Object request)
       throws SLCommandException {
-    super.init(ctx, request);
+    super.init(request);
     
     String infoboxIdentifier = getInfoboxIdentifier(getRequestValue());
     
-    infobox = InfoboxFactory.getInstance().createInfobox(infoboxIdentifier);
+    infobox = infoboxFactory.createInfobox(infoboxIdentifier);
   }
   
   /**

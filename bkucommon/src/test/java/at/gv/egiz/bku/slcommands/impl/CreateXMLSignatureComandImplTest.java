@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 import iaik.xml.crypto.XSecProvider;
 
 import java.io.InputStream;
-import java.security.Security;
 
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -29,41 +28,56 @@ import javax.xml.transform.stream.StreamSource;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import at.gv.egiz.bku.slcommands.CreateXMLSignatureCommand;
+import at.gv.egiz.bku.slcommands.ErrorResult;
 import at.gv.egiz.bku.slcommands.InfoboxReadCommand;
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLCommandFactory;
 import at.gv.egiz.bku.slcommands.SLResult;
-import at.gv.egiz.bku.slcommands.impl.xsect.STALProvider;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 import at.gv.egiz.bku.slexceptions.SLVersionException;
+import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 import at.gv.egiz.stal.STAL;
-import at.gv.egiz.stal.dummy.DummySTAL;
+import at.gv.egiz.stal.STALFactory;
 //@Ignore
 public class CreateXMLSignatureComandImplTest {
 
+  protected static ApplicationContext appCtx;
   private SLCommandFactory factory;
-  
-  private STAL stal;
 
+  private STAL stal;
+  
+  private URLDereferencer urlDereferencer;
+  
   @BeforeClass
   public static void setUpClass() {
-
-    new ClassPathXmlApplicationContext("at/gv/egiz/bku/slcommands/testApplicationContext.xml");
-
-    Security.addProvider(new STALProvider());
+    appCtx = new ClassPathXmlApplicationContext("at/gv/egiz/bku/slcommands/testApplicationContext.xml");
     XSecProvider.addAsProvider(true);
   }
   
   @Before
   public void setUp() {
-    factory = SLCommandFactory.getInstance();
-    stal = new DummySTAL();
+    Object bean = appCtx.getBean("slCommandFactory");
+    assertTrue(bean instanceof SLCommandFactory);
+    
+    factory = (SLCommandFactory) bean;
+    
+    bean = appCtx.getBean("stalFactory");
+    assertTrue(bean instanceof STALFactory);
+    
+    stal = ((STALFactory) bean).createSTAL();
+    
+    bean = appCtx.getBean("urlDereferencer");
+    assertTrue(bean instanceof URLDereferencer);
+    
+    urlDereferencer = (URLDereferencer) bean;
+
   }
   
   @Test
@@ -71,33 +85,34 @@ public class CreateXMLSignatureComandImplTest {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/createxmlsignaturerequest/CreateXMLSignatureRequest.xml");
     assertNotNull(inputStream);
     
-    SLCommandContext context = new SLCommandContext();
-    context.setSTAL(stal);
-    SLCommand command = factory.createSLCommand(new StreamSource(inputStream), context);
+    SLCommand command = factory.createSLCommand(new StreamSource(inputStream));
     assertTrue(command instanceof CreateXMLSignatureCommand);
     
-    SLResult result = command.execute();
+    SLCommandContext context = new SLCommandContext(stal, urlDereferencer);
+    SLResult result = command.execute(context);
     result.writeTo(new StreamResult(System.out), false);
   }
   
-//  @Test(expected=SLCommandException.class)
+  @Test(expected=SLCommandException.class)
   public void testInfboxReadRequestInvalid1() throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.Invalid-1.xml");
     assertNotNull(inputStream);
     
-    SLCommandContext context = new SLCommandContext();
-    SLCommand command = factory.createSLCommand(new StreamSource(inputStream), context);
+    SLCommand command = factory.createSLCommand(new StreamSource(inputStream));
     assertTrue(command instanceof InfoboxReadCommand);
   }
 
-//  @Test(expected=SLCommandException.class)
+  @Test
   public void testInfboxReadRequestInvalid2() throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.Invalid-2.xml");
     assertNotNull(inputStream);
     
-    SLCommandContext context = new SLCommandContext();
-    SLCommand command = factory.createSLCommand(new StreamSource(inputStream), context);
-    assertTrue(command instanceof InfoboxReadCommand);
+    SLCommand command = factory.createSLCommand(new StreamSource(inputStream));
+    assertTrue(command instanceof InfoboxReadCommandImpl);
+    
+    SLCommandContext context = new SLCommandContext(stal, urlDereferencer);
+    SLResult result = command.execute(context);
+    assertTrue(result instanceof ErrorResult);
   }
 
 }

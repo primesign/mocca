@@ -19,6 +19,7 @@ package at.gv.egiz.idlink;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,11 +29,12 @@ import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -44,29 +46,30 @@ import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 
 public class IdentityLinkTransformer {
   
-  protected static Log log = LogFactory.getLog(IdentityLinkTransformer.class);
+  private final Logger log = LoggerFactory.getLogger(IdentityLinkTransformer.class);
 
   /**
    * The transformer factory.
    */
-  private static SAXTransformerFactory factory;
+  private TransformerFactory factory = SAXTransformerFactory.newInstance();
 
   /**
-   * The instance to be returned by {@link #getInstance()}.
+   * The URLDereferencer used to dereference style-sheet URLs.
    */
-  private static IdentityLinkTransformer instance;
+  private URLDereferencer urlDereferencer;
   
   /**
-   * Returns an instance of this <code>IdentityLinkTransfomer</code>.
-   * 
-   * @return an instance of this <code>IdentityLinkTransformer</code>
+   * @return the urlDereferencer
    */
-  public static IdentityLinkTransformer getInstance() {
-    if (instance == null) {
-      instance = new IdentityLinkTransformer();
-      factory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
-    }
-    return instance;
+  public URLDereferencer getUrlDereferencer() {
+    return urlDereferencer;
+  }
+
+  /**
+   * @param urlDereferencer the urlDereferencer to set
+   */
+  public void setUrlDereferencer(URLDereferencer urlDereferencer) {
+    this.urlDereferencer = urlDereferencer;
   }
 
   /**
@@ -125,14 +128,8 @@ public class IdentityLinkTransformer {
   /**
    * Mapping of issuer template URIs to transformation templates.
    */
-  private Map<String, Templates> templates = new HashMap<String, Templates>();
+  private Map<String, Templates> templates = Collections.synchronizedMap(new HashMap<String, Templates>());
   
-  /**
-   * Private constructor.
-   */
-  private IdentityLinkTransformer() {
-  }
-
   /**
    * Transforms an identity link <code>source</code> to <code>result</code> with
    * the given issuer template from the <code>stylesheetURL</code>.
@@ -168,8 +165,7 @@ public class IdentityLinkTransformer {
         throw new MalformedURLException("Protocol " + url.getProtocol() + " not supported for IssuerTemplate URL.");
       }
       
-      URLDereferencer dereferencer = URLDereferencer.getInstance();
-      StreamData data = dereferencer.dereference(url.toExternalForm(), null);
+      StreamData data = urlDereferencer.dereference(url.toExternalForm());
       
       log.trace("Trying to create issuer template.");
       templ = factory.newTemplates(new StreamSource(data.getStream()));

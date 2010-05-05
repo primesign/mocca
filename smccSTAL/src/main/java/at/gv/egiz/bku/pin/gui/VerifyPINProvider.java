@@ -18,10 +18,10 @@ package at.gv.egiz.bku.pin.gui;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.smcc.CancelledException;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.pin.gui.PINProvider;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The number of retries is not fixed and there is no way (?) to obtain this value.
@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class VerifyPINProvider extends AbstractPINProvider implements PINProvider {
 
-  protected static final Log log = LogFactory.getLog(VerifyPINProvider.class);
+  private final Logger log = LoggerFactory.getLogger(VerifyPINProvider.class);
 
   protected BKUGUIFacade gui;
   private boolean retry = false;
@@ -46,26 +46,25 @@ public class VerifyPINProvider extends AbstractPINProvider implements PINProvide
   }
 
   @Override
-  public char[] providePIN(PINSpec spec, int retries)
+  public char[] providePIN(PinInfo spec, int retries)
           throws CancelledException, InterruptedException {
 
     gui.showVerifyPINDialog(spec, (retry) ? retries : -1,
             this, "verify",
             this, "cancel");
 
-    log.trace("[" + Thread.currentThread().getName() + "] wait for action");
+    log.trace("[{}] wait for action.", Thread.currentThread().getName());
     waitForAction();
-    log.trace("[" + Thread.currentThread().getName() + "] received action " + action);
+    log.trace("[{}] received action {}.", Thread.currentThread().getName(), action);
+
+    gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
+            BKUGUIFacade.MESSAGE_WAIT);
 
     if ("cancel".equals(action)) {
-      gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
-              BKUGUIFacade.MESSAGE_WAIT);
       throw new CancelledException(spec.getLocalizedName() +
               " entry cancelled");
     }
     
-    gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
-            BKUGUIFacade.MESSAGE_WAIT);
     retry = true;
     return gui.getPin();
   }

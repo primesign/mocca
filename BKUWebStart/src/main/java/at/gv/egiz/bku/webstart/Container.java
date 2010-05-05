@@ -2,7 +2,6 @@ package at.gv.egiz.bku.webstart;
 
 import iaik.utils.StreamCopier;
 
-import java.awt.AWTPermission;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -10,21 +9,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilePermission;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.ReflectPermission;
-import java.net.NetPermission;
-import java.net.SocketPermission;
 import java.security.AllPermission;
 import java.security.KeyStore;
 import java.security.Permissions;
-import java.security.SecurityPermission;
 import java.security.cert.Certificate;
-import java.util.PropertyPermission;
-import javax.smartcardio.CardPermission;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.nio.SelectChannelConnector;
@@ -37,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class Container {
 
   public static final String HTTP_PORT_PROPERTY = "mocca.http.port";
-  public static final String HTTPS_PORT_PROPERTY = "mocca.http.port";
+  public static final String HTTPS_PORT_PROPERTY = "mocca.https.port";
   private static Logger log = LoggerFactory.getLogger(Container.class);
 
   static {
@@ -126,7 +118,7 @@ public class Container {
     webapp.setParentLoaderPriority(false);
 
     webapp.setWar(copyWebapp(webapp.getTempDirectory()));
-    webapp.setPermissions(getPermissions(webapp.getTempDirectory()));
+//    webapp.setPermissions(getPermissions(webapp.getTempDirectory()));
 
     server.setHandler(webapp);
     server.setGracefulShutdown(1000 * 3);
@@ -172,50 +164,22 @@ public class Container {
     return webapp.getPath();
   }
 
+  /**
+   * grant all permissions, since we need read/write access to save signature data files anywhere (JFileChooser) in the local filesystem
+   * and Jetty does not allow declare (webapp) permissions on a codeBase basis.
+   * @param webappDir
+   * @return
+   */
   private Permissions getPermissions(File webappDir) {
     Permissions perms = new Permissions();
     perms.add(new AllPermission());
+//      perms.add(new FilePermission(new File(System.getProperty("user.home")).getAbsolutePath(), "read, write"));
+//      perms.add(new FilePermission(new File(System.getProperty("user.home") + "/-").getAbsolutePath(), "read, write"));
+//      perms.add(new FilePermission(new File(System.getProperty("user.home") + "/.mocca/logs/*").getAbsolutePath(), "read, write,delete"));
+//      perms.add(new FilePermission(new File(System.getProperty("user.home") + "/.mocca/certs/-").getAbsolutePath(), "read, write,delete"));
 
-
-    if (false) {
-
-      // jetty-webstart (spring?)
-      perms.add(new RuntimePermission("getClassLoader"));
-
-      // standard permissions
-      perms.add(new PropertyPermission("*", "read,write"));
-      perms.add(new RuntimePermission("accessDeclaredMembers"));
-      perms.add(new RuntimePermission("accessClassInPackage.*"));
-      perms.add(new RuntimePermission("defineClassInPackage.*"));
-      perms.add(new RuntimePermission("setFactory"));
-      perms.add(new RuntimePermission("getProtectionDomain"));
-      perms.add(new RuntimePermission("modifyThread"));
-      perms.add(new RuntimePermission("modifyThreadGroup"));
-      perms.add(new RuntimePermission("setFactory"));
-      perms.add(new ReflectPermission("suppressAccessChecks"));
-
-      // MOCCA specific
-      perms.add(new SocketPermission("*", "connect,resolve"));
-      perms.add(new NetPermission("specifyStreamHandler"));
-      perms.add(new SecurityPermission("insertProvider.*"));
-      perms.add(new SecurityPermission("putProviderProperty.*"));
-      perms.add(new SecurityPermission("removeProvider.*"));
-      perms.add(new CardPermission("*", "*"));
-      perms.add(new AWTPermission("*"));
-
-      perms.add(new FilePermission(webappDir.getAbsolutePath() + "/-", "read"));
-      perms.add(new FilePermission(new File(System.getProperty("java.home") + "/lib/xalan.properties").getAbsolutePath(), "read"));
-      perms.add(new FilePermission(new File(System.getProperty("java.home") + "/lib/xerces.properties").getAbsolutePath(), "read"));
-      perms.add(new FilePermission(new File(System.getProperty("user.home")).getAbsolutePath(), "read, write"));
-      perms.add(new FilePermission(new File(System.getProperty("user.home") + "/-").getAbsolutePath(), "read, write"));
-      perms.add(new FilePermission(new File(System.getProperty("user.home") + "/.mocca/logs/*").getAbsolutePath(), "read, write,delete"));
-      perms.add(new FilePermission(new File(System.getProperty("user.home") + "/.mocca/certs/-").getAbsolutePath(), "read, write,delete"));
-
-      //TODO
-//    log.trace("granting file read/write permission to MOCCA local");
 //    perms.add(new FilePermission("<<ALL FILES>>", "read, write"));
 
-    }
     return perms;
   }
 

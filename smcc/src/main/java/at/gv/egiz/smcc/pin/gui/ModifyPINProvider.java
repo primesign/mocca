@@ -17,7 +17,7 @@
 package at.gv.egiz.smcc.pin.gui;
 
 import at.gv.egiz.smcc.CancelledException;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 
 
 /**
@@ -39,10 +39,10 @@ public interface ModifyPINProvider {
    * @throws at.gv.egiz.smcc.CancelledException if cancelled by user
    * @throws java.lang.InterruptedException
    */
-  public char[] provideCurrentPIN(PINSpec spec, int retries)
+  public char[] provideCurrentPIN(PinInfo pinInfo, int retries)
           throws CancelledException, InterruptedException;
 
-  public char[] provideNewPIN(PINSpec spec)
+  public char[] provideNewPIN(PinInfo pinInfo)
           throws CancelledException, InterruptedException;
 
 }

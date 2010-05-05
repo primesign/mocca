@@ -16,46 +16,62 @@
  */
 package at.gv.egiz.bku.local.gui;
 
-import at.gv.egiz.bku.gui.AbstractHelpListener;
-import at.gv.egiz.bku.gui.DefaultHelpListener;
+import at.gv.egiz.bku.gui.ViewerHelpListener;
 import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.net.URI;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * Open help document in browser, fallback to default (swing dialog) if Java Desktop API not supported.
+ * Open help document in browser, fallback to help viewer (swing dialog) if Java Desktop API not supported.
  * 
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class LocalHelpListener extends AbstractHelpListener {
+public class LocalHelpListener extends ViewerHelpListener {
 
+  private final Logger log = LoggerFactory.getLogger(LocalHelpListener.class);
+  
   protected Desktop desktop;
-  protected DefaultHelpListener fallback;
 
-  public LocalHelpListener(URL baseURL, Locale locale) {
-    super(baseURL, locale);
-    if (Desktop.isDesktopSupported()) {
+  public LocalHelpListener(String helpURL, Locale locale) {
+    super(helpURL, locale);
+    if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
       desktop = Desktop.getDesktop();
     } else {
-      log.info("Java Desktop API not available on current platform (libgnome installed?), falling back to DefaultHelpListener");
-      fallback = new DefaultHelpListener(baseURL, locale);
+      log.warn("Java Desktop API not available on current platform (libgnome installed?), " +
+              "falling back to help viewer");
     }
   }
 
   @Override
-  public void showDocument(URL helpDocument, String helpTopic) throws IOException, URISyntaxException {
+  public void mouseClicked(MouseEvent e) {
     if (desktop != null) {
-      if (!desktop.isSupported(Desktop.Action.BROWSE)) {
-        log.error("Failed to open default browser: The system provides the Desktop API, but does not support the BROWSE action");
-      } else {
-        Desktop.getDesktop().browse(helpDocument.toURI());
+      try {
+        desktop.browse(new URI(getHelpURL()));
+      } catch (Exception ex) {
+        log.error("Failed display help document {}.", getHelpURL(), ex);
+        super.mouseClicked(e);
       }
-    } else if (fallback != null) {
-      fallback.showDocument(helpDocument, helpTopic);
     } else {
-      log.error("failed to display help document");
+      super.mouseClicked(e);
+    }
+  }
+
+  @Override
+  public void keyPressed(KeyEvent e) {
+    if (desktop != null) {
+      try {
+        desktop.browse(new URI(getHelpURL()));
+      } catch (Exception ex) {
+        log.error("Failed display help document {}.", getHelpURL(), ex);
+        super.keyPressed(e);
+      }
+    } else {
+      super.keyPressed(e);
     }
   }
 }

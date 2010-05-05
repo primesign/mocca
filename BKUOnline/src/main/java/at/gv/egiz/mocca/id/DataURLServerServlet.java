@@ -1,0 +1,225 @@
+/*
+* Copyright 2009 Federal Chancellery Austria and
+* Graz University of Technology
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+package at.gv.egiz.mocca.id;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
+import at.gv.egiz.bku.binding.BindingProcessor;
+import at.gv.egiz.bku.binding.FormParameter;
+import at.gv.egiz.bku.binding.IdFactory;
+import at.gv.egiz.bku.binding.InputDecoder;
+import at.gv.egiz.bku.binding.InputDecoderFactory;
+import at.gv.egiz.bku.online.webapp.SpringBKUServlet;
+import at.gv.egiz.bku.slcommands.SLCommand;
+import at.gv.egiz.bku.slcommands.SLMarshallerFactory;
+import at.gv.egiz.bku.slcommands.SLResult;
+import at.gv.egiz.bku.slcommands.impl.DomCreateXMLSignatureResultImpl;
+import at.gv.egiz.bku.slcommands.impl.DomErrorResultImpl;
+import at.gv.egiz.bku.slcommands.impl.DomInfoboxReadResultImpl;
+import at.gv.egiz.bku.slcommands.impl.ErrorResultImpl;
+import at.gv.egiz.bku.slcommands.impl.SLCommandImpl;
+import at.gv.egiz.bku.slexceptions.SLCommandException;
+import at.gv.egiz.bku.utils.DebugInputStream;
+import at.gv.egiz.bku.utils.StreamUtil;
+import at.gv.egiz.slbinding.SLUnmarshaller;
+
+public class DataURLServerServlet extends SpringBKUServlet {
+  
+  private static Logger log = LoggerFactory.getLogger(DataURLServerServlet.class);
+  
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
+  /* (non-Javadoc)
+   * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+   */
+  @Override
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+    
+    String userAgent = req.getHeader("User-Agent");
+    String contentType = req.getContentType();
+    log.debug("Content-Type: " + contentType + " User-Agent: " + userAgent);
+
+    InputDecoder dec = InputDecoderFactory.getDecoder(contentType, req.getInputStream());
+    
+    String sessionId = null;
+    Element respElement = null;
+    
+    Iterator<FormParameter> formParams = dec.getFormParameterIterator();
+    while(formParams.hasNext()) {
+      FormParameter parameter = formParams.next();
+      String name = parameter.getFormParameterName();
+      if ("SessionID_".equals(name)) {
+        sessionId = StreamUtil.asString(parameter.getFormParameterValue(), "UTF-8");
+        log.debug("SessionID: {}", sessionId);
+      } else if ("ResponseType".equals(name)) {
+        String parameterContentType = parameter.getFormParameterContentType();
+        if (log.isDebugEnabled()) {
+          log.debug("ResponseType: ({}) {}.", parameterContentType, StreamUtil.asString(parameter.getFormParameterValue(), "UTF-8"));
+        }
+      } else if ("XMLResponse".equals(name)) {
+        InputStream inputStream = parameter.getFormParameterValue();
+        
+        DebugInputStream di = null;
+        if (log.isDebugEnabled()) {
+          di = new DebugInputStream(inputStream);
+          inputStream = di;
+        }
+        
+        SLUnmarshaller slUnmarshaller = new SLUnmarshaller();
+        
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        dbf.setSchema(slUnmarshaller.getSlSchema());
+        try {
+          dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        } catch (ParserConfigurationException e) {
+          log.warn("Failed to enable secure processing.", e);
+        }
+        
+        // http://www.w3.org/TR/xmldsig-bestpractices/#be-aware-schema-normalization
+        try {
+          dbf.setAttribute("http://apache.org/xml/features/validation/schema/normalized-value", Boolean.FALSE);
+        } catch (IllegalArgumentException e) {
+          log.warn("Failed to disable schema normalization " +
+                "(see http://www.w3.org/TR/xmldsig-bestpractices/#be-aware-schema-normalization)", e);
+        }
+        
+        DocumentBuilder documentBuilder;
+        try {
+          documentBuilder = dbf.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+          log.error("Failed to create parser for Security Layer response." , e);
+          resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+          return;
+        }
+        
+        try {
+          Document doc = documentBuilder.parse(inputStream);
+          respElement = doc.getDocumentElement();
+        } catch (SAXException e) {
+          log.info("Failed to parse Security Layer response.", e);
+          // TODO set error and redirect 
+          resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+          return;
+        }
+
+        if (di != null) {
+          log.debug("XMLResponse:\n{}", new String(di.getBufferedBytes(), "UTF-8"));
+        }
+        
+      }
+      
+    }
+
+    SAMLBindingProcessorImpl bindingProcessor = null;
+    if (sessionId != null) {
+      bindingProcessor = getBindingProcessor(sessionId);
+    }
+    
+    if (bindingProcessor != null && respElement != null) {
+      
+      SLResult slResult = null;
+      if ("http://www.buergerkarte.at/namespaces/securitylayer/1.2#".equals(respElement.getNamespaceURI())) {
+        if ("NullOperationResponse".equals(respElement.getLocalName())) {
+          slResult = null;
+        } else if ("InfoboxReadResponse".equals(respElement.getLocalName())) {
+          slResult = new DomInfoboxReadResultImpl(respElement);
+        } else if ("CreateXMLSignatureResponse".equals(respElement.getLocalName())) {
+          slResult = new DomCreateXMLSignatureResultImpl(respElement);
+        } else if ("ErrorResponse".equals(respElement.getLocalName())) {
+          slResult = new DomErrorResultImpl(respElement);
+        } else {
+          // TODO: report proper error
+          at.gv.egiz.bku.slexceptions.SLException slException = new at.gv.egiz.bku.slexceptions.SLException(0);
+          slResult = new ErrorResultImpl(slException, null);
+        }
+        
+      }
+      
+      SLCommand slCommand = null;
+      try {
+        slCommand = bindingProcessor.setExternalResult(slResult);
+      } catch (SLCommandException e) {
+        log.debug(e.getMessage());
+      } catch (InterruptedException e) {
+        // interrupted 
+      }
+       
+      if (slCommand instanceof SLCommandImpl<?>) {
+        JAXBElement<?> request = ((SLCommandImpl<?>) slCommand).getRequest();
+        Marshaller marshaller = SLMarshallerFactory.getInstance().createMarshaller(false, false);
+        try {
+
+          resp.setCharacterEncoding("UTF-8");
+          resp.setContentType("text/xml");
+          
+          marshaller.marshal(request, resp.getOutputStream());
+          
+          return;
+          
+        } catch (JAXBException e) {
+          log.error("Failed to marshall Security Layer request.", e);
+        }
+        
+      }
+
+    }
+
+    resp.sendRedirect("bkuResult");
+    
+  }    
+
+  protected SAMLBindingProcessorImpl getBindingProcessor(String sessionId) {
+    
+    BindingProcessor bp = getBindingProcessorManager().getBindingProcessor(
+        IdFactory.getInstance().createId(sessionId));
+    
+    if (bp instanceof SAMLBindingProcessorImpl) {
+      log.debug("Found active BindingProcessor, using this one.");
+      return (SAMLBindingProcessorImpl) bp;
+    }
+    
+    return null;
+    
+  }
+
+
+}

@@ -19,14 +19,14 @@ package at.gv.egiz.bku.pin.gui;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.PINManagementGUIFacade;
 import at.gv.egiz.smcc.CancelledException;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.pin.gui.ModifyPINProvider;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ManagementPINProvider extends AbstractPINProvider implements ModifyPINProvider {
 
-  protected static final Log log = LogFactory.getLog(ManagementPINProvider.class);
+  private final Logger log = LoggerFactory.getLogger(ManagementPINProvider.class);
   protected PINManagementGUIFacade gui;
   protected PINManagementGUIFacade.DIALOG type;
   private boolean retry = false;
@@ -37,16 +37,16 @@ public class ManagementPINProvider extends AbstractPINProvider implements Modify
   }
 
   @Override
-  public char[] provideCurrentPIN(PINSpec spec, int retries)
+  public char[] provideCurrentPIN(PinInfo spec, int retries)
           throws CancelledException, InterruptedException {
 
     gui.showPINDialog(type, spec, (retry) ? retries : -1,
             this, "change",
             this, "cancel");
 
-    log.trace("[" + Thread.currentThread().getName() + "] wait for action");
+    log.trace("[{}] wait for action.", Thread.currentThread().getName());
     waitForAction();
-    log.trace("[" + Thread.currentThread().getName() + "] received action " + action);
+    log.trace("[{}] received action {}.", Thread.currentThread().getName(), action);
 
     gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
             BKUGUIFacade.MESSAGE_WAIT);
@@ -60,7 +60,7 @@ public class ManagementPINProvider extends AbstractPINProvider implements Modify
   }
 
   @Override
-  public char[] provideNewPIN(PINSpec spec)
+  public char[] provideNewPIN(PinInfo spec)
           throws CancelledException, InterruptedException {
     
     char[] pin = gui.getPin();
@@ -73,9 +73,9 @@ public class ManagementPINProvider extends AbstractPINProvider implements Modify
             this, "activate",
             this, "cancel");
 
-    log.trace("[" + Thread.currentThread().getName() + "] wait for action");
+    log.trace("[{}] wait for action.", Thread.currentThread().getName());
     waitForAction();
-    log.trace("[" + Thread.currentThread().getName() + "] received action " + action);
+    log.trace("[{}] received action {}.", Thread.currentThread().getName(), action);
 
     gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
               BKUGUIFacade.MESSAGE_WAIT);

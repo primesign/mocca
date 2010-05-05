@@ -27,8 +27,8 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.LockedException;
@@ -47,14 +47,15 @@ import at.gv.egiz.stal.signedinfo.SignedInfoType;
 
 public class SignRequestHandler extends AbstractRequestHandler {
 
-    private static Log log = LogFactory.getLog(SignRequestHandler.class);
+    private final Logger log = LoggerFactory.getLogger(SignRequestHandler.class);
     private static JAXBContext jaxbContext;
 
     static {
         try {
             jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
         } catch (JAXBException e) {
-            log.fatal("Cannot init jaxbContext", e);
+          Logger log = LoggerFactory.getLogger(SignRequestHandler.class);
+          log.error("Cannot init jaxbContext", e);
         }
     }
 
@@ -75,7 +76,7 @@ public class SignRequestHandler extends AbstractRequestHandler {
                 InputStream is = new ByteArrayInputStream(signReq.getSignedInfo());
                 JAXBElement<SignedInfoType> si = (JAXBElement<SignedInfoType>) unmarshaller.unmarshal(is);
                 String signatureMethod = si.getValue().getSignatureMethod().getAlgorithm();
-                log.debug("Found signature method: " + signatureMethod);
+                log.debug("Found signature method: {}.", signatureMethod);
                 KeyboxName kb = SignatureCard.KeyboxName.getKeyboxName(signReq.getKeyIdentifier());
 
                 byte[] resp = card.createSignature(new ByteArrayInputStream(signReq.getSignedInfo()), kb,
@@ -101,7 +102,7 @@ public class SignRequestHandler extends AbstractRequestHandler {
                       BKUGUIFacade.MESSAGE_WAIT);
               return new ErrorResponse(6001);
             } catch (CancelledException cx) {
-                log.debug("User cancelled request");
+                log.debug("User cancelled request.");
                 return new ErrorResponse(6001);
             } catch (TimeoutException ex) {
               log.error("Timeout during pin entry");
@@ -116,14 +117,14 @@ public class SignRequestHandler extends AbstractRequestHandler {
                 log.error("Error while creating signature: " + e);
                 return new ErrorResponse(4000);
             } catch (JAXBException e) {
-                log.error("Cannot unmarshall signed info", e);
+                log.error("Cannot unmarshall signed info.", e);
                 return new ErrorResponse(1000);
             } catch (IOException e) {
               log.error("Error while creating signature: " + e);
               return new ErrorResponse(4000);
             } 
         } else {
-            log.fatal("Got unexpected STAL request: " + request);
+            log.error("Got unexpected STAL request: {}.", request);
             return new ErrorResponse(1000);
         }
     }

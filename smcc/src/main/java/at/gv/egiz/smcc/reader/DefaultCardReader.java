@@ -23,12 +23,12 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 import javax.smartcardio.ResponseAPDU;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.smcc.ChangeReferenceDataAPDUSpec;
 import at.gv.egiz.smcc.NewReferenceDataAPDUSpec;
-import at.gv.egiz.smcc.PINSpec;
+import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.ResetRetryCounterAPDUSpec;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.VerifyAPDUSpec;
@@ -42,7 +42,7 @@ import at.gv.egiz.smcc.util.ISO7816Utils;
  */
 public class DefaultCardReader implements CardReader {
 
-  protected final static Log log = LogFactory.getLog(DefaultCardReader.class);
+  private final Logger log = LoggerFactory.getLogger(DefaultCardReader.class);
 
   protected CardTerminal ct;
   protected String name;
@@ -57,7 +57,7 @@ public class DefaultCardReader implements CardReader {
 
   @Override
   public ResponseAPDU verify(CardChannel channel, VerifyAPDUSpec apduSpec,
-          PINGUI pinGUI, PINSpec pinSpec, int retries)
+          PINGUI pinGUI, PinInfo pinSpec, int retries)
         throws SignatureCardException, CardException, InterruptedException {
 
     log.debug("VERIFY");
@@ -66,7 +66,7 @@ public class DefaultCardReader implements CardReader {
 
   @Override
   public ResponseAPDU modify(CardChannel channel, ChangeReferenceDataAPDUSpec apduSpec,
-          ModifyPINGUI pinGUI, PINSpec pinSpec, int retries)
+          ModifyPINGUI pinGUI, PinInfo pinSpec, int retries)
         throws SignatureCardException, CardException, InterruptedException {
     log.debug("MODIFY (CHANGE_REFERENCE_DATA)");
     char[] oldPIN = pinGUI.provideCurrentPIN(pinSpec, retries);
@@ -76,7 +76,7 @@ public class DefaultCardReader implements CardReader {
 
   @Override
   public ResponseAPDU modify(CardChannel channel, NewReferenceDataAPDUSpec apduSpec,
-          ModifyPINGUI pinGUI, PINSpec pinSpec)
+          ModifyPINGUI pinGUI, PinInfo pinSpec)
         throws SignatureCardException, CardException, InterruptedException {
     log.debug("MODIFY (NEW_REFERENCE_DATA)");
     char[] newPIN = pinGUI.provideNewPIN(pinSpec);
@@ -85,7 +85,7 @@ public class DefaultCardReader implements CardReader {
 
   @Override
   public ResponseAPDU modify(CardChannel channel, ResetRetryCounterAPDUSpec apduSpec,
-          ModifyPINGUI pinGUI, PINSpec pinSpec, int retries)
+          ModifyPINGUI pinGUI, PinInfo pinSpec, int retries)
           throws InterruptedException, CardException, SignatureCardException {
     log.debug("MODIFY (RESET_RETRY_COUNTER)");
     //TODO

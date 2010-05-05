@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.smcc.SignatureCard;
@@ -37,7 +37,7 @@ import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.StatusRequest;
 
 public abstract class AbstractSMCCSTAL implements STAL {
-  private static Log log = LogFactory.getLog(AbstractSMCCSTAL.class);
+  private final Logger log = LoggerFactory.getLogger(AbstractSMCCSTAL.class);
 
   public final static int DEFAULT_MAX_RETRIES = 1;
 
@@ -66,7 +66,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
   private STALResponse getResponse(STALRequest request) throws InterruptedException {
     int retryCounter = 0;
     while (retryCounter < maxRetries) {
-      log.info("Retry #" + retryCounter + " of " + maxRetries);
+      log.info("Retry #{} of {}.", retryCounter, maxRetries);
       SMCCSTALRequestHandler handler = null;
       handler = handlerMap.get(request.getClass().getSimpleName());
       if (handler != null) {
@@ -80,7 +80,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
           STALResponse response = handler.handleRequest(request);
           if (response != null) {
             if (response instanceof ErrorResponse) {
-              log.info("Got an error response");
+              log.info("Got an error response.");
               ErrorResponse err = (ErrorResponse) response;
               if (unrecoverableErrors.contains(err.getErrorCode())) {
                 return response;
@@ -89,8 +89,8 @@ public abstract class AbstractSMCCSTAL implements STAL {
                 signatureCard.disconnect(true);
                 signatureCard = null;
               } else {
-                log.info("Exceeded max retries, returning error "
-                    + err.getErrorMessage());
+                log.info("Exceeded max retries, returning error {}.", err
+                    .getErrorMessage());
                 return response;
               }
             } else {
@@ -101,10 +101,10 @@ public abstract class AbstractSMCCSTAL implements STAL {
             return null;
           }
         } catch (InterruptedException e) {
-          log.info("Interrupt during request handling, do not retry");
+          log.info("Interrupt during request handling, do not retry.");
           throw e;
         } catch (Exception e) {
-          log.info("Error while handling STAL request:", e);
+          log.info("Error while handling STAL request.", e);
           if (++retryCounter < maxRetries) {
             signatureCard.disconnect(true);
             signatureCard = null;
@@ -114,7 +114,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
           }
         }
       } else {
-        log.error("Cannot find a handler for STAL request: " + request);
+        log.error("Cannot find a handler for STAL request: {}.", request);
         return new ErrorResponse();
       }
     }
@@ -129,25 +129,24 @@ public abstract class AbstractSMCCSTAL implements STAL {
    */
   @Override
   public List<STALResponse> handleRequest(List<? extends STALRequest> requestList) {
-    log.debug("Got request list containing " + requestList.size()
-        + " STAL requests");
+    log.debug("Got request list containing {} STAL requests.", requestList.size());
     List<STALResponse> responseList = new ArrayList<STALResponse>(requestList
         .size());
     for (STALRequest request : requestList) {
-      log.info("Processing: " + request.getClass());
+      log.info("Processing: {}.", request.getClass());
       STALResponse response;
       try {
         response = getResponse(request);
         if (response != null) {
           responseList.add(response);
           if (response instanceof ErrorResponse) {
-            log.info("Got an error response, don't process remaining requests");
+            log.info("Got an error response, don't process remaining requests.");
             break;
           }
         }
       } catch (InterruptedException ex) {
-        log.error("interrupted during request handling");
-        throw new RuntimeException("interrupted during request handling", ex);
+        log.error("Interrupted during request handling.");
+        throw new RuntimeException("nterrupted during request handling", ex);
       }
       
     }
@@ -156,12 +155,12 @@ public abstract class AbstractSMCCSTAL implements STAL {
 
   public void addRequestHandler(Class<? extends STALRequest> id,
       SMCCSTALRequestHandler handler) {
-    log.debug("Registering STAL request handler: " + id.getSimpleName());
+    log.trace("Registering STAL request handler: {}.", id.getSimpleName());
     handlerMap.put(id.getSimpleName(), handler);
   }
 
   public void removeRequestHandler(Class<? extends STALRequest> id) {
-    log.debug("De-registering STAL request handler: " + id.getSimpleName());
+    log.trace("De-registering STAL request handler: {}", id.getSimpleName());
     handlerMap.remove(id.getSimpleName());
   }
 

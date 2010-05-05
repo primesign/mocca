@@ -23,8 +23,8 @@ package at.gv.egiz.slbinding.impl;
 import at.gv.egiz.slbinding.*;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.namespace.NamespaceContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
 public class SignatureLocationType extends at.buergerkarte.namespaces.securitylayer._1.SignatureLocationType implements NamespaceContextCallback {
 
     @XmlTransient
-    private static Log log = LogFactory.getLog(SignatureLocationType.class);
+    private final Logger log = LoggerFactory.getLogger(SignatureLocationType.class);
     @XmlTransient
     protected NamespaceContext namespaceContext;
 
@@ -44,7 +44,7 @@ public class SignatureLocationType extends at.buergerkarte.namespaces.securityla
 
     @Override
     public void preserveNamespaceContext(RedirectEventFilter filter) {
-        log.debug("preserving namespace context for SignatureLocationType");
+        log.trace("preserving namespace context for SignatureLocationType");
         namespaceContext = filter.getCurrentNamespaceContext();
     }
 }

@@ -16,17 +16,20 @@
  */
 package at.gv.egiz.bku.online.applet.viewer;
 
-import at.gv.egiz.bku.gui.viewer.FontProviderException;
-import at.gv.egiz.bku.gui.viewer.FontProvider;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
+
 import javax.swing.SwingWorker;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import at.gv.egiz.bku.gui.viewer.FontProvider;
+import at.gv.egiz.bku.gui.viewer.FontProviderException;
 
 /**
  *
@@ -34,29 +37,24 @@ import org.apache.commons.logging.LogFactory;
  */
 public class URLFontLoader extends SwingWorker<Font, Object> implements FontProvider {
 
-  protected static final Log log = LogFactory.getLog(URLFontLoader.class);
+  private final Logger log = LoggerFactory.getLogger(URLFontLoader.class);
+  
   protected URL fontURL;
   protected Font font;
 
   public URLFontLoader(URL codebase) throws MalformedURLException {
     this.fontURL = new URL(codebase, SANSMONO_FONT_RESOURCE);
-    if (log.isDebugEnabled()) {
-      log.debug("[" + Thread.currentThread().getName() + "] setting font load URL: " + fontURL);
-    }
+    log.debug("[{}] setting font load URL: {}.", Thread.currentThread().getName(), fontURL);
   }
 
   public void loadInBackground() {
-    if (log.isDebugEnabled()) {
-      log.debug("[" + Thread.currentThread().getName() + "] scheduling font loading in background: " + fontURL);
-    }
+    log.debug("[{}] scheduling font loading in background: {}.", Thread.currentThread().getName(), fontURL);
     this.execute();
   }
 
   @Override
   protected Font doInBackground() throws MalformedURLException, FontFormatException, IOException {
-    if (log.isDebugEnabled()) {
-      log.debug("[" + Thread.currentThread().getName() + "] loading font in background...");
-    }
+    log.debug("[{}] loading font in background.", Thread.currentThread().getName());
     return Font.createFont(Font.TRUETYPE_FONT, fontURL.openStream());
   }
 
@@ -67,16 +65,15 @@ public class URLFontLoader extends SwingWorker<Font, Object> implements FontProv
    */
   @Override
   public Font getFont() throws FontProviderException {
-    log.debug("[" + Thread.currentThread().getName() + "] get font (EDT?)");
+    log.debug("[{}] get font (EDT?)", Thread.currentThread().getName());
     try {
       return get();
     } catch (InterruptedException ex) {
-      log.error("font loader interrupted");
-//      Thread.currentThread().interrupt();
-      throw new FontProviderException("font loader interrupted", ex);
+      log.error("Font loader interrupted.");
+      throw new FontProviderException("Font loader interrupted.", ex);
     } catch (ExecutionException ex) {
-      log.error("failed to load font", ex.getCause());
-      throw new FontProviderException("failed to load font", ex.getCause());
+      log.error("Failed to load font. {}", ex.getCause());
+      throw new FontProviderException("Failed to load font.", ex.getCause());
     }
   }
 }

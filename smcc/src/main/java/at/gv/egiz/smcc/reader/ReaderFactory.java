@@ -25,8 +25,8 @@ import java.util.Map;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ReaderFactory {
 
-  protected final static Log log = LogFactory.getLog(ReaderFactory.class);
+  private final Logger log = LoggerFactory.getLogger(ReaderFactory.class);
   
   protected static SMCCConfiguration configuration;
 
@@ -50,8 +50,9 @@ public class ReaderFactory {
 
   public static CardReader getReader(Card icc, CardTerminal ct) {
 
+    Logger log = LoggerFactory.getLogger(ReaderFactory.class);
     String name = ct.getName();
-    log.info("creating reader " + name);
+    log.info("Creating reader : {}.", name);
 
     Map<Byte, Integer> features;
     if (configuration != null && configuration.isDisablePinpad()) {
@@ -70,33 +71,31 @@ public class ReaderFactory {
     return reader;
   }
 
-  private static int CTL_CODE(int code) {
+  private static int SCARD_CTL_CODE(int code) {
     String os_name = System.getProperty("os.name").toLowerCase();
     if (os_name.indexOf("windows") > -1) {
-      // cf. WinIOCTL.h
       return (0x31 << 16 | (code) << 2);
     }
-    // cf. reader.h
     return 0x42000000 + (code);
   }
 
-  static int IOCTL_GET_FEATURE_REQUEST = CTL_CODE(3400);
+  static int IOCTL_GET_FEATURE_REQUEST = SCARD_CTL_CODE(3400);
 
   private static Map<Byte, Integer> queryFeatures(Card icc) {
+    Logger log = LoggerFactory.getLogger(ReaderFactory.class);
     Map<Byte, Integer> features = new HashMap<Byte, Integer>();
-
     if (icc == null) {
-      log.warn("invalid card handle, cannot query ifd features");
+      log.warn("Invalid card handle, cannot query ifd features.");
     } else {
       try {
         if (log.isTraceEnabled()) {
-          log.trace("GET_FEATURE_REQUEST " + Integer.toHexString(IOCTL_GET_FEATURE_REQUEST));
+          log.trace("GET_FEATURE_REQUEST {}", Integer.toHexString(IOCTL_GET_FEATURE_REQUEST));
         }
         byte[] resp = icc.transmitControlCommand(IOCTL_GET_FEATURE_REQUEST,
                 new byte[0]);
 
         if (log.isTraceEnabled()) {
-          log.trace("Response TLV " + SMCCHelper.toString(resp));
+          log.trace("Response TLV {}", SMCCHelper.toString(resp));
         }
         // tag
         // length in bytes (always 4)
@@ -108,15 +107,14 @@ public class ReaderFactory {
                   ((0xff & resp[i + 4]) << 8) |
                   (0xff & resp[i + 5]);
           if (log.isInfoEnabled()) {
-            log.info("IFD supports " + CardReader.FEATURES[feature.intValue()] +
-                    ": " + Integer.toHexString(ioctl.intValue()));
+            log.info("IFD supports {}: {}", CardReader.FEATURES[feature
+                .intValue()], Integer.toHexString(ioctl.intValue()));
           }
           features.put(feature, ioctl);
         }
       } catch (CardException ex) {
-        log.debug("Failed to query IFD features: " + ex.getMessage());
-        log.trace(ex);
-        log.info("IFD does not support secure pin entry");
+        log.debug("Failed to query IFD features: {}", ex.getMessage(), ex);
+        log.info("IFD does not support secure pin entry.");
       }
     }
     return features;

@@ -22,8 +22,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.SecureRandom;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation that uses a Base64 representation for self generated Ids.
@@ -31,7 +31,8 @@ import org.apache.commons.logging.LogFactory;
  *
  */
 public class IdImpl implements at.gv.egiz.bku.binding.Id {
-  private static Log log = LogFactory.getLog(IdImpl.class);
+
+  private final Logger log = LoggerFactory.getLogger(IdImpl.class);
   
   private String idString;
 
@@ -50,7 +51,7 @@ public class IdImpl implements at.gv.egiz.bku.binding.Id {
       b64.close();
       idString = new String(baos.toByteArray());
     } catch (IOException e) {
-      log.error("Cannot create secure id: "+e);
+      log.error("Cannot create secure id.", e);
     }
   }
 

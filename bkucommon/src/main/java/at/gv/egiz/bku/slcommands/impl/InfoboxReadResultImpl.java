@@ -61,4 +61,22 @@ public class InfoboxReadResultImpl extends SLResultImpl implements InfoboxReadRe
     writeTo(response, result, templates, fragment);
   }
 
+  @Override
+  public Object getContent() {
+    if (infoboxReadResponse != null) {
+      if (infoboxReadResponse.getAssocArrayData() != null) {
+        return infoboxReadResponse.getAssocArrayData();
+      } else {
+        Base64XMLContentType binaryFileData = infoboxReadResponse.getBinaryFileData();
+        if (binaryFileData.getBase64Content() != null) {
+          return binaryFileData.getBase64Content();
+        } else {
+          return binaryFileData.getXMLContent().getContent();
+        }
+      }
+    } else {
+      return null;
+    }
+  }
+
 }

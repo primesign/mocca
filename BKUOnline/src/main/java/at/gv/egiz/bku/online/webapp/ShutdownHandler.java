@@ -17,8 +17,8 @@
 
 package at.gv.egiz.bku.online.webapp;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
@@ -27,7 +27,7 @@ import at.gv.egiz.bku.binding.BindingProcessorManager;
 
 public class ShutdownHandler implements ApplicationListener {
 
-	private static Log log = LogFactory.getLog(ShutdownHandler.class);
+	private final Logger log = LoggerFactory.getLogger(ShutdownHandler.class);
 
 	private BindingProcessorManager bindingProcessorManager;
 
@@ -39,7 +39,7 @@ public class ShutdownHandler implements ApplicationListener {
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof ContextClosedEvent) {
-			log.info("Shutting down BKU");
+			log.info("Shutting down MOCCA.");
 			bindingProcessorManager.shutdownNow();
 		}
 

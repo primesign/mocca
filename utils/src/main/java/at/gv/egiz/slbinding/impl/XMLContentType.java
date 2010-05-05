@@ -27,8 +27,8 @@ import java.io.UnsupportedEncodingException;
 
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.stream.XMLStreamException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -37,27 +37,27 @@ import org.apache.commons.logging.LogFactory;
 public class XMLContentType extends at.buergerkarte.namespaces.securitylayer._1.XMLContentType implements RedirectCallback {
 
     @XmlTransient
-    private static Log log = LogFactory.getLog(XMLContentType.class);
+    private final Logger log = LoggerFactory.getLogger(XMLContentType.class);
     @XmlTransient
     protected ByteArrayOutputStream redirectOS = null;
 
     @Override
     public void enableRedirect(RedirectEventFilter filter) throws XMLStreamException {
-        log.debug("enabling event redirection for XMLContentType");
+        log.trace("enabling event redirection for XMLContentType");
         redirectOS = new ByteArrayOutputStream();
         filter.setRedirectStream(redirectOS);
     }
 
     @Override
     public void disableRedirect(RedirectEventFilter filter) throws XMLStreamException {
-        log.debug("disabling event redirection for XMLContentType");
+        log.trace("disabling event redirection for XMLContentType");
         filter.flushRedirectStream();
         filter.setRedirectStream(null);
-        if (log.isDebugEnabled()) {
+        if (log.isTraceEnabled()) {
           try {
-            log.debug("redirected events (UTF-8): " + redirectOS.toString("UTF-8"));
+            log.trace("redirected events (UTF-8): " + redirectOS.toString("UTF-8"));
           } catch (UnsupportedEncodingException ex) {
-            log.debug("failed to log redirected events", ex);
+            log.error("failed to log redirected events", ex);
           }
         }
     }

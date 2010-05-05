@@ -40,17 +40,19 @@ import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 import at.gv.egiz.bku.slexceptions.SLVersionException;
+import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 import at.gv.egiz.stal.STAL;
-import at.gv.egiz.stal.dummy.DummySTAL;
+import at.gv.egiz.stal.STALFactory;
 
 //@Ignore
 public class InfoboxReadComandImplTest {
 
-  private static ApplicationContext appCtx;
-  
+  protected static ApplicationContext appCtx;
   private SLCommandFactory factory;
   
   private STAL stal;
+  
+  private URLDereferencer urlDereferencer;
   
   @BeforeClass
   public static void setUpClass() {
@@ -59,8 +61,20 @@ public class InfoboxReadComandImplTest {
 
   @Before
   public void setUp() {
-    factory = SLCommandFactory.getInstance();
-    stal = new DummySTAL();
+    Object bean = appCtx.getBean("slCommandFactory");
+    assertTrue(bean instanceof SLCommandFactory);
+    
+    factory = (SLCommandFactory) bean;
+    
+    bean = appCtx.getBean("stalFactory");
+    assertTrue(bean instanceof STALFactory);
+    
+    stal = ((STALFactory) bean).createSTAL();
+    
+    bean = appCtx.getBean("urlDereferencer");
+    assertTrue(bean instanceof URLDereferencer);
+    
+    urlDereferencer = (URLDereferencer) bean;
   }
   
   @Test
@@ -68,12 +82,12 @@ public class InfoboxReadComandImplTest {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.xml");
     assertNotNull(inputStream);
     
-    SLCommandContext context = new SLCommandContext();
+    SLCommandContext context = new SLCommandContext(stal, urlDereferencer);
     context.setSTAL(stal);
-    SLCommand command = factory.createSLCommand(new StreamSource(inputStream), context);
+    SLCommand command = factory.createSLCommand(new StreamSource(inputStream));
     assertTrue(command instanceof InfoboxReadCommand);
     
-    SLResult result = command.execute();
+    SLResult result = command.execute(context);
     result.writeTo(new StreamResult(System.out), false);
   }
   
@@ -82,9 +96,7 @@ public class InfoboxReadComandImplTest {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.Invalid-1.xml");
     assertNotNull(inputStream);
     
-    SLCommandContext context = new SLCommandContext();
-    context.setSTAL(stal);
-    SLCommand command = factory.createSLCommand(new StreamSource(inputStream), context);
+    SLCommand command = factory.createSLCommand(new StreamSource(inputStream));
     assertTrue(command instanceof InfoboxReadCommand);
   }
 
@@ -92,12 +104,11 @@ public class InfoboxReadComandImplTest {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.Invalid-2.xml");
     assertNotNull(inputStream);
     
-    SLCommandContext context = new SLCommandContext();
-    context.setSTAL(stal);
-    SLCommand command = factory.createSLCommand(new StreamSource(inputStream), context);
+    SLCommandContext context = new SLCommandContext(stal, urlDereferencer);
+    SLCommand command = factory.createSLCommand(new StreamSource(inputStream));
     assertTrue(command instanceof InfoboxReadCommand);
     
-    SLResult result = command.execute();
+    SLResult result = command.execute(context);
     assertTrue(result instanceof ErrorResult);
   }
 

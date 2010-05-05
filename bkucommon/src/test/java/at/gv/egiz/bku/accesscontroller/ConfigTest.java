@@ -7,7 +7,6 @@ import org.junit.Test;
 import at.gv.egiz.bku.slcommands.InfoboxReadCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLResult;
-import at.gv.egiz.bku.slcommands.impl.InfoboxReadCommandImpl;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLException;
 import static org.junit.Assert.*;
@@ -20,7 +19,6 @@ public class ConfigTest {
 	static class MyInfoBox implements InfoboxReadCommand {
 		private String domainId;
 		private String boxId;
-		private String name;
 
 		public MyInfoBox(String identifier, String domainId) {
 			this.boxId = identifier;
@@ -38,12 +36,11 @@ public class ConfigTest {
 		}
 
 		@Override
-		public SLResult execute() {
+		public SLResult execute(SLCommandContext commandContext) {
 			return null;
 		}
 		
 		public void setName(String name) {
-			this.name = name;
 		}
 
 		@Override
@@ -52,7 +49,7 @@ public class ConfigTest {
 		}
 
 		@Override
-		public void init(SLCommandContext ctx, Object unmarshalledRequest)
+		public void init(Object unmarshalledRequest)
 				throws SLCommandException {
 		}
 	}
