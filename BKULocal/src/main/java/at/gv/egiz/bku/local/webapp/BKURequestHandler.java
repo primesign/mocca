@@ -104,7 +104,6 @@ public class BKURequestHandler extends SpringBKUServlet {
         if (redirectURL != null) {
           // send redirect and return
           resp.sendRedirect(redirectURL);
-          return;
         }
         
         // wait for the binding processor to finish processing
@@ -116,6 +115,13 @@ public class BKURequestHandler extends SpringBKUServlet {
         } catch (ExecutionException e) {
           log.error("Request processing failed.", e);
           resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+          return;
+        } finally {
+          bindingProcessorManager.removeBindingProcessor(id);
+        }
+        
+        if (redirectURL != null) {
+          // already redirected
           return;
         }
         

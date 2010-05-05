@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package at.gv.egiz.bku.online.webapp;
+package at.gv.egiz.bku.spring;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

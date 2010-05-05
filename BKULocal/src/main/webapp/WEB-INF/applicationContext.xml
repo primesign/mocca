@@ -191,5 +191,10 @@
 			</map>
 		</property>
 	</bean>
+	
+  <!-- Shutdown Event handler -->
+  <bean id="shutdownHandler" class="at.gv.egiz.bku.spring.ShutdownHandler">
+    <property name="bindingProcessorManager" ref="bindingProcessorManager" />
+  </bean>
 
 </beans>
