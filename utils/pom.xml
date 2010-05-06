@@ -10,7 +10,6 @@
 	<name>BKU Utils</name>
 	<packaging>jar</packaging>
 	<version>${parent.version}</version>
-	<url>http://bku.egiz.gv.at</url>
 	<dependencies>
 		<dependency>
 			<groupId>org.slf4j</groupId>

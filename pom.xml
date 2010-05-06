@@ -5,8 +5,9 @@
   <artifactId>mocca</artifactId>
   <packaging>pom</packaging>
   <version>1.3.0-SNAPSHOT</version>
-  <name>BKU</name>
-  <url>http://bku.egiz.gv.at</url>
+  <name>MOCCA</name>
+  <description>MOCCA (Modular Open Citizen Card Architecture) project</description>
+  <url>http://mocca.egovlabs.gv.at</url>
   <properties>
     <mocca.certificates.version>1.2</mocca.certificates.version>
     <mocca.fonts.version>1.2</mocca.fonts.version>
@@ -130,6 +131,11 @@
 	          <redirectTestOutputToFile>true</redirectTestOutputToFile>
           </configuration>
         </plugin>
+        <plugin>
+        	<groupId>org.apache.maven.plugins</groupId>
+        	<artifactId>maven-site-plugin</artifactId>
+        	<version>2.1</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -168,6 +174,23 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <reporting>
+  	<plugins>
+  		<plugin>
+  			<groupId>org.apache.maven.plugins</groupId>
+  			<artifactId>maven-project-info-reports-plugin</artifactId>
+  			<version>2.1.2</version>
+  			<reportSets>
+  				<reportSet>
+  				  <reports>
+              <report>index</report>
+              <report>summary</report>
+  				  </reports>
+  				</reportSet>
+  			</reportSets>
+  		</plugin>
+  	</plugins>
+  </reporting>
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -305,4 +328,10 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+  <distributionManagement>
+    <site>
+      <id>project</id>
+      <url>scp://egovlabs.gv.at/var/lib/gforge/chroot/home/groups/mocca/htdocs</url>
+    </site>
+  </distributionManagement>
 </project>

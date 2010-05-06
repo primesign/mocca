@@ -9,7 +9,6 @@
   <artifactId>STALXService</artifactId>
   <name>STAL-X Service</name>
   <version>${project.parent.version}</version>
-  <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
       <artifactId>STALService</artifactId>

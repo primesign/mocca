@@ -10,7 +10,6 @@
   <name>smcc</name>
   <packaging>jar</packaging>
   <version>${project.parent.version}</version>
-  <url>http://bku.egiz.gv.at</url>
 	<build>
 		<plugins>
 			<plugin>
