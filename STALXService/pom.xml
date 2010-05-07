@@ -7,8 +7,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>at.gv.egiz</groupId>
   <artifactId>STALXService</artifactId>
-  <name>STAL-X Service</name>
+  <name>STAL Ext Service</name>
   <version>${project.parent.version}</version>
+  <description>STAL extension webservice interface</description>
   <dependencies>
     <dependency>
       <artifactId>STALService</artifactId>

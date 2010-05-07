@@ -16,25 +16,8 @@
      |   remains (not true for provided), see BKUViewer, BKULocal and
      |   BKUOnline -->
 
-    This module is used in validator(s) and viewer and is a direct dependency of
-      - bkucommon (direct runtime dependency)
-      - BKUViewer (transitive runtime from bkucommon)
-        TextValidator depends on the fonts. (TextValidator should rather use a FontProvider)
-      - BKUOnline (transitive runtime from bkucommon/bkuviewer)
-        unpack-fonts to applet dir and include jar in WEB-INF/lib
-      - BKULocal (transitive runtime from bkucommon/bkuviewer)
-      - removed the BKUCommonGUI (runtime; propagate dependency to BKUApplet):
-          no real dependency: BKUCommonGUI contains SecureFontProvider interface only
-          (which does not state how fonts are loaded); implementations should depend no BKUFonts
-          (ResourceFontLoader in BKULocal depends on the fonts, however URLFontLoader in BKUApplet doesn't.
-          BKUOnline however depends on BKUFonts for providing the fonts as web-resource for the applet)
+    Fonts used by validators and viewers
 
-
-    at.gv.egiz.bku.text.TextValidator and xxx.LocalFontProvider load fonts from classpath,
-    resource name must be known, TODO: encapsulate resource loading (FontProvider constants?)
-
-    at.gv.egiz.bku.online.applet.URLFontLoader loads (unpacked) font files from applet codebase, 
-    resource names _must_ be known since applet has no BKUFonts dependency
 
   </description>
   <build>

@@ -9,7 +9,8 @@
     <artifactId>smccSTAL</artifactId>
     <name>smcc STAL</name>
     <version>${project.parent.version}</version>
-	  <build>
+    <description>STAL implementation for smart cards using smcc</description>
+    <build>
 	    <plugins>
 	      <plugin>
 	        <artifactId>maven-compiler-plugin</artifactId>

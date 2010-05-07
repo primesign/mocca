@@ -30,6 +30,10 @@ under the License.
   <body>
   
     <menu ref="parent"/>
+    
+    <menu name="${project.name}">
+      <item name="Configuration" href="configuration.html"/>
+    </menu>
   
     <menu ref="reports"/>
 

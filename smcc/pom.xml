@@ -10,7 +10,8 @@
   <name>smcc</name>
   <packaging>jar</packaging>
   <version>${project.parent.version}</version>
-	<build>
+  <description>Smart card communication</description>
+  <build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>

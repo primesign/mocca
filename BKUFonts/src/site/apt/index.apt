@@ -1,0 +1,25 @@
+	---
+	About
+	---
+	EGIZ
+	---
+	2010
+	---
+
+BKU Fonts
+
+	This module provides fonts used in validator(s) and viewer and is a direct dependency of
+	
+    * bkucommon (direct runtime dependency)
+    
+    * BKUViewer (transitive runtime from bkucommon)
+      
+    TextValidator depends on the fonts. (TextValidator should rather use a FontProvider)
+      
+    * BKUOnline (transitive runtime from bkucommon/bkuviewer)
+    
+    unpack-fonts to applet dir and include jar in WEB-INF/lib
+    
+    * BKULocal (transitive runtime from bkucommon/bkuviewer)
+    
+

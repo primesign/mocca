@@ -7,9 +7,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>at.gv.egiz</groupId>
   <artifactId>STALExt</artifactId>
-  <name>STAL Extension</name>
+  <name>STAL Ext</name>
   <version>${project.parent.version}</version>
-  <description />
+  <description>STAL extensions for card management</description>
   <dependencies>
     <dependency>
       <groupId>at.gv.egiz</groupId>

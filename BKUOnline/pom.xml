@@ -9,7 +9,7 @@
   <groupId>at.gv.egiz</groupId>
   <artifactId>BKUOnline</artifactId>
   <packaging>war</packaging>
-  <name>BKU Online</name>
+  <name>MOCCA Online</name>
   <version>${parent.version}</version>
 
   <pluginRepositories>
@@ -146,6 +146,7 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+  <description>MOCCA Online</description>
   <build>
     <plugins>
       <plugin>

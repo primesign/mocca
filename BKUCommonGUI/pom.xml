@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>at.gv.egiz</groupId>
     <artifactId>BKUCommonGUI</artifactId>
-    <name>BKU GUI</name>
+    <name>BKU Common GUI</name>
     <version>${project.parent.version}</version>
     <dependencies>
         <dependency>
@@ -22,7 +22,8 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
-	  <build>
+    <description>Common GUI functionality</description>
+    <build>
 	    <plugins>
 	      <plugin>
 	        <artifactId>maven-compiler-plugin</artifactId>

@@ -1,0 +1,87 @@
+	---
+	Configuration
+	---
+	EGIZ
+	---
+	2010
+	---
+	
+MOCCA Configuration
+
+	Since MOCCA version 1.3 {{{http://commons.apache.org/configuration/}commons-configuration}} is used for the main configuration of MOCCA.
+	
+	The configuration is build by the {{{./apidocs/at/gv/egiz/bku/spring/ConfigurationFactoryBean.html} ConfigurationFactoryBean}} class. It creates a composite configuration using a default configuration read from {{{./apidocs/constant-values.html#at.gv.egiz.bku.spring.ConfigurationFactoryBean.DEFAULT_CONFIG}ConfigurationFactoryBean.DEFAULT_CONFIG}} and an (optional) resource specified by {{{./apidocs/at/gv/egiz/bku/spring/ConfigurationFactoryBean.html#setConfigurationResource(org.springframework.core.io.Resource)}setConfigurationResource(org.springframework.core.io.Resource)}}. The later {{{http://static.springsource.org/spring/docs/2.5.5/reference/resources.html}resource}} is usually injected via a {{{http://static.springsource.org/spring/docs/2.5.5/reference/beans.html}spring application context}}. See the configuration sections of MOCCA Online / MOCCA Local on how the configuration resource is constructed in their respective application contexts and on how to provide your own configuration file.
+	
+* Common Configuration Options
+
+	A typical configuraton file looks like the following:
+	
++------------------+
+<?xml version="1.0" encoding="UTF-8"?>
+<MoccaConfiguration version="1.0">
+  <RegisterSecurityProviders>true</RegisterSecurityProviders>
+  <DataURLConnection>
+    <MaxHops>50</MaxHops>
+  </DataURLConnection>
+  <ValidateHashDataInputs>true</ValidateHashDataInputs>
+  <SSL>
+    <certDirectory>./certStore</certDirectory>
+    <caDirectory>./trustStore</caDirectory>
+  </SSL>
+</MoccaConfiguration>
++------------------+
+
+** Supported Configuration Parameters
+
+	[<<<RegisterSecurityProviders>>>] Allows to controll if MOCCA should  register the <required> Java {{{http://java.sun.com/javase/6/docs/technotes/guides/security/crypto/CryptoSpec.html#ProviderArch}Cryptographic Service Providers}}. 
+	
+	NOTE: MOCCA will only work if the required security providers are registered. If this is set to <<<false>>>, the security providers must be registered by some other means (e.g. {{{http://java.sun.com/javase/6/docs/technotes/guides/security/crypto/CryptoSpec.html#ProviderInstalling}registered staticaly}}). 
+	
+	Default: <<<true>>>
+	
+	[<<<DataURLConnection>>>]
+	
+		[<<<MaxHops>>>] Sets the number of consequtive requests allowed to be recieved from the {{{http://www.buergerkarte.at/konzept/securitylayer/spezifikation/aktuell/bindings/Bindings.en.html#http.ablauf.schritte}DataURL}} server.
+		This allows to prevent from infinite request loops caused by erroneous server implementations.
+		
+		Default: <<<50>>>
+		
+	[<<<ValidateHashDataInputs>>>] Controls if to-be signed data is validated for conformity with the {{{http://www.buergerkarte.at/konzept/securitylayer/spezifikation/aktuell/viewerformat/ViewerFormat.en.html}standardised viewer format}} auf the Austrian Citizen Card spezification.
+	
+	Default: <<<true>>>
+	
+	[<<<SSL>>>]
+		
+		The following two configuration elements must provide an URL which resolves to a directory in the filesystem. It may either be an absolute URL or a relative URL, which is resolved using the URL of the configuration file.
+		
+		[<<<certDirectory>>>] Specifies the URL of a certificate store directory. This directory must contain all certificates required to build a valid certification chain up to an anchor of trust (e.g. a certificate also contained in the trust store directory). Certificate filenames are hashed. To add new certificates to the certificate store directory create a sub-directory named <<<toBeAdded>>> and put the certificates into this directory. They will then be added to the certificate store upon startup of MOCCA.
+		
+		Default: <<<classpath:at/gv/egiz/bku/certs/certStore>>>
+		
+		[<<<caDirectory>>>] Specifies the URL of a trust store directory. This directory must contain all certificates considered as a root of trust.
+		
+		NOTE: Any certificate in the trust store directory must also be present in the certificate store directory!
+		
+		Default: <<<classpath:at/gv/egiz/bku/certs/trustStore>>>
+		
+		[<<<sslProtocol>>>] Options: <<<TLS>>> (default) or <<<SSL>>>
+		
+		[]
+		
+		NOTE: Do not enable the following two options in production environments!
+
+		[<<<disableHostnameVerification>>>] May be set to <<<true>>> disable verification of the server host name given in the server's certificate.
+		
+		Default: <<<false>>>
+		
+		[<<<disableAllChecks>>>] May be set to <<<true>>> to disable all TSL/SSL related checks.
+		
+		Default: <<<false>>>
+		
+	[<<<ProductName>>>] May be specified to set the product name given by the <<<Server>>> and <<<User-Agent>>> HTTP headers as specified by {{{http://www.buergerkarte.at/konzept/securitylayer/spezifikation/aktuell/bindings/bindings.en.html#http}HTTP binding}}.
+	
+	[<<<ProductVersion>>>] May be specified to set the product version given by the <<<Server>>> and <<<User-Agent>>> HTTP headers as specified by {{{http://www.buergerkarte.at/konzept/securitylayer/spezifikation/aktuell/bindings/bindings.en.html#http}HTTP binding}}.
+
+	[<<<SignatureLayout>>>] May be specified to set the <<<SignatureLayout>>> HTTP header.
+	
+	

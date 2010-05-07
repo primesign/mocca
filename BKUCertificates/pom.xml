@@ -14,6 +14,7 @@
   <version>1.2</version>
   <name>BKU Certificates</name>
 
+  <description>Trusted certificates for TLS/SSL authentication</description>
   <build>
     <plugins>
       <plugin>

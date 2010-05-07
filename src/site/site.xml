@@ -27,6 +27,8 @@ under the License.
     <href>http://mocca.egovlabs.gv.at/</href>
   </bannerLeft>
 
+  <version position="none"/>
+
   <body>
     <links>
       <item name="Austrian Citizen Card" href="http://www.buergerkarte.at"/>

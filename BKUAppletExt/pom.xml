@@ -7,9 +7,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>at.gv.egiz</groupId>
     <artifactId>BKUAppletExt</artifactId>
-    <name>BKU Applet Extension</name>
+    <name>BKU Applet Ext</name>
     <version>${project.parent.version}</version>
-    <description />
+    <description >Card management extension for Java Applet used by MOCCA Online</description>
     <dependencies>
         <dependency>
             <groupId>at.gv.egiz</groupId>

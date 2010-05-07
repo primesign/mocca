@@ -8,7 +8,8 @@
   <groupId>at.gv.egiz</groupId>
   <artifactId>BKUGuiExt</artifactId>
   <version>${project.parent.version}</version>
-  <name>BKU GUI Extension</name>
+  <name>BKU GUI Ext</name>
+  <description>Common BKU GUI functionality extension for card managment</description>
   <dependencies>
     <dependency>
       <groupId>at.gv.egiz</groupId>

@@ -10,7 +10,7 @@
     <artifactId>STALService</artifactId>
     <name>STAL Service</name>
     <version>${project.parent.version}</version>
-    <description />
+    <description >STAL webservice interface</description>
     <dependencies>
         <dependency>
             <groupId>at.gv.egiz</groupId>

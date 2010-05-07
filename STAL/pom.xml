@@ -12,7 +12,8 @@
     <version>${parent.version}</version>
     <dependencies>
     </dependencies>
-	  <build>
+    <description>Security Token Access Layer</description>
+    <build>
 	    <plugins>
 	      <plugin>
 	        <artifactId>maven-compiler-plugin</artifactId>

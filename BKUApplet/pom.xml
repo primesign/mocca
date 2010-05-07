@@ -9,6 +9,7 @@
   <artifactId>BKUApplet</artifactId>
   <name>BKU Applet</name>
   <version>${project.parent.version}</version>
+  <description>Java Applet used by MOCCA Online</description>
   <build>
     <plugins>
       <plugin>

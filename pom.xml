@@ -34,6 +34,7 @@
     <module>smccSTALExt</module>
     <module>BKUFonts</module>
   </modules>
+  <inceptionYear>2007</inceptionYear>
   <developers>
     <developer>
       <id>mcentner</id>
@@ -55,6 +56,13 @@
     <name>E-Government Innovation Center (EGIZ)</name>
     <url>http://www.egiz.gv.at</url>
   </organization>
+	<licenses>
+	  <license>
+	    <name>Apache 2</name>
+	    <url>LICENSE.txt</url>
+	    <distribution>manually</distribution>
+	  </license>
+	</licenses>
   <build>
     <pluginManagement>
       <plugins>
@@ -180,11 +188,18 @@
   			<groupId>org.apache.maven.plugins</groupId>
   			<artifactId>maven-project-info-reports-plugin</artifactId>
   			<version>2.1.2</version>
+        <configuration>
+          <dependencyDetailsEnabled>true</dependencyDetailsEnabled>
+          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+        </configuration>
   			<reportSets>
   				<reportSet>
   				  <reports>
               <report>index</report>
               <report>summary</report>
+              <report>license</report>
+              <report>dependencies</report>
+              <report>dependency-management</report>
   				  </reports>
   				</reportSet>
   			</reportSets>
@@ -334,4 +349,5 @@
       <url>scp://egovlabs.gv.at/var/lib/gforge/chroot/home/groups/mocca/htdocs</url>
     </site>
   </distributionManagement>
+  
 </project>
