@@ -2,14 +2,14 @@
     <parent>
         <artifactId>mocca</artifactId>
         <groupId>at.gv.egiz</groupId>
-        <version>1.3.0-RC1</version>
+        <version>1.3.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>at.gv.egiz</groupId>
     <artifactId>BKUAppletExt</artifactId>
     <name>BKU Applet Ext</name>
-    <version>1.3.0-RC1</version>
-    <description>Card management extension for Java Applet used by MOCCA Online</description>
+    <version>${project.parent.version}</version>
+    <description >Card management extension for Java Applet used by MOCCA Online</description>
     <dependencies>
         <dependency>
             <groupId>at.gv.egiz</groupId>
