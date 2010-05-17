@@ -3,14 +3,14 @@
     <parent>
         <artifactId>mocca</artifactId>
         <groupId>at.gv.egiz</groupId>
-        <version>1.3.0-SNAPSHOT</version>
+        <version>1.3.0-RC1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>at.gv.egiz</groupId>
     <artifactId>STALService</artifactId>
     <name>STAL Service</name>
-    <version>${project.parent.version}</version>
-    <description >STAL webservice interface</description>
+    <version>1.3.0-RC1</version>
+    <description>STAL webservice interface</description>
     <dependencies>
         <dependency>
             <groupId>at.gv.egiz</groupId>
