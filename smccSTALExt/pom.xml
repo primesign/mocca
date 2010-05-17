@@ -3,11 +3,11 @@
   <parent>
     <artifactId>mocca</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.3.0-RC1</version>
+    <version>1.3.0-SNAPSHOT</version>
   </parent>
   <groupId>at.gv.egiz</groupId>
   <artifactId>smccSTALExt</artifactId>
-  <version>1.3.0-RC1</version>
+  <version>${project.parent.version}</version>
   <name>smcc STAL Ext</name>
   <description>STAL Ext implementation for smart cards using smcc</description>
   <dependencies>
