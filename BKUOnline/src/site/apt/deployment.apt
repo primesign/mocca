@@ -1,0 +1,77 @@
+	---
+	Deployment
+	---
+	EGIZ
+	---
+	2010
+	---
+	
+MOCCA Online Deployment
+
+	We have tried to keep the deployment procedure of MOCCA Online as simple as possible. In the standard case, all you need to do is download the appropriate war file and deploy it usign the standard deployment mechanism of your favorite servlet container.
+	
+    [Note: <<<war>>> File Deployment] 
+    
+    MOCCA assumes that the war file is unpacked upon deployment by the servlet container (which is the standard case e.g. in Apache Tomcat). 
+    
+    MOCCA requires proper directories for the certificate and trust stores. It is therefore possible to deploy and run MOCCA from the packed war file, but you need to provide your own configuration resource as described in {{{./configuration.html}Configuration}} in such a case. This configuration resource must provide URLs for the certificate and trust stores that resolve to proper directories (see {{{/bkucommon/configuration.html}MOCCA Configuration}}).
+    
+    []
+    
+    [Note: {Java Cryptographic Service Providers}]
+    
+    MOCCA requires some Java {{{http://java.sun.com/javase/6/docs/technotes/guides/security/crypto/CryptoSpec.html#ProviderArch}Cryptographic Service Providers}} to be registered.
+    
+    To allow for a simple deployment in the standard case MOCCA tries to register any required and not yet registered Cryptographic Service Providers upon startup. Since such security providers can only be registered statically with the class <<<{{{http://java.sun.com/javase/6/docs/api/java/security/Security.html}java.security.Security}}>>> which is load by a class loader shared by all servlet contexts (see {{{http://tomcat.apache.org/tomcat-6.0-doc/class-loader-howto.html}Apache Tomcat Class Loader How-To}}) the registered security providers are also visibile to other servlet contexts in the same container. This may affect other web applications in the same servlet container!
+    
+    When the security providers registered with the class <<<java.security.Security>>> have been load by the context class loader of one servlet context they are <visible but not usable> by servlets in another servlet context. This may cause other web applications in the same servlet container to fail!
+    
+    Therefore, <<when deploying MOCCA together with other web applications>> in the same servlet container (e.g. Apache Tomcat) <<make sure any Cryptographic Service Providers registered>> with the class <<<java.security.Security>>> <<are load by a shared class loader>>.
+    
+    There are (at least) two possibilities to accomplish this:
+    
+    	[[A]] 
+    	
+    	Make sure to remove the following <<<jar>>> files from the <<<WEB-INF/lib>>> directory of your deployed MOCCA web application (archive)
+    		
+    		* <<<iaik_jce_full_signed-*.jar>>>
+    		
+    		* <<<iaik_ecc_signed-*.jar>>>
+    		
+    		* <<<iaik_xsect-*.jar>>>
+    		
+    	and place them into the appropriate directory accessible by the shared class loader (e.g. <<<$CATALINA_HOME/lib>>> for Apache Tomcat).
+    	
+    	[[A]] 
+    	
+    	Register the security providers statically  with your Java VM as explained in {{{http://java.sun.com/javase/6/docs/technotes/guides/security/crypto/CryptoSpec.html#ProviderInstalling}Provider Installing}}. The classes
+    	    	
+    		* <<<iaik.security.provider.IAIK>>>
+    		
+    		* <<<iaik.security.ecc.provider.ECCProvider>>>
+    		
+    	should be registered at first and second position. And the class
+    	
+    		* <<<iaik.xml.crypto.XSecProvider>>>
+    		
+    	must be registered before any other XMLDSig provider (e.g. <<<org.jcp.xml.dsig.internal.dom.XMLDSigRI>>>).
+    	
+    	You may then tell MOCCA to omit the provider registration via the <<<RegisterSecurityProviders>>> {{{/bkucommmon/configuration.html}configuration parameter}}. However, this is not required as MOCCA detects already registered providers.
+    
+	[]
+	
+* Deploying MOCCA Online in Apache Tomcat 6.0
+
+	If MOCCA Online is the only application going to be deployed in Tomcat all you need to do is:
+
+	[[]] Copy the MOCCA Online <<<war>>> file to the <<<./webapps>>> directory of your Tomcat installation.
+	
+	[[]] Optionally rename the <<<war>>> file to match the desired context name (e.g. <<<mocca.war>>> for a web application context of <<</mocca>>>).
+	
+	[[]] Startup Tomcat. 
+	
+	[]
+	
+	MOCCA Online should now be accessible by directing your browser to {{http://localhost:8080/mocca/}} (replace <<<mocca>>> with the name of your war file).
+	
+	If other web applications are deployed into the same Tomcat instance, your may also need to perform the steps in the Note on {{Java Cryptographic Service Providers}} above.

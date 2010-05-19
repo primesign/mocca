@@ -11,6 +11,7 @@
   <properties>
     <mocca.certificates.version>1.2</mocca.certificates.version>
     <mocca.fonts.version>1.2</mocca.fonts.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <modules>
     <module>utils</module>

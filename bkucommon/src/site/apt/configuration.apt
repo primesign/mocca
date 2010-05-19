@@ -1,4 +1,4 @@
-	---
+ 	---
 	Configuration
 	---
 	EGIZ
@@ -70,7 +70,7 @@ MOCCA Configuration
 		
 		NOTE: Do not enable the following two options in production environments!
 
-		[<<<disableHostnameVerification>>>] May be set to <<<true>>> disable verification of the server host name given in the server's certificate.
+		[<<<disableHostnameVerification>>>] May be set to <<<true>>> to disable verification of the server host name given in the server's certificate.
 		
 		Default: <<<false>>>
 		

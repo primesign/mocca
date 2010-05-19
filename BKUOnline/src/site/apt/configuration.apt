@@ -1,0 +1,56 @@
+	---
+	Configuration
+	---
+	EGIZ
+	---
+	2010
+	---
+	
+MOCCA Online Configuration
+
+	MOCCA Online comes with a reasonable default configuration. Therefore, providing your own configuration is only required when you need configuration options different from the default parameters.
+	
+	Since MOCCA version 1.3 a configuration resource may be specified as servlet context init parameter. This allows to keep your configuration resource outside of the deployed servlet context and to redeploy the web application without overwriting your configuration resource.
+	
+	To specify your own configuration {{{http://static.springsource.org/spring/docs/2.5.5/reference/resources.html}resource}} simply set the corresponding servlet context init parameter <<<configurationResource>>>. Please refer to the documentation of your servlet container on how to set servlet context initialization parameters. Usually this is done via the <<<web.xml>>> file in your web application.
+	
+	<<<WEB-INF/web.xml>>>:
+	
++------------------+
+...
+<web-app>
+
+  ...
+  <context-param>
+    <param-name>configurationResource</param-name>
+    <param-value>file://mocca/configuration.xml</param-value>
+  </context-param>
+  ...
+
+</web-app>
++------------------+
+
+	The value of the <<<configurationResource>>> parameter must be a valid {{{http://static.springsource.org/spring/docs/2.5.5/reference/resources.html}Spring resource}} name. Placeholders such as <<<$\{user.home\}>>> are also supported (via {{{http://static.springsource.org/spring/docs/2.5.5/api/org/springframework/beans/factory/config/PropertyPlaceholderConfigurer.html}Spring's Property Placeholder Configurer}}).
+	
+* Apache Tomcat	
+	
+	In addition to the specifying init parameters in the <<<web.xml>>> Apache Tomcat also allows to provide a file named <<<$CATALINA_BASE/conf/[enginename]/[hostname]/[webappname].xml>>> (e.g. <<<.../conf/Catalina/localhost/mocca.xml>>>) to specify context parameters. See also {{http://tomcat.apache.org/tomcat-6.0-doc/config/context.html}}.
+	
+	The <<<configurationResource>>> parameter may be specified like the following:
+	
++------------------+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+
+  <Parameter name="configurationResource" value="file:${user.home}/mocca/configuration.xml" override="false"/>
+
+</Context>
+
++------------------+
+
+	This way the init parameter is not overwritten when the web application is redeployed.
+	
+* Configuration Options
+
+	For the available configuration options please see {{{../bkucommon/configuration.html}MOCCA Configuration}}.

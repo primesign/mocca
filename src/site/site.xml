@@ -32,6 +32,7 @@ under the License.
   <body>
     <links>
       <item name="Austrian Citizen Card" href="http://www.buergerkarte.at"/>
+      <item name="Digital Austria" href="http://www.digitales.oesterreich.gv.at/site/6497/Default.aspx"/>
       <item name="EGIZ" href="http://www.egiz.gv.at" />
       <item name="Federal Chancellery" href="http://www.bka.gv.at/"/>
       <item name="Graz University of Technology" href="http://www.tugraz.at"/>
@@ -43,6 +44,7 @@ under the License.
       <item name="Download" href="http://egovlabs.gv.at/frs/?group_id=13"/>
       <item name="Source" href="http://egovlabs.gv.at/scm/?group_id=13"/>
       <item name="Wiki" href="http://egovlabs.gv.at/plugins/wiki/index.php?id=13&amp;type=g"/>
+      <item name="What's new in 1.3?" href="new.html"/>
     </menu>
     
     <menu ref="reports"/>

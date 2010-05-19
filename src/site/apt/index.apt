@@ -19,7 +19,7 @@ MOCCA Project
 
 	MOCCA Local is provided as Java Web Start application via {{http://webstart.buergerkarte.at}}.
     
-	* <<MOCCA Online>>
+	* <<{{{./BKUOnline/}MOCCA Online}}>>
 
 	MOCCA Online (aka <BKUOnline>) provides a new approach that overcomes the need to install dedicated software on the user's PC. MOCCA Online  is <to be installed as online service> (usually together with a citizen card enabled web application) by a service provider. It offers the same interfaces and protocol bindings for integration with applications via the user's browser as MOCCA Local. Access to the user's citizen card and user interaction is performed via a Java Applet. Therefore, a user only needs a properly installed (PC/SC supported) card reader and a recent version of the Java browser plug-in to be able to use a citizen card with MOCCA Online.  
 	
@@ -35,17 +35,7 @@ Releases
 
 Development
 
-	The current development version of MOCCA is 1.3.
-
-* Whats new in 1.3?
-
-	* Some parts of MOCCA needed to be redesigned to allow for a better integration with other software deployed within the same servlet container.
-
-	It is now possible to deploy multiple instances of MOCCA within the same servlet container. It should also be possible to deploy MOCCA together with most other software within a single servlet container.
-
-	* Configuration has been redesigned and is now based on {{{http://commons.apache.org/configuration/}commons-configuration}}.
-
-	
+	The current development version of MOCCA is 1.3. Take a look at {{{./new.html}What's new in MOCCA 1.3?}}
  
 Licensing
 

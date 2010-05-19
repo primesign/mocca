@@ -33,6 +33,7 @@
             <configuration>
               <includeArtifactIds>BKULocal</includeArtifactIds>
               <includeGroupIds>at.gv.egiz</includeGroupIds>
+              <includeTypes>jar</includeTypes>
               <excludes>META-INF/</excludes>
               <outputDirectory>${project.build.directory}/classes</outputDirectory>
               <stripVersion>true</stripVersion>
@@ -280,4 +281,28 @@
       <systemPath>${java.home}/lib/javaws.jar</systemPath>
     </dependency>
   </dependencies>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.1.2</version>
+        <configuration>
+          <dependencyDetailsEnabled>true</dependencyDetailsEnabled>
+          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>index</report>
+              <report>summary</report>
+              <report>license</report>
+              <report>dependencies</report>
+              <report>dependency-management</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
