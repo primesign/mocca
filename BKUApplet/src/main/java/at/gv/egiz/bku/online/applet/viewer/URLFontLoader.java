@@ -40,7 +40,6 @@ public class URLFontLoader extends SwingWorker<Font, Object> implements FontProv
   private final Logger log = LoggerFactory.getLogger(URLFontLoader.class);
   
   protected URL fontURL;
-  protected Font font;
 
   public URLFontLoader(URL codebase) throws MalformedURLException {
     this.fontURL = new URL(codebase, SANSMONO_FONT_RESOURCE);

@@ -70,7 +70,6 @@ public class SignRequestHandler extends AbstractRequestHandler {
     public STALResponse handleRequest(STALRequest request) throws InterruptedException {
         if (request instanceof SignRequest) {
             SignRequest signReq = (SignRequest) request;
-            newSTALMessage("Message.RequestCaption", "Message.SignRequest");
             try {
                 Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
                 InputStream is = new ByteArrayInputStream(signReq.getSignedInfo());

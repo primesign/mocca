@@ -64,10 +64,6 @@ public class ExclSignatureCardProxy implements InvocationHandler {
         new ExclSignatureCardProxy(signatureCard));
   }
   
-  public static PINMgmtSignatureCard newInstance(PINMgmtSignatureCard signatureCard) {
-    return null;
-  }
-
   @Override
   public Object invoke(Object proxy, Method method, Object[] args)
       throws Throwable {

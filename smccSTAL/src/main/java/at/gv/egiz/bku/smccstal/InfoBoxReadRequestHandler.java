@@ -45,7 +45,6 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
       
       try {
         if (infoBox.getInfoboxIdentifier().equals("IdentityLink")) {
-          newSTALMessage("Message.RequestCaption", "Message.IdentityLink");
           log.debug("Handling identitylink infobox.");
           byte[] resp = card.getInfobox(infoBox.getInfoboxIdentifier(),
                   new VerifyPINGUI(gui),
@@ -67,7 +66,6 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
           return stalResp;
         } else if (SignatureCard.KeyboxName.CERITIFIED_KEYPAIR.equals(infoBox
             .getInfoboxIdentifier())) {
-          newSTALMessage("Message.RequestCaption", "Message.CertifiedKeypair");
           log.debug("Handling certified keypair infobox.");
           byte[] resp = card
               .getCertificate(SignatureCard.KeyboxName.CERITIFIED_KEYPAIR);
@@ -79,8 +77,6 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
           return stalResp;
         } else if (SignatureCard.KeyboxName.SECURE_SIGNATURE_KEYPAIR
             .equals(infoBox.getInfoboxIdentifier())) {
-          newSTALMessage("Message.RequestCaption",
-              "Message.SecureSignatureKeypair");
           log.debug("Handling secure signature keypair infobox.");
           byte[] resp = card
               .getCertificate(SignatureCard.KeyboxName.SECURE_SIGNATURE_KEYPAIR);
@@ -91,7 +87,6 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
           stalResp.setInfoboxValue(resp);
           return stalResp;
         } else {
-          newSTALMessage("Message.RequestCaption", "Message.InfoboxReadRequest");
           log.warn("Unknown infobox identifier: {} trying generic request.",
               infoBox.getInfoboxIdentifier());
           byte[] resp = card.getInfobox(infoBox.getInfoboxIdentifier(),

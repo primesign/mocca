@@ -33,7 +33,6 @@ public abstract class AbstractRequestHandler implements SMCCSTALRequestHandler,
 
   protected SignatureCard card;
   protected BKUGUIFacade gui;
-  protected static STALMessageConsumer messageConsumer = null;
   protected String actionCommand;
   protected boolean actionPerformed = false;
 
@@ -49,16 +48,6 @@ public abstract class AbstractRequestHandler implements SMCCSTALRequestHandler,
     this.gui = gui;
   }
   
-  public static void setMessageConsumer(STALMessageConsumer messageConsumer) {
-    AbstractRequestHandler.messageConsumer = messageConsumer;
-  }
-
-  protected static void newSTALMessage(String caption, String message) {
-    if (messageConsumer != null) {
-      messageConsumer.consumeNewSTALMessage(caption, message);
-    }
-  }
-
   protected synchronized void waitForAction() throws InterruptedException {
     try {
       while (!actionPerformed) {
