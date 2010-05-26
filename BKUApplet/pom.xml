@@ -13,24 +13,67 @@
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack</id>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <includeScope>runtime</includeScope>
-              <!-- don't include transitive dependency BKUFonts [runtime] from BKUCommonGUI -->
-              <excludeTransitive>false</excludeTransitive>
-              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-              <excludes>META-INF\/</excludes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
+				<groupId>com.pyx4me</groupId>
+				<artifactId>proguard-maven-plugin</artifactId>
+				<version>2.0.4</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>proguard</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+				  <obfuscate>false</obfuscate>
+				  <options>
+				    <option>-keep public class * extends at.gv.egiz.smcc.SignatureCard { *; }</option>
+				    <option>-keep public class * extends java.applet.Applet { *; }</option>
+				    <option>-keep @javax.xml.bind.annotation.** class * { *; }</option>
+				    <option>-ignorewarnings</option>
+				    <option>-dontoptimize</option>
+				    <option>-dontpreverify</option>
+				    <option>-target 1.6</option>
+				  </options>
+				  <libs>
+            <lib>${java.home}/jre/lib/rt.jar</lib>
+				    <lib>${java.home}/jre/lib/jce.jar</lib>
+            <lib>${java.home}/jre/lib/jsse.jar</lib>
+				  </libs>
+					<assembly>
+						<inclusions>
+							<inclusion>
+								<groupId>at.gv.egiz</groupId>
+								<artifactId>smcc</artifactId>
+							</inclusion>
+							<inclusion>
+								<groupId>at.gv.egiz</groupId>
+								<artifactId>STAL</artifactId>
+							</inclusion>
+							<inclusion>
+								<groupId>at.gv.egiz</groupId>
+								<artifactId>STALService</artifactId>
+							</inclusion>
+							<inclusion>
+								<groupId>at.gv.egiz</groupId>
+								<artifactId>smccSTAL</artifactId>
+							</inclusion>
+							<inclusion>
+								<groupId>at.gv.egiz</groupId>
+								<artifactId>BKUCommonGUI</artifactId>
+							</inclusion>
+							<inclusion>
+								<groupId>org.slf4j</groupId>
+								<artifactId>slf4j-api</artifactId>
+							</inclusion>
+							<inclusion>
+								<groupId>org.slf4j</groupId>
+								<artifactId>slf4j-jdk14</artifactId>
+							</inclusion>
+						</inclusions>
+					</assembly>
+				</configuration>
+			</plugin>
+			<plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>maven-buildnumber-plugin</artifactId>
         <executions>
@@ -77,9 +120,37 @@
           <verify>true</verify>
         </configuration>
       </plugin>
+      
     </plugins>
+    <pluginManagement>
+    	<plugins>
+    	</plugins>
+    </pluginManagement>
   </build>
-  <profiles>
+	<profiles>
+		<profile>
+			<id>proguard-osx</id>
+			<activation>
+				<os>
+					<family>mac</family>
+				</os>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.pyx4me</groupId>
+						<artifactId>proguard-maven-plugin</artifactId>
+						<configuration>
+							<libs>
+								<lib>${java.home}/../Classes/classes.jar</lib>
+								<lib>${java.home}/lib/jce.jar</lib>
+								<lib>${java.home}/../Classes/jsse.jar</lib>
+							</libs>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
     <profile>
       <id>pkcs11-sign</id>
       <build>
@@ -139,7 +210,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jdk14</artifactId>
-			<scope>runtime</scope>
+			<scope>compile</scope>
 			<optional>true</optional>
 		</dependency>
   </dependencies>
