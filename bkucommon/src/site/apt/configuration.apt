@@ -33,7 +33,7 @@ MOCCA Configuration
 
 ** Supported Configuration Parameters
 
-	[<<<RegisterSecurityProviders>>>] Allows to controll if MOCCA should  register the <required> Java {{{http://java.sun.com/javase/6/docs/technotes/guides/security/crypto/CryptoSpec.html#ProviderArch}Cryptographic Service Providers}}. 
+	[<<<RegisterSecurityProviders>>>] Allows to control if MOCCA should  register the <required> Java {{{http://java.sun.com/javase/6/docs/technotes/guides/security/crypto/CryptoSpec.html#ProviderArch}Cryptographic Service Providers}}. 
 	
 	NOTE: MOCCA will only work if the required security providers are registered. If this is set to <<<false>>>, the security providers must be registered by some other means (e.g. {{{http://java.sun.com/javase/6/docs/technotes/guides/security/crypto/CryptoSpec.html#ProviderInstalling}registered staticaly}}). 
 	
