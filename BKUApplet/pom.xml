@@ -35,9 +35,9 @@
 				    <option>-target 1.6</option>
 				  </options>
 				  <libs>
-            <lib>${java.home}/jre/lib/rt.jar</lib>
-				    <lib>${java.home}/jre/lib/jce.jar</lib>
-            <lib>${java.home}/jre/lib/jsse.jar</lib>
+            <lib>${java.home}/lib/rt.jar</lib>
+				    <lib>${java.home}/lib/jce.jar</lib>
+            <lib>${java.home}/lib/jsse.jar</lib>
 				  </libs>
 					<assembly>
 						<inclusions>
