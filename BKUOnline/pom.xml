@@ -137,12 +137,14 @@
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUApplet</artifactId>
       <version>${project.parent.version}</version>
+      <classifier>single</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUAppletExt</artifactId>
       <version>${project.parent.version}</version>
+      <classifier>single</classifier>
       <scope>provided</scope>
     </dependency>
   </dependencies>

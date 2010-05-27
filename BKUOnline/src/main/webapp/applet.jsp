@@ -53,13 +53,13 @@
         String extension = (String) session.getAttribute("appletExtension");
         String appletClass, appletArchive;
         if ("activation".equalsIgnoreCase(extension)) {
-            appletArchive = "BKUAppletExt";
+            appletArchive = "BKUAppletExt-single";
             appletClass = "at.gv.egiz.bku.online.applet.ActivationApplet.class";
         } else if ("pin".equalsIgnoreCase(extension)) {
-            appletArchive = "BKUAppletExt";
+            appletArchive = "BKUAppletExt-single";
             appletClass = "at.gv.egiz.bku.online.applet.PINManagementApplet.class";
         } else {
-            appletArchive = "BKUApplet";
+            appletArchive = "BKUApplet-single";
             appletClass = "at.gv.egiz.bku.online.applet.BKUApplet.class";
         }
      

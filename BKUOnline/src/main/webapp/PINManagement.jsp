@@ -94,7 +94,7 @@
                     var attributes = {
                         codebase :'applet',
                         code : 'at.gv.egiz.bku.online.applet.PINManagementApplet.class',
-                        archive : 'BKUAppletExt.jar, commons-logging.jar, iaik_jce_me4se.jar',
+                        archive : 'BKUAppletExt-single.jar',
                         width : <%=width%>,
                         height :<%=height%>,
                         name : 'moccaapplet',

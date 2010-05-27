@@ -30,6 +30,7 @@
 				    <option>-keep public class * extends java.applet.Applet { *; }</option>
 				    <option>-keep @javax.xml.bind.annotation.** class * { *; }</option>
 				    <option>-ignorewarnings</option>
+            <option>-printusage ${project.build.directory}/proguard_usage.txt</option>
 				    <option>-dontoptimize</option>
 				    <option>-dontpreverify</option>
 				    <option>-target 1.6</option>
@@ -39,8 +40,15 @@
 				    <lib>${java.home}/lib/jce.jar</lib>
             <lib>${java.home}/lib/jsse.jar</lib>
 				  </libs>
+				  <attach>true</attach>
+				  <appendClassifier>true</appendClassifier>
+          <attachArtifactClassifier>single</attachArtifactClassifier>
 					<assembly>
 						<inclusions>
+						  <inclusion>
+					      <groupId>iaik</groupId>
+					      <artifactId>iaik_jce_me4se</artifactId>
+						  </inclusion>
 							<inclusion>
 								<groupId>at.gv.egiz</groupId>
 								<artifactId>smcc</artifactId>
@@ -97,6 +105,9 @@
             <goals>
               <goal>sign</goal>
             </goals>
+            <configuration>
+              <jarPath>${project.build.directory}/${project.build.finalName}-single.${project.packaging}</jarPath>
+            </configuration>
           </execution>
         </executions>
         <configuration>
@@ -113,19 +124,12 @@
           </archive>
           <alias>test-applet signer</alias>
           <keystore>./keystore.ks</keystore>
-          <!-- attention: configuration inherited by pkcs11-sign, uncomment!
-               (removed in maven-jar-pluging-2.2-mocca) -->
           <storepass>storepass</storepass>
           <keypass>keypass</keypass>
           <verify>true</verify>
         </configuration>
       </plugin>
-      
     </plugins>
-    <pluginManagement>
-    	<plugins>
-    	</plugins>
-    </pluginManagement>
   </build>
 	<profiles>
 		<profile>
