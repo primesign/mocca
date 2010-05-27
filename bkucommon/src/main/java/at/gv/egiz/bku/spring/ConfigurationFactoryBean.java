@@ -36,6 +36,7 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
+import at.gv.egiz.bku.conf.MoccaConfigurationException;
 import at.gv.egiz.bku.slcommands.impl.CreateXMLSignatureCommandImpl;
 
 /**
@@ -59,6 +60,12 @@ public class ConfigurationFactoryBean implements FactoryBean, ResourceLoaderAwar
    * The URL of the configuration file.
    */
   protected Resource configurationResource;
+
+  /**
+   * Should building the configuration fail if the given configuration resource
+   * is not available?
+   */
+  protected boolean failOnMissingResource = false;
   
   /**
    * The ResourceLoader.
@@ -82,6 +89,14 @@ public class ConfigurationFactoryBean implements FactoryBean, ResourceLoaderAwar
    */
   public void setConfigurationResource(Resource configurationResource) {
     this.configurationResource = configurationResource;
+  }
+
+  /**
+   * @param failOnMissingConfigurationResource the failOnMissingConfigurationResource to set
+   */
+  public void setfailOnMissingResource(
+      Boolean failOnMissingResource) {
+    this.failOnMissingResource = failOnMissingResource;
   }
 
   protected Configuration getDefaultConfiguration()
@@ -141,18 +156,30 @@ public class ConfigurationFactoryBean implements FactoryBean, ResourceLoaderAwar
     
     log.info("Configuration resource is {}.", configurationResource);
     
-    CompositeConfiguration configuration;
-    if (configurationResource == null) {
+    CompositeConfiguration configuration = null;
+    if (configurationResource != null) {
+      if (configurationResource.exists()) {
+        // initialize with writable configuration
+        URL url = configurationResource.getURL();
+        XMLConfiguration writableConfiguration = new XMLConfiguration(url);
+        configuration = new CompositeConfiguration(writableConfiguration);
+        log.info("Initialized with configuration from '{}'.", url);
+      } else if (failOnMissingResource) {
+        StringBuilder message = new StringBuilder();
+        message.append("ConfigurationResource '");
+        message.append(configurationResource.getDescription());
+        message.append("' does not exist!");
+        log.error(message.toString());
+        throw new MoccaConfigurationException(message.toString());
+      }
+    }
+
+    if (configuration == null) {
       // initialize default configuration
       log.warn("Initializing with default configuration.");
       configuration = new CompositeConfiguration();
-    } else {
-      // initialize with writable configuration
-      URL url = configurationResource.getURL();
-      XMLConfiguration writableConfiguration = new XMLConfiguration(url);
-      configuration = new CompositeConfiguration(writableConfiguration);
-      log.info("Initialized with configuration from '{}'.", url);
     }
+    
     configuration.addConfiguration(getDefaultConfiguration());
     configuration.addConfiguration(getVersionConfiguration());
     return configuration;

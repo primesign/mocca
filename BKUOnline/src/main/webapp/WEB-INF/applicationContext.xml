@@ -23,6 +23,7 @@
 
 	<bean id="configuration" class="at.gv.egiz.bku.spring.ConfigurationFactoryBean">
 		<property name="configurationResource" ref="configurationResource" />
+		<property name="failOnMissingResource" value="true" />
 	</bean>
 
   <bean id="sslPKIProfile" class="at.gv.egiz.bku.spring.PKIProfileFactoryBean">
