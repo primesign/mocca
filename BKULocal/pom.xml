@@ -20,6 +20,8 @@
           <manifest>
             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
           </manifest>
+          <!-- TODO: load webapp jars via jnlp 
+          <packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes-->
           <archive>
             <manifestEntries>
               <Implementation-Build>${project.version}-r${buildNumber}</Implementation-Build>
@@ -57,6 +59,19 @@
               <includeGroupIds>at.gv.egiz</includeGroupIds>
               <excludes>META-INF/</excludes>
               <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- certificates in webapp filesystem (default trust/certstores) -->
+            <id>copy-certificates</id>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>BKUCertificates</includeArtifactIds>
+              <includeGroupIds>at.gv.egiz</includeGroupIds>
+              <excludes>META-INF/</excludes>
+              <outputDirectory>${project.build.directory}/classes</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -104,6 +119,11 @@
       <artifactId>BKUHelp</artifactId>
       <groupId>at.gv.egiz</groupId>
       <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>BKUCertificates</artifactId>
+      <groupId>at.gv.egiz</groupId>
+      <version>1.2</version>
     </dependency>
     <dependency>
       <groupId>iaik</groupId>
