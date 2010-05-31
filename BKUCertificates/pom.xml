@@ -9,7 +9,7 @@
   <artifactId>BKUCertificates</artifactId>
   <!-- DON'T CHANGE VERSION UNLESS THE INCLUDED CERTIFICATES CHANGED
    |   PLEASE COMMIT CHANGES to src/main/changes/changes.txt
-   |   and don't forget to update depending modules (BKUOnline, BKUWebstart)
+   |   and don't forget to update depending modules (BKUOnline, BKULocal & BKUWebstart)
    |-->
   <version>1.2</version>
   <name>BKU Certificates</name>
