@@ -16,14 +16,16 @@
  */
 package at.gv.egiz.bku.gui;
 
+import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class HelpListener implements MouseListener, KeyListener, HelpURLProvider {
+public class HelpListener implements MouseListener, KeyListener, HelpURLProvider {
 
   public static final String MESSAGE_BUNDLE = "at/gv/egiz/bku/gui/Messages";
 
@@ -32,23 +34,22 @@ public abstract class HelpListener implements MouseListener, KeyListener, HelpUR
   protected String helpTopic;
   protected ResourceBundle messageBundle;
 
-  // localization in helpListener (pass message bundle, getLocale, add language to helpContext) or outside?
-  public HelpListener(String helpURL, Locale locale) {
-//    this.codebase = codebase;
-    this.helpURL = helpURL;
+  public HelpListener(String baseHelpURL, Locale locale) {
+
+    helpURL = baseHelpURL;
 
     if (locale != null) {
-      log.trace("Check for support of requested help locale {}.", locale.getLanguage().substring(0,2));
-      messageBundle = ResourceBundle.getBundle(MESSAGE_BUNDLE,
-              new Locale(locale.getLanguage().substring(0, 2)));
+      log.trace("Check for support of requested help locale {}.", locale);
+      messageBundle = ResourceBundle.getBundle(MESSAGE_BUNDLE, locale);
     } else {
       messageBundle = ResourceBundle.getBundle(MESSAGE_BUNDLE);
     }
-    if (!"".equals(messageBundle.getLocale().getLanguage())) {
-      log.trace("Using help locale '{}'.", messageBundle.getLocale().getLanguage().substring(0,2));
-      helpURL += messageBundle.getLocale().getLanguage().substring(0,2) + '/';
-    } else {
+
+    if ("".equals(messageBundle.getLocale().getLanguage())) {
       log.trace("Using help locale 'default'.");
+    } else {
+      log.trace("Using help locale '{}'.", messageBundle.getLocale());
+      helpURL += messageBundle.getLocale().getLanguage() + '/';
     }
     
     log.debug("Setting help context to {}.", helpURL);
@@ -66,9 +67,11 @@ public abstract class HelpListener implements MouseListener, KeyListener, HelpUR
       log.debug("No help topic set, return index.");
       return helpURL + "index.html";
     }
-    String url = helpURL + helpTopic + ".html";
-    log.debug("Return help topic: {}.", url);
-    return url;
+    StringBuilder url = new StringBuilder(helpURL);
+    url.append(helpTopic);
+    url.append(".html");
+    log.debug("Return help url: {}.", url.toString());
+    return url.toString();
   }
 
   /**
@@ -79,6 +82,39 @@ public abstract class HelpListener implements MouseListener, KeyListener, HelpUR
    * (whether a help icon shall be included)
    * @return true if this HelpListener implements the Mouse/KeyListeners 
    */
-  public abstract boolean implementsListener();
-  
+  public boolean implementsListener() {
+    return false;
+  }
+
+  @Override
+  public void mouseClicked(MouseEvent arg0) {
+  }
+
+  @Override
+  public void keyPressed(KeyEvent arg0) {
+  }
+
+  @Override
+  public void mousePressed(MouseEvent e) {
+  }
+
+  @Override
+  public void mouseReleased(MouseEvent e) {
+  }
+
+  @Override
+  public void mouseEntered(MouseEvent e) {
+  }
+
+  @Override
+  public void mouseExited(MouseEvent e) {
+  }
+
+  @Override
+  public void keyTyped(KeyEvent e) {
+  }
+
+  @Override
+  public void keyReleased(KeyEvent e) {
+  }
 }

@@ -123,7 +123,7 @@
     <dependency>
       <artifactId>BKUCertificates</artifactId>
       <groupId>at.gv.egiz</groupId>
-      <version>1.2</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>iaik</groupId>

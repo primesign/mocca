@@ -2290,26 +2290,20 @@ public class BKUGUIImpl implements BKUGUIFacade {
 	 * @param locale
 	 */
 	protected void loadMessageBundle(Locale locale) {
-		if (locale != null) {
-			// see [#378] Ignoring post parameter 'locale': bundle resolve-order
+    if (locale != null) {
+      // see [#378] Ignoring post parameter 'locale': bundle resolve-order
 			// not correct?!
-			Locale lang = new Locale(locale.getLanguage().substring(0, 2));
-			log.debug("Loading message bundle for language: {}.", lang.toString());
-			messages = ResourceBundle.getBundle(MESSAGES_BUNDLE, lang);
-		} else {
-			log.debug("Loading default language message bundle.");
-			messages = ResourceBundle.getBundle(MESSAGES_BUNDLE);
-		}
+			log.debug("Loading message bundle for language: {}.", locale);
+			messages = ResourceBundle.getBundle(MESSAGES_BUNDLE, locale);
+    } else {
+      messages = ResourceBundle.getBundle(MESSAGES_BUNDLE);
+    }
 
-		if (log.isDebugEnabled()) {
-			if (messages.getLocale() == null
-					|| "".equals(messages.getLocale().getLanguage())) {
-				log.info("Fallback to default locale message bundle.");
-			} else {
-				log.info("Applet message bundle loaded for {}.",
-						messages.getLocale());
-			}
-		}
+    if ("".equals(messages.getLocale().getLanguage())) {
+      log.debug("Using locale 'default'.");
+    } else {
+      log.debug("Using locale '{}'.", messages.getLocale());
+    }
 	}
 
 	protected int initButtonSize() {

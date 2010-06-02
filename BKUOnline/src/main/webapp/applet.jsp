@@ -134,7 +134,7 @@
             Background : '<%=backgroundImg%>',
             BackgroundColor : '<%=backgroundColor%>',
             WSDL_URL : '../stal;jsessionid=<%=sessionId%>?wsdl',
-            HelpURL : '../help/',
+            HelpURL : 'help/',
             SessionID : '<%=sessionId%>',
             RedirectURL : '../bkuResult',
             RedirectTarget: '_parent',

@@ -33,7 +33,7 @@ public class SecureViewerDialogTest {
   @BeforeClass
   public static void setUpClass() throws Exception {
     messages = ResourceBundle.getBundle("at/gv/egiz/bku/gui/Messages");
-    secureViewer = new SecureViewerDialog(null, messages,null, null, new DummyFontLoader(), new DeafHelpListener("../help", messages.getLocale()), 1f);
+    secureViewer = new SecureViewerDialog(null, messages,null, null, new DummyFontLoader(), new HelpListener("../help", messages.getLocale()), 1f);
   }
 
   @AfterClass

@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUGUIImpl;
-import at.gv.egiz.bku.gui.DeafHelpListener;
 import at.gv.egiz.bku.gui.HelpListener;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
 import at.gv.egiz.stal.service.STALPortType;
@@ -155,11 +154,14 @@ public class BKUApplet extends JApplet {
     HttpsURLConnection.setDefaultSSLSocketFactory(InternalSSLSocketFactory.getInstance());
 
     String locale = getParameter(LOCALE);
+    log.trace("requested locale: {}, jvm default locale: {}", locale, Locale.getDefault());
     if (locale != null) {
+      if (locale.indexOf('_') > 0) {
+        locale = locale.substring(0, locale.indexOf('_'));
+      }
       this.setLocale(new Locale(locale));
     }
-    log.trace("Default locale: {}.", Locale.getDefault());
-    log.debug("Applet locale set to: {}.", getLocale());
+    log.trace("Applet locale set to: {} (will be used as a hint for resource bundle loading).", getLocale());
 
     if (Boolean.parseBoolean(getParameter(ENFORCE_RECOMMENDED_PIN_LENGTH))) {
       SignatureCardFactory.ENFORCE_RECOMMENDED_PIN_LENGTH = true;
@@ -185,7 +187,7 @@ public class BKUApplet extends JApplet {
       log.warn("Cannot load applet background image. {}", ex.getMessage());
     }
 
-    helpListener = new DeafHelpListener(getParameter(HELP_URL), getLocale());
+    helpListener = new HelpListener(getParameter(HELP_URL), getLocale());
 
     SwitchFocusListener switchFocusListener = new SwitchFocusListener(
             getAppletContext(), "focusToBrowser");

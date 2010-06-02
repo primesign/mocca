@@ -27,6 +27,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -49,6 +50,8 @@ import org.slf4j.LoggerFactory;
 public class HelpViewer extends JDialog
         implements ActionListener {
 
+  public static final String MESSAGE_BUNDLE = "at/gv/egiz/bku/gui/Messages";
+
   private static final long serialVersionUID = 1L;
 
   private final Logger log = LoggerFactory.getLogger(HelpViewer.class);
@@ -65,29 +68,24 @@ public class HelpViewer extends JDialog
    * @param messages
    */
   public static void showHelpDialog(AppletContext ctx,
-          URL helpURL,
-//          String helpTopic,
-          ResourceBundle messages) {
-    showHelpDialog(null, ctx, helpURL, messages); //helpTopic, messages);
+          URL helpURL, ResourceBundle messages) {
+    showHelpDialog(null, ctx, helpURL, messages); 
   }
 
-  public static void showHelpDialog(URL helpURL,
-//          String helpTopic,
-          ResourceBundle messages) {
-    showHelpDialog(null, null, helpURL, messages); // helpTopic, messages);
+  public static void showHelpDialog(URL helpURL, ResourceBundle messages) {
+    showHelpDialog(null, null, helpURL, messages);
   }
 
   public static void showHelpDialog(Component owner,
           AppletContext ctx,
           URL helpURL,
-//          String helpTopic,
           ResourceBundle messages) {
 
     Frame frame = null;
     if (owner != null) {
       JOptionPane.getFrameForComponent(owner);
     }
-    dialog = new HelpViewer(frame, messages, ctx, helpURL); //, helpTopic);
+    dialog = new HelpViewer(frame, messages, ctx, helpURL); 
     dialog.setVisible(true);
     dialog.toFront();
   }
@@ -95,14 +93,12 @@ public class HelpViewer extends JDialog
   private HelpViewer(Frame frame,
           ResourceBundle messages,
           AppletContext ctx,
-          URL helpURL) { //, String helpTopic) {
+          URL helpURL) {
     super(frame, messages.getString(BKUGUIFacade.WINDOWTITLE_HELP), true);
     this.messages = messages;
     this.ctx = ctx;
 
-//    String p = messages.getString(BKUGUIFacade.MESSAGE_HELP);
-//    String helpItem = messages.getString(helpTopic);
-//    String viewerLabel = MessageFormat.format(p, new Object[]{helpItem});
+    log.trace("init help viewer for locale ", messages.getLocale());
 
     JPanel helpPanel = createViewerPanel(helpURL); //viewerLabel, helpURL);
     JPanel buttonPanel = createButtonPanel();
