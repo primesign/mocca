@@ -2,11 +2,11 @@
 <jnlp spec="$jnlpspec" codebase="http://localhost/webstart/" context="http://localhost/" href="$outputFile">
 
   <information>
-    <title>${project.Description}</title>
+    <title>${project.name}</title>
     <vendor>E-Government Innovationszentrum (EGIZ)</vendor>
     <homepage href="${project.Url}"/>
-    <description>${project.Description} (BKU) MOCCA Web Start</description>
-    <description kind="short">${project.Description}</description>
+    <description>${project.name} - ${project.Description} (BKU)</description>
+    <description kind="short">${project.name}</description>
     <icon kind="shortcut" href="img/chip16.png" width="16" height="16"/>
     <icon kind="shortcut" href="img/chip24.png" width="24" height="24"/>
     <icon kind="shortcut" href="img/chip32.png" width="32" height="32"/>

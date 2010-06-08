@@ -2,11 +2,11 @@
 <jnlp spec="$jnlpspec" codebase="http://localhost:8080/webstart/" context="http://localhost:8080/" href="$outputFile">
 
   <information>
-    <title>MOCCA Unstable</title>
+    <title>${project.name} Unstable</title>
     <vendor>E-Government Innovationszentrum (EGIZ)</vendor>
     <homepage href="${project.Url}"/>
-    <description>MOCCA Web Start - Unstable Build</description>
-    <description kind="short">MOCCA Web Start - Unstable Build</description>
+    <description>${project.name} - Unstable Build</description>
+    <description kind="short">${project.name} Unstable</description>
     <icon kind="shortcut" href="img/chip16.png" width="16" height="16"/>
     <icon kind="shortcut" href="img/chip24.png" width="24" height="24"/>
     <icon kind="shortcut" href="img/chip32.png" width="32" height="32"/>

@@ -2,11 +2,11 @@
 <jnlp spec="$jnlpspec" codebase="file:${project.build.directory}/jnlp" href="$outputFile">
 
   <information>
-    <title>MOCCA Developement</title>
+    <title>${project.name} Development</title>
     <vendor>E-Government Innovationszentrum (EGIZ)</vendor>
     <homepage href="${project.Url}"/>
-    <description>MOCCA Web Start - Developement Version</description>
-    <description kind="short">MOCCA Development</description>
+    <description>${project.name} - Development Version</description>
+    <description kind="short">${project.name} Development</description>
     <icon kind="shortcut" href="img/chip48.png" width="48" height="48"/>
     <icon kind="shortcut" href="img/chip32.png" width="32" height="32"/>
     <icon kind="shortcut" href="img/chip24.png" width="24" height="24"/>
