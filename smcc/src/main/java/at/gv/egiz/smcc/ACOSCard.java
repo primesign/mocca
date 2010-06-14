@@ -21,17 +21,9 @@ import at.gv.egiz.smcc.pin.gui.PINGUI;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.AlgorithmParameters;
-import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESedeKeySpec;
-import javax.crypto.spec.IvParameterSpec;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
@@ -274,102 +266,40 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
       execSELECT_FID(channel, EF_INFOBOX);
       
       // READ BINARY
-      TransparentFileInputStream is = ISO7816Utils.openTransparentFileInputStream(channel, -1);
-      
-      int b = is.read();
-      if (b == 0x00) {
-        return null;
-      }
-      if (b != 0x41 || is.read() != 0x49 || is.read() != 0x4b) {
-        String msg = "Infobox structure invalid.";
-        log.info(msg);
-        throw new SignatureCardException(msg);
-      }
-        
-      b = is.read();
-      if (b != 0x01) {
-        String msg = "Infobox structure v{}" + b + " not supported.";
-        log.info(msg);
-        throw new SignatureCardException(msg);
-      }
-      
-      while ((b = is.read()) != 0x01 && b != 00) {
-        is.read(); // modifiers
-        is.skip(is.read() + (is.read() << 8)); // length
-      }
-      
-      if (b != 0x01) {
-        return null; 
-      }
-      
-      int modifiers = is.read();
-      int length = is.read() + (is.read() << 8);
+      TransparentFileInputStream is = ISO7816Utils
+          .openTransparentFileInputStream(channel, -1);
+      InfoboxContainer infoboxContainer = new InfoboxContainer(is, (byte) 0x30);
 
-      byte[] bytes;
-      byte[] key = null;
-      
-      switch (modifiers) {
-      case 0x00:
-        bytes = new byte[length];
-        break;
-      case 0x01:
-        key = new byte[is.read() + (is.read() << 8)];
-        is.read(key);
-        bytes = new byte[length - key.length - 2];
-        break;
-      default:
-        String msg = "Compressed infobox structure not yet supported.";
-        log.info(msg);
-        throw new SignatureCardException(msg);
-      }
-      
-      is.read(bytes);
-      
-      if (key == null) {
-        return bytes;
-      }
+      for (Infobox box : infoboxContainer.getInfoboxes()) {
+        if (box.getTag() == 0x01) {
+          if (box.isEncrypted()) {
 
-      execMSE(channel, 0x41, 0xb8, new byte[] {
-          (byte) 0x84, (byte) 0x01, (byte) 0x88, (byte) 0x80, (byte) 0x01,
-          (byte) 0x02 });
+            execMSE(channel, 0x41, 0xb8, new byte[] {
+                (byte) 0x84, (byte) 0x01, (byte) 0x88, (byte) 0x80, (byte) 0x01,
+                (byte) 0x02 });
 
 
-      byte[] plainKey = null;
+            byte[] plainKey = null;
 
-      while (true) {
-        try {
-          plainKey = execPSO_DECIPHER(channel, key);
-          break;
-        } catch(SecurityStatusNotSatisfiedException e) {
-          verifyPINLoop(channel, decPinInfo, provider);
+            while (true) {
+              try {
+                plainKey = execPSO_DECIPHER(channel, box.getEncryptedKey());
+                break;
+              } catch(SecurityStatusNotSatisfiedException e) {
+                verifyPINLoop(channel, decPinInfo, provider);
+              }
+            }
+
+            return box.decipher(plainKey);
+            
+          } else {
+            return box.getData();
+          }
         }
       }
-      
-      try {
-        Cipher cipher = Cipher
-            .getInstance("DESede/CBC/PKCS5Padding");
-        byte[] iv = new byte[8];
-        Arrays.fill(iv, (byte) 0x00);
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
-        AlgorithmParameters parameters = AlgorithmParameters
-            .getInstance("DESede");
-        parameters.init(ivParameterSpec);
 
-        DESedeKeySpec keySpec = new DESedeKeySpec(plainKey);
-        SecretKeyFactory keyFactory = SecretKeyFactory
-            .getInstance("DESede");
-        SecretKey secretKey = keyFactory.generateSecret(keySpec);
-
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, parameters);
-
-        return cipher.doFinal(bytes);
-
-      } catch (GeneralSecurityException e) {
-        String msg = "Failed to decrypt infobox.";
-        log.info(msg, e);
-        throw new SignatureCardException(msg, e);
-      }
-      
+      // empty
+      return null;
       
     } catch (FileNotFoundException e) {
       throw new NotActivatedException();

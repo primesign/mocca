@@ -104,11 +104,11 @@ public class ISO7816Utils {
     TransparentFileInputStream is = openTransparentFileInputStream(channel,
         maxSize);
     
-    return readTransparentFileTLV(is, maxSize, expectedType);
+    return readTransparentFileTLV(is, expectedType);
 
   }
   
-  public static byte[] readTransparentFileTLV(TransparentFileInputStream is, int maxSize,
+  public static byte[] readTransparentFileTLV(TransparentFileInputStream is,
       byte expectedType) throws CardException, SignatureCardException {
 
 

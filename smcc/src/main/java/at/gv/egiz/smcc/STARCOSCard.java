@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.smcc.util.ISO7816Utils;
 import at.gv.egiz.smcc.util.SMCCHelper;
+import at.gv.egiz.smcc.util.TransparentFileInputStream;
 
 public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatureCard {
 
@@ -233,13 +234,57 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         // SELECT file
         execSELECT_FID(channel, EF_INFOBOX);
 
-        while (true) {
+        InfoboxContainer infoboxContainer = null;
+        while (infoboxContainer == null) {
           try {
-            return ISO7816Utils.readTransparentFileTLV(channel, -1, (byte) 0x30);
-          } catch (SecurityStatusNotSatisfiedException e) {
-            verifyPINLoop(channel, cardPinInfo, pinGUI);
+            
+            TransparentFileInputStream is = ISO7816Utils
+                .openTransparentFileInputStream(channel, -1);
+            infoboxContainer = new InfoboxContainer(is, (byte) 0x30);
+
+          } catch (IOException e) {
+            if (e.getCause() instanceof SecurityStatusNotSatisfiedException) {
+              verifyPINLoop(channel, cardPinInfo, pinGUI);
+            } else {
+              log.warn("Failed to read infobox.", e);
+              throw new SignatureCardException("Failed to read infobox.", e);
+            }
           }
         }
+
+        for (Infobox box : infoboxContainer.getInfoboxes()) {
+          if (box.getTag() == 0x01) {
+            if (box.isEncrypted()) {
+
+              execSELECT_AID(channel, AID_DF_GS);
+              
+              execMSE(channel, 0x41, 0xb8, new byte[] {
+                  (byte) 0x84, (byte) 0x03, (byte) 0x80, (byte) 0x03, (byte) 0x00,
+                  (byte) 0x80, (byte) 0x01, (byte) 0x81});
+
+
+              byte[] plainKey = null;
+
+              while (true) {
+                try {
+                  plainKey = execPSO_DECIPHER(channel, box.getEncryptedKey());
+                  break;
+                } catch(SecurityStatusNotSatisfiedException e) {
+                  verifyPINLoop(channel, cardPinInfo, pinGUI);
+                }
+              }
+
+              return box.decipher(plainKey);
+              
+            } else {
+              return box.getData();
+            }
+          }
+        }
+
+        // empty
+        return null;
+
         
       } else if ("Status".equals(infobox)) {
         
@@ -285,7 +330,8 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         return ISO7816Utils.readTransparentFileTLV(channel, -1, (byte) 0x30);
         
       }
-        
+    } catch (FileNotFoundException e) {
+      throw new NotActivatedException(e);
     } catch (CardException e) {
       log.warn("Failed to execute command.", e);
       throw new SignatureCardException("Failed to access card.", e);
@@ -889,4 +935,23 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
       return resp.getData();
     }
   }
+  
+  protected byte[] execPSO_DECIPHER(CardChannel channel, byte [] cipher) throws CardException, SignatureCardException {
+    
+    byte[] data = new byte[cipher.length + 1];
+    data[0] = (byte) 0x81;
+    System.arraycopy(cipher, 0, data, 1, cipher.length);
+    ResponseAPDU resp = channel.transmit(new CommandAPDU(0x00, 0x2A, 0x80, 0x86, data, 256));
+    if (resp.getSW() == 0x6982) {
+      throw new SecurityStatusNotSatisfiedException();
+    } else if (resp.getSW() != 0x9000) {
+      throw new SignatureCardException(
+          "PSO - DECIPHER failed: SW="
+          + Integer.toHexString(resp.getSW()));
+    }
+    
+    return resp.getData();
+    
+  }
+
 }
