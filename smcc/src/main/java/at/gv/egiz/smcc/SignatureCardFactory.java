@@ -324,7 +324,7 @@ public class SignatureCardFactory {
     supportedCards.add(new SupportedCard(
             // ATR
             // (3B:5E:11:FF:45:73:74:45:49:44:20:76:65:72:20:31:2E:30)
-            new byte[] { (byte) 0x3b, (byte) 0x5e, (byte) 0x11,
+            new byte[] { (byte) 0x3b, (byte) 0x00, (byte) 0x00,
                     (byte) 0xff, (byte) 0x45, (byte) 0x73, (byte) 0x74,
                     (byte) 0x45, (byte) 0x49, (byte) 0x44, (byte) 0x20,
                     (byte) 0x76, (byte) 0x65, (byte) 0x72, (byte) 0x20,
