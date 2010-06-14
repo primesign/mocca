@@ -44,6 +44,8 @@ public class EstEIDCard extends AbstractSignatureCard {
   public static final byte[] DF = { (byte) 0xEE, (byte) 0xEE };
   
   public static final byte[] EF_CERT = { (byte) 0xDD, (byte) 0x0CE };
+  
+  public static final byte[] MF = { (byte) 0x3F, (byte) 0x00 };
 
   private static final PinInfo QS_PIN_SPEC = new PinInfo(5, 12, "[0-9]",
       "at/gv/egiz/smcc/EstEIDCard", "qs.pin", KID_PIN_2, DF, PinInfo.UNKNOWN_RETRIES);
@@ -185,10 +187,9 @@ public class EstEIDCard extends AbstractSignatureCard {
     
   }
 
-  
   protected void execSELECT_MF(CardChannel channel)
       throws SignatureCardException, CardException {
-    execSELECT(channel, 0x00, null);
+    execSELECT(channel, 0x00, MF);
   }
   
   protected void execSELECT_DF(CardChannel channel, byte[] fid)
@@ -204,12 +205,7 @@ public class EstEIDCard extends AbstractSignatureCard {
   protected void execSELECT(CardChannel channel, int p1, byte[] fid)
       throws SignatureCardException, CardException {
 
-    CommandAPDU command;
-    if (fid != null) {
-      command = new CommandAPDU(0x00, 0xA4, p1, 0x0C, fid, 256);
-    } else {
-      command = new CommandAPDU(0x00, 0xA4, p1, 0x0C, 256);
-    }
+    CommandAPDU command = new CommandAPDU(0x00, 0xA4, p1, 0x0C, fid, 256);
     
     ResponseAPDU resp = channel.transmit(command);
 
