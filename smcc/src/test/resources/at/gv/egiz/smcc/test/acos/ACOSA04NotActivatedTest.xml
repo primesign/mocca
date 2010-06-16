@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		Copyright 2008 Federal Chancellery Austria and Graz University of
+		Technology Licensed under the Apache License, Version 2.0 (the
+		"License"); you may not use this file except in compliance with the
+		License. You may obtain a copy of the License at
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+	-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<import resource="ACOSA04.xml" />
+
+	<bean name="card" parent="acosA04">
+		<property name="applications">
+			<list>
+				<ref bean="applDEC_notActivated" />
+				<ref bean="applSIG_notActivated" />
+			</list>
+		</property>
+	</bean>
+
+	<bean name="applDEC_notActivated" parent="applDEC">
+		<property name="files">
+			<list>
+				<bean class="at.gv.egiz.smcc.test.spring.CertificateFileFactoryBean">
+					<property name="fid" value="c0:01" />
+					<property name="fileSize" value="2000" />
+					<property name="fcx" value="6f:07:80:02:07:d0:82:01 01" />
+					<property name="certificate" value="" />
+				</bean>
+				<bean
+					class="at.gv.egiz.smcc.test.spring.InfoboxContainerFileFactoryBean">
+					<property name="fid" value="c0:02" />
+					<property name="fileSize" value="1500" />
+					<property name="fcx" value="6f:07:80:02:05:dc:82:01:01" />
+					<property name="identityLink" value="" />
+				</bean>
+			</list>
+		</property>
+		<property name="pins">
+			<map>
+				<entry key="0x81">
+					<bean class="at.gv.egiz.smcc.PIN">
+						<property name="state">
+							<util:constant static-field="at.gv.egiz.smcc.PIN.STATE_PIN_NOTACTIVE" />
+						</property>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean name="applSIG_notActivated" parent="applSIG">
+		<property name="files">
+			<list>
+				<ref bean="EF_INFO" />
+				<bean parent="EF_C_CH_DS">
+					<property name="certificate" value="" />
+				</bean>
+			</list>
+		</property>
+		<property name="pins">
+			<map>
+				<entry key="0x81">
+					<bean class="at.gv.egiz.smcc.PIN">
+						<property name="state">
+							<util:constant static-field="at.gv.egiz.smcc.PIN.STATE_PIN_NOTACTIVE" />
+						</property>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+</beans>

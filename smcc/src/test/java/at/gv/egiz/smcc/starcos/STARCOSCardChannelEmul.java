@@ -16,43 +16,34 @@
 */
 package at.gv.egiz.smcc.starcos;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
-import javax.smartcardio.Card;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
 import at.gv.egiz.smcc.AbstractAppl;
 import at.gv.egiz.smcc.CardChannelEmul;
-import at.gv.egiz.smcc.CardEmul;
 import at.gv.egiz.smcc.File;
 import at.gv.egiz.smcc.PIN;
-import java.util.ArrayList;
-import java.util.List;
 
-@SuppressWarnings("restriction")
 public class STARCOSCardChannelEmul extends CardChannelEmul {
 
   public static final int KID_PIN_Glob = 0x01;
   
-  /**
-   * 
-   */
-  protected CardEmul cardEmul;
+  protected List<File> globalFiles = new ArrayList<File>();
+  
+  protected HashMap<Integer, PIN> globalPins = new HashMap<Integer, PIN>();
 
-  public final List<File> globalFiles = new ArrayList<File>();
-  public final HashMap<Integer, PIN> globalPins = new HashMap<Integer, PIN>();
-
-  public STARCOSCardChannelEmul(CardEmul cardEmul, byte[] Glob_PIN, int PIN_STATE) {
-    this.cardEmul = cardEmul;
-    globalPins.put(KID_PIN_Glob, new PIN(Glob_PIN, KID_PIN_Glob, 10, PIN_STATE));
- }
-
-  @Override
-  public Card getCard() {
-    return cardEmul;
+  public void setGlobalFiles(List<File> globalFiles) {
+    this.globalFiles = globalFiles;
+  }
+  
+  public void setGlobalPins(HashMap<Integer, PIN> globalPins) {
+    this.globalPins = globalPins;
   }
 
   protected ResponseAPDU cmdSELECT(CommandAPDU command) throws CardException {
@@ -122,7 +113,7 @@ public class STARCOSCardChannelEmul extends CardChannelEmul {
         }
         currentAppl = appl;
 
-        byte[] fci = currentAppl.getFCI();
+        byte[] fci = currentAppl.getFCX();
         byte[] response = new byte[fci.length + 2];
         System.arraycopy(fci, 0, response, 0, fci.length);
         response[fci.length] = (byte) 0x90;

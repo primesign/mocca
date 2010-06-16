@@ -34,6 +34,9 @@ public class PIN {
   
   public int kfpc; // = 10;
 
+  public PIN() {
+  };
+  
   //TODO also provde default constructor without state param
   public PIN(byte[] pin, int kid, int kfpc, int state) {
     this.pin = pin;
@@ -42,4 +45,62 @@ public class PIN {
     this.state = state;
   }
 
+  /**
+   * @return the pin
+   */
+  public byte[] getPin() {
+    return pin;
+  }
+
+  /**
+   * @param pin the pin to set
+   */
+  public void setPin(byte[] pin) {
+    this.pin = pin;
+  }
+
+  /**
+   * @return the kid
+   */
+  public int getKid() {
+    return kid;
+  }
+
+  /**
+   * @param kid the kid to set
+   */
+  public void setKid(int kid) {
+    this.kid = kid;
+  }
+
+  /**
+   * @return the state
+   */
+  public int getState() {
+    return state;
+  }
+
+  /**
+   * @param state the state to set
+   */
+  public void setState(int state) {
+    this.state = state;
+  }
+
+  /**
+   * @return the kfpc
+   */
+  public int getKfpc() {
+    return kfpc;
+  }
+
+  /**
+   * @param kfpc the kfpc to set
+   */
+  public void setKfpc(int kfpc) {
+    this.kfpc = kfpc;
+  }
+
+  
+  
 }

@@ -24,14 +24,8 @@ import javax.smartcardio.ResponseAPDU;
 import at.gv.egiz.smcc.CardChannelEmul;
 
 
-@SuppressWarnings("restriction")
 public class A03ApplSIG extends ACOSApplSIG {
   
-  public A03ApplSIG() {
-    super();
-    System.arraycopy(C_CH_DS, 0, EF_C_CH_DS, 0, C_CH_DS.length);
-  }
-
   @Override
   public ResponseAPDU cmdMANAGE_SECURITY_ENVIRONMENT(CommandAPDU command, CardChannelEmul channel) {
 
@@ -63,9 +57,9 @@ public class A03ApplSIG extends ACOSApplSIG {
     case 0xB8:
       switch (command.getP1()) {
       case 0x41:
-        // PSO � DECIPHER
+        // PSO - DECIPHER
       case 0x81:
-        // PSO � ENCIPHER
+        // PSO - ENCIPHER
       }
     default:
       return new ResponseAPDU(new byte[] {(byte) 0x6A, (byte) 0x81});

@@ -118,7 +118,7 @@ public class ISO7816Utils {
 
       // check expected type
       int b = is.read();
-      if (b == 0x00) {
+      if (b == 0x00 || b == 0xFF) {
         return null;
       }
       if (b == -1 || expectedType != (0xFF & b)) {

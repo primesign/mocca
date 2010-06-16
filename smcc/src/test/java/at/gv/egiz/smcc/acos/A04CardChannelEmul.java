@@ -21,15 +21,8 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
-import at.gv.egiz.smcc.CardEmul;
 
-
-@SuppressWarnings("restriction")
 public class A04CardChannelEmul extends ACOSCardChannelEmul {
-
-  public A04CardChannelEmul(CardEmul cardEmul) {
-    super(cardEmul);
-  }
 
   @Override
   public ResponseAPDU cmdREAD_BINARY(CommandAPDU command) throws CardException {

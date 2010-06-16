@@ -34,12 +34,19 @@ public class HexDump {
   }
   
   public static void hexDump(InputStream is, Writer writer, int chunkSize) throws IOException {
+    hexDump(is, writer, chunkSize, false);
+  }
+  
+  public static void hexDump(InputStream is, Writer writer, int chunkSize, boolean plain) throws IOException {
     
     byte[] chunk = new byte[chunkSize];
     long adr = 0;
     for (int l; (l = is.read(chunk)) != -1;) {
       
-      writer.append(String.format("[%06x]", adr));
+      if (!plain) {
+        writer.append(String.format("[%06x]", adr));
+      }
+      
       for (int i = 0; i < l; i++) {
         if (i % 8 == 0) {
           writer.append(" ");
@@ -54,14 +61,16 @@ public class HexDump {
         writer.append("   ");
       }
       
-      for (int i = 0; i < l; i++) {
-        if (i % 8 == 0) {
-          writer.append(" ");
-        }
-        if (chunk[i] > 31 && chunk[i] < 127) {
-          writer.append((char) chunk[i]);
-        } else {
-          writer.append(".");
+      if (!plain) {
+        for (int i = 0; i < l; i++) {
+          if (i % 8 == 0) {
+            writer.append(" ");
+          }
+          if (chunk[i] > 31 && chunk[i] < 127) {
+            writer.append((char) chunk[i]);
+          } else {
+            writer.append(".");
+          }
         }
       }
 

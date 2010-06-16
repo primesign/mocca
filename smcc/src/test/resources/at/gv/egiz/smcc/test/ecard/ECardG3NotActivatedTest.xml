@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		Copyright 2008 Federal Chancellery Austria and Graz University of
+		Technology Licensed under the Apache License, Version 2.0 (the
+		"License"); you may not use this file except in compliance with the
+		License. You may obtain a copy of the License at
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+	-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<import resource="ECardG3.xml" />
+
+	<bean name="card" parent="eCardG3">
+		<property name="basicChannel" ref="cardChannel_notActivated" />
+		<property name="applications">
+			<list>
+				<ref bean="applInfobox_notActivated" />
+				<ref bean="applSichereSignatur_notActivated" />
+				<ref bean="applGewoehnlicheSignatur_notActivated" />
+			</list>
+		</property>
+	</bean>
+
+	<bean name="cardChannel_notActivated" parent="cardChannel">
+		<property name="globalPins">
+			<map>
+				<entry key="0x01">
+					<bean parent="kartenPIN">
+						<property name="state">
+							<util:constant static-field="at.gv.egiz.smcc.PIN.STATE_PIN_NOTACTIVE" />
+						</property>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean name="applInfobox_notActivated" parent="applInfobox">
+		<property name="files">
+			<list>
+				<bean parent="EF_Infobox">
+					<property name="identityLink" value="" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean name="applGewoehnlicheSignatur_notActivated" parent="applGewoehnlicheSignatur">
+		<property name="files">
+			<list>
+				<bean parent="EF_C_X509_CH_AUT">
+					<property name="certificate" value="" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean name="applSichereSignatur_notActivated" parent="applSichereSignatur">
+		<property name="files">
+			<list>
+				<bean parent="EF_C_X509_CH_DS">
+					<property name="certificate" value="" />
+				</bean>
+			</list>
+		</property>
+		<property name="pins">
+			<map>
+				<entry key="0x81">
+					<bean parent="signaturPIN">
+						<property name="pin" value="26:12:34:56:ff:ff:ff:ff" />
+						<property name="state">
+							<util:constant static-field="at.gv.egiz.smcc.PIN.STATE_PIN_NOTACTIVE" />
+						</property>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+</beans>

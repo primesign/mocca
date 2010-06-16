@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		Copyright 2008 Federal Chancellery Austria and Graz University of
+		Technology Licensed under the Apache License, Version 2.0 (the
+		"License"); you may not use this file except in compliance with the
+		License. You may obtain a copy of the License at
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+	-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<import resource="ACOS.xml" />
+
+	<bean name="applSIG" class="at.gv.egiz.smcc.acos.A04ApplSIG">
+		<property name="aid" value="a0:00:00:01:18:45:43" />
+		<property name="fid" value="df:70" />
+		<property name="fcx"
+			value="6f:1a:84:07:a0:00:00:01:18:45:43:85:0f:50:0d:44:49:47:53:49:47:20:43:43:20:45:43:43" />
+		<property name="files">
+			<list>
+        <ref bean="EF_INFO" />
+				<ref bean="EF_C_CH_DS" />
+			</list>
+		</property>
+		<property name="pins">
+			<map>
+				<entry key="0x81" value-ref="signaturPIN" />
+			</map>
+		</property>
+	</bean>
+
+	<bean name="signaturPIN" class="at.gv.egiz.smcc.PIN">
+		<property name="pin" value="31:32:33:34:35:36:00:00" />
+		<property name="kfpc" value="3" />
+	</bean>
+
+  <bean name="EF_INFO" class="at.gv.egiz.smcc.File">
+    <property name="fid" value="d0:02" />
+    <property name="fcx"
+      value="6f:07:80:02:00:08:82:01:01:" />
+    <property name="file">
+      <value>
+        02:00:00:00:00:00:00:00
+      </value>
+    </property>
+  </bean>
+
+	<bean name="EF_C_CH_DS"
+		class="at.gv.egiz.smcc.test.spring.CertificateFileFactoryBean">
+		<property name="fid" value="c0:02" />
+		<property name="fileSize" value="2000" />
+		<property name="fcx"
+			value="6f:07:80:02:07:d0:82:01:01" />
+		<property name="certificate" ref="certificateSS" />
+	</bean>
+
+</beans>

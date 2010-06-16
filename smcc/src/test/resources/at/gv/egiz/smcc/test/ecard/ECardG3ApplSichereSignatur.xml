@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		Copyright 2008 Federal Chancellery Austria and Graz University of
+		Technology Licensed under the Apache License, Version 2.0 (the
+		"License"); you may not use this file except in compliance with the
+		License. You may obtain a copy of the License at
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+	-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<import resource="ECard.xml" />
+
+	<bean name="applSichereSignatur" class="at.gv.egiz.smcc.starcos.STARCOSG3ApplSichereSignatur">
+		<property name="cardChannel" ref="cardChannel" />
+		<property name="aid" value="d0:40:00:00:17:00:12:01" />
+		<property name="fid" value="3f:04" />
+		<property name="fcx"
+			value="6f:16:84:08:d0:40:00:00:17:00:12:01:a5:0a:53:02:01:10:54:04:01:00:03:00" />
+		<property name="files">
+			<list>
+				<ref bean="EF_C_X509_CH_DS" />
+			</list>
+		</property>
+		<property name="pins">
+			<map>
+				<entry key="0x81" value-ref="signaturPIN" />
+			</map>
+		</property>
+	</bean>
+
+	<bean name="signaturPIN" class="at.gv.egiz.smcc.PIN">
+		<property name="pin" value="26:12:34:56:ff:ff:ff:ff" />
+		<property name="kfpc" value="3" />
+	</bean>
+
+	<bean name="EF_C_X509_CH_DS"
+		class="at.gv.egiz.smcc.test.spring.CertificateFileFactoryBean">
+		<property name="fid" value="c0:00" />
+		<property name="fileSize" value="2000" />
+		<property name="fcx"
+			value="62:16:80:02:04:ef:82:01:01:83:02:c0:00:88:01:08:8a:01:05:a1:03:8b:01:0e" />
+		<property name="certificate" ref="certificateSS" />
+	</bean>
+
+</beans>

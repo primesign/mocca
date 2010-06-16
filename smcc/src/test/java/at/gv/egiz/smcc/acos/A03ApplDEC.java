@@ -16,7 +16,6 @@
 */
 package at.gv.egiz.smcc.acos;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -24,28 +23,11 @@ import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
 import at.gv.egiz.smcc.CardChannelEmul;
-import at.gv.egiz.smcc.File;
 import at.gv.egiz.smcc.PIN;
 
 
-@SuppressWarnings("restriction")
 public class A03ApplDEC extends ACOSApplDEC {
   
-  public static final int KID_PIN_INF = 0x83;
-
-  public A03ApplDEC() {
-    super();
-
-    System.arraycopy(IDLINK, 0, EF_INFOBOX, 0, IDLINK.length);
-    putFile(new File(FID_EF_INFOBOX, EF_INFOBOX, FCI_EF_INFOBOX, KID_PIN_INF));
-
-    try {
-      pins.put(KID_PIN_INF, new PIN("0000\0\0\0\0".getBytes("ASCII"), KID_PIN_INF, 10, PIN.STATE_RESET));
-    } catch (UnsupportedEncodingException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
   @Override
   public ResponseAPDU cmdMANAGE_SECURITY_ENVIRONMENT(CommandAPDU command, CardChannelEmul channel) {
 

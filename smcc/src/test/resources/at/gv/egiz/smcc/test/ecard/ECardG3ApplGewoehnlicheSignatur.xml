@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		Copyright 2008 Federal Chancellery Austria and Graz University of
+		Technology Licensed under the Apache License, Version 2.0 (the
+		"License"); you may not use this file except in compliance with the
+		License. You may obtain a copy of the License at
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+	-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<import resource="ECard.xml" />
+
+	<bean name="applGewoehnlicheSignatur"
+		class="at.gv.egiz.smcc.starcos.STARCOSApplGewoehnlicheSignatur">
+		<property name="cardChannel" ref="cardChannel" />
+		<property name="aid" value="d0:40:00:00:17:00:13:01" />
+		<property name="fid" value="3f:05" />
+		<property name="fcx"
+			value="6f:14:84:08:d0:40:00:00:17:00:13:01:a5:08:53:02:01:10:54:02:01:00" />
+	  <property name="privateKey" ref="privateKeyAUT" />
+		<property name="dst" value="84:03:80:02:00:80:01:04" />
+		<property name="ct" value="84:03:80:03:00:80:01:81" />
+		<property name="files">
+			<list>
+				<ref bean="EF_C_X509_CH_AUT" />
+			</list>
+		</property>
+	</bean>
+
+	<bean name="EF_C_X509_CH_AUT"
+		class="at.gv.egiz.smcc.test.spring.CertificateFileFactoryBean">
+		<property name="fid" value="2f:01" />
+		<property name="fileSize" value="2000" />
+		<property name="fcx"
+			value="62:16:80:02:04:9c:82:01:01:83:02:2f:01:88:01:08:8a:01:05:a1:03:8b:01:08" />
+		<property name="certificate" ref="certificateGS" />
+	</bean>
+
+</beans>

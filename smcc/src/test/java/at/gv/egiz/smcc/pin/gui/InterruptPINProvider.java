@@ -19,7 +19,6 @@ package at.gv.egiz.smcc.pin.gui;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.PinInfo;
 
-@SuppressWarnings("restriction")
 public class InterruptPINProvider extends DummyPINGUI implements PINGUI {
 
   public InterruptPINProvider() {

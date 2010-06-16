@@ -16,9 +16,6 @@
 */
 package at.gv.egiz.smcc.starcos;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import javax.smartcardio.CommandAPDU;
@@ -29,31 +26,15 @@ import at.gv.egiz.smcc.CardAppl;
 import at.gv.egiz.smcc.CardChannelEmul;
 import at.gv.egiz.smcc.PIN;
 
-@SuppressWarnings("restriction")
 public abstract class STARCOSAppl extends AbstractAppl implements CardAppl {
 
-  public static byte[] AID_SichereSignatur = new byte[] { (byte) 0xD0, (byte) 0x40,
-        (byte) 0x00, (byte) 0x00, (byte) 0x17, (byte) 0x00, (byte) 0x12, (byte) 0x01 };
-  
-  public static byte[] FID_SichereSignatur = new byte[] { (byte) 0x3F, (byte) 0x04 };
-  
-  public static byte[] AID_Infobox = new byte[] { (byte) 0xD0, (byte) 0x40,
-    (byte) 0x00, (byte) 0x00, (byte) 0x17, (byte) 0x00, (byte) 0x18, (byte) 0x01 };
-
-  public static byte[] FID_Infobox = new byte[] { (byte) 0x3F, (byte) 0x06 };
-
-  public static byte[] AID_GewoehnlicheSignatur = new byte[] { (byte) 0xD0, (byte) 0x40,
-    (byte) 0x00, (byte) 0x00, (byte) 0x17, (byte) 0x00, (byte) 0x13, (byte) 0x01 };
-
-  public static byte[] FID_GewoehnlicheSignatur = new byte[] { (byte) 0x3F, (byte) 0x05 };
-  
   protected STARCOSCardChannelEmul channel;
   
   protected byte[] securityEnv;
 
   protected byte[] hash;
 
-  public STARCOSAppl(STARCOSCardChannelEmul channel) {
+  public void setCardChannel(STARCOSCardChannelEmul channel) {
     this.channel = channel;
   }
 

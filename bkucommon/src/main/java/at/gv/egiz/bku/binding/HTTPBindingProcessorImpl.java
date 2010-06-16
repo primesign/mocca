@@ -427,9 +427,9 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 						currentState = State.FINISHED;
 					}
 				} else {
-					log.debug("Content type not set in dataurl response.");
+					log.info("Content type not set in dataurl response.");
 					closeDataUrlConnection();
-					throw new SLBindingException(2007);
+                    throw new SLBindingException(2007);
 				}
 
 				break;
@@ -483,7 +483,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 				// issue error
 				log.info("Unexpected response code from dataurl server: {}.", 
 				    dataUrlResponse.getResponseCode());
-				throw new SLBindingException(2007);
+                throw new SLBindingException(2007);
 			}
 
 		} catch (SLException slx) {

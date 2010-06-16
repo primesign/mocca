@@ -37,5 +37,10 @@
       <artifactId>iaik_jce_full_signed</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

@@ -17,10 +17,14 @@
 package at.gv.egiz.smcc;
 
 public class File {
+  
   public byte[] fid;
   public byte[] file;
   public byte[] fcx;
   public int kid = -1;
+  
+  public File() {
+  }
 
   public File(byte[] fid, byte[] file, byte[] fcx) {
     this.fid = fid;
@@ -35,4 +39,62 @@ public class File {
     this.kid = kid;
   }
 
+  /**
+   * @return the fid
+   */
+  public byte[] getFid() {
+    return fid;
+  }
+
+  /**
+   * @param fid the fid to set
+   */
+  public void setFid(byte[] fid) {
+    this.fid = fid;
+  }
+
+  /**
+   * @return the file
+   */
+  public byte[] getFile() {
+    return file;
+  }
+
+  /**
+   * @param file the file to set
+   */
+  public void setFile(byte[] file) {
+    this.file = file;
+  }
+
+  /**
+   * @return the fcx
+   */
+  public byte[] getFcx() {
+    return fcx;
+  }
+
+  /**
+   * @param fcx the fcx to set
+   */
+  public void setFcx(byte[] fcx) {
+    this.fcx = fcx;
+  }
+
+  /**
+   * @return the kid
+   */
+  public int getKid() {
+    return kid;
+  }
+
+  /**
+   * @param kid the kid to set
+   */
+  public void setKid(int kid) {
+    this.kid = kid;
+  }
+
+  
+  
 }

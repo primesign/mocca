@@ -18,19 +18,17 @@ package at.gv.egiz.smcc;
 
 import java.nio.ByteBuffer;
 
+import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 
-@SuppressWarnings("restriction")
 public abstract class CardChannelEmul extends CardChannel {
+  
+  protected CardEmul cardEmul;
 
   protected AbstractAppl currentAppl = null;
   protected File currentFile = null;
-
-  public CardChannelEmul() {
-    super();
-  }
 
   @Override
   public int getChannelNumber() {
@@ -47,6 +45,14 @@ public abstract class CardChannelEmul extends CardChannel {
     byte[] responseBytes = transmit(new CommandAPDU(command)).getBytes();
     response.put(responseBytes);
     return responseBytes.length;
+  }
+
+  public Card getCard() {
+    return cardEmul;
+  }
+
+  public void setCardEmul(CardEmul card) {
+    this.cardEmul = card;
   }
 
 }

@@ -29,18 +29,7 @@ import at.gv.egiz.smcc.CardAppl;
 import at.gv.egiz.smcc.CardChannelEmul;
 import at.gv.egiz.smcc.PIN;
 
-@SuppressWarnings("restriction")
 public abstract class ACOSAppl extends AbstractAppl implements CardAppl {
-
-  public static byte[] AID_SIG = new byte[] { (byte) 0xA0, (byte) 0x00,
-        (byte) 0x00, (byte) 0x01, (byte) 0x18, (byte) 0x45, (byte) 0x43 };
-  
-  public static byte[] FID_SIG = new byte[] { (byte) 0xDF, (byte) 0x70 };
-  
-  public static byte[] AID_DEC = new byte[] { (byte) 0xA0, (byte) 0x00,
-        (byte) 0x00, (byte) 0x01, (byte) 0x18, (byte) 0x45, (byte) 0x4E };
-
-  public static byte[] FID_DEC = new byte[] { (byte) 0xDF, (byte) 0x71 };
 
   protected byte[] securityEnv;
 

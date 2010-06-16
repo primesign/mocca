@@ -18,33 +18,16 @@ package at.gv.egiz.smcc.acos;
 
 import java.util.Arrays;
 
-import javax.smartcardio.Card;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
 import at.gv.egiz.smcc.AbstractAppl;
 import at.gv.egiz.smcc.CardChannelEmul;
-import at.gv.egiz.smcc.CardEmul;
 import at.gv.egiz.smcc.File;
 import at.gv.egiz.smcc.PIN;
 
-@SuppressWarnings("restriction")
 public abstract class ACOSCardChannelEmul extends CardChannelEmul {
-
-  /**
-   * 
-   */
-  protected CardEmul cardEmul;
-
-  public ACOSCardChannelEmul(CardEmul cardEmul) {
-    this.cardEmul = cardEmul;
-  }
-
-  @Override
-  public Card getCard() {
-    return cardEmul;
-  }
 
   protected ResponseAPDU cmdSELECT(CommandAPDU command) throws CardException {
   
@@ -58,7 +41,7 @@ public abstract class ACOSCardChannelEmul extends CardChannelEmul {
       }
       currentAppl = appl;
 
-      byte[] fci = currentAppl.getFCI();
+      byte[] fci = currentAppl.getFCX();
       byte[] response = new byte[fci.length + 2];
       System.arraycopy(fci, 0, response, 0, fci.length);
       response[fci.length] = (byte) 0x90;

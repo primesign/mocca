@@ -21,14 +21,13 @@ import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
 
-@SuppressWarnings("restriction")
 public interface CardAppl {
   
   public byte[] getAID();
   
   public byte[] getFID();
   
-  public byte[] getFCI();
+  public byte[] getFCX();
   
   public void leaveApplContext();
 

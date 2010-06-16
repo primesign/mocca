@@ -283,7 +283,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         }
 
         // empty
-        return null;
+        throw new NotActivatedException();
 
         
       } else if ("Status".equals(infobox)) {

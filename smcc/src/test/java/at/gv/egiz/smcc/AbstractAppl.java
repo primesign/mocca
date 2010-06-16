@@ -20,15 +20,34 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
-import javax.smartcardio.ResponseAPDU;
 
 
 public abstract class AbstractAppl implements CardAppl {
   
-  public final HashMap<Integer, PIN> pins = new HashMap<Integer, PIN>();
+  /**
+   * The Application Identifier.
+   */
+  private byte[] aid;
+  
+  /**
+   * The File Identifier.
+   */
+  private byte[] fid;
+  
+  /**
+   * The File Control (Information / Parameter)
+   */
+  private byte[] fcx;
+  
+  /**
+   * The PINs used by this Application.
+   */
+  public HashMap<Integer, PIN> pins = new HashMap<Integer, PIN>();
 
+  /**
+   * The Files used by this Application.
+   */
   protected List<File> files = new ArrayList<File>();
 
   public void checkINS(CommandAPDU command, int ins) {
@@ -37,12 +56,54 @@ public abstract class AbstractAppl implements CardAppl {
     }
   }
 
-  @Override
-  public abstract byte[] getAID();
+  public void setAid(byte[] aID) {
+    aid = aID;
+  }
 
   @Override
-  public abstract byte[] getFCI();
+  public byte[] getAID() {
+    return aid;
+  }
+
+  public void setFid(byte[] fid) {
+    this.fid = fid;
+  }
+
+  @Override
+  public byte[] getFID() {
+    return fid;
+  }
+
+  public void setFcx(byte[] fcx) {
+    this.fcx = fcx;
+  }
+
+  @Override
+  public byte[] getFCX() {
+    return fcx;
+  }
   
+  /**
+   * @return the pins
+   */
+  public HashMap<Integer, PIN> getPins() {
+    return pins;
+  }
+
+  /**
+   * @param pins the pins to set
+   */
+  public void setPins(HashMap<Integer, PIN> pins) {
+    this.pins = pins;
+  }
+
+  /**
+   * @param files the files to set
+   */
+  public void setFiles(List<File> files) {
+    this.files = files;
+  }
+
   public void putFile(File file) {
     files.add(file);
   }

@@ -166,7 +166,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   @Override
   @Exclusive
   public byte[] getCertificate(KeyboxName keyboxName)
-      throws SignatureCardException, InterruptedException {
+      throws SignatureCardException {
     
       byte[] aid;
       byte[] fid;
@@ -240,7 +240,13 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
       // READ BINARY
       while(true) {
         try {
-          return ISO7816Utils.readTransparentFileTLV(channel, maxSize, (byte) 0x30);
+          byte[] idLink = ISO7816Utils.readTransparentFileTLV(channel, maxSize,
+              (byte) 0x30);
+          if (idLink != null) {
+            return idLink;
+          } else {
+            throw new NotActivatedException();
+          }
         } catch (SecurityStatusNotSatisfiedException e) {
           verifyPINLoop(channel, infPinInfo, provider);
         }
@@ -299,7 +305,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
       }
 
       // empty
-      return null;
+      throw new NotActivatedException();
       
     } catch (FileNotFoundException e) {
       throw new NotActivatedException();
@@ -472,7 +478,11 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
    * @see at.gv.egiz.smcc.PINMgmtSignatureCard#getpinInfos()
    */
   @Override
-  public PinInfo[] getPinInfos() {
+  public PinInfo[] getPinInfos() throws SignatureCardException {
+    
+    //check if card is activated
+    getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR);
+    
     if (appVersion < 2) {
       return new PinInfo[] {decPinInfo, sigPinInfo, infPinInfo };
     }

@@ -16,20 +16,15 @@
 */
 package at.gv.egiz.smcc.util;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 
 import javax.smartcardio.CommandAPDU;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import at.gv.egiz.smcc.VerifyAPDUSpec;
-import at.gv.egiz.smcc.util.ISO7816Utils;
-import static org.junit.Assert.*;
 
 public class ISO7816UtilsTest {
   
@@ -156,20 +151,5 @@ public class ISO7816UtilsTest {
     assertTrue(Arrays.equals(apdu.getBytes(), ref));
 
   }
-  
-  private String toString(byte[] b) {
-    StringBuffer sb = new StringBuffer();
-    if (b != null && b.length > 0) {
-      sb.append(Integer.toHexString((b[0] & 240) >> 4));
-      sb.append(Integer.toHexString(b[0] & 15));
-    }
-    for (int i = 1; i < b.length; i++) {
-      sb.append(':');
-      sb.append(Integer.toHexString((b[i] & 240) >> 4));
-      sb.append(Integer.toHexString(b[i] & 15));
-    }
-    return sb.toString();
-  }
-
 
 }
