@@ -29,6 +29,7 @@
             <option>-keep public class * extends at.gv.egiz.smcc.SignatureCard { *; }</option>
             <option>-keep public class * extends java.applet.Applet { *; }</option>
             <option>-keep @javax.xml.bind.annotation.** class * { *; }</option>
+            <option>-keep @javax.xml.ws.** class * { *; }</option>
             <option>-ignorewarnings</option>
             <option>-printusage ${project.build.directory}/proguard_usage.txt</option>
             <option>-dontoptimize</option>
