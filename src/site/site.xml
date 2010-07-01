@@ -44,6 +44,7 @@ under the License.
       <item name="Download" href="http://egovlabs.gv.at/frs/?group_id=13"/>
       <item name="Source" href="http://egovlabs.gv.at/scm/?group_id=13"/>
       <item name="Wiki" href="http://egovlabs.gv.at/plugins/wiki/index.php?id=13&amp;type=g"/>
+      <item name="Tracker" href="http://jira.egovlabs.gv.at/browse/MOCCA"/>
       <item name="What's new in 1.3?" href="new.html"/>
     </menu>
     
