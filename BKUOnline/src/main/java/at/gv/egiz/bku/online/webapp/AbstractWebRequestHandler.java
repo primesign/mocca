@@ -300,8 +300,8 @@ public abstract class AbstractWebRequestHandler extends SpringBKUServlet {
       if (appletPage == null || appletPage.isEmpty()) {
         appletPage = APPLET_PAGE_DEFAULT;
       }
-      log.debug("Sending redirect to UI page '{}'.", appletPage);
-      resp.sendRedirect(appletPage);
+      log.debug("Sending redirect to UI page '{}'.", appletPage + ";jsessionid=" + id);
+      resp.sendRedirect(appletPage + ";jsessionid=" + id);
       
     } finally {
       MDC.remove("id");
