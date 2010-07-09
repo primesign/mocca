@@ -1,11 +1,30 @@
 
-BKUCertificates-1.2
--------------------
-
 *         ... newly added
 !         ... removed
 (TRUSTED) ... also included in truststore
 
+
+BKUCertificates-1.3
+-------------------
+
+*VeriSignClass3PublicPrimaryCA-G2.cer (TRUSTED)
+Serial Number: 7d:d9:fe:07:cf:a8:1e:b7:10:79:67:fb:a7:89:34:c6
+Issuer: C=US, O=VeriSign, Inc., OU=Class 3 Public Primary Certification Authority - G2, OU=(c) 1998 VeriSign, Inc. - For authorized use only, OU=VeriSign Trust Network
+Subject: C=US, O=VeriSign, Inc., OU=Class 3 Public Primary Certification Authority - G2, OU=(c) 1998 VeriSign, Inc. - For authorized use only, OU=VeriSign Trust Network
+Not Before: May 18 00:00:00 1998 GMT
+Not After : Aug  1 23:59:59 2028 GMT
+
+*VeriSignClass3SecureServerCA-G2.cer
+Serial Number: 6e:4f:fa:b3:c5:e6:69:c4:d1:67:c9:92:ab:e8:58:c4
+Issuer: C=US, O=VeriSign, Inc., OU=Class 3 Public Primary Certification Authority - G2, OU=(c) 1998 VeriSign, Inc. - For authorized use only, OU=VeriSign Trust Network
+Subject: C=US, O=VeriSign, Inc., OU=VeriSign Trust Network, OU=Terms of use at https://www.verisign.com/rpa (c)09, CN=VeriSign Class 3 Secure Server CA - G2
+Not Before: Mar 25 00:00:00 2009 GMT
+Not After : Mar 24 23:59:59 2019 GMT
+
+!www.buergerkarte.at.cer from truststore
+
+BKUCertificates-1.2
+-------------------
 
 [...]
 
