@@ -189,23 +189,23 @@ public class EstEIDCard extends AbstractSignatureCard {
 
   protected void execSELECT_MF(CardChannel channel)
       throws SignatureCardException, CardException {
-    execSELECT(channel, 0x00, MF);
+    execSELECT(channel, 0x00, 0x04, MF);
   }
   
   protected void execSELECT_DF(CardChannel channel, byte[] fid)
       throws SignatureCardException, CardException {
-    execSELECT(channel, 0x01, fid);
+    execSELECT(channel, 0x01, 0x04, fid);
   }
   
   protected void execSELECT_EF(CardChannel channel, byte[] fid)
       throws SignatureCardException, CardException {
-    execSELECT(channel, 0x02, fid);
+    execSELECT(channel, 0x02, 0x04, fid);
   }
   
-  protected void execSELECT(CardChannel channel, int p1, byte[] fid)
+  protected void execSELECT(CardChannel channel, int p1, int p2, byte[] fid)
       throws SignatureCardException, CardException {
 
-    CommandAPDU command = new CommandAPDU(0x00, 0xA4, p1, 0x0C, fid, 256);
+    CommandAPDU command = new CommandAPDU(0x00, 0xA4, p1, p2, fid, 256);
     
     ResponseAPDU resp = channel.transmit(command);
 

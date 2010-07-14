@@ -90,7 +90,9 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
       (byte) 0x40, (byte) 0x00, (byte) 0x00, (byte) 0x17, (byte) 0x00,
       (byte) 0x18, (byte) 0x01 };
 
-  public static final byte[] EF_INFOBOX = new byte[] { (byte) 0xef, (byte) 0x01 };
+  public static final byte[] EF_INFOBOX_LEGACY = new byte[] { (byte) 0xef, (byte) 0x01 };
+  
+  public static final byte[] EF_INFOBOX = { (byte) 0xc0, (byte) 0x02 };
 
   public static final byte[] AID_SVSIG_CERT = new byte[] { (byte) 0xd0,
       (byte) 0x40, (byte) 0x00, (byte) 0x00, (byte) 0x17, (byte) 0x00,
@@ -232,7 +234,14 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         // SELECT application
         execSELECT_AID(channel, AID_INFOBOX);
         // SELECT file
-        execSELECT_FID(channel, EF_INFOBOX);
+        try {
+          // the file identifier has changed with version G3b
+          execSELECT_FID(channel, EF_INFOBOX);
+        } catch (FileNotFoundException e) {
+          // fallback for < G3b 
+          log.debug("Not an eCard G3b, falling back to legacy FID for EF_Infobox.");
+          execSELECT_FID(channel, EF_INFOBOX_LEGACY);
+        }
 
         InfoboxContainer infoboxContainer = null;
         while (infoboxContainer == null) {
