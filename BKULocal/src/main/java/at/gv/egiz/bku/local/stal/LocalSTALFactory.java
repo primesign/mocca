@@ -79,7 +79,6 @@ public class LocalSTALFactory implements STALFactory {
     }
     PINManagementGUIFacade gui = new PINManagementGUI(dialog.getContentPane(),
             dialog.getLocale(),
-            BKUGUIFacade.Style.advanced,
             null,
             new ResourceFontLoader(),
             helpListener,
