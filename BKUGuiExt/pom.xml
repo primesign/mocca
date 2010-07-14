@@ -3,11 +3,11 @@
   <parent>
     <artifactId>mocca</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.3.0-RC2-SNAPSHOT</version>
+    <version>1.3.0-RC2</version>
   </parent>
   <groupId>at.gv.egiz</groupId>
   <artifactId>BKUGuiExt</artifactId>
-  <version>1.3.0-RC2-SNAPSHOT</version>
+  <version>1.3.0-RC2</version>
   <name>BKU GUI Ext</name>
   <description>Common BKU GUI functionality extension for card managment</description>
   <dependencies>
