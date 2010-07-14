@@ -9,9 +9,7 @@
   <description>MOCCA (Modular Open Citizen Card Architecture) project</description>
   <url>http://mocca.egovlabs.gv.at</url>
   <properties>
-  	<mocca.certificates.version>1.3</mocca.certificates.version>
-  	<mocca.fonts.version>1.2</mocca.fonts.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <modules>
     <module>utils</module>
@@ -308,12 +306,12 @@
       <dependency>
         <groupId>at.gv.egiz</groupId>
         <artifactId>BKUCertificates</artifactId>
-        <version>${mocca.certificates.version}</version>
+        <version>1.3-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>at.gv.egiz</groupId>
         <artifactId>BKUFonts</artifactId>
-        <version>${mocca.fonts.version}</version>
+        <version>1.2</version>
       </dependency>
       <dependency>
       	<groupId>org.springframework</groupId>
