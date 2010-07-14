@@ -66,7 +66,6 @@
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUFonts</artifactId>
-      <version>1.2</version>
       <scope>runtime</scope>
     </dependency>
     

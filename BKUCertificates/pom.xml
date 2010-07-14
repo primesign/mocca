@@ -11,7 +11,7 @@
    |   PLEASE COMMIT CHANGES to src/main/changes/changes.txt
    |   and don't forget to update depending modules (BKUOnline, BKULocal & BKUWebstart)
    |-->
-  <version>1.3-SNAPSHOT</version>
+  <version>1.3</version>
   <name>BKU Certificates</name>
 
   <description>Trusted certificates for TLS/SSL authentication</description>
