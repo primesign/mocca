@@ -39,7 +39,7 @@ public class PINManagementApplet extends BKUApplet {
 			BKUGUIFacade.Style guiStyle, URL backgroundImgURL,
 			FontProvider fontProvider, HelpListener helpListener,
 			SwitchFocusListener switchFocusListener) {
-		return new PINManagementGUI(contentPane, locale, guiStyle,
+		return new PINManagementGUI(contentPane, locale,
 				backgroundImgURL, fontProvider, helpListener,
 				switchFocusListener);
 	}
