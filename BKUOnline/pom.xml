@@ -146,6 +146,13 @@
       <classifier>single</classifier>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+    	<groupId>javax.servlet</groupId>
+    	<artifactId>jstl</artifactId>
+    	<version>1.2</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
   </dependencies>
   <description>MOCCA Online</description>
   <build>

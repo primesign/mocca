@@ -35,11 +35,12 @@ public class SessionListener implements HttpSessionListener {
 
   @Override
   public void sessionCreated(HttpSessionEvent event) {
+    log.info("Session {} created.", event.getSession().getId());
   }
 
   @Override
   public void sessionDestroyed(HttpSessionEvent event) {
-    BindingProcessorManager manager = (BindingProcessorManager) event.getSession().getServletContext().getAttribute(SpringBKUServlet.BEAN_NAME);
+    BindingProcessorManager manager = (BindingProcessorManager) event.getSession().getServletContext().getAttribute("bindingProcessorManager");
     manager.removeBindingProcessor(IdFactory.getInstance().createId(event.getSession().getId()));
     log.info("Session {} destroyed.", event.getSession().getId());
   }

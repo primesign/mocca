@@ -65,7 +65,7 @@ public class ActivationApplet extends BKUApplet {
    */
   @Override
   public STALPortType getSTALPort() throws MalformedURLException {
-    URL wsdlURL = getURLParameter(WSDL_URL, null);
+    URL wsdlURL = getURLParameter(WSDL_URL);
     log.debug("Setting STAL WSDL: {}.", wsdlURL);
     QName endpointName = new QName(STAL_WSDL_NS, STAL_SERVICE);
     log.info("Creating STAL-X enabled webservice port.");

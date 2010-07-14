@@ -88,7 +88,7 @@ public class PINManagementBKUWorker extends AppletBKUWorker {
       }
     }
 
-    applet.sendRedirect(sessionId);
+    applet.sendRedirect();
   }
 
   }

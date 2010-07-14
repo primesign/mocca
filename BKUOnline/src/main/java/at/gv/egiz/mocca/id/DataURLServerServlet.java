@@ -20,8 +20,10 @@ package at.gv.egiz.mocca.id;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.Locale;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.XMLConstants;
@@ -38,12 +40,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import at.gv.egiz.bku.binding.BindingProcessor;
+import at.gv.egiz.bku.binding.BindingProcessorManager;
 import at.gv.egiz.bku.binding.FormParameter;
-import at.gv.egiz.bku.binding.IdFactory;
+import at.gv.egiz.bku.binding.Id;
 import at.gv.egiz.bku.binding.InputDecoder;
 import at.gv.egiz.bku.binding.InputDecoderFactory;
-import at.gv.egiz.bku.online.webapp.SpringBKUServlet;
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slcommands.SLMarshallerFactory;
 import at.gv.egiz.bku.slcommands.SLResult;
@@ -55,9 +56,10 @@ import at.gv.egiz.bku.slcommands.impl.SLCommandImpl;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.utils.DebugInputStream;
 import at.gv.egiz.bku.utils.StreamUtil;
+import at.gv.egiz.org.apache.tomcat.util.http.AcceptLanguage;
 import at.gv.egiz.slbinding.SLUnmarshaller;
 
-public class DataURLServerServlet extends SpringBKUServlet {
+public class DataURLServerServlet extends HttpServlet {
   
   private static Logger log = LoggerFactory.getLogger(DataURLServerServlet.class);
   
@@ -73,6 +75,26 @@ public class DataURLServerServlet extends SpringBKUServlet {
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
     
+    BindingProcessorManager bindingProcessorManager = (BindingProcessorManager) getServletContext()
+        .getAttribute("bindingProcessorManager");
+    if (bindingProcessorManager == null) {
+      String msg = "Configuration error: BindingProcessorManager missing!";
+      log.error(msg);
+      resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
+      return;
+    }
+
+    Id id = (Id) req.getAttribute("id");
+    if (id == null) {
+      String msg = "No request id! Configuration error: ServletFilter missing?"; 
+      log.error(msg);
+      resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
+      return;
+    }
+    
+    // if binding processor with same id is present: remove
+    bindingProcessorManager.removeBindingProcessor(id);
+
     String userAgent = req.getHeader("User-Agent");
     String contentType = req.getContentType();
     log.debug("Content-Type: " + contentType + " User-Agent: " + userAgent);
@@ -148,12 +170,20 @@ public class DataURLServerServlet extends SpringBKUServlet {
       }
       
     }
-
-    SAMLBindingProcessorImpl bindingProcessor = null;
-    if (sessionId != null) {
-      bindingProcessor = getBindingProcessor(sessionId);
+    
+    Locale locale = AcceptLanguage.getLocale(req.getHeader("Accept-Language"));
+    if (log.isInfoEnabled()) {
+      log.info("Recieved request (Accept-Language locale: {}).", locale);
     }
     
+    // create new binding processor
+    String protocol = getServletConfig().getInitParameter("protocol");
+    if (protocol == null || protocol.isEmpty()) {
+      protocol = req.getScheme();
+    }
+    SAMLBindingProcessorImpl bindingProcessor = (SAMLBindingProcessorImpl) bindingProcessorManager
+        .createBindingProcessor(protocol, locale);    
+
     if (bindingProcessor != null && respElement != null) {
       
       SLResult slResult = null;
@@ -203,23 +233,8 @@ public class DataURLServerServlet extends SpringBKUServlet {
 
     }
 
-    resp.sendRedirect("bkuResult");
+    resp.sendRedirect("ui;jsessionid=" + id.toString());
     
   }    
-
-  protected SAMLBindingProcessorImpl getBindingProcessor(String sessionId) {
-    
-    BindingProcessor bp = getBindingProcessorManager().getBindingProcessor(
-        IdFactory.getInstance().createId(sessionId));
-    
-    if (bp instanceof SAMLBindingProcessorImpl) {
-      log.debug("Found active BindingProcessor, using this one.");
-      return (SAMLBindingProcessorImpl) bp;
-    }
-    
-    return null;
-    
-  }
-
 
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
+	<!--
 		Copyright 2008 Federal Chancellery Austria and Graz University of
 		Technology Licensed under the Apache License, Version 2.0 (the
 		"License"); you may not use this file except in compliance with the
@@ -12,138 +12,159 @@
 		the specific language governing permissions and limitations under the
 		License.
 	-->
-<web-app id="bkuonline" version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-  <display-name>http-security-layer-request</display-name>
-
-  <listener>
-    <listener-class>at.gv.egiz.bku.online.webapp.MoccaContextListener</listener-class>
-  </listener>
-
-	<!--  Begin Spring Config -->
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	id="bkuonline" version="2.5">
+	<display-name>MOCCA Online</display-name>
+	<listener>
+		<listener-class>at.gv.egiz.bku.online.webapp.MoccaContextListener</listener-class>
+	</listener>
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	<context-param>
+		<!--
+			You may specify your configuration resource below. Please do not
+			remove the the configurationResource parameter if not used, but set
+			it to an empty value.
+		-->
 		<param-name>configurationResource</param-name>
 		<param-value></param-value>
 	</context-param>
-	<!--  End Spring Config -->
-
-	<!--  Begin BKU Config -->
-  <listener>
-    <listener-class>at.gv.egiz.bku.online.webapp.SessionListener</listener-class>
-  </listener>
-  <listener>
-    <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
-  </listener>
-  <servlet>
-    <servlet-name>BKUServlet</servlet-name>
-    <servlet-class>at.gv.egiz.bku.online.webapp.BKURequestHandler</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>SAMLServlet</servlet-name>
-    <servlet-class>at.gv.egiz.mocca.id.SAMLRequestHandler</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>DataURLServlet</servlet-name>
-    <servlet-class>at.gv.egiz.mocca.id.DataURLServerServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>ResultServlet</servlet-name>
-    <servlet-class>at.gv.egiz.bku.online.webapp.ResultServlet</servlet-class>
-    <init-param>
-      <param-name>responseEncoding</param-name>
-      <param-value>UTF-8</param-value>
-    </init-param>
-    <init-param>
-      <param-name>expiredPage</param-name>
-      <param-value>expired.html</param-value>
-    </init-param>
-  </servlet>
+	<listener>
+		<listener-class>at.gv.egiz.bku.online.webapp.SessionListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
+	</listener>
 	<servlet>
+		<!--
+			This servlet accepts HTTP(S) Security Layer requests and redirects to
+			UIServlet.
+		-->
+		<servlet-name>HTTPSecurityLayerServlet</servlet-name>
+		<servlet-class>at.gv.egiz.bku.online.webapp.WebRequestHandler</servlet-class>
+		<init-param>
+			<param-name>protocol</param-name>
+			<param-value>HTTP</param-value>
+		</init-param>
+	</servlet>
+	<servlet>
+		<!--
+			This Servlet handles user interaction. In fact it merely sets some
+			request attributes and hands over (forwards) to the requested uiPage
+			(e.g. applet.jsp).
+		-->
+		<servlet-name>UIServlet</servlet-name>
+		<servlet-class>at.gv.egiz.bku.online.webapp.UIServlet</servlet-class>
+		<init-param>
+			<!--
+				The uiPage parameter below specifies the default uiPage, which is
+				used if no specific page was requested.
+			-->
+			<param-name>uiPage</param-name>
+			<param-value>applet.jsp</param-value>
+		</init-param>
+		<init-param>
+			<!--
+				If no protocol specific request (e.g. http security layer request)
+				is associated with the request to this servlet, a temporary redirect
+				to the URL given below is sent to the browser.
+			-->
+			<param-name>expiredPageUrl</param-name>
+			<param-value>expired.jsp</param-value>
+		</init-param>
+	</servlet>
+	<servlet>
+		<servlet-name>ResultServlet</servlet-name>
+		<servlet-class>at.gv.egiz.bku.online.webapp.ResultServlet</servlet-class>
+		<init-param>
+			<param-name>responseEncoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<!--
+				If no protocol specific request (e.g. http security layer request)
+				is associated with the request to this servlet, a temporary redirect
+				to the URL given below is sent to the browser.
+			-->
+			<param-name>expiredPageUrl</param-name>
+			<param-value>expired.jsp</param-value>
+		</init-param>
+	</servlet>
+	<servlet>
+		<!--
+		 STAL Web Service
+		-->
 		<servlet-name>STALService</servlet-name>
 		<servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	<!--	<servlet>-->
+	<!--		<servlet-name>SAMLServlet</servlet-name>-->
+	<!--		<servlet-class>at.gv.egiz.bku.online.webapp.WebRequestHandler</servlet-class>	-->
+	<!--		<init-param>-->
+	<!--			<param-name>protocol</param-name>-->
+	<!--			<param-value>SAML</param-value>-->
+	<!--		</init-param>-->
+	<!--	</servlet>-->
+	<!--	<servlet>-->
+	<!--		<servlet-name>DataURLServlet</servlet-name>-->
+	<!--		<servlet-class>at.gv.egiz.mocca.id.DataURLServerServlet</servlet-class>	-->
+	<!--	</servlet>-->
 	<servlet-mapping>
-		<servlet-name>BKUServlet</servlet-name>
+		<servlet-name>HTTPSecurityLayerServlet</servlet-name>
 		<url-pattern>/http-security-layer-request</url-pattern>
 	</servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>BKUServlet</servlet-name>
-    <url-pattern>/https-security-layer-request</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>DataURLServlet</servlet-name>
-    <url-pattern>/DataURLServer</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>ResultServlet</servlet-name>
-    <url-pattern>/bkuResult</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>SAMLServlet</servlet-name>
-    <url-pattern>/moccaid</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>DataURLServlet</servlet-name>
-    <url-pattern>/DataURLServer</url-pattern>
-  </servlet-mapping>
-  
-
-    <!--
-     |  Configure alternative applet pages that may be requested
-     |  via the 'appletPage' form parameter (cf. SLRequestForm.html)
-    <servlet>
-        <servlet-name>BKUAppletAlternative</servlet-name>
-        <jsp-file>/appletAlternative.jsp</jsp-file>
-    </servlet-->
-
-    <!--
-     |  To disable applet caching load the applet via the AppletDispatcher
-     |  (cf. applet.jsp)
-    <servlet>
-        <servlet-name>AppletDispatcher</servlet-name>
-        <servlet-class>at.gv.egiz.bku.online.webapp.AppletDispatcher</servlet-class>
-    </servlet>
-    <servlet-mapping>
-      <servlet-name>AppletDispatcher</servlet-name>
-      <url-pattern>/applet/dispatch/*</url-pattern>
-    </servlet-mapping-->
-
-	<!--  End BKU Config -->
-
-  <!-- Begin BKU Web Start Config
-   |   (activate 'include-webstart' profile)
-  <servlet>
-    <servlet-name>JnlpDownloadServlet</servlet-name>
-    <servlet-class>jnlp.sample.servlet.JnlpDownloadServlet</servlet-class>
-    <init-param>
-      <param-name>logLevel</param-name>
-      <param-value>DEBUG</param-value>
-    </init-param>
-    <init-param>
-      <param-name>logPath</param-name>
-      <param-value>logs/jnlpdownloadservlet.log</param-value>
-    </init-param>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>JnlpDownloadServlet</servlet-name>
-    <url-pattern>/webstart/*</url-pattern>
-  </servlet-mapping>
-  -->
-  <!-- End BKU Web Start Config -->
-
-    <servlet-mapping>
-      <servlet-name>STALService</servlet-name>
-      <url-pattern>/stal</url-pattern>
-    </servlet-mapping>
-    <session-config>
-    <session-timeout>5</session-timeout>
-  </session-config>
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-    <welcome-file>index.jsp</welcome-file>
-  </welcome-file-list>
+	<servlet-mapping>
+		<servlet-name>HTTPSecurityLayerServlet</servlet-name>
+		<url-pattern>/https-security-layer-request</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>UIServlet</servlet-name>
+		<url-pattern>/ui</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ResultServlet</servlet-name>
+		<url-pattern>/result</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>STALService</servlet-name>
+		<url-pattern>/stal</url-pattern>
+	</servlet-mapping>
+	<!--	<servlet-mapping>-->
+	<!--		<servlet-name>SAMLServlet</servlet-name>-->
+	<!--		<url-pattern>/moccaid</url-pattern>-->
+	<!--	</servlet-mapping>-->
+	<!--	<servlet-mapping>-->
+	<!--		<servlet-name>DataURLServlet</servlet-name>-->
+	<!--		<url-pattern>/DataURLServer</url-pattern>-->
+	<!--	</servlet-mapping>-->
+	<session-config>
+		<session-timeout>5</session-timeout>
+	</session-config>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+	<!-- 
+	Servlet Filter for Request/Session tracking.
+	 -->
+	<filter>
+		<filter-name>RequestIdFilter</filter-name>
+		<filter-class>at.gv.egiz.bku.online.webapp.RequestIdFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>RequestIdFilter</filter-name>
+		<servlet-name>HTTPSecurityLayerServlet</servlet-name>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>RequestIdFilter</filter-name>
+		<servlet-name>UIServlet</servlet-name>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>RequestIdFilter</filter-name>
+		<servlet-name>ResultServlet</servlet-name>
+	</filter-mapping>
 </web-app>

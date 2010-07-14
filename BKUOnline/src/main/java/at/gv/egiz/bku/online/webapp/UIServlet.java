@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Federal Chancellery Austria and
+ * Copyright 2009 Federal Chancellery Austria and
  * Graz University of Technology
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,15 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package at.gv.egiz.bku.online.webapp;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
-import java.util.Map.Entry;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -35,29 +34,17 @@ import at.gv.egiz.bku.binding.BindingProcessor;
 import at.gv.egiz.bku.binding.BindingProcessorManager;
 import at.gv.egiz.bku.binding.HTTPBindingProcessor;
 import at.gv.egiz.bku.binding.Id;
-import at.gv.egiz.bku.utils.NullOutputStream;
 
-/**
- * Delivers the result to the browser
- * 
- */
-public class ResultServlet extends HttpServlet {
+public class UIServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
 
-  private final Logger log = LoggerFactory.getLogger(ResultServlet.class);
+  private final Logger log = LoggerFactory.getLogger(UIServlet.class);
 
-  private String responseEncoding = "UTF-8";
-  
   private String expiredPageUrl = "expired.jsp";
 
   @Override
   public void init() throws ServletException {
-    String encoding = getServletConfig().getInitParameter("responseEncoding");
-    if (encoding != null) {
-      log.info("Init default responseEncoding to: {}.", encoding);
-      responseEncoding = encoding;
-    }
     String url = getServletConfig().getInitParameter("expiredPageUrl");
     if (url != null) {
       try {
@@ -69,13 +56,9 @@ public class ResultServlet extends HttpServlet {
     }
   }
 
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
-    doGet(req, resp);
-  }
-
+  @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, java.io.IOException { 
+      throws ServletException, IOException {
 
     BindingProcessorManager bindingProcessorManager = (BindingProcessorManager) getServletContext()
         .getAttribute("bindingProcessorManager");
@@ -95,37 +78,29 @@ public class ResultServlet extends HttpServlet {
       return;
     }
     
-    HTTPBindingProcessor bp = (HTTPBindingProcessor) bindingProcessor;
+    MoccaParameterBean parameterBean = new MoccaParameterBean((HTTPBindingProcessor) bindingProcessor);
+    req.setAttribute("moccaParam", parameterBean);
     
-    try {
-      OutputStream outputStream;
-      String redirectUrl = bp.getRedirectURL();
-      if (redirectUrl != null && !redirectUrl.trim().isEmpty()) {
-        log.info("Sending (deferred) redirect to {}.", redirectUrl);
-        resp.sendRedirect(redirectUrl);
-        // TODO Couldn't we simply discard the output?
-        outputStream = new NullOutputStream();
-      } else {
-        log.debug("Setting HTTP status code {}.", bp.getResponseCode());
-        resp.setStatus(bp.getResponseCode());
-        resp.setHeader("Cache-Control", "no-store"); // HTTP 1.1
-        resp.setHeader("Pragma", "no-cache"); // HTTP 1.0
-        resp.setDateHeader("Expires", 0);
-        Map<String, String> responseHeaders = bp.getResponseHeaders();
-        for (Entry<String, String> header : responseHeaders.entrySet()) {
-          String key = header.getKey();
-          String value = header.getValue();
-          log.debug("Setting response header {}: {}.", key, value);
-          resp.setHeader(key, value);
-        }
-        resp.setContentType(bp.getResultContentType());
-        log.info("Sending result.");
-        outputStream = resp.getOutputStream();
-      }
-      bp.writeResultTo(outputStream, responseEncoding);
-      outputStream.flush();
-    } finally {
-      bindingProcessorManager.removeBindingProcessor(id);
+    String uiPage = getServletConfig().getInitParameter("uiPage");
+    uiPage = parameterBean.getUIPage(uiPage);
+    if (uiPage == null) {
+      uiPage = "applet.jsp";
     }
+
+    RequestDispatcher dispatcher = req.getRequestDispatcher(uiPage);
+    if (dispatcher == null) {
+      log.warn("Failed to get RequestDispatcher for page {}.", uiPage);
+      resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+    } else {
+      dispatcher.forward(req, resp);
+    }
+
   }
+
+  @Override
+  protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+      throws ServletException, IOException {
+    super.doPost(req, resp);
+  }
+
 }

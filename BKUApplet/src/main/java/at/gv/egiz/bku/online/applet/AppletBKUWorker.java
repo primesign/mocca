@@ -183,7 +183,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
       }
     }
 
-    applet.sendRedirect(sessionId);
+    applet.sendRedirect();
   }
 
   /**

@@ -14,16 +14,18 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%-- Messages --%>
+<fmt:bundle basename="web">
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Session Expired</title>
-</head>
-<body>
-    <p>
-    Ihre Sitzung ist abgelaufen. 
-    <!--Ein neuer BKU request kann im <a href="HTTP-ohne.html">Requestformular</a> erstellt werden.-->
-    </p>
-</body>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title><fmt:message key="expiredTitle"/></title>
+  </head>
+  <body>
+    <p><fmt:message key="expiredMessage"/></p>
+  </body>
 </html>
+</fmt:bundle>

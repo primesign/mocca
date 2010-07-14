@@ -181,7 +181,7 @@ public class BKUApplet extends JApplet {
 
     URL backgroundImgURL = null;
     try {
-      backgroundImgURL = getURLParameter(BACKGROUND_IMG, null);
+      backgroundImgURL = getURLParameter(BACKGROUND_IMG);
       log.debug("Setting background: {}.", backgroundImgURL);
     } catch (MalformedURLException ex) {
       log.warn("Cannot load applet background image. {}", ex.getMessage());
@@ -287,7 +287,7 @@ public class BKUApplet extends JApplet {
    * @throws java.net.MalformedURLException
    */
   public STALPortType getSTALPort() throws MalformedURLException {
-    URL wsdlURL = getURLParameter(WSDL_URL, null);
+    URL wsdlURL = getURLParameter(WSDL_URL);
     log.debug("Setting STAL WSDL: {}.", wsdlURL);
     QName endpointName = new QName(STAL_WSDL_NS, STAL_SERVICE);
     STALService stal = new STALService(wsdlURL, endpointName);
@@ -311,14 +311,14 @@ public class BKUApplet extends JApplet {
    * @return
    * @throws java.net.MalformedURLException
    */
-  protected void sendRedirect(String sessionId) {
+  protected void sendRedirect() {
     try {
       AppletContext ctx = getAppletContext();
       if (ctx == null) {
         log.error("No applet context (applet might already have been destroyed).");
         return;
       }
-      URL redirectURL = getURLParameter(REDIRECT_URL, sessionId);
+      URL redirectURL = getURLParameter(REDIRECT_URL);
       String redirectTarget = getParameter(REDIRECT_TARGET);
       if (redirectTarget == null) {
         log.info("Done. Redirecting to {}.", redirectURL);
@@ -342,23 +342,12 @@ public class BKUApplet extends JApplet {
   // ///////////////////////////////////////////////////////////////////////////
   // utility methods
   // ///////////////////////////////////////////////////////////////////////////
-  protected URL getURLParameter(String paramKey, String sessionId)
+  protected URL getURLParameter(String paramKey)
           throws MalformedURLException {
     String urlParam = getParameter(paramKey);
-    if (urlParam != null && !"".equals(urlParam)) {
-      URL codebase = getCodeBase();
+    if (urlParam != null && !urlParam.isEmpty()) {
       try {
-        URL url;
-        if (codebase.getProtocol().equalsIgnoreCase("file")) {
-          // for debugging in appletrunner
-          url = new URL(urlParam);
-        } else {
-          if (sessionId != null) {
-            urlParam = urlParam + ";jsessionid=" + sessionId;
-          }
-          url = new URL(codebase, urlParam);
-        }
-        return url;
+        return new URL(getCodeBase(), urlParam);
       } catch (MalformedURLException ex) {
         log.error("Applet paremeter {} ist not a valid URL. {}", urlParam, ex.getMessage());
         throw ex;

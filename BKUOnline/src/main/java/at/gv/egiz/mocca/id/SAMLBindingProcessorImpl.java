@@ -77,8 +77,6 @@ public class SAMLBindingProcessorImpl extends
 
   private String keyBoxIdentifier = "SecureSignatureKeypair";
   
-  private String url = "www.egiz.gv.at";
-
   private QESTemplates templates = new QESTemplates();
 
   private IdLink idLink;
