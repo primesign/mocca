@@ -39,10 +39,10 @@
 <c:set var="defaultButtonWidth" value="16"/>
 <c:set var="defaultButtonHeight" value="22"/>
 <%-- URLs --%>
-<c:url value="/applet" var="codebaseUrl"/>
+<c:set value="./applet" var="codebase"/>
 <c:url value="/help/" var="helpUrl"/>
-<c:url value="/stal;jsessionid=${requestScope.id}?wsdl" var="wsdlUrl"/>
-<c:url value="/result;jsessionid=${requestScope.id}" var="resultUrl"/>
+<c:url value="/stal?wsdl" var="wsdlUrl"/>
+<c:url value="/result" var="resultUrl"/>
 <%-- Messages --%>
 <fmt:bundle basename="web">
 <%-- Applet archive and class --%>
@@ -190,7 +190,7 @@
           document.getElementById("message").style.display = "block";
         } else {
           var attributes = {
-            codebase :'<c:out value="${codebaseUrl}"/>',
+            codebase :'<c:out value="${codebase}"/>',
             code : '<c:out value="${appletClass}"/>',
             archive : '<c:out value="${appletArchive}"/>',
             width : <c:out value="${requestScope.moccaParam.appletWidth}" default="${defaultWidth}"/>,
