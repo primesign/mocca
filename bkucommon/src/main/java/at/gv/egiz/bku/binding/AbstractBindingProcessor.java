@@ -61,6 +61,11 @@ public abstract class AbstractBindingProcessor implements BindingProcessor {
   }
 
   @Override
+  public Locale getLocale() {
+    return locale;
+  }
+  
+  @Override
   public void init(String id, STAL stal, SLCommandInvoker commandInvoker) {
     if (id == null) {
       throw new NullPointerException("Id must not be null.");

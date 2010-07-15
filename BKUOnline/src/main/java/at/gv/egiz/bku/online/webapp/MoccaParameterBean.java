@@ -172,7 +172,7 @@ public class MoccaParameterBean {
             + "='{}' is not a valid locale definition.", locale);
       }
     }
-    return null;
+    return bindingProcessor.getLocale();
   }
   
   public Integer getInteger(String parameterName) {

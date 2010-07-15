@@ -53,6 +53,13 @@ public interface BindingProcessor extends Runnable {
    *          must not be null.
    */
   public void setLocale(Locale locale);
+  
+  /**
+   * Returns the locale used for user interaction.
+   * 
+   * @return the locale used for user interaction
+   */
+  public Locale getLocale();
 
   /**
    * Instructs this BindingProcessor to consume the request
