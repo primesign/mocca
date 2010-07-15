@@ -128,7 +128,13 @@
     </style>
     <script type="text/javascript" src="https://www.java.com/js/deployJava.js"></script>
     <script type="text/javascript">
-      var iframe = false; // Does not work in IE8: (top.location.href != window.location.href);
+      var iframe = false;
+      try {
+    	  iframe = top.location.href != window.location.href;
+      } catch (e) {
+        // if window.location can not be accessed we are most likely in an iframe
+        iframe = true;
+      }
       var fontSize = 100;
       var width = <c:out value="${requestScope.moccaParam.appletWidth}" default="${defaultWidth}"/>;
       var height = <c:out value="${requestScope.moccaParam.appletHeight}" default="${defaultHeight}"/>;
