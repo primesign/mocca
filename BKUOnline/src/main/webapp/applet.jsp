@@ -112,6 +112,10 @@
         text-decoration: none;
         border-style: none;
       }
+      #buttons {
+        padding: 0;
+        margin: 0;
+      }
       #message {
         margin: 0;
         padding: 0.25em 0 0.25em 0;
@@ -122,7 +126,7 @@
         padding: 0.25em 0.5em 0.25em 0.5em;
       }
     </style>
-    <script type="text/javascript" src="http://www.java.com/js/deployJava.js"></script>
+    <script type="text/javascript" src="https://www.java.com/js/deployJava.js"></script>
     <script type="text/javascript">
       var iframe = (top.location.href != window.location.href);
       var fontSize = 100;
@@ -168,8 +172,10 @@
     </head>
     <body>
       <div id="container">
-        <a href="#" id="focus" onclick="resize(1.2); return false;" style="float: left;"><img alt="<fmt:message key="incTextSize"/>" src="img/inc.png" id="incButton" class="button"></a>
-        <a href="#" onclick="resize(1/1.2); return false;" style="float: left;"><img alt="<fmt:message key="decTextSize"/>" src="img/dec.png" id="decButton" class="button"></a>
+        <div id="buttons">
+	        <a href="#" id="focus" onclick="resize(1.2); return false;" style="float: left;"><img alt="<fmt:message key="incTextSize"/>" src="img/inc.png" id="incButton" class="button"></a>
+	        <a href="#" onclick="resize(1/1.2); return false;" style="float: left;"><img alt="<fmt:message key="decTextSize"/>" src="img/dec.png" id="decButton" class="button"></a>
+        </div>
         <a href="<c:out value="${helpUrl}"/>" onclick="this.href = document.moccaapplet.getHelpURL(); return true;" target="_new" style="float: right;"><img alt="<fmt:message key="help"/>" src="img/help.png" id="helpButton" class="button"></a>
         <div id="message" style="display: none;">
           <p><fmt:message key="javaPluginRequired"/></p>
