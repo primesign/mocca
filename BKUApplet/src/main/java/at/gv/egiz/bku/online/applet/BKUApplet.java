@@ -165,8 +165,8 @@ public class BKUApplet extends JApplet {
 
     if (Boolean.parseBoolean(getParameter(ENFORCE_RECOMMENDED_PIN_LENGTH))) {
       SignatureCardFactory.ENFORCE_RECOMMENDED_PIN_LENGTH = true;
-      log.debug("Enforce recommended pin length = {}.", SignatureCardFactory.ENFORCE_RECOMMENDED_PIN_LENGTH);
     }
+    log.debug("Enforce recommended pin length = {}.", SignatureCardFactory.ENFORCE_RECOMMENDED_PIN_LENGTH);
     
     BKUGUIFacade.Style guiStyle;
     String guiStyleParam = getParameter(GUI_STYLE);
@@ -219,17 +219,20 @@ public class BKUApplet extends JApplet {
       }
     }
 
+    BKUGUIFacade gui = null;
+    URLFontLoader fontProvider = null;
+      
     try {
-      URLFontLoader fontProvider = new URLFontLoader(getCodeBase());
+      fontProvider =  new URLFontLoader(getCodeBase());
       fontProvider.loadInBackground();
-      BKUGUIFacade gui = createGUI(contentPanel, getLocale(), guiStyle,
-              backgroundImgURL, fontProvider, helpListener, switchFocusListener);
-
-      worker = createBKUWorker(this, gui);
+      
     } catch (MalformedURLException ex) {
       log.error("Failed to load font provider URL.", ex);
       System.err.println("invalid font provider URL " + ex.getMessage());
     }
+    gui = createGUI(contentPanel, getLocale(), guiStyle,
+              backgroundImgURL, fontProvider, helpListener, switchFocusListener);
+    worker = createBKUWorker(this, gui);
   }
 
   @Override

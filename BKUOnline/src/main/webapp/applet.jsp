@@ -213,8 +213,7 @@
             HelpURL : '<c:out value="${helpUrl}"/>',
             SessionID : '<c:out value="${requestScope.id}"/>',
             RedirectURL : '<c:out value="${resultUrl}"/>',
-            RedirectTarget: '_parent',
-            EnforceRecommendedPINLength: 'true'
+            RedirectTarget: '_parent'
           };
           deployJava.runApplet(attributes, parameters, '<c:out value="${minJavaVersion}"/>');
         }
