@@ -393,8 +393,23 @@ public class SignatureCardFactory {
                 (byte) 0xff, (byte) 0xff, (byte) 0xff,
                 (byte) 0xff, (byte) 0xff, (byte) 0xff,
                 (byte) 0xff, (byte) 0xff, (byte) 0xff},
-        "at.gv.egiz.smcc.SwissSignIDCard"));
+        "at.gv.egiz.smcc.SuisseIDCard"));
     
+    supportedCards.add(new SupportedCard(
+        // ATR 3b:f2:18:00:02:c1:0a:31:fe:58:c8:08:74
+        new byte[] { (byte) 0x3b, (byte) 0xf2, (byte) 0x18,
+                (byte) 0x00, (byte) 0x02, (byte) 0xc1, (byte) 0x0a,
+                (byte) 0x31, (byte) 0xfe, (byte) 0x58, (byte) 0xc8,
+                (byte) 0x08, (byte) 0x74},
+        // mask
+        new byte[] {
+                (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff},
+        "at.gv.egiz.smcc.SuisseIDCard"));
+
   }
 
   /**

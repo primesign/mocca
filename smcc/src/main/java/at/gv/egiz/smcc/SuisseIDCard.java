@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import javax.smartcardio.ATR;
 
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
@@ -36,13 +37,15 @@ import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.smcc.util.ISO7816Utils;
 import at.gv.egiz.smcc.util.SMCCHelper;
+import javax.smartcardio.Card;
+import javax.smartcardio.CardTerminal;
 
-public class SwissSignIDCard extends AbstractSignatureCard implements SignatureCard {
+public class SuisseIDCard extends AbstractSignatureCard implements SignatureCard {
   
   /**
    * Logging facility.
    */
-  private final Logger log = LoggerFactory.getLogger(SwissSignIDCard.class);
+  private final Logger log = LoggerFactory.getLogger(SuisseIDCard.class);
 
   public static final byte[] MF = new byte[] { (byte) 0x3F, (byte) 0x00 };
 
@@ -55,15 +58,39 @@ public class SwissSignIDCard extends AbstractSignatureCard implements SignatureC
 
   public static final byte KID = (byte) 0x81;
 
-  protected PinInfo pinInfo =
-    new PinInfo(5, 12, "[0-9]",
-      "at/gv/egiz/smcc/SwissSignIDCard", "pin", KID, AID_SIG, PinInfo.UNKNOWN_RETRIES);
-    
-  /**
-   * Creates a new instance.
-   */
-  public SwissSignIDCard() {
-    super("at/gv/egiz/smcc/SwissSignIDCard");
+  protected PinInfo pinInfo;
+  protected String name = "SuisseID";
+
+  @Override
+  public void init(Card card, CardTerminal cardTerminal) {
+    super.init(card, cardTerminal);
+
+    byte[] atr = card.getATR().getBytes();
+    if (atr[11] == 'S' &&
+        atr[12] == 'w' &&
+        atr[13] == 'i' &&
+        atr[14] == 's' &&
+        atr[15] == 's' &&
+        atr[16] == 'S' &&
+        atr[17] == 'i' &&
+        atr[18] == 'g' &&
+        atr[19] == 'n') {
+      name = "SwissSign SuisseID";
+      pinInfo = new PinInfo(5, 12, "[0-9]",
+        "at/gv/egiz/smcc/SwissSignIDCard", "pin", KID, AID_SIG, PinInfo.UNKNOWN_RETRIES);
+
+    } else {
+      name = "QuoVadis SuisseID";
+      pinInfo = new PinInfo(6, 12, "[0-9]",
+        "at/gv/egiz/smcc/QuoVadisIDCard", "pin", KID, AID_SIG, PinInfo.UNKNOWN_RETRIES);
+    }
+
+    log.debug("initializing {} for ATR {}", name, toString(atr));
+  }
+
+  @Override
+  public String toString() {
+    return name;
   }
 
   @Override
@@ -166,10 +193,6 @@ public class SwissSignIDCard extends AbstractSignatureCard implements SignatureC
 
   }
 
-  public String toString() {
-    return "Belpic Card";
-  }
-  
   protected void verifyPINLoop(CardChannel channel, PinInfo spec,
       PINGUI provider) throws LockedException, NotActivatedException,
       SignatureCardException, InterruptedException, CardException {

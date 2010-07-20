@@ -52,13 +52,6 @@ public class ITCard extends AbstractSignatureCard {
           "at/gv/egiz/smcc/ITCard", "sig.pin", (byte) 0x10,
           new byte[] { (byte) 0x11, (byte) 0x00 }, PinInfo.UNKNOWN_RETRIES);
     
-  /**
-   * Creates a new instance.
-   */
-  public ITCard() {
-    super("at/gv/egiz/smcc/ITCard");
-  }
-
   @Override
   @Exclusive
   public byte[] getCertificate(KeyboxName keyboxName)

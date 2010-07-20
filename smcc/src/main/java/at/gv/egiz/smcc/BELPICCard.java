@@ -68,13 +68,6 @@ public class BELPICCard extends AbstractSignatureCard implements SignatureCard {
     new PinInfo(4, 12, "[0-9]",
       "at/gv/egiz/smcc/BELPICCard", "sig.pin", KID, DF_BELPIC, PinInfo.UNKNOWN_RETRIES);
     
-  /**
-   * Creates a new instance.
-   */
-  public BELPICCard() {
-    super("at/gv/egiz/smcc/BelpicCard");
-  }
-
   @Override
   @Exclusive
   public byte[] getCertificate(KeyboxName keyboxName)

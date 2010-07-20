@@ -62,10 +62,6 @@ public class PtEidCard extends AbstractSignatureCard {
     new PinInfo(4, 4, "[0-9]",
       "at/gv/egiz/smcc/PtEidCard", "sig.pin", (byte) 0x82, DF_ISSUES, PinInfo.UNKNOWN_RETRIES);
   
-  protected PtEidCard() {
-    super("at/gv/egiz/smcc/PtEidCard");
-  }
-
   @Override
   public byte[] getCertificate(KeyboxName keyboxName)
       throws SignatureCardException, InterruptedException {

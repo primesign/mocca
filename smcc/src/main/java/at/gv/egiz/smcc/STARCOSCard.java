@@ -137,13 +137,6 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
   protected PinInfo cardPinInfo;
   protected PinInfo ssPinInfo;
 
-  /**
-   * Creates a new instance.
-   */
-  public STARCOSCard() {
-    super("at/gv/egiz/smcc/STARCOSCard");
-  }
- 
   /* (non-Javadoc)
    * @see at.gv.egiz.smcc.AbstractSignatureCard#init(javax.smartcardio.Card, javax.smartcardio.CardTerminal)
    */

@@ -33,17 +33,13 @@ public abstract class AbstractSignatureCard implements SignatureCard {
 
   private final Logger log = LoggerFactory.getLogger(AbstractSignatureCard.class);
 
-  private ResourceBundle i18n;
-  private String resourceBundleName;
-
   private Locale locale = Locale.getDefault();
 
   private Card card_;
   
   protected CardReader reader;
 
-  protected AbstractSignatureCard(String resourceBundleName) {
-    this.resourceBundleName = resourceBundleName;
+  protected AbstractSignatureCard() {
   }
 
   protected String toString(byte[] b) {
@@ -81,13 +77,6 @@ public abstract class AbstractSignatureCard implements SignatureCard {
       throw new NullPointerException("Locale must not be set to null");
     }
     this.locale = locale;
-  }
-
-  protected ResourceBundle getResourceBundle() {
-    if (i18n == null) {
-      i18n = ResourceBundle.getBundle(resourceBundleName, locale);
-    }
-    return i18n;
   }
 
   @Override

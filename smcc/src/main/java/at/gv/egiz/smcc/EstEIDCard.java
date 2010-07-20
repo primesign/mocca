@@ -50,10 +50,6 @@ public class EstEIDCard extends AbstractSignatureCard {
   private static final PinInfo QS_PIN_SPEC = new PinInfo(5, 12, "[0-9]",
       "at/gv/egiz/smcc/EstEIDCard", "qs.pin", KID_PIN_2, DF, PinInfo.UNKNOWN_RETRIES);
   
-  public EstEIDCard() {
-    super("at/gv/egiz/smcc/EstEIDCard");
-  }
-
   @Override
   public byte[] getCertificate(KeyboxName keyboxName)
       throws SignatureCardException, InterruptedException {

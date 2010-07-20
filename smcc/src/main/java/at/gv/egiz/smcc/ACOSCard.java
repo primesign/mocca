@@ -113,10 +113,6 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
    */
   protected int appVersion = -1;
 
-  public ACOSCard() {
-    super("at/gv/egiz/smcc/ACOSCard");
-  }
-
   @Override
   public void init(Card card, CardTerminal cardTerminal) {
     super.init(card, cardTerminal);
