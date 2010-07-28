@@ -67,7 +67,7 @@ public class SecureViewerDialog extends JDialog {
    * BKUApplet includes BKUFonts as runtime dependency only, the jar is copied to the applet dir in BKUOnline with dependency-plugin
    * BKUViewer has compile dependency BKUFonts, transitive in BKUOnline and BKULocal
    */
-  public static final Dimension VIEWER_DIMENSION = new Dimension(600, 400);
+  public static final Dimension VIEWER_DIMENSION = new Dimension(600, 480);
   
   public static final List<String> SUPPORTED_MIME_TYPES = new ArrayList<String>();
   static {
