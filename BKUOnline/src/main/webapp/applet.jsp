@@ -46,36 +46,27 @@
 <%-- Messages --%>
 <fmt:bundle basename="web">
 <%-- Applet archive and class --%>
+<c:choose>
+  <c:when test="${requestScope.moccaParam.extension == 'activation'}">
+    <c:set var="appletArchive" value="BKUAppletExt-single.jar"/>
+    <c:set var="appletClass" value="at.gv.egiz.bku.online.applet.ActivationApplet.class"/>
+  </c:when>
+  <c:when test="${requestScope.moccaParam.extension == 'pin'}">
+    <c:set var="appletArchive" value="BKUAppletExt-single.jar"/>
+    <c:set var="appletClass" value="at.gv.egiz.bku.online.applet.PINManagementApplet.class"/>
+  </c:when>
+  <c:otherwise>
+    <c:set var="appletArchive" value="BKUApplet-single.jar"/>
+    <c:set var="appletClass" value="at.gv.egiz.bku.online.applet.BKUApplet.class"/>
+  </c:otherwise>
+</c:choose>
 <%-- 
   Uncomment the following line if you would like to prevent applet caching! 
 --%>
 <%-- jsp:useBean id="now" class="java.util.Date" scope="request"/ --%>
-<c:choose>
-  <c:when test="${requestScope.moccaParam.extension == 'activation'}">
-    <c:url var="appletArchive" value="BKUAppletExt-single.jar">
-      <c:if test="${! empty now}">
-        <c:param name="no-cache" value="${now.time}"/>
-      </c:if>
-    </c:url>
-    <c:set var="appletClass" value="at.gv.egiz.bku.online.applet.ActivationApplet.class"/>
-  </c:when>
-  <c:when test="${requestScope.moccaParam.extension == 'pin'}">
-    <c:url var="appletArchive" value="BKUAppletExt-single.jar">
-      <c:if test="${! empty now}">
-        <c:param name="no-cache" value="${now.time}"/>
-      </c:if>
-    </c:url>
-    <c:set var="appletClass" value="at.gv.egiz.bku.online.applet.PINManagementApplet.class"/>
-  </c:when>
-  <c:otherwise>
-    <c:url var="appletArchive" value="BKUApplet-single.jar">
-      <c:if test="${! empty now}">
-        <c:param name="no-cache" value="${now.time}"/>
-      </c:if>
-    </c:url>
-    <c:set var="appletClass" value="at.gv.egiz.bku.online.applet.BKUApplet.class"/>
-  </c:otherwise>
-</c:choose>
+<c:if test="${! empty now}">
+  <c:set var="appletArchive" value="${appletArchive}?no-cache=${now.time}"/>
+</c:if>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
   <head>

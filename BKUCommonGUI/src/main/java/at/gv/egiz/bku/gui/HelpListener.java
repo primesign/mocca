@@ -72,7 +72,7 @@ public class HelpListener implements MouseListener, KeyListener, HelpURLProvider
   @Override
   public synchronized String getHelpURL() {
     try {
-      URL helpURL = new URL(baseURL, (helpTopic != null) ? "index.html" : helpTopic + ".html");
+      URL helpURL = new URL(baseURL, (helpTopic == null) ? "index.html" : helpTopic + ".html");
       log.debug("Return help url: {}.", helpURL);
       return helpURL.toString();
     } catch (MalformedURLException e) {
