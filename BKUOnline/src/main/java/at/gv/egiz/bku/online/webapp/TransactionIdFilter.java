@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.MDC;
@@ -19,7 +20,7 @@ import at.gv.egiz.bku.binding.IdFactory;
 /**
  * Servlet Filter implementation class BindingProcessorFilter
  */
-public class RequestIdFilter implements Filter {
+public class TransactionIdFilter implements Filter {
   
   /**
    * @see Filter#destroy()
@@ -35,9 +36,28 @@ public class RequestIdFilter implements Filter {
 
     if (request instanceof HttpServletRequest) {
       HttpSession session = ((HttpServletRequest) request).getSession();
-      Id id = IdFactory.getInstance().createId(session.getId());
+      
+      String tidx = null;
+      // We expect the transaction index parameter to appear in GET requests only
+      if ("GET".equals(((HttpServletRequest) request).getMethod())) {
+        tidx = request.getParameter("tidx");
+      }
+
+      if (tidx == null) {
+        TransactionId transactionIndex = (TransactionId) session
+            .getAttribute(TransactionId.TRANSACTION_INDEX);
+        if (transactionIndex != null) {
+          tidx = Integer.toString(transactionIndex.next());
+        } else {
+          tidx = "0";
+        }
+      }
+      
+      Id id = IdFactory.getInstance().createId(session.getId() + "-" + tidx);
       MDC.put("id", id.toString());
       request.setAttribute("id", id);
+      
+      response = new TransactionIdResponseWrapper((HttpServletResponse) response, session.getId(), tidx);
     }
 
     // pass the request along the filter chain
@@ -54,5 +74,5 @@ public class RequestIdFilter implements Filter {
    */
   public void init(FilterConfig fConfig) throws ServletException {
   }
-
-}
+  
+} 

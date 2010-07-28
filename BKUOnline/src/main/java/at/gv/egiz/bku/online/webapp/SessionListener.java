@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.binding.BindingProcessorManager;
+import at.gv.egiz.bku.binding.Id;
 import at.gv.egiz.bku.binding.IdFactory;
 
 /**
@@ -36,12 +37,20 @@ public class SessionListener implements HttpSessionListener {
   @Override
   public void sessionCreated(HttpSessionEvent event) {
     log.info("Session {} created.", event.getSession().getId());
+    event.getSession().setAttribute(TransactionId.TRANSACTION_INDEX, new TransactionId());
   }
 
   @Override
   public void sessionDestroyed(HttpSessionEvent event) {
     BindingProcessorManager manager = (BindingProcessorManager) event.getSession().getServletContext().getAttribute("bindingProcessorManager");
-    manager.removeBindingProcessor(IdFactory.getInstance().createId(event.getSession().getId()));
+    TransactionId tidx = (TransactionId) event.getSession().getAttribute(TransactionId.TRANSACTION_INDEX);
+    if (tidx != null) {
+      IdFactory idFactory = IdFactory.getInstance();
+      for (int i = 0; i <= tidx.get(); i++) {
+        Id id = idFactory.createId(event.getSession().getId() + "-" + i);
+        manager.removeBindingProcessor(id);
+      }
+    }
     log.info("Session {} destroyed.", event.getSession().getId());
   }
 

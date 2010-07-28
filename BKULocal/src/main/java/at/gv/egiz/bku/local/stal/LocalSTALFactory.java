@@ -19,6 +19,8 @@ package at.gv.egiz.bku.local.stal;
 import at.gv.egiz.bku.viewer.ResourceFontLoader;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Locale;
 
 
@@ -46,7 +48,7 @@ public class LocalSTALFactory implements STALFactory {
 
   private final Logger log = LoggerFactory.getLogger(LocalSTALFactory.class);
   protected static final Dimension PREFERRED_SIZE = new Dimension(318, 200);
-  protected String helpURL;
+  protected URL helpURL;
   protected Locale locale;
   
   protected Configuration configuration;
@@ -108,9 +110,10 @@ public class LocalSTALFactory implements STALFactory {
   /**
    * spring injects helpURL
    * @param helpURL
+   * @throws MalformedURLException if helpURL is not a valid URL
    */
-  public void setHelpURL(String helpURL) {
-    this.helpURL = helpURL;
+  public void setHelpURL(String helpURL) throws MalformedURLException {
+    this.helpURL = new URL(helpURL);
   }
 
   /**

@@ -33,12 +33,12 @@ public class ViewerHelpListener extends HelpListener {
 
   protected AppletContext appletCtx;
 
-  public ViewerHelpListener(String helpURL, Locale locale) {
-    super(helpURL, locale);
+  public ViewerHelpListener(URL baseURL, Locale locale) {
+    super(baseURL, locale);
   }
 
-  public ViewerHelpListener(AppletContext ctx, String helpURL, Locale locale) {
-    super(helpURL, locale);
+  public ViewerHelpListener(AppletContext ctx, URL baseURL, Locale locale) {
+    super(baseURL, locale);
     this.appletCtx = ctx;
   }
 

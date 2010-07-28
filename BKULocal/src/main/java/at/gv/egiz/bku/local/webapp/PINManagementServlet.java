@@ -22,6 +22,7 @@ import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.ext.PINManagementRequest;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
@@ -46,7 +47,11 @@ public class PINManagementServlet extends HttpServlet {
 
   public PINManagementServlet() {
     stalFactory = new LocalSTALFactory();
-    stalFactory.setHelpURL("http://localhost:3495/help/");
+    try {
+      stalFactory.setHelpURL("http://localhost:3495/help/");
+    } catch (MalformedURLException e) {
+      log.info("Failed to set help URL.", e);
+    }
   }
 
   /**

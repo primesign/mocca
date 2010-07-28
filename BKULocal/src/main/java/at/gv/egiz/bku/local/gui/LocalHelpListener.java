@@ -21,6 +21,7 @@ import java.awt.Desktop;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.net.URI;
+import java.net.URL;
 import java.util.Locale;
 
 import org.slf4j.Logger;
@@ -37,8 +38,8 @@ public class LocalHelpListener extends ViewerHelpListener {
   
   protected Desktop desktop;
 
-  public LocalHelpListener(String helpURL, Locale locale) {
-    super(helpURL, locale);
+  public LocalHelpListener(URL baseURL, Locale locale) {
+    super(baseURL, locale);
     if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
       desktop = Desktop.getDesktop();
     } else {

@@ -153,7 +153,7 @@
 	 -->
 	<filter>
 		<filter-name>RequestIdFilter</filter-name>
-		<filter-class>at.gv.egiz.bku.online.webapp.RequestIdFilter</filter-class>
+		<filter-class>at.gv.egiz.bku.online.webapp.TransactionIdFilter</filter-class>
 	</filter>
 	<filter-mapping>
 		<filter-name>RequestIdFilter</filter-name>

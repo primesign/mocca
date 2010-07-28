@@ -121,10 +121,7 @@ public class WebRequestHandler extends HttpServlet {
     bindingProcessorManager.process(id, bindingProcessor);
   
     log.debug("Sending redirect to user interface.");
-    // TODO: appending the jsessionid here breaks the separation of request
-    // handling and request state tracking done in the servlet filter, but 
-    // the servlet filter does not allow us to modify the redirect
-    resp.sendRedirect("ui;jsessionid=" + id.toString());
+    resp.sendRedirect(resp.encodeRedirectURL("ui"));
       
   }
 

@@ -187,7 +187,13 @@ public class BKUApplet extends JApplet {
       log.warn("Cannot load applet background image. {}", ex.getMessage());
     }
 
-    helpListener = new HelpListener(getParameter(HELP_URL), getLocale());
+    try {
+      URL helpUrl = getURLParameter(HELP_URL);
+      helpListener = new HelpListener(helpUrl, getLocale());
+      log.debug("Setting help URL: {}", helpUrl);
+    } catch (MalformedURLException e) {
+      log.warn("Cannot set help URL. {}", e.getMessage());
+    }
 
     SwitchFocusListener switchFocusListener = new SwitchFocusListener(
             getAppletContext(), "focusToBrowser");

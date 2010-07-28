@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.ResourceBundle;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -32,8 +33,9 @@ public class SecureViewerDialogTest {
 
   @BeforeClass
   public static void setUpClass() throws Exception {
+    URL baseURL = new URL("../help");
     messages = ResourceBundle.getBundle("at/gv/egiz/bku/gui/Messages");
-    secureViewer = new SecureViewerDialog(null, messages,null, null, new DummyFontLoader(), new HelpListener("../help", messages.getLocale()), 1f);
+    secureViewer = new SecureViewerDialog(null, messages,null, null, new DummyFontLoader(), new HelpListener(baseURL, messages.getLocale()), 1f);
   }
 
   @AfterClass

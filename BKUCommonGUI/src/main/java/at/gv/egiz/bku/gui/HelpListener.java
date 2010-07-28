@@ -20,6 +20,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import org.slf4j.Logger;
@@ -30,14 +32,16 @@ public class HelpListener implements MouseListener, KeyListener, HelpURLProvider
   public static final String MESSAGE_BUNDLE = "at/gv/egiz/bku/gui/Messages";
 
   private final Logger log = LoggerFactory.getLogger(HelpListener.class);
-  private String helpURL;
+
+  private URL baseURL;
+  
   protected String helpTopic;
   protected ResourceBundle messageBundle;
 
-  public HelpListener(String baseHelpURL, Locale locale) {
+  public HelpListener(URL baseURL, Locale locale) {
 
-    helpURL = baseHelpURL;
-
+    this.baseURL = baseURL;
+    
     if (locale != null) {
       log.trace("Check for support of requested help locale {}.", locale);
       messageBundle = ResourceBundle.getBundle(MESSAGE_BUNDLE, locale);
@@ -45,14 +49,18 @@ public class HelpListener implements MouseListener, KeyListener, HelpURLProvider
       messageBundle = ResourceBundle.getBundle(MESSAGE_BUNDLE);
     }
 
-    if ("".equals(messageBundle.getLocale().getLanguage())) {
-      log.trace("Using help locale 'default'.");
-    } else {
-      log.trace("Using help locale '{}'.", messageBundle.getLocale());
-      helpURL += messageBundle.getLocale().getLanguage() + '/';
-    }
-    
-    log.debug("Setting help context to {}.", helpURL);
+    String language = messageBundle.getLocale().getLanguage();
+    log.trace("Using help language '{}'.", language);
+    if (!language.isEmpty()) {
+      try {
+        baseURL = new URL(baseURL, language + "/");
+      } catch (MalformedURLException e) {
+        log.info("Failed to build baseURL using language {}. " +
+        		"Using default language.", language, e);
+      }
+    } 
+    log.debug("Setting help context to {}.", baseURL);
+
   }
 
   @Override
@@ -63,15 +71,15 @@ public class HelpListener implements MouseListener, KeyListener, HelpURLProvider
 
   @Override
   public synchronized String getHelpURL() {
-    if (helpTopic == null) {
-      log.debug("No help topic set, return index.");
-      return helpURL + "index.html";
+    try {
+      URL helpURL = new URL(baseURL, (helpTopic != null) ? "index.html" : helpTopic + ".html");
+      log.debug("Return help url: {}.", helpURL);
+      return helpURL.toString();
+    } catch (MalformedURLException e) {
+      log.info("Failed to build helpURL. Returning base URL: {}.", baseURL, e);
+      return baseURL.toString();
     }
-    StringBuilder url = new StringBuilder(helpURL);
-    url.append(helpTopic);
-    url.append(".html");
-    log.debug("Return help url: {}.", url.toString());
-    return url.toString();
+    
   }
 
   /**
