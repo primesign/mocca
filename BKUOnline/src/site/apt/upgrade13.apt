@@ -1,0 +1,31 @@
+  ---
+  Upgrading from MOCCA Online Version \< 1.3
+  ---
+  EGIZ
+  ---
+  2010
+  ---
+  
+Upgrading from MOCCA Online Version \< 1.3
+
+  Before upgrading to a new version please create a backup of your existing deployed MOCCA Online web application.
+
+  If you are running a previous version of MOCCA in the default configuration (that is, you did not modify any configuration options, any web-page templates and certificate or trust stores) you can simply replace your deployed web application by the new .war file (see {{{./deployment.html}Deployment}}). Otherwise, please follow the instructions below. 
+
+  [[]] If you have modified configuration options you need to transfer them to the new configuration format (see {{{./configuration.html}configuration}}).
+  
+  [[]] If you have customized the provided web-page templates, please transfer your changes to the new web-page templates provided with MOCCA Online 1.3.x. Since the web-page templates have changed, simply replacing the new web-page templates with your existing ones will most likely not work.
+  
+  * The {{{./webflow.html}page flow}} has slightly changed with version 1.3.0. Upon receiving a Security Layer request, MOCCA Online does not directly respond with the web page containing the MOCCA Applet (e.g. applet.jsp) any longer, but sends a temporary redirect (HTTP response code 302) to the user interface servlet (which then forwards to the applet page internally). This allows to handle reloading of the applet page in a proper way.
+  
+  * The web page templates are now implemented using JSP and standard tags (no scriptlets anymore) and fully support localization.
+  
+  * There is now only a single (signed) jar file per applet.
+  
+  * The applet page may be used within an iframe or as a single page. 
+  
+  []
+
+  [[]] If you have modified the list of trusted certificates (<truststore> and <certstore>), you need to reference them from your configuration file (see {{{./configuration.html}configuration}}).  
+
+  [[]] If you have a very restrictively configured reverse proxy forwarding requests to MOCCA Online you may also need to consider the URL of the new user interface servlet ("./ui") and the changed URL of the result servlet ("./result").  

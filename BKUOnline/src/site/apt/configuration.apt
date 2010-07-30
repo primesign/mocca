@@ -12,7 +12,7 @@ MOCCA Online Configuration
 	
 	Since MOCCA version 1.3 a configuration resource may be specified as servlet context init parameter. This allows to keep your configuration resource outside of the deployed servlet context and to redeploy the web application without overwriting your configuration resource.
 	
-	To specify your own configuration {{{http://static.springsource.org/spring/docs/2.5.5/reference/resources.html}resource}} simply set the corresponding servlet context init parameter <<<configurationResource>>>. Please refer to the documentation of your servlet container on how to set servlet context initialization parameters. Usually this is done via the <<<web.xml>>> file in your web application.
+	To specify your own configuration {{{http://static.springsource.org/spring/docs/2.5.5/reference/resources.html}resource}} simply set the corresponding servlet context init parameter <<<configurationResource>>>. Please refer to the documentation of your servlet container on how to set servlet context initialization parameters. Usually this is done via the <<<web.xml>>> file in your web application. (Apache Tomcat users are recommended to use context parameters as shown {{{Apache Tomcat}below}}.)
 	
 	<<<WEB-INF/web.xml>>>:
 	
@@ -32,7 +32,7 @@ MOCCA Online Configuration
 
 	The value of the <<<configurationResource>>> parameter must be a valid {{{http://static.springsource.org/spring/docs/2.5.5/reference/resources.html}Spring resource}} name. Placeholders such as <<<$\{user.home\}>>> are also supported (via {{{http://static.springsource.org/spring/docs/2.5.5/api/org/springframework/beans/factory/config/PropertyPlaceholderConfigurer.html}Spring's Property Placeholder Configurer}}).
 	
-* Apache Tomcat	
+* Apache Tomcat
 	
 	In addition to the specifying init parameters in the <<<web.xml>>> Apache Tomcat also allows to provide a file named <<<$CATALINA_BASE/conf/[enginename]/[hostname]/[webappname].xml>>> (e.g. <<<.../conf/Catalina/localhost/mocca.xml>>>) to specify context parameters. See also {{http://tomcat.apache.org/tomcat-6.0-doc/config/context.html}}.
 	
@@ -49,7 +49,7 @@ MOCCA Online Configuration
 
 +------------------+
 
-	This way the init parameter is not overwritten when the web application is redeployed.
+	This way, the init parameter is not overwritten when the web application is redeployed.
 	
 * Configuration Options
 

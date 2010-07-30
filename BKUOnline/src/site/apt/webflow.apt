@@ -1,0 +1,37 @@
+  ---
+  MOCCA Online Web Flow
+  ---
+  EGIZ
+  ---
+  2010
+  ---
+  
+MOCCA Online Web Flow
+
+  The figure below shows the MOCCA Online web flow.
+  
+  [[1]] The browser submits a Security Layer request via POST or GET to the URL <./http-security-layer-request> or <./https-security-layer-request>.
+
+  [[2]] The WebRequestHandler receives the Security Layer request and returns HTTP code 302 (temporary redirect) with <Location = ./ui>.
+  
+  [[3]] The browser performs a GET request to the returned location (<./ui>).
+  
+  [[4]] The UIServlet receives the request and internally forwards it to the user interface page (e.g. <applet.jsp>).
+
+  [[5]] The user interface page generates the HTML and returns the response to the UIServlet.
+  
+  [[6]] The UIServlet returns the response to the browser.
+  
+  [[7]] The browser displays the user interface page and invokes the included Applet.
+  
+  [[8]] The Applet contacts the STAL web service handles any requests received and 
+  
+  [[9]] returns the result to the STAL web service.
+  
+  [[10]] When the Applet receives a request to quit, it directs the browser to open the URL <./result>.
+  
+  [[11]] The browser finally requests the result of the Security Layer request.
+
+  []
+
+[./images/webflow.png]

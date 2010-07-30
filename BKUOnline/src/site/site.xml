@@ -34,6 +34,8 @@ under the License.
     <menu name="${project.name}">
       <item name="Deployment" href="deployment.html"/>
       <item name="Configuration" href="configuration.html"/>
+      <item name="Web Flow" href="webflow.html"/>
+      <item name="Upgrade from &lt; 1.3" href="upgrade13.html"/>
     </menu>
   
     <menu ref="reports"/>

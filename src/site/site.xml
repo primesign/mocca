@@ -41,7 +41,7 @@ under the License.
     <menu name="MOCCA" inherit="true">
       <item name="About" href="index.html"/>
       <item name="News" href="http://egovlabs.gv.at/news/?group_id=13"/>
-      <item name="Download" href="http://egovlabs.gv.at/frs/?group_id=13"/>
+      <item name="Download" href="download.html"/>
       <item name="Source" href="http://egovlabs.gv.at/scm/?group_id=13"/>
       <item name="Wiki" href="http://egovlabs.gv.at/plugins/wiki/index.php?id=13&amp;type=g"/>
       <item name="Tracker" href="http://jira.egovlabs.gv.at/browse/MOCCA"/>

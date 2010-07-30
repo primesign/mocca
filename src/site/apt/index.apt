@@ -29,14 +29,8 @@ MOCCA Project
 
 Releases
 
-	Current stable versions are 1.2.x. Releases can be found in the {{{http://egovlabs.gv.at/frs/?group_id=13}download}} section.
+  See {{{./download.html}download}} section.
 
-	NOTE: For <<installation of MOCCA Local>> please go to <<{{http://webstart.buergerkarte.at}}>>!
-
-Development
-
-	The current development version of MOCCA is 1.3. Take a look at {{{./new.html}What's new in MOCCA 1.3?}}
- 
 Licensing
 
 	The MOCCA project as provided by {{{http://www.egiz.gv.at}EGIZ}} is licensed according to the terms of the {{{http://www.apache.org/licenses/LICENSE-2.0.html}Apache License 2.0}}.
