@@ -2,14 +2,14 @@
   <parent>
     <artifactId>mocca</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.3.1-RC3-SNAPSHOT</version>
+    <version>1.3.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>at.gv.egiz</groupId>
   <artifactId>BKUWebStart</artifactId>
   <packaging>jar</packaging>
   <name>MOCCA Webstart</name>
-  <version>1.3.1-RC3-SNAPSHOT</version>
+  <version>1.3.1</version>
   <url>http://mocca.egovlabs.gv.at/</url>
   <description>Bürgerkartenumgebung</description>
   

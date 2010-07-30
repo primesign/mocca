@@ -2,13 +2,13 @@
 	<parent>
 		<artifactId>mocca</artifactId>
 		<groupId>at.gv.egiz</groupId>
-		<version>1.3.1-RC3-SNAPSHOT</version>
+		<version>1.3.1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>BKUViewer</artifactId>
 	<name>BKU Viewer</name>
-	<version>1.3.1-RC3-SNAPSHOT</version>
+	<version>1.3.1</version>
 	<description>Validator for plain text and XHTML to-be signed content</description>
 	<dependencies>
 		<dependency>
