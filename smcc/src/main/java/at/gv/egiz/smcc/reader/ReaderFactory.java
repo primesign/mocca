@@ -107,8 +107,14 @@ public class ReaderFactory {
                   ((0xff & resp[i + 4]) << 8) |
                   (0xff & resp[i + 5]);
           if (log.isInfoEnabled()) {
-            log.info("IFD supports {}: {}", CardReader.FEATURES[feature
-                .intValue()], Integer.toHexString(ioctl.intValue()));
+            if (feature.intValue() < CardReader.FEATURES.length) {
+              log.info("IFD supports {}: {}", CardReader.FEATURES[feature
+                  .intValue()], Integer.toHexString(ioctl.intValue()));
+            } else {
+              log.info("IFD supports unknown feature 0x{}, : {}", Integer
+                      .toHexString(feature), Integer
+                      .toHexString(ioctl.intValue()));
+            }
           }
           features.put(feature, ioctl);
         }

@@ -55,7 +55,9 @@ public interface CardReader {
     "FEATURE_MODIFY_PIN_DIRECT_APP_ID",
     "FEATURE_WRITE_DISPLAY",
     "FEATURE_GET_KEY",
-    "FEATURE_IFD_DISPLAY_PROPERTIES"};
+    "FEATURE_IFD_DISPLAY_PROPERTIES",
+    "FEATURE_GET_TLV_PROPERTIES",
+    "FEATURE_CCID_ESC_COMMAND"};
 
   static final Byte FEATURE_VERIFY_PIN_START = new Byte((byte) 0x01);
   static final Byte FEATURE_VERIFY_PIN_FINISH = new Byte((byte) 0x02);
@@ -67,7 +69,15 @@ public interface CardReader {
   static final Byte FEATURE_MCT_READER_DIRECT = new Byte((byte) 0x08);
   static final Byte FEATURE_MCT_UNIVERSAL = new Byte((byte) 0x09);
   static final Byte FEATURE_IFD_PIN_PROPERTIES = new Byte((byte) 0x0a);
-  //TODO continue list
+  static final Byte FEATURE_ABORT = new Byte((byte) 0x0b);
+  static final Byte FEATURE_SET_SPE_MESSAGE = new Byte((byte) 0x0c);
+  static final Byte FEATURE_VERIFY_PIN_DIRECT_APP_ID = new Byte((byte) 0x0d);
+  static final Byte FEATURE_MODIFY_PIN_DIRECT_APP_ID = new Byte((byte) 0x0e);
+  static final Byte FEATURE_WRITE_DISPLAY = new Byte((byte) 0x0f);
+  static final Byte FEATURE_GET_KEY = new Byte((byte) 0x10);
+  static final Byte FEATURE_IFD_DISPLAY_PROPERTIES = new Byte((byte) 0x11);
+  static final Byte FEATURE_GET_TLV_PROPERTIES = new Byte((byte) 0x12);
+  static final Byte FEATURE_CCID_ESC_COMMAND = new Byte((byte) 0x13);
 
 
   Card connect() throws CardException;
