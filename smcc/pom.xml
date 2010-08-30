@@ -2,14 +2,14 @@
   <parent>
     <artifactId>mocca</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.3.2</version>
+    <version>1.3.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>at.gv.egiz</groupId>
   <artifactId>smcc</artifactId>
   <name>smcc</name>
   <packaging>jar</packaging>
-  <version>1.3.2</version>
+  <version>1.3.3-SNAPSHOT</version>
   <description>Smart card communication</description>
   <build>
 		<plugins>
