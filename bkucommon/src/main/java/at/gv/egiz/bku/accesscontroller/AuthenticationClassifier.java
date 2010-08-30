@@ -34,6 +34,8 @@ public class AuthenticationClassifier {
 	private static AuthenticationClassifier instance = new AuthenticationClassifier();
 	private final static String GOV_DOMAIN = ".gv.at";
 
+	private final Logger log = LoggerFactory.getLogger(AuthenticationClassifier.class);
+	
 	private AuthenticationClassifier() {
 	}
 
@@ -80,6 +82,11 @@ public class AuthenticationClassifier {
 			URL url, X509Certificate cert) {
 		if (isDataUrl) {
 			if (url.getProtocol().equalsIgnoreCase("https")) {
+  			    if (cert == null) {
+  			      log.warn("HTTPS connection does not provide certificate. " +
+  			      		"Therefore, assuming authentication class '" + PSEUDO_ANONYMOUS + "'.");
+  			      return PSEUDO_ANONYMOUS;
+  			    }
 				if (isGovAgency(cert)) {
 					return CERTIFIED_GOV_AGENCY;
 				}
