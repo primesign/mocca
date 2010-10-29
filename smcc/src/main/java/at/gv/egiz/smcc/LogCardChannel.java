@@ -31,7 +31,7 @@ public class LogCardChannel extends CardChannel {
   
   private final Logger log = LoggerFactory.getLogger(LogCardChannel.class);
   
-  private CardChannel channel;
+  protected CardChannel channel;
   
   public LogCardChannel(CardChannel channel) {
     if (channel == null) {

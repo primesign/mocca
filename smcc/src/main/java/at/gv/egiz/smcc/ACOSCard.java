@@ -161,7 +161,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
 
   @Override
   @Exclusive
-  public byte[] getCertificate(KeyboxName keyboxName)
+  public byte[] getCertificate(KeyboxName keyboxName, PINGUI provider)
       throws SignatureCardException {
     
       byte[] aid;
@@ -477,7 +477,7 @@ public class ACOSCard extends AbstractSignatureCard implements PINMgmtSignatureC
   public PinInfo[] getPinInfos() throws SignatureCardException {
     
     //check if card is activated
-    getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR);
+    getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR, null);
     
     if (appVersion < 2) {
       return new PinInfo[] {decPinInfo, sigPinInfo, infPinInfo };

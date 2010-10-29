@@ -178,7 +178,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
 
   @Override
   @Exclusive
-  public byte[] getCertificate(KeyboxName keyboxName)
+  public byte[] getCertificate(KeyboxName keyboxName, PINGUI provider)
       throws SignatureCardException {
 
     byte[] aid;
@@ -576,7 +576,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
 
     if (version >= 1.2) {
       //check if card is activated
-      getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR);
+      getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR, null);
     }
 
     PinInfo[] pinInfos = new PinInfo[] {cardPinInfo, ssPinInfo};

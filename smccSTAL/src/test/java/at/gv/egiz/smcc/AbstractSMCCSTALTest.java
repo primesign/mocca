@@ -51,7 +51,7 @@ public class AbstractSMCCSTALTest extends AbstractSMCCSTAL implements
     }
 
     @Override
-    public byte[] getCertificate(KeyboxName keyboxName)
+    public byte[] getCertificate(KeyboxName keyboxName, PINGUI gui)
         throws SignatureCardException {
       // TODO Auto-generated method stub
       return null;

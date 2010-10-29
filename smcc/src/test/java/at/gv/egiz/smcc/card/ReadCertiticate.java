@@ -48,7 +48,7 @@ public class ReadCertiticate {
   public static X509Certificate readCertificate(SignatureCard signatureCard,
       KeyboxName keyboxName) throws SignatureCardException,
       InterruptedException, CertificateException {
-    byte[] certificate = signatureCard.getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR);
+    byte[] certificate = signatureCard.getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR, null);
     CertificateFactory certificateFactory = CertificateFactory.getInstance("X509");
     return (X509Certificate) certificateFactory.generateCertificate(new ByteArrayInputStream(certificate));
   }

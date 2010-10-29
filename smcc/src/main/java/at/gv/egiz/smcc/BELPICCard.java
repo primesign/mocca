@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import at.gv.egiz.smcc.util.ISO7816Utils;
 import at.gv.egiz.smcc.util.SMCCHelper;
 
-public class BELPICCard extends AbstractSignatureCard implements SignatureCard {
+public class BELPICCard extends AbstractT0SignatureCard implements SignatureCard {
   
     /**
      * Logging facility.
@@ -70,7 +70,7 @@ public class BELPICCard extends AbstractSignatureCard implements SignatureCard {
     
   @Override
   @Exclusive
-  public byte[] getCertificate(KeyboxName keyboxName)
+  public byte[] getCertificate(KeyboxName keyboxName, PINGUI provider)
       throws SignatureCardException {
 
     if (keyboxName != KeyboxName.SECURE_SIGNATURE_KEYPAIR) {

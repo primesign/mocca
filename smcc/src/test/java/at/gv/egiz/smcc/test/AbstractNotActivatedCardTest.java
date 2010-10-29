@@ -39,7 +39,7 @@ public abstract class AbstractNotActivatedCardTest extends AbstractCardTestBase 
   public void testGetCertificates() throws SignatureCardException, InterruptedException {
     
     try {
-      signatureCard.getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR);
+      signatureCard.getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR, null);
       fail();
     } catch (NotActivatedException e) {
       // expected
@@ -48,7 +48,7 @@ public abstract class AbstractNotActivatedCardTest extends AbstractCardTestBase 
     }
 
     try {
-      signatureCard.getCertificate(KeyboxName.CERITIFIED_KEYPAIR);
+      signatureCard.getCertificate(KeyboxName.CERITIFIED_KEYPAIR, null);
       fail();
     } catch (NotActivatedException e) {
       // expected

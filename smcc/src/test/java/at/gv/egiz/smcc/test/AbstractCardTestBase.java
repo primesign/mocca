@@ -18,7 +18,7 @@
 package at.gv.egiz.smcc.test;
 
 import static org.junit.Assert.assertNotNull;
-import iaik.security.provider.IAIK;
+//import iaik.security.provider.IAIK;
 
 import javax.smartcardio.Card;
 
@@ -44,7 +44,7 @@ public abstract class AbstractCardTestBase {
   
   @BeforeClass
   public static void setupClass() {
-    IAIK.addAsJDK14Provider();
+//    IAIK.addAsJDK14Provider();
   }
   
   @Before

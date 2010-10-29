@@ -253,7 +253,7 @@ public class SWCard implements SignatureCard {
     
   }
   
-  public byte[] getCertificate(KeyboxName keyboxName)
+  public byte[] getCertificate(KeyboxName keyboxName, PINGUI provider)
       throws SignatureCardException {
 
     try {

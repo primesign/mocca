@@ -47,7 +47,7 @@ import at.gv.egiz.smcc.pin.gui.PINGUI;
 import at.gv.egiz.smcc.util.ISO7816Utils;
 import at.gv.egiz.smcc.util.SMCCHelper;
 
-public class PtEidCard extends AbstractSignatureCard {
+public class PtEidCard extends AbstractT0SignatureCard {
 
   private final Logger log = LoggerFactory.getLogger(PtEidCard.class);
   
@@ -63,7 +63,7 @@ public class PtEidCard extends AbstractSignatureCard {
       "at/gv/egiz/smcc/PtEidCard", "sig.pin", (byte) 0x82, DF_ISSUES, PinInfo.UNKNOWN_RETRIES);
   
   @Override
-  public byte[] getCertificate(KeyboxName keyboxName)
+  public byte[] getCertificate(KeyboxName keyboxName, PINGUI provider)
       throws SignatureCardException, InterruptedException {
 
     try {

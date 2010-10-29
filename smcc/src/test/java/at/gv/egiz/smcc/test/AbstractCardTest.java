@@ -48,13 +48,13 @@ public abstract class AbstractCardTest extends AbstractCardTestBase {
     
     byte[] certificateSSRef = (byte[]) applicationContext.getBean("certificateSS", byte[].class);
     
-    byte[] certificateSS = signatureCard.getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR);
+    byte[] certificateSS = signatureCard.getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR, null);
     
     assertArrayEquals(certificateSSRef, certificateSS);
     
     byte[] certificateGSRef = (byte[]) applicationContext.getBean("certificateGS", byte[].class);
     
-    byte[] certificateGS = signatureCard.getCertificate(KeyboxName.CERITIFIED_KEYPAIR);
+    byte[] certificateGS = signatureCard.getCertificate(KeyboxName.CERITIFIED_KEYPAIR, null);
     
     assertArrayEquals(certificateGSRef, certificateGS);
     
@@ -171,7 +171,7 @@ public abstract class AbstractCardTest extends AbstractCardTestBase {
           throws CancelledException, InterruptedException {
 
         try {
-          signatureCard.getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR);
+          signatureCard.getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR, null);
           assertTrue(false);
           return null;
         } catch (SignatureCardException e) {
@@ -198,7 +198,7 @@ public abstract class AbstractCardTest extends AbstractCardTestBase {
           throws CancelledException, InterruptedException {
 
         try {
-          signatureCard.getCertificate(KeyboxName.CERITIFIED_KEYPAIR);
+          signatureCard.getCertificate(KeyboxName.CERITIFIED_KEYPAIR, null);
           assertTrue(false);
           return null;
         } catch (SignatureCardException e) {

@@ -77,7 +77,7 @@ public interface SignatureCard {
   
   public Card getCard();
 
-  public byte[] getCertificate(KeyboxName keyboxName)
+  public byte[] getCertificate(KeyboxName keyboxName, PINGUI pinGUI)
       throws SignatureCardException, InterruptedException;
   
   public void disconnect(boolean reset);

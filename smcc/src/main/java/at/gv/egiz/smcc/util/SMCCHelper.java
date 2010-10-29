@@ -44,7 +44,9 @@ public class SMCCHelper {
   protected SignatureCard signatureCard = null;
   protected static boolean useSWCard = false;
 
-  public SMCCHelper() {
+  public SMCCHelper() {	
+	
+	System.setProperty("sun.security.smartcardio.t0GetResponse", "false");
     update();
   }
 
@@ -81,7 +83,7 @@ public class SMCCHelper {
             Card c = newCards.get(cardTerminal);
             if (c == null) {
               throw new CardNotSupportedException();
-            }
+            }            
             signatureCard = factory.createSignatureCard(c, cardTerminal);
             if (log.isTraceEnabled()) {
               Object[] args = { signatureCard, cardTerminal.getName(),

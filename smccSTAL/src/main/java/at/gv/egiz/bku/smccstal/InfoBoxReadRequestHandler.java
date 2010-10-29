@@ -17,6 +17,7 @@
 package at.gv.egiz.bku.smccstal;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.bku.pin.gui.SignPINGUI;
 import at.gv.egiz.bku.pin.gui.VerifyPINGUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ import at.gv.egiz.stal.STALResponse;
 public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
 
   private final Logger log = LoggerFactory.getLogger(InfoBoxReadRequestHandler.class);
-
+  
 //  protected PINProviderFactory pinProviderFactory;
 
   @Override
@@ -68,7 +69,7 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
             .getInfoboxIdentifier())) {
           log.debug("Handling certified keypair infobox.");
           byte[] resp = card
-              .getCertificate(SignatureCard.KeyboxName.CERITIFIED_KEYPAIR);
+              .getCertificate(SignatureCard.KeyboxName.CERITIFIED_KEYPAIR, new VerifyPINGUI(gui));
           if (resp == null) {
             return new ErrorResponse(6001);
           }
@@ -79,7 +80,7 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
             .equals(infoBox.getInfoboxIdentifier())) {
           log.debug("Handling secure signature keypair infobox.");
           byte[] resp = card
-              .getCertificate(SignatureCard.KeyboxName.SECURE_SIGNATURE_KEYPAIR);
+              .getCertificate(SignatureCard.KeyboxName.SECURE_SIGNATURE_KEYPAIR, new VerifyPINGUI(gui));
           if (resp == null) {
             return new ErrorResponse(6001);
           }

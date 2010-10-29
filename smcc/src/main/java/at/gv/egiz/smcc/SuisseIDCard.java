@@ -95,7 +95,7 @@ public class SuisseIDCard extends AbstractSignatureCard implements SignatureCard
 
   @Override
   @Exclusive
-  public byte[] getCertificate(KeyboxName keyboxName)
+  public byte[] getCertificate(KeyboxName keyboxName, PINGUI provider)
       throws SignatureCardException {
 
     if (keyboxName != KeyboxName.SECURE_SIGNATURE_KEYPAIR) {
