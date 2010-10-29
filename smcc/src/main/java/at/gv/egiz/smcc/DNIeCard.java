@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.smcc.pin.gui.PINGUI;
 
-public class DNIeCard extends AbstractT0SignatureCard implements SignatureCard {
+public class DNIeCard extends AbstractSignatureCard implements SignatureCard {
 
 	private final Logger log = LoggerFactory.getLogger(DNIeCard.class);
 

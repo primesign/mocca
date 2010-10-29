@@ -47,7 +47,7 @@ import at.gv.egiz.smcc.pin.gui.PINGUI;
 import at.gv.egiz.smcc.util.ISO7816Utils;
 import at.gv.egiz.smcc.util.SMCCHelper;
 
-public class PtEidCard extends AbstractT0SignatureCard {
+public class PtEidCard extends AbstractSignatureCard {
 
   private final Logger log = LoggerFactory.getLogger(PtEidCard.class);
   

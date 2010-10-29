@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 import at.gv.egiz.smcc.util.ISO7816Utils;
 import at.gv.egiz.smcc.util.SMCCHelper;
 
-public class BELPICCard extends AbstractT0SignatureCard implements SignatureCard {
+public class BELPICCard extends AbstractSignatureCard implements SignatureCard {
   
     /**
      * Logging facility.

@@ -69,7 +69,13 @@ public abstract class AbstractSignatureCard implements SignatureCard {
 
   protected CardChannel getCardChannel() {
 	  
-	  return new LogCardChannel(card_.getBasicChannel());
+	  if(card_.getProtocol().equalsIgnoreCase("T=0")) {
+		  
+		  return new T0CardChannel(card_.getBasicChannel());
+	  } else {
+	  
+		  return new LogCardChannel(card_.getBasicChannel());
+	  }
   }
 
   @Override
