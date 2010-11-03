@@ -40,7 +40,9 @@
 //    with  <any_resource_you_would_like_to_grant_XSLTs_document()_function_access_to>
 //
 // replace  www.a-trust.at and ksp.ecard.sozialversicherung.gv.at
-//    with  <idLink_template_download_URL>
+//    with  <idLink_template_download_URL>, currently:
+//          A-Trust: http://www.a-trust.at/zmr/persb204.xsl
+//          Verwaltungssignatur: http://ksp.ecard.sozialversicherung.gv.at/ePortal/public/xslt/ExpandIdLink-2_0.xslt
 // replace  ldap.a-trust.at:389, ocsp.a-trust.at:80 and ocsp.ecard.sozialversicherung.at:80
 //    with  <certificate_revocation_authority_endpoint> (OCSP, CRLs)
 //
@@ -70,6 +72,9 @@ grant codeBase "file:${catalina.base}/webapps/bkuonline/-" {
       permission java.net.SocketPermission "apps.egiz.gv.at:443", "connect, resolve";
       permission java.net.SocketPermission "www.buergerkarte.at:443", "connect, resolve";
       permission java.net.SocketPermission "www.sozialversicherung.gv.at:443", "connect, resolve";
+      permission java.net.SocketPermission "www.sozialversicherung.at:443", "connect, resolve";
+      permission java.net.SocketPermission "www2.sozialversicherung.gv.at:443", "connect, resolve";
+      permission java.net.SocketPermission "www2.sozialversicherung.at:443", "connect, resolve";
 
       // other resources (crls, persb.xsl, ...)
       permission java.net.SocketPermission "www.a-trust.at:80", "connect, resolve";

@@ -48,8 +48,14 @@ import org.springframework.core.io.ResourceLoader;
 
 import at.gv.egiz.bku.conf.IAIKLogAdapterFactory;
 import at.gv.egiz.bku.conf.MoccaConfigurationFacade;
+import java.util.ArrayList;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PKIProfileFactoryBean implements FactoryBean, ResourceLoaderAware {
+
+  protected static final Logger log = LoggerFactory.getLogger(PKIProfileFactoryBean.class);
 
   /**
    * The configuration facade.
@@ -68,6 +74,8 @@ public class PKIProfileFactoryBean implements FactoryBean, ResourceLoaderAware {
     
     public static final String SSL_CA_DIRECTORY_DEFAULT = "classpath:at/gv/egiz/bku/certs/trustStore";
     
+    public static final String SSL_REVOCATION_SERVICE_ORDER = "SSL.revocationServiceOrder";
+
     public URL getCertDirectory() throws MalformedURLException {
       return getURL(SSL_CERT_DIRECTORY);
     }
@@ -75,7 +83,11 @@ public class PKIProfileFactoryBean implements FactoryBean, ResourceLoaderAware {
     public URL getCaDirectory() throws MalformedURLException {
       return getURL(SSL_CA_DIRECTORY);
     }
-    
+
+    public List<String> getRevocationServiceOrder() throws Exception {
+      return configuration.getList(SSL_REVOCATION_SERVICE_ORDER);
+    }
+
     private URL getURL(String key) throws MalformedURLException {
       String url = configuration.getString(key);
       if (url == null || url.isEmpty()) {
@@ -199,6 +211,30 @@ public class PKIProfileFactoryBean implements FactoryBean, ResourceLoaderAware {
         TrustStoreTypes.DIRECTORY, caDirectory.getAbsolutePath());
     
   }
+
+  protected String[] createRevocationServiceOrder() throws Exception {
+    List<String> services = configurationFacade.getRevocationServiceOrder();
+
+    if (services != null) {
+      List<String> order = new ArrayList<String>(2);
+      for (String service : services) {
+        if ("OCSP".equals(service)) {
+          order.add(RevocationSourceTypes.OCSP);
+        } else if ("CRL".equals(service)) {
+          order.add(RevocationSourceTypes.CRL);
+        } else {
+          throw new Exception("Unsupported revocation service type " + service);
+        }
+      }
+      if (!order.isEmpty()) {
+        log.info("configure revocation service type order: {}", order);
+        return order.toArray(new String[order.size()]);
+      }
+    }
+    log.info("configure default revocation service type order: [OCSP, CRL]");
+    return new String[]
+      { RevocationSourceTypes.OCSP, RevocationSourceTypes.CRL };
+  }
   
   @Override
   public Object getObject() throws Exception {
@@ -216,8 +252,7 @@ public class PKIProfileFactoryBean implements FactoryBean, ResourceLoaderAware {
     DefaultPKIProfile pkiProfile = new DefaultPKIProfile(trustProfile);
     
     pkiProfile.setAutoAddCertificates(true);
-    pkiProfile.setPreferredServiceOrder(new String[] {
-        RevocationSourceTypes.OCSP, RevocationSourceTypes.CRL });
+    pkiProfile.setPreferredServiceOrder(createRevocationServiceOrder());
     
     return pkiProfile;
   }

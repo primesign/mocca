@@ -77,6 +77,10 @@ MOCCA Configuration
 		[<<<disableAllChecks>>>] May be set to <<<true>>> to disable all TSL/SSL related checks.
 		
 		Default: <<<false>>>
+
+        [<<<revocationServiceOrder>>>] May be set to <<<CRL,OCSP>>>, <<<CRL>>> or <<<OCSP>>> to define the (order of) revocation service(s) to be used.
+
+        Default: <<<OCSP,CRL>>>
 		
 	[<<<ProductName>>>] May be specified to set the product name given by the <<<Server>>> and <<<User-Agent>>> HTTP headers as specified by {{{http://www.buergerkarte.at/konzept/securitylayer/spezifikation/aktuell/bindings/bindings.en.html#http}HTTP binding}}.
 	

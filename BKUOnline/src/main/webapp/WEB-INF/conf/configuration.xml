@@ -7,4 +7,8 @@
 		-->
     <MaxHops>50</MaxHops>
   </DataURLConnection>
+  <!-- default revocation service type order: OCSP, CRL
+  <SSL>
+    <revocationServiceOrder>OCSP</revocationServiceOrder>
+  </SSL-->
 </MoccaConfiguration>
