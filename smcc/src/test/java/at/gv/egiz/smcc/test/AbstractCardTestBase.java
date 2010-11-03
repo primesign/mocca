@@ -31,6 +31,7 @@ import at.gv.egiz.smcc.CardNotSupportedException;
 import at.gv.egiz.smcc.CardTerminalEmul;
 import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.smcc.SignatureCardFactory;
+import iaik.security.provider.IAIK;
 
 public abstract class AbstractCardTestBase {
   
@@ -44,7 +45,7 @@ public abstract class AbstractCardTestBase {
   
   @BeforeClass
   public static void setupClass() {
-//    IAIK.addAsJDK14Provider();
+    IAIK.addAsJDK14Provider();
   }
   
   @Before

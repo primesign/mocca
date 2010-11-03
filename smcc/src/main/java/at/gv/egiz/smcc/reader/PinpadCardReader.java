@@ -115,6 +115,9 @@ public class PinpadCardReader extends DefaultCardReader {
         log.trace("Setting custom wPINMaxExtraDigitH (0x01) for {}.", name);
         wPINMaxExtraDigitMin = 0x01;
       }
+      //TODO Kobil KAAN Advanced seems to have an issue,
+      //cf. http://www.buergerkarte.at/mvnforum/mvnforum/viewthread?thread=255
+      //CHANGE REFERENCE DATA failed. SW=6a80 on activate STARCOS card
     }
 
   }

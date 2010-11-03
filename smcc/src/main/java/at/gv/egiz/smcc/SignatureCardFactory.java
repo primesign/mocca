@@ -424,6 +424,27 @@ public class SignatureCardFactory {
                 (byte) 0xff},
         "at.gv.egiz.smcc.SuisseIDCard"));
 
+    supportedCards.add(new SupportedCard(
+        // FL-Post card
+        // [3b:bb:18:00:c0:10:31:fe:45:80:67:04:12: b0:03:03:00:00:81:05:3c]
+        new byte[] { (byte) 0x3b, (byte) 0xbb, (byte) 0x18,
+                (byte) 0x00, (byte) 0xc0, (byte) 0x10, (byte) 0x31,
+                (byte) 0xfe, (byte) 0x45, (byte) 0x80, (byte) 0x67,
+                (byte) 0x04, (byte) 0x12, (byte) 0xb0, (byte) 0x03,
+                (byte) 0x03, (byte) 0x00, (byte) 0x00, (byte) 0x81,
+                (byte) 0x05, (byte) 0x3c},
+        // mask
+        new byte[] {
+                (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff},
+        "at.gv.egiz.smcc.LIEZertifikatCard"));
+
+    
   }
 
   /**
