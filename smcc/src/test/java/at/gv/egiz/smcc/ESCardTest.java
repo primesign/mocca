@@ -43,6 +43,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.smartcardio.*;
 
 import at.gv.egiz.smcc.pin.gui.PINGUI;
+import org.junit.Ignore;
 
 //import iaik.asn1.ASN1;
 //import iaik.asn1.ASN1Object;
@@ -52,6 +53,7 @@ import at.gv.egiz.smcc.pin.gui.PINGUI;
 //import iaik.security.rsa.RSAPublicKey;
 //import iaik.x509.X509Certificate;
 
+@Ignore
 public class ESCardTest extends AbstractSignatureCard {
 
 	private static final String ROOT_CA_MODULO = "EADEDA455332945039DAA404C8EBC4D3B7F5DC869283CDEA2F101E2AB54FB0D0B03D8F030DAF2458028288F54CE552F8FA57AB2FB103B112427E11131D1D27E10A5B500EAAE5D940301E30EB26C3E9066B257156ED639D70CCC090B863AFBB3BFED8C17BE7673034B9823E977ED657252927F9575B9FFF6691DB64F80B5E92CD";
