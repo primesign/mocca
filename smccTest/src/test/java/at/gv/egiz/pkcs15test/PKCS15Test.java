@@ -8,8 +8,10 @@ import iaik.asn1.ASN1Object;
 import iaik.asn1.CodingException;
 import iaik.asn1.DerCoder;
 //import iaik.security.provider.IAIK;
+import iaik.security.ecc.provider.ECCProvider;
 
 import iaik.security.provider.IAIK;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -68,6 +70,7 @@ public class PKCS15Test {
   public void setUp() throws NoSuchAlgorithmException, CardException {
     
     IAIK.addAsJDK14Provider();
+    ECCProvider.addAsProvider();
     
     System.out.println("create terminalFactory...\n");
     TerminalFactory terminalFactory = TerminalFactory.getInstance("PC/SC", null);
@@ -335,6 +338,24 @@ public class PKCS15Test {
     resp = basicChannel.transmit(cmdAPDU);
     System.out.println(" -> " + toString(resp.getBytes()) + "\n");
     System.out.println(new TLVSequence(new TLVSequence(resp.getData()).getValue(0x6f)));
+
+    System.out.println("SELECT CERTIFICATE");
+    cmdAPDU = new CommandAPDU(0x00, 0xA4, 0x02, 0x00, new byte[] { (byte) 0xc0, (byte) 0x00 }, 256);
+    System.out.println(" cmd apdu " + toString(cmdAPDU.getBytes()));
+    resp = basicChannel.transmit(cmdAPDU);
+    System.out.println(" -> " + toString(resp.getBytes()) + "\n");
+
+    X509Certificate certificate = null;
+    try {
+      System.out.println("READ cert?");
+      CertificateFactory certificateFactory = CertificateFactory.getInstance("X509");
+      certificate = (X509Certificate) certificateFactory.generateCertificate(ISO7816Utils.openTransparentFileInputStream(basicChannel, -1));
+//      certificate = certificateFactory.generateCertificate(new BASE64DecoderStream(new ByteArrayInputStream(CERT.getBytes())));
+//      System.out.println("certificate: \n" + toString(certificate.getEncoded()));
+      System.out.println("certificate: \n" + certificate);
+    } catch (CertificateException e) {
+      e.printStackTrace();
+    }
 
     byte[] fid = new byte[] {(byte) 0x00, (byte) 0x30 };
     System.out.println("SELECT EF FID=" + toString(fid));
