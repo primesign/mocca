@@ -114,6 +114,13 @@ public class PinpadCardReader extends DefaultCardReader {
       } else if (name.startsWith("cherry smartboard xx44")) {
         log.trace("Setting custom wPINMaxExtraDigitH (0x01) for {}.", name);
         wPINMaxExtraDigitMin = 0x01;
+      } else if (name.startsWith("cherry gmbh smartterminal st-2xxx")) {
+        // Win: Cherry GmbH SmartTerminal ST-2xxx 0
+        // Linux(?): Cherry SmartTerminal ST-2XXX (21121010102014) 00 00
+        log.trace("Setting custom bTimeOut (0x3c) for {}.", name);
+        bTimeOut = 0x3c;
+        log.trace("Setting custom bTimeOut2 (0x0f) for {}.", name);
+        bTimeOut2 = 0x0f;
       }
       //TODO Kobil KAAN Advanced seems to have an issue,
       //cf. http://www.buergerkarte.at/mvnforum/mvnforum/viewthread?thread=255
