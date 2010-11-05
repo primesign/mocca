@@ -1,4 +1,6 @@
-package at.gv.egiz.pkcs15test;
+package at.gv.egiz.smcc.util;
+
+
 
 /*
  * Copyright 2009 Federal Chancellery Austria and

@@ -59,7 +59,7 @@ public class CardTest {
         // Certificates
         try {
           System.out.println("--- Certificate " + keyboxName + " ---");
-          byte[] certificate = signatureCard.getCertificate(keyboxName);
+          byte[] certificate = signatureCard.getCertificate(keyboxName, null);
           Certificate cert = certificateFactory.generateCertificate(new ByteArrayInputStream(certificate));
           System.out.println(cert);
         } catch (SignatureCardException e) {

@@ -1,8 +1,10 @@
-package at.gv.egiz.pkcs15test;
+package at.gv.egiz.smcctest;
 
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.VerifyAPDUSpec;
 import at.gv.egiz.smcc.util.ISO7816Utils;
+import at.gv.egiz.smcc.util.TLV;
+import at.gv.egiz.smcc.util.TLVSequence;
 import iaik.asn1.ASN1;
 import iaik.asn1.ASN1Object;
 import iaik.asn1.CodingException;
@@ -33,12 +35,12 @@ import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 import javax.smartcardio.TerminalFactory;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+//import org.junit.After;
+//import org.junit.AfterClass;
+//import org.junit.Before;
+//import org.junit.BeforeClass;
+//import org.junit.Ignore;
+//import org.junit.Test;
 //import org.opensc.pkcs15.asn1.PKCS15Certificate;
 //import org.opensc.pkcs15.asn1.PKCS15Objects;
 //import org.opensc.pkcs15.asn1.sequence.SequenceOf;
@@ -58,15 +60,15 @@ public class PKCS15Test {
   public PKCS15Test() {
   }
 
-  @BeforeClass
+//  @BeforeClass
   public static void setUpClass() throws Exception {
   }
 
-  @AfterClass
+//  @AfterClass
   public static void tearDownClass() throws Exception {
   }
 
-  @Before
+//  @Before
   public void setUp() throws NoSuchAlgorithmException, CardException {
     
     IAIK.addAsJDK14Provider();
@@ -94,12 +96,12 @@ public class PKCS15Test {
     
   }
 
-  @After
+//  @After
   public void tearDown() {
   }
 
-  @Test
-  @Ignore
+//  @Test
+//  @Ignore
   public void getEFDIR() throws CardException, SignatureCardException, InstantiationException, CodingException {
     
     CardChannel basicChannel = icc.getBasicChannel();
@@ -208,12 +210,12 @@ public class PKCS15Test {
       byte[] fid = (byte[]) object.getComponentAt(0).getValue();
       
       System.out.println("SELECT EF fid=" + toString(fid));
-      cmdAPDU = new CommandAPDU(0x00, 0xA4, 0x02, 0x00, fid, 256);
+      cmdAPDU = new CommandAPDU(0x00, 0xA4, 0x02, 0x04, fid, 256);
       System.out.println(" cmd apdu " + toString(cmdAPDU.getBytes()));
       resp = basicChannel.transmit(cmdAPDU);
       System.out.println(" -> " + toString(resp.getBytes()) + "\n");
       
-      byte[] fcx = new TLVSequence(resp.getBytes()).getValue(0x6f); //0x62 for FCP, 0x6f for FCI
+      byte[] fcx = new TLVSequence(resp.getBytes()).getValue(0x62); //0x62 for FCP, 0x6f for FCI
       byte[] fd = new TLVSequence(fcx).getValue(0x82);
 
 //      System.out.println("cio " + toString(fid) + " fd: " + toString(fd));
@@ -305,8 +307,8 @@ public class PKCS15Test {
 
   }
 
-  @Test
-  @Ignore
+//  @Test
+//  @Ignore
   public void ecard() throws CardException, SignatureCardException, CodingException {
     CardChannel basicChannel = icc.getBasicChannel();
     CommandAPDU cmdAPDU;
@@ -383,8 +385,8 @@ public class PKCS15Test {
   }
 
 
-  @Test
-  @Ignore
+//  @Test
+//  @Ignore
   public void sign() throws CardException, SignatureCardException, InstantiationException, CodingException {
     CardChannel basicChannel = icc.getBasicChannel();
     CommandAPDU cmdAPDU;
@@ -669,7 +671,7 @@ public class PKCS15Test {
 //          +"-----END CERTIFICATE-----";
 
 
-  @Ignore
+//  @Ignore
   public void directoryListing(CommandAPDU cmdAPDU, ResponseAPDU resp, CardChannel basicChannel) throws CardException, SignatureCardException {
 
     byte[] dir = new byte[] {(byte) 0x50, (byte) 0x15};
@@ -715,8 +717,8 @@ public class PKCS15Test {
 
   }
 
-  @Test
-  @Ignore
+//  @Test
+//  @Ignore
   public void verify() throws CardException {
     CardChannel basicChannel = icc.getBasicChannel();
     CommandAPDU cmdAPDU;
@@ -739,8 +741,8 @@ public class PKCS15Test {
 
   }
 
-  @Test
-  @Ignore
+//  @Test
+//  @Ignore
   public void selectAndRead() throws CardException, SignatureCardException {
     CardChannel basicChannel = icc.getBasicChannel();
     CommandAPDU cmdAPDU;
@@ -866,7 +868,7 @@ public class PKCS15Test {
   }
 
 
-  @Ignore
+//  @Ignore
   public void todo(Certificate certificate, CommandAPDU cmdAPDU, ResponseAPDU resp, CardChannel basicChannel) throws CardException, SignatureCardException {
 
 //    System.out.println("SELECT by Path");
@@ -1014,10 +1016,15 @@ public class PKCS15Test {
 
 
   public static void main(String[] args) {
-    System.out.println("manually running pkcs15 test...");
-    PKCS15Test test = new PKCS15Test();
-//    test.setUp();
-//    test.selectAndRead();
+        try {
+            System.out.println("manually running pkcs15 test...");
+            PKCS15Test test = new PKCS15Test();
+            test.setUp();
+            test.getEFDIR();
+            //    test.selectAndRead();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
   }
 
 }
