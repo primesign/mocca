@@ -1,7 +1,27 @@
+/*
+* Copyright 2009 Federal Chancellery Austria and
+* Graz University of Technology
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
 package at.gv.egiz.smcc;
+
+import iaik.me.asn1.ASN1;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -44,14 +64,6 @@ import javax.smartcardio.*;
 
 import at.gv.egiz.smcc.pin.gui.PINGUI;
 import org.junit.Ignore;
-
-//import iaik.asn1.ASN1;
-//import iaik.asn1.ASN1Object;
-//import iaik.asn1.CodingException;
-//import iaik.security.provider.IAIK;
-//import iaik.security.rsa.RSAPrivateKey;
-//import iaik.security.rsa.RSAPublicKey;
-//import iaik.x509.X509Certificate;
 
 @Ignore
 public class ESCardTest extends AbstractSignatureCard {
@@ -313,8 +325,9 @@ public class ESCardTest extends AbstractSignatureCard {
 	// ,(byte)0xc6,(byte)0x93,(byte)0x57,(byte)0xba,(byte)0x7b,(byte)0x25,(byte)0xd0,(byte)0xfc
 	// };
 
-	private static final byte[] IV = new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-	
+	private static final byte[] IV = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x00, 0x00, 0x00 };
+
 	private int prndLength;
 	private byte[] snIcc;
 	private byte[] componentCert;
@@ -332,305 +345,407 @@ public class ESCardTest extends AbstractSignatureCard {
 
 	private byte[] sigVal;
 	private byte[] sigCert;
-	
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 
 		System.setProperty("sun.security.smartcardio.t0GetResponse", "false");
-		
-//		IAIK.addAsProvider();
+
+		// IAIK.addAsProvider();
 
 		ESCardTest tester = new ESCardTest();
 
+		tester.testEchtCert();
+//		try {
+//			CardChannel channel = tester.setupCardChannel();
+//
+//			for (int i = 0; i < 1; i++) {
+//				tester.establishSecureChannel(channel);
+//			}
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+
+	}
+
+	private void testEchtCert() {
+
 		try {
-			
-//			createRSAPrivateKey(TERMINAL_MODULO, TERMINAL_PRIVEXP);
-			tester.establishSecureChannel();
-//			tester.testSigVerify();
-//			tester.testZLib();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
+		java.io.File file = new java.io.File("f:/c.hex");
+		InputStream is = new FileInputStream(file);
+
+		long length = file.length();
+
+		byte[] bytes = new byte[(int) length];
+		// Read in the bytes
+		int offset = 0;
+		int numRead = 0;
+		while (offset < bytes.length
+				&& (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
+			offset += numRead;
 		}
 
+		if (offset < bytes.length) {
+			throw new IOException("Could not completely read file "
+					+ file.getName());
+		}
+
+		is.close(); 
+		
+		
+		int uncompressedDataLen = getUncompressedDataLength(bytes);
+
+		byte[] compressedWithoutHeader = new byte[bytes.length - 8];
+		System.arraycopy(bytes, 8, compressedWithoutHeader, 0,
+				compressedWithoutHeader.length);
+
+		byte[] decompressed = decompressData(compressedWithoutHeader,
+				uncompressedDataLen);
+
+		writeDataToFile(decompressed, "F:/cert2.cer");		
+		
+		} catch(Exception e) {
+			
+			e.printStackTrace();
+		}
+		
 	}
 
 	private void testZLib() {
-		
-		 try {
-		     // Encode a String into bytes
-		     String inputString = "blahblahblah??";
-		     byte[] input = inputString.getBytes("UTF-8");
 
-		     // Compress the bytes
-		     byte[] output = new byte[100];
-		     Deflater compresser = new Deflater();
-		     compresser.setInput(input);
-		     compresser.finish();
-		     int compressedDataLength = compresser.deflate(output);
-		     
-		     System.out.println("compressed data (len):" + compressedDataLength);
-		     printByteArray(output);
+		try {
+			// Encode a String into bytes
+			String inputString = "blahblahblah??";
+			byte[] input = inputString.getBytes("UTF-8");
 
-		     // Decompress the bytes
-		     Inflater decompresser = new Inflater();
-		     decompresser.setInput(output, 0, compressedDataLength);
-		     byte[] result = new byte[100];
-		     int resultLength = decompresser.inflate(result);
-		     decompresser.end();
-		     
-		     System.out.println("Decompressed data (len):" + resultLength);
-		     printByteArray(result);
+			// Compress the bytes
+			byte[] output = new byte[100];
+			Deflater compresser = new Deflater();
+			compresser.setInput(input);
+			compresser.finish();
+			int compressedDataLength = compresser.deflate(output);
 
-		     // Decode the bytes into a String
-		     String outputString = new String(result, 0, resultLength, "UTF-8");
-		 } catch(java.io.UnsupportedEncodingException ex) {
-		     // handle
-		 } catch (java.util.zip.DataFormatException ex) {
-		     // handle
-		 }
+			System.out.println("compressed data (len):" + compressedDataLength);
+			printByteArray(output);
 
-		
-	}
-	
-	private byte[] decompressData(byte[] input, int len) throws CardException {
-		
-	     Inflater decompresser = new Inflater();
-	     decompresser.setInput(input, 0, input.length);
-	     byte[] result = new byte[len];	     
-	     
-	     try {
-			decompresser.inflate(result);
+			// Decompress the bytes
+			Inflater decompresser = new Inflater();
+			decompresser.setInput(output, 0, compressedDataLength);
+			byte[] result = new byte[100];
+			int resultLength = decompresser.inflate(result);
 			decompresser.end();
-			
-			return result;
-			
-		} catch (DataFormatException e) {
-			
-			throw new CardException("Error decompressing file." , e); 
+
+			System.out.println("Decompressed data (len):" + resultLength);
+			printByteArray(result);
+
+			// Decode the bytes into a String
+			String outputString = new String(result, 0, resultLength, "UTF-8");
+		} catch (java.io.UnsupportedEncodingException ex) {
+			// handle
+		} catch (java.util.zip.DataFormatException ex) {
+			// handle
 		}
-	    
+
 	}
+
+
+	private byte[] decompressData(byte[] input, int len) throws CardException {
+
+		Inflater decompresser = new Inflater();
+		decompresser.setInput(input, 0, input.length);
+		byte[] buffer = new byte[256];
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		
+		try {
+			while(!decompresser.finished()) {
+			
+				int numBytes = decompresser.inflate(buffer);
+				bos.write(buffer, 0, numBytes);
+			}
+
+		} catch (DataFormatException e) {
+
+			throw new CardException("Error decompressing file.", e);
+		}
+
+		return bos.toByteArray();
+	}	
 	
 	private void testSigVerify() throws CardException {
-		
+
 		this.kEnc = new byte[] {
-			
-				(byte)0x59, (byte)0x8f, (byte)0x26, (byte)0xe3, (byte)0x6e, (byte)0x11, (byte)0xa8, (byte)0xec, (byte)0x14, (byte)0xb8, (byte)0x1e, (byte)0x19, (byte)0xbd, (byte)0xa2, (byte)0x23, (byte)0xca
-		};
-		
+
+		(byte) 0x59, (byte) 0x8f, (byte) 0x26, (byte) 0xe3, (byte) 0x6e,
+				(byte) 0x11, (byte) 0xa8, (byte) 0xec, (byte) 0x14,
+				(byte) 0xb8, (byte) 0x1e, (byte) 0x19, (byte) 0xbd,
+				(byte) 0xa2, (byte) 0x23, (byte) 0xca };
+
 		this.kMac = new byte[] {
-				
-				(byte)0x5d, (byte)0xe2, (byte)0x93, (byte)0x9a, (byte)0x1e, (byte)0xa0, (byte)0x3a, (byte)0x93, (byte)0x0b, (byte)0x88, (byte)0x20, (byte)0x6d, (byte)0x8f, (byte)0x73, (byte)0xe8, (byte)0xa7	
-		};
-		
+
+		(byte) 0x5d, (byte) 0xe2, (byte) 0x93, (byte) 0x9a, (byte) 0x1e,
+				(byte) 0xa0, (byte) 0x3a, (byte) 0x93, (byte) 0x0b,
+				(byte) 0x88, (byte) 0x20, (byte) 0x6d, (byte) 0x8f,
+				(byte) 0x73, (byte) 0xe8, (byte) 0xa7 };
+
 		this.ssc = new byte[] {
-				
-				(byte)0xd3, (byte)0x1a, (byte)0xc8, (byte)0xec, (byte)0x7b, (byte)0xa0, (byte)0xfe, (byte)0x73	
-		};
-		
+
+		(byte) 0xd3, (byte) 0x1a, (byte) 0xc8, (byte) 0xec, (byte) 0x7b,
+				(byte) 0xa0, (byte) 0xfe, (byte) 0x73 };
+
 		byte[] sigData_1 = new byte[] {
-				
-				(byte)0x87, (byte)0x82, (byte)0x01, (byte)0x09, (byte)0x01, (byte)0xe4, (byte)0xe9, (byte)0xca, (byte)0x20, (byte)0xeb, (byte)0x99, (byte)0x6f, (byte)0x14, (byte)0xf2, (byte)0x19, (byte)0xd0, (byte)0x86, (byte)0xb1, (byte)0x31, (byte)0x87, (byte)0xd6, (byte)0x40, (byte)0xa7, (byte)0xf7
-				, (byte)0xd9, (byte)0xa9, (byte)0x3b, (byte)0x74, (byte)0x36, (byte)0x88, (byte)0x70, (byte)0xe7, (byte)0x30, (byte)0x0e, (byte)0xc5, (byte)0xdb, (byte)0x20, (byte)0x2e, (byte)0x68, (byte)0x3e, (byte)0x85, (byte)0x07, (byte)0xae, (byte)0x87, (byte)0x1f, (byte)0xf9, (byte)0xfe, (byte)0x6c
-				, (byte)0x10, (byte)0xcd, (byte)0x6b, (byte)0x66, (byte)0xe9, (byte)0x42, (byte)0xaf, (byte)0xfa, (byte)0xc1, (byte)0x99, (byte)0x6a, (byte)0x20, (byte)0x48, (byte)0xe0, (byte)0x56, (byte)0x4d, (byte)0x8e, (byte)0xdd, (byte)0x8b, (byte)0x00, (byte)0x57, (byte)0xea, (byte)0xa0, (byte)0x57
-				, (byte)0x6e, (byte)0xc8, (byte)0x3e, (byte)0x0b, (byte)0x62, (byte)0xeb, (byte)0x07, (byte)0xbe, (byte)0xa6, (byte)0xf7, (byte)0x4a, (byte)0x43, (byte)0xa8, (byte)0xd4, (byte)0xa5, (byte)0x18, (byte)0xf5, (byte)0x5d, (byte)0xae, (byte)0xba, (byte)0x0b, (byte)0xc6, (byte)0xa8, (byte)0x7f
-				, (byte)0x0e, (byte)0x30, (byte)0xfb, (byte)0x1a, (byte)0x75, (byte)0xd4, (byte)0x47, (byte)0x21, (byte)0x08, (byte)0xec, (byte)0xb0, (byte)0x43, (byte)0xdc, (byte)0xd2, (byte)0xf2, (byte)0x2f, (byte)0x85, (byte)0xdb, (byte)0x56, (byte)0x40, (byte)0xc8, (byte)0x6b, (byte)0x50, (byte)0x0b
-				, (byte)0xf5, (byte)0xa8, (byte)0x19, (byte)0xac, (byte)0x73, (byte)0x63, (byte)0xd8, (byte)0x79, (byte)0xf9, (byte)0x8b, (byte)0x42, (byte)0x95, (byte)0x35, (byte)0x9d, (byte)0x2f, (byte)0x7c, (byte)0x04, (byte)0xf1, (byte)0x34, (byte)0xfd, (byte)0x28, (byte)0xaf, (byte)0x07, (byte)0xb7
-				, (byte)0xe5, (byte)0xb3, (byte)0x27, (byte)0xf3, (byte)0x21, (byte)0x4a, (byte)0x81, (byte)0x6f, (byte)0xcd, (byte)0xa4, (byte)0x89, (byte)0xb1, (byte)0x7e, (byte)0x0a, (byte)0x0f, (byte)0x9b, (byte)0x9c, (byte)0x3a, (byte)0xf5, (byte)0xb7, (byte)0xce, (byte)0xaa, (byte)0x43, (byte)0x11
-				, (byte)0xc7, (byte)0xa6, (byte)0x6e, (byte)0xec, (byte)0xe2, (byte)0x10, (byte)0xde, (byte)0x9b, (byte)0x47, (byte)0x1c, (byte)0x78, (byte)0xae, (byte)0xf8, (byte)0x58, (byte)0xcf, (byte)0xea, (byte)0xeb, (byte)0x11, (byte)0xda, (byte)0x40, (byte)0xba, (byte)0x93, (byte)0x2d, (byte)0x49
-				, (byte)0x90, (byte)0x0b, (byte)0x73, (byte)0xf6, (byte)0xa1, (byte)0x44, (byte)0x51, (byte)0xc0, (byte)0xca, (byte)0xe0, (byte)0x4b, (byte)0x08, (byte)0x5b, (byte)0x62, (byte)0xaa, (byte)0x19, (byte)0x03, (byte)0x7b, (byte)0x62, (byte)0xea, (byte)0xf7, (byte)0xb9, (byte)0x7b, (byte)0xf7
-				, (byte)0xe6, (byte)0xdf, (byte)0x54, (byte)0xcb, (byte)0x8a, (byte)0x4e, (byte)0x3d, (byte)0xb5, (byte)0xbc, (byte)0x56, (byte)0x81, (byte)0x84, (byte)0x67, (byte)0xac, (byte)0x75, (byte)0x6b, (byte)0x53, (byte)0xba, (byte)0x04, (byte)0xb5, (byte)0xdb, (byte)0x0f, (byte)0x55, (byte)0xc1
-				, (byte)0xdb, (byte)0x23, (byte)0xf2, (byte)0x28, (byte)0x9f, (byte)0x9e, (byte)0x2c, (byte)0x35, (byte)0x96, (byte)0x71, (byte)0xba, (byte)0x17, (byte)0x4a, (byte)0x9e, (byte)0xcd, (byte)0xe2, (byte)0x61, (byte)0x17				
-		};
-		
+
+		(byte) 0x87, (byte) 0x82, (byte) 0x01, (byte) 0x09, (byte) 0x01,
+				(byte) 0xe4, (byte) 0xe9, (byte) 0xca, (byte) 0x20,
+				(byte) 0xeb, (byte) 0x99, (byte) 0x6f, (byte) 0x14,
+				(byte) 0xf2, (byte) 0x19, (byte) 0xd0, (byte) 0x86,
+				(byte) 0xb1, (byte) 0x31, (byte) 0x87, (byte) 0xd6,
+				(byte) 0x40, (byte) 0xa7, (byte) 0xf7, (byte) 0xd9,
+				(byte) 0xa9, (byte) 0x3b, (byte) 0x74, (byte) 0x36,
+				(byte) 0x88, (byte) 0x70, (byte) 0xe7, (byte) 0x30,
+				(byte) 0x0e, (byte) 0xc5, (byte) 0xdb, (byte) 0x20,
+				(byte) 0x2e, (byte) 0x68, (byte) 0x3e, (byte) 0x85,
+				(byte) 0x07, (byte) 0xae, (byte) 0x87, (byte) 0x1f,
+				(byte) 0xf9, (byte) 0xfe, (byte) 0x6c, (byte) 0x10,
+				(byte) 0xcd, (byte) 0x6b, (byte) 0x66, (byte) 0xe9,
+				(byte) 0x42, (byte) 0xaf, (byte) 0xfa, (byte) 0xc1,
+				(byte) 0x99, (byte) 0x6a, (byte) 0x20, (byte) 0x48,
+				(byte) 0xe0, (byte) 0x56, (byte) 0x4d, (byte) 0x8e,
+				(byte) 0xdd, (byte) 0x8b, (byte) 0x00, (byte) 0x57,
+				(byte) 0xea, (byte) 0xa0, (byte) 0x57, (byte) 0x6e,
+				(byte) 0xc8, (byte) 0x3e, (byte) 0x0b, (byte) 0x62,
+				(byte) 0xeb, (byte) 0x07, (byte) 0xbe, (byte) 0xa6,
+				(byte) 0xf7, (byte) 0x4a, (byte) 0x43, (byte) 0xa8,
+				(byte) 0xd4, (byte) 0xa5, (byte) 0x18, (byte) 0xf5,
+				(byte) 0x5d, (byte) 0xae, (byte) 0xba, (byte) 0x0b,
+				(byte) 0xc6, (byte) 0xa8, (byte) 0x7f, (byte) 0x0e,
+				(byte) 0x30, (byte) 0xfb, (byte) 0x1a, (byte) 0x75,
+				(byte) 0xd4, (byte) 0x47, (byte) 0x21, (byte) 0x08,
+				(byte) 0xec, (byte) 0xb0, (byte) 0x43, (byte) 0xdc,
+				(byte) 0xd2, (byte) 0xf2, (byte) 0x2f, (byte) 0x85,
+				(byte) 0xdb, (byte) 0x56, (byte) 0x40, (byte) 0xc8,
+				(byte) 0x6b, (byte) 0x50, (byte) 0x0b, (byte) 0xf5,
+				(byte) 0xa8, (byte) 0x19, (byte) 0xac, (byte) 0x73,
+				(byte) 0x63, (byte) 0xd8, (byte) 0x79, (byte) 0xf9,
+				(byte) 0x8b, (byte) 0x42, (byte) 0x95, (byte) 0x35,
+				(byte) 0x9d, (byte) 0x2f, (byte) 0x7c, (byte) 0x04,
+				(byte) 0xf1, (byte) 0x34, (byte) 0xfd, (byte) 0x28,
+				(byte) 0xaf, (byte) 0x07, (byte) 0xb7, (byte) 0xe5,
+				(byte) 0xb3, (byte) 0x27, (byte) 0xf3, (byte) 0x21,
+				(byte) 0x4a, (byte) 0x81, (byte) 0x6f, (byte) 0xcd,
+				(byte) 0xa4, (byte) 0x89, (byte) 0xb1, (byte) 0x7e,
+				(byte) 0x0a, (byte) 0x0f, (byte) 0x9b, (byte) 0x9c,
+				(byte) 0x3a, (byte) 0xf5, (byte) 0xb7, (byte) 0xce,
+				(byte) 0xaa, (byte) 0x43, (byte) 0x11, (byte) 0xc7,
+				(byte) 0xa6, (byte) 0x6e, (byte) 0xec, (byte) 0xe2,
+				(byte) 0x10, (byte) 0xde, (byte) 0x9b, (byte) 0x47,
+				(byte) 0x1c, (byte) 0x78, (byte) 0xae, (byte) 0xf8,
+				(byte) 0x58, (byte) 0xcf, (byte) 0xea, (byte) 0xeb,
+				(byte) 0x11, (byte) 0xda, (byte) 0x40, (byte) 0xba,
+				(byte) 0x93, (byte) 0x2d, (byte) 0x49, (byte) 0x90,
+				(byte) 0x0b, (byte) 0x73, (byte) 0xf6, (byte) 0xa1,
+				(byte) 0x44, (byte) 0x51, (byte) 0xc0, (byte) 0xca,
+				(byte) 0xe0, (byte) 0x4b, (byte) 0x08, (byte) 0x5b,
+				(byte) 0x62, (byte) 0xaa, (byte) 0x19, (byte) 0x03,
+				(byte) 0x7b, (byte) 0x62, (byte) 0xea, (byte) 0xf7,
+				(byte) 0xb9, (byte) 0x7b, (byte) 0xf7, (byte) 0xe6,
+				(byte) 0xdf, (byte) 0x54, (byte) 0xcb, (byte) 0x8a,
+				(byte) 0x4e, (byte) 0x3d, (byte) 0xb5, (byte) 0xbc,
+				(byte) 0x56, (byte) 0x81, (byte) 0x84, (byte) 0x67,
+				(byte) 0xac, (byte) 0x75, (byte) 0x6b, (byte) 0x53,
+				(byte) 0xba, (byte) 0x04, (byte) 0xb5, (byte) 0xdb,
+				(byte) 0x0f, (byte) 0x55, (byte) 0xc1, (byte) 0xdb,
+				(byte) 0x23, (byte) 0xf2, (byte) 0x28, (byte) 0x9f,
+				(byte) 0x9e, (byte) 0x2c, (byte) 0x35, (byte) 0x96,
+				(byte) 0x71, (byte) 0xba, (byte) 0x17, (byte) 0x4a,
+				(byte) 0x9e, (byte) 0xcd, (byte) 0xe2, (byte) 0x61, (byte) 0x17 };
+
 		byte[] sigData_2 = new byte[] {
-				
-				(byte)0x78, (byte)0x4d, (byte)0xd3, (byte)0x60, (byte)0x9f, (byte)0x32, (byte)0xf0, (byte)0x40, (byte)0xda, (byte)0xe1, (byte)0xc1, (byte)0x44, (byte)0x7e, (byte)0x99, (byte)0x02, (byte)0x90, (byte)0x00, (byte)0x8e, (byte)0x04, (byte)0x99, (byte)0x9b, (byte)0x1e, (byte)0x4e, (byte)0x90, (byte)0x00
-				
+
+		(byte) 0x78, (byte) 0x4d, (byte) 0xd3, (byte) 0x60, (byte) 0x9f,
+				(byte) 0x32, (byte) 0xf0, (byte) 0x40, (byte) 0xda,
+				(byte) 0xe1, (byte) 0xc1, (byte) 0x44, (byte) 0x7e,
+				(byte) 0x99, (byte) 0x02, (byte) 0x90, (byte) 0x00,
+				(byte) 0x8e, (byte) 0x04, (byte) 0x99, (byte) 0x9b,
+				(byte) 0x1e, (byte) 0x4e, (byte) 0x90, (byte) 0x00
+
 		};
-		                            
-		//------------------
-		
+
+		// ------------------
+
 		System.out.println("Data_1 lenght: " + sigData_1.length);
 		System.out.println("Data_2 lenght: " + sigData_2.length);
-		
-		byte[] allData = new byte[sigData_1.length-2 + sigData_2.length-2];
-		System.arraycopy(sigData_1, 0, allData, 0, sigData_1.length-2);
-		System.arraycopy(sigData_2, 0, allData, sigData_1.length-2, sigData_2.length-2);
-		
+
+		byte[] allData = new byte[sigData_1.length - 2 + sigData_2.length - 2];
+		System.arraycopy(sigData_1, 0, allData, 0, sigData_1.length - 2);
+		System.arraycopy(sigData_2, 0, allData, sigData_1.length - 2,
+				sigData_2.length - 2);
+
 		System.out.println("AllData lenght: " + allData.length);
 		System.out.println("AllData:");
 		printByteArray(allData);
-		
-		verifyAndDecryptSecuredResponseAPDU(allData);
-		
-		
-		
-	}
-	
-	private byte[] executeGetResponse(CardChannel channel, byte sw2) throws CardException {
-		
-//			System.out.print("Run GET RESPONSE..");
-		
-			boolean done=false;
-			ByteArrayOutputStream bof = new ByteArrayOutputStream();
-			
-			while(!done) {
-			
-				CommandAPDU command = new CommandAPDU(new byte[] { (byte) 0x00, (byte) 0xC0,
-						(byte) 0x00, (byte) 0x00, (byte) sw2 });
-				ResponseAPDU resp = channel.transmit(command);
-				
-	//			System.out.println("Answer from card: " + Integer.toHexString(resp.getSW()));
-	//			System.out.println("Number of bytes read: " + resp.getData().length);
-	//			
-//				if(resp.getSW1() == (byte)0x61 || resp.getSW() == 0x9000) {
-//					
-//					return resp.getData();
-//				} else {
-//					
-//					throw new CardException("Command GET RESPONSE failed. SW=" + Integer.toHexString(resp.getSW()));				
-//				}
-				
-//				System.out.println(Integer.toHexString(resp.getSW()));
-				
-				try {
-					bof.write(resp.getData());
-				} catch (IOException e) {
 
-					throw new CardException("Unable to read card response.", e);
-				}
-				
-				if(resp.getSW1() == (byte)0x61) {
-					
-					// more data to be read
-					sw2 = (byte)resp.getSW2();
-					continue;
-				}
-				
-				if(resp.getSW() == 0x9000) {
-					
-					// all data read
-					done=true;
-				} else {
-					
-					throw new CardException("An error has occured while fetching response from card: " + Integer.toHexString(resp.getSW()));
-				}
-		
-			}
-		
-			return bof.toByteArray();
+		verifyAndDecryptSecuredResponseAPDU(allData);
+
 	}
-	
+
+	private byte[] executeGetResponse(CardChannel channel, byte sw2)
+			throws CardException {
+
+		// System.out.print("Run GET RESPONSE..");
+
+		boolean done = false;
+		ByteArrayOutputStream bof = new ByteArrayOutputStream();
+
+		while (!done) {
+
+			CommandAPDU command = new CommandAPDU(new byte[] { (byte) 0x00,
+					(byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) sw2 });
+			ResponseAPDU resp = channel.transmit(command);
+
+			// System.out.println("Answer from card: " +
+			// Integer.toHexString(resp.getSW()));
+			// System.out.println("Number of bytes read: " +
+			// resp.getData().length);
+			//			
+			// if(resp.getSW1() == (byte)0x61 || resp.getSW() == 0x9000) {
+			//					
+			// return resp.getData();
+			// } else {
+			//					
+			// throw new CardException("Command GET RESPONSE failed. SW=" +
+			// Integer.toHexString(resp.getSW()));
+			// }
+
+			// System.out.println(Integer.toHexString(resp.getSW()));
+
+			try {
+				bof.write(resp.getData());
+			} catch (IOException e) {
+
+				throw new CardException("Unable to read card response.", e);
+			}
+
+			if (resp.getSW1() == (byte) 0x61) {
+
+				// more data to be read
+				sw2 = (byte) resp.getSW2();
+				continue;
+			}
+
+			if (resp.getSW() == 0x9000) {
+
+				// all data read
+				done = true;
+			} else {
+
+				throw new CardException(
+						"An error has occured while fetching response from card: "
+								+ Integer.toHexString(resp.getSW()));
+			}
+
+		}
+
+		return bof.toByteArray();
+	}
+
 	public void testT0() throws CardException {
-		
+
 		CardChannel channel = setupCardChannel();
 
 		byte[] apdu = new byte[] { (byte) 0x00, (byte) 0xA4, (byte) 0x00,
-				(byte) 0x00, (byte) 0x02, (byte)0x60, (byte)0x20 };
+				(byte) 0x00, (byte) 0x02, (byte) 0x60, (byte) 0x20 };
 		CommandAPDU command = new CommandAPDU(apdu);
 		ResponseAPDU resp = channel.transmit(command);
-		
+
 		System.out.println("Response: " + Integer.toHexString(resp.getSW()));
-		
-		
+
 	}
-	
-	private void executeSecureSelectCertificate(CardChannel channel) throws CardException {
-		
+
+	private void executeSecureSelectCertificate(CardChannel channel)
+			throws CardException {
+
 		// select master file
 		executeSecureSelectMasterFile(channel);
-		
+
 		// select 6081
-		byte[] apdu = new byte[]{
-			
-				(byte)0x00,
-				(byte)0xA4,
-				(byte)0x00,
-				(byte)0x00,
-				(byte)0x02,
-				(byte)0x60,
-				(byte)0x81				
-		};
-		
+		byte[] apdu = new byte[] {
+
+		(byte) 0x00, (byte) 0xA4, (byte) 0x00, (byte) 0x00, (byte) 0x02,
+				(byte) 0x60, (byte) 0x81 };
+
 		executeSecureSelect(channel, apdu);
-		
+
 		// select 7004
-		byte[] apdu2 = new byte[]{
-			
-				(byte)0x00,
-				(byte)0xA4,
-				(byte)0x00,
-				(byte)0x00,
-				(byte)0x02,
-				(byte)0x70,
-				(byte)0x04				
-		};
-		
+		byte[] apdu2 = new byte[] {
+
+		(byte) 0x00, (byte) 0xA4, (byte) 0x00, (byte) 0x00, (byte) 0x02,
+				(byte) 0x70, (byte) 0x04 };
+
 		byte[] fci = executeSecureSelect(channel, apdu2);
-		
-//		System.out.println("Obtained FCI:");
-//		printByteArray(fci);
-		
+
+		// System.out.println("Obtained FCI:");
+		// printByteArray(fci);
+
 		byte sizeHi = fci[7];
 		byte sizeLo = fci[8];
-		
+
 		byte[] data = executeSecureReadBinary(channel, sizeHi, sizeLo);
 
 		int uncompressedDataLen = getUncompressedDataLength(data);
-		
-		byte[] compressedWithoutHeader = new byte[data.length-8];
-		System.arraycopy(data, 8, compressedWithoutHeader, 0, compressedWithoutHeader.length);
-		
-		byte[] decompressed = decompressData(compressedWithoutHeader, uncompressedDataLen);
-		
+
+		byte[] compressedWithoutHeader = new byte[data.length - 8];
+		System.arraycopy(data, 8, compressedWithoutHeader, 0,
+				compressedWithoutHeader.length);
+
+		byte[] decompressed = decompressData(compressedWithoutHeader,
+				uncompressedDataLen);
+
 		writeDataToFile(decompressed, "F:/cert_7004.cer");
-		
+
 		this.sigCert = decompressed;
-		
+
 	}
-	
-	private X509Certificate createCertificate(byte[] certData) throws CardException {
-		
+
+	private X509Certificate createCertificate(byte[] certData)
+			throws CardException {
+
 		try {
-		 InputStream inStream = new ByteArrayInputStream(certData);
-		 CertificateFactory cf = CertificateFactory.getInstance("X.509");
-		 X509Certificate certificate = (X509Certificate)cf.generateCertificate(inStream);
-		 inStream.close();
-		
-		 return certificate;
-		 
-		}catch(Exception e) {
-			
+			InputStream inStream = new ByteArrayInputStream(certData);
+			CertificateFactory cf = CertificateFactory.getInstance("X.509");
+			X509Certificate certificate = (X509Certificate) cf
+					.generateCertificate(inStream);
+			inStream.close();
+
+			return certificate;
+
+		} catch (Exception e) {
+
 			throw new CardException("Unable to create certificate.", e);
 		}
-		 
-		 
+
 	}
-	
+
 	private void verifySignature() throws CardException {
-		
+
 		PublicKey pubKey = null;
-		
 
-			// IAIK:
-//			X509Certificate certificate = new X509Certificate(this.sigCert);
-			
-			// SUN:
-			X509Certificate certificate = createCertificate(this.sigCert);
-			
-			pubKey = certificate.getPublicKey();
+		// IAIK:
+		// X509Certificate certificate = new X509Certificate(this.sigCert);
 
-		
+		// SUN:
+		X509Certificate certificate = createCertificate(this.sigCert);
+
+		pubKey = certificate.getPublicKey();
+
 		try {
 			byte[] plain = rsaDecrypt(pubKey, this.sigVal);
-			
+
 			System.out.println("Deciphered Data:");
 			printByteArray(plain);
-			
+
 		} catch (InvalidKeyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -647,335 +762,356 @@ public class ESCardTest extends AbstractSignatureCard {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	private int getUncompressedDataLength(byte[] data) {
-		
+
 		byte len0 = data[0];
 		byte len1 = data[1];
 		byte len2 = data[2];
 		byte len3 = data[3];
-		
+
 		int a = len0;
 		int b = len1 * 256;
 		int c = len2 * 256 * 256;
 		int d = len3 * 256 * 256 * 256;
-		
-		return a+b+c+d;
-		
+
+		return a + b + c + d;
+
 	}
-	
-	private void executeSecurePerformSecurityOperation(CardChannel channel) throws CardException {
-		
+
+	private void executeSecurePerformSecurityOperation(CardChannel channel)
+			throws CardException {
+
 		System.out.print("Compute electronic signature on card..");
-		
+
 		byte[] testHashData = new byte[] {
-				
-			(byte)0x00, (byte)0x11, (byte)0x22, (byte)0x33, (byte)0x44, (byte)0x55, (byte)0x66, (byte)0x77, (byte)0x88, (byte)0x99, (byte)0xAA, (byte)0xBB, (byte)0xCC, (byte)0xDD, (byte)0xEE, (byte)0xFF, (byte)0x01, (byte)0x02, (byte)0x03, (byte)0x04
-		};
-		
+
+		(byte) 0x00, (byte) 0x11, (byte) 0x22, (byte) 0x33, (byte) 0x44,
+				(byte) 0x55, (byte) 0x66, (byte) 0x77, (byte) 0x88,
+				(byte) 0x99, (byte) 0xAA, (byte) 0xBB, (byte) 0xCC,
+				(byte) 0xDD, (byte) 0xEE, (byte) 0xFF, (byte) 0x01,
+				(byte) 0x02, (byte) 0x03, (byte) 0x04 };
+
 		byte[] padding = new byte[] {
-				
-				(byte)0x30, (byte)0x21, (byte)0x30, (byte)0x09, (byte)0x06, (byte)0x05, (byte)0x2B, (byte)0x0E, (byte)0x03, (byte)0x02, (byte)0x1A, (byte)0x05, (byte)0x00, (byte)0x04, (byte)0x14
-		};
-		
+
+		(byte) 0x30, (byte) 0x21, (byte) 0x30, (byte) 0x09, (byte) 0x06,
+				(byte) 0x05, (byte) 0x2B, (byte) 0x0E, (byte) 0x03,
+				(byte) 0x02, (byte) 0x1A, (byte) 0x05, (byte) 0x00,
+				(byte) 0x04, (byte) 0x14 };
+
 		byte[] apduHeader = new byte[] {
-				
-				(byte)0x00, (byte)0x2A, (byte)0x9E, (byte)0x9A, (byte)0x23
-		};
-		
-		byte[] apdu = new byte[apduHeader.length + padding.length + testHashData.length];
+
+		(byte) 0x00, (byte) 0x2A, (byte) 0x9E, (byte) 0x9A, (byte) 0x23 };
+
+		byte[] apdu = new byte[apduHeader.length + padding.length
+				+ testHashData.length];
 		System.arraycopy(apduHeader, 0, apdu, 0, apduHeader.length);
 		System.arraycopy(padding, 0, apdu, apduHeader.length, padding.length);
-		System.arraycopy(testHashData, 0, apdu, apduHeader.length+padding.length, testHashData.length);
-		
+		System.arraycopy(testHashData, 0, apdu, apduHeader.length
+				+ padding.length, testHashData.length);
+
 		byte[] securedAPDU = getSecuredAPDU(apdu);
-		
-		CommandAPDU command = new CommandAPDU(securedAPDU);		
+
+		CommandAPDU command = new CommandAPDU(securedAPDU);
 		ResponseAPDU resp = channel.transmit(command);
-		
-//		System.out.println("Response to SignCommand: " + Integer.toHexString(resp.getSW()));
-		
-		byte[] signatureValue = executeGetResponse(channel, (byte)resp.getSW2());
-		
-//		System.out.println("Encrypted Signature Value:");
-//		printByteArray(signatureValue);
-//		System.out.println("Length of encrypted signature value: " + signatureValue.length);
-		
-		
-		
-//		boolean done = false;
-//		ByteArrayOutputStream bof = new ByteArrayOutputStream();
-		
-//		while(!done) {
-//		
-//			
-//			try {
-//				bof.write(resp.getData());
-//			} catch (IOException e) {
-//				throw new CardException("Error reading response from card.", e);
-//			}			
-//			
-//		}			
-			
+
+		// System.out.println("Response to SignCommand: " +
+		// Integer.toHexString(resp.getSW()));
+
+		byte[] signatureValue = executeGetResponse(channel, (byte) resp
+				.getSW2());
+
+		// System.out.println("Encrypted Signature Value:");
+		// printByteArray(signatureValue);
+		// System.out.println("Length of encrypted signature value: " +
+		// signatureValue.length);
+
+		// boolean done = false;
+		// ByteArrayOutputStream bof = new ByteArrayOutputStream();
+
+		// while(!done) {
+		//		
+		//			
+		// try {
+		// bof.write(resp.getData());
+		// } catch (IOException e) {
+		// throw new CardException("Error reading response from card.", e);
+		// }
+		//			
+		// }
+
 		byte[] decryptedSignatureValueWithSW = verifyAndDecryptSecuredResponseAPDU(signatureValue);
 
 		int len = decryptedSignatureValueWithSW.length;
-		if(decryptedSignatureValueWithSW[len-2] == (byte)0x90 &&
-		   decryptedSignatureValueWithSW[len-1] == (byte)0x00) {
-			
-			System.out.println("OK");
-			
-			byte[] sigVal = new byte[decryptedSignatureValueWithSW.length-2];			
-			System.arraycopy(decryptedSignatureValueWithSW, 0, sigVal, 0, decryptedSignatureValueWithSW.length-2);
-			
-			System.out.println("Signature Value:");
-			printByteArray(sigVal);	
-			
-			this.sigVal = sigVal;
-			
-		} else {
-			
-			throw new CardException("Error creating signature on card: " + Integer.toHexString(decryptedSignatureValueWithSW[len-2]) + " " + Integer.toHexString(decryptedSignatureValueWithSW[len-1]));
-		}
-		
+		if (decryptedSignatureValueWithSW[len - 2] == (byte) 0x90
+				&& decryptedSignatureValueWithSW[len - 1] == (byte) 0x00) {
 
-		
+			System.out.println("OK");
+
+			byte[] sigVal = new byte[decryptedSignatureValueWithSW.length - 2];
+			System.arraycopy(decryptedSignatureValueWithSW, 0, sigVal, 0,
+					decryptedSignatureValueWithSW.length - 2);
+
+			System.out.println("Signature Value:");
+			printByteArray(sigVal);
+
+			this.sigVal = sigVal;
+
+		} else {
+
+			throw new CardException(
+					"Error creating signature on card: "
+							+ Integer
+									.toHexString(decryptedSignatureValueWithSW[len - 2])
+							+ " "
+							+ Integer
+									.toHexString(decryptedSignatureValueWithSW[len - 1]));
+		}
+
 	}
-	
-	private void executeSecureManageSecurityEnvironment(CardChannel channel) throws CardException {
-		
+
+	private void executeSecureManageSecurityEnvironment(CardChannel channel)
+			throws CardException {
+
 		System.out.print("Manage Security Environment..");
-		
+
 		byte[] apdu = new byte[] {
-				
-				(byte)0x00, (byte)0x22, (byte)0x41, (byte)0xB6, (byte)0x04, (byte)0x84, (byte)0x02, (byte)0x01, (byte)0x01
-		};
-		
+
+		(byte) 0x00, (byte) 0x22, (byte) 0x41, (byte) 0xB6, (byte) 0x04,
+				(byte) 0x84, (byte) 0x02, (byte) 0x01, (byte) 0x01 };
+
 		byte[] securedAPDU = getSecuredAPDU(apdu);
-		
-		CommandAPDU command = new CommandAPDU(securedAPDU);		
-		ResponseAPDU resp = channel.transmit(command);		
-		
-//		System.out.println("Obtained result: " + Integer.toHexString(resp.getSW()));
-		
-		if(resp.getSW1() == (byte)0x61) {
-			
-			byte[] response = executeGetResponse(channel, (byte)resp.getSW2()); 
+
+		CommandAPDU command = new CommandAPDU(securedAPDU);
+		ResponseAPDU resp = channel.transmit(command);
+
+		// System.out.println("Obtained result: " +
+		// Integer.toHexString(resp.getSW()));
+
+		if (resp.getSW1() == (byte) 0x61) {
+
+			byte[] response = executeGetResponse(channel, (byte) resp.getSW2());
 			byte[] decryptedResponse = verifyAndDecryptSecuredResponseAPDU(response);
-			
-//			System.out.println("Decrypted Response from card:");
-//			printByteArray(decryptedResponse);
-		
-			if(decryptedResponse.length == 2 && 
-			   decryptedResponse[0] == (byte)0x90 &&
-			   decryptedResponse[1] == (byte)0x00) {
-				
+
+			// System.out.println("Decrypted Response from card:");
+			// printByteArray(decryptedResponse);
+
+			if (decryptedResponse.length == 2
+					&& decryptedResponse[0] == (byte) 0x90
+					&& decryptedResponse[1] == (byte) 0x00) {
+
 				System.out.println("OK");
 			} else {
-				
+
 				System.out.println("FAILED");
 			}
-			
+
 		}
-		
-		
-		
+
 	}
-	
-	private void executeSecureSelectMasterFile(CardChannel channel) throws CardException {
-		
+
+	private void executeSecureSelectMasterFile(CardChannel channel)
+			throws CardException {
+
 		byte[] apdu = new byte[] {
-				
-				(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x0B,
+
+		(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x0B,
 				(byte) 0x4D, (byte) 0x61, (byte) 0x73, (byte) 0x74,
 				(byte) 0x65, (byte) 0x72, (byte) 0x2E, (byte) 0x46,
-				(byte) 0x69, (byte) 0x6C, (byte) 0x65				
-				
-				
+				(byte) 0x69, (byte) 0x6C, (byte) 0x65
+
 		};
-		
+
 		executeSecureSelect(channel, apdu);
-		
+
 	}
-	
-	private void executeSecurePINVerify(CardChannel channel) throws CardException {
-		
-//		this.kEnc = new byte[] {
-//		
-//				(byte) 0x59, (byte) 0x8f, (byte) 0x26, (byte) 0xe3, (byte) 0x6e,
-//						(byte) 0x11, (byte) 0xa8, (byte) 0xec, (byte) 0x14,
-//						(byte) 0xb8, (byte) 0x1e, (byte) 0x19, (byte) 0xbd,
-//						(byte) 0xa2, (byte) 0x23, (byte) 0xca };
-//		
-//				this.kMac = new byte[] {
-//		
-//				(byte) 0x5d, (byte) 0xe2, (byte) 0x93, (byte) 0x9a, (byte) 0x1e,
-//						(byte) 0xa0, (byte) 0x3a, (byte) 0x93, (byte) 0x0b,
-//						(byte) 0x88, (byte) 0x20, (byte) 0x6d, (byte) 0x8f,
-//						(byte) 0x73, (byte) 0xe8, (byte) 0xa7 };
-//		
-//				this.ssc = new byte[] {
-//		
-//				(byte) 0xd3, (byte) 0x1a, (byte) 0xc8, (byte) 0xec, (byte) 0x7b,
-//						(byte) 0xa0, (byte) 0xfe, (byte) 0x6e };		
-//		
-		
-		
+
+	private void executeSecurePINVerify(CardChannel channel)
+			throws CardException {
+
+		// this.kEnc = new byte[] {
+		//		
+		// (byte) 0x59, (byte) 0x8f, (byte) 0x26, (byte) 0xe3, (byte) 0x6e,
+		// (byte) 0x11, (byte) 0xa8, (byte) 0xec, (byte) 0x14,
+		// (byte) 0xb8, (byte) 0x1e, (byte) 0x19, (byte) 0xbd,
+		// (byte) 0xa2, (byte) 0x23, (byte) 0xca };
+		//		
+		// this.kMac = new byte[] {
+		//		
+		// (byte) 0x5d, (byte) 0xe2, (byte) 0x93, (byte) 0x9a, (byte) 0x1e,
+		// (byte) 0xa0, (byte) 0x3a, (byte) 0x93, (byte) 0x0b,
+		// (byte) 0x88, (byte) 0x20, (byte) 0x6d, (byte) 0x8f,
+		// (byte) 0x73, (byte) 0xe8, (byte) 0xa7 };
+		//		
+		// this.ssc = new byte[] {
+		//		
+		// (byte) 0xd3, (byte) 0x1a, (byte) 0xc8, (byte) 0xec, (byte) 0x7b,
+		// (byte) 0xa0, (byte) 0xfe, (byte) 0x6e };
+		//		
+
 		byte[] apdu = new byte[] {
-			
+
 				// PIN VERIFY (0 0 0 0 0 0 0 0)
-				(byte)0x00, (byte)0x20, (byte)0x00, (byte)0x00, (byte)0x08, (byte)0x30, (byte)0x30, (byte)0x30, (byte)0x30, (byte)0x30, (byte)0x30, (byte)0x30, (byte)0x30
-				
-				// PIN VERIFY (C R Y P T O K I)
-//				(byte)0x00, (byte)0x20, (byte)0x00, (byte)0x00, (byte)0x08, (byte)0x43, (byte)0x52, (byte)0x59, (byte)0x50, (byte)0x54, (byte)0x4f, (byte)0x4b, (byte)0x49
+				(byte) 0x00, (byte) 0x20, (byte) 0x00, (byte) 0x00,
+				(byte) 0x08, (byte) 0x30, (byte) 0x30, (byte) 0x30,
+				(byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0x30
+
+		// PIN VERIFY (C R Y P T O K I)
+		// (byte)0x00, (byte)0x20, (byte)0x00, (byte)0x00, (byte)0x08,
+		// (byte)0x43, (byte)0x52, (byte)0x59, (byte)0x50, (byte)0x54,
+		// (byte)0x4f, (byte)0x4b, (byte)0x49
 		};
-		
+
 		byte[] securedAPDU = getSecuredAPDU(apdu);
-		
-//		System.out.println("Secured PINVerify APDU:");
-//		printByteArray(securedAPDU);
-		
+
+		// System.out.println("Secured PINVerify APDU:");
+		// printByteArray(securedAPDU);
+
 		System.out.print("Verifiying PIN..");
-		
-		CommandAPDU command = new CommandAPDU(securedAPDU);		
-//		System.out.println("Sending APDU: " + command.toString());		
+
+		CommandAPDU command = new CommandAPDU(securedAPDU);
+		// System.out.println("Sending APDU: " + command.toString());
 		ResponseAPDU resp = channel.transmit(command);
-		
-//		System.out.println("Received status word: " + Integer.toHexString(resp.getSW()));
-		
-		if(resp.getSW1() == (byte)0x61) {
-			
-//			System.out.println("Reading available bytes..");
-			byte[] securedResponseData = executeGetResponse(channel, (byte)resp.getSW2());
-//			printByteArray(securedResponseData);
-		
+
+		// System.out.println("Received status word: " +
+		// Integer.toHexString(resp.getSW()));
+
+		if (resp.getSW1() == (byte) 0x61) {
+
+			// System.out.println("Reading available bytes..");
+			byte[] securedResponseData = executeGetResponse(channel,
+					(byte) resp.getSW2());
+			// printByteArray(securedResponseData);
+
 			byte[] plainData = verifyAndDecryptSecuredResponseAPDU(securedResponseData);
-			
-//			System.out.println("Decrypted data:");
-//			printByteArray(plainData);
-			
-			if(plainData.length == 2 &&
-			   plainData[0] == (byte)0x90 &&
-			   plainData[1] == (byte)0x00) {
-				
+
+			// System.out.println("Decrypted data:");
+			// printByteArray(plainData);
+
+			if (plainData.length == 2 && plainData[0] == (byte) 0x90
+					&& plainData[1] == (byte) 0x00) {
+
 				System.out.println("OK");
 			} else {
-				
+
 				System.out.println("FAILED");
 			}
-			
+
 		}
 	}
 
-	private byte[] readFromCard(CardChannel channel, byte offsetHi, byte offsetLo, byte numBytes) throws CardException {
-		
+	private byte[] readFromCard(CardChannel channel, byte offsetHi,
+			byte offsetLo, byte numBytes) throws CardException {
+
 		byte[] apdu = new byte[] {
-				
-				(byte)0x00, (byte)0xB0, offsetHi, offsetLo, numBytes					
-		};
-		
-//		System.out.println("Sent APDU (plain):");
-//		printByteArray(apdu);
-		
+
+		(byte) 0x00, (byte) 0xB0, offsetHi, offsetLo, numBytes };
+
+		// System.out.println("Sent APDU (plain):");
+		// printByteArray(apdu);
+
 		byte[] securedAPDU = getSecuredAPDU(apdu);
-		
-		
-		CommandAPDU command = new CommandAPDU(securedAPDU);		
+
+		CommandAPDU command = new CommandAPDU(securedAPDU);
 
 		ResponseAPDU resp = channel.transmit(command);
-//		System.out.println("Answer to read binary: " + Integer.toHexString(resp.getSW()));
-		
-		byte[] data = executeGetResponse(channel, (byte)resp.getSW2());			
+		// System.out.println("Answer to read binary: " +
+		// Integer.toHexString(resp.getSW()));
+
+		byte[] data = executeGetResponse(channel, (byte) resp.getSW2());
 
 		byte[] decryptedResponse = verifyAndDecryptSecuredResponseAPDU(data);
-		
+
 		return decryptedResponse;
-		
+
 	}
-	
-	private byte[] executeSecureReadBinary(CardChannel channel, byte lengthHi, byte lengthLo) throws CardException {
-		
+
+	private byte[] executeSecureReadBinary(CardChannel channel, byte lengthHi,
+			byte lengthLo) throws CardException {
+
 		System.out.print("Executing secure read binary..");
-		
+
 		ByteArrayOutputStream bof = new ByteArrayOutputStream();
 
 		int bytes2read = (lengthHi * 256) + lengthLo;
-//		System.out.println("Bytes to read in total: " + bytes2read);
+		// System.out.println("Bytes to read in total: " + bytes2read);
 		int bytesRead = 0;
 
 		boolean done = false;
 		boolean forceExit = false;
-		
+
 		int offset = 0;
 		int len = 0;
 
 		while (!done) {
 
-//			System.out.println("\nEntering loop..");
-//			System.out.println("Bytes read so far: " + bytesRead);
-			
+			// System.out.println("\nEntering loop..");
+			// System.out.println("Bytes read so far: " + bytesRead);
+
 			if (bytes2read - bytesRead > 0xef) {
 				len = 0xef;
 			} else {
 				len = bytes2read - bytesRead;
 			}
 
-//			System.out.println("Bytes to read in this iteration: " + len);
-			
-			
+			// System.out.println("Bytes to read in this iteration: " + len);
+
 			byte[] offsetBytes = intToHex(offset);
-			
-//			byte[] apdu = new byte[] {
-//					
-//					(byte)0x00, (byte)0xB0, offsetBytes[0], offsetBytes[1], (byte)len					
-//			};
-//			
-//			System.out.println("Sent APDU (plain):");
-//			printByteArray(apdu);
-//			
-//			byte[] securedAPDU = getSecuredAPDU(apdu);
-//			
-//			
-//			CommandAPDU command = new CommandAPDU(securedAPDU);		
-//
-//			ResponseAPDU resp = channel.transmit(command);
-//			System.out.println("Answer to read binary: " + Integer.toHexString(resp.getSW()));
-//			
-//			byte[] data = executeGetResponse(channel, (byte)resp.getSW2());			
-//
-//			byte[] decryptedResponse = verifyAndDecryptSecuredResponseAPDU(data);
-			
-			byte[] decryptedResponse = readFromCard(channel, offsetBytes[0], offsetBytes[1], (byte)len);
-			
-//			System.out.println("Decrypted response:");
-//			printByteArray(decryptedResponse);
-			
-			if(decryptedResponse.length == 2 &&
-			   decryptedResponse[0] == (byte)0x6C) {
-				
-				// handle case: card returns 6CXX (wrong number of bytes requested)
+
+			// byte[] apdu = new byte[] {
+			//					
+			// (byte)0x00, (byte)0xB0, offsetBytes[0], offsetBytes[1], (byte)len
+			// };
+			//			
+			// System.out.println("Sent APDU (plain):");
+			// printByteArray(apdu);
+			//			
+			// byte[] securedAPDU = getSecuredAPDU(apdu);
+			//			
+			//			
+			// CommandAPDU command = new CommandAPDU(securedAPDU);
+			//
+			// ResponseAPDU resp = channel.transmit(command);
+			// System.out.println("Answer to read binary: " +
+			// Integer.toHexString(resp.getSW()));
+			//			
+			// byte[] data = executeGetResponse(channel, (byte)resp.getSW2());
+			//
+			// byte[] decryptedResponse =
+			// verifyAndDecryptSecuredResponseAPDU(data);
+
+			byte[] decryptedResponse = readFromCard(channel, offsetBytes[0],
+					offsetBytes[1], (byte) len);
+
+			// System.out.println("Decrypted response:");
+			// printByteArray(decryptedResponse);
+
+			if (decryptedResponse.length == 2
+					&& decryptedResponse[0] == (byte) 0x6C) {
+
+				// handle case: card returns 6CXX (wrong number of bytes
+				// requested)
 				// we assume that his only happens in the final iteration
-				
-				decryptedResponse = readFromCard(channel, offsetBytes[0], offsetBytes[1], decryptedResponse[1]);
-				
-//				System.out.println("Decrypted response:");
-//				printByteArray(decryptedResponse);
-				
+
+				decryptedResponse = readFromCard(channel, offsetBytes[0],
+						offsetBytes[1], decryptedResponse[1]);
+
+				// System.out.println("Decrypted response:");
+				// printByteArray(decryptedResponse);
+
 				forceExit = true;
 			}
-				   
-			   
-			
-			byte[] decryptedData = new byte[decryptedResponse.length-2];
-			System.arraycopy(decryptedResponse, 0, decryptedData, 0, decryptedResponse.length-2);
-			
+
+			byte[] decryptedData = new byte[decryptedResponse.length - 2];
+			System.arraycopy(decryptedResponse, 0, decryptedData, 0,
+					decryptedResponse.length - 2);
+
 			try {
 				bof.write(decryptedData);
 			} catch (IOException e) {
-				throw new CardException("Error reading data from card",
-						e);
+				throw new CardException("Error reading data from card", e);
 			}
 
 			bytesRead = bytesRead + decryptedData.length;
@@ -985,177 +1121,307 @@ public class ESCardTest extends AbstractSignatureCard {
 
 				done = true;
 			}
-			
-			if(forceExit) {
-				
+
+			if (forceExit) {
+
 				break;
 			}
 		}
-		
+
 		System.out.println("OK");
-		
+
 		return bof.toByteArray();
-		
+
 	}
-	
-	private void executeSecureReadPrKDF(CardChannel channel) throws CardException {
-		
+
+	private void executeSecureReadPrKDF(CardChannel channel)
+			throws CardException {
+
 		System.out.println("Reading PrKDF..");
-		
-		byte[] file = executeSecureReadFile(channel, new byte[]{(byte)0x50,(byte)0x15,(byte)0x60,(byte)0x01});
+
+		byte[] file = executeSecureReadFile(channel, new byte[] { (byte) 0x50,
+				(byte) 0x15, (byte) 0x60, (byte) 0x01 });
 		writeDataToFile(file, "f:/PrKDF.bin");
-		
+
 		System.out.println("Reading PrKDF successful.");
-		
-//		try {
-//			ASN1 asn1 = new ASN1(file);
-//			
-//			ASN1Object obj = asn1.toASN1Object();
-//			
-//			System.out.println("Here!");
-//			
-//		} catch (CodingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
+
+		// try {
+		// ASN1 asn1 = new ASN1(file);
+		//			
+		// ASN1Object obj = asn1.toASN1Object();
+		//			
+		// System.out.println("Here!");
+		//			
+		// } catch (CodingException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+
+		getKeyIdFromASN1File(file);
+
+	}
+
+	private void getKeyIdFromASN1File(byte[] file) throws CardException {
+
+		// split file in two records
+		int record1Length = getRecordLength(file, 1);
+
+		byte[] record1 = new byte[record1Length];
+		byte[] record2 = new byte[file.length - record1.length];
+
+		System.arraycopy(file, 0, record1, 0, record1.length);
+		System.arraycopy(file, record1.length, record2, 0, record2.length);
+
+		try {
+			ASN1 asn1_1 = new ASN1(record1);
+			ASN1 asn1_2 = new ASN1(record2);
+
+			byte keyId = (byte) 0x00;
+
+			if (asn1_1.getElementAt(0).getElementAt(0).gvString()
+					.equalsIgnoreCase("KprivFirmaDigital")) {
+
+				byte[] data = asn1_1.getElementAt(2).gvByteArray();
+
+				keyId = data[10];
+			}
+
+			else if (asn1_2.getElementAt(0).getElementAt(0).gvString()
+					.equalsIgnoreCase("KprivFirmaDigital")) {
+
+				byte[] data = asn1_2.getElementAt(2).gvByteArray();
+
+				keyId = data[10];
+			}
+
+			System.out.println("Found keyId: " + keyId);
+
+		} catch (Exception e) {
+
+			throw new CardException("Error getting ASN1 data.", e);
+		}
+	}
+
+	private byte[] getCertIdFromASN1File(byte[] file) throws CardException {
+
+		int record1Length = getRecordLength(file, 1);
+
+		// split file in two records
+		byte[] record1 = new byte[record1Length];
+		byte[] record2 = new byte[file.length - record1.length];
+
+		System.arraycopy(file, 0, record1, 0, record1.length);
+		System.arraycopy(file, record1.length, record2, 0, record2.length);
+
+		byte[] certId = null;
+
+		try {
+			ASN1 asn1_1 = new ASN1(record1);
+			ASN1 asn1_2 = new ASN1(record2);
+
+			if (asn1_1.getElementAt(0).getElementAt(0).gvString()
+					.equalsIgnoreCase("CertFirmaDigital")) {
+
+				certId = retrieveCertId(asn1_1.getElementAt(2).gvByteArray());
+			}
+
+			if (asn1_2.getElementAt(0).getElementAt(0).gvString()
+					.equalsIgnoreCase("CertFirmaDigital")) {
+
+				certId = retrieveCertId(asn1_2.getElementAt(2).gvByteArray());
+			}
+
+			// byte[] data = asn1_1.getElementAt(2).gvByteArray();
+			//			
+			// System.out.println("asn1data:");
+			// printByteArray(data);
+			// ASN1 contextSpecific = getASN1WithinContextSpecific(data);
+			//			
+			// byte[] id =
+			// contextSpecific.getElementAt(0).getElementAt(0).gvByteArray();
+			// System.out.println("CertID:");
+			// printByteArray(id);
+
+			//
+			// else
+			// if(asn1_2.getElementAt(0).getElementAt(0).gvString().equalsIgnoreCase("KprivFirmaDigital"))
+			// {
+			//				
+			// byte[] data = asn1_2.getElementAt(2).gvByteArray();
+			//				
+			// keyId = data[10];
+			// }
+			//			
+			// System.out.println("Found keyId: " + keyId);
+
+		} catch (Exception e) {
+
+			throw new CardException("Error getting ASN1 data.", e);
+		}
+
+		System.out.println("Found certId:");
+		printByteArray(certId);
+
+		return certId;
+	}
+
+	private byte[] retrieveCertId(byte[] data) throws CardException {
+
+		ASN1 contextSpecific = getASN1WithinContextSpecific(data);
+		try {
+			return contextSpecific.getElementAt(0).getElementAt(0)
+					.gvByteArray();
+		} catch (IOException e) {
+			throw new CardException(
+					"Error retrieving certificate ID from ASN1 data.", e);
+		}
 	}
 
 	private void executeSecureReadCDF(CardChannel channel) throws CardException {
-		
+
 		System.out.println("Reading CDF file..");
-		
-		byte[] file = executeSecureReadFile(channel, new byte[]{(byte)0x50,(byte)0x15,(byte)0x60,(byte)0x04});
+
+		byte[] file = executeSecureReadFile(channel, new byte[] { (byte) 0x50,
+				(byte) 0x15, (byte) 0x60, (byte) 0x04 });
 		writeDataToFile(file, "f:/CDF.bin");
-		
+
+		getCertIdFromASN1File(file);
+
 		System.out.println("Reading CDF file successful.");
-	}	
-	
-	private byte[] executeSecureReadFile(CardChannel channel, byte[] path) throws CardException {
-	
+	}
+
+	private byte[] executeSecureReadFile(CardChannel channel, byte[] path)
+			throws CardException {
+
 		System.out.println("Executing secure read File command..");
-		
+
 		executeSecureSelectMasterFile(channel);
-		
-		// Select DF 
+
+		// Select DF
 		byte[] apdu_2 = new byte[] {
-				
-				(byte)0x00,   	// CLA 
-				(byte)0xA4, 	// INS
-				(byte)0x00, 	// P1
-				(byte)0x00, 	// P2
-				(byte)0x02, 	// Lc
-				path[0], 
-				path[1] 
-		};
-		
+
+		(byte) 0x00, // CLA
+				(byte) 0xA4, // INS
+				(byte) 0x00, // P1
+				(byte) 0x00, // P2
+				(byte) 0x02, // Lc
+				path[0], path[1] };
+
 		executeSecureSelect(channel, apdu_2);
-		
-		// Select EF 
+
+		// Select EF
 		byte[] apdu_3 = new byte[] {
-				
-				(byte)0x00,   	// CLA 
-				(byte)0xA4, 	// INS
-				(byte)0x00, 	// P1
-				(byte)0x00, 	// P2
-				(byte)0x02, 	// Lc
-				path[2], 
-				path[3] 
-		};
-		
+
+		(byte) 0x00, // CLA
+				(byte) 0xA4, // INS
+				(byte) 0x00, // P1
+				(byte) 0x00, // P2
+				(byte) 0x02, // Lc
+				path[2], path[3] };
+
 		byte[] fci = executeSecureSelect(channel, apdu_3);
-		
+
 		System.out.println("FCI of File:");
 		printByteArray(fci);
-		
-		byte[] file = executeSecureReadBinary(channel, fci[7], fci[8]);		
+
+		byte[] file = executeSecureReadBinary(channel, fci[7], fci[8]);
 		writeDataToFile(file, "f:/asn1.bin");
 		return file;
-		
+
 	}
-	
-	private byte[] executeSecureSelect(CardChannel channel, byte[] apdu) throws CardException {
-		
+
+	private byte[] executeSecureSelect(CardChannel channel, byte[] apdu)
+			throws CardException {
+
 		System.out.print("Executing secure select command..");
-		
-//		System.out.println("kEnc:");
-//		printByteArray(this.kEnc);
-		
-//		this.kEnc[0] = (byte)(this.kEnc[0]+ (byte)0x01);
-		
-//		System.out.println("kEnc after modification:");
-//		printByteArray(this.kEnc);
-		
-		
-//		byte[] apdu = new byte[] {
-//
-//				// Select by name "Master.File"
-//				(byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x0B,
-//						(byte) 0x4D, (byte) 0x61, (byte) 0x73, (byte) 0x74,
-//						(byte) 0x65, (byte) 0x72, (byte) 0x2E, (byte) 0x46,
-//						(byte) 0x69, (byte) 0x6C, (byte) 0x65
-				
-//				(byte) 0x00, (byte)0xA4, (byte)0x04, (byte)0x00, (byte)0x02, (byte)0x3F, (byte)0x00
-				
-//				(byte)0x00, (byte)0xA4, (byte)0x04, (byte)0x00, (byte)0x0C, (byte)0xA0, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x63, (byte)0x50, (byte)0x4B, (byte)0x43, (byte)0x53, (byte)0x2D, (byte)0x31, (byte)0x35
-						
-//				(byte)0x00, (byte)0xC0, (byte)0x00, (byte)0x00, (byte)0x05
-				
-				// PIN VERIFY
-//				(byte)0x00, (byte)0x20, (byte)0x00, (byte)0x00, (byte)0x08, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00
-				
-				// MSE
-//				(byte)0x00, (byte)0x22, (byte)0x41, (byte)0xB6, (byte)0x04, (byte)0x84, (byte)0x02, (byte)0x01, (byte)0x01
-				
-				// SIGNATURE
-//				(byte)0x00, (byte)0x2A, (byte)0x9E, (byte)0x9A, (byte)0x23, (byte)0x30, (byte)0x21, (byte)0x30, (byte)0x09,
-//				(byte)0x06, (byte)0x05, (byte)0x2B, (byte)0x0E, (byte)0x03, (byte)0x02, (byte)0x1A, (byte)0x05, (byte)0x00,
-//				(byte)0x04, (byte)0x14, (byte)0x83, (byte)0x9B, (byte)0x54, (byte)0x3F, (byte)0xB0, (byte)0x9D, (byte)0x20,
-//				(byte)0xC8, (byte)0x03, (byte)0xB4, (byte)0x6E, (byte)0x6F, (byte)0x8F, (byte)0x07, (byte)0x47, (byte)0x24,
-//				(byte)0x49, (byte)0x51, (byte)0x82, (byte)0x2F
-//		};
-				
-		
+
+		// System.out.println("kEnc:");
+		// printByteArray(this.kEnc);
+
+		// this.kEnc[0] = (byte)(this.kEnc[0]+ (byte)0x01);
+
+		// System.out.println("kEnc after modification:");
+		// printByteArray(this.kEnc);
+
+		// byte[] apdu = new byte[] {
+		//
+		// // Select by name "Master.File"
+		// (byte) 0x00, (byte) 0xA4, (byte) 0x04, (byte) 0x00, (byte) 0x0B,
+		// (byte) 0x4D, (byte) 0x61, (byte) 0x73, (byte) 0x74,
+		// (byte) 0x65, (byte) 0x72, (byte) 0x2E, (byte) 0x46,
+		// (byte) 0x69, (byte) 0x6C, (byte) 0x65
+
+		// (byte) 0x00, (byte)0xA4, (byte)0x04, (byte)0x00, (byte)0x02,
+		// (byte)0x3F, (byte)0x00
+
+		// (byte)0x00, (byte)0xA4, (byte)0x04, (byte)0x00, (byte)0x0C,
+		// (byte)0xA0, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x63,
+		// (byte)0x50, (byte)0x4B, (byte)0x43, (byte)0x53, (byte)0x2D,
+		// (byte)0x31, (byte)0x35
+
+		// (byte)0x00, (byte)0xC0, (byte)0x00, (byte)0x00, (byte)0x05
+
+		// PIN VERIFY
+		// (byte)0x00, (byte)0x20, (byte)0x00, (byte)0x00, (byte)0x08,
+		// (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,
+		// (byte)0x00, (byte)0x00, (byte)0x00
+
+		// MSE
+		// (byte)0x00, (byte)0x22, (byte)0x41, (byte)0xB6, (byte)0x04,
+		// (byte)0x84, (byte)0x02, (byte)0x01, (byte)0x01
+
+		// SIGNATURE
+		// (byte)0x00, (byte)0x2A, (byte)0x9E, (byte)0x9A, (byte)0x23,
+		// (byte)0x30, (byte)0x21, (byte)0x30, (byte)0x09,
+		// (byte)0x06, (byte)0x05, (byte)0x2B, (byte)0x0E, (byte)0x03,
+		// (byte)0x02, (byte)0x1A, (byte)0x05, (byte)0x00,
+		// (byte)0x04, (byte)0x14, (byte)0x83, (byte)0x9B, (byte)0x54,
+		// (byte)0x3F, (byte)0xB0, (byte)0x9D, (byte)0x20,
+		// (byte)0xC8, (byte)0x03, (byte)0xB4, (byte)0x6E, (byte)0x6F,
+		// (byte)0x8F, (byte)0x07, (byte)0x47, (byte)0x24,
+		// (byte)0x49, (byte)0x51, (byte)0x82, (byte)0x2F
+		// };
+
 		byte[] securedApdu = getSecuredAPDU(apdu);
-		
-//		System.out.println("Secured APDU:");
-//		printByteArray(securedApdu);
 
-		
-		CommandAPDU command = new CommandAPDU(securedApdu);		
-//		System.out.println("Sending APDU: " + command.toString());
-//		printByteArray(securedApdu);
+		// System.out.println("Secured APDU:");
+		// printByteArray(securedApdu);
+
+		CommandAPDU command = new CommandAPDU(securedApdu);
+		// System.out.println("Sending APDU: " + command.toString());
+		// printByteArray(securedApdu);
 		ResponseAPDU resp = channel.transmit(command);
-		
-//		System.out.println("Response: " + Integer.toHexString(resp.getSW()));
-//		printByteArray(resp.getData());				
 
-		byte[] data = executeGetResponse(channel, (byte)resp.getSW2());
+		// System.out.println("Response: " + Integer.toHexString(resp.getSW()));
+		// printByteArray(resp.getData());
 
-//		System.out.println("Encrypted response from card:");
-//		printByteArray(data);
-		
-		byte[] response = verifyAndDecryptSecuredResponseAPDU(data);        
-		
-//		System.out.println("Decrypted response from card:");
-//		printByteArray(response);
-		
-		if(response.length >= 2 && response[response.length-2] == (byte)0x90 && response[response.length-1] == (byte)0x00) {
-			
+		byte[] data = executeGetResponse(channel, (byte) resp.getSW2());
+
+		// System.out.println("Encrypted response from card:");
+		// printByteArray(data);
+
+		byte[] response = verifyAndDecryptSecuredResponseAPDU(data);
+
+		// System.out.println("Decrypted response from card:");
+		// printByteArray(response);
+
+		if (response.length >= 2
+				&& response[response.length - 2] == (byte) 0x90
+				&& response[response.length - 1] == (byte) 0x00) {
+
 			System.out.println("OK");
 		} else {
-			
+
 			System.out.println("FAILED");
 		}
-		
-		byte[] fci = new byte[response.length-2];
-		System.arraycopy(response, 0, fci, 0, response.length-2);
-		
+
+		byte[] fci = new byte[response.length - 2];
+		System.arraycopy(response, 0, fci, 0, response.length - 2);
+
 		return fci;
-		
+
 	}
-	
-	
+
 	private byte[] getRandomBytes(int length) {
 
 		byte[] result = new byte[length];
@@ -1172,31 +1438,44 @@ public class ESCardTest extends AbstractSignatureCard {
 
 	private void calculateChannelKey() throws CardException {
 
-//		this.kifd = new byte[] {
-//				
-//			(byte)0xcd, (byte)0x97, (byte)0xdb, (byte)0xf2, (byte)0x23, (byte)0x57, (byte)0x60, (byte)0xd8, (byte)0xb3, (byte)0xe9, (byte)0xc4, (byte)0xd7, (byte)0xe9, (byte)0xa6, (byte)0x91, (byte)0xfb
-//			, (byte)0x12, (byte)0xcd, (byte)0x20, (byte)0x7c, (byte)0x42, (byte)0x66, (byte)0x0d, (byte)0xf9, (byte)0xc6, (byte)0x93, (byte)0x57, (byte)0xba, (byte)0x7b, (byte)0x25, (byte)0xd0, (byte)0xfc	
-//		};
-//		
-//		this.kicc = new byte[] {
-//			
-//			(byte)0x88, (byte)0x6b, (byte)0x2b, (byte)0x01, (byte)0x5c, (byte)0xe1, (byte)0xc9, (byte)0x52, (byte)0x9d, (byte)0x94, (byte)0x63, (byte)0x69, (byte)0x5f, (byte)0xab, (byte)0xd1, (byte)0xa4
-//			, (byte)0xa4, (byte)0xb8, (byte)0x5e, (byte)0x0a, (byte)0x1c, (byte)0xcd, (byte)0x4f, (byte)0x55, (byte)0x29, (byte)0x2c, (byte)0x20, (byte)0xe2, (byte)0x1e, (byte)0x95, (byte)0x4d, (byte)0x31
-//		};
-//		
-//		this.rndIcc = new byte[] {
-//		
-//				(byte)0xea, (byte)0xef, (byte)0xa8, (byte)0xfb, (byte)0xd3, (byte)0x1a, (byte)0xc8, (byte)0xec
-//		};
-//		
-//		this.rndIfd = new byte[] {
-//				
-//				(byte)0x23, (byte)0x1D, (byte)0xac, (byte)0x73, (byte)0x7B, (byte)0xa0, (byte)0xfe, (byte)0x6e
-//		};
-		
-		
+		// this.kifd = new byte[] {
+		//				
+		// (byte)0xcd, (byte)0x97, (byte)0xdb, (byte)0xf2, (byte)0x23,
+		// (byte)0x57, (byte)0x60, (byte)0xd8, (byte)0xb3, (byte)0xe9,
+		// (byte)0xc4, (byte)0xd7, (byte)0xe9, (byte)0xa6, (byte)0x91,
+		// (byte)0xfb
+		// , (byte)0x12, (byte)0xcd, (byte)0x20, (byte)0x7c, (byte)0x42,
+		// (byte)0x66, (byte)0x0d, (byte)0xf9, (byte)0xc6, (byte)0x93,
+		// (byte)0x57, (byte)0xba, (byte)0x7b, (byte)0x25, (byte)0xd0,
+		// (byte)0xfc
+		// };
+		//		
+		// this.kicc = new byte[] {
+		//			
+		// (byte)0x88, (byte)0x6b, (byte)0x2b, (byte)0x01, (byte)0x5c,
+		// (byte)0xe1, (byte)0xc9, (byte)0x52, (byte)0x9d, (byte)0x94,
+		// (byte)0x63, (byte)0x69, (byte)0x5f, (byte)0xab, (byte)0xd1,
+		// (byte)0xa4
+		// , (byte)0xa4, (byte)0xb8, (byte)0x5e, (byte)0x0a, (byte)0x1c,
+		// (byte)0xcd, (byte)0x4f, (byte)0x55, (byte)0x29, (byte)0x2c,
+		// (byte)0x20, (byte)0xe2, (byte)0x1e, (byte)0x95, (byte)0x4d,
+		// (byte)0x31
+		// };
+		//		
+		// this.rndIcc = new byte[] {
+		//		
+		// (byte)0xea, (byte)0xef, (byte)0xa8, (byte)0xfb, (byte)0xd3,
+		// (byte)0x1a, (byte)0xc8, (byte)0xec
+		// };
+		//		
+		// this.rndIfd = new byte[] {
+		//				
+		// (byte)0x23, (byte)0x1D, (byte)0xac, (byte)0x73, (byte)0x7B,
+		// (byte)0xa0, (byte)0xfe, (byte)0x6e
+		// };
+
 		System.out.print("Generating channel keys..");
-		
+
 		if (this.kicc == null || this.kifd == null) {
 
 			throw new CardException("Required key data not available.");
@@ -1265,190 +1544,208 @@ public class ESCardTest extends AbstractSignatureCard {
 
 		// printByteArray(ssc);
 		System.out.println("done.");
-		
-//		System.out.println("Kenc:");
-//		printByteArray(this.kEnc);
-//		
-//		System.out.println("Kmac:");
-//		printByteArray(this.kMac);
-//		
-//		System.out.println("SSC:");
-//		printByteArray(this.ssc);
-		
+
+		// System.out.println("Kenc:");
+		// printByteArray(this.kEnc);
+		//		
+		// System.out.println("Kmac:");
+		// printByteArray(this.kMac);
+		//		
+		// System.out.println("SSC:");
+		// printByteArray(this.ssc);
+
 	}
 
-	private byte[] verifyAndDecryptSecuredResponseAPDU(byte[] securedAPDU) throws CardException {
-		
+	private byte[] verifyAndDecryptSecuredResponseAPDU(byte[] securedAPDU)
+			throws CardException {
+
 		// FOR TEST PURPOSES
-//		this.kEnc = new byte[] {
-//
-//		(byte) 0x59, (byte) 0x8f, (byte) 0x26, (byte) 0xe3, (byte) 0x6e,
-//				(byte) 0x11, (byte) 0xa8, (byte) 0xec, (byte) 0x14,
-//				(byte) 0xb8, (byte) 0x1e, (byte) 0x19, (byte) 0xbd,
-//				(byte) 0xa2, (byte) 0x23, (byte) 0xca };
-//
-//		this.kMac = new byte[] {
-//
-//		(byte) 0x5d, (byte) 0xe2, (byte) 0x93, (byte) 0x9a, (byte) 0x1e,
-//				(byte) 0xa0, (byte) 0x3a, (byte) 0x93, (byte) 0x0b,
-//				(byte) 0x88, (byte) 0x20, (byte) 0x6d, (byte) 0x8f,
-//				(byte) 0x73, (byte) 0xe8, (byte) 0xa7 };
-//
-//		this.ssc = new byte[] {
-//
-//		(byte) 0xd3, (byte) 0x1a, (byte) 0xc8, (byte) 0xec, (byte) 0x7b,
-//				(byte) 0xa0, (byte) 0xfe, (byte) 0x75 };		
-//		
-//		securedAPDU = new byte[] {
-//				(byte)0x87, (byte) 0x21, (byte) 0x01, (byte) 0xbb, (byte) 0x10, (byte) 0xc8, (byte) 0x91, (byte) 0x5f, (byte) 0x0d, (byte) 0xdb, (byte) 0x63, (byte) 0x0c, (byte) 0xf3, (byte) 0x8e, (byte) 0xd7, (byte) 0x99, (byte) 0xa2, (byte) 0x02, (byte) 0x64, (byte) 0x7c, (byte) 0xa4, (byte) 0x74, (byte) 0x49, (byte) 0xd2		
-//		, (byte) 0x79, (byte) 0x13, (byte) 0x9f, (byte) 0xc2, (byte) 0x26, (byte) 0xd2, (byte) 0x5c, (byte) 0x20, (byte) 0x76, (byte) 0x56, (byte) 0x45, (byte) 0x99, (byte) 0x02, (byte) 0x90, (byte) 0x00, (byte) 0x8e, (byte) 0x04, (byte) 0x9a, (byte) 0xa7, (byte) 0x77, (byte) 0x07
-//		};
-		
-//		System.out.println("APDU to verify:");
-//		printByteArray(securedAPDU);
-		
+		// this.kEnc = new byte[] {
+		//
+		// (byte) 0x59, (byte) 0x8f, (byte) 0x26, (byte) 0xe3, (byte) 0x6e,
+		// (byte) 0x11, (byte) 0xa8, (byte) 0xec, (byte) 0x14,
+		// (byte) 0xb8, (byte) 0x1e, (byte) 0x19, (byte) 0xbd,
+		// (byte) 0xa2, (byte) 0x23, (byte) 0xca };
+		//
+		// this.kMac = new byte[] {
+		//
+		// (byte) 0x5d, (byte) 0xe2, (byte) 0x93, (byte) 0x9a, (byte) 0x1e,
+		// (byte) 0xa0, (byte) 0x3a, (byte) 0x93, (byte) 0x0b,
+		// (byte) 0x88, (byte) 0x20, (byte) 0x6d, (byte) 0x8f,
+		// (byte) 0x73, (byte) 0xe8, (byte) 0xa7 };
+		//
+		// this.ssc = new byte[] {
+		//
+		// (byte) 0xd3, (byte) 0x1a, (byte) 0xc8, (byte) 0xec, (byte) 0x7b,
+		// (byte) 0xa0, (byte) 0xfe, (byte) 0x75 };
+		//		
+		// securedAPDU = new byte[] {
+		// (byte)0x87, (byte) 0x21, (byte) 0x01, (byte) 0xbb, (byte) 0x10,
+		// (byte) 0xc8, (byte) 0x91, (byte) 0x5f, (byte) 0x0d, (byte) 0xdb,
+		// (byte) 0x63, (byte) 0x0c, (byte) 0xf3, (byte) 0x8e, (byte) 0xd7,
+		// (byte) 0x99, (byte) 0xa2, (byte) 0x02, (byte) 0x64, (byte) 0x7c,
+		// (byte) 0xa4, (byte) 0x74, (byte) 0x49, (byte) 0xd2
+		// , (byte) 0x79, (byte) 0x13, (byte) 0x9f, (byte) 0xc2, (byte) 0x26,
+		// (byte) 0xd2, (byte) 0x5c, (byte) 0x20, (byte) 0x76, (byte) 0x56,
+		// (byte) 0x45, (byte) 0x99, (byte) 0x02, (byte) 0x90, (byte) 0x00,
+		// (byte) 0x8e, (byte) 0x04, (byte) 0x9a, (byte) 0xa7, (byte) 0x77,
+		// (byte) 0x07
+		// };
+
+		// System.out.println("APDU to verify:");
+		// printByteArray(securedAPDU);
+
 		byte[] data = new byte[securedAPDU.length - 10];
 		byte[] commandResponse = new byte[4];
 		byte[] obtainedMac = new byte[4];
-		
+
 		System.arraycopy(securedAPDU, 0, data, 0, data.length);
-		System.arraycopy(securedAPDU, data.length, commandResponse, 0, commandResponse.length);
-		System.arraycopy(securedAPDU, data.length+commandResponse.length+2, obtainedMac, 0, obtainedMac.length);
-		
-//		System.out.println("Extracted data:");
-//		printByteArray(data);
-//		System.out.println("Extracted command response:");
-//		printByteArray(commandResponse);
-//		System.out.println("Extracted MAC:");
-//		printByteArray(obtainedMac);
-		
+		System.arraycopy(securedAPDU, data.length, commandResponse, 0,
+				commandResponse.length);
+		System.arraycopy(securedAPDU, data.length + commandResponse.length + 2,
+				obtainedMac, 0, obtainedMac.length);
+
+		// System.out.println("Extracted data:");
+		// printByteArray(data);
+		// System.out.println("Extracted command response:");
+		// printByteArray(commandResponse);
+		// System.out.println("Extracted MAC:");
+		// printByteArray(obtainedMac);
+
 		byte[] macData = new byte[data.length + commandResponse.length];
 		System.arraycopy(data, 0, macData, 0, data.length);
-		System.arraycopy(commandResponse, 0, macData, data.length, commandResponse.length);
-		
+		System.arraycopy(commandResponse, 0, macData, data.length,
+				commandResponse.length);
+
 		byte[] paddedMacData = applyPadding(8, macData);
-		
-//		System.out.println("padded macData: ");
-//		printByteArray(paddedMacData);
-		
+
+		// System.out.println("padded macData: ");
+		// printByteArray(paddedMacData);
+
 		incrementSSC();
-		
+
 		byte[] mac = calculateMAC(paddedMacData, this.kMac, this.ssc);
-		
-//		System.out.println("Computed MAC:");
-//		printByteArray(mac);
-//		
-//		System.out.println("Obtained MAC:");
-//		printByteArray(obtainedMac);
-		
-		if(!Arrays.equals(mac, obtainedMac)) {
-			
+
+		// System.out.println("Computed MAC:");
+		// printByteArray(mac);
+		//		
+		// System.out.println("Obtained MAC:");
+		// printByteArray(obtainedMac);
+
+		if (!Arrays.equals(mac, obtainedMac)) {
+
 			throw new CardException("Unable to verify MAC of response APDU.");
 		} else {
-			
-//			System.out.println("MAC OK!");
+
+			// System.out.println("MAC OK!");
 		}
-		
-		if(data.length > 0) {
-		
-			byte[] data2decrypt = new byte[data.length - getCutOffLength(data, 8)];
-			System.arraycopy(data, getCutOffLength(data, 8), data2decrypt, 0, data2decrypt.length);
-			
-//			System.out.println("Data to be decrypted:");
-//			printByteArray(data2decrypt);
-			
+
+		if (data.length > 0) {
+
+			byte[] data2decrypt = new byte[data.length
+					- getCutOffLength(data, 8)];
+			System.arraycopy(data, getCutOffLength(data, 8), data2decrypt, 0,
+					data2decrypt.length);
+
+			// System.out.println("Data to be decrypted:");
+			// printByteArray(data2decrypt);
+
 			byte[] plainData = null;
-			
+
 			try {
-				plainData = perform3DESCipherOperation(data2decrypt, this.kEnc, Cipher.DECRYPT_MODE);
+				plainData = perform3DESCipherOperation(data2decrypt, this.kEnc,
+						Cipher.DECRYPT_MODE);
 			} catch (Exception e) {
 				throw new CardException("Unable to decrypt data.", e);
 			}
-			
-//			System.out.println("Plain data:");
-//			printByteArray(plainData);
-			
+
+			// System.out.println("Plain data:");
+			// printByteArray(plainData);
+
 			byte[] unpaddedData = removePadding(plainData);
-			
+
 			byte[] result = new byte[unpaddedData.length + 2];
 			System.arraycopy(unpaddedData, 0, result, 0, unpaddedData.length);
-			result[result.length-2] = commandResponse[2];
-			result[result.length-1] = commandResponse[3];
-			
+			result[result.length - 2] = commandResponse[2];
+			result[result.length - 1] = commandResponse[3];
+
 			return result;
 		} else {
-			
+
 			// no data in response
 			byte[] result = new byte[2];
-			result[result.length-2] = commandResponse[2];
-			result[result.length-1] = commandResponse[3];
+			result[result.length - 2] = commandResponse[2];
+			result[result.length - 1] = commandResponse[3];
 			return result;
 		}
 	}
-	
-//	private int getLengthValue(byte[] data, int blockLen) throws CardException {
-//		
-//		
-//		int len = data.length;
-//		
-//		if( (len-3) % blockLen == 0) {
-//			
-//			// length of length tag is probably 1 -> check
-//			if(data[2] == (byte)0x01) {
-//				
-//				return 1;
-//			}
-//		}
-//		
-//		if( (len-4) % blockLen == 0) {
-//			
-//			// length of length tag is probably 2 -> check
-//			if(data[3] == (byte)0x01) {
-//				
-//				return 2;
-//			}
-//			
-//		}
-//			
-//		throw new CardException("Unable to determine length of length tag");
-//
-//	}
-	
-	private int getCutOffLength(byte[] data, int blockSize) throws CardException {
-		
+
+	// private int getLengthValue(byte[] data, int blockLen) throws
+	// CardException {
+	//		
+	//		
+	// int len = data.length;
+	//		
+	// if( (len-3) % blockLen == 0) {
+	//			
+	// // length of length tag is probably 1 -> check
+	// if(data[2] == (byte)0x01) {
+	//				
+	// return 1;
+	// }
+	// }
+	//		
+	// if( (len-4) % blockLen == 0) {
+	//			
+	// // length of length tag is probably 2 -> check
+	// if(data[3] == (byte)0x01) {
+	//				
+	// return 2;
+	// }
+	//			
+	// }
+	//			
+	// throw new CardException("Unable to determine length of length tag");
+	//
+	// }
+
+	private int getCutOffLength(byte[] data, int blockSize)
+			throws CardException {
+
 		int len = data.length % blockSize;
-		
+
 		// verify
-		if(data[len-1] == (byte)0x01) {
-			
+		if (data[len - 1] == (byte) 0x01) {
+
 			return len;
 		} else {
-			throw new CardException("Unable to reconstruct encrypted datablock.");
+			throw new CardException(
+					"Unable to reconstruct encrypted datablock.");
 		}
-		
+
 	}
-	
+
 	private byte[] getSecuredAPDU(byte[] apdu) throws CardException {
 
 		// FOR TEST PURPOSES
-//		this.kEnc = new byte[] {
-//
-//		(byte) 0x59, (byte) 0x8f, (byte) 0x26, (byte) 0xe3, (byte) 0x6e,
-//				(byte) 0x11, (byte) 0xa8, (byte) 0xec, (byte) 0x14,
-//				(byte) 0xb8, (byte) 0x1e, (byte) 0x19, (byte) 0xbd,
-//				(byte) 0xa2, (byte) 0x23, (byte) 0xca };
-//
-//		this.kMac = new byte[] {
-//
-//		(byte) 0x5d, (byte) 0xe2, (byte) 0x93, (byte) 0x9a, (byte) 0x1e,
-//				(byte) 0xa0, (byte) 0x3a, (byte) 0x93, (byte) 0x0b,
-//				(byte) 0x88, (byte) 0x20, (byte) 0x6d, (byte) 0x8f,
-//				(byte) 0x73, (byte) 0xe8, (byte) 0xa7 };
-//
-//		this.ssc = new byte[] {
-//
-//		(byte) 0xd3, (byte) 0x1a, (byte) 0xc8, (byte) 0xec, (byte) 0x7b,
-//				(byte) 0xa0, (byte) 0xfe, (byte) 0x6e };
+		// this.kEnc = new byte[] {
+		//
+		// (byte) 0x59, (byte) 0x8f, (byte) 0x26, (byte) 0xe3, (byte) 0x6e,
+		// (byte) 0x11, (byte) 0xa8, (byte) 0xec, (byte) 0x14,
+		// (byte) 0xb8, (byte) 0x1e, (byte) 0x19, (byte) 0xbd,
+		// (byte) 0xa2, (byte) 0x23, (byte) 0xca };
+		//
+		// this.kMac = new byte[] {
+		//
+		// (byte) 0x5d, (byte) 0xe2, (byte) 0x93, (byte) 0x9a, (byte) 0x1e,
+		// (byte) 0xa0, (byte) 0x3a, (byte) 0x93, (byte) 0x0b,
+		// (byte) 0x88, (byte) 0x20, (byte) 0x6d, (byte) 0x8f,
+		// (byte) 0x73, (byte) 0xe8, (byte) 0xa7 };
+		//
+		// this.ssc = new byte[] {
+		//
+		// (byte) 0xd3, (byte) 0x1a, (byte) 0xc8, (byte) 0xec, (byte) 0x7b,
+		// (byte) 0xa0, (byte) 0xfe, (byte) 0x6e };
 
 		if (apdu == null || apdu.length < 4) {
 
@@ -1459,51 +1756,56 @@ public class ESCardTest extends AbstractSignatureCard {
 
 			// TODO: Handle cases: (a) CLA INS P1 P2, (b) CLA INS P1 P2 LE
 
-			if(apdu.length == 5) {
-				
+			if (apdu.length == 5) {
+
 				// handle case CLA INS P1 P2 LE
-				
-				byte encCLA = (byte)(apdu[0] | (byte)0x0C);
-				byte[] encHeader = new byte[]{encCLA, apdu[1], apdu[2], apdu[3]};
+
+				byte encCLA = (byte) (apdu[0] | (byte) 0x0C);
+				byte[] encHeader = new byte[] { encCLA, apdu[1], apdu[2],
+						apdu[3] };
 				byte[] paddedHeader = applyPadding(8, encHeader);
-				
+
 				byte[] leField = new byte[3];
-				leField[0] = (byte)0x97;
-				leField[1] = (byte)0x01;
+				leField[0] = (byte) 0x97;
+				leField[1] = (byte) 0x01;
 				leField[2] = apdu[4];
-				
+
 				byte[] macData = new byte[paddedHeader.length + leField.length];
-				System.arraycopy(paddedHeader, 0, macData, 0, paddedHeader.length);
-				System.arraycopy(leField, 0, macData, paddedHeader.length, leField.length);
-				
+				System.arraycopy(paddedHeader, 0, macData, 0,
+						paddedHeader.length);
+				System.arraycopy(leField, 0, macData, paddedHeader.length,
+						leField.length);
+
 				byte[] paddedMacData = applyPadding(8, macData);
-				
+
 				incrementSSC();
-				
-//				System.out.println("Calculating MAC based on following data:");
-//				printByteArray(paddedMacData);
-				
+
+				// System.out.println("Calculating MAC based on following data:");
+				// printByteArray(paddedMacData);
+
 				byte[] mac = calculateMAC(paddedMacData, kMac, this.ssc);
-				
+
 				byte[] encapsulatedMac = new byte[mac.length + 2];
-				encapsulatedMac[0] = (byte)0x8E;
-				encapsulatedMac[1] = (byte)mac.length;
+				encapsulatedMac[0] = (byte) 0x8E;
+				encapsulatedMac[1] = (byte) mac.length;
 				System.arraycopy(mac, 0, encapsulatedMac, 2, mac.length);
-				
-				byte[] completeMessage = new byte[5 + leField.length + encapsulatedMac.length];
+
+				byte[] completeMessage = new byte[5 + leField.length
+						+ encapsulatedMac.length];
 				completeMessage[0] = encCLA;
 				completeMessage[1] = apdu[1];
 				completeMessage[2] = apdu[2];
 				completeMessage[3] = apdu[3];
-				completeMessage[4] = (byte)(encapsulatedMac.length + leField.length);						
-				System.arraycopy(leField, 0, completeMessage, 5, leField.length);
-				System.arraycopy(encapsulatedMac, 0, completeMessage, 5+leField.length, encapsulatedMac.length);
-				
+				completeMessage[4] = (byte) (encapsulatedMac.length + leField.length);
+				System
+						.arraycopy(leField, 0, completeMessage, 5,
+								leField.length);
+				System.arraycopy(encapsulatedMac, 0, completeMessage,
+						5 + leField.length, encapsulatedMac.length);
+
 				return completeMessage;
 			}
-			
-			
-			
+
 			return null;
 		}
 
@@ -1519,194 +1821,200 @@ public class ESCardTest extends AbstractSignatureCard {
 		System.arraycopy(apdu, 5, data, 0, lc);
 
 		byte[] paddedData = applyPadding(8, data);
-		
+
 		byte[] encrypted = null;
-		
+
 		try {
-			
-			encrypted = perform3DESCipherOperation(paddedData, kEnc, Cipher.ENCRYPT_MODE);
-//			printByteArray(encrypted);
-			
+
+			encrypted = perform3DESCipherOperation(paddedData, kEnc,
+					Cipher.ENCRYPT_MODE);
+			// printByteArray(encrypted);
+
 		} catch (Exception e) {
-			
+
 			throw new CardException("Error encrypting APDU.", e);
 		}
-		
+
 		byte[] encapsulated = new byte[encrypted.length + 3];
-		encapsulated[0] = (byte)0x87;
-		encapsulated[1] = (byte)(encrypted.length + 1);
-		encapsulated[2] = (byte)0x01;
+		encapsulated[0] = (byte) 0x87;
+		encapsulated[1] = (byte) (encrypted.length + 1);
+		encapsulated[2] = (byte) 0x01;
 		System.arraycopy(encrypted, 0, encapsulated, 3, encrypted.length);
-		
-//		printByteArray(encapsulated);
-		
-		
+
+		// printByteArray(encapsulated);
+
 		// calculate MAC
-		
+
 		// prepare CLA byte
-		
-		byte encCLA = (byte)(cla | (byte)0x0C);
-		byte[] encHeader = new byte[]{encCLA, ins, p1, p2};
+
+		byte encCLA = (byte) (cla | (byte) 0x0C);
+		byte[] encHeader = new byte[] { encCLA, ins, p1, p2 };
 		byte[] paddedHeader = applyPadding(8, encHeader);
-		
-		byte[] headerAndData = new byte[paddedHeader.length + encapsulated.length];
-		System.arraycopy(paddedHeader, 0, headerAndData, 0, paddedHeader.length);
-		System.arraycopy(encapsulated, 0, headerAndData, paddedHeader.length, encapsulated.length);
-		
+
+		byte[] headerAndData = new byte[paddedHeader.length
+				+ encapsulated.length];
+		System
+				.arraycopy(paddedHeader, 0, headerAndData, 0,
+						paddedHeader.length);
+		System.arraycopy(encapsulated, 0, headerAndData, paddedHeader.length,
+				encapsulated.length);
+
 		byte[] paddedHeaderAndData = applyPadding(8, headerAndData);
-		
-//		printByteArray(paddedHeaderAndData);
-		
+
+		// printByteArray(paddedHeaderAndData);
+
 		incrementSSC();
-//		printByteArray(this.ssc);
-		
+		// printByteArray(this.ssc);
+
 		byte[] mac = calculateMAC(paddedHeaderAndData, kMac, this.ssc);
-//		printByteArray(mac);			
+		// printByteArray(mac);
 
 		byte[] encapsulatedMac = new byte[mac.length + 2];
-		encapsulatedMac[0] = (byte)0x8E;
-		encapsulatedMac[1] = (byte)mac.length;
+		encapsulatedMac[0] = (byte) 0x8E;
+		encapsulatedMac[1] = (byte) mac.length;
 		System.arraycopy(mac, 0, encapsulatedMac, 2, mac.length);
-		
-//		printByteArray(encapsulatedMac);			
-		
-		byte[] completeMessage = new byte[5 + encapsulated.length + encapsulatedMac.length];
+
+		// printByteArray(encapsulatedMac);
+
+		byte[] completeMessage = new byte[5 + encapsulated.length
+				+ encapsulatedMac.length];
 		completeMessage[0] = encCLA;
 		completeMessage[1] = ins;
 		completeMessage[2] = p1;
 		completeMessage[3] = p2;
-		completeMessage[4] = (byte)(encapsulated.length + encapsulatedMac.length);		
-		System.arraycopy(encapsulated, 0, completeMessage, 5, encapsulated.length);
-		System.arraycopy(encapsulatedMac, 0, completeMessage, 5+encapsulated.length, encapsulatedMac.length);
-		
-//		printByteArray(completeMessage);
-		
+		completeMessage[4] = (byte) (encapsulated.length + encapsulatedMac.length);
+		System.arraycopy(encapsulated, 0, completeMessage, 5,
+				encapsulated.length);
+		System.arraycopy(encapsulatedMac, 0, completeMessage,
+				5 + encapsulated.length, encapsulatedMac.length);
+
+		// printByteArray(completeMessage);
+
 		return completeMessage;
 	}
 
 	private void incrementSSC() {
-		
-		BigInteger ssc = new BigInteger(this.ssc);		
-		ssc = ssc.add(new BigInteger("1", 10));		
+
+		BigInteger ssc = new BigInteger(this.ssc);
+		ssc = ssc.add(new BigInteger("1", 10));
 		this.ssc = ssc.toByteArray();
 	}
-	
-	
-	private byte[] xorByteArrays(byte[] array1, byte[] array2) throws CardException {
-		
-		if(array1 == null || array2 == null || array1.length != array2.length) {
-			
+
+	private byte[] xorByteArrays(byte[] array1, byte[] array2)
+			throws CardException {
+
+		if (array1 == null || array2 == null || array1.length != array2.length) {
+
 			throw new CardException("Cannot xor byte arrays - invalid input.");
 		}
-		
+
 		byte[] result = new byte[array1.length];
-		
-		for(int i=0; i<array1.length; i++) {
-			
-			result[i] = (byte)(array1[i] ^ array2[i]);
+
+		for (int i = 0; i < array1.length; i++) {
+
+			result[i] = (byte) (array1[i] ^ array2[i]);
 		}
-		
+
 		return result;
 	}
-	
-	  public byte[] calculateMAC(byte[] data, byte[] key, byte[] ssc
-		     ) throws CardException {
 
-		    SecretKeySpec desSingleKey = new SecretKeySpec(key, 0, 8, "DES");
-		    Cipher singleDesCipher;
+	public byte[] calculateMAC(byte[] data, byte[] key, byte[] ssc)
+			throws CardException {
+
+		SecretKeySpec desSingleKey = new SecretKeySpec(key, 0, 8, "DES");
+		Cipher singleDesCipher;
+		try {
+			singleDesCipher = Cipher.getInstance("DES/CBC/NoPadding");
+		} catch (Exception e) {
+
+			throw new CardException("Error creating DES cipher instance.", e);
+		}
+
+		// Calculate the first n - 1 block.
+		IvParameterSpec ivSpec;
+		ivSpec = new IvParameterSpec(IV);
+		int dataLen = data.length;
+
+		try {
+			singleDesCipher.init(Cipher.ENCRYPT_MODE, desSingleKey, ivSpec);
+		} catch (Exception e) {
+			throw new CardException("Error initializing DES cipher.", e);
+		}
+		byte[] result;
+		try {
+			result = singleDesCipher.doFinal(ssc);
+		} catch (Exception e) {
+			throw new CardException("Error applying DES cipher.", e);
+		}
+
+		// printByteArray(result);
+
+		byte[] dataBlock = new byte[8];
+
+		for (int i = 0; i < dataLen - 8; i = i + 8) {
+
+			System.arraycopy(data, i, dataBlock, 0, 8);
+			byte[] input = xorByteArrays(result, dataBlock);
+
 			try {
-				singleDesCipher = Cipher.getInstance("DES/CBC/NoPadding");
-			} catch (Exception e) {
-
-				throw new CardException("Error creating DES cipher instance.", e);
-			}
-
-		    // Calculate the first n - 1 block.
-		    IvParameterSpec ivSpec;
-		    ivSpec = new IvParameterSpec(IV);
-		    int dataLen = data.length;
-
-		    try {
-				singleDesCipher.init(Cipher.ENCRYPT_MODE, desSingleKey, ivSpec);
-			} catch (Exception e) {
-				throw new CardException("Error initializing DES cipher.", e);
-			}
-		    byte[] result;
-			try {
-				result = singleDesCipher.doFinal(ssc);
+				result = singleDesCipher.doFinal(input);
 			} catch (Exception e) {
 				throw new CardException("Error applying DES cipher.", e);
 			}
-		    
-//		    printByteArray(result);
-		    
-		    byte[] dataBlock = new byte[8];
-		    
-		    for (int i = 0; i < dataLen - 8; i = i + 8) {
-		    			    	
-		    	System.arraycopy(data, i, dataBlock, 0, 8);
-		    	byte[] input = xorByteArrays(result, dataBlock);
-		    	
-		    	try {
-					result = singleDesCipher.doFinal(input);
-				} catch (Exception e) {
-					throw new CardException("Error applying DES cipher.", e);
-				}
-		    	
-//		    	printByteArray(result);
-		    	
-		    }
 
-		    // calculate the last block with 3DES
-		    byte[] fullKey = new byte[24];
-		    System.arraycopy(key, 0, fullKey, 0, 16);
-		    System.arraycopy(key, 0, fullKey, 16, 8);
-		    
-		    SecretKeySpec desKey = new SecretKeySpec(fullKey, "DESede");
-		    Cipher cipher;
-			try {
-				cipher = Cipher.getInstance("DESede/CBC/NoPadding");
-			} catch (Exception e) {
-				throw new CardException("Error getting 3DES cipher instance.", e);
-			}
+			// printByteArray(result);
 
-		    ivSpec = new IvParameterSpec(IV);
-		    try {
-				cipher.init(Cipher.ENCRYPT_MODE, desKey, ivSpec);
-			} catch (Exception e) {
-				throw new CardException("Error initializing 3DES cipher.", e);
-			}
+		}
 
-			System.arraycopy(data, data.length-8, dataBlock, 0, 8);
-			byte[] input = xorByteArrays(result, dataBlock);
-			
-			byte[] mac = new byte[4];
-			
-		    try {
-				
-		    	result = cipher.doFinal(input);
-								
-			} catch (Exception e) {
-				throw new CardException("Error applying 3DES cipher.", e);
-			}
+		// calculate the last block with 3DES
+		byte[] fullKey = new byte[24];
+		System.arraycopy(key, 0, fullKey, 0, 16);
+		System.arraycopy(key, 0, fullKey, 16, 8);
 
-			System.arraycopy(result, 0, mac, 0, 4);
-			
-		    return mac;
+		SecretKeySpec desKey = new SecretKeySpec(fullKey, "DESede");
+		Cipher cipher;
+		try {
+			cipher = Cipher.getInstance("DESede/CBC/NoPadding");
+		} catch (Exception e) {
+			throw new CardException("Error getting 3DES cipher instance.", e);
+		}
 
-		  }	
-	
-	private byte[] perform3DESCipherOperation(byte[] data,
-			byte[] keyData, int mode) throws NoSuchAlgorithmException,
-			NoSuchProviderException, NoSuchPaddingException,
-			InvalidKeyException, InvalidAlgorithmParameterException,
-			ShortBufferException, IllegalBlockSizeException,
-			BadPaddingException {
+		ivSpec = new IvParameterSpec(IV);
+		try {
+			cipher.init(Cipher.ENCRYPT_MODE, desKey, ivSpec);
+		} catch (Exception e) {
+			throw new CardException("Error initializing 3DES cipher.", e);
+		}
+
+		System.arraycopy(data, data.length - 8, dataBlock, 0, 8);
+		byte[] input = xorByteArrays(result, dataBlock);
+
+		byte[] mac = new byte[4];
+
+		try {
+
+			result = cipher.doFinal(input);
+
+		} catch (Exception e) {
+			throw new CardException("Error applying 3DES cipher.", e);
+		}
+
+		System.arraycopy(result, 0, mac, 0, 4);
+
+		return mac;
+
+	}
+
+	private byte[] perform3DESCipherOperation(byte[] data, byte[] keyData,
+			int mode) throws NoSuchAlgorithmException, NoSuchProviderException,
+			NoSuchPaddingException, InvalidKeyException,
+			InvalidAlgorithmParameterException, ShortBufferException,
+			IllegalBlockSizeException, BadPaddingException {
 
 		byte[] full3DESKey = new byte[24];
 		System.arraycopy(keyData, 0, full3DESKey, 0, 16);
 		System.arraycopy(keyData, 0, full3DESKey, 16, 8);
-		
+
 		SecretKeySpec key = new SecretKeySpec(full3DESKey, "DESede");
 		IvParameterSpec ivSpec = new IvParameterSpec(IV);
 
@@ -1721,35 +2029,35 @@ public class ESCardTest extends AbstractSignatureCard {
 	}
 
 	private byte[] removePadding(byte[] paddedData) throws CardException {
-		
-		for(int i=paddedData.length-1; i >= 0; i--) {
-			
+
+		for (int i = paddedData.length - 1; i >= 0; i--) {
+
 			byte current = paddedData[i];
-			
-			if(current == (byte)0x00) {
-				
+
+			if (current == (byte) 0x00) {
+
 				continue;
 			}
-			
-			if(current == (byte)0x80) {
-				
+
+			if (current == (byte) 0x80) {
+
 				// end of padding reached
 				byte[] data = new byte[i];
 				System.arraycopy(paddedData, 0, data, 0, i);
 				return data;
-				
+
 			} else {
-				
+
 				throw new CardException("Wrong padding.");
 			}
-			
+
 		}
-		
-		//should never happen
+
+		// should never happen
 		return null;
-		
+
 	}
-	
+
 	private byte[] applyPadding(int blockSize, byte[] data) {
 
 		// add mandatory 0x80
@@ -1787,7 +2095,7 @@ public class ESCardTest extends AbstractSignatureCard {
 
 		System.out.println("Read chip info:");
 		printByteArray(resp.getData());
-		
+
 		return resp.getData();
 	}
 
@@ -1813,14 +2121,14 @@ public class ESCardTest extends AbstractSignatureCard {
 
 		} else if (resp.getSW1() == 0x61) {
 			// Selection successful - FCI ready to be read
-//			int fciLen = resp.getSW2();
-//			command = new CommandAPDU(new byte[] { (byte) 0x00, (byte) 0xC0,
-//					(byte) 0x00, (byte) 0x00, (byte) fciLen });
-//			resp = channel.transmit(command);
-//
-//			byte[] fci = resp.getData();
-			byte[] fci = executeGetResponse(channel, (byte)resp.getSW2());
-			
+			// int fciLen = resp.getSW2();
+			// command = new CommandAPDU(new byte[] { (byte) 0x00, (byte) 0xC0,
+			// (byte) 0x00, (byte) 0x00, (byte) fciLen });
+			// resp = channel.transmit(command);
+			//
+			// byte[] fci = resp.getData();
+			byte[] fci = executeGetResponse(channel, (byte) resp.getSW2());
+
 			certLenHigh = fci[7];
 			certLenLow = fci[8];
 
@@ -1877,12 +2185,13 @@ public class ESCardTest extends AbstractSignatureCard {
 	}
 
 	private void verifyCertificates() throws CardException {
-		
-		RSAPublicKey rootPubKey = createRSAPublicKey(ROOT_CA_MODULO, ROOT_CA_PUBEXP);
-		
-		X509Certificate intermediate = createCertificate(intermediateCert); 
-		X509Certificate component = createCertificate(componentCert); 
-		
+
+		RSAPublicKey rootPubKey = createRSAPublicKey(ROOT_CA_MODULO,
+				ROOT_CA_PUBEXP);
+
+		X509Certificate intermediate = createCertificate(intermediateCert);
+		X509Certificate component = createCertificate(componentCert);
+
 		try {
 			component.verify(intermediate.getPublicKey());
 			intermediate.verify(rootPubKey);
@@ -1890,13 +2199,11 @@ public class ESCardTest extends AbstractSignatureCard {
 
 			System.out.println("Certificate verification failed.");
 			e.printStackTrace();
-		}		
+		}
 	}
-	
-	
-	public void establishSecureChannel() throws CardException {
-		
-		CardChannel channel = setupCardChannel();
+
+	public void establishSecureChannel(CardChannel channel)
+			throws CardException {
 
 		// get card serial number
 		this.snIcc = executeGetChipInfo(channel);
@@ -1907,16 +2214,16 @@ public class ESCardTest extends AbstractSignatureCard {
 		this.intermediateCert = executeReadCertificate(channel, new byte[] {
 				(byte) 0x60, (byte) 0x20 });
 		printByteArray(this.intermediateCert);
-		writeDataToFile(intermediateCert, "f:/secure_channel_card_intermediate.cer");
+		writeDataToFile(intermediateCert,
+				"f:/secure_channel_card_intermediate.cer");
 		this.componentCert = executeReadCertificate(channel, new byte[] {
 				(byte) 0x60, (byte) 0x1F });
 		printByteArray(this.componentCert);
 		writeDataToFile(componentCert, "f:/secure_channel_card_component.cer");
-		
+
 		// TODO: Verify certificate chain
 		verifyCertificates();
-		
-		
+
 		// load certs and select keys
 		loadCertsAndSelectKeys(channel);
 
@@ -1928,35 +2235,35 @@ public class ESCardTest extends AbstractSignatureCard {
 
 		// derive channel key
 		calculateChannelKey();
-		
-		// test secure channel
-//		executeSecureSelect(channel);
-//		executeSecureSelect(channel);
-//		executeSecureSelect(channel);
-//		executeSecureSelect(channel);
-//		executeSecureSelect(channel);
-		
-		//VERIFY PIN
+
+		// // test secure channel
+		// executeSecureSelect(channel);
+		// executeSecureSelect(channel);
+		// executeSecureSelect(channel);
+		// executeSecureSelect(channel);
+		// executeSecureSelect(channel);
+
+		// VERIFY PIN
 		executeSecurePINVerify(channel);
-		
+
 		// GET PrKDF
 		executeSecureReadPrKDF(channel);
-		
+
 		// Manage Security Environment
 		executeSecureManageSecurityEnvironment(channel);
-		
+
 		// Create signature
 		executeSecurePerformSecurityOperation(channel);
 
 		// GET CDF
 		executeSecureReadCDF(channel);
-		
+
 		// Select certificate
 		executeSecureSelectCertificate(channel);
-		
+
 		// Verify signature
 		verifySignature();
-		
+
 	}
 
 	private void internalAuthentication(CardChannel channel)
@@ -1976,30 +2283,30 @@ public class ESCardTest extends AbstractSignatureCard {
 			challengeData[i + randomBytes.length] = RANDOM_TAIL[i];
 		}
 
-//		System.out.println("Generated terminal challenge:");
-//		printByteArray(challengeData);
-		
+		// System.out.println("Generated terminal challenge:");
+		// printByteArray(challengeData);
+
 		// send challenge to card
 		CommandAPDU command_6 = new CommandAPDU((byte) 0x00, (byte) 0x88,
 				(byte) 0x00, (byte) 0x00, challengeData);
 		ResponseAPDU resp_6 = channel.transmit(command_6);
 
-//		System.out.println("Challenge:");
-//		printByteArray(challengeData);
+		// System.out.println("Challenge:");
+		// printByteArray(challengeData);
 
 		System.out.println("Response to terminal challenge: "
 				+ Integer.toHexString(resp_6.getSW()));
 
 		byte[] data = null;
-		
+
 		if (resp_6.getSW() == 0x9000) {
 
 			data = resp_6.getData();
 
 		} else if (resp_6.getSW1() == 0x61) {
 
-			data = executeGetResponse(channel, (byte)resp_6.getSW2());
-			
+			data = executeGetResponse(channel, (byte) resp_6.getSW2());
+
 		} else {
 
 			System.out.println("An error occured - cancel.");
@@ -2017,7 +2324,7 @@ public class ESCardTest extends AbstractSignatureCard {
 			System.out.println("Internal Authentiction failed - cancel.");
 			throw new CardException("Internal authentication failed");
 		}
-		
+
 	}
 
 	private void loadCertsAndSelectKeys(CardChannel channel)
@@ -2073,22 +2380,32 @@ public class ESCardTest extends AbstractSignatureCard {
 		return digest;
 	}
 
+	private static BigInteger createUnsignedBigInteger(byte[] data) {
+
+		byte[] unsigned = new byte[data.length + 1];
+		unsigned[0] = (byte) 0x00;
+		System.arraycopy(data, 0, unsigned, 1, data.length);
+
+		return new BigInteger(unsigned);
+
+	}
+
 	private void externalAuthentication(CardChannel channel)
 			throws CardException {
 
 		System.out.println("Starting external authentication..");
 
 		// request card challenge
-//		System.out.print("Requesting card challenge..");
+		// System.out.print("Requesting card challenge..");
 		CommandAPDU command_7 = new CommandAPDU((byte) 0x00, (byte) 0x84,
 				(byte) 0x00, (byte) 0x00, (byte) 0x08);
 		ResponseAPDU resp_7 = channel.transmit(command_7);
 		byte[] cardChallenge = resp_7.getData();
 
-//		System.out.println("Obtained card challenge:");
-//		printByteArray(cardChallenge);
-		
-//		System.out.println(Integer.toHexString(resp_7.getSW()));
+		// System.out.println("Obtained card challenge:");
+		// printByteArray(cardChallenge);
+
+		// System.out.println(Integer.toHexString(resp_7.getSW()));
 
 		this.rndIcc = cardChallenge;
 
@@ -2097,9 +2414,9 @@ public class ESCardTest extends AbstractSignatureCard {
 
 		byte[] prnd2 = getRandomBytes(this.prndLength);
 		byte[] kIfd = getRandomBytes(32);
-		
-//		System.out.println("Created KIFD:");
-//		printByteArray(kIfd);
+
+		// System.out.println("Created KIFD:");
+		// printByteArray(kIfd);
 
 		// byte[] prnd2 = TEST_PRND2;
 		// byte[] kIfd = TEST_KIFD;
@@ -2197,7 +2514,12 @@ public class ESCardTest extends AbstractSignatureCard {
 		// printByteArray(encResult);
 
 		// apply MIN function
-		BigInteger sig = new BigInteger(encResult);
+
+		// ensure that created BigInteger is unsigned by adding leading 00 byte
+
+		// BigInteger sig = new BigInteger(encResult);
+		BigInteger sig = createUnsignedBigInteger(encResult);
+
 		BigInteger mod = new BigInteger(TERMINAL_MODULO, 16);
 
 		BigInteger diff = mod.subtract(sig);
@@ -2209,22 +2531,22 @@ public class ESCardTest extends AbstractSignatureCard {
 
 		PublicKey cardPubKey = null;
 		// encrypt with card public key
-//		try {
-//			X509Certificate cert = new X509Certificate(componentCert);
-			X509Certificate cert = createCertificate(componentCert);
+		// try {
+		// X509Certificate cert = new X509Certificate(componentCert);
+		X509Certificate cert = createCertificate(componentCert);
 
-			cardPubKey = cert.getPublicKey();
-//		} catch (CertificateException e) {
-//
-//			throw new CardException(
-//					"Error retrieving public key from certificate.", e);
-//		}
+		cardPubKey = cert.getPublicKey();
+		// } catch (CertificateException e) {
+		//
+		// throw new CardException(
+		// "Error retrieving public key from certificate.", e);
+		// }
 
 		byte[] authData = null;
 		try {
 			authData = rsaEncrypt(cardPubKey, sigMin.toByteArray());
 		} catch (Exception e) {
-
+			e.printStackTrace();
 			throw new CardException("Error encrypting authentication data.");
 		}
 
@@ -2284,17 +2606,17 @@ public class ESCardTest extends AbstractSignatureCard {
 
 		PublicKey pubKey = null;
 
-//		try {
-//			X509Certificate cert = new X509Certificate(componentCert);
-			X509Certificate cert = createCertificate(componentCert);
-			
-			pubKey = cert.getPublicKey();
+		// try {
+		// X509Certificate cert = new X509Certificate(componentCert);
+		X509Certificate cert = createCertificate(componentCert);
 
-//		} catch (CertificateException e) {
-//
-//			throw new CardException(
-//					"Error retrieving public key from certificate.", e);
-//		}
+		pubKey = cert.getPublicKey();
+
+		// } catch (CertificateException e) {
+		//
+		// throw new CardException(
+		// "Error retrieving public key from certificate.", e);
+		// }
 
 		byte[] sig = null;
 
@@ -2327,24 +2649,26 @@ public class ESCardTest extends AbstractSignatureCard {
 
 				RSAPublicKey rsaPubKey = (RSAPublicKey) pubKey;
 				BigInteger mod = rsaPubKey.getModulus();
-				BigInteger sigVal = new BigInteger(plain);
+				// BigInteger sigVal = new BigInteger(plain);
+				BigInteger sigVal = createUnsignedBigInteger(plain);
 
-//				System.out.println("MODULUS: " + mod);
-//				System.out.println("SIGVAL: " + sigVal);
-//				
+				// System.out.println("MODULUS: " + mod);
+				// System.out.println("SIGVAL: " + sigVal);
+				//				
 				BigInteger substractionResult = mod.subtract(sigVal);
-//				System.out.println("DIFFERENCE: " + substractionResult);
-				
-				
+				// System.out.println("DIFFERENCE: " + substractionResult);
+
 				byte[] encrypted = substractionResult.toByteArray();
 
-//				System.out.println("data to be decrypted:");
-//				printByteArray(encrypted);
-				
-				// necessary as substraction result seems to contain one leading zero byte
+				// System.out.println("data to be decrypted:");
+				// printByteArray(encrypted);
+
+				// necessary as substraction result seems to contain one leading
+				// zero byte
 				byte[] trimmed = new byte[128];
-				System.arraycopy(encrypted, encrypted.length-128, trimmed, 0, 128);
-				
+				System.arraycopy(encrypted, encrypted.length - 128, trimmed, 0,
+						128);
+
 				try {
 					sig = rsaDecrypt(pubKey, trimmed);
 
@@ -2372,9 +2696,9 @@ public class ESCardTest extends AbstractSignatureCard {
 			kIcc[i] = sig[i + 1 + prnd1.length];
 		}
 
-//		System.out.println("Got KICC from card:");
-//		printByteArray(kIcc);
-		
+		// System.out.println("Got KICC from card:");
+		// printByteArray(kIcc);
+
 		for (int i = 0; i < hash.length; i++) {
 
 			hash[i] = sig[i + 1 + prnd1.length + kIcc.length];
@@ -2446,17 +2770,19 @@ public class ESCardTest extends AbstractSignatureCard {
 
 	}
 
-//	public static RSAPublicKey createRSAPublicKey(String mod, String pubExponent) {
-//
-//		BigInteger modulo = new BigInteger(mod, 16);
-//		BigInteger pubExp = new BigInteger(pubExponent, 16);
-//
-//		RSAPublicKey rsaPublicKey = new RSAPublicKey(modulo, pubExp);
-//
-//		return rsaPublicKey;
-//	}
+	// public static RSAPublicKey createRSAPublicKey(String mod, String
+	// pubExponent) {
+	//
+	// BigInteger modulo = new BigInteger(mod, 16);
+	// BigInteger pubExp = new BigInteger(pubExponent, 16);
+	//
+	// RSAPublicKey rsaPublicKey = new RSAPublicKey(modulo, pubExp);
+	//
+	// return rsaPublicKey;
+	// }
 
-	public static RSAPublicKey createRSAPublicKey(String mod, String pubExponent) throws CardException {
+	public static RSAPublicKey createRSAPublicKey(String mod, String pubExponent)
+			throws CardException {
 
 		BigInteger modulus = new BigInteger(mod, 16);
 		BigInteger pubExp = new BigInteger(pubExponent, 16);
@@ -2466,16 +2792,15 @@ public class ESCardTest extends AbstractSignatureCard {
 		try {
 			fac = KeyFactory.getInstance("RSA");
 			KeySpec spec = new RSAPublicKeySpec(modulus, pubExp);
-			key = (RSAPublicKey)fac.generatePublic(spec); 			
+			key = (RSAPublicKey) fac.generatePublic(spec);
 		} catch (Exception e) {
-			
-			throw new CardException("Unable to create public key." , e);
+
+			throw new CardException("Unable to create public key.", e);
 		}
 
-
 		return key;
-	}	
-	
+	}
+
 	public static RSAPrivateKey createRSAPrivateKey(String mod,
 			String privExponent) throws CardException {
 
@@ -2487,19 +2812,44 @@ public class ESCardTest extends AbstractSignatureCard {
 		try {
 			fac = KeyFactory.getInstance("RSA");
 			KeySpec spec = new RSAPrivateKeySpec(modulus, privExp);
-			key = (RSAPrivateKey)fac.generatePrivate(spec); 			
+			key = (RSAPrivateKey) fac.generatePrivate(spec);
 		} catch (Exception e) {
-			
-			throw new CardException("Unable to create private key." , e);
+
+			throw new CardException("Unable to create private key.", e);
 		}
 
 		return key;
 	}
-	
-	
+
 	public static byte[] rsaEncrypt(Key key, byte[] data)
 			throws NoSuchAlgorithmException, NoSuchPaddingException,
 			InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+
+		System.out.println("RSA ENCRYPTION:");
+		BigInteger modulus = null;
+
+		if (key instanceof RSAPublicKey) {
+			RSAPublicKey pubKey = (RSAPublicKey) key;
+			System.out.println("Key Modulus: " + pubKey.getModulus());
+			modulus = pubKey.getModulus();
+		}
+
+		if (key instanceof RSAPrivateKey) {
+
+			RSAPrivateKey privKey = (RSAPrivateKey) key;
+			System.out.println("Key Modulus: " + privKey.getModulus());
+			modulus = privKey.getModulus();
+		}
+
+		// BigInteger dataInt = new BigInteger(data);
+		BigInteger dataInt = createUnsignedBigInteger(data);
+		System.out.println("DATA: " + dataInt);
+
+		if (dataInt.compareTo(modulus) > 0) {
+			System.out.println("DATA IS LARGER!!!!");
+		} else {
+			System.out.println("DATA IS SMALLER - OK");
+		}
 
 		Cipher rsa = Cipher.getInstance("RSA/ECB/NoPadding");
 		rsa.init(Cipher.ENCRYPT_MODE, key);
@@ -2554,12 +2904,11 @@ public class ESCardTest extends AbstractSignatureCard {
 		Card card = terminal.connect("*");
 		System.out.println("card: " + card);
 		CardChannel channel = card.getBasicChannel();
-		
 
 		return channel;
 	}
 
-	private void printByteArray(byte[] data) {
+	private static void printByteArray(byte[] data) {
 
 		for (int i = 0; i < data.length; i++) {
 
@@ -2619,6 +2968,73 @@ public class ESCardTest extends AbstractSignatureCard {
 
 	public void setIntermediateCert(byte[] intermediateCert) {
 		this.intermediateCert = intermediateCert;
+	}
+
+	private int byteToInt(byte b) {
+
+		return b < 0 ? b + 256 : b;
+
+	}
+
+	private int getRecordLength(byte[] data, int startOfLength) {
+
+		byte lengthStartByte = data[startOfLength];
+
+		if (lengthStartByte < 0) {
+			// we have more than one length byte
+			byte lengthOfLength = (byte) (lengthStartByte & (byte) 0x7F);
+
+			byte[] lengthValues = new byte[lengthOfLength];
+			System.arraycopy(data, startOfLength + 1, lengthValues, 0,
+					lengthOfLength);
+
+			int result = 0;
+
+			for (int i = 0; i < lengthValues.length; i++) {
+
+				result = (result + byteToInt(lengthValues[lengthValues.length
+						- 1 - i])
+						* (int) Math.pow(256, i));
+			}
+
+			return result + startOfLength + lengthOfLength + 1; // defined
+			// length + tag
+			// byte + length
+			// bytes
+
+		} else {
+
+			return (int) lengthStartByte + startOfLength + 1; // defined length
+			// + tag byte +
+			// length byte
+		}
+
+	}
+
+	private ASN1 getASN1WithinContextSpecific(byte[] data) {
+
+		byte first = data[0];
+		byte lengthOfLength = 0;
+
+		if (first < 0) {
+
+			lengthOfLength = (byte) (first & (byte) 0x7F);
+			lengthOfLength = (byte) (lengthOfLength + 1);
+		} else {
+
+			lengthOfLength = 1;
+		}
+
+		byte[] asn1data = new byte[data.length - lengthOfLength];
+		System.arraycopy(data, lengthOfLength, asn1data, 0, asn1data.length);
+
+		try {
+			return new ASN1(asn1data);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }
