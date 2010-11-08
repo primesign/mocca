@@ -276,12 +276,12 @@ public class SignatureCardFactory {
             new byte[] { (byte) 0x3b, (byte) 0x7F, (byte) 0x38,
                     (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x6A,
                     (byte) 0x44, (byte) 0x4E, (byte) 0x49, (byte) 0x65,
-                    (byte) 0x20, (byte) 0x02, (byte) 0x4C, (byte) 0x34, (byte) 0x01, (byte) 0x13, (byte) 0x03, (byte) 0x90, (byte) 0x00 },
+                    (byte) 0x00, (byte) 0x02, (byte) 0x4C, (byte) 0x34, (byte) 0x01, (byte) 0x13, (byte) 0x03, (byte) 0x90, (byte) 0x00 },
             // mask (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
             new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
                     (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
                     (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-                    (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+                    (byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff },
             "at.gv.egiz.smcc.DNIeCard"));
     
     // ITCards

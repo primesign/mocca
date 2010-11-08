@@ -1,3 +1,20 @@
+/*
+* Copyright 2009 Federal Chancellery Austria and
+* Graz University of Technology
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
 package at.gv.egiz.smcc;
 
 import java.io.ByteArrayInputStream;
@@ -188,8 +205,6 @@ public class DNIeCardSecureChannel {
 	private final byte[] IV = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			0x00, 0x00 };
 
-	private final byte[] KEY_ID = new byte[] { (byte) 0x01, (byte) 0x02 };
-
 	private final byte[] HASH_PADDING = new byte[] {
 
 	(byte) 0x30, (byte) 0x21, (byte) 0x30, (byte) 0x09, (byte) 0x06,
@@ -220,10 +235,12 @@ public class DNIeCardSecureChannel {
 
 	public void establish(CardChannel channel) throws CardException {
 
+		log.debug("Setting up secure channel to crd..");
+		
 		// get chip info
 		this.snIcc = executeGetChipInfo(channel);
 
-		// get certificates to establish secure channel
+		// get card certificates to establish secure channel
 		this.intermediateCert = executeReadSecureChannelCertificate(channel,
 				SECURE_CHANNEL_INTERMEDIAT_CERT_ID);
 		this.componentCert = executeReadSecureChannelCertificate(channel,
@@ -288,20 +305,21 @@ public class DNIeCardSecureChannel {
 
 	}
 
-	public void executeSecureManageSecurityEnvironment(CardChannel channel)
+	public void executeSecureManageSecurityEnvironment(CardChannel channel, byte[] id)
 			throws CardException {
 
 		log.debug("Manage Security Environment..");
 
-		byte[] apdu = new byte[7 + KEY_ID.length];
+		byte[] apdu = new byte[7 + 2];
 		apdu[0] = (byte) 0x00;
 		apdu[1] = (byte) 0x22;
 		apdu[2] = (byte) 0x41;
 		apdu[3] = (byte) 0xB6;
-		apdu[4] = (byte) (KEY_ID.length + 2);
+		apdu[4] = (byte) (2 + 2);
 		apdu[5] = (byte) 0x84; // Tag
-		apdu[6] = (byte) KEY_ID.length; // Length
-		System.arraycopy(KEY_ID, 0, apdu, 7, KEY_ID.length);
+		apdu[6] = (byte) 0x02; // Length
+		apdu[7] = id[0]; // ID
+		apdu[8] = id[1]; // ID
 
 		byte[] securedAPDU = getSecuredAPDU(apdu);
 
@@ -479,9 +497,6 @@ public class DNIeCardSecureChannel {
 		System.arraycopy(encrypted, 0, encapsulated, 3, encrypted.length);
 
 		// calculate MAC
-
-		// prepare CLA byte
-
 		byte encCLA = (byte) (cla | (byte) 0x0C);
 		byte[] encHeader = new byte[] { encCLA, ins, p1, p2 };
 		byte[] paddedHeader = applyPadding(BLOCK_LENGTH, encHeader);
@@ -733,8 +748,6 @@ public class DNIeCardSecureChannel {
 
 		byte[] decryptedResponse = verifyAndDecryptSecuredResponseAPDU(data);
 
-		log.debug("Read plain data: " + formatByteArray(decryptedResponse));
-
 		return decryptedResponse;
 
 	}
@@ -869,7 +882,7 @@ public class DNIeCardSecureChannel {
 
 		byte[] prnd2 = getRandomBytes(this.prndLength);
 		byte[] kIfd = getRandomBytes(32);
-
+		
 		// compute hash
 		byte[] hashData = new byte[prnd2.length + kIfd.length
 				+ cardChallenge.length + BLOCK_LENGTH];
@@ -888,9 +901,9 @@ public class DNIeCardSecureChannel {
 
 		System.arraycopy(snIcc, 0, hashData, prnd2.length + kIfd.length
 				+ cardChallenge.length + snPadding, snIcc.length);
-
+		
 		byte[] digest = computeSHA1Hash(hashData);
-
+		
 		// prepare data to be encrypted
 		byte[] plain = new byte[2 + prnd2.length + kIfd.length + digest.length];
 
@@ -906,17 +919,17 @@ public class DNIeCardSecureChannel {
 		// encrypt plain data
 		RSAPrivateKey terminalPrivateKey = createRSAPrivateKey(TERMINAL_MODULO,
 				TERMINAL_PRIVEXP);
-
+		
 		byte[] encResult = null;
 		try {
 			encResult = rsaEncrypt(terminalPrivateKey, plain);
 		} catch (Exception e) {
-
+			e.printStackTrace();
 			throw new CardException("Error encrypting authentication data.", e);
 		}
 
-		// apply MIN function
-		BigInteger sig = new BigInteger(encResult);
+		// apply MIN function	
+		BigInteger sig = createUnsignedBigInteger(encResult);
 		BigInteger mod = new BigInteger(TERMINAL_MODULO, 16);
 
 		BigInteger diff = mod.subtract(sig);
@@ -932,10 +945,11 @@ public class DNIeCardSecureChannel {
 		try {
 			authData = rsaEncrypt(cardPubKey, sigMin.toByteArray());
 		} catch (Exception e) {
-
+			e.printStackTrace();
 			throw new CardException("Error encrypting authentication data.");
 		}
 
+		log.debug("Sending computed cryptogram to card..");
 		// send auth data to card
 		// BE CAREFUL WITH THAT! EXT-AUTH METHOD MAY GET BLOCKED!
 		if (executeExternalAuthenticate(channel, authData)) {
@@ -962,6 +976,8 @@ public class DNIeCardSecureChannel {
 	private void performInternalAuthentication(CardChannel channel)
 			throws CardException {
 
+		log.debug("Starting internal authentication..");
+		
 		byte[] randomBytes = getRandomBytes(BLOCK_LENGTH);
 		byte[] challengeData = new byte[randomBytes.length
 				+ TERMINAL_CHALLENGE_TAIL.length];
@@ -991,7 +1007,6 @@ public class DNIeCardSecureChannel {
 
 		// This method verifies the card's component and intermediate
 		// certificates cryptographically.
-		// TODO: Revocation checking (cannot be done now since CRL URLs in certificates seem to be incorrect)
 
 		RSAPublicKey rootPubKey = createRSAPublicKey(ROOT_CA_MODULO,
 				ROOT_CA_PUBEXP);
@@ -1004,8 +1019,7 @@ public class DNIeCardSecureChannel {
 			intermediate.verify(rootPubKey);
 		} catch (Exception e) {
 
-			log.error("Certificate verification failed.");
-			e.printStackTrace();
+			throw new CardException("Certificate verification failed.", e);			
 		}
 	}
 
@@ -1044,27 +1058,27 @@ public class DNIeCardSecureChannel {
 
 		if (sig == null) {
 
-			throw new CardException("Invalid decryption result - null.");
+			throw new CardException("Invalid decryption result: null.");
 		} else {
 
 			if (sig[0] == (byte) 0x6A && sig[sig.length - 1] == (byte) 0xBC) {
 
 				// Obtained response from card was obviously SIG - nothing else
-				// to do here
+				// to do here so far
 
 			} else {
 
-				// Obtained response from card was obviously N.ICC-SIG -
+				// Obtained response from card was probably N.ICC-SIG -
 				// compute N.ICC-SIG and decrypt result again
 
 				RSAPublicKey rsaPubKey = (RSAPublicKey) pubKey;
 				BigInteger mod = rsaPubKey.getModulus();
-				BigInteger sigVal = new BigInteger(plain);
+				BigInteger sigVal = createUnsignedBigInteger(plain);
 
 				BigInteger substractionResult = mod.subtract(sigVal);
 				byte[] encrypted = substractionResult.toByteArray();
 
-				// necessary as substraction result seems to contain one leading
+				// necessary if substraction result contains leading
 				// zero byte
 				byte[] trimmed = new byte[128];
 				System.arraycopy(encrypted, encrypted.length - 128, trimmed, 0,
@@ -1147,8 +1161,6 @@ public class DNIeCardSecureChannel {
 		} else {
 			log.debug("FAILED: " + Integer.toHexString(resp.getSW()));
 		}
-
-		log.debug("Read chip info: " + formatByteArray(resp.getData()));
 
 		return resp.getData();
 	}
@@ -1430,6 +1442,16 @@ public class DNIeCardSecureChannel {
 		return result;
 	}
 
+	private BigInteger createUnsignedBigInteger(byte[] data) {
+		
+		byte[] unsigned = new byte[data.length+1];
+		unsigned[0] = (byte)0x00;
+		System.arraycopy(data, 0, unsigned, 1, data.length);
+		
+		return new BigInteger(unsigned);
+		
+	}	
+	
 	private RSAPrivateKey createRSAPrivateKey(String mod, String privExponent)
 			throws CardException {
 
@@ -1473,7 +1495,7 @@ public class DNIeCardSecureChannel {
 	private byte[] rsaEncrypt(Key key, byte[] data)
 			throws NoSuchAlgorithmException, NoSuchPaddingException,
 			InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-
+		
 		Cipher rsa = Cipher.getInstance("RSA/ECB/NoPadding");
 		rsa.init(Cipher.ENCRYPT_MODE, key);
 		byte[] encrypted = rsa.doFinal(data);
@@ -1622,5 +1644,5 @@ public class DNIeCardSecureChannel {
 		return (sw1 * 256) + sw2;
 
 	}
-
+	
 }
