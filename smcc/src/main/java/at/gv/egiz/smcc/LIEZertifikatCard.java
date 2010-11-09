@@ -36,6 +36,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.smcc.util.SMCCHelper;
+import iaik.me.asn1.ASN1;
+import java.util.Arrays;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardTerminal;
 
@@ -54,7 +56,7 @@ public class LIEZertifikatCard extends AbstractSignatureCard implements Signatur
     (byte) 0x50, (byte) 0x4B, (byte) 0x43, (byte) 0x53, (byte) 0x2D,
     (byte) 0x31, (byte) 0x35 };
 
-  public static final byte[] EF_QCERT = new byte[] { (byte) 0x0c, (byte) 0x02};
+  public static final byte[] EF_CD = new byte[] { (byte) 0x44, (byte) 0x04};
 
   public static final byte[] CRT_AT = new byte[] {
     // key 0x81??? (EF.PrKD defines 0x84 and 0x85)
@@ -103,8 +105,13 @@ public class LIEZertifikatCard extends AbstractSignatureCard implements Signatur
       CardChannel channel = getCardChannel();
       // SELECT DF.CIA
       execSELECT_AID(channel, AID_SIG);
+      byte[] ef_qcert = getFID_QCERT(channel);
+      if (ef_qcert == null) {
+        throw new NotActivatedException();
+      }
+
       // SELECT CERT
-      execSELECT_EF(channel, EF_QCERT);
+      execSELECT_EF(channel, ef_qcert);
 
       // READ BINARY
       byte[] certificate = ISO7816Utils.readTransparentFileTLV(channel, -1, (byte) 0x30);
@@ -288,11 +295,58 @@ public class LIEZertifikatCard extends AbstractSignatureCard implements Signatur
   }
   
   
-  protected byte[] execSELECT_EF(CardChannel channel, byte[] fid)
+  protected byte[] getFID_QCERT(CardChannel channel)
   throws SignatureCardException, CardException {
 
+    execSELECT_EF(channel, EF_CD);
+    byte[] cio_cd = ISO7816Utils.readTransparentFile(channel, -1);
+
+    //assume first 'record' is qcert
+    int length = 0;
+    if ((cio_cd[1] & 0xf0) == 0x80) {
+        int ll = cio_cd[1] & 0x7f;
+        for (int i= 0; i < ll; i++) {
+            length = (length << 8) + (cio_cd[2+i] & 0xff);
+        }
+        length += ll + 2;
+    } else {
+        length = (cio_cd[1] & 0xff) + 2;
+    }
+    
+    log.trace("reading CIO.CD[0-{}]", length-1);
+
+    try {
+        ASN1 certificateObj = new ASN1(Arrays.copyOfRange(cio_cd, 0, length));
+        byte[] contextSpecific = certificateObj.getElementAt(2).getEncoded();
+        if ((contextSpecific[0] & 0xff) != 0xa1) {
+            log.warn("expected X509CertificateAttributes (CONTEXTSPECIFIC 0xa1), got {}",
+                    (contextSpecific[0] & 0xff));
+        }
+        int ll = ((contextSpecific[1] & 0xf0) == 0x80)
+                ? (contextSpecific[1] & 0x7f) + 2 : 2;
+
+        ASN1 x509CertificateAttributes = new ASN1(
+                Arrays.copyOfRange(contextSpecific, ll, contextSpecific.length));
+
+        byte[] fid = x509CertificateAttributes.getElementAt(0).getElementAt(0)
+                .gvByteArray();
+        
+        log.debug("reading certificate {} from file {}",
+                certificateObj.getElementAt(0).getElementAt(0).gvString(),
+                toString(fid));
+        
+        return fid;
+    } catch (IOException ex) {
+        log.error("failed to get certificate path: " + ex.getMessage(), ex);
+        return null;
+    }
+  }
+
+  protected byte[] execSELECT_EF(CardChannel channel, byte[] fid)
+          throws SignatureCardException, CardException {
+
     ResponseAPDU resp = channel.transmit(
-        new CommandAPDU(0x00, 0xA4, 0x02, 0x00, fid, 256));
+      new CommandAPDU(0x00, 0xA4, 0x02, 0x00, fid, 256));
 
     if (resp.getSW() == 0x6A82) {
       String msg = "File or application not found FID="

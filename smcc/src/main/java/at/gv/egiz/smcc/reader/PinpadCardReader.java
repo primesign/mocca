@@ -59,7 +59,8 @@ public class PinpadCardReader extends DefaultCardReader {
   protected byte bTimeOut2 = 0x00;                  // default (attention with SCM)
   protected byte wPINMaxExtraDigitMin = 0x00;         // min pin length zero digits
   protected byte wPINMaxExtraDigitMax = 0x0c;         // max pin length 12 digits
-
+  protected byte bNumberMessage = 0x01;
+  
   /**
    * supported features and respective control codes
    */
@@ -99,6 +100,12 @@ public class PinpadCardReader extends DefaultCardReader {
       //Snow Leopard: Reiner-SCT cyberJack pinpad(a) 00 00
       //display: REINER SCT CyberJack 00 00
       if(name.startsWith("gemplus gempc pinpad") || name.startsWith("gemalto gempc pinpad")) {
+          // win7(microsoft driver) GemPlus USB GemPC Pinpad Smartcardreader 0 -> no pinpad
+          // win7(gemalto4.0.7.5) Gemalto GemPC Pinpad USB Smart Card Read 0 -> transmitContorlCommand failed (0x7a)
+          //     (same with timeouts set to 0000 and 3c0f)
+          // winXP (verify failed, sw=d2(ecard) sw=92(acos), cf. wiki):
+          // winXP (without setting wPINMax: sw=6b:80)
+          // linux (ok): Gemplus GemPC Pinpad 00 00
         log.trace("Setting custom wPINMaxExtraDigitH (0x04) for {}.", name);
         wPINMaxExtraDigitMin = 0x04;
         log.trace("Setting custom wPINMaxExtraDigitL (0x08) for {}.", name);
@@ -539,7 +546,7 @@ public class PinpadCardReader extends DefaultCardReader {
     // bEntryValidationCondition
     s.write(bEntryValidationCondition);
     // bNumberMessage
-    s.write(0x01);
+    s.write(bNumberMessage);
     // wLangId (little endian)
     s.write(0x09);
     s.write(0x04);
