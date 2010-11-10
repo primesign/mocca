@@ -2,14 +2,14 @@
 	<parent>
 		<artifactId>mocca</artifactId>
 		<groupId>at.gv.egiz</groupId>
-		<version>1.3.3-SNAPSHOT</version>
+		<version>1.3.3</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>at.gv.egiz</groupId>
 	<artifactId>BKULocal</artifactId>
 	<packaging>war</packaging>
 	<name>BKU Local</name>
-	<version>1.3.3-SNAPSHOT</version>
+	<version>1.3.3</version>
 
 	<description>MOCCA Local</description>
 	<build>
