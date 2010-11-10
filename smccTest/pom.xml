@@ -51,6 +51,10 @@
 		</dependency>
 		<dependency>
 			<groupId>iaik</groupId>
+			<artifactId>iaik_jce_me4se</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>iaik</groupId>
 			<artifactId>iaik_jce_full_signed</artifactId>
 		</dependency>
     <dependency>

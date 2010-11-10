@@ -16,6 +16,7 @@ import iaik.security.provider.IAIK;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -102,7 +103,7 @@ public class PKCS15Test {
 
 //  @Test
 //  @Ignore
-  public void getEFDIR() throws CardException, SignatureCardException, InstantiationException, CodingException {
+  public void getEFDIR() throws CardException, SignatureCardException, InstantiationException, CodingException, IOException {
     
     CardChannel basicChannel = icc.getBasicChannel();
     CommandAPDU cmdAPDU;
@@ -199,8 +200,13 @@ public class PKCS15Test {
     System.out.println(" " + toString(efod));
     
     for (TLV cio : new TLVSequence(efod)) {
-      
-      System.out.println("\n\nTag = " + cio.getTag());
+
+        byte[] val = cio.getValue();
+        System.out.println("val: "+ toString(val));
+        byte[] path = Arrays.copyOfRange(val, 4, 4+val[3]);
+        System.out.println("path: "+ toString(path));
+
+      System.out.println("\n\nTag = " + (cio.getTag() & 0x0f));
       if (cio.getTag() == 0) {
         System.out.println("cannot decode null data");
         continue;
@@ -244,27 +250,40 @@ public class PKCS15Test {
         byte[] ef = ISO7816Utils.readTransparentFile(basicChannel, -1);
 //        System.out.println(" " + toString(ef));
 
-        int length;
         int i = 0;
         int j;
 
         do {
           System.out.println("tag: 0x" + Integer.toHexString(ef[i]) + ", length: 0x" + Integer.toHexString(ef[i+1]));
-          if ((ef[i+1] & 0xff) == 0x81) {
-            length = ef[i+2] & 0xff;
-            j = 3;
-//            System.out.println("ef["+(i+1)+"]=0x81, setting length=" + (ef[i+2] & 0xff));
 
-          } else if ((ef[i+1] & 0xff) == 0x82) {
-            length = ((ef[i+2] & 0xff) << 8) | (ef[i+3] & 0xff);
-            j = 4;
-//            System.out.println("ef["+(i+1)+"]=0x82, setting length=" + (((ef[i+2] & 0xff) << 8) | (ef[i+3] & 0xff)));
+            int length = 0;
+            int ll = 0;
+            if ((ef[i+1] & 0xf0) == 0x80) {
+                ll = ef[i+1] & 0x7f;
+                for (int it = 0; it < ll; it++) {
+                    System.out.println(" + 0x" + Integer.toHexString(ef[i + it+2] & 0xff) );
+                    length = (length << 8) + (ef[i+it+2] & 0xff);
+                    System.out.println("length: " + length + " (0x" + Integer.toHexString(length) + ")");
+                }
+            } else {
+                length = (ef[i+1] & 0xff);
+            }
 
-          } else {
-            length = ef[i+1] & 0xff;
-            j = 2;
-//            System.out.println("ef["+(i+1)+"]=0x" + Integer.toBinaryString(ef[i+1] & 0xff));
-          }
+//          if ((ef[i+1] & 0xff) == 0x81) {
+//            length = ef[i+2] & 0xff;
+//            j = 3;
+////            System.out.println("ef["+(i+1)+"]=0x81, setting length=" + (ef[i+2] & 0xff));
+//
+//          } else if ((ef[i+1] & 0xff) == 0x82) {
+//            length = ((ef[i+2] & 0xff) << 8) | (ef[i+3] & 0xff);
+//            j = 4;
+////            System.out.println("ef["+(i+1)+"]=0x82, setting length=" + (((ef[i+2] & 0xff) << 8) | (ef[i+3] & 0xff)));
+//
+//          } else {
+//            length = ef[i+1] & 0xff;
+//            j = 2;
+////            System.out.println("ef["+(i+1)+"]=0x" + Integer.toBinaryString(ef[i+1] & 0xff));
+//          }
 
           System.out.println("setting length: 0x" + Integer.toHexString(length));
 
@@ -272,10 +291,53 @@ public class PKCS15Test {
 //          byte[] cert = Arrays.copyOfRange(ef, 0, ef.length-1);
 ////          System.out.println("cert 1: \n " + toString(cert));
 
-          j = i + j + length;
+          j = i + 2 + ll + length;
           System.out.println("reading ef[" + i +"-" + (j-1) + "]:\n" + toString(Arrays.copyOfRange(ef, i, j)) );
+
           ASN1Object informationObject = DerCoder.decode(Arrays.copyOfRange(ef, i, j));
           System.out.println(ASN1.print(informationObject));
+
+          if (Arrays.equals(fid, new byte[] { (byte)0x44, (byte)0x00})) {
+              byte[] id = (byte[]) informationObject.getComponentAt(1).getComponentAt(0).getValue();
+              byte[] usage = (byte[]) informationObject.getComponentAt(1).getComponentAt(1).getValue();
+              byte[] access= (byte[]) informationObject.getComponentAt(1).getComponentAt(2).getValue();
+              BigInteger keyRef = (BigInteger) informationObject.getComponentAt(1).getComponentAt(3).getValue();
+
+              System.out.println("key iD " + toString(id) );
+              System.out.println("key ref " + keyRef);
+              System.out.println("key usage " + toString(usage));
+              System.out.println("key access "+ toString(access) );
+          } else if (Arrays.equals(fid, new byte[] { (byte)0x44, (byte)0x04})) {
+              System.out.println("Certificate (" + informationObject.getComponentAt(0).getComponentAt(0).getValue() + ") path: " + toString((byte[]) informationObject.getComponentAt(2).getComponentAt(0).getComponentAt(0).getComponentAt(0).getValue()) + "\n");
+
+//            iaik.me.asn1.ASN1 obj = new iaik.me.asn1.ASN1(Arrays.copyOfRange(ef, i, j));
+//            byte[] contextSpecific = obj.getElementAt(2).getEncoded();
+//            System.out.println("JCE ME ASN1 obj: " + toString(contextSpecific));
+//            if ((contextSpecific[0] & 0xff) != 0xa1) {
+//                System.out.println("WARNING: expected CONTEXTSPECIFIC structure 0xa1, got 0x" + Integer.toHexString(contextSpecific[0]));
+//            }
+//              System.out.println("(contextSpecific[1] & 0xf0) = 0x" + Integer.toHexString(contextSpecific[1] & 0xf0));
+//              System.out.println("(contextSpecific[1] & 0xf0) == 0x80 " + ((contextSpecific[1] & 0xf0) == 0x80));
+//              System.out.println("(contextSpecific[1] & 0x0f) = 0x" + Integer.toHexString(contextSpecific[1] & 0x0f) + " = " + (contextSpecific[1] & 0x0f));
+//              System.out.println("(contextSpecific[1] & 0x0f) + 2 = 0x" + Integer.toHexString((contextSpecific[1] & 0x0f)+2) + " = " + ((contextSpecific[1] & 0x0f)+2));
+//
+//              int ll = ((contextSpecific[1] & 0xf0) == 0x80) ? (contextSpecific[1] & 0x0f) + 2 : 2;
+//              System.out.println("ll = " + ll);
+//              System.out.println(toString(Arrays.copyOfRange(contextSpecific, ll, contextSpecific.length)));
+//            if ((contextSpecific[1] & 0xff) == 0x81) {
+//                iaik.me.asn1.ASN1 x509CertificateAttributes = new iaik.me.asn1.ASN1(
+//                        Arrays.copyOfRange(contextSpecific, ll, contextSpecific.length));
+//                System.out.println("path?: " + toString(x509CertificateAttributes.getElementAt(0).getElementAt(0).gvByteArray()));
+//
+//            }
+
+
+//            byte[] ef_qcert = obj.getElementAt(2).getElementAt(0).getElementAt(0)
+//                    .getElementAt(0).gvByteArray();
+//            System.out.println("reading certificate "
+//                    + obj.getElementAt(0).getElementAt(0).gvString()
+//                    + " from fid=" + toString(ef_qcert));
+            }
           i = j;
         } while (i<ef.length && ef[i]>0);
       }
@@ -406,11 +468,14 @@ public class PKCS15Test {
 
     Certificate certificate = null;
     try {
-      System.out.println("READ cert?");
       CertificateFactory certificateFactory = CertificateFactory.getInstance("X509");
       certificate = certificateFactory.generateCertificate(ISO7816Utils.openTransparentFileInputStream(basicChannel, -1));
 //      certificate = certificateFactory.generateCertificate(new BASE64DecoderStream(new ByteArrayInputStream(CERT.getBytes())));
-      System.out.println("certificate: \n" + toString(certificate.getEncoded()));
+      System.out.println("Certificate: \n===================================\n"
+              + toString(certificate.getEncoded())
+              + "\n===================================\n"
+              + certificate
+              + "\n===================================\n");
     } catch (CertificateException e) {
       e.printStackTrace();
     }
@@ -1021,6 +1086,7 @@ public class PKCS15Test {
             PKCS15Test test = new PKCS15Test();
             test.setUp();
             test.getEFDIR();
+//            test.sign();
             //    test.selectAndRead();
         } catch (Exception ex) {
             ex.printStackTrace();
