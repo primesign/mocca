@@ -33,7 +33,23 @@ import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.VerifyAPDUSpec;
 
 public class ISO7816Utils {
-  
+
+    /**
+     * file control information templates
+     */
+    public static final byte TAG_FCP = 0x62;
+    public static final byte TAG_FMD = 0x64;
+    public static final byte TAG_FCI = 0x6f;
+
+    /**
+     * file control informatino bitmasks (SELECT P2)
+     */
+    public static final byte P2_FCI = 0x00;
+    public static final byte P2_FCP = 0x04;
+    public static final byte P2_FMD = 0x08;
+    public static final byte P2_NORESP = 0x0c;
+
+    
   public static TransparentFileInputStream openTransparentFileInputStream(
       final CardChannel channel, int maxSize) {
     

@@ -105,12 +105,29 @@ public class LIEZertifikatCard extends AbstractSignatureCard implements Signatur
       CardChannel channel = getCardChannel();
       // SELECT DF.CIA
       execSELECT_AID(channel, AID_SIG);
-      byte[] ef_qcert = getFID_QCERT(channel);
+
+      EFObjectDirectory ef_od = new EFObjectDirectory();
+      ef_od.selectAndRead(channel);
+
+      CIOCertificateDirectory ef_cd = new CIOCertificateDirectory(ef_od.getEf_cd());
+      ef_cd.selectAndRead(channel);
+
+        byte[] ef_qcert = null;
+        for (CIOCertificate cioCertificate : ef_cd.getCIOs()) {
+            String label = cioCertificate.getLabel();
+            //"TEST LLV APO 2s Liechtenstein Post Qualified CA ID"
+            if (label != null && label.toLowerCase()
+                    .contains("liechtenstein post qualified ca id")) {
+                ef_qcert = cioCertificate.getEfidOrPath();
+            }
+        }
+      
+
       if (ef_qcert == null) {
         throw new NotActivatedException();
       }
 
-      // SELECT CERT
+      // SELECT CERT, assume efid
       execSELECT_EF(channel, ef_qcert);
 
       // READ BINARY
@@ -122,6 +139,9 @@ public class LIEZertifikatCard extends AbstractSignatureCard implements Signatur
       
     } catch (FileNotFoundException e) {
       throw new NotActivatedException();
+      } catch (IOException ex) {
+          log.warn("failed to get certificate info", ex);
+          throw new SignatureCardException(ex);
     } catch (CardException e) {
       log.info("Failed to get certificate.", e);
       throw new SignatureCardException(e);
@@ -294,7 +314,11 @@ public class LIEZertifikatCard extends AbstractSignatureCard implements Signatur
 
   }
   
-  
+
+  /**
+   *
+   * @return null if not found
+   */
   protected byte[] getFID_QCERT(CardChannel channel)
   throws SignatureCardException, CardException {
 
