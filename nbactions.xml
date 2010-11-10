@@ -24,4 +24,14 @@
                 <goal>release:rollback</goal>
             </goals>
         </action>
+        <action>
+            <actionName>CUSTOM-release (clemenso)</actionName>
+            <displayName>release (clemenso)</displayName>
+            <goals>
+                <goal>release:prepare</goal>
+            </goals>
+            <properties>
+                <username>clemenso</username>
+            </properties>
+        </action>
     </actions>

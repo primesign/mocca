@@ -59,7 +59,7 @@ public class Configurator {
    * configurations with less than this (major) version will be backuped and updated
    * allowed: MAJOR[.MINOR[.X[-SNAPSHOT]]]
    */
-  public static final String MIN_CONFIG_VERSION = "1.2.11-SNAPSHOT";
+  public static final String MIN_CONFIG_VERSION = "1.3.3";
   public static final String CONFIG_DIR = ".mocca/conf/";
   public static final String CERTS_DIR = ".mocca/certs/";
   public static final String VERSION_FILE = ".version";
