@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -48,6 +49,7 @@ import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
@@ -63,6 +65,8 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.smartcardio.*;
 
 import at.gv.egiz.smcc.pin.gui.PINGUI;
+import at.gv.egiz.smcc.util.SMCCHelper;
+
 import org.junit.Ignore;
 
 @Ignore
@@ -357,7 +361,9 @@ public class ESCardTest extends AbstractSignatureCard {
 
 		ESCardTest tester = new ESCardTest();
 
-		tester.testEchtCert();
+		tester.cardTest();
+//		tester.byteBufferTest();
+//		tester.testEchtCert();
 //		try {
 //			CardChannel channel = tester.setupCardChannel();
 //
@@ -369,8 +375,49 @@ public class ESCardTest extends AbstractSignatureCard {
 //			e.printStackTrace();
 //		}
 
+		
+		
 	}
 
+	private void cardTest() {
+		
+	    SMCCHelper helper = new SMCCHelper();
+
+	    SignatureCard signatureCard = helper.getSignatureCard(Locale.getDefault());
+	    
+	    try {
+			signatureCard.createSignature(null, null, null, null);
+		} catch (SignatureCardException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void byteBufferTest() {
+		
+		byte[] testarray = new byte[]{(byte)0x05,(byte)0x07,(byte)0x09,(byte)0x0B,(byte)0x0D};		
+		ByteBuffer buf = ByteBuffer.wrap(testarray);
+		
+		System.out.println("Position:" + buf.position());
+		System.out.println("Remaining:" + buf.remaining());
+		System.out.println("Get: " + buf.get());
+		System.out.println("Position:" + buf.position());
+		System.out.println("Remaining:" + buf.remaining());
+		
+		buf.put((byte)0x11);
+		System.out.println("Position:" + buf.position());
+		System.out.println("Remaining:" + buf.remaining());
+		
+		printByteArray(buf.array());
+	}
+	
 	private void testEchtCert() {
 
 		try {
@@ -414,6 +461,62 @@ public class ESCardTest extends AbstractSignatureCard {
 		
 	}
 
+	private byte[] secure4ByteAPDU(byte[] apdu) throws CardException {
+		
+		if(apdu.length != 4) {
+			
+			throw new CardException("Invalid APDU length.");
+		}
+
+		byte encCLA = (byte) (apdu[0] | (byte) 0x0C);
+		byte[] encHeader = new byte[] { encCLA, apdu[1], apdu[2],
+				apdu[3] };
+		byte[] paddedHeader = DNIeCryptoUtil.applyPadding(8,
+				encHeader);
+		
+		byte[] macData = new byte[paddedHeader.length];
+		System.arraycopy(paddedHeader, 0, macData, 0,
+				paddedHeader.length);
+		
+
+//		byte[] paddedMacData = DNIeCryptoUtil.applyPadding(
+//				8, macData);
+
+		incrementSSC();
+
+		System.out.println("MAC data:");
+		printByteArray(macData);
+		
+		byte[] mac = DNIeCryptoUtil.calculateAPDUMAC(macData,
+				kMac, this.ssc, 8);
+
+		System.out.println("MAC:");
+		printByteArray(mac);
+		
+		byte[] encapsulatedMac = new byte[mac.length + 2];
+		encapsulatedMac[0] = (byte) 0x8E;
+		encapsulatedMac[1] = (byte) mac.length;
+		System.arraycopy(mac, 0, encapsulatedMac, 2, mac.length);
+
+		byte[] completeMessage = new byte[5+ encapsulatedMac.length];
+		completeMessage[0] = encCLA;
+		completeMessage[1] = apdu[1];
+		completeMessage[2] = apdu[2];
+		completeMessage[3] = apdu[3];
+		completeMessage[4] = (byte) (encapsulatedMac.length);
+
+		
+		System.arraycopy(encapsulatedMac, 0, completeMessage,
+				5, encapsulatedMac.length);
+
+		System.out.println("Secured 4 Byte APDU to: ");
+		printByteArray(completeMessage);
+		
+		return completeMessage;		
+		
+	}	
+	
+	
 	private void testZLib() {
 
 		try {
@@ -686,8 +789,8 @@ public class ESCardTest extends AbstractSignatureCard {
 
 		byte[] fci = executeSecureSelect(channel, apdu2);
 
-		// System.out.println("Obtained FCI:");
-		// printByteArray(fci);
+		 System.out.println("Obtained FCI:");
+		 printByteArray(fci);
 
 		byte sizeHi = fci[7];
 		byte sizeLo = fci[8];
@@ -951,6 +1054,7 @@ public class ESCardTest extends AbstractSignatureCard {
 		// (byte) 0xa0, (byte) 0xfe, (byte) 0x6e };
 		//		
 
+		
 		byte[] apdu = new byte[] {
 
 				// PIN VERIFY (0 0 0 0 0 0 0 0)
@@ -1002,6 +1106,22 @@ public class ESCardTest extends AbstractSignatureCard {
 		}
 	}
 
+	private void checkPIN(CardChannel channel) throws CardException {
+		
+		byte[] apdu = new byte[]{
+				(byte)0x00, (byte)0x20, (byte)0x00, (byte)0x00
+		};
+		
+		byte[] securedAPDU = secure4ByteAPDU(apdu);
+		
+		
+		CommandAPDU command = new CommandAPDU(securedAPDU);
+		ResponseAPDU resp = channel.transmit(command);
+		
+		System.out.println("Response: " + Integer.toHexString(resp.getSW()));
+		
+	}
+	
 	private byte[] readFromCard(CardChannel channel, byte offsetHi,
 			byte offsetLo, byte numBytes) throws CardException {
 
@@ -1283,10 +1403,43 @@ public class ESCardTest extends AbstractSignatureCard {
 
 		byte[] file = executeSecureReadFile(channel, new byte[] { (byte) 0x50,
 				(byte) 0x15, (byte) 0x60, (byte) 0x04 });
+
 		writeDataToFile(file, "f:/CDF.bin");
 
 		getCertIdFromASN1File(file);
 
+		// NEW
+//		try {
+//		
+//	      EFObjectDirectory ef_od = new EFObjectDirectory(new byte[]{(byte)0x50, (byte)0x15});
+//	      ef_od.selectAndRead(channel);
+//
+//	      CIOCertificateDirectory ef_cd = new CIOCertificateDirectory(ef_od.getEf_cd());
+//	      ef_cd.selectAndRead(channel);
+//
+//	        byte[] ef_qcert = null;
+//	        for (CIOCertificate cioCertificate : ef_cd.getCIOs()) {
+//	            String label = cioCertificate.getLabel();
+//	            //"TEST LLV APO 2s Liechtenstein Post Qualified CA ID"
+//	            if (label != null && label.toLowerCase()
+//	                    .contains("liechtenstein post qualified ca id")) {
+//	                ef_qcert = cioCertificate.getEfidOrPath();
+//	            }
+//	        }		
+//		
+//		} catch(SignatureCardException e) {
+//			
+//			System.out.println("Error getting CDF.");
+//			e.printStackTrace();
+//		}
+//				
+//		 catch (IOException e) {
+//				System.out.println("Error getting CDF.");
+//				e.printStackTrace();
+//		}
+		// END NEW		
+		 
+		 
 		System.out.println("Reading CDF file successful.");
 	}
 
@@ -2245,24 +2398,25 @@ public class ESCardTest extends AbstractSignatureCard {
 
 		// VERIFY PIN
 		executeSecurePINVerify(channel);
+		checkPIN(channel);
 
-		// GET PrKDF
-		executeSecureReadPrKDF(channel);
-
-		// Manage Security Environment
-		executeSecureManageSecurityEnvironment(channel);
-
-		// Create signature
-		executeSecurePerformSecurityOperation(channel);
-
-		// GET CDF
-		executeSecureReadCDF(channel);
-
-		// Select certificate
-		executeSecureSelectCertificate(channel);
-
-		// Verify signature
-		verifySignature();
+//		// GET PrKDF
+//		executeSecureReadPrKDF(channel);
+//
+//		// Manage Security Environment
+//		executeSecureManageSecurityEnvironment(channel);
+//
+//		// Create signature
+//		executeSecurePerformSecurityOperation(channel);
+//
+//		// GET CDF
+//		executeSecureReadCDF(channel);
+//
+//		// Select certificate
+//		executeSecureSelectCertificate(channel);
+//
+//		// Verify signature
+//		verifySignature();
 
 	}
 

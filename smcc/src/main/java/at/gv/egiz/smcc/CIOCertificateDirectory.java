@@ -37,6 +37,8 @@ import org.slf4j.LoggerFactory;
  */
 public class CIOCertificateDirectory {
 
+	protected static final boolean RETRIEVE_AUTH_ID_FROM_ASN1 = Boolean.TRUE;
+	
     protected static final Logger log = LoggerFactory.getLogger(CIOCertificateDirectory.class);
     protected byte[] fid;
     protected List<CIOCertificate> cios;
@@ -64,47 +66,69 @@ public class CIOCertificateDirectory {
         byte[] fd = new TLVSequence(fcx).getValue(0x82);
 
         if ((fd[0] & 0x04) > 0) {
-            for (int r = 1; r < fd[fd.length - 1]; r++) {
-                log.trace("read CIO record {}", r);
-                byte[] record = ISO7816Utils.readRecord(channel, r);
-                log.trace("{} bytes", record.length);
-                addCIOCertificate(record);
-            }
+        	
+        	readCIOCertificatesFromRecords(channel, fd);
+        	
         } else if ((fd[0] & 0x05) == 0x01) {
-            byte[] ef = ISO7816Utils.readTransparentFile(channel, -1);
 
-            int i = 0;
-            int j;
-
-            do {
-                int length = 0;
-                int ll = 0;
-                if ((ef[i + 1] & 0xf0) == 0x80) {
-                    ll = ef[i + 1] & 0x7f;
-                    for (int it = 0; it < ll; it++) {
-                        length = (length << 8) + (ef[i + it + 2] & 0xff);
-                    }
-                } else {
-                    length = (ef[i + 1] & 0xff);
-                }
-
-                log.trace("read transparent file entry: tag 0x{}, length 0x{}", Integer.toHexString(ef[i]),
-                        Integer.toHexString(length));
-
-                j = i + 2 + ll + length;
-                addCIOCertificate(Arrays.copyOfRange(ef, i, j));
-                i = j;
-            } while (i < ef.length && ef[i] > 0);
+        	readCIOCertificatesFromTransparentFile(channel);
         }
     }
 
+    protected void readCIOCertificatesFromRecords(CardChannel channel, byte[] fd) throws CardException, SignatureCardException, IOException {
+    	
+        for (int r = 1; r < fd[fd.length - 1]; r++) {
+            log.trace("read CIO record {}", r);
+            byte[] record = ISO7816Utils.readRecord(channel, r);
+            log.trace("{} bytes", record.length);
+            addCIOCertificate(record);
+        }
+    }
+    
+    protected byte[] doReadTransparentFile(CardChannel channel) throws CardException, SignatureCardException {
+    	
+    	return ISO7816Utils.readTransparentFile(channel, -1);
+    }
+    
+    protected void readCIOCertificatesFromTransparentFile(CardChannel channel) throws CardException, SignatureCardException, IOException {
+    	
+//        byte[] ef = ISO7816Utils.readTransparentFile(channel, -1);
+    	byte[] ef = doReadTransparentFile(channel);
+    	
+        int i = 0;
+        int j;
+
+        do {
+            int length = 0;
+            int ll = 0;
+            if ((ef[i + 1] & 0xf0) == 0x80) {
+                ll = ef[i + 1] & 0x7f;
+                for (int it = 0; it < ll; it++) {
+                    length = (length << 8) + (ef[i + it + 2] & 0xff);
+                }
+            } else {
+                length = (ef[i + 1] & 0xff);
+            }
+
+            log.trace("read transparent file entry: tag 0x{}, length 0x{}", Integer.toHexString(ef[i]),
+                    Integer.toHexString(length));
+
+            j = i + 2 + ll + length;
+            addCIOCertificate(Arrays.copyOfRange(ef, i, j));
+            i = j;
+        } while (i < ef.length && ef[i] > 0);
+    	
+    }
+    
     protected void addCIOCertificate(byte[] cio) throws IOException {
         
         ASN1 x509Certificate = new ASN1(cio);
 
         CIOCertificate cioCert = new CIOCertificate();
         cioCert.setLabel(x509Certificate.getElementAt(0).getElementAt(0).gvString());
-        cioCert.setAuthId(x509Certificate.getElementAt(0).getElementAt(2).gvByteArray());
+        if(retrieveAuthIdFromASN1()) {
+        	cioCert.setAuthId(x509Certificate.getElementAt(0).getElementAt(2).gvByteArray());
+        }
         cioCert.setiD(x509Certificate.getElementAt(1).getElementAt(0).gvByteArray());
 
         //read CONTEXTSPECIFIC manually
@@ -129,4 +153,9 @@ public class CIOCertificateDirectory {
     public List<CIOCertificate> getCIOs() {
         return cios;
     }
+    
+	protected boolean retrieveAuthIdFromASN1() {
+		
+		return RETRIEVE_AUTH_ID_FROM_ASN1;
+	}
 }

@@ -16,10 +16,12 @@
 */
 package at.gv.egiz.smcc.util;
 
+import java.math.BigInteger;
 import java.util.Locale;
 import java.util.Map;
 
 import javax.smartcardio.Card;
+import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
 
 import org.slf4j.Logger;
@@ -142,6 +144,42 @@ public class SMCCHelper {
     return sb.toString();
   }
 
+	public static byte[] toByteArray(int val) throws CardException {
+
+		String hexString = Integer.toHexString(val);
+
+		if (hexString.length() > 4) {
+			throw new CardException(
+					"Unexpected input length to toByteArray() utility method: "
+							+ hexString.length());
+		}
+
+		byte high = 0x00;
+		byte low = 0x00;
+
+		if (hexString.length() <= 2) {
+
+			low = (byte) Integer.parseInt(hexString, 16);
+		} else {
+
+			low = (byte) Integer.parseInt(hexString.substring(hexString
+					.length() - 2), 16);
+			high = (byte) Integer.parseInt(hexString.substring(0, hexString
+					.length() - 2), 16);
+		}
+
+		return new byte[] { high, low };
+	}  
+  
+	public static BigInteger createUnsignedBigInteger(byte[] data) {
+
+		byte[] unsigned = new byte[data.length + 1];
+		unsigned[0] = (byte) 0x00;
+		System.arraycopy(data, 0, unsigned, 1, data.length);
+
+		return new BigInteger(unsigned);
+	}	
+	
   public static boolean isUseSWCard() {
     return useSWCard;
   }
