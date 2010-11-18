@@ -227,7 +227,8 @@
 		<property name="bindingProcessorManager" ref="bindingProcessorManager" />
 	</bean>
 	
-	<!-- JMX -->
+  <!-- do not launch MBeanServer by default
+   |   (the contextPathFactoryBean requires Servlet 2.5)
 	<bean
     class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="properties">
@@ -259,6 +260,7 @@
       </map>
     </property>
   </bean>
+  -->
 	
 
 </beans>
