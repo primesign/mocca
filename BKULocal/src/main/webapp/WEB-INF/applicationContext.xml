@@ -25,6 +25,14 @@
 		<property name="configurationResource" ref="configurationResource" />
 	</bean>
 
+  <bean id="smccConfiguration" class="at.gv.egiz.bku.local.spring.SMCCConfigurationFactoryBean">
+    <property name="configuration" ref="configuration"/>
+  </bean>
+
+  <bean id="readerFactory" class="at.gv.egiz.smcc.reader.ReaderFactory">
+      <property name="configuration" ref="smccConfiguration"/>
+  </bean>
+  
   <bean id="sslPKIProfile" class="at.gv.egiz.bku.spring.PKIProfileFactoryBean">
     <property name="configuration" ref="configuration"/>
     <property name="trustProfileId" value="SSL"/>
