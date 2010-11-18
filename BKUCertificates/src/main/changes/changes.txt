@@ -7,6 +7,17 @@ Tags:
 
 
 
+'''BKUCertificates-1.4'''
+-------------------
+
+AddTrustExternalCARoot.cer (''ADDED'', TRUSTED)
+* Serial Number: 1 (0x1)
+* Issuer: C=SE, O=AddTrust AB, OU=AddTrust External TTP Network, CN=AddTrust External CA Root
+* Subject: C=SE, O=AddTrust AB, OU=AddTrust External TTP Network, CN=AddTrust External CA Root
+* Not Before: May 30 10:48:38 2000 GMT
+* Not After : May 30 10:48:38 2020 GMT
+
+
 '''BKUCertificates-1.3'''
 -------------------
 
