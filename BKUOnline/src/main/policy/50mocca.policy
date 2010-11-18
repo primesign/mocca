@@ -27,8 +27,8 @@
 // replace  ${catalina.base}/work/Catalina/localhost/bkuonline
 //    with  ${catalina.base}/work/Catalina/localhost/<mocca_context> (the path to the compiled JSPs, excl. package dir: org/apache/jsp/)
 // replace  version info in 
-//          ${catalina.base}/webapps/bkuonline/WEB-INF/lib/utils-1.2.12.jar and
-//          ${catalina.base}/webapps/bkuonline/WEB-INF/lib/bkucommon-1.2.12.jar
+//          ${catalina.base}/webapps/bkuonline/WEB-INF/lib/utils-1.3.3.jar and
+//          ${catalina.base}/webapps/bkuonline/WEB-INF/lib/bkucommon-1.3.3.jar
 //    with  current version
 // replace  www.sozialversicherung.gv.at:443
 //    with  <DataURL_host:DataURL_port>
@@ -73,9 +73,11 @@ grant codeBase "file:${catalina.base}/webapps/bkuonline/-" {
       permission java.net.SocketPermission "www.buergerkarte.at:443", "connect, resolve";
       permission java.net.SocketPermission "www.sozialversicherung.gv.at:443", "connect, resolve";
       permission java.net.SocketPermission "www.sozialversicherung.at:443", "connect, resolve";
-      permission java.net.SocketPermission "www2.sozialversicherung.gv.at:443", "connect, resolve";
-      permission java.net.SocketPermission "www2.sozialversicherung.at:443", "connect, resolve";
-
+      permission java.net.SocketPermission "www.int.esv.sozialversicherung.at:443", "connect, resolve";
+      permission java.net.SocketPermission "www.int.esv.sozialversicherung.gv.at:443", "connect, resolve";
+      //permission java.net.SocketPermission "www2.sozialversicherung.gv.at:443", "connect, resolve";
+      //permission java.net.SocketPermission "www2.sozialversicherung.at:443", "connect, resolve";
+      
       // other resources (crls, persb.xsl, ...)
       permission java.net.SocketPermission "www.a-trust.at:80", "connect, resolve";
       permission java.net.SocketPermission "ksp.ecard.sozialversicherung.gv.at:80", "connect,resolve";
@@ -90,8 +92,10 @@ grant codeBase "file:${catalina.base}/webapps/bkuonline/-" {
       permission java.security.SecurityPermission "removeProvider.IAIK";
       permission java.security.SecurityPermission "insertProvider.IAIK_ECC";
       permission java.security.SecurityPermission "putProviderProperty.IAIK_ECC";
+      permission java.security.SecurityPermission "removeProvider.IAIK_ECC";
       permission java.security.SecurityPermission "insertProvider.XSECT";
       permission java.security.SecurityPermission "putProviderProperty.XSECT";
+      permission java.security.SecurityPermission "removeProvider.XSECT";
       permission java.security.SecurityPermission "insertProvider.STAL";
       permission java.security.SecurityPermission "putProviderProperty.STAL";
       // XMLDSig is moved backwards by XSECT
@@ -126,12 +130,12 @@ grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/classes/-" {
       permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
 };
 
-grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/utils-1.2.12.jar" {
+grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/utils-1.3.3.jar" {
 //      permission java.lang.RuntimePermission "accessDeclaredMembers";
       permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
 };
 
-grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/bkucommon-1.2.12.jar" {
+grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/bkucommon-1.3.3.jar" {
       permission java.io.FilePermission "${catalina.base}/webapps/bkuonline/WEB-INF/classes/at/gv/egiz/bku/certs/certStore", "write";
       permission java.io.FilePermission "${catalina.base}/webapps/bkuonline/WEB-INF/classes/at/gv/egiz/bku/certs/certStore/-", "write";
       permission java.io.FilePermission "${catalina.base}/webapps/bkuonline/WEB-INF/classes/at/gv/egiz/bku/certs/certStore/toBeAdded/-", "delete";
@@ -147,7 +151,7 @@ grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/iaik_jce_ful
       permission java.util.PropertyPermission "*", "read, write";
 };
 
-grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/iaik_xsect-1.14.jar" {
+grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/iaik_xsect-1.17.jar" {
       permission java.util.PropertyPermission "*", "read, write";
 };
 
