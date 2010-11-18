@@ -115,14 +115,26 @@ public class LIEZertifikatCard extends AbstractSignatureCard implements Signatur
         byte[] ef_qcert = null;
         for (CIOCertificate cioCertificate : ef_cd.getCIOs()) {
             String label = cioCertificate.getLabel();
-            //"TEST LLV APO 2s Liechtenstein Post Qualified CA ID"
+            //"Name (qualified signature"
             if (label != null && label.toLowerCase()
-                    .contains("liechtenstein post qualified ca id")) {
+                    .contains("qualified signature")) {
                 ef_qcert = cioCertificate.getEfidOrPath();
+                log.debug("found certificate: {} (fid={})", label, ef_qcert);
+            }
+        }
+
+        if (ef_qcert == null) {
+            for (CIOCertificate cioCertificate : ef_cd.getCIOs()) {
+                String label = cioCertificate.getLabel();
+                //"TEST LLV APO 2s Liechtenstein Post Qualified CA ID"
+                if (label != null && label.toLowerCase()
+                        .contains("liechtenstein post qualified ca id")) {
+                    ef_qcert = cioCertificate.getEfidOrPath();
+                    log.debug("found certificate: {} (fid={})", label, ef_qcert);
+                }
             }
         }
       
-
       if (ef_qcert == null) {
         throw new NotActivatedException();
       }

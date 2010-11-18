@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * TODO
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public class ReaderFactory {
@@ -40,11 +40,8 @@ public class ReaderFactory {
 
   public void setConfiguration(SMCCConfiguration configuration) {
     if (configuration != null) {
-      log.debug("reader configuration: disablePinpad=" + configuration.isDisablePinpad());
+      log.info("reader configuration: disablePinpad=" + configuration.isDisablePinpad());
     }
-    //spring injects configuration into singleton ReaderFactory instance,
-    //but we access the ReaderFactory statically (getReader)
-    //(we rather should query the application context to obtain a reader factory)
     ReaderFactory.configuration = configuration;
   }
 
