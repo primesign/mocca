@@ -66,6 +66,10 @@ MOCCA Configuration
 		
 		[<<<sslProtocol>>>] Options: <<<TLS>>> (default) or <<<SSL>>>
 		
+		[<<<revocationServiceOrder>>>] Comma-separated (ordered) list of revocation services to be used, e.g. "<<<CRL,OCSP>>>". Any revocation service not contained in the list will be disabled.
+
+                Default: <<<OCSP,CRL>>>
+
 		[]
 		
 		NOTE: Do not enable the following two options in production environments!
@@ -78,14 +82,19 @@ MOCCA Configuration
 		
 		Default: <<<false>>>
 
-        [<<<revocationServiceOrder>>>] May be set to <<<CRL,OCSP>>>, <<<CRL>>> or <<<OCSP>>> to define the (order of) revocation service(s) to be used.
-
-        Default: <<<OCSP,CRL>>>
-		
 	[<<<ProductName>>>] May be specified to set the product name given by the <<<Server>>> and <<<User-Agent>>> HTTP headers as specified by {{{http://www.buergerkarte.at/konzept/securitylayer/spezifikation/aktuell/bindings/bindings.en.html#http}HTTP binding}}.
 	
 	[<<<ProductVersion>>>] May be specified to set the product version given by the <<<Server>>> and <<<User-Agent>>> HTTP headers as specified by {{{http://www.buergerkarte.at/konzept/securitylayer/spezifikation/aktuell/bindings/bindings.en.html#http}HTTP binding}}.
 
 	[<<<SignatureLayout>>>] May be specified to set the <<<SignatureLayout>>> HTTP header.
-	
-	
+
+
+** MOCCA Local Only Configuration Parameters
+
+	[<<<CCID>>>]
+
+		Smart card interface device configuration options. Currently, only one configuration item.
+
+		[<<<disablePinpad>>>] Whether to disable the pinpad on a card reader and use keyboard pin entry instead.
+
+		Default: <<<false>>>
