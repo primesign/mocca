@@ -49,7 +49,7 @@ public class T0CardChannel extends LogCardChannel {
 		CommandAPDU command = new CommandAPDU(new byte[] { (byte) 0x00,
 				(byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) sw2 });
 		ResponseAPDU resp = channel.transmit(command);
-
+		
 		try {
 			bof.write(resp.getData());
 		} catch (IOException e) {

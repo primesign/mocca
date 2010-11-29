@@ -183,7 +183,7 @@ public class SignatureCardFactory {
 		// e-card G3
 		supportedCards.add(new SupportedCard(
 		// ATR
-		// (3b:dd:96:ff:81:b1:fe:45:1f:03:80:31:b0:52:02:03:64:04:1b:b4:22:81:05:18)
+				// (3b:dd:96:ff:81:b1:fe:45:1f:03:80:31:b0:52:02:03:64:04:1b:b4:22:81:05:18)
 				new byte[] { (byte) 0x3b, (byte) 0xdd, (byte) 0x96,
 						(byte) 0xff, (byte) 0x81, (byte) 0xb1, (byte) 0xfe,
 						(byte) 0x45, (byte) 0x1f, (byte) 0x03, (byte) 0x00,
@@ -203,7 +203,7 @@ public class SignatureCardFactory {
 		// a-sign premium (EPA)
 		supportedCards.add(new SupportedCard(
 		// ATR
-		// (3b:bf:11:00:81:31:fe:45:45:50:41:00:00:00:00:00:00:00:00:00:00:00:00:00)
+				// (3b:bf:11:00:81:31:fe:45:45:50:41:00:00:00:00:00:00:00:00:00:00:00:00:00)
 				new byte[] { (byte) 0x3b, (byte) 0xbf, (byte) 0x11,
 						(byte) 0x00, (byte) 0x81, (byte) 0x31, (byte) 0xfe,
 						(byte) 0x45, (byte) 0x45, (byte) 0x50, (byte) 0x41,
@@ -224,7 +224,7 @@ public class SignatureCardFactory {
 		// a-sign premium (MCA)
 		supportedCards.add(new SupportedCard(
 		// ATR
-		// (3b:bf:11:00:81:31:fe:45:45:50:41:00:00:00:00:00:00:00:00:00:00:00:00:00)
+				// (3b:bf:11:00:81:31:fe:45:45:50:41:00:00:00:00:00:00:00:00:00:00:00:00:00)
 				new byte[] { (byte) 0x3b, (byte) 0xbf, (byte) 0x11,
 						(byte) 0x00, (byte) 0x81, (byte) 0x31, (byte) 0xfe,
 						(byte) 0x45, (byte) 0x4D, (byte) 0x43, (byte) 0x41,
@@ -308,6 +308,41 @@ public class SignatureCardFactory {
 						(byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0x00, (byte) 0xff,
 						(byte) 0xff }, "at.gv.egiz.smcc.ESDNIeCard"));
+
+		// FMNT card - ATR is correct, but implementation is NOT equal to DNIe
+//		supportedCards.add(new SupportedCard(
+//				// ATR
+//				// [3b:ef:00:00:40:14:80:25:43:45:52:45:53:57:01:16:01:01:03:90:00]
+//				new byte[] { (byte) 0x3b, (byte) 0xEF, (byte) 0x00,
+//						(byte) 0x00, (byte) 0x40, (byte) 0x14, (byte) 0x80,
+//						(byte) 0x25, (byte) 0x43, (byte) 0x45, (byte) 0x52,
+//						(byte) 0x45, (byte) 0x53, (byte) 0x57, (byte) 0x01,
+//						(byte) 0x16, (byte) 0x01, (byte) 0x01, (byte) 0x03,
+//						(byte) 0x90, (byte) 0x00 },
+//				// mask (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
+//				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+//						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+//						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+//						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+//						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+//						(byte) 0xff, (byte) 0xff },
+//				"at.gv.egiz.smcc.ESDNIeCard"));
+
+		// FIN eID
+		supportedCards.add(new SupportedCard(
+		// ATR [3b:7B:94:00:00:80:62:12:51:56:46:69:6E:45:49:44]
+				new byte[] { (byte) 0x3b, (byte) 0x7B, (byte) 0x94,
+						(byte) 0x00, (byte) 0x00, (byte) 0x80, (byte) 0x62,
+						(byte) 0x00, (byte) 0x51, (byte) 0x56, (byte) 0x46,
+						(byte) 0x69, (byte) 0x6E, (byte) 0x45, (byte) 0x49,
+						(byte) 0x44 },
+				// mask (ff:ff:ff:ff:ff:ff:ff:00:ff:ff:ff:ff:ff:ff:ff:ff) -
+				// ignore card OS minor version
+				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff }, "at.gv.egiz.smcc.FINEIDCard"));
 
 		// ITCards
 		supportedCards.add(new SupportedCard(

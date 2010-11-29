@@ -65,6 +65,11 @@ public class ISO7816Utils {
 			@Override
 			protected byte[] readBinary(int offset, int len) throws IOException {
 
+				if(len < 1) {
+					// nothing to read - return
+					return new byte[0];
+				}
+								
 				ResponseAPDU resp;
 				try {
 					resp = channel.transmit(new CommandAPDU(0x00, 0xB0,
@@ -76,7 +81,7 @@ public class ISO7816Utils {
 				// handle case: wrong number of bytes requested from card
 				// card indicates correct number of bytes available in SW2
 				if (resp.getSW1() == 0x6c) {
-
+					
 					try {
 						resp = channel.transmit(new CommandAPDU(0x00, 0xB0,
 								0x7F & (offset >> 8), offset & 0xFF, resp
@@ -106,7 +111,6 @@ public class ISO7816Utils {
 		};
 
 		return file;
-
 	}
 
 	private static byte[] readFromInputStream(TransparentFileInputStream is) throws CardException, SignatureCardException {

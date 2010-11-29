@@ -21,7 +21,7 @@ import at.gv.egiz.smcc.util.SMCCHelper;
 
 public class ESDNIeCard extends AbstractSignatureCard implements SignatureCard {
 
-	private final byte[] MASTER_FILE_ID = new byte[] {
+	public static final byte[] MASTER_FILE_ID = new byte[] {
 
 	(byte) 0x4D, (byte) 0x61, (byte) 0x73, (byte) 0x74, (byte) 0x65,
 			(byte) 0x72, (byte) 0x2E, (byte) 0x46, (byte) 0x69, (byte) 0x6C,
@@ -42,20 +42,16 @@ public class ESDNIeCard extends AbstractSignatureCard implements SignatureCard {
 			"[0-9A-Za-z_<>!()?%\\-=&+\\.]", "at/gv/egiz/smcc/ESDNIeCard",
 			"sig.pin", (byte) 0x00, new byte[] {}, PinInfo.UNKNOWN_RETRIES);
 
-	protected CardChannel channel;
 
 	@Override
 	protected CardChannel getCardChannel() {
-
-		if (channel == null) {
-
-			channel = new DNIeSecuredChannel(getCard().getBasicChannel());
-		}
-
-		return channel;
+		
+		// set up a new secure channel each time
+		return new DNIeSecuredChannel(getCard().getBasicChannel());
 	}
-
+	
 	@Override
+	@Exclusive
 	public byte[] createSignature(InputStream input, KeyboxName keyboxName,
 			PINGUI pinGUI, String alg) throws SignatureCardException,
 			InterruptedException, IOException {
@@ -63,7 +59,7 @@ public class ESDNIeCard extends AbstractSignatureCard implements SignatureCard {
 		CardChannel channel = getCardChannel();
 
 		try {
-
+			
 			// Select MF
 			executeSelectMasterFile(channel);
 
@@ -135,20 +131,22 @@ public class ESDNIeCard extends AbstractSignatureCard implements SignatureCard {
 			throw new SignatureCardException(
 					"Error creating signature with DNIe card.", e);
 		}
+		
 	}
 
 	@Override
+	@Exclusive
 	public byte[] getCertificate(KeyboxName keyboxName, PINGUI pinGUI)
 			throws SignatureCardException, InterruptedException {
 
 		byte[] result = null;
-
+		
 		CardChannel channel = getCardChannel();
 
 		byte[] certId = null;
 
 		try {
-
+			
 			// Select MF
 			executeSelectMasterFile(channel);
 
@@ -161,7 +159,7 @@ public class ESDNIeCard extends AbstractSignatureCard implements SignatureCard {
 			efOd.selectAndRead(channel);
 
 			DNIeCIOCertificateDirectory efCd = new DNIeCIOCertificateDirectory(
-					efOd.getEf_cd());
+					efOd.getEf_cd_list().get(0));
 
 			try {
 				efCd.selectAndRead(channel);
@@ -214,17 +212,18 @@ public class ESDNIeCard extends AbstractSignatureCard implements SignatureCard {
 					compressedWithoutHeader.length);
 
 			result = decompressData(compressedWithoutHeader);
-
+			
 		} catch (CardException e) {
 
 			log.error("Error reading certificate from card.", e);
 			throw new SignatureCardException(
 					"Error reading certificate from card.", e);
 		}
-
+		
 		return result;
 	}
 
+	
 	@Override
 	public byte[] getInfobox(String infobox, PINGUI pinGUI, String domainId)
 			throws SignatureCardException, InterruptedException {

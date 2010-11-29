@@ -186,11 +186,13 @@ public class DNIeSecuredChannel extends T0CardChannel {
 
 		super(channel);
 		this.established = false;
-		
+
 		try {
+
 			this.establish();
+
 		} catch (CardException e) {
-			
+
 			log.error("Error establishing secure channel with card.", e);
 		}
 	}
@@ -198,6 +200,9 @@ public class DNIeSecuredChannel extends T0CardChannel {
 	public void establish() throws CardException {
 
 		log.trace("Try to set up secure channel to card..");
+
+		// select master file
+		executeSelectMasterFile();
 
 		// get chip info
 		this.snIcc = executeGetChipInfo();
@@ -230,42 +235,43 @@ public class DNIeSecuredChannel extends T0CardChannel {
 	@Override
 	public int transmit(ByteBuffer command, ByteBuffer response)
 			throws CardException {
-		
+
 		byte[] commandAPDU = new byte[command.remaining()];
-		for(int i=0; i<commandAPDU.length; i++) {
-			
+		for (int i = 0; i < commandAPDU.length; i++) {
+
 			commandAPDU[i] = command.get();
 		}
-		
+
 		CommandAPDU apdu = new CommandAPDU(commandAPDU);
 		ResponseAPDU resp = transmit(apdu);
-		
+
 		byte[] responseData = resp.getBytes();
-		for(int i=0; i<responseData.length; i++) {
-			
+		for (int i = 0; i < responseData.length; i++) {
+
 			response.put(responseData[i]);
 		}
-		
+
 		return responseData.length;
 	}
 
 	@Override
 	public ResponseAPDU transmit(CommandAPDU apdu) throws CardException {
 
-		if(!this.established) {
-			
+		if (!this.established) {
+
 			this.establish();
 		}
-		
+
 		byte[] plainAPDUData = apdu.getBytes();
 		byte[] securedAPDUData = secureAPDU(plainAPDUData);
 
 		CommandAPDU securedAPDU = new CommandAPDU(securedAPDUData);
 		ResponseAPDU securedResp = super.transmit(securedAPDU);
 
-		byte[] respData = verifyAndDecryptSecuredResponseAPDU(securedResp.getData());
+		byte[] respData = verifyAndDecryptSecuredResponseAPDU(securedResp
+				.getData());
 		ResponseAPDU resp = new ResponseAPDU(respData);
-		
+
 		return resp;
 	}
 
@@ -369,19 +375,42 @@ public class DNIeSecuredChannel extends T0CardChannel {
 
 		if (resp.getSW() != 0x9000) {
 
-			log.error("Error selecting DF or EF: " + Integer.toHexString(resp.getSW()));
+			log.error("Error selecting DF or EF: "
+					+ Integer.toHexString(resp.getSW()));
 			throw new CardException("Unexpected response to Select Command: "
 					+ Integer.toHexString(resp.getSW()));
 		}
 
 		return resp.getData();
+	}
 
+	private void executeSelectMasterFile() throws CardException {
+
+		byte[] apdu = new byte[ESDNIeCard.MASTER_FILE_ID.length + 5];
+		apdu[0] = (byte) 0x00;
+		apdu[1] = (byte) 0xA4;
+		apdu[2] = (byte) 0x04;
+		apdu[3] = (byte) 0x00;
+		apdu[4] = (byte) ESDNIeCard.MASTER_FILE_ID.length;
+		System.arraycopy(ESDNIeCard.MASTER_FILE_ID, 0, apdu, 5,
+				ESDNIeCard.MASTER_FILE_ID.length);
+
+		CommandAPDU command = new CommandAPDU(apdu);
+		ResponseAPDU resp = super.transmit(command);
+
+		if (resp.getSW() != 0x9000) {
+
+			log.error("Error selecting master file: "
+					+ Integer.toHexString(resp.getSW()));
+			throw new CardException("Error selecting master file: "
+					+ Integer.toHexString(resp.getSW()));
+		}
 	}
 
 	private void verifyCertificates() throws CardException {
 
 		// This method verifies the card's component and intermediate
-		// certificates cryptographically only.
+		// certificates cryptographically only (no revocation checking).
 
 		RSAPublicKey rootPubKey = DNIeCryptoUtil.createRSAPublicKey(
 				ROOT_CA_MODULO, ROOT_CA_PUBEXP);
@@ -417,7 +446,7 @@ public class DNIeSecuredChannel extends T0CardChannel {
 		executePerformSecurityOperation(C_CV_IFD);
 
 		// MSE - select keys
-		executeManageSecurityEnvironment((byte) 0xC1, (byte) 0xA4, KEY_SELECTOR);		
+		executeManageSecurityEnvironment((byte) 0xC1, (byte) 0xA4, KEY_SELECTOR);
 
 	}
 
@@ -431,7 +460,8 @@ public class DNIeSecuredChannel extends T0CardChannel {
 
 		if (resp.getSW() != 0x9000) {
 
-			log.error("Error executing Manage Security Environment: " + Integer.toHexString(resp.getSW()));
+			log.error("Error executing Manage Security Environment: "
+					+ Integer.toHexString(resp.getSW()));
 			throw new CardException(
 					"Unexpected response from card during preparation of secure channel credentials: "
 							+ Integer.toHexString(resp.getSW()));
@@ -448,7 +478,8 @@ public class DNIeSecuredChannel extends T0CardChannel {
 
 		if (resp.getSW() != 0x9000) {
 
-			log.error("Error executing Perform Security Operation: " + Integer.toHexString(resp.getSW()));
+			log.error("Error executing Perform Security Operation: "
+					+ Integer.toHexString(resp.getSW()));
 			throw new CardException(
 					"Unexpected response from card during preparation of secure channel credentials: "
 							+ Integer.toHexString(resp.getSW()));
@@ -477,8 +508,9 @@ public class DNIeSecuredChannel extends T0CardChannel {
 		log.trace("Internal Authentiction succeeded: " + ok);
 
 		if (!ok) {
-			
-			log.error("Internal authentication failed - unable to sucessfully verify card response.");
+
+			log
+					.error("Internal authentication failed - unable to sucessfully verify card response.");
 			throw new CardException("Internal authentication failed");
 		}
 
@@ -500,7 +532,8 @@ public class DNIeSecuredChannel extends T0CardChannel {
 
 		} else {
 
-			log.error("Error sending terminal challenge to card: " + Integer.toHexString(resp.getSW()));
+			log.error("Error sending terminal challenge to card: "
+					+ Integer.toHexString(resp.getSW()));
 			throw new CardException("Invalid response to terminal challenge: "
 					+ Integer.toHexString(resp.getSW()));
 		}
@@ -541,7 +574,8 @@ public class DNIeSecuredChannel extends T0CardChannel {
 
 		if (sig == null) {
 
-			log.error("Error verifying card response - decryption result is null");
+			log
+					.error("Error verifying card response - decryption result is null");
 			throw new CardException("Invalid decryption result: null.");
 		} else {
 
@@ -622,12 +656,13 @@ public class DNIeSecuredChannel extends T0CardChannel {
 	private void performExternalAuthentication() throws CardException {
 
 		log.trace("Performing external authentication.");
-		
+
 		byte[] cardChallenge = executeRequestCardChallenge();
 
 		this.rndIcc = cardChallenge;
 
 		byte[] prnd2 = DNIeCryptoUtil.getRandomBytes(this.prndLength);
+
 		byte[] kIfd = DNIeCryptoUtil.getRandomBytes(32);
 
 		// compute hash
@@ -702,9 +737,9 @@ public class DNIeSecuredChannel extends T0CardChannel {
 		if (executeExternalAuthenticate(authData)) {
 
 			log.trace("External authentication succeeded.");
-			this.kifd = kIfd;			
+			this.kifd = kIfd;
 		} else {
-			log.error("Error performing external authentication.");
+			log.error("Error performing external authentication");
 			throw new CardException("External Authentication failed.");
 		}
 
@@ -718,7 +753,8 @@ public class DNIeSecuredChannel extends T0CardChannel {
 
 		if (resp.getSW() != 0x9000) {
 
-			log.error("Error requesting challenge from card: " + Integer.toHexString(resp.getSW()));
+			log.error("Error requesting challenge from card: "
+					+ Integer.toHexString(resp.getSW()));
 			throw new CardException(
 					"Invalid response from card upon challenge request: "
 							+ Integer.toHexString(resp.getSW()));
@@ -734,6 +770,9 @@ public class DNIeSecuredChannel extends T0CardChannel {
 				(byte) 0x00, (byte) 0x00, authData);
 		ResponseAPDU resp = super.transmit(command);
 
+		log.trace("Card answer to EXTERNL AUTHENTICATE: "
+				+ Integer.toHexString(resp.getSW()));
+
 		return resp.getSW() == 0x9000;
 	}
 
@@ -741,7 +780,8 @@ public class DNIeSecuredChannel extends T0CardChannel {
 
 		if (this.kicc == null || this.kifd == null) {
 
-			log.error("Error generating channel keys - required key data is null.");
+			log
+					.error("Error generating channel keys - required key data is null.");
 			throw new CardException(
 					"Required data for deriving keys not available.");
 		}
@@ -793,52 +833,49 @@ public class DNIeSecuredChannel extends T0CardChannel {
 		System.arraycopy(this.rndIfd, this.rndIfd.length - 4, this.ssc, 4, 4);
 	}
 
-	
 	private byte[] secureAPDUWithoutData(byte[] apdu) throws CardException {
-		
-		if(apdu.length < 4 || apdu.length > 5) {
-			
-			log.error("Error securing APDU - invalid APDU length: " + apdu.length);
+
+		if (apdu.length < 4 || apdu.length > 5) {
+
+			log.error("Error securing APDU - invalid APDU length: "
+					+ apdu.length);
 			throw new CardException("Invalid APDU length.");
 		}
-		
+
 		boolean leAvailable = apdu.length == 5;
 
 		byte encCLA = (byte) (apdu[0] | (byte) 0x0C);
-		byte[] encHeader = new byte[] { encCLA, apdu[1], apdu[2],
-				apdu[3] };
+		byte[] encHeader = new byte[] { encCLA, apdu[1], apdu[2], apdu[3] };
 		byte[] paddedHeader = DNIeCryptoUtil.applyPadding(BLOCK_LENGTH,
 				encHeader);
 
 		int leFieldLen;
 		byte[] leField = null;
-		if(leAvailable) {
+		if (leAvailable) {
 			leField = new byte[3];
 			leField[0] = (byte) 0x97;
 			leField[1] = (byte) 0x01;
 			leField[2] = apdu[4];
 			leFieldLen = leField.length;
 		} else {
-			
+
 			leFieldLen = 0;
 		}
 
 		byte[] macData = new byte[paddedHeader.length + leFieldLen];
-		System.arraycopy(paddedHeader, 0, macData, 0,
-				paddedHeader.length);
-		
-		if(leAvailable) {
+		System.arraycopy(paddedHeader, 0, macData, 0, paddedHeader.length);
+
+		if (leAvailable) {
 			System.arraycopy(leField, 0, macData, paddedHeader.length,
 					leField.length);
-			
-			macData = DNIeCryptoUtil.applyPadding(
-					BLOCK_LENGTH, macData);			
+
+			macData = DNIeCryptoUtil.applyPadding(BLOCK_LENGTH, macData);
 		}
 
 		incrementSSC();
 
-		byte[] mac = DNIeCryptoUtil.calculateAPDUMAC(macData,
-				kMac, this.ssc, BLOCK_LENGTH);
+		byte[] mac = DNIeCryptoUtil.calculateAPDUMAC(macData, kMac, this.ssc,
+				BLOCK_LENGTH);
 
 		byte[] encapsulatedMac = new byte[mac.length + 2];
 		encapsulatedMac[0] = (byte) 0x8E;
@@ -852,28 +889,28 @@ public class DNIeSecuredChannel extends T0CardChannel {
 		completeMessage[2] = apdu[2];
 		completeMessage[3] = apdu[3];
 		completeMessage[4] = (byte) (encapsulatedMac.length + leFieldLen);
-		
-		if(leAvailable) {
-			System
-					.arraycopy(leField, 0, completeMessage, 5,
-							leField.length);
-		}
-		
-		System.arraycopy(encapsulatedMac, 0, completeMessage,
-				5 + leFieldLen, encapsulatedMac.length);
 
-		return completeMessage;		
-		
+		if (leAvailable) {
+			System.arraycopy(leField, 0, completeMessage, 5, leField.length);
+		}
+
+		System.arraycopy(encapsulatedMac, 0, completeMessage, 5 + leFieldLen,
+				encapsulatedMac.length);
+
+		return completeMessage;
+
 	}
-	
+
 	private byte[] secureAPDUWithData(byte[] apdu) throws CardException {
 
-		if(apdu.length < 6) {
-			
-			log.error("Error securing APDU - invalid APDU length: " + apdu.length);
-			throw new CardException("Error securing APDU - invalid APDU length: " + apdu.length);
+		if (apdu.length < 6) {
+
+			log.error("Error securing APDU - invalid APDU length: "
+					+ apdu.length);
+			throw new CardException(
+					"Error securing APDU - invalid APDU length: " + apdu.length);
 		}
-		
+
 		byte cla = apdu[0];
 		byte ins = apdu[1];
 		byte p1 = apdu[2];
@@ -881,23 +918,24 @@ public class DNIeSecuredChannel extends T0CardChannel {
 		byte lc = apdu[4];
 
 		boolean leAvailable;
-		if(apdu.length == lc + 5 + 1) {
-			
+		if (apdu.length == lc + 5 + 1) {
+
 			leAvailable = true;
-		} else if(apdu.length != lc + 5) {
-			
-			log.error("Error securing APDU - invalid APDU length: " + apdu.length);
+		} else if (apdu.length != lc + 5) {
+
+			log.error("Error securing APDU - invalid APDU length: "
+					+ apdu.length);
 			throw new CardException("Invalid APDU length or format.");
 		} else {
-			
+
 			leAvailable = false;
 		}
-		
+
 		byte[] leField = null;
-		if(leAvailable) {
-		    
-			byte le = apdu[apdu.length-1];
-			
+		if (leAvailable) {
+
+			byte le = apdu[apdu.length - 1];
+
 			leField = new byte[3];
 			leField[0] = (byte) 0x97;
 			leField[1] = (byte) 0x01;
@@ -942,14 +980,17 @@ public class DNIeSecuredChannel extends T0CardChannel {
 		System.arraycopy(encapsulated, 0, headerAndData, paddedHeader.length,
 				encapsulated.length);
 
-		if(leAvailable) {
+		if (leAvailable) {
 			byte[] macData = new byte[headerAndData.length + leField.length];
-			System.arraycopy(headerAndData, 0, macData, 0, headerAndData.length);
-			System.arraycopy(leField, 0, macData, headerAndData.length, leField.length);
-			
+			System
+					.arraycopy(headerAndData, 0, macData, 0,
+							headerAndData.length);
+			System.arraycopy(leField, 0, macData, headerAndData.length,
+					leField.length);
+
 			headerAndData = macData;
 		}
-		
+
 		byte[] paddedHeaderAndData = DNIeCryptoUtil.applyPadding(BLOCK_LENGTH,
 				headerAndData);
 
@@ -964,34 +1005,35 @@ public class DNIeSecuredChannel extends T0CardChannel {
 		System.arraycopy(mac, 0, encapsulatedMac, 2, mac.length);
 
 		int leFieldLen;
-		if(leAvailable) {
+		if (leAvailable) {
 			leFieldLen = leField.length;
 		} else {
 			leFieldLen = 0;
 		}
-		
+
 		byte[] completeMessage = new byte[5 + encapsulated.length
 				+ encapsulatedMac.length + leFieldLen];
 		completeMessage[0] = encCLA;
 		completeMessage[1] = ins;
 		completeMessage[2] = p1;
 		completeMessage[3] = p2;
-		
+
 		completeMessage[4] = (byte) (encapsulated.length + leFieldLen + encapsulatedMac.length);
 		System.arraycopy(encapsulated, 0, completeMessage, 5,
 				encapsulated.length);
-		
-		if(leAvailable) {
-			System.arraycopy(leField, 0, completeMessage, 5 + encapsulated.length, leFieldLen);
-		}
-		
-		System.arraycopy(encapsulatedMac, 0, completeMessage,
-				5 + encapsulated.length + leFieldLen, encapsulatedMac.length);
 
-		return completeMessage;	
+		if (leAvailable) {
+			System.arraycopy(leField, 0, completeMessage,
+					5 + encapsulated.length, leFieldLen);
+		}
+
+		System.arraycopy(encapsulatedMac, 0, completeMessage, 5
+				+ encapsulated.length + leFieldLen, encapsulatedMac.length);
+
+		return completeMessage;
 
 	}
-	
+
 	private byte[] secureAPDU(byte[] apdu) throws CardException {
 
 		if (apdu == null || apdu.length < 4) {
@@ -1005,12 +1047,12 @@ public class DNIeSecuredChannel extends T0CardChannel {
 			return secureAPDUWithoutData(apdu);
 		}
 
-		if(apdu.length > 5) {
+		if (apdu.length > 5) {
 
 			return secureAPDUWithData(apdu);
 		}
-		
-		throw new CardException("Error securing APDU - unexpected APDU length.");		
+
+		throw new CardException("Error securing APDU - unexpected APDU length.");
 	}
 
 	private byte[] verifyAndDecryptSecuredResponseAPDU(byte[] securedAPDU)
@@ -1031,15 +1073,18 @@ public class DNIeSecuredChannel extends T0CardChannel {
 		System.arraycopy(commandResponse, 0, macData, data.length,
 				commandResponse.length);
 
-		byte[] paddedMacData = DNIeCryptoUtil.applyPadding(BLOCK_LENGTH, macData);
+		byte[] paddedMacData = DNIeCryptoUtil.applyPadding(BLOCK_LENGTH,
+				macData);
 
 		incrementSSC();
 
-		byte[] mac = DNIeCryptoUtil.calculateAPDUMAC(paddedMacData, this.kMac, this.ssc, BLOCK_LENGTH);
+		byte[] mac = DNIeCryptoUtil.calculateAPDUMAC(paddedMacData, this.kMac,
+				this.ssc, BLOCK_LENGTH);
 
 		if (!Arrays.equals(mac, obtainedMac)) {
 
-			log.error("Error verifiying MAC of secured response. MAC values do not match.");
+			log
+					.error("Error verifiying MAC of secured response. MAC values do not match.");
 			throw new CardException("Unable to verify MAC of Response APDU.");
 		}
 
@@ -1047,14 +1092,14 @@ public class DNIeSecuredChannel extends T0CardChannel {
 
 			byte[] data2decrypt = new byte[data.length
 					- DNIeCryptoUtil.getCutOffLength(data, BLOCK_LENGTH)];
-			System.arraycopy(data, DNIeCryptoUtil.getCutOffLength(data, BLOCK_LENGTH),
-					data2decrypt, 0, data2decrypt.length);
+			System.arraycopy(data, DNIeCryptoUtil.getCutOffLength(data,
+					BLOCK_LENGTH), data2decrypt, 0, data2decrypt.length);
 
 			byte[] plainData = null;
 
 			try {
-				plainData = DNIeCryptoUtil.perform3DESCipherOperation(data2decrypt, this.kEnc,
-						Cipher.DECRYPT_MODE);
+				plainData = DNIeCryptoUtil.perform3DESCipherOperation(
+						data2decrypt, this.kEnc, Cipher.DECRYPT_MODE);
 			} catch (Exception e) {
 				log.error("Error decrypting data.", e);
 				throw new CardException("Unable to decrypt data.", e);

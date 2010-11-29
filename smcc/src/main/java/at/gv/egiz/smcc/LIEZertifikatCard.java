@@ -109,7 +109,7 @@ public class LIEZertifikatCard extends AbstractSignatureCard implements Signatur
       EFObjectDirectory ef_od = new EFObjectDirectory();
       ef_od.selectAndRead(channel);
 
-      CIOCertificateDirectory ef_cd = new CIOCertificateDirectory(ef_od.getEf_cd());
+      CIOCertificateDirectory ef_cd = new CIOCertificateDirectory(ef_od.getEf_cd_list().get(0));
       ef_cd.selectAndRead(channel);
 
         byte[] ef_qcert = null;

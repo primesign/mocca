@@ -386,16 +386,17 @@ public class ESCardTest extends AbstractSignatureCard {
 	    SignatureCard signatureCard = helper.getSignatureCard(Locale.getDefault());
 	    
 	    try {
-			signatureCard.createSignature(null, null, null, null);
+//			signatureCard.createSignature(null, null, null, null);
+	    	signatureCard.getCertificate(null, null);
 		} catch (SignatureCardException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
 		}
 		
 	}

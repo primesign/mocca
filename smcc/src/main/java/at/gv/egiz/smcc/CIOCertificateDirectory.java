@@ -59,12 +59,8 @@ public class CIOCertificateDirectory {
      */
     public void selectAndRead(CardChannel channel) throws CardException, SignatureCardException, IOException {
 
-        CommandAPDU cmd = new CommandAPDU(0x00, 0xA4, 0x02, ISO7816Utils.P2_FCP, fid, 256);
-        ResponseAPDU resp = channel.transmit(cmd);
-
-        byte[] fcx = new TLVSequence(resp.getBytes()).getValue(ISO7816Utils.TAG_FCP);
-        byte[] fd = new TLVSequence(fcx).getValue(0x82);
-
+    	byte[] fd = executeSelect(channel);
+    	
         if ((fd[0] & 0x04) > 0) {
         	
         	readCIOCertificatesFromRecords(channel, fd);
@@ -75,6 +71,17 @@ public class CIOCertificateDirectory {
         }
     }
 
+    protected byte[] executeSelect(CardChannel channel) throws CardException {
+    	
+        CommandAPDU cmd = new CommandAPDU(0x00, 0xA4, 0x02, ISO7816Utils.P2_FCP, fid, 256);
+        ResponseAPDU resp = channel.transmit(cmd);
+
+        byte[] fcx = new TLVSequence(resp.getBytes()).getValue(ISO7816Utils.TAG_FCP);
+        byte[] fd = new TLVSequence(fcx).getValue(0x82);
+        
+        return fd;
+    }
+    
     protected void readCIOCertificatesFromRecords(CardChannel channel, byte[] fd) throws CardException, SignatureCardException, IOException {
     	
         for (int r = 1; r < fd[fd.length - 1]; r++) {
@@ -92,7 +99,6 @@ public class CIOCertificateDirectory {
     
     protected void readCIOCertificatesFromTransparentFile(CardChannel channel) throws CardException, SignatureCardException, IOException {
     	
-//        byte[] ef = ISO7816Utils.readTransparentFile(channel, -1);
     	byte[] ef = doReadTransparentFile(channel);
     	
         int i = 0;
@@ -132,7 +138,7 @@ public class CIOCertificateDirectory {
         cioCert.setiD(x509Certificate.getElementAt(1).getElementAt(0).gvByteArray());
 
         //read CONTEXTSPECIFIC manually
-        byte[] ctxSpecific = x509Certificate.getElementAt(2).getEncoded();
+        byte[] ctxSpecific = x509Certificate.getElementAt(x509Certificate.getSize()-1).getEncoded();
         if ((ctxSpecific[0] & 0xff) == 0xa1) {
             int ll = ((ctxSpecific[1] & 0xf0) == 0x80)
                     ? (ctxSpecific[1] & 0x0f) + 2 : 2;
