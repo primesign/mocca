@@ -5,6 +5,23 @@ Tags:
 * ''REMOVED''  ... certificate removed in this release
 * TRUSTED	... certificate included in truststore
 
+'''BKUCertificates-1.5'''
+-------------------
+
+VeriSign_Class3_PublicPrimaryCA-G5.cer VeriSign_Class3_PublicPrimaryCA-G5.cer
+* Serial Number: 18:da:d1:9e:26:7d:e8:bb:4a:21:58:cd:cc:6b:3b:4a
+* Issuer: C=US, O=VeriSign, Inc., OU=VeriSign Trust Network, OU=(c) 2006 VeriSign, Inc. - For authorized use only, CN=VeriSign Class 3 Public Primary Certification Authority - G5
+* Subject: C=US, O=VeriSign, Inc., OU=VeriSign Trust Network, OU=(c) 2006 VeriSign, Inc. - For authorized use only, CN=VeriSign Class 3 Public Primary Certification Authority - G5
+* Not Before: Nov  8 00:00:00 2006 GMT
+* Not After : Jul 16 23:59:59 2036 GMT
+
+VeriSign_Class3_SecureServerCA-G3.cer (''ADDED'')
+* Serial Number: 6e:cc:7a:a5:a7:03:20:09:b8:ce:bc:f4:e9:52:d4:91
+* Issuer: C=US, O=VeriSign, Inc., OU=VeriSign Trust Network, OU=(c) 2006 VeriSign, Inc. - For authorized use only, CN=VeriSign Class 3 Public Primary Certification Authority - G5
+* Subject: C=US, O=VeriSign, Inc., OU=VeriSign Trust Network, OU=Terms of use at https://www.verisign.com/rpa (c)10, CN=VeriSign Class 3 Secure Server CA - G3
+* Not Before: Feb  8 00:00:00 2010 GMT
+* Not After : Feb  7 23:59:59 2020 GMT
+
 
 
 '''BKUCertificates-1.4'''
