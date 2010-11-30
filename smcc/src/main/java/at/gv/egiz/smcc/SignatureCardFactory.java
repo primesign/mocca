@@ -433,7 +433,27 @@ public class SignatureCardFactory {
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff },
 				"at.gv.egiz.smcc.EstEIDCard"));
-
+		supportedCards.add(new SupportedCard(
+				// ATR
+				// (3b:fe:94:00:ff:80:b1:fa:45:1f:03:45:73:74:45:49:44:20:76:65:72:20:31:2e:30:43)
+				new byte[] { (byte) 0x3b, (byte) 0xfe, (byte) 0x94,
+						(byte) 0x00, (byte) 0xff, (byte) 0x80, (byte) 0xb1,
+						(byte) 0xfa, (byte) 0x45, (byte) 0x1f, (byte) 0x03,
+						(byte) 0x45, (byte) 0x73, (byte) 0x74, (byte) 0x45,
+						(byte) 0x49, (byte) 0x44, (byte) 0x20, (byte) 0x76,
+						(byte) 0x65, (byte) 0x72, (byte) 0x20, (byte) 0x31,
+						(byte) 0x2e, (byte) 0x30, (byte) 0x43 },
+				// mask
+				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:00:00:00:00)
+				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff },
+				"at.gv.egiz.smcc.EstEIDCard"));
+		
 		supportedCards.add(new SupportedCard(
 				// ATR (3B:7D:95:00:00:80:31:80:65:B0:83:11:C0:A9:83:00:90:00 -
 				// 00:00:00:00)
