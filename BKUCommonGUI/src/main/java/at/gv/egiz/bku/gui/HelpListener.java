@@ -40,8 +40,6 @@ public class HelpListener implements MouseListener, KeyListener, HelpURLProvider
 
   public HelpListener(URL baseURL, Locale locale) {
 
-    this.baseURL = baseURL;
-    
     if (locale != null) {
       log.trace("Check for support of requested help locale {}.", locale);
       messageBundle = ResourceBundle.getBundle(MESSAGE_BUNDLE, locale);
@@ -60,7 +58,7 @@ public class HelpListener implements MouseListener, KeyListener, HelpURLProvider
       }
     } 
     log.debug("Setting help context to {}.", baseURL);
-
+    this.baseURL = baseURL;
   }
 
   @Override
