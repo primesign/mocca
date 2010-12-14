@@ -133,7 +133,7 @@ public class PKCS15Test {
 //        resp = basicChannel.transmit(cmdAPDU);
 //      }
 //    }
-   
+
     System.out.println("SELECT DF.CIA");
 //    cmdAPDU = new CommandAPDU(0x00, 0xA4, 0x04, 0x00, new byte[] { (byte) 0xE8, (byte) 0x28, (byte) 0xBD, (byte) 0x08, (byte) 0x0F }, 256);
     cmdAPDU = new CommandAPDU(0x00, 0xA4, 0x04, 0x00, new byte[] { (byte) 0xA0, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x63,(byte) 0x50,(byte) 0x4B,(byte) 0x43,(byte) 0x53,(byte) 0x2D,(byte) 0x31,(byte) 0x35 }, 256);
@@ -161,7 +161,7 @@ public class PKCS15Test {
 //    }
 
 
-    System.out.println("SELECT EF 0x0b 0X02");
+    System.out.println("SELECT EF 0x0b 0x02");
     cmdAPDU = new CommandAPDU(0x00, 0xA4, 0x02, 0x00, new byte[] { (byte) 0x0B,(byte) 0x02 }, 256);
     System.out.println(" cmd apdu " + toString(cmdAPDU.getBytes()));
     resp = basicChannel.transmit(cmdAPDU);
@@ -542,9 +542,12 @@ public class PKCS15Test {
 //    resp = basicChannel.transmit(cmdAPDU);
 //    System.out.println(" -> " + toString(resp.getBytes()) + "\n");
 
+    int i = 1;
     byte[] dst = new byte[] {
-      // key 0x81?
-      (byte) 0x84, (byte) 0x01, (byte) 0x81,
+      // 3 byte keyRef (key number 1)
+//      (byte) 0x84, (byte) 0x03, (byte) 0x80, (byte) 0x01, (byte) 0xff,
+      // 1 byte keyRef (key number 1)
+      (byte) 0x84, (byte) 0x01, (byte) (0x80 | (i & 0x7f)),
       //RSA Authentication
       (byte) 0x89, (byte) 0x02, (byte) 0x23, (byte) 0x13
     };
@@ -1085,8 +1088,8 @@ public class PKCS15Test {
             System.out.println("manually running pkcs15 test...");
             PKCS15Test test = new PKCS15Test();
             test.setUp();
-            test.getEFDIR();
-//            test.sign();
+//            test.getEFDIR();
+            test.sign();
             //    test.selectAndRead();
         } catch (Exception ex) {
             ex.printStackTrace();
