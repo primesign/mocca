@@ -92,7 +92,7 @@ public class FINEIDCard extends AbstractSignatureCard implements SignatureCard {
 						"Could not determine authID of private key from PrKD.");
 			}
 
-			// read AOD to find associated PIN (authId must match)
+			// read AOD to find the associated PIN (authId must match)
 			FINEIDAODirectory ef_aod = new FINEIDAODirectory(ef_od.getEf_aod());
 			ef_aod.selectAndRead(channel);
 
