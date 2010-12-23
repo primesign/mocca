@@ -17,6 +17,7 @@
 
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.cio.CIOCertificate;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -63,7 +64,7 @@ public class FINEIDCard extends AbstractSignatureCard implements SignatureCard {
 
 			// read PRKD to find correct key
 			FINEIDCIOKeyDirectory ef_prkd = new FINEIDCIOKeyDirectory(ef_od
-					.getEf_prkd());
+					.getPrKDReferences().get(0));
 			ef_prkd.selectAndRead(channel);
 
 			byte[] efKey = null;
@@ -93,7 +94,7 @@ public class FINEIDCard extends AbstractSignatureCard implements SignatureCard {
 			}
 
 			// read AOD to find the associated PIN (authId must match)
-			FINEIDAODirectory ef_aod = new FINEIDAODirectory(ef_od.getEf_aod());
+			FINEIDAODirectory ef_aod = new FINEIDAODirectory(ef_od.getAODReferences().get(0));
 			ef_aod.selectAndRead(channel);
 
 			byte[] pinPath = null;
@@ -181,10 +182,10 @@ public class FINEIDCard extends AbstractSignatureCard implements SignatureCard {
 
 			byte[] certPath = null;
 
-			for (int i = 0; i < ef_od.getEf_cd_list().size(); i++) {
+			for (int i = 0; i < ef_od.getCDReferences().size(); i++) {
 
 				FINEIDCIOCertificateDirectory ef_cd = new FINEIDCIOCertificateDirectory(
-						ef_od.getEf_cd_list().get(i));
+						ef_od.getCDReferences().get(i));
 
 				try {
 					ef_cd.selectAndRead(channel);

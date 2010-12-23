@@ -27,8 +27,6 @@ import at.gv.egiz.smcc.util.TLVSequence;
 
 public class FINEIDCIOCertificateDirectory extends CIOCertificateDirectory {
 
-	protected static final boolean RETRIEVE_AUTH_ID_FROM_ASN1 = Boolean.FALSE;
-	
 	public FINEIDCIOCertificateDirectory(byte[] fid) {
 		
 		super(fid);
@@ -46,11 +44,4 @@ public class FINEIDCIOCertificateDirectory extends CIOCertificateDirectory {
           
           return fd;
       }
-	
-	@Override
-	protected boolean retrieveAuthIdFromASN1() {
-		
-		return RETRIEVE_AUTH_ID_FROM_ASN1;
-	}
-	
 }

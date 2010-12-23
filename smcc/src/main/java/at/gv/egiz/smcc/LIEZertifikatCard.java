@@ -18,6 +18,8 @@
 
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.cio.CIOCertificate;
+import at.gv.egiz.smcc.cio.ObjectDirectory;
 import at.gv.egiz.smcc.pin.gui.PINGUI;
 import at.gv.egiz.smcc.util.ISO7816Utils;
 
@@ -26,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
@@ -36,7 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.smcc.util.SMCCHelper;
-import iaik.me.asn1.ASN1;
 import java.util.Arrays;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardTerminal;
@@ -58,13 +60,6 @@ public class LIEZertifikatCard extends AbstractSignatureCard implements Signatur
 
   public static final byte[] EF_CD = new byte[] { (byte) 0x44, (byte) 0x04};
 
-  public static final byte[] CRT_AT = new byte[] {
-    // key 0x81??? (EF.PrKD defines 0x84 and 0x85)
-    (byte) 0x84, (byte) 0x01, (byte) 0x81,
-    //RSA Authentication
-    (byte) 0x89, (byte) 0x02, (byte) 0x23, (byte) 0x13
-  };
-
   public static final byte[] PKCS1_PADDING = new byte[] {
     (byte) 0x30, (byte) 0x21, (byte) 0x30, (byte) 0x09, (byte) 0x06,
     (byte) 0x05, (byte) 0x2b, (byte) 0x0e, (byte) 0x03, (byte) 0x02,
@@ -80,6 +75,9 @@ public class LIEZertifikatCard extends AbstractSignatureCard implements Signatur
           "at/gv/egiz/smcc/LIEZertifikatCard", "pin", KID, AID_SIG, 3);
   protected String name = "LIEZertifikat";
 
+  ObjectDirectory ef_od = new ObjectDirectory();
+  CIOCertificate cioQCert;
+  
   @Override
   public void init(Card card, CardTerminal cardTerminal) {
     super.init(card, cardTerminal);
@@ -106,41 +104,10 @@ public class LIEZertifikatCard extends AbstractSignatureCard implements Signatur
       // SELECT DF.CIA
       execSELECT_AID(channel, AID_SIG);
 
-      EFObjectDirectory ef_od = new EFObjectDirectory();
-      ef_od.selectAndRead(channel);
-
-      CIOCertificateDirectory ef_cd = new CIOCertificateDirectory(ef_od.getEf_cd_list().get(0));
-      ef_cd.selectAndRead(channel);
-
-        byte[] ef_qcert = null;
-        for (CIOCertificate cioCertificate : ef_cd.getCIOs()) {
-            String label = cioCertificate.getLabel();
-            //"Name (qualified signature"
-            if (label != null && label.toLowerCase()
-                    .contains("qualified signature")) {
-                ef_qcert = cioCertificate.getEfidOrPath();
-                log.debug("found certificate: {} (fid={})", label, ef_qcert);
-            }
-        }
-
-        if (ef_qcert == null) {
-            for (CIOCertificate cioCertificate : ef_cd.getCIOs()) {
-                String label = cioCertificate.getLabel();
-                //"TEST LLV APO 2s Liechtenstein Post Qualified CA ID"
-                if (label != null && label.toLowerCase()
-                        .contains("liechtenstein post qualified ca id")) {
-                    ef_qcert = cioCertificate.getEfidOrPath();
-                    log.debug("found certificate: {} (fid={})", label, ef_qcert);
-                }
-            }
-        }
-      
-      if (ef_qcert == null) {
-        throw new NotActivatedException();
-      }
+      ensureCIOQCertificate(channel);
 
       // SELECT CERT, assume efid
-      execSELECT_EF(channel, ef_qcert);
+      execSELECT_EF(channel, cioQCert.getEfidOrPath());
 
       // READ BINARY
       byte[] certificate = ISO7816Utils.readTransparentFileTLV(channel, -1, (byte) 0x30);
@@ -217,7 +184,7 @@ public class LIEZertifikatCard extends AbstractSignatureCard implements Signatur
       // VERIFY
       verifyPINLoop(channel, pinInfo, provider);
       // MANAGE SECURITY ENVIRONMENT : SET SE
-      execMSE_SET(channel, CRT_AT);
+      execMSE_SET(channel, getCRT_AT(channel));
       // PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATURE
       return execINTERNAL_AUTHENTICATE(channel, data.toByteArray());
 
@@ -301,83 +268,6 @@ public class LIEZertifikatCard extends AbstractSignatureCard implements Signatur
     
   }
 
-  protected byte[] execSELECT_MF(CardChannel channel)
-  throws SignatureCardException, CardException {
-
-    // don't add Ne, causes 67:00
-    ResponseAPDU resp = channel.transmit(
-        new CommandAPDU(0x00, 0xA4, 0x00, 0x0c, MF));
-    
-    if (resp.getSW() == 0x6A82) {
-      String msg = "File or application not found FID="
-          + SMCCHelper.toString(MF) + " SW="
-          + Integer.toHexString(resp.getSW()) + ".";
-      log.info(msg);
-      throw new FileNotFoundException(msg);
-    } else if (resp.getSW() != 0x9000) {
-      String msg = "Failed to select FID="
-          + SMCCHelper.toString(MF) + " SW="
-          + Integer.toHexString(resp.getSW()) + ".";
-      log.error(msg);
-      throw new SignatureCardException(msg);
-    } else {
-      return resp.getBytes();
-    }
-
-  }
-  
-
-  /**
-   *
-   * @return null if not found
-   */
-  protected byte[] getFID_QCERT(CardChannel channel)
-  throws SignatureCardException, CardException {
-
-    execSELECT_EF(channel, EF_CD);
-    byte[] cio_cd = ISO7816Utils.readTransparentFile(channel, -1);
-
-    //assume first 'record' is qcert
-    int length = 0;
-    if ((cio_cd[1] & 0xf0) == 0x80) {
-        int ll = cio_cd[1] & 0x7f;
-        for (int i= 0; i < ll; i++) {
-            length = (length << 8) + (cio_cd[2+i] & 0xff);
-        }
-        length += ll + 2;
-    } else {
-        length = (cio_cd[1] & 0xff) + 2;
-    }
-    
-    log.trace("reading CIO.CD[0-{}]", length-1);
-
-    try {
-        ASN1 certificateObj = new ASN1(Arrays.copyOfRange(cio_cd, 0, length));
-        byte[] contextSpecific = certificateObj.getElementAt(2).getEncoded();
-        if ((contextSpecific[0] & 0xff) != 0xa1) {
-            log.warn("expected X509CertificateAttributes (CONTEXTSPECIFIC 0xa1), got {}",
-                    (contextSpecific[0] & 0xff));
-        }
-        int ll = ((contextSpecific[1] & 0xf0) == 0x80)
-                ? (contextSpecific[1] & 0x7f) + 2 : 2;
-
-        ASN1 x509CertificateAttributes = new ASN1(
-                Arrays.copyOfRange(contextSpecific, ll, contextSpecific.length));
-
-        byte[] fid = x509CertificateAttributes.getElementAt(0).getElementAt(0)
-                .gvByteArray();
-        
-        log.debug("reading certificate {} from file {}",
-                certificateObj.getElementAt(0).getElementAt(0).gvString(),
-                toString(fid));
-        
-        return fid;
-    } catch (IOException ex) {
-        log.error("failed to get certificate path: " + ex.getMessage(), ex);
-        return null;
-    }
-  }
-
   protected byte[] execSELECT_EF(CardChannel channel, byte[] fid)
           throws SignatureCardException, CardException {
 
@@ -415,16 +305,6 @@ public class LIEZertifikatCard extends AbstractSignatureCard implements Signatur
     }
   }
 
-  protected void execMSE_RESTORE(CardChannel channel, byte seid)
-      throws CardException, SignatureCardException {
-    ResponseAPDU resp = channel.transmit(
-        new CommandAPDU(0x00, 0x22, 0xf3, seid));
-    if (resp.getSW() != 0x9000) {
-      throw new SignatureCardException("MSE:RESTORE failed: SW="
-          + Integer.toHexString(resp.getSW()));
-    }
-  }
-
   protected byte[] execINTERNAL_AUTHENTICATE(CardChannel channel, byte[] AI)
       throws CardException, SignatureCardException {
     ResponseAPDU resp;
@@ -442,5 +322,70 @@ public class LIEZertifikatCard extends AbstractSignatureCard implements Signatur
       return resp.getData();
     }
   }
+
+    private void ensureCIOQCertificate(CardChannel channel) throws IOException, CardException, NotActivatedException, SignatureCardException {
+
+        if (cioQCert != null) {
+            return;
+        }
+        
+        List<CIOCertificate> certCIOs = ef_od.getCD(channel).getCIOs(channel);
+
+        for (CIOCertificate cio : certCIOs) {
+
+            String label = cio.getLabel();
+            //"Name (qualified signature"
+            if (label != null && label.toLowerCase().contains("qualified signature")) {
+                log.debug("found certificate: {} (fid={})", label,
+                        toString(cio.getEfidOrPath()));
+                cioQCert = cio;
+            }
+        }
+        //fallback for old cards
+        if (cioQCert == null) {
+            for (CIOCertificate cio : certCIOs) {
+                String label = cio.getLabel();
+                //"TEST LLV APO 2s Liechtenstein Post Qualified CA ID"
+                if (label != null && label.toLowerCase().contains("liechtenstein post qualified ca id")) {
+                    log.debug("found certificate: {} (fid={})", label,
+                        toString(cio.getEfidOrPath()));
+                    cioQCert = cio;
+                }
+            }
+        }
+
+        if (cioQCert == null) {
+            throw new NotActivatedException();
+        }
+    }
+
+    protected byte[] getCRT_AT(CardChannel channel) throws CardException, SignatureCardException, IOException {
+
+        ensureCIOQCertificate(channel);
+        List<CIOCertificate> keyCIOs = ef_od.getPrKD(channel).getCIOs(channel);
+
+      int i = 1;
+      for (CIOCertificate cio : keyCIOs) {
+        if (Arrays.equals(cio.getiD(), cioQCert.getiD())) {
+
+            byte[] CRT_AT = new byte[] {
+                  // 1-byte keyReference
+                  (byte) 0x84, (byte) 0x01, (byte) (0x80 | (0x7f & i)),
+                  // 3-byte keyReference
+        //          (byte) 0x84, (byte) 0x03, (byte) 0x80, (byte) 0x01, (byte) 0xff,
+                  //RSA Authentication
+                  (byte) 0x89, (byte) 0x02, (byte) 0x23, (byte) 0x13
+              };
+
+              return CRT_AT;
+        }
+        i++;
+      }
+
+      log.error("no PrK CIO corresponding to QCert {} found", toString(cioQCert.getiD()));
+      throw new SignatureCardException("could not determine PrK for QCert " + toString(cioQCert.getiD()));
+      
+  }
+
 
 }

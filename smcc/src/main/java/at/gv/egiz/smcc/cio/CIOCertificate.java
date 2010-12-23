@@ -15,17 +15,21 @@
 * limitations under the License.
 */
 
-package at.gv.egiz.smcc;
+package at.gv.egiz.smcc.cio;
+
+import iaik.me.asn1.ASN1;
+import java.io.IOException;
+import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author clemens
  */
-public class CIOCertificate {
+public class CIOCertificate extends CIO {
 
-    /** CommonObjectAttributes */
-    private String label;
-    private byte[] authId;
+    protected static final Logger log = LoggerFactory.getLogger(CIOCertificate.class);
 
     /** CommonCertificateAttributes */
     private byte[] iD;
@@ -34,32 +38,34 @@ public class CIOCertificate {
     private byte[] efidOrPath;
     private int serialNumber;
 
-    /**
-     * @return the label
-     */
-    public String getLabel() {
-        return label;
-    }
+    public CIOCertificate(byte[] cio) throws IOException {
 
-    /**
-     * @param label the label to set
-     */
-    public void setLabel(String label) {
-        this.label = label;
-    }
+        ASN1 x509Certificate = new ASN1(cio);
+        ASN1 commonObjAttrs = x509Certificate.getElementAt(0);
+        label = commonObjAttrs.getElementAt(0).gvString();
+        try {
+            // FINeID does not provide authId
+            authId = commonObjAttrs.getElementAt(2).gvByteArray();
+        } catch (IOException e) {
+            log.info("failed to get authId from CommonObjectAttributes: {}", e.getMessage());
+        }
 
-    /**
-     * @return the authId
-     */
-    public byte[] getAuthId() {
-        return authId;
-    }
+        iD = x509Certificate.getElementAt(1).getElementAt(0).gvByteArray();
 
-    /**
-     * @param authId the authId to set
-     */
-    public void setAuthId(byte[] authId) {
-        this.authId = authId;
+        //read CONTEXTSPECIFIC manually
+        byte[] ctxSpecific = x509Certificate.getElementAt(x509Certificate.getSize()-1).getEncoded();
+        if ((ctxSpecific[0] & 0xff) == 0xa1) {
+            int ll = ((ctxSpecific[1] & 0xf0) == 0x80)
+                    ? (ctxSpecific[1] & 0x0f) + 2 : 2;
+            ASN1 x509CertificateAttributes = new ASN1(Arrays.copyOfRange(ctxSpecific, ll, ctxSpecific.length));
+
+            efidOrPath = x509CertificateAttributes.getElementAt(0).getElementAt(0).gvByteArray();
+
+        } else {
+            log.warn("expected CONTEXTSPECIFIC, got 0x{}",
+                    Integer.toHexString(ctxSpecific[0]));
+        }
+
     }
 
     /**
@@ -84,6 +90,7 @@ public class CIOCertificate {
     }
 
     /**
+     * @deprecated
      * @param efidOrPath the efidOrPath to set
      */
     public void setEfidOrPath(byte[] efidOrPath) {
@@ -91,6 +98,7 @@ public class CIOCertificate {
     }
 
     /**
+     * @deprecated
      * @return the serialNumber
      */
     public int getSerialNumber() {
@@ -98,15 +106,11 @@ public class CIOCertificate {
     }
 
     /**
+     * @deprecated 
      * @param serialNumber the serialNumber to set
      */
     public void setSerialNumber(int serialNumber) {
         this.serialNumber = serialNumber;
-    }
-
-    @Override
-    public String toString() {
-        return "CIOCertificate " + label;
     }
 
 

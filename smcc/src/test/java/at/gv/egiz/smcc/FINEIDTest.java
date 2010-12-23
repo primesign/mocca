@@ -1,5 +1,6 @@
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.cio.CIOCertificate;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -95,10 +96,10 @@ public class FINEIDTest extends AbstractSignatureCard {
 
 		// **** READ CERT ****
 
-		for (int i = 0; i < ef_od.getEf_cd_list().size(); i++) {
+		for (int i = 0; i < ef_od.getCDReferences().size(); i++) {
 
 			FINEIDCIOCertificateDirectory ef_cd = new FINEIDCIOCertificateDirectory(
-					ef_od.getEf_cd_list().get(i));
+					ef_od.getCDReferences().get(i));
 
 			try {
 				ef_cd.selectAndRead(channel);
@@ -158,11 +159,11 @@ public class FINEIDTest extends AbstractSignatureCard {
 
 		// **** VERIFY PIN ****
 
-		byte[] prkdPath = ef_od.getEf_prkd();
+		byte[] prkdPath = ef_od.getPrKDReferences().get(0);
 		System.out.println("PRKD path: " + SMCCHelper.toString(prkdPath));
 
 		FINEIDCIOKeyDirectory ef_prkd = new FINEIDCIOKeyDirectory(ef_od
-				.getEf_prkd());
+				.getPrKDReferences().get(0));
 		ef_prkd.selectAndRead(channel);
 
 		byte[] efKey = null;
@@ -181,10 +182,10 @@ public class FINEIDTest extends AbstractSignatureCard {
 
 		System.out.println("Key path: " + SMCCHelper.toString(efKey));
 
-		byte[] aod = ef_od.getEf_aod();
+		byte[] aod = ef_od.getAODReferences().get(0);
 		System.out.println("AOD path: " + SMCCHelper.toString(aod));
 
-		FINEIDAODirectory ef_aod = new FINEIDAODirectory(ef_od.getEf_aod());
+		FINEIDAODirectory ef_aod = new FINEIDAODirectory(ef_od.getAODReferences().get(0));
 		ef_aod.selectAndRead(channel);
 
 		byte[] pinPath = null;

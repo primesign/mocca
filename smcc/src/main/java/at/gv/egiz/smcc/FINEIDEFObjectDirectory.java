@@ -17,28 +17,12 @@
 
 package at.gv.egiz.smcc;
 
-import javax.smartcardio.CardChannel;
-import javax.smartcardio.CardException;
-import javax.smartcardio.CommandAPDU;
-import javax.smartcardio.ResponseAPDU;
+import at.gv.egiz.smcc.cio.ObjectDirectory;
 
-public class FINEIDEFObjectDirectory extends EFObjectDirectory {
+public class FINEIDEFObjectDirectory extends ObjectDirectory {
 
 	public FINEIDEFObjectDirectory(int padding) {
 
-		super(padding);
+		super(padding, 0x00);
 	}	
-	
-	@Override
-	protected void executeSelect(CardChannel channel)
-			throws SignatureCardException, CardException {		
-		
-		CommandAPDU cmd = new CommandAPDU(0x00, 0xA4, 0x00, 0x00, fid, 256);
-		ResponseAPDU resp = channel.transmit(cmd);
-
-		if (resp.getSW() != 0x9000) {
-			throw new SignatureCardException("SELECT EF.OD failed: SW=0x"
-					+ Integer.toHexString(resp.getSW()));
-		}
-	}
 }

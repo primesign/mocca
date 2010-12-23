@@ -1,5 +1,7 @@
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.cio.CIOCertificate;
+import at.gv.egiz.smcc.cio.ObjectDirectory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,11 +68,11 @@ public class ESDNIeCard extends AbstractSignatureCard implements SignatureCard {
 			// Select DF.CIA
 			executeSelectDFCIA(channel);
 
-			EFObjectDirectory efOd = new EFObjectDirectory();
+			ObjectDirectory efOd = new ObjectDirectory();
 			efOd.selectAndRead(channel);
 
 			DNIeCIOCertificateDirectory efPrkd = new DNIeCIOCertificateDirectory(
-					efOd.getEf_prkd());
+					efOd.getPrKDReferences().get(0));
 			efPrkd.selectAndRead(channel);
 
 			byte[] efKey = null;
@@ -155,11 +157,11 @@ public class ESDNIeCard extends AbstractSignatureCard implements SignatureCard {
 
 			byte[] efQcert = null;
 
-			EFObjectDirectory efOd = new EFObjectDirectory();
+			ObjectDirectory efOd = new ObjectDirectory();
 			efOd.selectAndRead(channel);
 
 			DNIeCIOCertificateDirectory efCd = new DNIeCIOCertificateDirectory(
-					efOd.getEf_cd_list().get(0));
+					efOd.getCDReferences().get(0));
 
 			try {
 				efCd.selectAndRead(channel);

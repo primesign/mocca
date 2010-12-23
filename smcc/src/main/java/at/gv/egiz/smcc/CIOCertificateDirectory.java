@@ -17,6 +17,7 @@
 
 package at.gv.egiz.smcc;
 
+import at.gv.egiz.smcc.cio.CIOCertificate;
 import at.gv.egiz.smcc.util.ISO7816Utils;
 import at.gv.egiz.smcc.util.TLVSequence;
 import iaik.me.asn1.ASN1;
@@ -32,13 +33,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * TODO To be replaced by at.gv.egiz.smcc.cio.CIOCertificateDirectory
+ * 
  * @author clemens
  */
 public class CIOCertificateDirectory {
 
-	protected static final boolean RETRIEVE_AUTH_ID_FROM_ASN1 = Boolean.TRUE;
-	
     protected static final Logger log = LoggerFactory.getLogger(CIOCertificateDirectory.class);
     protected byte[] fid;
     protected List<CIOCertificate> cios;
@@ -127,29 +127,8 @@ public class CIOCertificateDirectory {
     }
     
     protected void addCIOCertificate(byte[] cio) throws IOException {
-        
-        ASN1 x509Certificate = new ASN1(cio);
 
-        CIOCertificate cioCert = new CIOCertificate();
-        cioCert.setLabel(x509Certificate.getElementAt(0).getElementAt(0).gvString());
-        if(retrieveAuthIdFromASN1()) {
-        	cioCert.setAuthId(x509Certificate.getElementAt(0).getElementAt(2).gvByteArray());
-        }
-        cioCert.setiD(x509Certificate.getElementAt(1).getElementAt(0).gvByteArray());
-
-        //read CONTEXTSPECIFIC manually
-        byte[] ctxSpecific = x509Certificate.getElementAt(x509Certificate.getSize()-1).getEncoded();
-        if ((ctxSpecific[0] & 0xff) == 0xa1) {
-            int ll = ((ctxSpecific[1] & 0xf0) == 0x80)
-                    ? (ctxSpecific[1] & 0x0f) + 2 : 2;
-            ASN1 x509CertificateAttributes = new ASN1(Arrays.copyOfRange(ctxSpecific, ll, ctxSpecific.length));
-
-            cioCert.setEfidOrPath(x509CertificateAttributes.getElementAt(0).getElementAt(0).gvByteArray());
-
-        } else {
-            log.warn("expected CONTEXTSPECIFIC, got 0x{}",
-                    Integer.toHexString(ctxSpecific[0]));
-        }
+        CIOCertificate cioCert = new CIOCertificate(cio);
 
         log.debug("adding {}", cioCert);
         cios.add(cioCert);
@@ -160,8 +139,4 @@ public class CIOCertificateDirectory {
         return cios;
     }
     
-	protected boolean retrieveAuthIdFromASN1() {
-		
-		return RETRIEVE_AUTH_ID_FROM_ASN1;
-	}
 }
