@@ -88,6 +88,13 @@ MOCCA Configuration
 
 	[<<<SignatureLayout>>>] May be specified to set the <<<SignatureLayout>>> HTTP header.
 
+        [<<<AccessController>>>]
+
+		Citizen Card Environment access control configuration file
+
+		[<<<PolicyResource>>>]
+
+		Default: <<<classpath:/at/gv/egiz/bku/accesscontrol/config/accessControlConfig.xml>>>
 
 ** MOCCA Local Only Configuration Parameters
 
