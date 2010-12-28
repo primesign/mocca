@@ -176,6 +176,26 @@ public class ConfiguratorTest {
     result = Configurator.updateRequired(oldVersion, minVersion);
     assertEquals(expResult, result);
 
+    //no update for branch versions
+    oldVersion = "1.2.13-pinguin-1";
+    minVersion = "1.2.14";
+    expResult = false;
+    result = Configurator.updateRequired(oldVersion, minVersion);
+    assertEquals(expResult, result);
+
+    //... but for major version changes
+    oldVersion = "1.2.13-pinguin-1";
+    minVersion = "1.3.0";
+    expResult = true;
+    result = Configurator.updateRequired(oldVersion, minVersion);
+    assertEquals(expResult, result);
+
+    oldVersion = "1.3.0-RC2-r611";
+    minVersion = "1.3.0";
+    expResult = false;
+    result = Configurator.updateRequired(oldVersion, minVersion);
+    assertEquals(expResult, result);
+
     oldVersion = "1";
     minVersion = "2";
     expResult = true;

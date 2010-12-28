@@ -266,7 +266,7 @@ public class Configurator {
         int majorEndOld = oldVersion.indexOf("-SNAPSHOT"); // 1.0.10-SNAPSHOT-r438, 1.2.12-pinguin-1-SNAPSHOT-r635
         if (majorEndOld < 0) {
           preRelease = false;
-          majorEndOld = oldVersion.lastIndexOf('-'); // 1.0.10-r439, 1.2.12-pinguin-1-r635
+          majorEndOld = oldVersion.lastIndexOf('-'); // 1.0.10-r439, 1.2.12-pinguin-1-r635, 1.3.0-RC2-r611
           if (majorEndOld < 0) {
             majorEndOld = oldVersion.length();
           }
@@ -282,7 +282,13 @@ public class Configurator {
           }
         }
 
-        xOld = Integer.valueOf(oldVersion.substring(fromInd, majorEndOld));
+        try {
+            xOld = Integer.valueOf(oldVersion.substring(fromInd, majorEndOld));
+        } catch (NumberFormatException ex) {
+            log.warn("{} seems to be a branch version, do not update", oldVersion);
+            log.debug(ex.getMessage(), ex);
+            return false;
+        }
         boolean hasMoreDigitsMin = true;
         nextIndMin = minVersion.indexOf('.', fromInd);
         if (nextIndMin < 0) {
