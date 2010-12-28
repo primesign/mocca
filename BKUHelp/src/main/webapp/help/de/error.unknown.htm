@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>CitizenCard - Help</title>
+<link href="css/help.css" rel="stylesheet" type="text/css" />
+<link rel="shortcut icon" href="chip16.ico" type="image/x-icon"/>
+<!--[if IE]>
+<style type="text/css"> 
+/* place css fixes for all versions of IE in this conditional comment */
+.twoColElsLtHdr #sidebar1 { padding-top: 30px; }
+.twoColElsLtHdr #mainContent { zoom: 1; padding-top: 15px; }
+/* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+</style>
+<![endif]-->
+</head>
+
+<body class="twoColElsLtHdr">
+
+<div id="container">
+  <div id="header">
+    <h1>Online-Hilfe</h1>
+    <!-- end #header --></div>
+  <div id="mainContent" style="margin: 1.5em 1.5em 0 1.5em">
+    <h1>Unerwarteter Fehler</h1>
+   
+	<p>Ein unerwarteter Fehler ist aufgetreten. Bitte wiederholen Sie den Vorgang noch einmal.</p>
+    <p>Genauere Informationen entnehmen Sie bitte dem MOCCA Log-File. Falls Sie den Fehler ihrem MOCCA Betreiber melden wollen, schicken Sie das Log-File bitte mit.</p>
+    <p>Bei Verwendung der <strong>lokalen BKU (MOCCA Webstart)</strong> finden Sie das Log-File unter dem Home-Verzeichnis des Benutzers:
+    <ul>
+    <li>unter Windows: <code>%USERPROFILE%\.mocca\logs\webstart.log</code>, z.B.: <code>C:\Benutzer\tester\.mocca\logs\webstart.log</code></li>
+    <li>unter Linux: <code>~/.mocca/logs/webstart.log</code></li>
+    </ul></p>
+    <p>Bei Verwendung des Java Applets der <strong>Online-BKU MOCCA</strong> wird das MOCCA Log in der Java-Konsole ausgegeben. 
+    Um die Java-Konsole anzuzeigen, aktivieren Sie im Java Control Panel die Option <em>Konsole einblenden</em>:
+    <code>Java Control Panel -> Erweitert -> Java - Konsole -> Konsole einblenden.</code>
+    Unter Windows befindet sich das Java Control Panel in der Systemsteuerung.</p>
+    <p style="text-align: center"><img src="error.unknown.png" alt="Bildschirmfoto" width="400" height="484" /></p>
+    
+    <p> Das Java Applet Log-Level kann weiters noch feiner eingestellt werden. Diese Konfiguration können sie unter <code>&lt;JAVA_HOME&gt;/lib/logging.properties</code> einstellen. </p>
+    <ul>
+    <li>Windows: <code>C:\Programme\Java\jre6\lib\logging.properties</code></li>
+    <li>Linux z.B.: <code>/usr/lib/jvm/java-6-sun/jre/lib/logging.properties</code></li>
+    </ul>
+    <p>Eine Beispielkonfiguration finden Sie im <a href="https://egovlabs.gv.at/frs/download.php/230/logging.properties">Download Bereich</a> der Egovlabs Plattform. 
+    Sie können die bestehende Konfigurationsdatei einfach durch die Beispielkonfiguration ersetzen.
+    Durch die folgenden Einstellungen wird in dieser Beispielkonfiguration das Logging auf die höchste Stufe eingestellt:
+     <ul>
+	 <li><code>java.util.logging.ConsoleHandler.level = FINEST</code></li>
+     <li><code>at.gv.egiz.level = ALL</code></li></ul>
+    </p>
+     <p> Weiter Informationen finden sie unter: <a href="http://download.oracle.com/docs/cd/E17476_01/javase/1.5.0/docs/guide/deployment/deployment-guide/tracing_logging.html">Logging und Tracing</a> </p>
+     
+     	<p>Für zusätzliche Log-Informationen (z.B. Netzwerk) können Sie im Java Control Panel die Java Protokollierung aktivieren: <code>Java Control Panel -> Erweitert -> 
+    Debugging -> Protokollierung aktivieren</code> (vgl. Abbildung oben).</p>
+    
+
+  </div>
+  <div id="footer">
+  	<p>
+    	<a href="http://www.buergerkarte.at">&Ouml;sterreichische B&uuml;rgerkarte</a> | <a href="http://mocca.egovlabs.gv.at">B&uuml;rgerkartensoftware MOCCA</a>
+    </p>
+  </div>
+<!-- end #container --></div>
+</body>
+</html>
