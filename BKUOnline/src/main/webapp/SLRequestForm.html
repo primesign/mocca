@@ -83,8 +83,8 @@
 <sl:CreateXMLSignatureRequest 
    xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#">
 <sl:KeyboxIdentifier>SecureSignatureKeypair</sl:KeyboxIdentifier>
-   <sl:DataObjectInfo Structure="detached">
-     <sl:DataObject Reference="test.txt">
+   <sl:DataObjectInfo Structure="enveloping">
+     <sl:DataObject>
        <sl:XMLContent>Ich bin ein einfacher Text.</sl:XMLContent>
      </sl:DataObject>
     <sl:TransformsInfo>
