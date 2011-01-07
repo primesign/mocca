@@ -385,7 +385,7 @@ public class Activation {
         if (cin.length != 10) {
             throw new RuntimeException("invalid CIN: " + toString(cin));
         }
-        
+
         byte[] icc_id = Arrays.copyOfRange(cin, cin .length-8, cin.length);
         System.out.println("ICC_ID:  " + toString(icc_id));
 
