@@ -8,18 +8,17 @@ package at.gv.egiz.smcc.activation;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.util.TLVSequence;
 import iaik.security.provider.IAIK;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -225,7 +224,7 @@ public class Activation {
         channel = icc.getBasicChannel();
     }
 
-    public void activate() throws CardException, SignatureCardException {
+    public void activate() throws CardException, SignatureCardException, Exception {
 
         System.out.println("SELECT MF");
         CommandAPDU cmdAPDU = new CommandAPDU(0x00, 0xA4, 0x00, 0x0c, new byte[]{(byte) 0x3F, (byte) 0x00});
@@ -327,7 +326,7 @@ public class Activation {
         }
     }
 
-    void openSecureChannel(SecretKeySpec k_appl, byte[] cin) throws NoSuchAlgorithmException, UnsupportedEncodingException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, CardException {
+    void openSecureChannel(SecretKeySpec k_appl, byte[] cin) throws NoSuchAlgorithmException, UnsupportedEncodingException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, CardException, NoSuchProviderException, GeneralSecurityException {
 //        function openSecureChannelG3(card, crypto, iccsn, kappl, kid, algo) {
 
 //	if (typeof(kid) == "undefined")
@@ -381,10 +380,14 @@ public class Activation {
         if (rnd_icc.length != 8) {
             throw new RuntimeException("invalid RND.ICC: " + toString(rnd_icc));
         }
+        System.out.println("RND_ICC: " + toString(rnd_icc));
 
         if (cin.length != 10) {
             throw new RuntimeException("invalid CIN: " + toString(cin));
         }
+        
+        byte[] icc_id = Arrays.copyOfRange(cin, cin .length-8, cin.length);
+        System.out.println("ICC_ID:  " + toString(icc_id));
 
 //	var rndifd = crypto.generateRandom(8);
 //	var snifd = crypto.generateRandom(8);
@@ -396,7 +399,6 @@ public class Activation {
 
         byte[] rnd_ifd = new byte[8];
         rand.nextBytes(rnd_ifd);
-        byte[] icc_id = Arrays.copyOfRange(cin, 2, 8);
         byte[] ifd_id = new byte[8];
         rand.nextBytes(ifd_id);
         byte[] kd_ifd = new byte[64];
@@ -411,12 +413,44 @@ public class Activation {
 //	var cryptogram = crypto.encrypt(kenc, Crypto.DES_CBC, plain, new ByteString("0000000000000000", HEX));
 //	GPSystem.trace("Cryptogram   : " + cryptogram);
 //	print("Cryptogram   : " + cryptogram);
-//
-//        print("K_mac        : " + kmac.getComponent(Key.DES));
-//
-//	var mac = crypto.sign(kmac, Crypto.DES_MAC_EMV, cryptogram.pad(Crypto.ISO9797_METHOD_2));
-//	GPSystem.trace("MAC          : " + mac);
-//	print("MAC          : " + mac);
+
+        Cipher tDES = Cipher.getInstance("3DES/CBC/NoPadding");
+        tDES.init(Cipher.ENCRYPT_MODE, k_enc, new IvParameterSpec(ZEROS));
+
+        byte[] sendData = new byte[4*8+64];
+        System.arraycopy(rnd_ifd, 0, sendData, 0, 8);
+        System.out.println(toString(sendData));
+        System.arraycopy(ifd_id, 0, sendData, 8, 8);
+        System.out.println(toString(sendData));
+        System.arraycopy(rnd_icc, 0, sendData, 16, 8);
+        System.out.println(toString(sendData));
+        System.arraycopy(icc_id, 0, sendData, 24, 8);
+        System.out.println(toString(sendData));
+        System.arraycopy(kd_ifd, 0, sendData, 32, 64);
+        System.out.println(toString(sendData));
+
+        System.out.println("cryptogram input (" + sendData.length + "byte): "
+                + toString(sendData));
+
+//        tDES.update(rnd_ifd); // 8 byte
+//        tDES.update(ifd_id);  // 8 byte
+//        tDES.update(rnd_icc); // 8 byte
+//        tDES.update(icc_id);  // 8 byte
+//        tDES.update(kd_ifd);  // 64 byte
+
+        byte[] cryptogram = tDES.doFinal(sendData);
+        System.out.println("cryptogram (" + cryptogram.length + "byte): "
+                + toString(cryptogram));
+    //
+    //        print("K_mac        : " + kmac.getComponent(Key.DES));
+    //
+    //	var mac = crypto.sign(kmac, Crypto.DES_MAC_EMV, cryptogram.pad(Crypto.ISO9797_METHOD_2));
+    //	GPSystem.trace("MAC          : " + mac);
+    //	print("MAC          : " + mac);
+
+
+        byte[] mac = RetailCBCMac.retailMac(cryptogram, "DES", "DESede", k_mac, 8, 8);
+        System.out.println("mac (" + mac.length +"byte): " + toString(mac));
 //
 //
 //	var autresp = card.sendApdu(0x00, 0x82, 0x00, 0x00, cryptogram.concat(mac), 0); // 81 -> 00
@@ -428,10 +462,21 @@ public class Activation {
 //
 //	cryptogram = autresp.bytes(0, 96);	// 64 -> 96
 //	mac = autresp.bytes(96, 8); // 64 -> 96
+
+        byte[] c = new byte[cryptogram.length + mac.length];
+        System.arraycopy(cryptogram, 0, c, 0, cryptogram.length);
+        System.arraycopy(mac, 0, c, cryptogram.length, mac.length);
+        System.out.println("MUTUAL AUTHENTICATE " + c.length + "bytes :" + toString(c));
+        cmdAPDU = new CommandAPDU(0x00, 0x82, 0x00, 0x81, c, 256); // 81->00
+        System.out.println(" cmd apdu " + toString(cmdAPDU.getBytes()));
+        resp = channel.transmit(cmdAPDU);
+        System.out.println(" -> " + toString(resp.getBytes()) + "\n");
 //
 //	if (!crypto.verify(kmac, Crypto.DES_MAC_EMV, cryptogram.pad(Crypto.ISO9797_METHOD_2), mac)) {
 //		throw new GPError("MutualAuthentication", GPError.CRYPTO_FAILED, 0, "Card MAC did not verify correctly");
 //	}
+
+        
 //
 //	plain = crypto.decrypt(kenc, Crypto.DES_CBC, cryptogram, new ByteString("0000000000000000", HEX));
 //	GPSystem.trace("Plain Block  : " + plain);
