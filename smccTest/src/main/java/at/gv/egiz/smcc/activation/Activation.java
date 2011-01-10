@@ -535,6 +535,7 @@ public class Activation {
 
         }
 
+        // TODO derive key
 
 //	var hashin = keyinp.concat(new ByteString("00000001", HEX));
 //	var hashres = crypto.digest(Crypto.SHA_256, hashin);
