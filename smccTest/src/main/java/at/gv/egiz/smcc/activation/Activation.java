@@ -16,6 +16,7 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.SignatureException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -326,7 +327,7 @@ public class Activation {
         }
     }
 
-    void openSecureChannel(SecretKeySpec k_appl, byte[] cin) throws NoSuchAlgorithmException, UnsupportedEncodingException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, CardException, NoSuchProviderException, GeneralSecurityException {
+    void openSecureChannel(SecretKeySpec k_appl, byte[] cin) throws SignatureCardException, NoSuchAlgorithmException, UnsupportedEncodingException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, CardException, NoSuchProviderException, GeneralSecurityException {
 //        function openSecureChannelG3(card, crypto, iccsn, kappl, kid, algo) {
 
 //	if (typeof(kid) == "undefined")
@@ -419,15 +420,10 @@ public class Activation {
 
         byte[] sendData = new byte[4*8+64];
         System.arraycopy(rnd_ifd, 0, sendData, 0, 8);
-        System.out.println(toString(sendData));
         System.arraycopy(ifd_id, 0, sendData, 8, 8);
-        System.out.println(toString(sendData));
         System.arraycopy(rnd_icc, 0, sendData, 16, 8);
-        System.out.println(toString(sendData));
         System.arraycopy(icc_id, 0, sendData, 24, 8);
-        System.out.println(toString(sendData));
         System.arraycopy(kd_ifd, 0, sendData, 32, 64);
-        System.out.println(toString(sendData));
 
         System.out.println("cryptogram input (" + sendData.length + "byte): "
                 + toString(sendData));
@@ -466,15 +462,27 @@ public class Activation {
         byte[] c = new byte[cryptogram.length + mac.length];
         System.arraycopy(cryptogram, 0, c, 0, cryptogram.length);
         System.arraycopy(mac, 0, c, cryptogram.length, mac.length);
-        System.out.println("MUTUAL AUTHENTICATE " + c.length + "bytes :" + toString(c));
+        System.out.println("MUTUAL AUTHENTICATE (" + c.length + "bytes): " + toString(c));
         cmdAPDU = new CommandAPDU(0x00, 0x82, 0x00, 0x81, c, 256); // 81->00
         System.out.println(" cmd apdu " + toString(cmdAPDU.getBytes()));
         resp = channel.transmit(cmdAPDU);
         System.out.println(" -> " + toString(resp.getBytes()) + "\n");
+
 //
 //	if (!crypto.verify(kmac, Crypto.DES_MAC_EMV, cryptogram.pad(Crypto.ISO9797_METHOD_2), mac)) {
 //		throw new GPError("MutualAuthentication", GPError.CRYPTO_FAILED, 0, "Card MAC did not verify correctly");
 //	}
+
+        System.out.println("ICC Response: " + resp.getData().length + " Bytes");
+        System.arraycopy(resp.getData(), 0, cryptogram, 0, 96);
+        System.arraycopy(resp.getData(), 96, mac, 0, 8);
+
+        byte[] mac_ = RetailCBCMac.retailMac(cryptogram, "DES", "DESede", k_mac, 8, 8);
+
+        if (!Arrays.equals(mac, mac_)) {
+          throw new SignatureCardException("Failed to authenticate card, invalid MAC " + toString(mac));
+        }
+        System.out.println("icc MAC verified");
 
         
 //
@@ -488,10 +496,46 @@ public class Activation {
 //	if (!plain.bytes(16, 8).equals(rndifd)) {
 //		throw new GPError("MutualAuthentication", GPError.CRYPTO_FAILED, 0, "Card response does not contain matching RND.IFD");
 //	}
+
+        tDES = Cipher.getInstance("3DES/CBC/NoPadding");
+        tDES.init(Cipher.DECRYPT_MODE, k_enc, new IvParameterSpec(ZEROS));
+
+        System.out.println("Decrypt cryptogram (" 
+                + cryptogram.length + " Bytes) " + toString(cryptogram));
+
+        byte[] plain = tDES.doFinal(cryptogram);
+
+        if (!Arrays.equals(Arrays.copyOfRange(plain, 0, 8), rnd_icc)) {
+          throw new SignatureCardException("Failed to authenticate ICC, wrong RND.ICC "
+                  + toString(Arrays.copyOfRange(plain, 0, 8)));
+        } else if (!Arrays.equals(Arrays.copyOfRange(plain, 16, 24), rnd_ifd)) {
+          throw new SignatureCardException("Failed to authenticate ICC, wrong RND.IFD "
+                  + toString(Arrays.copyOfRange(plain, 16, 24)));
+        }
+
+        System.out.println("successfully verified RND.ICC/IFD");
+        
+
 //
 //	var kicc = plain.bytes(32, 64);	// 32 -> 64
 //	keyinp = kicc.xor(kifd);
 //
+
+        byte[] kd_icc = Arrays.copyOfRange(plain, 32, 96);
+        System.out.println("derive key input...");
+        byte[] kinp = new byte[kd_ifd.length];
+        for (int i = 0; i < kd_ifd.length; i++) {
+
+//          System.out.println(Integer.toBinaryString(kd_icc[i]));
+//          System.out.println(Integer.toBinaryString(kd_ifd[i]));
+
+          kinp[i] = (byte) (kd_icc[i] ^ kd_ifd[i]);
+
+//          System.out.println(Integer.toBinaryString(kinp[i]) + "\n");
+
+        }
+
+
 //	var hashin = keyinp.concat(new ByteString("00000001", HEX));
 //	var hashres = crypto.digest(Crypto.SHA_256, hashin);
 //	var kencval = hashres.bytes(0, 24);
