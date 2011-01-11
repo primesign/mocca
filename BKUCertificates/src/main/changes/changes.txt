@@ -5,35 +5,10 @@ Tags:
 * ''REMOVED''  ... certificate removed in this release
 * TRUSTED	... certificate included in truststore
 
-'''BKUCertificates-1.5-SNAPSHOT'''
+'''BKUCertificates-1.5'''
 -------------------
 
-www.int.esv.sozialversicherung.at.cer (''ADDED'')
-* Serial Number: 540512 (0x83f60)
-* Issuer: C=AT, O=A-Trust Ges. f. Sicherheitssysteme im elektr. Datenverkehr GmbH, OU=a-sign-SSL-03, CN=a-sign-SSL-03
-* Subject: C=AT, O=Hauptverband der Oesterreichischen Sozialversicherungstraeger, OU=SVC Betrieb, CN=www.int.esv.sozialversicherung.at/serialNumber=894954700494/emailAddress=esv.support@svc.co.at
-* Not Before: Dec 10 07:13:47 2010 GMT
-* Not After : Dec 10 07:13:47 2015 GMT
-
-www.int.esv.sozialversicherung.gv.at.cer (''ADDED'')
-* Serial Number: 540513 (0x83f61)
-* Issuer: C=AT, O=A-Trust Ges. f. Sicherheitssysteme im elektr. Datenverkehr GmbH, OU=a-sign-SSL-03, CN=a-sign-SSL-03
-* Subject: C=AT, O=Hauptverband der Oesterreichischen Sozialversicherungstraeger, OU=SVC Betrieb, CN=www.int.esv.sozialversicherung.gv.at/serialNumber=894954700494/emailAddress=esv.support@svc.co.at
-* Not Before: Dec 10 07:15:29 2010 GMT
-* Not After : Dec 10 07:15:29 2015 GMT
-
-ooegkk.int.esv.sozialversicherung.at.cer (''ADDED'')
-* Serial Number: 540514 (0x83f62)
-* Issuer: C=AT, O=A-Trust Ges. f. Sicherheitssysteme im elektr. Datenverkehr GmbH, OU=a-sign-SSL-03, CN=a-sign-SSL-03
-* Subject: C=AT, O=OOE.Gebietskrankenkasse - Forum Gesundheit, OU=SVC Betrieb, CN=ooegkk.int.esv.sozialversicherung.at/serialNumber=894954700494/emailAddress=esv.support@svc.co.at
-* Not Before: Dec 10 07:16:59 2010 GMT
-* Not After : Dec 10 07:16:59 2015 GMT
-
-
-'''BKUCertificates-1.4 (mocca-1.3.4-update1)'''
--------------------
-
-VeriSign_Class3_PublicPrimaryCA-G5.cer VeriSign_Class3_PublicPrimaryCA-G5.cer (''ADDED'', TRUSTED)
+VeriSign_Class3_PublicPrimaryCA-G5.cer VeriSign_Class3_PublicPrimaryCA-G5.cer
 * Serial Number: 18:da:d1:9e:26:7d:e8:bb:4a:21:58:cd:cc:6b:3b:4a
 * Issuer: C=US, O=VeriSign, Inc., OU=VeriSign Trust Network, OU=(c) 2006 VeriSign, Inc. - For authorized use only, CN=VeriSign Class 3 Public Primary Certification Authority - G5
 * Subject: C=US, O=VeriSign, Inc., OU=VeriSign Trust Network, OU=(c) 2006 VeriSign, Inc. - For authorized use only, CN=VeriSign Class 3 Public Primary Certification Authority - G5
@@ -48,7 +23,8 @@ VeriSign_Class3_SecureServerCA-G3.cer (''ADDED'')
 * Not After : Feb  7 23:59:59 2020 GMT
 
 
-'''BKUCertificates-1.4 (mocca-1.3.4)'''
+
+'''BKUCertificates-1.4'''
 -------------------
 
 AddTrustExternalCARoot.cer (''ADDED'', TRUSTED)

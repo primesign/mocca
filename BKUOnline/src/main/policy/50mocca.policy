@@ -75,7 +75,6 @@ grant codeBase "file:${catalina.base}/webapps/bkuonline/-" {
       permission java.net.SocketPermission "www.sozialversicherung.at:443", "connect, resolve";
       permission java.net.SocketPermission "www.int.esv.sozialversicherung.at:443", "connect, resolve";
       permission java.net.SocketPermission "www.int.esv.sozialversicherung.gv.at:443", "connect, resolve";
-      permission java.net.SocketPermission "ooegkk.int.esv.sozialversicherung.at:443", "connect, resolve";
       //permission java.net.SocketPermission "www2.sozialversicherung.gv.at:443", "connect, resolve";
       //permission java.net.SocketPermission "www2.sozialversicherung.at:443", "connect, resolve";
       
