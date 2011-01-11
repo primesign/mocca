@@ -521,21 +521,16 @@ public class Activation {
 //	keyinp = kicc.xor(kifd);
 //
 
+        // TDES session key negotiation according to E-Sign K [STARCOS,6.11]?
+
         byte[] kd_icc = Arrays.copyOfRange(plain, 32, 96);
         System.out.println("derive key input...");
         byte[] kinp = new byte[kd_ifd.length];
         for (int i = 0; i < kd_ifd.length; i++) {
-
-//          System.out.println(Integer.toBinaryString(kd_icc[i]));
-//          System.out.println(Integer.toBinaryString(kd_ifd[i]));
-
           kinp[i] = (byte) (kd_icc[i] ^ kd_ifd[i]);
-
-//          System.out.println(Integer.toBinaryString(kinp[i]) + "\n");
-
         }
 
-        // TODO derive key
+        System.out.println("session key negotiation key (key seed): " + toString(kinp));
 
 //	var hashin = keyinp.concat(new ByteString("00000001", HEX));
 //	var hashres = crypto.digest(Crypto.SHA_256, hashin);
@@ -547,6 +542,18 @@ public class Activation {
 //	var kenc = new Key();
 //	kenc.setComponent(Key.DES, kencval);
 //
+
+        MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+        sha256.update(kinp);
+        sha256.update(new byte[] { (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x01});
+        byte[] enc_ = sha256.digest();
+
+        SecretKeySpec kenc = new SecretKeySpec(Arrays.copyOfRange(enc_, 0, 24), "3DES");
+        byte[] kencssc = Arrays.copyOfRange(enc_, 24, 32);
+
+        System.out.println("session key kenc: " + toString(kenc.getEncoded()));
+        System.out.println("send sequence counter SSC_enc: " + toString(kencssc));
+
 //	var hashin = keyinp.concat(new ByteString("00000002", HEX));
 //	var hashres = crypto.digest(Crypto.SHA_256, hashin);
 //	var kmacval = hashres.bytes(0, 24);
@@ -556,6 +563,17 @@ public class Activation {
 //	GPSystem.trace("Kmac SSC     : " + kmacssc);
 //	var kmac = new Key();
 //	kmac.setComponent(Key.DES, kmacval);
+
+        sha256.update(kinp);
+        sha256.update(new byte[] { (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x02});
+        enc_ = sha256.digest();
+
+        SecretKeySpec kmac = new SecretKeySpec(Arrays.copyOfRange(enc_, 0, 24), "3DES");
+        byte[] kmacssc = Arrays.copyOfRange(enc_, 24, 32);
+
+        System.out.println("session key kmac: " + toString(kmac.getEncoded()));
+        System.out.println("send sequence counter SSC_mac: " + toString(kmacssc));
+
 //
 //	var sc = new IsoSecureChannel(crypto);
 //	sc.setEncKey(kenc);
@@ -566,6 +584,7 @@ public class Activation {
 //	return sc;
 //}
 
+        channel = new SecureChannel(channel, kenc, kmac, kencssc, kmacssc);
 
     }
 
