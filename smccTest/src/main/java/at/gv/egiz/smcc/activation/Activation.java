@@ -7,8 +7,25 @@ package at.gv.egiz.smcc.activation;
 
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.util.TLVSequence;
+import iaik.asn1.ASN1;
+import iaik.asn1.ASN1Object;
+import iaik.asn1.CodingException;
+import iaik.asn1.DerCoder;
+import iaik.security.ecc.ECCException;
+import iaik.security.ecc.ecdsa.ECDSAParameter;
+import iaik.security.ecc.ecdsa.ECPublicKey;
+import iaik.security.ecc.math.ecgroup.AffineCoordinate;
+import iaik.security.ecc.math.ecgroup.CoordinateTypes;
+import iaik.security.ecc.math.ecgroup.ECGroupFactory;
+import iaik.security.ecc.math.ecgroup.ECPoint;
+import iaik.security.ecc.math.ecgroup.EllipticCurve;
+import iaik.security.ecc.math.field.FieldElement;
+import iaik.security.ecc.parameter.ECCParameterFactory;
+import iaik.security.ecc.spec.ECCParameterSpec;
+import iaik.security.ecc.util.PointFormatter;
 import iaik.security.provider.IAIK;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
@@ -16,7 +33,7 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.SignatureException;
+import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -253,7 +270,52 @@ public class Activation {
         resp = channel.transmit(cmdAPDU);
         System.out.println(" -> " + toString(resp.getBytes()) + "\n");
 
-        openSecureChannel(k_qsig, cin);
+//        openSecureChannel(k_qsig, cin);
+
+        System.out.println("READ BINARY");
+        cmdAPDU = new CommandAPDU(0x00, 0xb0, 0x00, 0x00, 256);
+        System.out.println(" cmd apdu " + toString(cmdAPDU.getBytes()));
+        resp = channel.transmit(cmdAPDU);
+        System.out.println(" -> " + toString(resp.getBytes()) + "\n");
+
+        try{
+            ASN1Object puk = DerCoder.decode(resp.getData());
+            System.out.println("EF.PuK:\n" + ASN1.print(puk));
+
+            byte[] oid = (byte[]) puk.getComponentAt(1).getComponentAt(1).getValue();
+            if (oid == null || oid.length == 0) {
+                System.out.println("assume P-256");
+                oid = "1.2.840.10045.3.1.7".getBytes("ASCII");
+            }
+
+            System.out.println("OID: " + new String(oid));
+            byte[] Q = (byte[]) puk.getComponentAt(1).getComponentAt(0).getValue();
+//            byte[] Qx = Arrays.copyOfRange(Q, 0, Q.length/2);
+//            byte[] Qy = Arrays.copyOfRange(Q, Q.length/2, Q.length);
+//
+//            System.out.println("Qx: " + toString(Qx));
+//            System.out.println("Qy: " + toString(Qy));
+
+//            ECPublicKey ecPuK = decodeECPublicKey(Q, new String(oid));
+//            System.out.println("PuK: " + ecPuK);
+
+        } catch (CodingException ex) {
+            throw new SignatureCardException("failed to read EF.PuK", ex);
+        }
+        /*
+        [a8:82:00:a8:b6:16:83:14:80:04:00:00:00:23:00:79:05:03:d0:40:00:00:17:00:12:01:02:00:
+         7f:49:
+         82:00: public exponent?
+         44:
+         86:40:
+            d4:7c:12:55:e4:7b:0c:7d:4e:bb:17:e4:83:e5:3d:56:df:45:7e:99:cb:cc:93:d2:c2:5e:4d:91:27:6e:8b:e7:
+            6d:23:53:f6:ab:2e:a6:dd:b7:1c:68:fb:59:cd:d0:45:2b:10:0e:27:00:6e:aa:1c:49:90:67:a9:9f:59:d1:97:
+         c1:00:c0:01:80:9e:82:00:40:de:22:37:4c:41:e0:f7:94:9a:5a:e4:76:b8:9b:00:b8:23:7c:e9:4a
+92:fd:b0:fb:25:4a:a7:0e:4d:5f:6f:3d:3a:54:28:f8:90:a1:7d:60:28:f8:72:b7:0f:9f:a6:a8:53:15:f2:9f
+88:37:d4:6b:77:f7:69:c1:b9:e7:2a:43:90:00]
+
+         <ResponseAPDU SW="9000" rc="0" sequence="7">A88200A8B616831480040000002300789901D04000001700120102007F49820044864084BA7BF0AF355A67E0C9064EE53A63859903C775199221494A430FFAE20F3F2DC283FEF3C8EEF21FBF75448DC7DB9649BAC504DE0C6416C91D62882438128CDFC100C001809E82004087506037D74C9DCE7454A2F561A19FF24ED03D097A0CD8D45F3CB2DCF51684195632F39D72381F64BA2DCB65524C54E94265CB9E5F43EBCC02D23C1D9A02D26E</ResponseAPDU>
+        */
     }
 
 
@@ -514,79 +576,116 @@ public class Activation {
         }
 
         System.out.println("successfully verified RND.ICC/IFD");
-        
 
-//
-//	var kicc = plain.bytes(32, 64);	// 32 -> 64
-//	keyinp = kicc.xor(kifd);
-//
-
-        // TDES session key negotiation according to E-Sign K [STARCOS,6.11]?
-
+        //
+        //	var kicc = plain.bytes(32, 64);	// 32 -> 64
         byte[] kd_icc = Arrays.copyOfRange(plain, 32, 96);
+
+        channel = secureChannel(kd_icc, kd_ifd);
+
+    }
+
+    SecureChannel secureChannel(byte[] kd_icc, byte[] kd_ifd) throws NoSuchAlgorithmException {
+
+        //	keyinp = kicc.xor(kifd);
+        //
+        // TDES session key negotiation according to E-Sign K [STARCOS,6.11]?
         System.out.println("derive key input...");
         byte[] kinp = new byte[kd_ifd.length];
         for (int i = 0; i < kd_ifd.length; i++) {
-          kinp[i] = (byte) (kd_icc[i] ^ kd_ifd[i]);
+            kinp[i] = (byte) (kd_icc[i] ^ kd_ifd[i]);
         }
-
         System.out.println("session key negotiation key (key seed): " + toString(kinp));
-
-//	var hashin = keyinp.concat(new ByteString("00000001", HEX));
-//	var hashres = crypto.digest(Crypto.SHA_256, hashin);
-//	var kencval = hashres.bytes(0, 24);
-//	var kencssc = hashres.bytes(24, 8);
-//
-//	GPSystem.trace("Kenc         : " + kencval);
-//	GPSystem.trace("Kenc SSC     : " + kencssc);
-//	var kenc = new Key();
-//	kenc.setComponent(Key.DES, kencval);
-//
-
+        //	var hashin = keyinp.concat(new ByteString("00000001", HEX));
+        //	var hashres = crypto.digest(Crypto.SHA_256, hashin);
+        //	var kencval = hashres.bytes(0, 24);
+        //	var kencssc = hashres.bytes(24, 8);
+        //
+        //	GPSystem.trace("Kenc         : " + kencval);
+        //	GPSystem.trace("Kenc SSC     : " + kencssc);
+        //	var kenc = new Key();
+        //	kenc.setComponent(Key.DES, kencval);
+        //
         MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
         sha256.update(kinp);
-        sha256.update(new byte[] { (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x01});
+        sha256.update(new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01});
         byte[] enc_ = sha256.digest();
-
         SecretKeySpec kenc = new SecretKeySpec(Arrays.copyOfRange(enc_, 0, 24), "3DES");
         byte[] kencssc = Arrays.copyOfRange(enc_, 24, 32);
-
         System.out.println("session key kenc: " + toString(kenc.getEncoded()));
         System.out.println("send sequence counter SSC_enc: " + toString(kencssc));
-
-//	var hashin = keyinp.concat(new ByteString("00000002", HEX));
-//	var hashres = crypto.digest(Crypto.SHA_256, hashin);
-//	var kmacval = hashres.bytes(0, 24);
-//	var kmacssc = hashres.bytes(24, 8);
-//
-//	GPSystem.trace("Kmac         : " + kmacval);
-//	GPSystem.trace("Kmac SSC     : " + kmacssc);
-//	var kmac = new Key();
-//	kmac.setComponent(Key.DES, kmacval);
-
+        //	var hashin = keyinp.concat(new ByteString("00000002", HEX));
+        //	var hashres = crypto.digest(Crypto.SHA_256, hashin);
+        //	var kmacval = hashres.bytes(0, 24);
+        //	var kmacssc = hashres.bytes(24, 8);
+        //
+        //	GPSystem.trace("Kmac         : " + kmacval);
+        //	GPSystem.trace("Kmac SSC     : " + kmacssc);
+        //	var kmac = new Key();
+        //	kmac.setComponent(Key.DES, kmacval);
         sha256.update(kinp);
-        sha256.update(new byte[] { (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x02});
+        sha256.update(new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x02});
         enc_ = sha256.digest();
-
         SecretKeySpec kmac = new SecretKeySpec(Arrays.copyOfRange(enc_, 0, 24), "3DES");
         byte[] kmacssc = Arrays.copyOfRange(enc_, 24, 32);
-
         System.out.println("session key kmac: " + toString(kmac.getEncoded()));
         System.out.println("send sequence counter SSC_mac: " + toString(kmacssc));
+        //
+        //	var sc = new IsoSecureChannel(crypto);
+        //	sc.setEncKey(kenc);
+        //	sc.setMacKey(kmac);
+        //
+        //	sc.setMACSendSequenceCounter(kmacssc);
+        //	sc.setEncryptionSendSequenceCounter(kencssc);
+        //	return sc;
+        //}
 
-//
-//	var sc = new IsoSecureChannel(crypto);
-//	sc.setEncKey(kenc);
-//	sc.setMacKey(kmac);
-//
-//	sc.setMACSendSequenceCounter(kmacssc);
-//	sc.setEncryptionSendSequenceCounter(kencssc);
-//	return sc;
-//}
-
-        channel = new SecureChannel(channel, kenc, kmac, kencssc, kmacssc);
-
+        return new SecureChannel(channel, kenc, kmac, kencssc, kmacssc);
     }
+
+     /**
+   * Decodes the given encoded EC PublicKey according to the Octet-String-to-Point conversion
+   * of ANSI X9.62 (1998), section 4.3.7.
+   * <p>
+   * This method is called on the client side to decode the public server key
+   * contained in an ECDH ServerKeyExchange message received from the server.
+   *
+   * @param ecPoint the (client) public key ECPoint, encoded according to
+   *                ANSI X9.62 (1998), section 4.3.6
+   * @param oid the oid of the curve
+   *
+   * @return the decoded public EC key
+   *
+   * @exception Exception if an error occurs when decoding the key
+   */
+  public static ECPublicKey decodeECPublicKey(byte[] ecPoint, String oid) throws ECCException {
+
+    ECCParameterFactory pFac = ECCParameterFactory.getInstance();
+    ECCParameterSpec spec = pFac.getParameterByOID(oid);
+
+    // Now, we need an instance of elliptic curve factory
+    ECGroupFactory gfac = ECGroupFactory.getInstance();
+
+    BigInteger r = spec.getR();
+
+    FieldElement aElement = spec.getA();
+    FieldElement bElement = spec.getB();
+
+    // Now we get a curve of the form y^2 = x^3 + ax + b having order r from the
+    // ECGroupFactory. We assume that the curve is non-singular.
+    EllipticCurve ec = gfac.getCurve(aElement, bElement, r, CoordinateTypes.AFFINE_COORDINATES);
+
+
+    AffineCoordinate coord = PointFormatter.getInstance().getPointCodec().decodePoint(ecPoint, ec);
+
+    // With these coordinates, we can construct a point on the curve.
+    ECPoint point = ec.newPoint(coord);
+
+    ECDSAParameter params = new ECDSAParameter(spec);
+
+    return new ECPublicKey(params, point);
+
+  }
 
     public static void main(String[] args) {
 

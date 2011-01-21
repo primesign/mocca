@@ -123,7 +123,7 @@ public class RetailCBCMac {
                        int off,
                        int len,
                        SecretKey key, 
-                       String cipherAlg, 
+                       String cipherAlg,
                        int blockSize) 
     throws NoSuchAlgorithmException, 
            NoSuchProviderException, 
