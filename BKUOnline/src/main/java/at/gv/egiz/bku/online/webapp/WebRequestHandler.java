@@ -99,7 +99,6 @@ public class WebRequestHandler extends HttpServlet {
         headerMap.put(name, value);
       }
     }
-    bindingProcessor.setHTTPHeaders(headerMap);
     
     // set request stream 
     InputStream inputStream;
@@ -114,6 +113,8 @@ public class WebRequestHandler extends HttpServlet {
         inputStream = new ByteArrayInputStream(new byte[] {});
       }
     }
+
+    bindingProcessor.setHTTPHeaders(headerMap);
     bindingProcessor.consumeRequestStream(req.getRequestURL().toString(), inputStream);
     inputStream.close();
 
