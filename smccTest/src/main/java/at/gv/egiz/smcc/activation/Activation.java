@@ -33,7 +33,6 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -270,7 +269,7 @@ public class Activation {
         resp = channel.transmit(cmdAPDU);
         System.out.println(" -> " + toString(resp.getBytes()) + "\n");
 
-//        openSecureChannel(k_qsig, cin);
+        openSecureChannel(k_qsig, cin);
 
         System.out.println("READ BINARY");
         cmdAPDU = new CommandAPDU(0x00, 0xb0, 0x00, 0x00, 256);
@@ -296,8 +295,11 @@ public class Activation {
 //            System.out.println("Qx: " + toString(Qx));
 //            System.out.println("Qy: " + toString(Qy));
 
-//            ECPublicKey ecPuK = decodeECPublicKey(Q, new String(oid));
-//            System.out.println("PuK: " + ecPuK);
+            byte[] Q_ = new byte[Q.length + 1];
+            Q_[0] = (byte) 0x04;
+            System.arraycopy(Q, 0, Q_, 1, Q.length);
+            ECPublicKey ecPuK = decodeECPublicKey(Q_, new String(oid));
+            System.out.println("PuK: " + ecPuK);
 
         } catch (CodingException ex) {
             throw new SignatureCardException("failed to read EF.PuK", ex);
@@ -507,7 +509,7 @@ public class Activation {
     //	print("MAC          : " + mac);
 
 
-        byte[] mac = RetailCBCMac.retailMac(cryptogram, "DES", "DESede", k_mac, 8, 8);
+        byte[] mac = RetailCBCMac.retailMac(cryptogram, RetailCBCMac.PADDING.ISO9797_2, "DES", "DESede", k_mac, 8, 8);
         System.out.println("mac (" + mac.length +"byte): " + toString(mac));
 //
 //
@@ -539,7 +541,7 @@ public class Activation {
         System.arraycopy(resp.getData(), 0, cryptogram, 0, 96);
         System.arraycopy(resp.getData(), 96, mac, 0, 8);
 
-        byte[] mac_ = RetailCBCMac.retailMac(cryptogram, "DES", "DESede", k_mac, 8, 8);
+        byte[] mac_ = RetailCBCMac.retailMac(cryptogram, RetailCBCMac.PADDING.ISO9797_2, "DES", "DESede", k_mac, 8, 8);
 
         if (!Arrays.equals(mac, mac_)) {
           throw new SignatureCardException("Failed to authenticate card, invalid MAC " + toString(mac));
@@ -595,7 +597,8 @@ public class Activation {
         for (int i = 0; i < kd_ifd.length; i++) {
             kinp[i] = (byte) (kd_icc[i] ^ kd_ifd[i]);
         }
-        System.out.println("session key negotiation key (key seed): " + toString(kinp));
+
+        System.out.println("session key negotiation key (key seed) (" + kinp.length + "B): " + toString(kinp));
         //	var hashin = keyinp.concat(new ByteString("00000001", HEX));
         //	var hashres = crypto.digest(Crypto.SHA_256, hashin);
         //	var kencval = hashres.bytes(0, 24);
@@ -623,6 +626,7 @@ public class Activation {
         //	GPSystem.trace("Kmac SSC     : " + kmacssc);
         //	var kmac = new Key();
         //	kmac.setComponent(Key.DES, kmacval);
+
         sha256.update(kinp);
         sha256.update(new byte[]{(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x02});
         enc_ = sha256.digest();
@@ -640,7 +644,7 @@ public class Activation {
         //	return sc;
         //}
 
-        return new SecureChannel(channel, kenc, kmac, kencssc, kmacssc);
+        return new SecureChannel(channel, kenc, kmac, 8, kencssc, kmacssc);
     }
 
      /**
@@ -675,7 +679,6 @@ public class Activation {
     // ECGroupFactory. We assume that the curve is non-singular.
     EllipticCurve ec = gfac.getCurve(aElement, bElement, r, CoordinateTypes.AFFINE_COORDINATES);
 
-
     AffineCoordinate coord = PointFormatter.getInstance().getPointCodec().decodePoint(ecPoint, ec);
 
     // With these coordinates, we can construct a point on the curve.
@@ -687,14 +690,92 @@ public class Activation {
 
   }
 
-    public static void main(String[] args) {
+  public static void main(String[] args) {
 
-        try {
-            Activation test = new Activation();
-            test.setUp();
-            test.activate();
-        } catch (Exception e) {
-            e.printStackTrace();
+    try {
+      Activation test = new Activation();
+      test.setUp();
+      test.activate();
+//      test.testMACProtection();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+  }
+
+
+/*
+  static final byte[] kicc = new byte[] { (byte)0xB3, (byte)0xB1, (byte)0x0A, (byte)0x87, (byte)0x84, (byte)0xEC, (byte)0x26, (byte)0xE7, (byte)0x90, (byte)0xA1, (byte)0x14, (byte)0xFC, (byte)0x1A, (byte)0xA9, (byte)0x40, (byte)0xF9, (byte)0x7E, (byte)0xE9, (byte)0xAC, (byte)0x69, (byte)0x6D, (byte)0x64, (byte)0xAF, (byte)0xD8, (byte)0x24, (byte)0xCA, (byte)0x6A, (byte)0xB7, (byte)0x30, (byte)0x49, (byte)0x68, (byte)0xFE, (byte)0xFD, (byte)0x5A, (byte)0xC6, (byte)0x58, (byte)0xAD, (byte)0x33, (byte)0xC1, (byte)0xE4, (byte)0xDE, (byte)0x16, (byte)0xC0, (byte)0x06, (byte)0x66, (byte)0xA3, (byte)0x1E, (byte)0x86, (byte)0xEF, (byte)0xBF, (byte)0xAA, (byte)0x3B, (byte)0x4B, (byte)0xCA, (byte)0x47, (byte)0x81, (byte)0x33, (byte)0xE1, (byte)0x67, (byte)0x6A, (byte)0x69, (byte)0xA5, (byte)0x4E, (byte)0xB4 };
+  static final byte[] kifd = new byte[] { (byte)0xB9, (byte)0xFD, (byte)0x50, (byte)0xF3, (byte)0x25, (byte)0x92, (byte)0xE9, (byte)0xF9, (byte)0x7C, (byte)0xF4, (byte)0x8F, (byte)0xEF, (byte)0xC4, (byte)0x8E, (byte)0x93, (byte)0x8F, (byte)0xC6, (byte)0x86, (byte)0x40, (byte)0xAF, (byte)0x4F, (byte)0x3E, (byte)0xFF, (byte)0x76, (byte)0xDE, (byte)0x1B, (byte)0xCE, (byte)0x87, (byte)0x8A, (byte)0x19, (byte)0xF9, (byte)0x2F, (byte)0xF9, (byte)0x94, (byte)0x9A, (byte)0x63, (byte)0x4E, (byte)0xED, (byte)0x84, (byte)0xDE, (byte)0x5B, (byte)0x47, (byte)0x53, (byte)0x12, (byte)0xBC, (byte)0xD6, (byte)0x24, (byte)0x1C, (byte)0xE0, (byte)0xC4, (byte)0xB1, (byte)0x83, (byte)0x24, (byte)0x33, (byte)0x11, (byte)0x49, (byte)0x51, (byte)0x3E, (byte)0xDC, (byte)0xB4, (byte)0x3F, (byte)0x7B, (byte)0xF2, (byte)0x71 };
+  static final byte[] keyinp = new byte[] { (byte)0x0A, (byte)0x4C, (byte)0x5A, (byte)0x74, (byte)0xA1, (byte)0x7E, (byte)0xCF, (byte)0x1E, (byte)0xEC, (byte)0x55, (byte)0x9B, (byte)0x13, (byte)0xDE, (byte)0x27, (byte)0xD3, (byte)0x76, (byte)0xB8, (byte)0x6F, (byte)0xEC, (byte)0xC6, (byte)0x22, (byte)0x5A, (byte)0x50, (byte)0xAE, (byte)0xFA, (byte)0xD1, (byte)0xA4, (byte)0x30, (byte)0xBA, (byte)0x50, (byte)0x91, (byte)0xD1, (byte)0x04, (byte)0xCE, (byte)0x5C, (byte)0x3B, (byte)0xE3, (byte)0xDE, (byte)0x45, (byte)0x3A, (byte)0x85, (byte)0x51, (byte)0x93, (byte)0x14, (byte)0xDA, (byte)0x75, (byte)0x3A, (byte)0x9A, (byte)0x0F, (byte)0x7B, (byte)0x1B, (byte)0xB8, (byte)0x6F, (byte)0xF9, (byte)0x56, (byte)0xC8, (byte)0x62, (byte)0xDF, (byte)0xBB, (byte)0xDE, (byte)0x56, (byte)0xDE, (byte)0xBC, (byte)0xC5 };
+  static final byte[] hashinp = new byte[] { (byte)0x0A, (byte)0x4C, (byte)0x5A, (byte)0x74, (byte)0xA1, (byte)0x7E, (byte)0xCF, (byte)0x1E, (byte)0xEC, (byte)0x55, (byte)0x9B, (byte)0x13, (byte)0xDE, (byte)0x27, (byte)0xD3, (byte)0x76, (byte)0xB8, (byte)0x6F, (byte)0xEC, (byte)0xC6, (byte)0x22, (byte)0x5A, (byte)0x50, (byte)0xAE, (byte)0xFA, (byte)0xD1, (byte)0xA4, (byte)0x30, (byte)0xBA, (byte)0x50, (byte)0x91, (byte)0xD1, (byte)0x04, (byte)0xCE, (byte)0x5C, (byte)0x3B, (byte)0xE3, (byte)0xDE, (byte)0x45, (byte)0x3A, (byte)0x85, (byte)0x51, (byte)0x93, (byte)0x14, (byte)0xDA, (byte)0x75, (byte)0x3A, (byte)0x9A, (byte)0x0F, (byte)0x7B, (byte)0x1B, (byte)0xB8, (byte)0x6F, (byte)0xF9, (byte)0x56, (byte)0xC8, (byte)0x62, (byte)0xDF, (byte)0xBB, (byte)0xDE, (byte)0x56, (byte)0xDE, (byte)0xBC, (byte)0xC5, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x01 };
+//hashres      : A6 85 3E A7 A2 9E 2D 5C 00 CC 8D 0A E5 89 9E DF 6A 0A AD 65 47 C6 12 A2 19 D8 67 49 D9 F3 A0 6E
+*
+ */
+
+
+  /*
+   *
+   Plain Block  : 3E 43 8A 71 9E 25 1E 87 33 1F D2 4A A7 79 12 18 5B 3D B2 93 3F E8 CE 7C 00 00 00 23 00 79 05 03 4A B5 FB 44 33 01 64 57 80 21 B5 B1 B6 FF D9 C3 5C 10 FB 4A A8 88 B7 F8 79 19 D6 3A 3E 5D F4 D7 1B CA 48 82 E9 9B 6E C7 4F AB 34 CC 0D AA 43 25 21 29 D0 78 31 A3 F2 26 F7 EF 52 70 F9 2E 84 2B
+K_enc        : C7 61 DA 43 FD 89 89 9E 92 54 AD 08 5D 67 4F 8C 38 DC 32 7C A4 FB 67 07
+Cryptogram   : B1 0C 9A F3 6D FA B0 70 D8 4D 6A 0B 3C E9 8E 5E 50 D0 2A 82 1E CD 70 77 6F CC D4 E8 4D 0E A3 E6 B8 87 2E 31 0F B1 0B 42 5F EB C6 36 B0 EC 18 86 94 0D 5B 67 6C 1A 96 8F C7 2B 8E 4B 85 2A 91 63 C9 E4 66 43 42 D9 55 FF 44 5C C9 DE A6 44 D3 46 37 DA 47 02 A3 63 BA E7 4D CB 52 64 5D F6 B4 94
+K_mac        : 02 E5 8A D6 1A DA 98 EA E9 0B C4 68 0B C8 29 A4 31 26 F1 16 91 46 7F 97
+MAC          : 6B 51 02 0A DD 8F 10 55
+kicc         : 56 B8 10 10 B9 BE 09 34 AA DA 1A 0A 64 24 B7 35 5A 6C A0 5C 75 9F A8 B1 B6 1F 4E 5E 16 15 37 51 EA 9F 0B DE CC FC 31 0B 21 40 28 B5 75 63 86 79 6E 64 C8 14 4A C6 05 1E C1 FB 7E 86 EF 7F B9 9C
+kifd         : 4A B5 FB 44 33 01 64 57 80 21 B5 B1 B6 FF D9 C3 5C 10 FB 4A A8 88 B7 F8 79 19 D6 3A 3E 5D F4 D7 1B CA 48 82 E9 9B 6E C7 4F AB 34 CC 0D AA 43 25 21 29 D0 78 31 A3 F2 26 F7 EF 52 70 F9 2E 84 2B
+keyinp         : 1C 0D EB 54 8A BF 6D 63 2A FB AF BB D2 DB 6E F6 06 7C 5B 16 DD 17 1F 49 CF 06 98 64 28 48 C3 86 F1 55 43 5C 25 67 5F CC 6E EB 1C 79 78 C9 C5 5C 4F 4D 18 6C 7B 65 F7 38 36 14 2C F6 16 51 3D B7
+hashinp      : 1C 0D EB 54 8A BF 6D 63 2A FB AF BB D2 DB 6E F6 06 7C 5B 16 DD 17 1F 49 CF 06 98 64 28 48 C3 86 F1 55 43 5C 25 67 5F CC 6E EB 1C 79 78 C9 C5 5C 4F 4D 18 6C 7B 65 F7 38 36 14 2C F6 16 51 3D B7 00 00 00 01
+hashres      : 78 8B 53 B9 E0 3B 9B 87 11 42 4A 13 2D 03 7B AA 0E 9E 97 43 4E 4E FC 5A F1 BE 47 51 F3 EC C8 04
+hashinp      : 1C 0D EB 54 8A BF 6D 63 2A FB AF BB D2 DB 6E F6 06 7C 5B 16 DD 17 1F 49 CF 06 98 64 28 48 C3 86 F1 55 43 5C 25 67 5F CC 6E EB 1C 79 78 C9 C5 5C 4F 4D 18 6C 7B 65 F7 38 36 14 2C F6 16 51 3D B7 00 00 00 02
+hashres      : 4D BF FC AD 67 94 55 F9 7F DD 47 30 C7 74 B1 7D CF B8 B3 74 93 87 0F 21 ED 72 96 5D D6 04 66 58
+   */
+
+
+    /**
+     * sniffed values (cf. activate-800400...790503.log lines 95-101, hashres = sk2 | ssc2
+     * and apdu_ from activate activate-800400...790503-apdu.log lines 79-83, corresponding challenge)
+     */
+     static final byte[] kicc = new byte[] { (byte)0x56, (byte)0xB8, (byte)0x10, (byte)0x10, (byte)0xB9, (byte)0xBE, (byte)0x09, (byte)0x34, (byte)0xAA, (byte)0xDA, (byte)0x1A, (byte)0x0A, (byte)0x64, (byte)0x24, (byte)0xB7, (byte)0x35, (byte)0x5A, (byte)0x6C, (byte)0xA0, (byte)0x5C, (byte)0x75, (byte)0x9F, (byte)0xA8, (byte)0xB1, (byte)0xB6, (byte)0x1F, (byte)0x4E, (byte)0x5E, (byte)0x16, (byte)0x15, (byte)0x37, (byte)0x51, (byte)0xEA, (byte)0x9F, (byte)0x0B, (byte)0xDE, (byte)0xCC, (byte)0xFC, (byte)0x31, (byte)0x0B, (byte)0x21, (byte)0x40, (byte)0x28, (byte)0xB5, (byte)0x75, (byte)0x63, (byte)0x86, (byte)0x79, (byte)0x6E, (byte)0x64, (byte)0xC8, (byte)0x14, (byte)0x4A, (byte)0xC6, (byte)0x05, (byte)0x1E, (byte)0xC1, (byte)0xFB, (byte)0x7E, (byte)0x86, (byte)0xEF, (byte)0x7F, (byte)0xB9, (byte)0x9C };
+     static final byte[] kifd = new byte[] { (byte)0x4A, (byte)0xB5, (byte)0xFB, (byte)0x44, (byte)0x33, (byte)0x01, (byte)0x64, (byte)0x57, (byte)0x80, (byte)0x21, (byte)0xB5, (byte)0xB1, (byte)0xB6, (byte)0xFF, (byte)0xD9, (byte)0xC3, (byte)0x5C, (byte)0x10, (byte)0xFB, (byte)0x4A, (byte)0xA8, (byte)0x88, (byte)0xB7, (byte)0xF8, (byte)0x79, (byte)0x19, (byte)0xD6, (byte)0x3A, (byte)0x3E, (byte)0x5D, (byte)0xF4, (byte)0xD7, (byte)0x1B, (byte)0xCA, (byte)0x48, (byte)0x82, (byte)0xE9, (byte)0x9B, (byte)0x6E, (byte)0xC7, (byte)0x4F, (byte)0xAB, (byte)0x34, (byte)0xCC, (byte)0x0D, (byte)0xAA, (byte)0x43, (byte)0x25, (byte)0x21, (byte)0x29, (byte)0xD0, (byte)0x78, (byte)0x31, (byte)0xA3, (byte)0xF2, (byte)0x26, (byte)0xF7, (byte)0xEF, (byte)0x52, (byte)0x70, (byte)0xF9, (byte)0x2E, (byte)0x84, (byte)0x2B };
+     static final byte[] sk2 = new byte[] { (byte)0x4D, (byte)0xBF, (byte)0xFC, (byte)0xAD, (byte)0x67, (byte)0x94, (byte)0x55, (byte)0xF9, (byte)0x7F, (byte)0xDD, (byte)0x47, (byte)0x30, (byte)0xC7, (byte)0x74, (byte)0xB1, (byte)0x7D, (byte)0xCF, (byte)0xB8, (byte)0xB3, (byte)0x74, (byte)0x93, (byte)0x87, (byte)0x0F, (byte)0x21 };
+     static final byte[] ssc2 = new byte[] { (byte)0xED, (byte)0x72, (byte)0x96, (byte)0x5D, (byte)0xD6, (byte)0x04, (byte)0x66, (byte)0x58 };
+     static final byte[] apdu_ = new byte[] { (byte)0x0C, (byte)0xB0, (byte)0x00, (byte)0x00, (byte)0x0D, (byte)0x97, (byte)0x01, (byte)0xDF, (byte)0x8E, (byte)0x08, (byte)0xCE, (byte)0xBD, (byte)0xFA, (byte)0xEC, (byte)0xFA, (byte)0xB2, (byte)0xC5, (byte)0xD7, (byte)0x00 };
+
+
+    void testMACProtection() throws IllegalArgumentException, InvalidKeyException, NoSuchAlgorithmException, NoSuchProviderException, GeneralSecurityException {
+
+        SecureChannel channel = secureChannel(kicc, kifd);
+
+        if (!Arrays.equals(channel.kmac.getEncoded(), sk2)) {
+            System.out.println("derived session key kmac does not match");
+            System.out.println("kmac orig:    " + toString(sk2));
+            System.out.println("kmac test:    " + toString(channel.kmac.getEncoded()));
+        }
+        if (!Arrays.equals(channel.kmacssc, ssc2)) {
+            System.out.println("derived send sequence counter kmacssc does not match");
+            System.out.println("kmacssc orig: " + toString(ssc2));
+            System.out.println("kmacssc test: " + toString(channel.kmacssc));
+        }
+        
+        
+        for (int i = 0; i < 3; i++) {
+            byte[] case2apdu = channel.protectCase2(new byte[] { (byte)0x00, (byte)0x0b, (byte)0x00, (byte)0x00, (byte)0x00 });
+
+            System.out.println("apdu orig:   " + toString(apdu_));
+            System.out.println("apdu test:   " + toString(case2apdu));
+
+            if (Arrays.equals(apdu_, case2apdu)) {
+                System.out.println(" ******************************* ");
+            }
         }
     }
+
+		public static final byte[] SM_RESP_APDU = new byte[] {
+			(byte)0x81, (byte)0x81, (byte)0xac, (byte)0xa8, (byte)0x82, (byte)0x00, (byte)0xa8, (byte)0xb6, (byte)0x16, (byte)0x83, (byte)0x14, (byte)0x80, (byte)0x04, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x23, (byte)0x00, (byte)0x79, (byte)0x05, (byte)0x03, (byte)0xd0, (byte)0x40, (byte)0x00, (byte)0x00, (byte)0x17, (byte)0x00, (byte)0x12, (byte)0x01, (byte)0x02, (byte)0x00, (byte)0x7f,
+			(byte)0x49, (byte)0x82, (byte)0x00, (byte)0x44, (byte)0x86, (byte)0x40, (byte)0xd4, (byte)0x7c, (byte)0x12, (byte)0x55, (byte)0xe4, (byte)0x7b, (byte)0x0c, (byte)0x7d, (byte)0x4e, (byte)0xbb, (byte)0x17, (byte)0xe4, (byte)0x83, (byte)0xe5, (byte)0x3d, (byte)0x56, (byte)0xdf, (byte)0x45, (byte)0x7e, (byte)0x99, (byte)0xcb, (byte)0xcc, (byte)0x93, (byte)0xd2, (byte)0xc2, (byte)0x5e,
+			(byte)0x4d, (byte)0x91, (byte)0x27, (byte)0x6e, (byte)0x8b, (byte)0xe7, (byte)0x6d, (byte)0x23, (byte)0x53, (byte)0xf6, (byte)0xab, (byte)0x2e, (byte)0xa6, (byte)0xdd, (byte)0xb7, (byte)0x1c, (byte)0x68, (byte)0xfb, (byte)0x59, (byte)0xcd, (byte)0xd0, (byte)0x45, (byte)0x2b, (byte)0x10, (byte)0x0e, (byte)0x27, (byte)0x00, (byte)0x6e, (byte)0xaa, (byte)0x1c, (byte)0x49, (byte)0x90,
+			(byte)0x67, (byte)0xa9, (byte)0x9f, (byte)0x59, (byte)0xd1, (byte)0x97, (byte)0xc1, (byte)0x00, (byte)0xc0, (byte)0x01, (byte)0x80, (byte)0x9e, (byte)0x82, (byte)0x00, (byte)0x40, (byte)0xde, (byte)0x22, (byte)0x37, (byte)0x4c, (byte)0x41, (byte)0xe0, (byte)0xf7, (byte)0x94, (byte)0x9a, (byte)0x5a, (byte)0xe4, (byte)0x76, (byte)0xb8, (byte)0x9b, (byte)0x00, (byte)0xb8, (byte)0x23,
+			(byte)0x7c, (byte)0xe9, (byte)0x4a, (byte)0x92, (byte)0xfd, (byte)0xb0, (byte)0xfb, (byte)0x25, (byte)0x4a, (byte)0xa7, (byte)0x0e, (byte)0x4d, (byte)0x5f, (byte)0x6f, (byte)0x3d, (byte)0x3a, (byte)0x54, (byte)0x28, (byte)0xf8, (byte)0x90, (byte)0xa1, (byte)0x7d, (byte)0x60, (byte)0x28, (byte)0xf8, (byte)0x72, (byte)0xb7, (byte)0x0f, (byte)0x9f, (byte)0xa6, (byte)0xa8, (byte)0x53,
+			(byte)0x15, (byte)0xf2, (byte)0x9f, (byte)0x88, (byte)0x37, (byte)0xd4, (byte)0x6b, (byte)0x77, (byte)0xf7, (byte)0x69, (byte)0xc1, (byte)0xb9, (byte)0xe7, (byte)0x2a, (byte)0x43, (byte)0x99, (byte)0x02, (byte)0x90, (byte)0x00, (byte)0x8e, (byte)0x08, (byte)0xbc, (byte)0xdc, (byte)0x25, (byte)0x67, (byte)0x5e, (byte)0xfd, (byte)0x6c, (byte)0xba }; //, (byte)0x90, (byte)0x00};
+
+		
 }

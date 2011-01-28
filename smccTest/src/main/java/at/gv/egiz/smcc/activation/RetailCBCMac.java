@@ -13,6 +13,10 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class RetailCBCMac {
+
+    public enum PADDING {
+      NoPadding, ISO9797_2
+    };
   
   /**
    * Calculates a Retail CBC Mac from the given message.
@@ -53,7 +57,8 @@ public class RetailCBCMac {
    * @throws InvalidKeyException if the key cannot be used with the Ciphers 
    * @throws GeneralSecurityException if the Cipher operation(s) fails
    */
-  static byte[] retailMac(byte[] msg, 
+  static byte[] retailMac(byte[] msg,
+                          PADDING msgPadding,
                           String cbcCipherAlg,
                           String cipherAlg,
                           SecretKey csk,
@@ -84,17 +89,20 @@ public class RetailCBCMac {
       System.arraycopy(rawCsk, 0, rawCbcCipherKey, 0, blockSize);
       cbcCipherKey = new SecretKeySpec(rawCbcCipherKey, cbcCipherAlg);
     }
-    // if necessary pad message with zeros
-    byte[] paddedMsg = pad(msg, blockSize);
-    
+
+    if (msgPadding == PADDING.ISO9797_2) {
+        // if necessary pad message with zeros
+        msg = pad(msg, blockSize);
+    }
+
     // calculate CBC Mac for the first n-1 blocks
-    int n = paddedMsg.length;
+    int n = msg.length;
     int n_1 = n - blockSize;
-    byte[] cbcMac = cbcMac(paddedMsg, 0, n_1, cbcCipherKey, cbcCipherAlg, blockSize);
+    byte[] cbcMac = cbcMac(msg, 0, n_1, cbcCipherKey, cbcCipherAlg, blockSize);
 
     // calculate retail mac
     byte[] xor = new byte[blockSize];
-    CryptoUtils.xorBlock(paddedMsg, n_1, cbcMac, 0, xor, 0, blockSize);
+    CryptoUtils.xorBlock(msg, n_1, cbcMac, 0, xor, 0, blockSize);
     Cipher cipher = Cipher.getInstance(cipherAlg+"/ECB/NoPadding", "IAIK");
     cipher.init(Cipher.ENCRYPT_MODE, csk);
     byte[] retailMac = cipher.doFinal(xor);

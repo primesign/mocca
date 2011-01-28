@@ -39,11 +39,28 @@ public class TLV {
     return 0xFF & bytes[start];
   }
 
+	public int getLengthFieldLength() {
+		if ((bytes[start + 1] & 0x80) > 0) {
+			// ISO 7816 allows length fields of up to 5 bytes
+			return 1 + (bytes[start + 1] & 0x07);
+		}
+		return 1;
+	}
+
   /**
    * @return the length
    */
   public int getLength() {
-    return 0xFF & bytes[start + 1];
+
+		if ((bytes[start + 1] & 0x80) > 0) {
+			int length = 0;
+			for (int i = 0; i < (bytes[start + 1] & 0x07); i++) {
+				length <<= 8;
+				length += bytes[start + 2 + i] & 0xff;
+			}
+			return length;
+		}
+		return bytes[start + 1] & 0x7f;
   }
 
   /**
@@ -51,7 +68,7 @@ public class TLV {
    */
   public byte[] getValue() {
     byte[] value = new byte[getLength()];
-    System.arraycopy(bytes, start + 2, value, 0, value.length);
+    System.arraycopy(bytes, start + 1 + getLengthFieldLength(), value, 0, value.length);
     return value;
   }
 
@@ -78,7 +95,7 @@ public class TLV {
     sb.append(']');
     return sb.toString();
   }
+	
 
-  
 
 }
