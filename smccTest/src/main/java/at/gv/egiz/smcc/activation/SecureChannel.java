@@ -91,30 +91,23 @@ public class SecureChannel extends CardChannel {
 		try {
 			if (apdu.length < 4) {
 				throw new IllegalArgumentException("invalid Command APDU " + toString(apdu));
-			} else if (apdu.length == 4) {
-				CommandAPDU capdu_ = new CommandAPDU(protectCase1b(apdu));
+			} else if (apdu.length < 6) {
+				CommandAPDU capdu_ = new CommandAPDU(
+								protectNoCommandData(apdu, apdu.length == 5));
 				log.info("cmd apdu*: {}", toString(capdu_.getBytes()));
 				ResponseAPDU resp_ = channel.transmit(capdu_);
 				log.info(" -> resp*: {}", toString(resp_.getBytes()));
-				return unProtectCase1b(resp_);
-			} else if (apdu.length == 5) {
-				CommandAPDU capdu_ = new CommandAPDU(protectCase2(apdu));
-				log.info("cmd apdu*: {}", toString(capdu_.getBytes()));
-				ResponseAPDU resp_ = channel.transmit(capdu_);
-				log.info(" -> resp*: {}", toString(resp_.getBytes()));
-				return unProtectCase2(resp_);
+				return unProtectResponse(resp_);
 
-			} else if (apdu.length == 5 + apdu[4]) {
-				// CLA|INS|P1|P2|Lc|Data    -> CLA'|INS|P1|P2|Lc'|TLplain|TLmac
-				// 81 (plain value) 8e (cryptographic checksum)
 			} else {
-				// CLA|INS|P1|P2|Lc|Data|Le -> CLA'|INS|P1|P2|Lc'|TLplain|TLle|TLmac|00
-				// 81 (plain value) 97 (Ne) 8e (cryptographic checksum)
-				// TODO extended APDUs
+				CommandAPDU capdu_ = new CommandAPDU(
+								protectCommandData(apdu, apdu.length > 5+apdu[4]));
+				log.info("cmd apdu*: {}", toString(capdu_.getBytes()));
+				ResponseAPDU resp_ = channel.transmit(capdu_);
+				log.info(" -> resp*: {}", toString(resp_.getBytes()));
+				return unProtectResponse(resp_);
+				
 			}
-
-			throw new UnsupportedOperationException("not implemented");
-			
 		} catch (Exception ex) {
 			System.out.println("failed to transmit protected APDU: " + ex.getMessage());
 			throw new CardException(ex);
@@ -132,132 +125,46 @@ public class SecureChannel extends CardChannel {
 	}
 
 	/**
-	 * Case 1 of command-response pair defined in ISO 7816-3
-	 * no command data, no response data, status not protected
-	 *
-	 * CLA|INS|P1|P2 -> CLA'|INS|P1|P2|Lc'|TLmac
-	 * @param apdu
-	 * @return
-	 * @throws GeneralSecurityException mac-calculation error
-	 */
-	byte[] protectCase1b(byte[] apdu) throws GeneralSecurityException {
-
-		byte[] apdu_ = new byte[16];
-
-		// authenticate header: CLA* b3=1
-		apdu_[0] = (byte) (apdu[0] | (byte) 0x0c); // CLA*: b8-6=000 b4-3=11
-		apdu_[1] = apdu[1];
-		apdu_[2] = apdu[2];
-		apdu_[3] = apdu[3];
-
-		// Lc': TLmac
-		apdu_[4] = (byte) (blocksize + 2); //0x0a;
-
-		// cryptographic checksum
-		apdu_[5] = (byte) 0x8e;
-		apdu_[6] = (byte) blocksize; //0x08;
-
-		// Le' (case 1b)
-		apdu_[7 + blocksize] = 0x00;
-
-		// 2 data objects: SSC, header
-		byte[] mac_in = new byte[2 * blocksize];
-
-		// SSC (rightmost blocksize bytes)
-		incrementSSC();
-		System.arraycopy(kmacssc, kmacssc.length-blocksize, mac_in, 0, blocksize);
-
-		// CLA** INS P1 P2 padding
-		byte[] paddedHeader = RetailCBCMac.pad(Arrays.copyOf(apdu_, 4), blocksize);
-		System.arraycopy(paddedHeader, 0, mac_in, blocksize, blocksize);
-
-		byte[] mac = RetailCBCMac.retailMac(mac_in, RetailCBCMac.PADDING.NoPadding,
-						"DES", "DESede", kmac, blocksize, blocksize);
-
-		log.debug("cryptographic checksum ({}): {}", toString(mac_in), toString(mac));
-
-		// insert mac in 8E object
-		System.arraycopy(mac, 0, apdu_, 7, blocksize);
-		return apdu_;
-	}
-
-	ResponseAPDU unProtectCase1b(ResponseAPDU resp_) throws GeneralSecurityException, CardException {
-
-		if (resp_.getSW() == 0x9000) {
-
-			byte[] respData = resp_.getData();
-
-			// T*Lsw1sw2 | TLcc (CC size == blocksize)
-
-			byte[] mac_in = new byte[blocksize + 4];
-
-			// SSC
-			incrementSSC();
-			System.arraycopy(kmacssc, kmacssc.length-blocksize, mac_in, 0, blocksize);
-
-			// data
-			System.arraycopy(respData, 0, resp_, blocksize, 4);
-			
-			byte[] mac_ = RetailCBCMac.retailMac(mac_in, RetailCBCMac.PADDING.ISO9797_2,
-							"DES", "DESede", kmac, blocksize, blocksize);
-
-			log.debug("cryptographic checksum ({}): {}", toString(mac_in), toString(mac_));
-
-			TLVSequence respSeq = new TLVSequence(respData);
-
-			byte[] cc = respSeq.getValue(0x8e);
-			if (!Arrays.equals(mac_, cc)) {
-				throw new CardException("invalid cryptographic checksum " + toString(cc));
-			}
-
-			byte[] sw = respSeq.getValue(0x99);
-			if (sw[0] != (byte) 0x90 || sw[1] != (byte) 0x00) {
-				throw new CardException("invalid status-word object " + toString(sw));
-			}
-
-			return new ResponseAPDU(sw);
-		}
-
-		log.info("unexpected response " + toString(resp_.getBytes()));
-		return resp_;
-	}
-
-	/**
-	 * Case 2 of command-response pair defined in ISO 7816-3
+	 * Case 1b/2 of command-response pair defined in ISO 7816-3
 	 * no command data, response data
 	 *
+	 * CLA|INS|P1|P2    -> CLA'|INS|P1|P2|Lc'|TLmac|00
 	 * CLA|INS|P1|P2|Le -> CLA'|INS|P1|P2|Lc'|TLle|TLmac|00
 	 *
 	 * @param apdu
 	 * @return
 	 * @throws GeneralSecurityException mac-calculation error
 	 */
-	byte[] protectCase2(byte[] apdu) throws GeneralSecurityException {
+	byte[] protectNoCommandData(byte[] apdu, boolean responseData) throws GeneralSecurityException {
 
-		byte[] apdu_ = new byte[19];
+		int leLength = (responseData) ? 1 : 0;
+		
+		byte[] apdu_ = new byte[16 + 3*leLength];
 		// authenticate header: CLA** b3=1
 		apdu_[0] = (byte) (apdu[0] | (byte) 0x0c); //CLA**: b8-6=000 b4-3=11
 		apdu_[1] = apdu[1];
 		apdu_[2] = apdu[2];
 		apdu_[3] = apdu[3];
 
-		// Lc': TLle TLmac
-		apdu_[4] = (byte) (blocksize + 2 + 3); //0x0d;
+		// Lc': [TLle] TLmac
+		apdu_[4] = (byte) (3*leLength + 2 + blocksize); //0x0a or 0x0d;
 
-		// Ne
-		apdu_[5] = (byte) 0x97;
-		apdu_[6] = (byte) 0x01;
-		apdu_[7] = apdu[4];
+		// T*L Le
+		if (responseData) {
+			apdu_[5] = (byte) 0x97;
+			apdu_[6] = (byte) 0x01;
+			apdu_[7] = apdu[4];
+		}
 
 		// cryptographic checksum
-		apdu_[8] = (byte) 0x8e;
-		apdu_[9] = (byte) blocksize; //0x08;
+		apdu_[5 + 3*leLength] = (byte) 0x8e;
+		apdu_[6 + 3*leLength] = (byte) blocksize; //0x08;
 
 		// Le'
-		apdu_[10 + blocksize] = 0x00;
+		apdu_[apdu_.length-1] = 0x00;
 
 		// 3 data objects: SSC, header, Le
-		byte[] mac_in = new byte[3 * blocksize];
+		byte[] mac_in = new byte[2*blocksize + blocksize*leLength];
 
 		// SSC (rightmost blocksize bytes)
 		incrementSSC();
@@ -268,8 +175,10 @@ public class SecureChannel extends CardChannel {
 		System.arraycopy(paddedHeader, 0, mac_in, blocksize, blocksize);
 
 		// TL Le
-		byte[] paddedTLLe = RetailCBCMac.pad(Arrays.copyOfRange(apdu_, 5, 8), blocksize);
-		System.arraycopy(paddedTLLe, 0, mac_in, 2*blocksize, blocksize);
+		if (responseData) {
+			byte[] paddedTLLe = RetailCBCMac.pad(Arrays.copyOfRange(apdu_, 5, 8), blocksize);
+			System.arraycopy(paddedTLLe, 0, mac_in, 2*blocksize, blocksize);
+		}
 
 		byte[] mac = RetailCBCMac.retailMac(mac_in, RetailCBCMac.PADDING.NoPadding, 
 						"DES", "DESede", kmac, blocksize, blocksize);
@@ -277,19 +186,28 @@ public class SecureChannel extends CardChannel {
 		log.debug("cryptographic checksum ({}): {}", toString(mac_in), toString(mac));
 
 		// insert mac in 8E object
-		System.arraycopy(mac, 0, apdu_, 10, blocksize);
+		System.arraycopy(mac, 0, apdu_, 7+3*leLength, blocksize);
 		return apdu_;
 	}
 
-	ResponseAPDU unProtectCase2(ResponseAPDU resp_) throws GeneralSecurityException, CardException {
+	/**
+	 * Verify cryptographic checksum for cases 1b/2/3b/4 and decode response apdu
+	 *
+	 * T*Lsw1sw2 | TLcc            -> sw1sw2
+	 * T*Lplain | T*Lsw1sw2 | TLcc -> plain | sw1sw2
+	 *
+	 * @param resp_
+	 * @return
+	 * @throws GeneralSecurityException
+	 * @throws CardException
+	 */
+	ResponseAPDU unProtectResponse(ResponseAPDU resp_) throws GeneralSecurityException, CardException {
 
-		if (resp_.getSW() == 0x9000) {
+		byte[] respData = resp_.getData();
 
-			byte[] respData = resp_.getData();
-
-			// T*Lplain | T*Lsw1sw2 | TLcc (CC size == blocksize)
-
-			int TLccInd = respData.length - 2 - blocksize;
+		if (respData != null && respData.length > 0) {
+			
+			int TLccInd = respData.length - (2 + blocksize);
 
 			byte[] mac_in = new byte[respData.length - 2]; //+blocksize-blocksize
 
@@ -318,16 +236,93 @@ public class SecureChannel extends CardChannel {
 			}
 
 			byte[] plain = respSeq.getValue(0x81);
-			byte[] resp = new byte[plain.length + 2];
-			System.arraycopy(plain, 0, resp, 0, plain.length);
-			resp[resp.length - 2] = (byte) 0x90;
-			resp[resp.length - 1] = (byte) 0x00;
-			return new ResponseAPDU(resp);
+			if (plain != null) {
+				byte[] resp = new byte[plain.length + 2];
+				System.arraycopy(plain, 0, resp, 0, plain.length);
+				System.arraycopy(sw, 0, resp, plain.length, 2);
+				return new ResponseAPDU(resp);
+			} else {
+				return new ResponseAPDU(sw);
+			}
 		}
 
 		log.info("unexpected response " + toString(resp_.getBytes()));
 		return resp_;
 	}
+
+	/**
+	 * Case 3b/4 of command-response pair defined in ISO 7816-3
+	 * command data, no response data
+	 *
+	 * CLA|INS|P1|P2|Lc|Data -> CLA'|INS|P1|P2|Lc'|TLplain|TLmac|00
+	 * CLA|INS|P1|P2|Lc|Data|Le -> CLA'|INS|P1|P2|Lc'|TLplain|TLle|TLmac|00
+	 * 
+	 * @param apdu
+	 * @return
+	 * @throws GeneralSecurityException mac-calculation error
+	 */
+	byte[] protectCommandData(byte[] apdu, boolean responseData) throws GeneralSecurityException {
+
+		int leLength = (responseData) ? 1 : 0;
+
+		// header | Lc' | TLplain | [TLLe] | TLmac | 00
+		byte[] apdu_= new byte[4 + 1 + 2+apdu[4] + 3*leLength + 2+blocksize + 1];
+
+		// authenticate header: CLA** b3=1
+		apdu_[0] = (byte) (apdu[0] | (byte) 0x0c); //CLA**: b8-6=000 b4-3=11
+		apdu_[1] = apdu[1];
+		apdu_[2] = apdu[2];
+		apdu_[3] = apdu[3];
+
+		// Lc': TLplain [TLLe] TLmac
+		apdu_[4] = (byte) (2+apdu[4] + 3*leLength +  2+blocksize);
+
+		// T*L plain
+		apdu_[5] = (byte) 0x81;
+		apdu_[6] = apdu[4];
+		System.arraycopy(apdu, 5, apdu_, 7, apdu[4]);
+
+		// T*L Le
+		if (responseData) {
+			apdu_[7+apdu[4]] = (byte) 0x97;
+			apdu_[8+apdu[4]] = (byte) 0x01;
+			apdu_[9+apdu[4]] = apdu[apdu.length-1];
+		}
+
+		// TL cc
+		apdu_[7 + apdu[4] + 3*leLength] = (byte) 0x8e;
+		apdu_[8 + apdu[4] + 3*leLength] = (byte) blocksize; //0x08;
+
+		apdu_[apdu_.length-1] = (byte) 0x00;
+
+		// TLplain [TLLe] Padding
+		byte[] paddedPlainLe = RetailCBCMac.pad(
+						Arrays.copyOfRange(apdu_, 5, 5+2+apdu[4] + 3*leLength), blocksize);
+		log.trace("padded plain command data: " + toString(paddedPlainLe));
+
+		// 3 blocks: SSC, header|padding, TLplain[TLLe]|padding
+		byte[] mac_in = new byte[2*blocksize + paddedPlainLe.length];
+
+		// SSC (rightmost blocksize bytes)
+		incrementSSC();
+		System.arraycopy(kmacssc, kmacssc.length-blocksize, mac_in, 0, blocksize);
+
+		// CLA** INS P1 P2 padding
+		byte[] paddedHeader = RetailCBCMac.pad(Arrays.copyOf(apdu_, 4), blocksize);
+		System.arraycopy(paddedHeader, 0, mac_in, blocksize, blocksize);
+
+		System.arraycopy(paddedPlainLe, 0, mac_in, 2*blocksize, paddedPlainLe.length);
+
+		byte[] mac = RetailCBCMac.retailMac(mac_in, RetailCBCMac.PADDING.NoPadding,
+						"DES", "DESede", kmac, blocksize, blocksize);
+
+		log.debug("cryptographic checksum ({}): {}", toString(mac_in), toString(mac));
+
+		// insert mac in 8E object
+		System.arraycopy(mac, 0, apdu_, 9 + apdu[4] + 3*leLength, blocksize);
+		return apdu_;
+	}
+
 
 	void incrementSSC() {
 		//TODO
