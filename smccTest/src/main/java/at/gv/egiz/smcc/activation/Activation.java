@@ -305,21 +305,6 @@ public class Activation {
             throw new SignatureCardException("failed to read EF.PuK", ex);
         }
 
-
-				System.out.println("SELECT EF.AOD");
-        cmdAPDU = new CommandAPDU(0x00, 0xA4, 0x02, 0x00, new byte[]{(byte) 0x50, (byte) 0x37}, 256);
-        System.out.println(" cmd apdu " + toString(cmdAPDU.getBytes()));
-        resp = channel.transmit(cmdAPDU);
-        System.out.println(" -> " + toString(resp.getBytes()) + "\n");
-
-				System.out.println("READ EF.AOD");
-        cmdAPDU = new CommandAPDU(0x00, 0xb0, 0x00, 0x00, 256);
-        System.out.println(" cmd apdu " + toString(cmdAPDU.getBytes()));
-        resp = channel.transmit(cmdAPDU);
-        System.out.println(" -> " + toString(resp.getBytes()) + "\n");
-
-
-
         /*
         [a8:82:00:a8:b6:16:83:14:80:04:00:00:00:23:00:79:05:03:d0:40:00:00:17:00:12:01:02:00:
          7f:49:
@@ -334,6 +319,8 @@ public class Activation {
 
          <ResponseAPDU SW="9000" rc="0" sequence="7">A88200A8B616831480040000002300789901D04000001700120102007F49820044864084BA7BF0AF355A67E0C9064EE53A63859903C775199221494A430FFAE20F3F2DC283FEF3C8EEF21FBF75448DC7DB9649BAC504DE0C6416C91D62882438128CDFC100C001809E82004087506037D74C9DCE7454A2F561A19FF24ED03D097A0CD8D45F3CB2DCF51684195632F39D72381F64BA2DCB65524C54E94265CB9E5F43EBCC02D23C1D9A02D26E</ResponseAPDU>
         */
+
+        // TODO
     }
 
 
