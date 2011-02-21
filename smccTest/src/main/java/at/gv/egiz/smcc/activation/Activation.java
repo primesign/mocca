@@ -304,6 +304,22 @@ public class Activation {
         } catch (CodingException ex) {
             throw new SignatureCardException("failed to read EF.PuK", ex);
         }
+
+
+				System.out.println("SELECT EF.AOD");
+        cmdAPDU = new CommandAPDU(0x00, 0xA4, 0x02, 0x00, new byte[]{(byte) 0x50, (byte) 0x37}, 256);
+        System.out.println(" cmd apdu " + toString(cmdAPDU.getBytes()));
+        resp = channel.transmit(cmdAPDU);
+        System.out.println(" -> " + toString(resp.getBytes()) + "\n");
+
+				System.out.println("READ EF.AOD");
+        cmdAPDU = new CommandAPDU(0x00, 0xb0, 0x00, 0x00, 256);
+        System.out.println(" cmd apdu " + toString(cmdAPDU.getBytes()));
+        resp = channel.transmit(cmdAPDU);
+        System.out.println(" -> " + toString(resp.getBytes()) + "\n");
+
+
+
         /*
         [a8:82:00:a8:b6:16:83:14:80:04:00:00:00:23:00:79:05:03:d0:40:00:00:17:00:12:01:02:00:
          7f:49:
@@ -332,6 +348,7 @@ public class Activation {
         CommandAPDU cmdAPDU;
         ResponseAPDU resp;
 
+        //alt. select 2f:02
         System.out.println("READ EF.GDO (SFI=02)");
         cmdAPDU = new CommandAPDU(0x00, 0xb0, 0x82, 0x00, 256);
         System.out.println(" cmd apdu " + toString(cmdAPDU.getBytes()));
@@ -757,16 +774,22 @@ hashres      : 4D BF FC AD 67 94 55 F9 7F DD 47 30 C7 74 B1 7D CF B8 B3 74 93 87
         }
         
         
-        for (int i = 0; i < 3; i++) {
-            byte[] case2apdu = channel.protectCase2(new byte[] { (byte)0x00, (byte)0x0b, (byte)0x00, (byte)0x00, (byte)0x00 });
+				byte[] case2apdu = channel.protectNoCommandData(new byte[] { (byte)0x00, (byte)0xb0, (byte)0x00, (byte)0x00, (byte)0xdf }, true);
 
-            System.out.println("apdu orig:   " + toString(apdu_));
-            System.out.println("apdu test:   " + toString(case2apdu));
+				System.out.println("apdu orig:   " + toString(apdu_));
+				System.out.println("apdu test:   " + toString(case2apdu));
 
-            if (Arrays.equals(apdu_, case2apdu)) {
-                System.out.println(" ******************************* ");
-            }
-        }
+				if (!Arrays.equals(apdu_, case2apdu)) {
+						System.out.println(" ******************************* test failed ");
+				}
+				
+				byte[] case3apdu = channel.protectCommandData(new byte[] { (byte)0x00, (byte)0x10, (byte)0x20, (byte)0x30, (byte)0x04, (byte)0x41, (byte)0x042, (byte)0x43, (byte)0x44 }, false);
+				System.out.println("apdu test:   " + toString(case3apdu));
+				
+				case3apdu = channel.protectCommandData(new byte[] { (byte)0x00, (byte)0x10, (byte)0x20, (byte)0x30, (byte)0x04, (byte)0x41, (byte)0x042, (byte)0x43, (byte)0x44, (byte)0x80 }, true);
+				System.out.println("apdu test:   " + toString(case3apdu));
+
+
     }
 
 		public static final byte[] SM_RESP_APDU = new byte[] {
