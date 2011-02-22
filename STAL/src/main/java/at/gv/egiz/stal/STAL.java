@@ -17,7 +17,6 @@
 package at.gv.egiz.stal;
 
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Interface for all implementations of the Security Tokean Abstraction Layer.

@@ -51,7 +51,7 @@ public class NamespacePrefixMapperImpl extends NamespacePrefixMapper {
   @Override
   public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix) {
 
-    log.trace("Prefix for namespace {} reqested.", namespaceUri);
+    log.trace("Prefix for namespace {} requested.", namespaceUri);
     
     String prefix = prefixMap.get(namespaceUri);
     
