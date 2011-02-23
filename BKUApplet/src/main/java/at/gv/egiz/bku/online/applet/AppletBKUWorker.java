@@ -109,7 +109,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
           List<STALRequest> stalRequests = new ArrayList<STALRequest>();
           for (JAXBElement<? extends RequestType> req : requests) {
             try {
-              stalRequests.add(stalTranslator.translate(req));
+              stalRequests.add(stalTranslator.translateWSRequest(req));
             } catch (TranslationException ex) {
               log.error("Received unknown request from server STAL. {}", ex.getMessage());
               throw new RuntimeException(ex);

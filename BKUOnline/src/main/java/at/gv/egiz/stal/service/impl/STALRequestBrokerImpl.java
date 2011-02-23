@@ -183,7 +183,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
             List<STALResponse> stalResponses = new ArrayList<STALResponse>();
             try {
               for (JAXBElement<? extends ResponseType> resp : responses) {
-                  STALResponse stalResp = translator.translate(resp);
+                  STALResponse stalResp = translator.translateWSResponse(resp);
                   stalResponses.add(stalResp);
               }
             } catch (TranslationException ex) {

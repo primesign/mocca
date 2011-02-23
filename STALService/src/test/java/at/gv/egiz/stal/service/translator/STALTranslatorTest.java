@@ -94,7 +94,7 @@ public class STALTranslatorTest {
     req.setSignedInfo("signedinfo".getBytes());
     JAXBElement<? extends RequestType> request = of.createGetNextRequestResponseTypeSignRequest(req);
     STALTranslator instance = new STALTranslator();
-    STALRequest result = instance.translate(request);
+    STALRequest result = instance.translateWSRequest(request);
     assertEquals(SignRequest.class, result.getClass());
     assertEquals(req.getKeyIdentifier(), ((SignRequest) result).getKeyIdentifier());
     assertEquals(req.getSignedInfo(), ((SignRequest) result).getSignedInfo());
@@ -106,7 +106,7 @@ public class STALTranslatorTest {
     QName n =  new QName("http://www.egiz.gv.at/stal", "SignRequest");
     JAXBElement<? extends RequestType> request = new JAXBElement<SignRequestType>(n, SignRequestType.class, null);
     STALTranslator instance = new STALTranslator();
-    STALRequest result = instance.translate(request);
+    STALRequest result = instance.translateWSRequest(request);
     assertEquals(SignRequest.class, result.getClass());
   }
 
@@ -137,7 +137,7 @@ public class STALTranslatorTest {
     JAXBElement<? extends ResponseType> response = null;
     STALTranslator instance = new STALTranslator();
     STALResponse expResult = null;
-    STALResponse result = instance.translate(response);
+    STALResponse result = instance.translateWSResponse(response);
     assertEquals(expResult, result);
     // TODO review the generated test code and remove the default call to fail.
     fail("The test case is a prototype.");

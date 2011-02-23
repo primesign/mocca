@@ -98,7 +98,7 @@ public class STALTranslator {
    * @return
    * @throws at.gv.egiz.stal.service.translator.TranslationException
    */
-  public STALRequest translate(JAXBElement<? extends RequestType> request) throws TranslationException {
+  public STALRequest translateWSRequest(JAXBElement<? extends RequestType> request) throws TranslationException {
     RequestType req = request.getValue();
     if (req == null) {
       throw new RuntimeException("RequestType must not be null");
@@ -138,7 +138,7 @@ public class STALTranslator {
    * @return
    * @throws at.gv.egiz.stal.service.translator.TranslationException
    */
-  public STALResponse translate(JAXBElement<? extends ResponseType> response) throws TranslationException {
+  public STALResponse translateWSResponse(JAXBElement<? extends ResponseType> response) throws TranslationException {
     ResponseType resp = response.getValue();
     if (resp == null) {
       throw new RuntimeException("ResponseType must not be null");
