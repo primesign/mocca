@@ -45,6 +45,7 @@ import at.gv.egiz.stal.service.STALService;
 import java.applet.AppletContext;
 import java.awt.Color;
 import java.awt.Container;
+import javax.swing.text.html.parser.ParserDelegator;
 
 import javax.xml.namespace.QName;
 
@@ -150,6 +151,13 @@ public class BKUApplet extends JApplet {
     log.info("Welcome to MOCCA {}.", VERSION);
     log.trace("Called init().");
     showStatus("Initializing MOCCA applet.");
+
+		// workaround to bug, cf.
+		// http://forums.oracle.com/forums/thread.jspa?messageID=7432921
+		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6993691
+		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6993073
+		// and http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7001786
+		ParserDelegator workaround = new ParserDelegator();
 
     HttpsURLConnection.setDefaultSSLSocketFactory(InternalSSLSocketFactory.getInstance());
 
