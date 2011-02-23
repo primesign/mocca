@@ -306,7 +306,7 @@
       <dependency>
         <groupId>at.gv.egiz</groupId>
         <artifactId>BKUCertificates</artifactId>
-        <version>1.4</version>
+        <version>1.5-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>at.gv.egiz</groupId>
