@@ -20,10 +20,10 @@ package at.gv.egiz.smcc.util;
  */
 
 public class TLV {
-  
+
   private byte[] bytes;
   private int start;
-  
+
   public TLV(byte[] bytes, int start) {
     if (bytes.length - start < 2) {
       throw new IllegalArgumentException("TLV must at least consit of tag and length.");
@@ -39,11 +39,28 @@ public class TLV {
     return 0xFF & bytes[start];
   }
 
+	public int getLengthFieldLength() {
+		if ((bytes[start + 1] & 0x80) > 0) {
+			// ISO 7816 allows length fields of up to 5 bytes
+			return 1 + (bytes[start + 1] & 0x07);
+		}
+		return 1;
+	}
+
   /**
    * @return the length
    */
   public int getLength() {
-    return 0xFF & bytes[start + 1];
+
+		if ((bytes[start + 1] & 0x80) > 0) {
+			int length = 0;
+			for (int i = 0; i < (bytes[start + 1] & 0x07); i++) {
+				length <<= 8;
+				length += bytes[start + 2 + i] & 0xff;
+			}
+			return length;
+		}
+		return bytes[start + 1] & 0x7f;
   }
 
   /**
@@ -51,7 +68,7 @@ public class TLV {
    */
   public byte[] getValue() {
     byte[] value = new byte[getLength()];
-    System.arraycopy(bytes, start + 2, value, 0, value.length);
+    System.arraycopy(bytes, start + 1 + getLengthFieldLength(), value, 0, value.length);
     return value;
   }
 
@@ -62,7 +79,7 @@ public class TLV {
   public String toString() {
     return "Tag = " + Integer.toHexString(getTag()) + ", Length = " + getLength() + ", Value = " + toString(getValue());
   }
-  
+
   public static String toString(byte[] b) {
     StringBuffer sb = new StringBuffer();
     sb.append('[');
@@ -78,7 +95,5 @@ public class TLV {
     sb.append(']');
     return sb.toString();
   }
-
-  
 
 }

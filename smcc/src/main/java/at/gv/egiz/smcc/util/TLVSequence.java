@@ -63,7 +63,7 @@ public class TLVSequence implements Iterable<TLV> {
     public TLV next() {
       if (hasNext()) {
         TLV tlv = new TLV(bytes, pos);
-        pos += tlv.getLength() + 2;
+        pos += 1 + tlv.getLengthFieldLength() + tlv.getLength();
         return tlv;
       } else {
         throw new NoSuchElementException();
