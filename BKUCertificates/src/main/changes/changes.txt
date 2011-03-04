@@ -5,7 +5,7 @@ Tags:
 * ''REMOVED''  ... certificate removed in this release
 * TRUSTED	... certificate included in truststore
 
-'''BKUCertificates-1.5-SNAPSHOT'''
+'''BKUCertificates-1.5'''
 -------------------
 
 www.int.esv.sozialversicherung.at.cer (''ADDED'')
