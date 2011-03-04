@@ -16,8 +16,16 @@
 */
 package at.gv.egiz.bku.webstart.gui;
 
+import java.util.Locale;
+
 public interface BKUControllerInterface {
   
   public void shutDown();
+
+	public String getVersion();
+	
+	public void showHelp(Locale locale);
+
+	public void pinManagement(Locale locale);
 
 }

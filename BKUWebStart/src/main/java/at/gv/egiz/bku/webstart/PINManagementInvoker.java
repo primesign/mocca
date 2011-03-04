@@ -14,13 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package at.gv.egiz.bku.webstart.gui;
+package at.gv.egiz.bku.webstart;
 
 import at.gv.egiz.bku.webstart.Launcher;
-import java.awt.TrayIcon;
+import at.gv.egiz.bku.webstart.gui.StatusNotifier;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,12 +33,10 @@ public class PINManagementInvoker implements Runnable {
 
   private static final Logger log = LoggerFactory.getLogger(PINManagementInvoker.class);
   
-  TrayIcon trayIcon;
-  ResourceBundle messages;
+  StatusNotifier status;
 
-  public PINManagementInvoker(TrayIcon trayIcon, ResourceBundle messages) {
-    this.trayIcon = trayIcon;
-    this.messages = messages;
+  public PINManagementInvoker(StatusNotifier status) {
+      this.status = status;
   }
 
   @Override
@@ -61,8 +58,7 @@ public class PINManagementInvoker implements Runnable {
       }
     } catch (IOException ex) {
       log.error("Failed to connect to PIN Management", ex);
-      trayIcon.displayMessage(messages.getString(Launcher.CAPTION_ERROR),
-              messages.getString(Launcher.ERROR_PIN), TrayIcon.MessageType.ERROR);
+      status.error(StatusNotifier.ERROR_PIN);
     } finally {
       if (connection != null) {
         connection.disconnect();
