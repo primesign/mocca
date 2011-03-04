@@ -62,9 +62,11 @@
               <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
             </configuration>
           </execution>
+					<!-- http://jira.egovlabs.gv.at/browse/MOCCA-762
+           |   do not provide certificates in webapp filesystem (default trust/certstores) -->
+
           <execution>
-            <!-- certificates in webapp filesystem (default trust/certstores) -->
-            <id>copy-certificates</id>
+						<id>copy-certificates</id>
             <goals>
               <goal>unpack-dependencies</goal>
             </goals>
