@@ -166,9 +166,15 @@ public class Activation {
         (byte) 0xd0, (byte) 0x40, (byte) 0x00, (byte) 0x00, (byte) 0x17,
         (byte) 0x00, (byte) 0x12, (byte) 0x01};
 
-    private final static byte[] ZEROS = {
+    public final static byte[] ZEROS = {
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
+
+		public final static byte[] ONES = {
+        (byte) 0x11, (byte) 0x11, (byte) 0x11, (byte) 0x11,
+				(byte) 0x11, (byte) 0x11, (byte) 0x11, (byte) 0x11
+    };
+
 
     /** Bit mask for counting the ones. */
     private final static byte[] BIT_MASK = {
@@ -305,6 +311,25 @@ public class Activation {
             throw new SignatureCardException("failed to read EF.PuK", ex);
         }
 
+
+				System.out.println("DUMMY APDU SELECT EF_C_X509.CH.DS");
+        cmdAPDU = new CommandAPDU(0x00, 0xA4, 0x02, 0x00, new byte[]{(byte) 0xc0, (byte) 0x00}, 256);
+        System.out.println(" cmd apdu " + toString(cmdAPDU.getBytes()));
+        resp = channel.transmit(cmdAPDU);
+        System.out.println(" -> " + toString(resp.getBytes()) + "\n");
+
+				System.out.println("DUMMY APDU READ BINARY");
+        cmdAPDU = new CommandAPDU(0x00, 0xb0, 0x00, 0x00, 256);
+        System.out.println(" cmd apdu " + toString(cmdAPDU.getBytes()));
+        resp = channel.transmit(cmdAPDU);
+        System.out.println(" -> " + toString(resp.getBytes()) + "\n");
+
+//				System.out.println("DELETE EF_C_X509.CH.DS *****************************");
+//        cmdAPDU = new CommandAPDU(0x00, 0xE4, 0x02, 0x00, new byte[]{(byte) 0xC0, (byte) 0x00});
+//        System.out.println(" cmd apdu " + toString(cmdAPDU.getBytes()));
+//        resp = channel.transmit(cmdAPDU);
+//        System.out.println(" -> " + toString(resp.getBytes()) + "\n");
+
         /*
         [a8:82:00:a8:b6:16:83:14:80:04:00:00:00:23:00:79:05:03:d0:40:00:00:17:00:12:01:02:00:
          7f:49:
@@ -319,8 +344,6 @@ public class Activation {
 
          <ResponseAPDU SW="9000" rc="0" sequence="7">A88200A8B616831480040000002300789901D04000001700120102007F49820044864084BA7BF0AF355A67E0C9064EE53A63859903C775199221494A430FFAE20F3F2DC283FEF3C8EEF21FBF75448DC7DB9649BAC504DE0C6416C91D62882438128CDFC100C001809E82004087506037D74C9DCE7454A2F561A19FF24ED03D097A0CD8D45F3CB2DCF51684195632F39D72381F64BA2DCB65524C54E94265CB9E5F43EBCC02D23C1D9A02D26E</ResponseAPDU>
         */
-
-        // TODO
     }
 
 
@@ -701,6 +724,7 @@ public class Activation {
       test.setUp();
       test.activate();
 //      test.testMACProtection();
+//      test.testENCProtection();
     } catch (Exception e) {
         e.printStackTrace();
     }
@@ -761,7 +785,7 @@ hashres      : 4D BF FC AD 67 94 55 F9 7F DD 47 30 C7 74 B1 7D CF B8 B3 74 93 87
         }
         
         
-				byte[] case2apdu = channel.protectNoCommandData(new byte[] { (byte)0x00, (byte)0xb0, (byte)0x00, (byte)0x00, (byte)0xdf }, true);
+				byte[] case2apdu = channel.protectNoCommandData(new byte[] { (byte)0x00, (byte)0xb0, (byte)0x00, (byte)0x00, (byte)0xdf });
 
 				System.out.println("apdu orig:   " + toString(apdu_));
 				System.out.println("apdu test:   " + toString(case2apdu));
@@ -773,11 +797,40 @@ hashres      : 4D BF FC AD 67 94 55 F9 7F DD 47 30 C7 74 B1 7D CF B8 B3 74 93 87
 				byte[] case3apdu = channel.protectCommandData(new byte[] { (byte)0x00, (byte)0x10, (byte)0x20, (byte)0x30, (byte)0x04, (byte)0x41, (byte)0x042, (byte)0x43, (byte)0x44 }, false);
 				System.out.println("apdu test:   " + toString(case3apdu));
 				
-				case3apdu = channel.protectCommandData(new byte[] { (byte)0x00, (byte)0x10, (byte)0x20, (byte)0x30, (byte)0x04, (byte)0x41, (byte)0x042, (byte)0x43, (byte)0x44, (byte)0x80 }, true);
+				case3apdu = channel.protectCommandData(new byte[] { (byte)0x00, (byte)0x10, (byte)0x20, (byte)0x30, (byte)0x04, (byte)0x41, (byte)0x042, (byte)0x43, (byte)0x44, (byte)0x80 }, false);
 				System.out.println("apdu test:   " + toString(case3apdu));
 
 
     }
+
+
+		/**
+     * sniffed values (cf. activate-800400...790503.log lines 125-136, hashres = kenc | kencssc
+     * and apdu_ from activate activate-800400...790503-apdu.log lines 96(corresponding challenge)
+     */
+
+		static final byte[] kenc = new byte[] { (byte)0x15, (byte)0xC7, (byte)0x63, (byte)0x2B, (byte)0xB7, (byte)0xBB, (byte)0x00, (byte)0x53, (byte)0xFA, (byte)0x3F, (byte)0xAC, (byte)0x2B, (byte)0x9B, (byte)0x59, (byte)0xCF, (byte)0xC3, (byte)0x04, (byte)0x50, (byte)0x51, (byte)0xE8, (byte)0x62, (byte)0xE8, (byte)0xD3, (byte)0xEE };
+    static final byte[] kencssc = new byte[] { (byte)0x62, (byte)0x82, (byte)0xA5, (byte)0xBA, (byte)0xB2, (byte)0xDD, (byte)0x25, (byte)0x50 };
+		static final byte[] kmac = new byte[] { (byte)0xD4, (byte)0x0B, (byte)0x7F, (byte)0x7E, (byte)0x9B, (byte)0x45, (byte)0x8C, (byte)0x39, (byte)0x80, (byte)0x8E, (byte)0x5B, (byte)0x2B, (byte)0x63, (byte)0x4B, (byte)0x0F, (byte)0xC4, (byte)0x0D, (byte)0xEE, (byte)0xB7, (byte)0x6D, (byte)0xC9, (byte)0xC1, (byte)0xFD, (byte)0xE9 };
+    static final byte[] kmacssc = new byte[] { (byte)0x3E, (byte)0x09, (byte)0x6C, (byte)0x86, (byte)0xB4, (byte)0xBB, (byte)0x9F, (byte)0x30 };
+    static final byte[] apduEnc_ = new byte[] { (byte) 0x0C, (byte)0xE4, (byte)0x02, (byte)0x00, (byte)0x15, (byte)0x87, (byte)0x09, (byte)0x01, (byte)0xB9, (byte)0x5A, (byte)0xCA, (byte)0xA5, (byte)0x69, (byte)0x55, (byte)0x46, (byte)0x56, (byte)0x8E, (byte)0x08, (byte)0x40, (byte)0x7D, (byte)0xEA, (byte)0xC4, (byte)0x30, (byte)0xE6, (byte)0xCF, (byte)0x94, (byte)0x00 };
+
+		public void testENCProtection() throws GeneralSecurityException {
+
+			SecureChannel sc = new SecureChannel(channel, 
+							new SecretKeySpec(kenc, "3DES"), new SecretKeySpec(kmac, "3DES"),
+							8, kencssc, kmacssc);
+
+			byte[] apdu = new byte[] { (byte) 0x00, (byte) 0xe4, (byte) 0x02, (byte) 0x00, (byte) 0x02, (byte) 0xc0, (byte) 0x00 };
+		  System.out.println("apdu test:    " + toString(apdu));
+			byte[] apduTest = sc.protectCommandData(apdu, true);
+			System.out.println("encrypt:      " + toString(apduTest));
+
+			if (!Arrays.equals(apduEnc_, apduTest)) {
+				System.out.println("************************************************** ERRROR ");
+			}
+
+		}
 
 		public static final byte[] SM_RESP_APDU = new byte[] {
 			(byte)0x81, (byte)0x81, (byte)0xac, (byte)0xa8, (byte)0x82, (byte)0x00, (byte)0xa8, (byte)0xb6, (byte)0x16, (byte)0x83, (byte)0x14, (byte)0x80, (byte)0x04, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x23, (byte)0x00, (byte)0x79, (byte)0x05, (byte)0x03, (byte)0xd0, (byte)0x40, (byte)0x00, (byte)0x00, (byte)0x17, (byte)0x00, (byte)0x12, (byte)0x01, (byte)0x02, (byte)0x00, (byte)0x7f,
