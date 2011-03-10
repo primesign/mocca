@@ -151,32 +151,33 @@ public class SignatureCardFactory {
 		}
 
 		/**
-		 * Returns true if the historical bytes of the given ATR contain the historical bytes pattern of this
-		 * SupportedCard object.
+		 * Returns true if the historical bytes of the given ATR contain the
+		 * historical bytes pattern of this SupportedCard object.
 		 * 
 		 * @param atr
 		 *            the ATR
 		 * 
-		 * @return <code>true</code> if the historical bytes of the given ATR contain the historical bytes pattern
-		 *         of this SupportedCard object, or <code>false</code>
-		 *         otherwise.
+		 * @return <code>true</code> if the historical bytes of the given ATR
+		 *         contain the historical bytes pattern of this SupportedCard
+		 *         object, or <code>false</code> otherwise.
 		 */
 		public boolean matchesHistoricalBytesPattern(ATR atr) {
-			
+
 			byte[] historicalBytes = atr.getHistoricalBytes();
-			if (historicalBytes == null || 
-				this.historicalBytesPattern == null ||
-				this.historicalBytesPattern.length > historicalBytes.length) {
-				
+			if (historicalBytes == null
+					|| this.historicalBytesPattern == null
+					|| this.historicalBytesPattern.length > historicalBytes.length) {
+
 				return false;
 			}
-			
+
 			int[] failure = computeFailure(this.historicalBytesPattern);
 
 			int j = 0;
 
 			for (int i = 0; i < historicalBytes.length; i++) {
-				while (j > 0 && this.historicalBytesPattern[j] != historicalBytes[i]) {
+				while (j > 0
+						&& this.historicalBytesPattern[j] != historicalBytes[i]) {
 					j = failure[j - 1];
 				}
 				if (this.historicalBytesPattern[j] == historicalBytes[i]) {
@@ -426,7 +427,7 @@ public class SignatureCardFactory {
 						(byte) 0x69, (byte) 0x6E, (byte) 0x45, (byte) 0x49,
 						(byte) 0x44 },
 				// historical bytes pattern
-				new byte[] {'F','i','n','E','I','D'},
+				new byte[] { 'F', 'i', 'n', 'E', 'I', 'D' },
 				// mask (ff:ff:ff:ff:ff:ff:ff:00:ff:ff:ff:ff:ff:ff:ff:ff) -
 				// ignore card OS minor version
 				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
@@ -434,6 +435,44 @@ public class SignatureCardFactory {
 						(byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff }, "at.gv.egiz.smcc.FINEIDCard"));
+
+		// LT eID
+		supportedCards.add(new SupportedCard(
+				// ATR [3b:7D:94:00:00:80:31:80:65:B0:83:11:C0:A9:83:00:90:00]
+				new byte[] { (byte) 0x3b, (byte) 0x7D, (byte) 0x94,
+						(byte) 0x00, (byte) 0x00, (byte) 0x80, (byte) 0x31,
+						(byte) 0x80, (byte) 0x65, (byte) 0xB0, (byte) 0x83,
+						(byte) 0x11, (byte) 0xC0, (byte) 0xA9, (byte) 0x83,
+						(byte) 0x00, (byte) 0x90, (byte) 0x00 },
+				// mask (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
+				// -
+				// ignore card OS minor version
+				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff },
+				"at.gv.egiz.smcc.LtEIDCard"));
+
+		// SE eID
+		supportedCards.add(new SupportedCard(
+				// ATR
+				// [3B:9F:94:80:1F:C3:00:68:10:44:05:01:46:49:53:45:31:C8:07:90:00:18]
+				new byte[] { (byte) 0x3b, (byte) 0x9F, (byte) 0x90,
+						(byte) 0x80, (byte) 0x1F, (byte) 0xC0, (byte) 0x00,
+						(byte) 0x68, (byte) 0x00, (byte) 0x00, (byte) 0x05,
+						(byte) 0x00, (byte) 0x46, (byte) 0x49, (byte) 0x53,
+						(byte) 0x45, (byte) 0x31, (byte) 0xC8, (byte) 0x00,
+						(byte) 0x00, (byte) 0x00, (byte) 0x00 },
+				// mask
+				// (ff:ff:f0:ff:ff:f0:ff:ff:00:00:ff:f0:ff:ff:ff:ff:ff:ff:F0:00:00:00)
+				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xf0,
+						(byte) 0xff, (byte) 0xff, (byte) 0xf0, (byte) 0xff,
+						(byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0xff,
+						(byte) 0xf0, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xf0,
+						(byte) 0x00, (byte) 0x00, (byte) 0x00 },
+				"at.gv.egiz.smcc.SEIdentityCard"));
 
 		// ITCards
 		supportedCards.add(new SupportedCard(
@@ -493,8 +532,8 @@ public class SignatureCardFactory {
 						(byte) 0xff, 'E', 's', 't', 'E', 'I', 'D', ' ', 'v',
 						'e', 'r', ' ', '1', '.', '0' },
 				// historical bytes pattern
-				new byte[] {'E', 's', 't', 'E', 'I', 'D', ' ', 'v',
-						'e', 'r', ' ', '1', '.', '0'},		
+				new byte[] { 'E', 's', 't', 'E', 'I', 'D', ' ', 'v', 'e', 'r',
+						' ', '1', '.', '0' },
 				// mask
 				// (ff:00:00:00:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
 				new byte[] { (byte) 0xff, (byte) 0x00, (byte) 0x00,
@@ -513,8 +552,8 @@ public class SignatureCardFactory {
 						'E', 's', 't', 'E', 'I', 'D', ' ', 'v', 'e', 'r', ' ',
 						'1', '.', '0', (byte) 0x2b },
 				// historical bytes pattern
-				new byte[] {'E', 's', 't', 'E', 'I', 'D', ' ', 'v',
-						'e', 'r', ' ', '1', '.', '0'},						
+				new byte[] { 'E', 's', 't', 'E', 'I', 'D', ' ', 'v', 'e', 'r',
+						' ', '1', '.', '0' },
 				// mask
 				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
 				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
@@ -534,8 +573,8 @@ public class SignatureCardFactory {
 						'E', 's', 't', 'E', 'I', 'D', ' ', 'v', 'e', 'r', ' ',
 						'1', '.', '0', (byte) 0x43 },
 				// historical bytes pattern
-				new byte[] {'E', 's', 't', 'E', 'I', 'D', ' ', 'v',
-					'e', 'r', ' ', '1', '.', '0'},						
+				new byte[] { 'E', 's', 't', 'E', 'I', 'D', ' ', 'v', 'e', 'r',
+						' ', '1', '.', '0' },
 				// mask
 				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:00:00:00:00)
 				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
@@ -572,8 +611,8 @@ public class SignatureCardFactory {
 						(byte) 0x31, (byte) 0xfe, (byte) 0x58, (byte) 0x4b,
 						'S', 'w', 'i', 's', 's', 'S', 'i', 'g', 'n',
 						(byte) 0x89 },
-				// historical bytes pattern						
-				new byte[]{'S', 'w', 'i', 's', 's', 'S', 'i', 'g', 'n'},
+				// historical bytes pattern
+				new byte[] { 'S', 'w', 'i', 's', 's', 'S', 'i', 'g', 'n' },
 				// mask
 				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
@@ -647,44 +686,55 @@ public class SignatureCardFactory {
 			SupportedCard supportedCard = cards.next();
 			if (supportedCard.matches(atr)) {
 
-				return instantiateSignatureCard(cardTerminal, card, supportedCard);
+				return instantiateSignatureCard(cardTerminal, card,
+						supportedCard);
 			}
 		}
-		
-		// if no matching implementation has been found yet, check for pattern match in historical bytes
-		log.trace("No card matching complete ATR found - checking candidates with historical bytes matches.");
+
+		// if no matching implementation has been found yet, check for pattern
+		// match in historical bytes
+		log
+				.trace("No card matching complete ATR found - checking candidates with historical bytes matches.");
 		Iterator<SupportedCard> cardsIterator = supportedCards.iterator();
 		List<SupportedCard> historicalBytesCandidates = new ArrayList<SupportedCard>();
 		while (cardsIterator.hasNext()) {
 			SupportedCard supportedCard = cardsIterator.next();
-			
-			if(supportedCard.matchesHistoricalBytesPattern(atr)) {
-				
+
+			if (supportedCard.matchesHistoricalBytesPattern(atr)) {
+
 				historicalBytesCandidates.add(supportedCard);
 			}
-		}		
+		}
 
 		historicalBytesCandidates = reduceCandidateList(historicalBytesCandidates);
-		if(historicalBytesCandidates.size() != 1) {
-			
-			log.warn("Found {} cards with matching historical bytes pattern.", historicalBytesCandidates.size());
+		if (historicalBytesCandidates.size() != 1) {
+
+			log.warn("Found {} cards with matching historical bytes pattern.",
+					historicalBytesCandidates.size());
 		} else {
-			
-			log.trace("Instantiating class " + historicalBytesCandidates.get(0).getImplementationClassName() + " according to historical bytes pattern match.");
-			return instantiateSignatureCard(cardTerminal, card, historicalBytesCandidates.get(0));
+
+			log.trace("Instantiating class "
+					+ historicalBytesCandidates.get(0)
+							.getImplementationClassName()
+					+ " according to historical bytes pattern match.");
+			return instantiateSignatureCard(cardTerminal, card,
+					historicalBytesCandidates.get(0));
 		}
-		
+
 		throw new CardNotSupportedException("Card not supported: ATR="
 				+ toString(atr.getBytes()));
 
 	}
 
-	private SignatureCard instantiateSignatureCard(CardTerminal cardTerminal, Card card, SupportedCard supportedCard) throws CardNotSupportedException {
-		
+	private SignatureCard instantiateSignatureCard(CardTerminal cardTerminal,
+			Card card, SupportedCard supportedCard)
+			throws CardNotSupportedException {
+
 		ClassLoader cl = SignatureCardFactory.class.getClassLoader();
 		SignatureCard sc;
 		try {
-			Class<?> scClass = cl.loadClass(supportedCard.getImplementationClassName());
+			Class<?> scClass = cl.loadClass(supportedCard
+					.getImplementationClassName());
 			sc = (SignatureCard) scClass.newInstance();
 
 			sc = ExclSignatureCardProxy.newInstance(sc);
@@ -694,55 +744,45 @@ public class SignatureCardFactory {
 			return sc;
 
 		} catch (ClassNotFoundException e) {
-			log.warn(
-					"Cannot find signature card implementation class.",
-					e);
+			log.warn("Cannot find signature card implementation class.", e);
 			throw new CardNotSupportedException(
-					"Cannot find signature card implementation class.",
-					e);
+					"Cannot find signature card implementation class.", e);
 		} catch (InstantiationException e) {
-			log
-					.warn(
-							"Failed to instantiate signature card implementation.",
-							e);
+			log.warn("Failed to instantiate signature card implementation.", e);
 			throw new CardNotSupportedException(
-					"Failed to instantiate signature card implementation.",
-					e);
+					"Failed to instantiate signature card implementation.", e);
 		} catch (IllegalAccessException e) {
-			log
-					.warn(
-							"Failed to instantiate signature card implementation.",
-							e);
+			log.warn("Failed to instantiate signature card implementation.", e);
 			throw new CardNotSupportedException(
-					"Failed to instantiate signature card implementation.",
-					e);
-		}		
+					"Failed to instantiate signature card implementation.", e);
+		}
 	}
-	
-	private List<SupportedCard> reduceCandidateList(List<SupportedCard> candidates) {
-		
+
+	private List<SupportedCard> reduceCandidateList(
+			List<SupportedCard> candidates) {
+
 		List<SupportedCard> result = new ArrayList<SupportedCard>();
-		
-		for(SupportedCard current : candidates) {
-			
+
+		for (SupportedCard current : candidates) {
+
 			String implName = current.getImplementationClassName();
 			boolean alreadyPresent = false;
-			
-			for(SupportedCard card : result) {
-				
-				if(card.getImplementationClassName().equals(implName)) {
-				
+
+			for (SupportedCard card : result) {
+
+				if (card.getImplementationClassName().equals(implName)) {
+
 					alreadyPresent = true;
 				}
 			}
-			
-			if(!alreadyPresent) {
+
+			if (!alreadyPresent) {
 				result.add(current);
 			}
-		}				
+		}
 		return result;
 	}
-	
+
 	public static String toString(byte[] b) {
 		StringBuffer sb = new StringBuffer();
 		if (b != null && b.length > 0) {

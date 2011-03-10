@@ -20,7 +20,6 @@ package at.gv.egiz.smcc;
 import at.gv.egiz.smcc.cio.CIOCertificate;
 import at.gv.egiz.smcc.util.ISO7816Utils;
 import at.gv.egiz.smcc.util.TLVSequence;
-import iaik.me.asn1.ASN1;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,7 +72,9 @@ public class CIOCertificateDirectory {
 
     protected byte[] executeSelect(CardChannel channel) throws CardException {
     	
+    	
         CommandAPDU cmd = new CommandAPDU(0x00, 0xA4, 0x02, ISO7816Utils.P2_FCP, fid, 256);
+        
         ResponseAPDU resp = channel.transmit(cmd);
 
         byte[] fcx = new TLVSequence(resp.getBytes()).getValue(ISO7816Utils.TAG_FCP);

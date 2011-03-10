@@ -8,6 +8,8 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
+import at.gv.egiz.smcc.util.SMCCHelper;
+
 public class T0CardChannel extends LogCardChannel {
 
 	public T0CardChannel(CardChannel channel) {
@@ -22,7 +24,7 @@ public class T0CardChannel extends LogCardChannel {
 		 
 		 if(resp.getSW1() == (byte)0x61) {
 			 
-			 byte[] data = executeGetResponse(channel, (byte)resp.getSW2());
+			 byte[] data = executeGetResponse((byte)resp.getSW2());
 			 
 			 byte[] result = new byte[data.length + 2];
 			 System.arraycopy(data, 0, result, 0, data.length);
@@ -38,7 +40,7 @@ public class T0CardChannel extends LogCardChannel {
 		 }
 	 }
 	
-		private byte[] executeGetResponse(CardChannel channel, byte sw2)
+		private byte[] executeGetResponse(byte sw2)
 		throws CardException {
 
 	boolean done = false;
@@ -48,7 +50,8 @@ public class T0CardChannel extends LogCardChannel {
 
 		CommandAPDU command = new CommandAPDU(new byte[] { (byte) 0x00,
 				(byte) 0xC0, (byte) 0x00, (byte) 0x00, (byte) sw2 });
-		ResponseAPDU resp = channel.transmit(command);
+//		ResponseAPDU resp = channel.transmit(command);
+		ResponseAPDU resp = super.transmit(command);
 		
 		try {
 			bof.write(resp.getData());

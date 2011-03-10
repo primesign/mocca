@@ -56,7 +56,7 @@ public class ObjectDirectory {
 	private List<byte[]> CD_refs;
 
 	private Integer padding;
-        private int P1 = 0x02;
+    private int P1 = 0x02;
 
 	public ObjectDirectory() {
 		fid = new byte[] { (byte) 0x50, (byte) 0x31 };
@@ -99,6 +99,7 @@ public class ObjectDirectory {
 
 		byte[] efod = ISO7816Utils.readTransparentFile(channel, -1);
 
+		
                 PrKD_refs = new ArrayList<byte[]>();
                 PuKD_refs = new ArrayList<byte[]>();
                 AOD_refs = new ArrayList<byte[]>();
@@ -107,7 +108,7 @@ public class ObjectDirectory {
 		for (TLV cio : new TLVSequence(efod)) {
 			int tag = cio.getTag();
 
-                        //TODO FIN EID: check if unknown tag and tag length > array
+            //TODO FIN EID: check if unknown tag and tag length > array
 			if (padding != null && tag == padding) {
 				// reached padding - quit record extraction
 				break;
@@ -205,4 +206,16 @@ public class ObjectDirectory {
         public List<byte[]> getCDReferences() {
 		return CD_refs;
 	}
+
+	public int getP1() {
+		return P1;
+	}
+
+	public void setP1(int p1) {
+		P1 = p1;
+	}
+        
+       
+
+	
 }
