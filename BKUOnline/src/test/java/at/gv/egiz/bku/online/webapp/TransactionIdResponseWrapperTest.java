@@ -17,12 +17,10 @@
 
 package at.gv.egiz.bku.online.webapp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Locale;
 
 import javax.servlet.ServletOutputStream;

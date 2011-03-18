@@ -16,12 +16,11 @@
 */
 package at.gv.egiz.bku.smccstal;
 
-import at.gv.egiz.bku.gui.BKUGUIFacade;
-import at.gv.egiz.bku.pin.gui.SignPINGUI;
-import at.gv.egiz.bku.pin.gui.VerifyPINGUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.bku.pin.gui.VerifyPINGUI;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.LockedException;
 import at.gv.egiz.smcc.NotActivatedException;

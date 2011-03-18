@@ -21,8 +21,6 @@ package at.gv.egiz.stalx.service;
 //import com.sun.xml.bind.api.TypeReference;
 //import com.sun.xml.ws.api.model.SEIModel;
 //import com.sun.xml.ws.developer.JAXBContextFactory;
-import java.util.List;
-import javax.xml.bind.JAXBException;
 
 /**
  *

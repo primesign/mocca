@@ -26,12 +26,11 @@ import static org.junit.Assert.assertNotNull;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.junit.Test;
 
-import at.gv.egiz.stal.InfoboxReadRequest;
-import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.service.GetHashDataInputFault;
 import at.gv.egiz.stal.service.STALPortType;
 import at.gv.egiz.stal.service.STALService;
@@ -41,7 +40,6 @@ import at.gv.egiz.stal.service.types.GetNextRequestResponseType;
 import at.gv.egiz.stal.service.types.GetNextRequestType;
 import at.gv.egiz.stal.service.types.InfoboxReadRequestType;
 import at.gv.egiz.stal.service.types.RequestType;
-import javax.xml.bind.JAXBElement;
 
 /**
  *
