@@ -914,7 +914,7 @@ var deployJava = {
             } catch (err) { }
     
             if (loc != null) {
-                loc.replace("-","_")
+                loc.replace("-","_");
                 deployJava.locale = loc;
             }
         }
