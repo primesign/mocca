@@ -41,7 +41,6 @@ public class XSECTTransforms extends TransformsImpl {
    * @param transforms a list of {@link TransformImpl}s
    * @see TransformsImpl#TransformsImpl(List)
    */
-  @SuppressWarnings("unchecked")
   public XSECTTransforms(List transforms) {
     super(transforms);
   }

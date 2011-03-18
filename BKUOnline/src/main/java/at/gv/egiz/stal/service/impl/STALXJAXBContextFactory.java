@@ -34,7 +34,6 @@ public class STALXJAXBContextFactory implements JAXBContextFactory {
 
   private final Logger log = LoggerFactory.getLogger(STALXJAXBContextFactory.class);
 
-  @SuppressWarnings("unchecked")
   @Override
   public JAXBRIContext createJAXBContext(SEIModel sei, List<Class> classesToBind, List<TypeReference> typeReferences) throws JAXBException {
     if (log.isTraceEnabled()) {

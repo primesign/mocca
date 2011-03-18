@@ -52,7 +52,6 @@ public class HttpUtil {
    *          if true the method return the default charset if not set
    * @return charset String or null if not present
    */
-  @SuppressWarnings("unchecked")
   public static String getCharset(String contentType,
       boolean replaceNullWithDefault) {
     ParameterParser pf = new ParameterParser();

@@ -82,7 +82,6 @@ public class MOASPClient {
 
   public static class ClientJAXBContextFactory implements JAXBContextFactory {
 
-    @SuppressWarnings("unchecked")
     public JAXBRIContext createJAXBContext(final SEIModel sei,
         final List<Class> classesToBind, final List<TypeReference> typeReferences)
             throws JAXBException {

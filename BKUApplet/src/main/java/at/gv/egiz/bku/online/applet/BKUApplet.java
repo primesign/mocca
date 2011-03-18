@@ -157,6 +157,7 @@ public class BKUApplet extends JApplet {
 		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6993691
 		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6993073
 		// and http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=7001786
+		@SuppressWarnings("unused")
 		ParserDelegator workaround = new ParserDelegator();
 
     HttpsURLConnection.setDefaultSSLSocketFactory(InternalSSLSocketFactory.getInstance());

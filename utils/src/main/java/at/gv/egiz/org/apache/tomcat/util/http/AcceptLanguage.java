@@ -35,7 +35,6 @@ import java.util.Vector;
  * @author Harish Prabandham
  * @author costin@eng.sun.com
  */
-@SuppressWarnings("unchecked")
 public class AcceptLanguage {
 
     public static Locale getLocale(String acceptLanguage) {

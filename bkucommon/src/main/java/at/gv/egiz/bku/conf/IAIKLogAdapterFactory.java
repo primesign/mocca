@@ -38,7 +38,6 @@ public class IAIKLogAdapterFactory extends LogFactory {
   /* (non-Javadoc)
    * @see iaik.logging.LogFactory#getInstance(java.lang.Class)
    */
-  @SuppressWarnings("unchecked")
   @Override
   public synchronized Log getInstance(Class clazz) throws LogConfigurationException {
     Logger logger = LoggerFactory.getLogger(clazz);

@@ -45,7 +45,6 @@ public abstract class CommandParamChecker {
 			return val;
 		}
 
-		@SuppressWarnings("unchecked")
 		public boolean equals(Object other) {
 			if (other instanceof Tupel) {
 				Tupel ot = (Tupel) other;
