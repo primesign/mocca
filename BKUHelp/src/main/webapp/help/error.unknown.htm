@@ -26,18 +26,17 @@
    
 	<p>Ein unerwarteter Fehler ist aufgetretten. Bitte wiederholen Sie den Vorgang noch einmal.</p>
     <p>Falls Sie den Fehler melden wollen, ist es sehr hilfreich wenn Sie das Log-File mitschicken.</p>
-    <p>Bei <strong>lokale BKU (MOCCA Webstart)</strong> finden Sie das Log-File unter dem Home-Verzeichnis des Benutzers (unter Windows <code>%USERPROFILE%\.mocca\logs\webstart.log)</code>
-    <li><code>z.B. C:\Benutzer\tester\.mocca\logs\webstart.log</code></li>
-    </p> 
+    <p>Bei <strong>lokale BKU (MOCCA Webstart)</strong> finden Sie das Log-File unter dem Home-Verzeichnis des Benutzers (unter Windows <code>%USERPROFILE%\.mocca\logs\webstart.log)</code></p>
+    <ul><li><code>z.B. C:\Benutzer\tester\.mocca\logs\webstart.log</code></li></ul>
     
     <p>Verwenden Sie <strong>online BKU MOCCA</strong> so m&uuml;ssen Sie zuerst die Java Protokollierung aktivieren. 
-    Unter Windows finden Sie die Java Einstellungen unter <code>Systemsteuerung -> Java Control Panal -> Erweitert -> 
-    Debugging -> Protokollierung aktivieren.</code></p>
+    Unter Windows finden Sie die Java Einstellungen unter <code>Systemsteuerung -&gt; Java Control Panel -&gt; Erweitert -&gt; 
+    Debugging -&gt; Protokollierung aktivieren.</code></p>
     <p>Damit das Log-File auch angezeigt wird, ist es notwendig die Java-Konsole einzublenden. Dies k&ouml;nnen Sie ebenfalls im Java Control Panal einlstellen. 
-    <code>Java Control Panal -> Erweitert -> Java - Konsole -> Konsole einblenden.</code></p>
+    <code>Java Control Panel -&gt; Erweitert -&gt; Java - Konsole -&gt; Konsole einblenden.</code></p>
     <p style="text-align: center"><img src="error.java_control_panal.png" alt="Bildschirmfoto" width="400" height="484" /></p>
     <p> Das Java Applet Log-Level kann weiters noch feiner eingestellt werden. Diese Konfiguration k&ouml;nnen sie unter <code>JAVA_HOME/lib/logging.properties</code> einstellen. </p>
-    <li><code>z.B. unter Windows <code>C:\Programme\Java\jre6\lib\logging.properties</code></li>
+    <ul><li>z.B. unter Windows <code>C:\Programme\Java\jre6\lib\logging.properties</code></li></ul>
     <p> Hierbei ist es wichtig, dass das Logging auf FINEST eingestellt wird, wie unten in der mittleren Zeile gezeigt wird.</p>
      <p><code># Limit the message that are printed on the console to INFO and above.</code>
 	 <code>java.util.logging.ConsoleHandler.level = <strong>FINEST</strong></code>
