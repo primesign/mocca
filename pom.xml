@@ -158,10 +158,9 @@
       <url>http://download.java.net/maven/2/</url>
     </repository>
     <repository>
-      <id>maven1-repository.dev.java.net</id>
-      <name>Java.net Repository for Maven 1</name>
-      <url>http://download.java.net/maven/1/</url>
-      <layout>legacy</layout>
+      <id>glassfish-repo-archive</id>
+      <name>Glassfish Repositories</name>
+      <url>http://maven.glassfish.org/content/groups/glassfish-group/</url>
     </repository>
   </repositories>
   <dependencies>
