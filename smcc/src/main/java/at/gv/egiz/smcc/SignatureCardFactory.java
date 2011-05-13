@@ -474,6 +474,39 @@ public class SignatureCardFactory {
 						(byte) 0x00, (byte) 0x00, (byte) 0x00 },
 				"at.gv.egiz.smcc.SEIdentityCard"));
 
+		// IS VISA electron
+		supportedCards.add(new SupportedCard(
+				// ATR
+				// [3B:68:00:00:00:73:C8:40:10:00:90:00]
+				new byte[] { (byte) 0x3b, (byte) 0x68, (byte) 0x00,
+						(byte) 0x00, (byte) 0x00, (byte) 0x73, (byte) 0xC8,
+						(byte) 0x40, (byte) 0x10, (byte) 0x00, (byte) 0x90,
+						(byte) 0x00},
+				// mask
+				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
+				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff},
+				"at.gv.egiz.smcc.ISVISAElectronCard"));
+		
+		// IS Maestro
+		supportedCards.add(new SupportedCard(
+				// ATR
+				// [3B:6F:00:00:80:31:E0:6B:04:20:05:02:58:55:55:55:55:55:55]
+				new byte[] { (byte) 0x3b, (byte) 0x6F, (byte) 0x00,
+						(byte) 0x00, (byte) 0x80, (byte) 0x31, (byte) 0xE0,
+						(byte) 0x6B, (byte) 0x04, (byte) 0x20, (byte) 0x05,
+						(byte) 0x02, (byte) 0x58, (byte) 0x55, (byte) 0x55,
+						(byte) 0x55, (byte) 0x55, (byte) 0x55, (byte) 0x55},
+				// mask
+				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
+				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff},
+				"at.gv.egiz.smcc.ISMAESTROCard"));		
+		
 		// ITCards
 		supportedCards.add(new SupportedCard(
 		// ATR =
