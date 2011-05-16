@@ -50,7 +50,7 @@ public abstract class AbstractCommandSequenceBindingProcessor extends AbstractBi
 
   private Exception error;
 
-  private SLCommandBrocker commandBrocker = new SLCommandBrocker();
+  private SLCommandBroker commandBroker = new SLCommandBroker();
   
   /**
    * External processing?
@@ -94,7 +94,7 @@ public abstract class AbstractCommandSequenceBindingProcessor extends AbstractBi
         SLCommandContext context = new SLCommandContext(getSTAL(), getUrlDereferencer(), locale);
         SLResult result = null;
         if (external) {
-          result = commandBrocker.execute(command, context, 3 * 60 * 1000);
+          result = commandBroker.execute(command, context, 3 * 60 * 1000);
         } else {
           if (command != null) {
             result = command.execute(context);
@@ -117,7 +117,7 @@ public abstract class AbstractCommandSequenceBindingProcessor extends AbstractBi
   }
 
   public SLCommand setExternalResult(SLResult slResult) throws SLCommandException, InterruptedException {
-    return commandBrocker.nextCommand(slResult, 3 * 60 * 1000);
+    return commandBroker.nextCommand(slResult, 3 * 60 * 1000);
   }
 
 }

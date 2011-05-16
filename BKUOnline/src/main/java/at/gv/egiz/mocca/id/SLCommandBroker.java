@@ -23,7 +23,7 @@ import at.gv.egiz.bku.slcommands.SLResult;
 import at.gv.egiz.bku.slcommands.impl.ErrorResultImpl;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 
-public class SLCommandBrocker {
+public class SLCommandBroker {
   
   private Sync<SLCommand> commandSync = new Sync<SLCommand>();
   
