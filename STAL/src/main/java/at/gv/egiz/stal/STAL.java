@@ -19,7 +19,7 @@ package at.gv.egiz.stal;
 import java.util.List;
 
 /**
- * Interface for all implementations of the Security Tokean Abstraction Layer.
+ * Interface for all implementations of the Security Token Abstraction Layer.
  * This interface is used by the BKU to handle all security token related parts.
  * 
  *
@@ -34,7 +34,7 @@ public interface STAL {
   public List<STALResponse> handleRequest(List<? extends STALRequest> aRequestList);
   
   /**
-   * Sets the preferred locale for userinteraction (e.g. PIN dialogs).
+   * Sets the preferred locale for user interaction (e.g. PIN dialogs).
    * If the locale is not set the default locale will be used.
    * @param locale must not be null.
    */

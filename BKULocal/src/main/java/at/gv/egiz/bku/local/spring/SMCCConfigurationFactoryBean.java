@@ -37,7 +37,7 @@ public class SMCCConfigurationFactoryBean implements FactoryBean {
         private Configuration configuration;
         public static final String DISABLE_PINPAD = "CCID.disablePinpad";
 
-        public boolean isDisablePinapad() {
+        public boolean isDisablePinpad() {
             return configuration.getBoolean(DISABLE_PINPAD, false);
         }
     }
@@ -50,7 +50,7 @@ public class SMCCConfigurationFactoryBean implements FactoryBean {
     public Object getObject() throws Exception {
         if (config == null) {
             config = new SMCCConfiguration();
-            config.setDisablePinpad(configurationFacade.isDisablePinapad());
+            config.setDisablePinpad(configurationFacade.isDisablePinpad());
         }
         return config;
     }
