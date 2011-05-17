@@ -281,10 +281,10 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 
 	protected void processRequest() {
 		log.info("Entered State: {}, Processing {}.", State.PROCESS, slCommand.getName());
-        SLCommandContext commandCtx = new SLCommandContext(
-            getSTAL(),
-            new FormDataURLDereferencer(urlDereferencer, this), 
-            locale);
+		SLCommandContext commandCtx = new SLCommandContext(
+			getSTAL(),
+			new FormDataURLDereferencer(urlDereferencer, this), 
+			locale);
 		commandInvoker.setCommand(commandCtx, slCommand);
 		responseCode = 200;
 		responseHeaders = Collections.EMPTY_MAP;

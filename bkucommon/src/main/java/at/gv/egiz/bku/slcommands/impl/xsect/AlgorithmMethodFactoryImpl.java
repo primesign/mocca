@@ -45,7 +45,7 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
   /**
    * Use SHA-2?
    */
-  private static boolean SHA2 = false;
+  private boolean SHA2 = false;
   
   /**
    * The signature algorithm URI.
@@ -63,7 +63,7 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
   private SignatureMethodParameterSpec signatureMethodParameterSpec;
 
   /**
-   * Creates a new AlgrithmMethodFactory with the given
+   * Creates a new AlgorithmMethodFactory with the given
    * <code>signingCertificate</code>.
    * 
    * @param signingCertificate
@@ -72,8 +72,10 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
    *           if the public key algorithm of the given
    *           <code>signingCertificate</code> is not supported
    */
-  public AlgorithmMethodFactoryImpl(X509Certificate signingCertificate)
+  public AlgorithmMethodFactoryImpl(X509Certificate signingCertificate, boolean useSHA2)
       throws NoSuchAlgorithmException {
+
+    SHA2 = useSHA2;
 
     PublicKey publicKey = signingCertificate.getPublicKey();
     String algorithm = publicKey.getAlgorithm();

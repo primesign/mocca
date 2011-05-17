@@ -32,20 +32,19 @@ public class CreateXMLSignatureCommandFactory extends AbstractSLCommandFactory {
   private ConfigurationFacade configurationFacade = new ConfigurationFacade();
   
   private class ConfigurationFacade implements MoccaConfigurationFacade {
-    
     public static final String VALIDATE_HASH_DATA_INPUTS = "ValidateHashDataInputs";
-    
+
     public boolean getValidateHashDataInputs() {
       return configuration.getBoolean(VALIDATE_HASH_DATA_INPUTS, true);
     }
-    
   }
-  
+
   @Override
   public SLCommand createSLCommand(JAXBElement<?> element) throws SLCommandException {
     
     CreateXMLSignatureCommandImpl command = new CreateXMLSignatureCommandImpl();
     command.init(element);
+    command.setConfiguration(configuration);
     return command;
     
   }

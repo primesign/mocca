@@ -26,6 +26,7 @@ import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.URIReferenceException;
 import javax.xml.crypto.dsig.XMLSignatureException;
 
+import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -33,6 +34,7 @@ import org.w3c.dom.ls.LSSerializer;
 
 import at.buergerkarte.namespaces.securitylayer._1.CreateXMLSignatureRequestType;
 import at.buergerkarte.namespaces.securitylayer._1.DataObjectInfoType;
+import at.gv.egiz.bku.conf.MoccaConfigurationFacade;
 import at.gv.egiz.bku.slcommands.CreateXMLSignatureCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLResult;
@@ -78,12 +80,30 @@ public class CreateXMLSignatureCommandImpl extends
    * The to-be signed signature.
    */
   protected Signature signature;
-  
+
   /**
-   * Disable hash data input validation?
+   * The configuration facade used to access the MOCCA configuration.
    */
-  protected boolean disableHashdataInputValidation;
-  
+  private ConfigurationFacade configurationFacade = new ConfigurationFacade();
+
+  private class ConfigurationFacade implements MoccaConfigurationFacade {
+    private Configuration configuration;
+
+    public static final String USE_SHA2 = "useSHA2";
+
+    public void setConfiguration(Configuration configuration) {
+        this.configuration = configuration;
+    }
+
+    public boolean getUseSHA2() {
+        return configuration.getBoolean(USE_SHA2, false);
+    }
+  }
+
+  public void setConfiguration(Configuration configuration) {
+    configurationFacade.setConfiguration(configuration);
+  }
+
   @Override
   public void prepareXMLSignature(SLCommandContext commandContext) throws SLCommandException,
       SLRequestException {
@@ -97,7 +117,7 @@ public class CreateXMLSignatureCommandImpl extends
     AlgorithmMethodFactory algorithmMethodFactory;
     try {
       algorithmMethodFactory = new AlgorithmMethodFactoryImpl(
-          signingCertificate);
+          signingCertificate, configurationFacade.getUseSHA2());
     } catch (NoSuchAlgorithmException e) {
       log.error("Failed to get DigestMethod.", e);
       throw new SLCommandException(4006);
