@@ -51,6 +51,7 @@ public class EstEIDCard extends AbstractSignatureCard {
       "at/gv/egiz/smcc/EstEIDCard", "qs.pin", KID_PIN_2, DF, PinInfo.UNKNOWN_RETRIES);
   
   @Override
+  @Exclusive
   public byte[] getCertificate(KeyboxName keyboxName, PINGUI provider)
       throws SignatureCardException, InterruptedException {
 
@@ -77,6 +78,7 @@ public class EstEIDCard extends AbstractSignatureCard {
   }
 
   @Override
+  @Exclusive
   public byte[] createSignature(InputStream input, KeyboxName keyboxName,
       PINGUI pinGUI, String alg) throws SignatureCardException,
       InterruptedException, IOException {
