@@ -1,6 +1,11 @@
 MOCCA Project
 Copyright 2008 Federal Chancellery Austria and Graz University of Technology
 
+This "NOTICE" text file is part of the distribution. Any derivative works that
+you distribute must include a readable copy of the attribution notices contained
+within this NOTICE file, excluding those notices that do not pertain to any part
+of the derivative works.
+
 This product includes software developed at
 E-Government Innovation Center (www.egiz.gv.at). 
 
@@ -8,10 +13,20 @@ E-Government Innovation Center is a joint initiative of
 Federal Chancellery Austria and Graz University of Technology.
 
 
-This product includes software developed by third parties
-and provided under an open source license (www.opensource.org).
+This product includes software developed by
+by third parties and provided under an open source license (www.opensource.org).
 
 
 This product includes software provided by
 Stiftung Secure Information and Communication Technologies SIC 
 (www.sic.st).
+
+License change: 
+Up to and including version 1.3.6 of this product were published under an
+Apache 2.0 license (see "LICENSE-2.0.txt"). From version 1.3.6 onwards the
+product is licensed under the terms and conditions of the European Union Public
+Licence (EUPL) Version 1.1 ("EUPL v.1.1 - Licence.pdf").
+For this present version 1.3.6 a transitional dual license is granted: The
+licensee can choose to either use "LICENSE-2.0.txt" or
+"EUPL v.1.1 - Licence.pdf" together with "SIC-LICENSE.txt" (for software
+provided by Stiftung Secure Information and Communication Technologies SIC).
