@@ -63,6 +63,7 @@ public class LtEIDCard extends AbstractSignatureCard implements SignatureCard {
 	private final Logger log = LoggerFactory.getLogger(LtEIDCard.class);
 
 	@Override
+	@Exclusive
 	public byte[] createSignature(InputStream input, KeyboxName keyboxName,
 			PINGUI pinGUI, String alg) throws SignatureCardException,
 			InterruptedException, IOException {
@@ -159,6 +160,7 @@ public class LtEIDCard extends AbstractSignatureCard implements SignatureCard {
 	}
 
 	@Override
+	@Exclusive
 	public byte[] getCertificate(KeyboxName keyboxName, PINGUI pinGUI)
 			throws SignatureCardException, InterruptedException {
 
@@ -393,6 +395,7 @@ public class LtEIDCard extends AbstractSignatureCard implements SignatureCard {
 	}
 
 	@Override
+	@Exclusive
 	public byte[] getInfobox(String infobox, PINGUI pinGUI, String domainId)
 			throws SignatureCardException, InterruptedException {
 
