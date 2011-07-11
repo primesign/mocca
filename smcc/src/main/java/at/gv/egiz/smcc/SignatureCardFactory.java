@@ -316,7 +316,7 @@ public class SignatureCardFactory {
 						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-						(byte) 0x00 }, "at.gv.egiz.smcc.ACOSCard"));
+						(byte) 0x00 }, "at.gv.egiz.smcc.AbstractACOSCard"));
 
 		// a-sign premium (MCA)
 		supportedCards.add(new SupportedCard(
@@ -337,7 +337,7 @@ public class SignatureCardFactory {
 						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-						(byte) 0x00 }, "at.gv.egiz.smcc.ACOSCard"));
+						(byte) 0x00 }, "at.gv.egiz.smcc.AbstractACOSCard"));
 
 		// BELPIC
 		supportedCards.add(new SupportedCard(
