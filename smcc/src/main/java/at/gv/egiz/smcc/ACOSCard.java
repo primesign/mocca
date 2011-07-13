@@ -173,11 +173,29 @@ PINMgmtSignatureCard {
 		try {
 			byte[] cert = getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR, null); 
 
-			ASN1 asn1 = new ASN1(cert);
+			ASN1 cert_asn1 = new ASN1(cert);
+			// certificate
+			// +-tbsCertificate(0)
+			//   +-...
+			//   +-issuer(3)
+			//     +-[RelativeDistinguishedName]
+			//       +-[AttributeValueAssertion]
+			//         +-attributeType
+			//         +-attributeValue
+			ASN1 issuer = cert_asn1.getElementAt(0).getElementAt(3);
+			String countryID = null;
+			for (int i = 0; i < issuer.getSize(); ++i) {
+				if (issuer.getElementAt(i).getElementAt(0).getElementAt(0).gvString() == ASN1.OID_NAME_C) {
+					countryID = issuer.getElementAt(i).getElementAt(0).getElementAt(1).gvString();
+					break;
+				}
+			}
 
-			String countryID = asn1.getElementAt(0).getElementAt(3).getElementAt(0).getElementAt(0).getElementAt(1).gvString();		    
-
-			if(countryID.equalsIgnoreCase("LI")) {
+			if (countryID == null) {
+				log.debug("No Country found! - default to ACOS Austria.");
+				_infoboxHandler = new ACOSATCard(this);
+			}
+			else if (countryID.equalsIgnoreCase("LI")) {
 				log.debug("Identified lisign card.");
 				_infoboxHandler = new ACOSLIESignCard(this);
 			} else {
@@ -185,7 +203,7 @@ PINMgmtSignatureCard {
 				_infoboxHandler = new ACOSATCard(this);
 			}
 		} catch (SignatureCardException e) {
-			log.warn("Cannot determine card type by certificate. Using default.", e);			
+			log.warn("Cannot determine card type by certificate. Using default.", e);
 			_infoboxHandler = new ACOSATCard(this);
 		} catch (IOException e) {
 			log.warn("Cannot determine card type by certificate. Using default.", e);
