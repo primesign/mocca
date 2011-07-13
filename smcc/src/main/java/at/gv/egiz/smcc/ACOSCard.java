@@ -185,7 +185,7 @@ PINMgmtSignatureCard {
 			ASN1 issuer = cert_asn1.getElementAt(0).getElementAt(3);
 			String countryID = null;
 			for (int i = 0; i < issuer.getSize(); ++i) {
-				if (issuer.getElementAt(i).getElementAt(0).getElementAt(0).gvString() == ASN1.OID_NAME_C) {
+				if (issuer.getElementAt(i).getElementAt(0).getElementAt(0).gvString().equals(ASN1.OID_NAME_C)) {
 					countryID = issuer.getElementAt(i).getElementAt(0).getElementAt(1).gvString();
 					break;
 				}
