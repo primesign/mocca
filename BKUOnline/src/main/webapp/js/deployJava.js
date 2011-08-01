@@ -1,5 +1,6 @@
 /*
- * Copyright (c)  2008 Sun Microsystems, Inc.  All rights reserved.
+ * Copyright (c) 2006, 2011, Oracle and/or its affiliates. All rights reserved.
+ * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -12,7 +13,7 @@
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
  *
- *   - Neither the name of Sun Microsystems nor the names of its
+ *   - Neither the name of Oracle nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -33,13 +34,13 @@
  * Added by EGIZ:
  * This file contains workarounds to
  * [#423] Firefox 3.0.11 bug #498132 causes applet loading failure
- *   (lines 95-99)
+ *   (not needed anymore)
  * [#424] Web Start loading via java plugin (Sun deployment script) fails on WinXP/Vista
- *   (lines 501-506)
+ *   (not needed anymore)
  *
  * features:
- * [#425] Disable WebStart Launch Button for MacOS
- *   (lines 492-504)
+ * [#425] Disable WebStart Launch Button for MacOS X < 1.6
+ *   (lines 595-612 & 647-662)
  *
  */
 
@@ -48,17 +49,26 @@
  *
  * This file is part of the Deployment Toolkit.  It provides functions for web
  * pages to detect the presence of a JRE, install the latest JRE, and easily run
- * applets or Web Start programs.  Usage guide may be found at http://<TBD>/.
+ * applets or Web Start programs.  More Information on usage of the 
+ * Deployment Toolkit can be found in the Deployment Guide at:
+ * http://java.sun.com/javase/6/docs/technotes/guides/jweb/index.html
  * 
- * The "live" copy of this file may be found at 
+ * The "live" copy of this file may be found at :
  * http://java.com/js/deployJava.js.  
- * You are encouraged to link directly to the live copy of the file.
+ * For web pages provisioned using https, you may want to access the copy at:
+ * https://java.com/js/deployJava.js.
  *
- * @version @(#)deployJava.js	1.13 08/10/28
+ * You are encouraged to link directly to the live copies. 
+ * The above files are stripped of comments and whitespace for performance,
+ * You can access this file w/o the whitespace and comments removed at:
+ * http://java.com/js/deployJava.txt.
+ *
  */
 
 var deployJava = {
     debug: null,
+
+    firefoxJavaVersion: null,
 
     myInterval: null,
     preInstallJREList: null,
@@ -77,10 +87,15 @@ var deployJava = {
     appleRedirectPage: 'http://www.apple.com/support/downloads/',
 
     // mime-type of the DeployToolkit plugin object
-    mimeType: 'application/npruntime-scriptable-plugin;DeploymentToolkit',
+    oldMimeType: 'application/npruntime-scriptable-plugin;DeploymentToolkit',
+    mimeType: 'application/java-deployment-toolkit',
 
     // location of the Java Web Start launch button graphic
+    //launchButtonPNG: 'http://java.sun.com/products/jfc/tsc/articles/swing2d/webstart.png',
     launchButtonPNG: 'img/webstart.png',
+
+    browserName: null,
+    browserName2: null,
 
     /**
      * Returns an array of currently-installed JRE version strings.  
@@ -96,10 +111,9 @@ var deployJava = {
         var list = new Array();
         if (deployJava.isPluginInstalled()) {
             var plugin =  deployJava.getPlugin();
-            //[#423] Firefox 3.0.11 bug #498132 causes applet loading failure
-            var jvms = plugin.jvms;
-            for (var i = 0; i < jvms.getLength(); i++) {
-                list[i] = jvms.get(i).version;
+            var VMs = plugin.jvms;
+            for (var i = 0; i < VMs.getLength(); i++) {
+                list[i] = VMs.get(i).version;
             }
         } else {
             var browser = deployJava.getBrowser();
@@ -118,30 +132,30 @@ var deployJava = {
                 } else if (deployJava.testForMSVM()) {
                     list[0] = '1.1';
                 }
-            }
-            else if (browser == 'Netscape Family') {
-                if (deployJava.testUsingMimeTypes('1.8')) {
-                    list[0] = '1.8.0';
+            } else if (browser == 'Netscape Family') {
+                deployJava.getJPIVersionUsingMimeType();
+                if (deployJava.firefoxJavaVersion != null) {
+                    list[0] = deployJava.firefoxJavaVersion;
+                } else if (deployJava.testUsingMimeTypes('1.8')) {
+                    list[0] = '1.8.0'; 
                 } else if (deployJava.testUsingMimeTypes('1.7')) {
-                    list[0] = '1.7.0';
+                    list[0] = '1.7.0'; 
                 } else if (deployJava.testUsingMimeTypes('1.6')) {
                     list[0] = '1.6.0';
                 } else if (deployJava.testUsingMimeTypes('1.5')) {
                     list[0] = '1.5.0';
                 } else if (deployJava.testUsingMimeTypes('1.4.2')) {
                     list[0] = '1.4.2';
-                }
-            } else if (browser == 'Safari') {
-                if (deployJava.testUsingPluginsArray('1.8.0')) {
-                    list[0] = '1.8.0';
-                } else if (deployJava.testUsingPluginsArray('1.7.0')) {
-                    list[0] = '1.7.0';
-                } else if (deployJava.testUsingPluginsArray('1.6.0')) {
-                    list[0] = '1.6.0';
-                } else if (deployJava.testUsingPluginsArray('1.5.0')) {
-                    list[0] = '1.5.0';
-                } else if (deployJava.testUsingPluginsArray('1.4.2')) {
-                    list[0] = '1.4.2';
+                } else if (deployJava.browserName2 == 'Safari') {
+                    if (deployJava.testUsingPluginsArray('1.7.0')) {
+                        list[0] = '1.7.0'; 
+                    } else if (deployJava.testUsingPluginsArray('1.6')) {
+                        list[0] = '1.6.0';
+                    } else if (deployJava.testUsingPluginsArray('1.5')) {
+                        list[0] = '1.5.0';
+                    } else if (deployJava.testUsingPluginsArray('1.4.2')) {
+                        list[0] = '1.4.2';
+                    }
                 }
             }
         }
@@ -290,7 +304,7 @@ var deployJava = {
 
         if (matchData != null) {
             var browser = deployJava.getBrowser();
-            if ((browser != '?') && (browser != 'Safari')) {
+            if ((browser != '?') && ('Safari' != deployJava.browserName2)) {
                 if (deployJava.versionCheck(minimumVersion + '+')) {
                     deployJava.writeAppletTag(attributes, parameters);
                 } else if (deployJava.installJRE(minimumVersion + '+')) {
@@ -326,12 +340,17 @@ var deployJava = {
      * has been completed.
      */
     writeAppletTag: function(attributes, parameters) {
-        var s = '<' + 'applet ';
+        var startApplet = '<' + 'applet ';
+        var params = '';
+        var endApplet = '<' + '/' + 'applet' + '>';
+        var addCodeAttribute = true;
+
         for (var attribute in attributes) {
-            s += (' ' + attribute + '="' + attributes[attribute] + '"');
+            startApplet += (' ' +attribute+ '="' +attributes[attribute] + '"');
+            if (attribute == 'code' || attribute == 'java_code') {
+                addCodeAttribute = false;
+            }
         }
-        s += '>';
-        document.write(s);
     
         if (parameters != 'undefined' && parameters != null) {
             var codebaseParam = false;
@@ -339,15 +358,26 @@ var deployJava = {
                 if (parameter == 'codebase_lookup') {
                     codebaseParam = true;
                 }
-                s = '<param name="' + parameter + '" value="' + 
-                    parameters[parameter] + '">';
-                document.write(s);
+                // Originally, parameter 'object' was used for serialized 
+                // applets, later, to avoid confusion with object tag in IE
+                // the 'java_object' was added.  Plugin supports both.
+                if (parameter == 'object' || parameter == 'java_object') {
+                    addCodeAttribute = false;
+                }
+                params += '<param name="' + parameter + '" value="' + 
+                    parameters[parameter] + '"/>';
             }
             if (!codebaseParam) {
-              document.write('<param name="codebase_lookup" value="false">');
+                params += '<param name="codebase_lookup" value="false"/>';
             }
         }
-        document.write('<' + '/' + 'applet' + '>');
+
+        if (addCodeAttribute) {
+            startApplet += (' code="dummy"');
+        }
+        startApplet += '>';
+
+        document.write(startApplet + '\n' + params + '\n' + endApplet);
     },
     
     
@@ -431,7 +461,7 @@ var deployJava = {
     isWebStartInstalled: function(minimumVersion) {
 
         var browser = deployJava.getBrowser();
-        if ((browser == '?') || (browser == 'Safari')) {
+        if ((browser == '?') || ('Safari' == deployJava.browserName2)) {
             // we really don't know - better to try to use it than reinstall
             return true;
         }
@@ -454,8 +484,134 @@ var deployJava = {
         }
         return retval;
     },
+
+    // obtain JPI version using navigator.mimeTypes array
+    // if found, set the version to deployJava.firefoxJavaVersion
+    getJPIVersionUsingMimeType: function() {
+        // Walk through the full list of mime types.
+        for (var i = 0; i < navigator.mimeTypes.length; ++i) {
+            var s = navigator.mimeTypes[i].type;
+            // The jpi-version is the plug-in version.  This is the best
+            // version to use.
+            var m = s.match(/^application\/x-java-applet;jpi-version=(.*)$/);
+            if (m != null) {
+                deployJava.firefoxJavaVersion = m[1];
+                // Opera puts the latest sun JRE last not first
+                if ('Opera' != deployJava.browserName2) {
+                    break;
+                }
+            }
+        }
+    },
   
-  
+   // launch the specified JNLP application using the passed in jnlp file
+   // the jnlp file does not need to have a codebase
+   // this requires JRE 7 or above to work
+   // if machine has no JRE 7 or above, we will try to auto-install and then launch
+   // (function will return false if JRE auto-install failed)
+   launchWebStartApplication: function(jnlp) {
+	var uaString = navigator.userAgent.toLowerCase();
+
+	deployJava.getJPIVersionUsingMimeType();
+
+	// make sure we are JRE 7 or above
+        if (deployJava.isWebStartInstalled('1.7.0') == false) {
+
+		// perform latest JRE auto-install
+  		if ((deployJava.installJRE('1.7.0+') == false) ||
+                         ((deployJava.isWebStartInstalled('1.7.0') == false))) {
+                          return false;
+                }
+	}
+
+        var jnlpDocbase = null;
+
+        // use document.documentURI for docbase
+        if (document.documentURI) {
+		jnlpDocbase = document.documentURI;
+	}
+
+	// fallback to document.URL if documentURI not available
+        if (jnlpDocbase == null) {
+		jnlpDocbase = document.URL;
+	}
+
+        var browser = deployJava.getBrowser();
+
+        var launchTag;
+
+        if (browser == 'MSIE') {
+
+            launchTag = '<' +
+                'object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" ' +
+		'width="0" height="0">' +
+		'<' + 'PARAM name="launchjnlp" value="' + jnlp + '"' + '>' +
+	        '<' + 'PARAM name="docbase" value="' + jnlpDocbase + '"' + '>' +
+                '<' + '/' + 'object' + '>';
+        } else if (browser == 'Netscape Family') {
+
+            launchTag = '<' +
+		'embed type="application/x-java-applet;jpi-version=' +
+		deployJava.firefoxJavaVersion + '" ' +
+                'width="0" height="0" ' +
+                'launchjnlp="' +  jnlp + '"' +
+                'docbase="' +  jnlpDocbase + '"' +
+                ' />';
+        }
+ 
+        if (document.body == 'undefined' || document.body == null) {
+           document.write(launchTag);
+           // go back to original page, otherwise current page becomes blank
+           document.location = jnlpDocbase;
+        } else {
+           var divTag = document.createElement("div");
+           divTag.id = "div1";
+           divTag.style.position = "relative";
+           divTag.style.left = "-10000px";
+           divTag.style.margin = "0px auto";
+           divTag.className ="dynamicDiv";
+           divTag.innerHTML = launchTag;
+           document.body.appendChild(divTag);
+        }
+   },
+
+   createWebStartLaunchButtonEx: function(jnlp, minimumVersion) {
+
+        if (deployJava.returnPage == null) {
+            // if there is an install, come back and run the jnlp file
+            deployJava.returnPage = jnlp;
+        }
+
+        var url = 'javascript:deployJava.launchWebStartApplication(\'' + jnlp +
+			'\');';
+
+        document.write('<' + 'a href="' + url + 
+                       '" onMouseOver="window.status=\'\'; ' +
+                       'return true;"><' + 'img ' +
+                       'src="' + deployJava.launchButtonPNG + '" ' + 
+                       'border="0" /><' + '/' + 'a' + '>');
+    },
+
+
+    /**
+     * Checks if MacOS Version contained in userAgent is at least a certain
+     * given Version.
+     */
+    isMacOSXVersionMin: function(userAgent, minMajor, minMinor)
+    {
+        var ver_match = /os x (\d+)[\._](\d+)/;
+        if (ver_match.exec(userAgent.toLowerCase()) == null)
+            return false;
+        var major = RegExp.$1;
+        var minor = RegExp.$2;
+        if (major > minMajor)
+            return true;
+        else if (major < minMajor)
+            return false;
+        else
+            return minor >= minMinor;
+    },
+
     /**
      * Outputs a launch button for the specified JNLP URL.  When clicked, the 
      * button will ensure that an appropriate JRE is installed and then launch 
@@ -472,7 +628,7 @@ var deployJava = {
      * but there are circumstances (such as when the JRE installation 
      * requires a browser restart) when this cannot be fulfilled.
      */
-    createWebStartLaunchButton: function(jnlp, minimumVersion) { 
+    createWebStartLaunchButton: function(jnlp, minimumVersion) {
 
         if (deployJava.returnPage == null) {
             // if there is an install, come back and run the jnlp file
@@ -490,9 +646,8 @@ var deployJava = {
                   '}';
 
         // [#425] Disable WebStart Launch Button for MacOS
-        if (navigator.appVersion.toLowerCase().indexOf("mac")!=-1 &&
-            navigator.userAgent.toLowerCase().indexOf("os x 10_6")==-1 &&
-            navigator.userAgent.toLowerCase().indexOf("os x 10.6")==-1 )
+        if ((navigator.userAgent.toLowerCase().indexOf("mac os")!=-1) &&
+            !deployJava.isMacOSXVersionMin(navigator.userAgent, 10, 6))
         {
           document.write('<' + 'a disabled="disabled"' +
                        ' onMouseOver="window.status=\'\'; ' +
@@ -513,13 +668,11 @@ var deployJava = {
      * Launch a JNLP application, (using the plugin if available)
      */
     launch: function(jnlp) {
-      //[#424] Web Start loading via java plugin (Sun deployment script) fails on WinXP
-//        if (deployJava.isPluginInstalled()) {
-//            return deployJava.getPlugin().launch(jnlp);
-//        } else {
-            document.location=jnlp;
-            return true;
-//        }
+   /*
+    * Using the plugin to launch Java Web Start is disabled for the time being
+    */
+        document.location=jnlp;
+        return true;
     },
 
     
@@ -548,8 +701,8 @@ var deployJava = {
     /* 
      * sets AutoUpdate on if plugin is installed
      */
-    setAutoUpdateEnabled: function() { 
-        if (deployJava.isPluginInstalled()) { 
+    setAutoUpdateEnabled: function() {
+        if (deployJava.isPluginInstalled()) {
             return deployJava.getPlugin().setAutoUpdateEnabled(); 
         }
         return false;
@@ -589,19 +742,35 @@ var deployJava = {
      */
     isPlugin2: function() {
         if (deployJava.isPluginInstalled()) {
-            try {
-                return deployJava.getPlugin().isPlugin2();
-            } catch (err) {
-                // older plugin w/o isPlugin2() function - just fall through
+            if (deployJava.versionCheck('1.6.0_10+')) {
+                try {
+                    return deployJava.getPlugin().isPlugin2();
+                } catch (err) {
+                    // older plugin w/o isPlugin2() function - 
+                }
             }
         }
         return false;
     },
        
+    allowPlugin: function() {
+        deployJava.getBrowser();
+
+        // Safari and Opera browsers find the plugin but it 
+        // doesn't work, so until we can get it to work - don't use it.
+        var ret = ('Safari' != deployJava.browserName2 &&
+            'Opera' != deployJava.browserName2);
+
+        return ret;
+    },
 
     getPlugin: function() {
         deployJava.refresh();
-        var ret = document.getElementById('deployJavaPlugin');
+
+        var ret = null;
+        if (deployJava.allowPlugin()) {
+            ret = document.getElementById('deployJavaPlugin');
+        }
         return ret;
     },
 
@@ -609,7 +778,7 @@ var deployJava = {
         var regex = "^(\\d+)(?:\\.(\\d+)(?:\\.(\\d+)(?:_(\\d+))?)?)?$";
         var matchData = version.match(regex);  
 
-        if (matchData != null) { 
+        if (matchData != null) {
             var index = 0;
             var result = new Array();
 
@@ -647,40 +816,49 @@ var deployJava = {
 
   
     getBrowser: function() {
-        var browser = navigator.userAgent.toLowerCase();
-    
-        if (deployJava.debug) {
-            alert('userAgent -> ' + browser);
-        }
 
-        if ((navigator.vendor) && 
-            (navigator.vendor.toLowerCase().indexOf('apple') != -1) &&
-            (browser.indexOf('safari') != -1)) {
+        if (deployJava.browserName == null) {
+            var browser = navigator.userAgent.toLowerCase();
+    
             if (deployJava.debug) {
-                alert('We claim to have detected "Safari".');
+                alert('userAgent -> ' + browser);
             }
-            return 'Safari';
-        } else if (browser.indexOf('msie') != -1) {
+
+            // order is important here.  Safari userAgent contains mozilla,
+            // and Chrome userAgent contains both mozilla and safari.
+            if (browser.indexOf('msie') != -1) {
+                deployJava.browserName = 'MSIE';
+                deployJava.browserName2 = 'MSIE';
+            } else if (browser.indexOf('iphone') != -1) {
+                // this included both iPhone and iPad
+                deployJava.browserName = 'Netscape Family';
+                deployJava.browserName2 = 'iPhone';
+            } else if (browser.indexOf('firefox') != -1) {
+                deployJava.browserName = 'Netscape Family';
+                deployJava.browserName2 = 'Firefox';
+            } else if (browser.indexOf('chrome') != -1) {
+                deployJava.browserName = 'Netscape Family';
+                deployJava.browserName2 = 'Chrome';
+            } else if (browser.indexOf('safari') != -1) {
+                deployJava.browserName = 'Netscape Family';
+                deployJava.browserName2 = 'Safari';
+            } else if (browser.indexOf('mozilla') != -1) {
+                deployJava.browserName = 'Netscape Family';
+                deployJava.browserName2 = 'Other';
+            } else if (browser.indexOf('opera') != -1) {
+                deployJava.browserName = 'Netscape Family';
+                deployJava.browserName2 = 'Opera';
+            } else {
+                deployJava.browserName = '?';
+                deployJava.browserName2 = 'unknown';
+            }
+
             if (deployJava.debug) {
-                alert('We claim to have detected "IE".');
+                alert ('Detected browser name:'+ deployJava.browserName +
+                       ', ' + deployJava.browserName2);
             }
-            return 'MSIE';
-//        } else if ((browser.indexOf('konqueror') != -1)) {
-//            if  (deployJava.debug) {
-//                alert('We claim to have detected "Konqueror".');
-//            }
-        } else if ((browser.indexOf('mozilla') != -1) || 
-                   (browser.indexOf('firefox') != -1)) {
-            if (deployJava.debug) {
-                alert('We claim to have detected a Netscape family browser.');
-            }
-            return 'Netscape Family';
-        } else {
-            if (deployJava.debug) {
-                alert('We claim to have failed to detect a browser.');
-            }
-            return '?';
         }
+        return deployJava.browserName;
     },
     
     
@@ -738,28 +916,38 @@ var deployJava = {
         return false;
     },
     
-    
     testUsingPluginsArray: function(version) {
         if ((!navigator.plugins) || (!navigator.plugins.length)) {
-            if (deployJava.debug) {
-                alert ('Browser claims to be Safari, but no plugins[] array?');
-            }
             return false;
         }
+        var platform = navigator.platform.toLowerCase();
 
         for (var i = 0; i < navigator.plugins.length; ++i) {
             s = navigator.plugins[i].description;
-    
-            if (s.search(/^Java Switchable Plug-in/) != -1) {
-                return true;
-            }
-    
-            m = s.match(/^Java (1\.4\.2|1\.5|1\.6|1\.7).* Plug-in/);
-            if (m != null) {
-                if (deployJava.compareVersions(m[1], version)) return true; 
+            if (s.search(/^Java Switchable Plug-in (Cocoa)/) != -1) {
+                // Safari on MAC
+                if (deployJava.compareVersions("1.5.0", version)) {
+                    return true;
+                }
+            } else if (s.search(/^Java/) != -1) {
+                if (platform.indexOf('win') != -1) {
+                    // still can't tell - opera, safari on windows
+                    // return true for 1.5.0 and 1.6.0
+                    if (deployJava.compareVersions("1.5.0", version) ||
+                        deployJava.compareVersions("1.6.0", version)) {
+                        return true;
+                    }
+                }
             }
         }
+        // if above dosn't work on Apple or Windows, just allow 1.5.0
+        if (deployJava.compareVersions("1.5.0", version)) {
+            return true;
+        }
         return false;
+
+
+
     },
     
     IEInstall: function() {
@@ -826,6 +1014,8 @@ var deployJava = {
     
     
     enableAlerts: function() {
+        // reset this so we can show the browser detection
+        deployJava.browserName = null;
         deployJava.debug = true;
     },
 
@@ -855,22 +1045,14 @@ var deployJava = {
     
     writePluginTag: function() {
         var browser = deployJava.getBrowser();
+
         if (browser == 'MSIE') {
             document.write('<' + 
                 'object classid="clsid:CAFEEFAC-DEC7-0000-0000-ABCDEFFEDCBA" ' +
                 'id="deployJavaPlugin" width="0" height="0">' +
                 '<' + '/' + 'object' + '>');
-        } else if (browser == 'Netscape Family') {
-            if (navigator.mimeTypes != null) for (var i=0; 
-                    i < navigator.mimeTypes.length; i++) {
-                if (navigator.mimeTypes[i].type == deployJava.mimeType) {
-                    if (navigator.mimeTypes[i].enabledPlugin) {
-                        document.write('<' + 
-                            'embed id="deployJavaPlugin" type="' + 
-                            deployJava.mimeType + '" hidden="true" />');
-                    }
-                }
-           }
+        } else if (browser == 'Netscape Family' && deployJava.allowPlugin()) {
+            deployJava.writeEmbedTag();
         }
     },
 
@@ -878,20 +1060,37 @@ var deployJava = {
         navigator.plugins.refresh(false);
 
         var browser = deployJava.getBrowser();
-        if (browser == 'Netscape Family') {
+        if (browser == 'Netscape Family' && deployJava.allowPlugin()) {
             var plugin = document.getElementById('deployJavaPlugin');
             // only do this again if no plugin
             if (plugin == null) {
-                if (navigator.mimeTypes != null) for (var i=0;
-                    i < navigator.mimeTypes.length; i++) {
-                    if (navigator.mimeTypes[i].type == deployJava.mimeType) {
-                        if (navigator.mimeTypes[i].enabledPlugin) {
-                            document.write('<' +
-                                'embed id="deployJavaPlugin" type="' +
-                                deployJava.mimeType + '" hidden="true" />');
-                        }
+                deployJava.writeEmbedTag();
+            }
+        }
+     },
+
+    writeEmbedTag: function() {
+        var written = false;
+        if (navigator.mimeTypes != null) {
+            for (var i=0; i < navigator.mimeTypes.length; i++) {
+                if (navigator.mimeTypes[i].type == deployJava.mimeType) {
+                    if (navigator.mimeTypes[i].enabledPlugin) {
+                        document.write('<' +
+                            'embed id="deployJavaPlugin" type="' +
+                            deployJava.mimeType + '" hidden="true" />');
+                        written = true;
                     }
-               }
+                }
+            }
+            // if we ddn't find new mimeType, look for old mimeType
+            if (!written) for (var i=0; i < navigator.mimeTypes.length; i++) {
+                if (navigator.mimeTypes[i].type == deployJava.oldMimeType) {
+                    if (navigator.mimeTypes[i].enabledPlugin) {
+                        document.write('<' +
+                            'embed id="deployJavaPlugin" type="' +
+                            deployJava.oldMimeType + '" hidden="true" />');
+                    }
+                }
             }
         }
     },
@@ -922,4 +1121,3 @@ var deployJava = {
       
 };
 deployJava.do_initialize();
-
