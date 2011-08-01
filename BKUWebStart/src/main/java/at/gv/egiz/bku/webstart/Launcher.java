@@ -24,6 +24,7 @@
 
 package at.gv.egiz.bku.webstart;
 
+import at.gv.egiz.bku.webstart.autostart.Autostart;
 import at.gv.egiz.bku.webstart.gui.StatusNotifier;
 import at.gv.egiz.bku.webstart.gui.BKUControllerInterface;
 import at.gv.egiz.bku.webstart.gui.MOCCAIcon;
@@ -57,6 +58,7 @@ public class Launcher implements BKUControllerInterface {
 	/** no leading slash for messages, but for image */
 	public static final String MESSAGES_RESOURCE = "at/gv/egiz/bku/webstart/messages";
 	public static final String TRAYICON_RESOURCE = "/at/gv/egiz/bku/webstart/chip";
+	private static final String WEBSTART_FILENAME = "mocca.jnlp";
 	private static Logger log = LoggerFactory.getLogger(Launcher.class);
 	/** local bku uri */
 	public static final URL HTTP_SECURITY_LAYER_URL;
@@ -113,6 +115,9 @@ public class Launcher implements BKUControllerInterface {
 	private Container server;
 	private BasicService basicService;
 	private StatusNotifier status;
+	private Autostart autostart;
+
+	private static URL codeBase;
 
 	public Launcher() {
 		log.info("Initializing Launcher");
@@ -123,6 +128,7 @@ public class Launcher implements BKUControllerInterface {
 		log.trace("disabling (JNLP) security manager");
 		System.setSecurityManager(null);
 
+		autostart = new Autostart();
 		status = new MOCCAIcon(this);
 	}
 
@@ -174,6 +180,8 @@ public class Launcher implements BKUControllerInterface {
 		try {
 			status.info(StatusNotifier.MESSAGE_START);
 			basicService = (BasicService) ServiceManager.lookup("javax.jnlp.BasicService");
+			codeBase = basicService.getCodeBase();
+			autostart.setWebstartName(codeBase + WEBSTART_FILENAME);
 			if (basicService.isOffline()) {
 				log.info("launching MOCCA Web Start offline");
 			} else {
@@ -283,5 +291,14 @@ public class Launcher implements BKUControllerInterface {
 	@Override
 	public String getVersion() {
 		return version;
+	}
+
+	@Override
+	public boolean isAutostartEnabled() {
+		return autostart.isEnabled();
+	}
+	@Override
+	public boolean setAutostart(boolean doAutostart) {
+		return autostart.set(doAutostart);
 	}
 }

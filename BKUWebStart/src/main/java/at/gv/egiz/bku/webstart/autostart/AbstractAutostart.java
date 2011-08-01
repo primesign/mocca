@@ -21,32 +21,18 @@
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
+package at.gv.egiz.bku.webstart.autostart;
 
-package at.gv.egiz.bku.webstart.gui;
+public abstract class AbstractAutostart implements AutostartInterface {
+	protected static final String AUTOSTART_FILENAME_PREFIX = "MOCCA";
 
-import java.util.Locale;
+	String _os = System.getProperty("os.name");
+	String _userHome = System.getProperty("user.home") + System.getProperty("file.separator");
+	String _webstartName = null;
 
-public interface BKUControllerInterface {
-  
-  public void shutDown();
-
-	public String getVersion();
+	@Override
+	public void setWebstartName(String webstartName) {
+		_webstartName = webstartName;
+	}
 	
-	public void showHelp(Locale locale);
-
-	public void pinManagement(Locale locale);
-
-
-	/**
-	 * Check if MOCCA Autostart is enabled
-	 * @return autostart state
-	 */
-	boolean isAutostartEnabled();
-
-	/**
-	 * Set MOCCA Autostart
-	 * @param doAutostart whether to enable or disable autostart
-	 * @return new autostart state
-	 */
-	public boolean setAutostart(boolean doAutostart);
 }

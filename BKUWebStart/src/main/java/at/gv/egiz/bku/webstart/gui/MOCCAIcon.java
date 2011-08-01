@@ -21,17 +21,20 @@
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
-
 package at.gv.egiz.bku.webstart.gui;
 
 import java.awt.AWTException;
+import java.awt.CheckboxMenuItem;
 import java.awt.Image;
+import java.awt.Menu;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -43,21 +46,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
- * @author clemens
+ * @author clemenso
+ * @author tkellner
  */
-public class MOCCAIcon implements StatusNotifier, ActionListener {
+public class MOCCAIcon implements StatusNotifier, ActionListener, ItemListener {
 
 	public static final String LABEL_SHUTDOWN = "tray.label.shutdown";
 	public static final String LABEL_PIN = "tray.label.pin";
 	public static final String LABEL_HELP = "tray.label.help";
 	public static final String LABEL_ABOUT = "tray.label.about";
+	public static final String LABEL_SETTINGS = "tray.label.settings";
+	public static final String LABEL_AUTOSTART = "tray.label.autostart";
 	public static final String TOOLTIP_DEFAULT = "tray.tooltip.default";
+
 	/** action commands for tray menu */
-	public static final String SHUTDOWN_COMMAND = "shutdown";
-	public static final String PIN_COMMAND = "pin";
-	public static final String ABOUT_COMMAND = "about";
-	public static final String HELP_COMMAND = "help";
+	private static enum COMMANDS {
+		SHUTDOWN_COMMAND, PIN_COMMAND, ABOUT_COMMAND, HELP_COMMAND, AUTOSTART_COMMAND
+	};
+
 	private static final Logger log = LoggerFactory.getLogger(MOCCAIcon.class);
 	protected BKUControllerInterface controller;
 	protected TrayIcon trayIcon;
@@ -67,7 +73,8 @@ public class MOCCAIcon implements StatusNotifier, ActionListener {
 
 	public MOCCAIcon(BKUControllerInterface controller) {
 		this.controller = controller;
-		messages = ResourceBundle.getBundle(MESSAGES_RESOURCE, Locale.getDefault());
+		messages = ResourceBundle.getBundle(MESSAGES_RESOURCE,
+				Locale.getDefault());
 		this.trayIcon = initTrayIcon();
 	}
 
@@ -88,33 +95,49 @@ public class MOCCAIcon implements StatusNotifier, ActionListener {
 				} else {
 					iconResource = TRAYICON_RESOURCE + "48.png";
 				}
-				Image image = ImageIO.read(getClass().getResourceAsStream(iconResource));
+				Image image = ImageIO.read(getClass().getResourceAsStream(
+						iconResource));
 
 				PopupMenu menu = new PopupMenu();
 
 				MenuItem helpItem = new MenuItem(messages.getString(LABEL_HELP));
 				helpItem.addActionListener(this);
-				helpItem.setActionCommand(HELP_COMMAND);
+				helpItem.setActionCommand(COMMANDS.HELP_COMMAND.name());
 				menu.add(helpItem);
 
 				MenuItem pinItem = new MenuItem(messages.getString(LABEL_PIN));
 				pinItem.addActionListener(this);
-				pinItem.setActionCommand(PIN_COMMAND);
+				pinItem.setActionCommand(COMMANDS.PIN_COMMAND.name());
 				menu.add(pinItem);
 
-				MenuItem shutdownItem = new MenuItem(messages.getString(LABEL_SHUTDOWN));
-				shutdownItem.addActionListener(this);
-				shutdownItem.setActionCommand(SHUTDOWN_COMMAND);
-				menu.add(shutdownItem);
-
-				menu.addSeparator();
-
-				MenuItem aboutItem = new MenuItem(messages.getString(LABEL_ABOUT));
-				aboutItem.setActionCommand(ABOUT_COMMAND);
+				MenuItem aboutItem = new MenuItem(
+						messages.getString(LABEL_ABOUT));
+				aboutItem.setActionCommand(COMMANDS.ABOUT_COMMAND.name());
 				aboutItem.addActionListener(this);
 				menu.add(aboutItem);
 
-				TrayIcon ti = new TrayIcon(image, messages.getString(TOOLTIP_DEFAULT), menu);
+				menu.addSeparator();
+
+				Menu settingsMenu = new Menu(messages.getString(LABEL_SETTINGS));
+				menu.add(settingsMenu);
+
+				CheckboxMenuItem autostartItem = new CheckboxMenuItem(
+						messages.getString(LABEL_AUTOSTART));
+				autostartItem.addItemListener(this);
+				autostartItem.setActionCommand(COMMANDS.AUTOSTART_COMMAND.name());
+				autostartItem.setState(controller.isAutostartEnabled());
+				settingsMenu.add(autostartItem);
+
+				menu.addSeparator();
+
+				MenuItem shutdownItem = new MenuItem(
+						messages.getString(LABEL_SHUTDOWN));
+				shutdownItem.addActionListener(this);
+				shutdownItem.setActionCommand(COMMANDS.SHUTDOWN_COMMAND.name());
+				menu.add(shutdownItem);
+
+				TrayIcon ti = new TrayIcon(image,
+						messages.getString(TOOLTIP_DEFAULT), menu);
 				ti.setImageAutoSize(true);
 				ti.addActionListener(this);
 				tray.add(ti);
@@ -133,10 +156,8 @@ public class MOCCAIcon implements StatusNotifier, ActionListener {
 	@Override
 	public void error(String msgKey) {
 		if (trayIcon != null) {
-			trayIcon.displayMessage(
-							messages.getString(CAPTION_ERROR),
-							messages.getString(msgKey),
-							TrayIcon.MessageType.ERROR);
+			trayIcon.displayMessage(messages.getString(CAPTION_ERROR),
+					messages.getString(msgKey), TrayIcon.MessageType.ERROR);
 		} else {
 			log.error(messages.getString(msgKey));
 		}
@@ -145,22 +166,20 @@ public class MOCCAIcon implements StatusNotifier, ActionListener {
 	@Override
 	public void error(String msgPatternKey, Object... argument) {
 		if (trayIcon != null) {
-			trayIcon.displayMessage(
-							messages.getString(CAPTION_ERROR),
-							MessageFormat.format(messages.getString(msgPatternKey), argument),
-							TrayIcon.MessageType.ERROR);
+			trayIcon.displayMessage(messages.getString(CAPTION_ERROR),
+					MessageFormat.format(messages.getString(msgPatternKey),
+							argument), TrayIcon.MessageType.ERROR);
 		} else {
-			log.error(MessageFormat.format(messages.getString(msgPatternKey), argument));
+			log.error(MessageFormat.format(messages.getString(msgPatternKey),
+					argument));
 		}
 	}
 
 	@Override
 	public void info(String msgKey) {
 		if (trayIcon != null) {
-			trayIcon.displayMessage(
-							messages.getString(CAPTION_DEFAULT),
-							messages.getString(msgKey),
-							TrayIcon.MessageType.INFO);
+			trayIcon.displayMessage(messages.getString(CAPTION_DEFAULT),
+					messages.getString(msgKey), TrayIcon.MessageType.INFO);
 		} else {
 			log.info(messages.getString(msgKey));
 		}
@@ -173,18 +192,23 @@ public class MOCCAIcon implements StatusNotifier, ActionListener {
 
 	/**
 	 * Listen for TrayMenu actions (display error messages on trayIcon)
+	 * 
 	 * @param e
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (SHUTDOWN_COMMAND.equals(e.getActionCommand())) {
+		switch (COMMANDS.valueOf(e.getActionCommand())) {
+		case SHUTDOWN_COMMAND:
 			log.debug("shutdown requested via tray menu");
 			controller.shutDown();
-		} else if (ABOUT_COMMAND.equals(e.getActionCommand())) {
+			break;
+
+		case ABOUT_COMMAND:
 			log.debug("about dialog requested via tray menu");
 
 			if (aboutDialog == null) {
-				aboutDialog = new AboutDialog(new JFrame(), true, controller.getVersion());
+				aboutDialog = new AboutDialog(new JFrame(), true,
+						controller.getVersion());
 				aboutDialog.addWindowListener(new WindowAdapter() {
 
 					@Override
@@ -195,17 +219,34 @@ public class MOCCAIcon implements StatusNotifier, ActionListener {
 			}
 			aboutDialog.setLocationByPlatform(true);
 			aboutDialog.setVisible(true);
+			break;
 
-		} else if (PIN_COMMAND.equals(e.getActionCommand())) {
+		case PIN_COMMAND:
 			log.debug("pin management dialog requested via tray menu");
 			controller.pinManagement(messages.getLocale());
+			break;
 
-		} else if (HELP_COMMAND.equals(e.getActionCommand())) {
+		case HELP_COMMAND:
 			log.debug("help page requested via tray menu");
 			controller.showHelp(messages.getLocale());
+			break;
 
-		} else {
+		default:
 			log.error("unknown tray menu command: " + e.getActionCommand());
+		}
+	}
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		log.debug("autostart toggle requested via tray menu");
+		CheckboxMenuItem item = (CheckboxMenuItem) e.getItemSelectable();
+		switch (COMMANDS.valueOf(item.getActionCommand())) {
+		case AUTOSTART_COMMAND:
+			item.setState((controller.setAutostart(item.getState())));
+			break;
+
+		default:
+			log.error("unknown tray menu command: " + item.getActionCommand());
 		}
 	}
 }

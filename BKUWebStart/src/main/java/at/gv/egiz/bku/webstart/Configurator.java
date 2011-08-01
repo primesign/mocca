@@ -68,8 +68,9 @@ public class Configurator {
    * allowed: MAJOR[.MINOR[.X[-SNAPSHOT]]]
    */
   public static final String MIN_CONFIG_VERSION = "1.3.4-SNAPSHOT";
-  public static final String CONFIG_DIR = ".mocca/conf/";
-  public static final String CERTS_DIR = ".mocca/certs/";
+  public static final String BKU_USER_DIR = ".mocca/";
+  public static final String CONFIG_DIR = BKU_USER_DIR + "conf/";
+  public static final String CERTS_DIR = BKU_USER_DIR + "certs/";
   public static final String VERSION_FILE = ".version";
   public static final String UNKOWN_VERSION = "unknown";
   public static final String CONF_TEMPLATE_FILE = "conf-tmp.zip";

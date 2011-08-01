@@ -21,32 +21,48 @@
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
+package at.gv.egiz.bku.webstart.autostart;
 
-package at.gv.egiz.bku.webstart.gui;
+public class Autostart {
+	private static AutostartInterface _autostart = null;
 
-import java.util.Locale;
+	private String _webstartName = null;
 
-public interface BKUControllerInterface {
-  
-  public void shutDown();
+	private AutostartInterface getAutostart()
+	{
+		if (_autostart == null)
+		{
+			String os = System.getProperty("os.name");
+			if (os.equalsIgnoreCase("linux"))
+				_autostart = new AutostartLinux();
+			else if (os.toLowerCase().contains("windows"))
+				_autostart = new AutostartWindows();
+			if (_webstartName != null)
+				_autostart.setWebstartName(_webstartName);
+		}
 
-	public String getVersion();
-	
-	public void showHelp(Locale locale);
+		return _autostart;
+	}
 
-	public void pinManagement(Locale locale);
+	public boolean isEnabled() {
+		if (getAutostart() == null)
+			return false;
+		
+		return getAutostart().isEnabled();
+	}
 
+	public boolean set(boolean enable) {
+		if (getAutostart() == null)
+			return false;
+		
+		return getAutostart().set(enable);
+	}
 
-	/**
-	 * Check if MOCCA Autostart is enabled
-	 * @return autostart state
-	 */
-	boolean isAutostartEnabled();
+	public void setWebstartName(String webstartName) {
+		if (_autostart == null)
+			_webstartName = webstartName;
+		else
+			_autostart.setWebstartName(webstartName);
+	}
 
-	/**
-	 * Set MOCCA Autostart
-	 * @param doAutostart whether to enable or disable autostart
-	 * @return new autostart state
-	 */
-	public boolean setAutostart(boolean doAutostart);
 }
