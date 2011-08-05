@@ -1889,7 +1889,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 				showMessageDialog(TITLE_SIGNATURE_DATA,
 						MESSAGE_UNSUPPORTED_MIMETYPE,
 						new Object[] { dataToBeSigned.get(0).getMimeType() });
-				SecureViewerSaveDialog.showSaveDialog(dataToBeSigned.get(0),
+				SecureViewerSaveDialog.showSaveDialog(contentPane, dataToBeSigned.get(0),
 						messages, backListener, backCommand,
 						(int) (baseFontSize * getResizeFactor()));
 			}
@@ -1914,11 +1914,11 @@ public class BKUGUIImpl implements BKUGUIFacade {
 		// avoid AlwaysOnTop at least in applet, otherwise make secureViewer
 		// AlwaysOnTop since MOCCA Dialog (JFrame created in LocalSTALFactory)
 		// is always on top.
-		Window window = SwingUtilities.getWindowAncestor(contentPane);
-		if (window != null && window.isAlwaysOnTop()) {
+		//Window window = SwingUtilities.getWindowAncestor(contentPane);
+		//if (window != null && window.isAlwaysOnTop()) {
 			log.debug("Make secureViewer alwaysOnTop.");
 			secureViewer.setAlwaysOnTop(true);
-		}
+		//}
 
 		secureViewer.setContent(dataToBeSigned);
 		log.trace("Viewer setContent returned.");
@@ -1961,7 +1961,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 			showMessageDialog(BKUGUIFacade.TITLE_SIGNATURE_DATA,
 					BKUGUIFacade.MESSAGE_UNSUPPORTED_MIMETYPE,
 					new Object[] { storedSelection.getMimeType() });
-			SecureViewerSaveDialog.showSaveDialog(storedSelection, messages,
+			SecureViewerSaveDialog.showSaveDialog(contentPane, storedSelection, messages,
 					storedBackToListListener, null,
 					(int) (baseFontSize * getResizeFactor()));
 		}		

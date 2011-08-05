@@ -64,7 +64,7 @@ public class SecureViewerSaveDialog {
 		}
 	}
   
-  public static void showSaveDialog(final HashDataInput hashDataInput, final ResourceBundle messages,
+  public static void showSaveDialog(final Component parent, final HashDataInput hashDataInput, final ResourceBundle messages,
       final ActionListener okListener, final String okCommand, final int fontSize) {
     
     final Logger log = LoggerFactory.getLogger(SecureViewerSaveDialog.class);
@@ -101,14 +101,14 @@ public class SecureViewerSaveDialog {
 				.getFont().deriveFont((float) fontSize));        
         
         // parent contentPane -> placed over applet
-        switch (fileDialog.showSaveDialog(fileDialog)) {
+        switch (fileDialog.showSaveDialog(parent)) {
         case JFileChooser.APPROVE_OPTION:
           File file = fileDialog.getSelectedFile();
           String id = hashDataInput.getReferenceId();
           if (file.exists()) {
             String msgPattern = messages
                 .getString(BKUGUIFacade.MESSAGE_OVERWRITE);
-            int overwrite = JOptionPane.showConfirmDialog(fileDialog,
+            int overwrite = JOptionPane.showConfirmDialog(parent,
                 MessageFormat.format(msgPattern, file), messages
                     .getString(BKUGUIFacade.WINDOWTITLE_OVERWRITE),
                 JOptionPane.OK_CANCEL_OPTION);
@@ -135,7 +135,7 @@ public class SecureViewerSaveDialog {
             log.error("Failed to write.", ex);
             String errPattern = messages
                 .getString(BKUGUIFacade.ERR_WRITE_HASHDATA);
-            JOptionPane.showMessageDialog(fileDialog, MessageFormat.format(
+            JOptionPane.showMessageDialog(parent, MessageFormat.format(
                 errPattern, ex.getMessage()), messages
                 .getString(BKUGUIFacade.WINDOWTITLE_ERROR),
                 JOptionPane.ERROR_MESSAGE);
