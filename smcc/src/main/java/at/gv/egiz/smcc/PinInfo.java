@@ -59,7 +59,7 @@ public class PinInfo {
   /**
    * The regular expression pattern of a single PIN digit or character.
    */
-  protected final String rexepPattern;
+  protected final String regexpPattern;
   
   /**
    * The name of the corresponding resource bundle.
@@ -101,18 +101,18 @@ public class PinInfo {
    * 
    * @param minLenght the minimum length of the PIN
    * @param maxLength the maximum length of the PIN, or -1 if there is no maximum length
-   * @param rexepPattern the regular expression pattern of a single PIN digit or character
+   * @param regexpPattern the regular expression pattern of a single PIN digit or character
    * @param resourceBundleName the name of a ResourceBundle for this PIN
    * @param resourceKey the key to look up the (localized) name of this PIN
    * @param kid the key id of the PIN
    * @param contextAID the AID the KID is valid in
    */
-  public PinInfo(int minLenght, int maxLength, String rexepPattern,
+  public PinInfo(int minLenght, int maxLength, String regexpPattern,
       String resourceBundleName, String resourceKey, byte kid, byte[] contextAID, int maxRetries) {
 
     this.minLength = minLenght;
     this.maxLength = maxLength;
-    this.rexepPattern = rexepPattern;
+    this.regexpPattern = regexpPattern;
     this.resourceBundleName = resourceBundleName;
     this.nameKey = resourceKey + ".name";
     this.kid = kid;
@@ -213,8 +213,8 @@ public class PinInfo {
   /**
    * @return the regular expression pattern of one single digit or character
    */
-  public String getRexepPattern() {
-    return rexepPattern;
+  public String getRegexpPattern() {
+    return regexpPattern;
   }
 
   /**

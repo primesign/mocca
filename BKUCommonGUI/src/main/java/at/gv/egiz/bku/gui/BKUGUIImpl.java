@@ -547,7 +547,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 				pinField.setText("");
 				pinField.setName("PINField");
 				pinField.setDocument(new PINDocument(pinSpec.getMinLength(),
-						pinSpec.getMaxLength(), pinSpec.getRexepPattern(),
+						pinSpec.getMaxLength(), pinSpec.getRegexpPattern(),
 						okButton));
 				pinField.setActionCommand(okCommand);
 				pinField.addActionListener(new ActionListener() {
@@ -1413,7 +1413,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 				pinField.setText("");
 				pinField.setName("PINField");
 				pinField.setDocument(new PINDocument(pinSpec.getMinLength(),
-						pinSpec.getMaxLength(), pinSpec.getRexepPattern(),
+						pinSpec.getMaxLength(), pinSpec.getRegexpPattern(),
 						signButton));
 				pinField.setActionCommand(signCommand);
 				pinField.addActionListener(new ActionListener() {
@@ -1906,7 +1906,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 			ActionListener closeListener, String closeCommand)
 			throws FontProviderException {
 
-		log.debug("[{}] Show secure viewer.");
+		log.debug("[{}] Show secure viewer.", Thread.currentThread().getName());
 		secureViewer = new SecureViewerDialog(null, messages, closeListener,
 				closeCommand, fontProvider, helpListener, getResizeFactor());
 

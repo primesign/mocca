@@ -584,15 +584,15 @@ public class PINManagementGUI extends CardMgmtGUI implements
 							ExtendedPinDocument oldPinDocument = new ExtendedPinDocument(
 									pinSpec.getMinLength(), pinSpec
 											.getMaxLength(), pinSpec
-											.getRexepPattern(), okButton);
+											.getRegexpPattern(), okButton);
 							ComparePinDocument newPinDocument = new ComparePinDocument(
 									pinSpec.getRecMinLength(), pinSpec
 											.getRecMaxLength(), pinSpec
-											.getRexepPattern(), okButton);
+											.getRegexpPattern(), okButton);
 							ComparePinDocument confirmPinDocument = new ComparePinDocument(
 									pinSpec.getRecMinLength(), pinSpec
 											.getRecMaxLength(), pinSpec
-											.getRexepPattern(), okButton);
+											.getRegexpPattern(), okButton);
 
 							oldPinDocument.newPIN = newPinDocument;
 							oldPinDocument.confirmPIN = confirmPinDocument;
@@ -613,11 +613,11 @@ public class PINManagementGUI extends CardMgmtGUI implements
 							ComparePinDocument newPinDocument = new ComparePinDocument(
 									pinSpec.getRecMinLength(), pinSpec
 											.getRecMaxLength(), pinSpec
-											.getRexepPattern(), okButton);
+											.getRegexpPattern(), okButton);
 							ComparePinDocument confirmPinDocument = new ComparePinDocument(
 									pinSpec.getRecMinLength(), pinSpec
 											.getRecMaxLength(), pinSpec
-											.getRexepPattern(), okButton);
+											.getRegexpPattern(), okButton);
 
 							newPinDocument.compareTo = confirmPinDocument;
 							confirmPinDocument.compareTo = newPinDocument;
@@ -631,7 +631,7 @@ public class PINManagementGUI extends CardMgmtGUI implements
 						// VERIFY
 						pinField.setDocument(new PINDocument(pinSpec
 								.getMinLength(), pinSpec.getMaxLength(),
-								pinSpec.getRexepPattern(), okButton));
+								pinSpec.getRegexpPattern(), okButton));
 						
 						primaryFocusHolder = pinField;
 					}
