@@ -406,7 +406,7 @@ public class SecureViewerDialog extends JDialog {
     @Override
     public void actionPerformed(ActionEvent e) {
       log.trace("[{}] display secure viewer save dialog.", Thread.currentThread().getName());
-      SecureViewerSaveDialog.showSaveDialog(viewer, content, messages, null, null, closeButton.getFont().getSize());
+      SecureViewerSaveDialog.showSaveDialog(SecureViewerDialog.this, content, messages, null, null, closeButton.getFont().getSize());
     }
   }
 }

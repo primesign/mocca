@@ -27,6 +27,7 @@ package at.gv.egiz.bku.gui.viewer;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedOutputStream;
@@ -37,6 +38,7 @@ import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -63,7 +65,8 @@ public class SecureViewerSaveDialog {
 			}
 		}
 	}
-  
+
+
   public static void showSaveDialog(final Component parent, final HashDataInput hashDataInput, final ResourceBundle messages,
       final ActionListener okListener, final String okCommand, final int fontSize) {
     
@@ -81,7 +84,17 @@ public class SecureViewerSaveDialog {
         
         UIManager.put("Button.defaultButtonFollowsFocus", Boolean.TRUE);
 
-        JFileChooser fileDialog = new JFileChooser(userHome);
+        @SuppressWarnings("serial")
+        JFileChooser fileDialog = new JFileChooser(userHome) {
+          @Override
+          protected JDialog createDialog(Component parent) throws HeadlessException {
+            JDialog dialog = super.createDialog(parent);
+            dialog.setModal(true);
+            dialog.setAlwaysOnTop(true);
+            return dialog;
+          }
+        };
+
         fileDialog.setMultiSelectionEnabled(false);
         fileDialog.setDialogType(JFileChooser.SAVE_DIALOG);
         fileDialog.setFileHidingEnabled(true);
@@ -97,10 +110,10 @@ public class SecureViewerSaveDialog {
             + MimeFilter.getExtension(mimeType);
         fileDialog.setSelectedFile(new File(userHome, filename));
 
-		setFileChooserFont(fileDialog.getComponents(), new JLabel()
-				.getFont().deriveFont((float) fontSize));        
-        
-        // parent contentPane -> placed over applet
+        setFileChooserFont(fileDialog.getComponents(),
+            new JLabel().getFont().deriveFont((float) fontSize));
+
+        // parent SecureViewer -> placed over it
         switch (fileDialog.showSaveDialog(parent)) {
         case JFileChooser.APPROVE_OPTION:
           File file = fileDialog.getSelectedFile();
