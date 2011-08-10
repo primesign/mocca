@@ -68,6 +68,13 @@ public class AutostartLinux extends AbstractAutostart {
 	}
 
 	@Override
+	public boolean isPossible() {
+		Map<String, String> autostartFiles = getAutostartFiles();
+
+		return !autostartFiles.isEmpty();
+	}
+
+	@Override
 	public boolean isEnabled() {
 		Map<String, String> autostartFiles = getAutostartFiles();
 

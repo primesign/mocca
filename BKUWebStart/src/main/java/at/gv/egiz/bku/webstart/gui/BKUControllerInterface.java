@@ -38,6 +38,12 @@ public interface BKUControllerInterface {
 
 
 	/**
+	 * Check if MOCCA Autostart is possible
+	 * @return autostart possibility
+	 */
+	boolean isAutostartPossible();
+
+	/**
 	 * Check if MOCCA Autostart is enabled
 	 * @return autostart state
 	 */

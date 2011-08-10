@@ -154,6 +154,13 @@ public class AutostartWindows extends AbstractAutostart {
 	}
 
 	@Override
+	public boolean isPossible() {
+		String autostartFileName = getAutostartFileName();
+
+		return autostartFileName != null;
+	}
+
+	@Override
 	public boolean isEnabled() {
 		String autostartFileName = getAutostartFileName();
 

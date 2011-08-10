@@ -37,11 +37,17 @@ public class Autostart {
 				_autostart = new AutostartLinux();
 			else if (os.toLowerCase().contains("windows"))
 				_autostart = new AutostartWindows();
-			if (_webstartName != null)
+			if (_autostart != null && _webstartName != null)
 				_autostart.setWebstartName(_webstartName);
 		}
 
 		return _autostart;
+	}
+
+	public boolean isPossible() {
+		if (getAutostart() == null)
+			return false;
+		return getAutostart().isPossible();
 	}
 
 	public boolean isEnabled() {

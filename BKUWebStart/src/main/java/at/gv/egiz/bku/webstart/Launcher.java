@@ -294,9 +294,15 @@ public class Launcher implements BKUControllerInterface {
 	}
 
 	@Override
+	public boolean isAutostartPossible() {
+		return autostart.isPossible();
+	}
+
+	@Override
 	public boolean isAutostartEnabled() {
 		return autostart.isEnabled();
 	}
+
 	@Override
 	public boolean setAutostart(boolean doAutostart) {
 		return autostart.set(doAutostart);

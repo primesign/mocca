@@ -126,6 +126,7 @@ public class MOCCAIcon implements StatusNotifier, ActionListener, ItemListener {
 				autostartItem.addItemListener(this);
 				autostartItem.setActionCommand(COMMANDS.AUTOSTART_COMMAND.name());
 				autostartItem.setState(controller.isAutostartEnabled());
+				autostartItem.setEnabled(controller.isAutostartPossible());
 				settingsMenu.add(autostartItem);
 
 				menu.addSeparator();
@@ -238,11 +239,13 @@ public class MOCCAIcon implements StatusNotifier, ActionListener, ItemListener {
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
-		log.debug("autostart toggle requested via tray menu");
 		CheckboxMenuItem item = (CheckboxMenuItem) e.getItemSelectable();
 		switch (COMMANDS.valueOf(item.getActionCommand())) {
 		case AUTOSTART_COMMAND:
-			item.setState((controller.setAutostart(item.getState())));
+			boolean reqState = item.getState();
+			boolean newState = controller.setAutostart(reqState);
+			log.debug("autostart toggle requested via tray menu (" + reqState + " -> " + newState + ")");
+			item.setState(newState);
 			break;
 
 		default:

@@ -24,6 +24,7 @@
 package at.gv.egiz.bku.webstart.autostart;
 
 public interface AutostartInterface {
+	public boolean isPossible();
 	public boolean isEnabled();
 	public boolean set(boolean enable);
 	public void setWebstartName(String webstartName);
