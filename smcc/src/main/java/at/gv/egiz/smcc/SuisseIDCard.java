@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import javax.smartcardio.ATR;
 
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
@@ -84,7 +83,7 @@ public class SuisseIDCard extends AbstractSignatureCard implements SignatureCard
         atr[18] == 'g' &&
         atr[19] == 'n') {
       name = "SwissSign SuisseID";
-      pinInfo = new PinInfo(5, 12, "[0-9]",
+      pinInfo = new PinInfo(5, 12, "[0-9a-zA-Z^°!\"§$%&/()=?`´{}\\[\\]äöüÄÖÜß+*~#',;\\.:\\-_@<>|]", //"[\\p{Print}]"
         "at/gv/egiz/smcc/SwissSignIDCard", "pin", KID, AID_SIG, PinInfo.UNKNOWN_RETRIES);
 
     } else {
