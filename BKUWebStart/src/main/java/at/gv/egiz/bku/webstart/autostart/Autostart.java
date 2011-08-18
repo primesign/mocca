@@ -23,7 +23,11 @@
 
 package at.gv.egiz.bku.webstart.autostart;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Autostart {
+	private static Logger _log = LoggerFactory.getLogger(Autostart.class);
 	private static AutostartInterface _autostart = null;
 
 	private String _webstartName = null;
@@ -37,6 +41,10 @@ public class Autostart {
 				_autostart = new AutostartLinux();
 			else if (os.toLowerCase().contains("windows"))
 				_autostart = new AutostartWindows();
+//			else if (os.toLowerCase().contains("os x"))
+//				_autostart = new AutostartMacOSX();
+			else
+				_log.debug("Unsupported OS: " + os);
 			if (_autostart != null && _webstartName != null)
 				_autostart.setWebstartName(_webstartName);
 		}
