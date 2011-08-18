@@ -2,9 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>CitizenCard - Help</title>
-<link href="css/help.css" rel="stylesheet" type="text/css" />
-<link rel="shortcut icon" href="img/chip16.ico" type="image/x-icon"/>
+<title>B&uuml;rgerkarte - Hilfe</title>
+<link href="../css/help.css" rel="stylesheet" type="text/css" />
+<link rel="shortcut icon" href="../img/chip16.ico" type="image/x-icon"/>
 <!--[if IE]>
 <style type="text/css"> 
 /* place css fixes for all versions of IE in this conditional comment */
@@ -19,14 +19,14 @@
 
 <div id="container">
   <div id="header">
-     <h1>Online Help</h1>
+    <h1>Online-Hilfe</h1>
     <!-- end #header --></div>
   <div id="sidebar1">
     <p><img src="img/help.pinpad.png" alt="Bildschirmfoto des Applets" width="190" height="132"/></p>
-    <p><strong>Note</strong> that the screenshot may differ slightly from the actual web page.</p>
+    <p><strong>Hinweis:</strong> Das Bildschirmfoto oben kann von der Darstellung in der Webseite abweichen.</p>
     <!-- end #sidebar1 --></div>
   <div id="mainContent">
-    <h1>PIN am Kartenleser Eingabe</h1>
+    <h1>PIN-Eingabe am Kartenleser</h1>
     <p>Zur Erstellung einer Signatur oder beim &Auml;ndern der PIN werden Sie aufgefordert die Signatur-PIN auf der Tastatur des Kartenleseger&auml;tes einzugeben und mit der gr&uuml;nen Taste zu best&auml;tigen.</p>
     <p>Bei Kartenlesern mit sicherer PIN-Eingabe (Pinpad) wird die Anzahl der eingegebenen Stellen im Applet angezeigt.</p>
     <p style="text-align: center"><img src="img/help.pinpad_1.png" alt="Bildschirmfoto" width="194" height="146" /></p>
@@ -36,12 +36,23 @@
     </ol>
     <p>F&uuml;r Kartenleser mit Anzeige ist dies nicht der Fall, die Stellen werden auf der Anzeige des Leseger&auml;tes angezeigt.</p> 
     <p style="text-align: center"><img src="img/help.pinpad_2.png" alt="Bildschirmfoto" width="194" height="146" /></p>
-    <p>Bitte beachten Sie das unter Linux (PCSCLite) keine Anzeige im Applet möglich ist. Die Macintosh PCSC-Schnittstelle unterst&uuml;tz keine Pinpad Kartenleser.</p>
+    <p>Bitte beachten Sie das unter Linux (PCSCLite) keine Anzeige im Applet möglich ist. Die Macintosh PCSC-Schnittstelle unterst&uuml;tz derzeit keine Pinpad Kartenleser.</p>
+    <p>In Einzelf&auml;llen kann es zu Problemen mit der Pinpad-Eingabe kommen. Zur tempor&auml;ren Umgehung dieser Probleme kann die Pinpad-Eingabe
+    deaktiviert werden. Dabei verlieren Sie allerdings den Sicherheitsvorteil eines Pinpad-Kartenlesers. Dazu muss in der <a href="help.config.html">MOCCA-Konfiguration</a> folgender Eintrag gemacht werden:</p>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;MoccaConfiguration version="1.0"&gt;
+  &lt;CCID&gt;
+    &lt;disablePinpad&gt;true&lt;/disablePinpad&gt;
+  &lt;/CCID&gt;
+&lt;/MoccaConfiguration&gt;
+</pre>
+   
     <p><br class="clearfloat" /></p>
   </div>
   <div id="footer">
   	<p>
-    	<a href="http://www.buergerkarte.at">Austrian CitizenCard</a> | <a href="http://mocca.egovlabs.gv.at">CitizenCard Environment MOCCA</a>
+    	<a href="http://www.buergerkarte.at">&Ouml;sterreichische B&uuml;rgerkarte</a> | <a href="http://mocca.egovlabs.gv.at">B&uuml;rgerkartensoftware MOCCA</a>
     </p>
   </div>
 <!-- end #container --></div>

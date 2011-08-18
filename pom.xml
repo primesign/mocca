@@ -29,6 +29,7 @@
     <module>BKUWebStart</module>
     <module>BKUCertificates</module>
     <module>BKUHelp</module>
+    <module>BKUHelpWebStart</module>
     <module>BKUGuiExt</module>
     <module>smccSTALExt</module>
     <module>BKUFonts</module>
@@ -44,6 +45,11 @@
       <id>corthacker</id>
       <name>Clemens Orthacker</name>
       <email>corthacker@egiz.gv.at</email>
+    </developer>
+    <developer>
+      <id>tkellner</id>
+      <name>Tobias Kellner</name>
+      <email>tobias.kellner@egiz.gv.at</email>
     </developer>
   </developers>
   <scm>

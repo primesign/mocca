@@ -62,6 +62,18 @@
               <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
             </configuration>
           </execution>
+          <execution>
+            <id>copy-help-overlay</id>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>BKUHelpWebStart</includeArtifactIds>
+              <includeGroupIds>at.gv.egiz</includeGroupIds>
+              <excludes>META-INF/</excludes>
+              <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
+            </configuration>
+          </execution>
 					<!-- http://jira.egovlabs.gv.at/browse/MOCCA-762
            |   do not provide certificates in webapp filesystem (default trust/certstores) -->
 
@@ -120,6 +132,11 @@
     </dependency>
     <dependency>
       <artifactId>BKUHelp</artifactId>
+      <groupId>at.gv.egiz</groupId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>BKUHelpWebStart</artifactId>
       <groupId>at.gv.egiz</groupId>
       <version>${project.parent.version}</version>
     </dependency>
