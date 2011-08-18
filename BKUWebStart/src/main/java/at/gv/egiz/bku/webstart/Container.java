@@ -41,6 +41,8 @@ import java.security.AllPermission;
 import java.security.KeyStore;
 import java.security.Permissions;
 import java.security.cert.Certificate;
+import java.util.Locale;
+
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.nio.SelectChannelConnector;
@@ -67,7 +69,16 @@ public class Container {
   }
   private Server server;
   private WebAppContext webapp;
+  private WebappErrorHandler errorHandler;
   private Certificate caCertificate;
+  private File tempDir;
+
+  private Locale locale = null;
+
+  public void init(Locale locale) throws IOException {
+    this.locale = locale;
+    init();
+  }
 
   public void init() throws IOException {
 //    System.setProperty("DEBUG", "true");
@@ -103,7 +114,7 @@ public class Container {
     sslConnector.setKeyPassword(passwd);
 
     //avoid jetty's ClassCastException: iaik.security.ecc.ecdsa.ECPublicKey cannot be cast to java.security.interfaces.ECPublicKey
-    String[] RFC4492CipherSuites = new String[]{
+    String[] RFC4492CipherSuites = new String[] {
       "TLS_ECDH_ECDSA_WITH_NULL_SHA",
       "TLS_ECDH_ECDSA_WITH_RC4_128_SHA",
       "TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA",
@@ -141,8 +152,12 @@ public class Container {
     webapp.setExtractWAR(true);
     webapp.setParentLoaderPriority(false);
 
-    webapp.setWar(copyWebapp(webapp.getTempDirectory()));
-//    webapp.setPermissions(getPermissions(webapp.getTempDirectory()));
+    errorHandler = new WebappErrorHandler(locale);
+    webapp.setErrorHandler(errorHandler);
+
+    tempDir = webapp.getTempDirectory();
+    webapp.setWar(copyWebapp(tempDir));
+//    webapp.setPermissions(getPermissions(tempDir));
 
     server.setHandler(webapp);
     server.setGracefulShutdown(1000 * 3);
@@ -188,6 +203,69 @@ public class Container {
     return webapp.getPath();
   }
 
+//	private boolean deleteRecursive(File f)
+//	{
+//		if (f.isDirectory())
+//		{
+//			String[] children = f.list();
+//			for (String child : children) {
+//				if (!deleteRecursive(new File(f, child)))
+//					return false;
+//			}
+//		}
+//		return f.delete();
+//	}
+//
+//	private void deleteOnExitRecursive(File f)
+//	{
+//		if (f.isDirectory())
+//		{
+//			String[] children = f.list();
+//			for (String child : children)
+//				deleteOnExitRecursive(new File(f, child));
+//		}
+//		f.deleteOnExit();
+//	}
+//
+//  /**
+//   * Workaround for Jetty problem where temporary directory
+//   * doesn't get deleted under Windows due to locking issues.
+//   * 
+//   * @param tempDir Temporary directory to delete
+//   */
+//  private void deleteTempDir(final File tempDir) {
+//    try {
+//      if (tempDir.exists()) {
+//        log.debug("Temp directory still exists - trying to delete");
+//        if (!deleteRecursive(tempDir))
+//        {
+//          log.debug("Deleting temp directory failed - adding shutdown hook");
+//          Runtime.getRuntime().addShutdownHook(
+//            new Thread() {
+//              public void run() {
+//                log.debug("Shutdown hook executing");
+//                if (tempDir.exists()) {
+//                  log.debug("Temp directory still exists - trying to delete");
+//                  if (!deleteRecursive(tempDir))
+//                  {
+//                    log.debug("Deleting temp directory failed");
+//                    deleteOnExitRecursive(tempDir);
+//                  }
+//                  else
+//                    log.debug("Successfully deleted temp directory");
+//                }
+//              }
+//            }
+//          );
+//        }
+//        else
+//          log.debug("Successfully deleted temp directory");
+//      }
+//    } catch (SecurityException ex) {
+//      log.debug("Temp directory access failed", ex);
+//    }
+//  }
+
   /**
    * grant all permissions, since we need read/write access to save signature data files anywhere (JFileChooser) in the local filesystem
    * and Jetty does not allow declare (webapp) permissions on a codeBase basis.
@@ -222,12 +300,18 @@ public class Container {
   }
 
   public void stop() throws Exception {
+//    log.debug("Container: stop called");
     server.stop();
+
+//    deleteTempDir(tempDir);
   }
 
   public void destroy() {
+//    log.debug("Container: destroy called");
     server.destroy();
-  }
+
+//    deleteTempDir(tempDir);
+}
 
   public void join() throws InterruptedException {
     server.join();

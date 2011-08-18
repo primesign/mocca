@@ -201,7 +201,7 @@ public class Launcher implements BKUControllerInterface {
 	private void startServer() throws Exception {
 		log.info("init servlet container and MOCCA webapp");
 		server = new Container();
-		server.init();
+		server.init(status.getLocale());
 		server.start();
 	}
 
