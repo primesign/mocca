@@ -102,7 +102,7 @@ public class ConfigurationFactoryBean implements FactoryBean, ResourceLoaderAwar
   /**
    * @param failOnMissingConfigurationResource the failOnMissingConfigurationResource to set
    */
-  public void setfailOnMissingResource(
+  public void setFailOnMissingResource(
       Boolean failOnMissingResource) {
     this.failOnMissingResource = failOnMissingResource;
   }
