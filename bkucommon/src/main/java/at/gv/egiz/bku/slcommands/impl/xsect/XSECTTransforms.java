@@ -49,7 +49,7 @@ public class XSECTTransforms extends TransformsImpl {
    * @param transforms a list of {@link TransformImpl}s
    * @see TransformsImpl#TransformsImpl(List)
    */
-  public XSECTTransforms(List transforms) {
+  public XSECTTransforms(List<Transform> transforms) {
     super(transforms);
   }
 

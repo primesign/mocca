@@ -1098,7 +1098,6 @@ public class DataObject {
 
       // add exclusive canonicalization to avoid signing the namespace context of the ds:Object
       c14nTransform = ctx.getSignatureFactory().newTransform(CanonicalizationMethod.EXCLUSIVE, (TransformParameterSpec) null);
-      
     } catch (NoSuchAlgorithmException e) {
       // algorithm must be present
       throw new SLRuntimeException(e);
