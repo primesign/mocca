@@ -47,7 +47,7 @@ import at.gv.egiz.smcc.util.SMCCHelper;
 
 public class CardTest {
   
-  private static KeyboxName[] keyboxNames = { KeyboxName.SECURE_SIGNATURE_KEYPAIR, KeyboxName.CERITIFIED_KEYPAIR };
+  private static KeyboxName[] keyboxNames = { KeyboxName.SECURE_SIGNATURE_KEYPAIR, KeyboxName.CERTIFIED_KEYPAIR };
   
   private static String[] infoboxes = { "IdentityLink" };
   

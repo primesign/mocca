@@ -39,7 +39,7 @@ public interface SignatureCard {
 
     public static KeyboxName SECURE_SIGNATURE_KEYPAIR = new KeyboxName(
         "SecureSignatureKeypair");
-    public static KeyboxName CERITIFIED_KEYPAIR = new KeyboxName(
+    public static KeyboxName CERTIFIED_KEYPAIR = new KeyboxName(
         "CertifiedKeypair");
 
     private String keyboxName_;
@@ -51,8 +51,8 @@ public interface SignatureCard {
     public static KeyboxName getKeyboxName(String keyBox) {
       if (SECURE_SIGNATURE_KEYPAIR.equals(keyBox)) {
         return SECURE_SIGNATURE_KEYPAIR;
-      } else if (CERITIFIED_KEYPAIR.equals(keyBox)) {
-        return CERITIFIED_KEYPAIR;
+      } else if (CERTIFIED_KEYPAIR.equals(keyBox)) {
+        return CERTIFIED_KEYPAIR;
       } else {
         return new KeyboxName(keyBox);
       }

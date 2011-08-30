@@ -56,7 +56,7 @@ public abstract class AbstractNotActivatedCardTest extends AbstractCardTestBase 
     }
 
     try {
-      signatureCard.getCertificate(KeyboxName.CERITIFIED_KEYPAIR, null);
+      signatureCard.getCertificate(KeyboxName.CERTIFIED_KEYPAIR, null);
       fail();
     } catch (NotActivatedException e) {
       // expected

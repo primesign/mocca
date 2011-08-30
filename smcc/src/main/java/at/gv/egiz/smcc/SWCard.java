@@ -227,7 +227,7 @@ public class SWCard implements SignatureCard {
   
   private KeyStore getKeyStore(KeyboxName keyboxName, char[] password) throws SignatureCardException {
     
-    if (keyboxName == KeyboxName.CERITIFIED_KEYPAIR) {
+    if (keyboxName == KeyboxName.CERTIFIED_KEYPAIR) {
       if (certifiedKeyStore == null) {
         certifiedKeyStore = loadKeyStore(KEYSTORE_CERTIFIED_KEYPAIR, password);
       }
@@ -245,7 +245,7 @@ public class SWCard implements SignatureCard {
   
   private char[] getPassword(KeyboxName keyboxName) throws SignatureCardException {
     
-    if (keyboxName == KeyboxName.CERITIFIED_KEYPAIR) {
+    if (keyboxName == KeyboxName.CERTIFIED_KEYPAIR) {
       if (certifiedKeyStorePassword == null) {
         certifiedKeyStorePassword = loadKeyStorePassword(KEYSTORE_PASSWORD_CERTIFIED_KEYPAIR);
       }
@@ -265,7 +265,7 @@ public class SWCard implements SignatureCard {
       throws SignatureCardException {
 
     try {
-      if (keyboxName == KeyboxName.CERITIFIED_KEYPAIR) {
+      if (keyboxName == KeyboxName.CERTIFIED_KEYPAIR) {
         if (certifiedCertificate == null) {
           certifiedCertificate = loadCertificate(CERTIFICATE_CERTIFIED_KEYPAIR);
         }

@@ -72,11 +72,11 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
           InfoboxReadResponse stalResp = new InfoboxReadResponse();
           stalResp.setInfoboxValue(resp);
           return stalResp;
-        } else if (SignatureCard.KeyboxName.CERITIFIED_KEYPAIR.equals(infoBox
+        } else if (SignatureCard.KeyboxName.CERTIFIED_KEYPAIR.equals(infoBox
             .getInfoboxIdentifier())) {
           log.debug("Handling certified keypair infobox.");
           byte[] resp = card
-              .getCertificate(SignatureCard.KeyboxName.CERITIFIED_KEYPAIR, new VerifyPINGUI(gui));
+              .getCertificate(SignatureCard.KeyboxName.CERTIFIED_KEYPAIR, new VerifyPINGUI(gui));
           if (resp == null) {
             return new ErrorResponse(6001);
           }

@@ -194,7 +194,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     if (keyboxName == KeyboxName.SECURE_SIGNATURE_KEYPAIR) {
       aid = AID_DF_SS;
       fid = EF_C_X509_CH_DS;
-    } else if (keyboxName == KeyboxName.CERITIFIED_KEYPAIR) {
+    } else if (keyboxName == KeyboxName.CERTIFIED_KEYPAIR) {
       aid = AID_DF_GS;
       fid = EF_C_X509_CH_AUT;
     } else {
@@ -357,10 +357,12 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     byte[] ht = null;
     
     MessageDigest md = null;
+
+    dst.write(new byte[] {(byte) 0x84, (byte) 0x03, (byte) 0x80});
     try {
       if (alg == null || "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1".equals(alg)) {
         // local key ID '02' version '00'
-        dst.write(new byte[] {(byte) 0x84, (byte) 0x03, (byte) 0x80, (byte) 0x02, (byte) 0x00});
+        dst.write(new byte[] {(byte) 0x02, (byte) 0x00});
         if (version < 1.2) {
           // algorithm ID ECDSA with SHA-1
           dst.write(new byte[] {(byte) 0x89, (byte) 0x03, (byte) 0x13, (byte) 0x35, (byte) 0x10});
@@ -373,7 +375,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         md = MessageDigest.getInstance("SHA-1");
       } else if (version >= 1.2 && "http://www.w3.org/2000/09/xmldsig#rsa-sha1".equals(alg)) {
         // local key ID '03' version '00'
-        dst.write(new byte[] {(byte) 0x84, (byte) 0x03, (byte) 0x80, (byte) 0x03, (byte) 0x00});
+        dst.write(new byte[] {(byte) 0x03, (byte) 0x00});
         // portable algorithm reference
         dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x02});
         // hash template
@@ -381,7 +383,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         md = MessageDigest.getInstance("SHA-1");
       } else if (version >= 1.2 && "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256".equals(alg)) {
         // local key ID '02' version '00'
-        dst.write(new byte[] {(byte) 0x84, (byte) 0x03, (byte) 0x80, (byte) 0x02, (byte) 0x00});
+        dst.write(new byte[] {(byte) 0x02, (byte) 0x00});
         // portable algorithm reference
         dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x04});
         // hash template
@@ -389,12 +391,29 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         md = MessageDigest.getInstance("SHA256");
       } else if (version >= 1.2 && "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256".equals(alg)) {
         // local key ID '03' version '00'
-        dst.write(new byte[] {(byte) 0x84, (byte) 0x03, (byte) 0x80, (byte) 0x03, (byte) 0x00});
+        dst.write(new byte[] {(byte) 0x03, (byte) 0x00});
         // portable algorithm reference
         dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x02});
         // hash template
         ht = new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x40};
         md = MessageDigest.getInstance("SHA256");
+      } else if ("http://www.w3.org/2007/05/xmldsig-more#ecdsa-ripemd160".equals(alg)) {
+        // local key ID '02' version '00'
+        dst.write(new byte[] {(byte) 0x02, (byte) 0x00});
+        if (version < 1.2) {
+          // algorithm ID ECDSA with RIPEMD160 doesn't work
+          //dst.write(new byte[] {(byte) 0x89, (byte) 0x03, (byte) 0x13, (byte) 0x35, (byte) 0x20});
+            // algorithm ID ECDSA with SHA-1
+            dst.write(new byte[] {(byte) 0x89, (byte) 0x03, (byte) 0x13, (byte) 0x35, (byte) 0x10});
+        } else {
+          // portable algorithm reference
+          dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x04});
+          // hash template (SHA-1 - no EF_ALIAS for RIPEMD160)
+          //ht = new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x10};
+          // hash template for RIPEMD160
+          ht = new byte[] {(byte) 0x89, (byte) 0x02, (byte) 0x14, (byte) 0x30};
+        }
+        md = MessageDigest.getInstance("RIPEMD160");
       } else {
         throw new SignatureCardException("e-card version " + version + " does not support signature algorithm " + alg + ".");
       }
@@ -439,7 +458,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         }
         
         
-      } else if (KeyboxName.CERITIFIED_KEYPAIR.equals(keyboxName)) {
+      } else if (KeyboxName.CERTIFIED_KEYPAIR.equals(keyboxName)) {
 
         // SELECT application
         execSELECT_AID(channel, AID_DF_GS);

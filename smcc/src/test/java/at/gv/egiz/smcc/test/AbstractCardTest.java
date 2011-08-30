@@ -62,7 +62,7 @@ public abstract class AbstractCardTest extends AbstractCardTestBase {
     
     byte[] certificateGSRef = (byte[]) applicationContext.getBean("certificateGS", byte[].class);
     
-    byte[] certificateGS = signatureCard.getCertificate(KeyboxName.CERITIFIED_KEYPAIR, null);
+    byte[] certificateGS = signatureCard.getCertificate(KeyboxName.CERTIFIED_KEYPAIR, null);
     
     assertArrayEquals(certificateGSRef, certificateGS);
     
@@ -113,7 +113,7 @@ public abstract class AbstractCardTest extends AbstractCardTestBase {
 
     byte[] signature = signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
         .getBytes("ASCII")),
-        KeyboxName.CERITIFIED_KEYPAIR, new SMCCTestPINProvider(pin), null);
+        KeyboxName.CERTIFIED_KEYPAIR, new SMCCTestPINProvider(pin), null);
 
     assertNotNull(signature);
     
@@ -126,7 +126,7 @@ public abstract class AbstractCardTest extends AbstractCardTestBase {
 
     byte[] signature = signatureCard.createSignature(new ByteArrayInputStream("MOCCA"
         .getBytes("ASCII")),
-        KeyboxName.CERITIFIED_KEYPAIR, new SMCCTestPINProvider(pin), null);
+        KeyboxName.CERTIFIED_KEYPAIR, new SMCCTestPINProvider(pin), null);
 
     assertNotNull(signature);
     
@@ -140,7 +140,7 @@ public abstract class AbstractCardTest extends AbstractCardTestBase {
     PINGUI pinProvider = new CancelPINProvider();
 
     signatureCard.createSignature(new ByteArrayInputStream(MOCCA),
-        KeyboxName.CERITIFIED_KEYPAIR, pinProvider, null);
+        KeyboxName.CERTIFIED_KEYPAIR, pinProvider, null);
 
   }
   
@@ -164,7 +164,7 @@ public abstract class AbstractCardTest extends AbstractCardTestBase {
     PINGUI pinProvider = new InterruptPINProvider();
 
     signatureCard.createSignature(new ByteArrayInputStream(MOCCA),
-        KeyboxName.CERITIFIED_KEYPAIR, pinProvider, null);
+        KeyboxName.CERTIFIED_KEYPAIR, pinProvider, null);
 
   }
   
@@ -206,7 +206,7 @@ public abstract class AbstractCardTest extends AbstractCardTestBase {
           throws CancelledException, InterruptedException {
 
         try {
-          signatureCard.getCertificate(KeyboxName.CERITIFIED_KEYPAIR, null);
+          signatureCard.getCertificate(KeyboxName.CERTIFIED_KEYPAIR, null);
           assertTrue(false);
           return null;
         } catch (SignatureCardException e) {
@@ -217,7 +217,7 @@ public abstract class AbstractCardTest extends AbstractCardTestBase {
     };
 
     signatureCard.createSignature(new ByteArrayInputStream(MOCCA),
-        KeyboxName.CERITIFIED_KEYPAIR, pinProvider, null);
+        KeyboxName.CERTIFIED_KEYPAIR, pinProvider, null);
 
   }
   

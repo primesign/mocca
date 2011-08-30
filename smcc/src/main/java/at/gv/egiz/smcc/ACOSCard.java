@@ -224,7 +224,7 @@ PINMgmtSignatureCard {
 	      if (keyboxName == KeyboxName.SECURE_SIGNATURE_KEYPAIR) {
 	        aid = AID_SIG;
 	        fid = EF_C_CH_DS;
-	      } else if (keyboxName == KeyboxName.CERITIFIED_KEYPAIR) {
+	      } else if (keyboxName == KeyboxName.CERTIFIED_KEYPAIR) {
 	        aid = AID_DEC;
 	        fid = EF_C_CH_EKEY;
 	      } else {
@@ -286,7 +286,7 @@ PINMgmtSignatureCard {
 	          && (alg == null || "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1".equals(alg))) {
 	        dst.write((byte) 0x14); // SHA-1/ECC
 	        md = MessageDigest.getInstance("SHA-1");
-	      } else if (KeyboxName.CERITIFIED_KEYPAIR.equals(keyboxName)
+	      } else if (KeyboxName.CERTIFIED_KEYPAIR.equals(keyboxName)
 	          && (alg == null || "http://www.w3.org/2000/09/xmldsig#rsa-sha1".equals(alg))) {
 	        dst.write((byte) 0x12); // SHA-1 with padding according to PKCS#1 block type 01
 	        md = MessageDigest.getInstance("SHA-1");
@@ -295,11 +295,15 @@ PINMgmtSignatureCard {
 	          && "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256".equals(alg)) {
 	        dst.write((byte) 0x44); // SHA-256/ECC
 	        md = MessageDigest.getInstance("SHA256");
-	      } else if (KeyboxName.CERITIFIED_KEYPAIR.equals(keyboxName)
+	      } else if (KeyboxName.CERTIFIED_KEYPAIR.equals(keyboxName)
 	          && appVersion >= 2
 	          && "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256".equals(alg)) {
 	        dst.write((byte) 0x41); // SHA-256 with padding according to PKCS#1
 	        md = MessageDigest.getInstance("SHA256");
+	      } else if (KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(keyboxName)
+	          && "http://www.w3.org/2007/05/xmldsig-more#ecdsa-ripemd160".equals(alg)) {
+	        dst.write((byte) 0x14); // No RIPEMD support - use SHA-1/ECC
+	        md = MessageDigest.getInstance("RIPEMD160");
 	      } else {
 	        throw new SignatureCardException("Card does not support signature algorithm " + alg + ".");
 	      }
@@ -331,7 +335,7 @@ PINMgmtSignatureCard {
 	        // PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATRE
 	        return execPSO_COMPUTE_DIGITAL_SIGNATURE(channel);
 	    
-	      } else if (KeyboxName.CERITIFIED_KEYPAIR.equals(keyboxName)) {
+	      } else if (KeyboxName.CERTIFIED_KEYPAIR.equals(keyboxName)) {
 	        
 	        // SELECT application
 	        execSELECT_AID(channel, AID_DEC);
