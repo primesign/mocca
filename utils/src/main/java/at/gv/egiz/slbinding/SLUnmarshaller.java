@@ -228,12 +228,11 @@ public class SLUnmarshaller {
     this.jaxbContext = createJAXBContext(packageNames);
   }
 
-  public Object unmarshal(Source source) throws XMLStreamException, JAXBException {
+  public Object unmarshal(StreamSource source) throws XMLStreamException, JAXBException {
     
     ReportingValidationEventHandler validationEventHandler = new ReportingValidationEventHandler();
-        
     XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-    XMLEventReader eventReader = inputFactory.createXMLEventReader(source);
+    XMLEventReader eventReader = inputFactory.createXMLEventReader(source.getReader());
     RedirectEventFilter redirectEventFilter = new RedirectEventFilter();
     XMLEventReader filteredReader = inputFactory.createFilteredReader(eventReader, redirectEventFilter);
 

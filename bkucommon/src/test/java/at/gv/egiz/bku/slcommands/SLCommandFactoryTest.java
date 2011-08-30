@@ -29,7 +29,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.Reader;
 import java.io.StringReader;
 
-import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.junit.Before;
@@ -65,7 +64,7 @@ public class SLCommandFactoryTest {
   public void createNullOperationCommand() throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
     Reader requestReader = new StringReader(
         "<NullOperationRequest xmlns=\"http://www.buergerkarte.at/namespaces/securitylayer/1.2#\"/>");
-    Source source = new StreamSource(requestReader);
+    StreamSource source = new StreamSource(requestReader);
     
     SLCommand slCommand = factory.createSLCommand(source);
     
@@ -76,7 +75,7 @@ public class SLCommandFactoryTest {
   public void createUnsupportedCommand() throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
     Reader requestReader = new StringReader(
       "<CreateCMSSignatureRequest xmlns=\"http://www.buergerkarte.at/namespaces/securitylayer/1.2#\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.buergerkarte.at/namespaces/securitylayer/1.2# file:/home/clemens/IAIK/BKU2/svn/bku/utils/src/main/schema/Core-1.2.xsd\" Structure=\"detached\"><KeyboxIdentifier></KeyboxIdentifier><DataObject><MetaInfo><MimeType></MimeType></MetaInfo><Content><Base64Content></Base64Content></Content></DataObject></CreateCMSSignatureRequest>");
-    Source source = new StreamSource(requestReader);
+    StreamSource source = new StreamSource(requestReader);
     
     factory.createSLCommand(source);
     
@@ -88,7 +87,7 @@ public class SLCommandFactoryTest {
         "<NullOperationRequest xmlns=\"http://www.buergerkarte.at/namespaces/securitylayer/1.2#\">" +
           "missplacedContent" +
         "</NullOperationRequest>");
-    Source source = new StreamSource(requestReader);
+    StreamSource source = new StreamSource(requestReader);
     
     factory.createSLCommand(source);
     
