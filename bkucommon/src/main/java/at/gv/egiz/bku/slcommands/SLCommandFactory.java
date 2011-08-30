@@ -107,7 +107,7 @@ public class SLCommandFactory extends SLUnmarshaller {
    *           corresponding <code>SLCommand</code> could not be instantiated
    * @throws SLVersionException
    */
-  public SLCommand createSLCommand(Source source)
+  public SLCommand createSLCommand(StreamSource source)
       throws SLCommandException, SLRuntimeException, SLRequestException,
       SLVersionException {
 
@@ -194,7 +194,7 @@ public class SLCommandFactory extends SLUnmarshaller {
    *           if an unexpected error occurs configuring the unmarshaller or if
    *           unmarshalling fails with an unexpected error
    */
-  protected Object unmarshalRequest(Source source) throws SLRuntimeException,
+  protected Object unmarshalRequest(StreamSource source) throws SLRuntimeException,
       SLRequestException {
 
     try {
