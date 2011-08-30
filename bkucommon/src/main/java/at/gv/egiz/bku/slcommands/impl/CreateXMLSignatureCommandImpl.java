@@ -97,14 +97,14 @@ public class CreateXMLSignatureCommandImpl extends
   private class ConfigurationFacade implements MoccaConfigurationFacade {
     private Configuration configuration;
 
-    public static final String USE_SHA2 = "useSHA2";
+    public static final String USE_STRONG_HASH = "useStrongHash";
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
     }
 
-    public boolean getUseSHA2() {
-        return configuration.getBoolean(USE_SHA2, false);
+    public boolean getUseStrongHash() {
+        return configuration.getBoolean(USE_STRONG_HASH, false);
     }
   }
 
@@ -125,7 +125,7 @@ public class CreateXMLSignatureCommandImpl extends
     AlgorithmMethodFactory algorithmMethodFactory;
     try {
       algorithmMethodFactory = new AlgorithmMethodFactoryImpl(
-          signingCertificate, configurationFacade.getUseSHA2());
+          signingCertificate, configurationFacade.getUseStrongHash());
     } catch (NoSuchAlgorithmException e) {
       log.error("Failed to get DigestMethod.", e);
       throw new SLCommandException(4006);

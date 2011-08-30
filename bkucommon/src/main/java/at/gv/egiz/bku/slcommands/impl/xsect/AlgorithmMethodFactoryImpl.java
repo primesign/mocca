@@ -51,11 +51,6 @@ import javax.xml.crypto.dsig.spec.SignatureMethodParameterSpec;
 public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
 
   /**
-   * Use SHA-2?
-   */
-  private boolean SHA2 = false;
-  
-  /**
    * The signature algorithm URI.
    */
   private String signatureAlgorithmURI;
@@ -80,10 +75,8 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
    *           if the public key algorithm of the given
    *           <code>signingCertificate</code> is not supported
    */
-  public AlgorithmMethodFactoryImpl(X509Certificate signingCertificate, boolean useSHA2)
+  public AlgorithmMethodFactoryImpl(X509Certificate signingCertificate, boolean useStrongHash)
       throws NoSuchAlgorithmException {
-
-    SHA2 = useSHA2;
 
     PublicKey publicKey = signingCertificate.getPublicKey();
     String algorithm = publicKey.getAlgorithm();
@@ -97,9 +90,12 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
         keyLength = ((RSAPublicKey) publicKey).getModulus().bitLength();
       }
       
-      if (SHA2 && keyLength >= 2048) {
+      if (useStrongHash && keyLength >= 2048) {
         signatureAlgorithmURI = XmldsigMore.SIGNATURE_RSA_SHA256;
         digestAlgorithmURI = DigestMethod.SHA256;
+//      } else if (useStrongHash) {
+//        signatureAlgorithmURI = XmldsigMore.SIGNATURE_RSA_RIPEMD160_ERRATA;
+//        digestAlgorithmURI = DigestMethod.RIPEMD160;
       } else {
         signatureAlgorithmURI = SignatureMethod.RSA_SHA1;
       }
@@ -115,12 +111,15 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
         fieldSize = params.getCurve().getField().getFieldSize();
       }
       
-      if (SHA2 && fieldSize >= 512) {
+      if (useStrongHash && fieldSize >= 512) {
         signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_SHA512;
         digestAlgorithmURI = DigestMethod.SHA512;
-      } else if (SHA2 && fieldSize >= 256) {
+      } else if (useStrongHash && fieldSize >= 256) {
         signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_SHA256;
         digestAlgorithmURI = DigestMethod.SHA256;
+      } else if (useStrongHash) {
+          signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_RIPEMD160;
+          digestAlgorithmURI = DigestMethod.RIPEMD160;
       } else {
         signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_SHA1;
       }

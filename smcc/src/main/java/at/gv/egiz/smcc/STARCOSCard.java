@@ -403,8 +403,8 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         if (version < 1.2) {
           // algorithm ID ECDSA with RIPEMD160 doesn't work
           //dst.write(new byte[] {(byte) 0x89, (byte) 0x03, (byte) 0x13, (byte) 0x35, (byte) 0x20});
-            // algorithm ID ECDSA with SHA-1
-            dst.write(new byte[] {(byte) 0x89, (byte) 0x03, (byte) 0x13, (byte) 0x35, (byte) 0x10});
+          // algorithm ID ECDSA with SHA-1
+          dst.write(new byte[] {(byte) 0x89, (byte) 0x03, (byte) 0x13, (byte) 0x35, (byte) 0x10});
         } else {
           // portable algorithm reference
           dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x04});
