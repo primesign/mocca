@@ -74,7 +74,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
   private STALResponse getResponse(STALRequest request) throws InterruptedException {
     int retryCounter = 0;
     while (retryCounter < maxRetries) {
-      log.info("Retry #{} of {}.", retryCounter, maxRetries);
+      log.info("Retry #{} of {}.", retryCounter+1, maxRetries);
       SMCCSTALRequestHandler handler = null;
       handler = handlerMap.get(request.getClass().getSimpleName());
       if (handler != null) {
@@ -154,7 +154,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
         }
       } catch (InterruptedException ex) {
         log.error("Interrupted during request handling.");
-        throw new RuntimeException("nterrupted during request handling", ex);
+        throw new RuntimeException("Interrupted during request handling", ex);
       }
       
     }
