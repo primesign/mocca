@@ -437,7 +437,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 				} else {
 					log.info("Content type not set in dataurl response.");
 					closeDataUrlConnection();
-                    throw new SLBindingException(2007);
+					throw new SLBindingException(2007);
 				}
 
 				break;
@@ -608,7 +608,12 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 	 * @return null if redirect url is not set.
 	 */
 	public String getRedirectURL() {
-		return getFormParameterAsString(FixedFormParameters.REDIRECTURL);
+		String redirectURL = getFormParameterAsString(FixedFormParameters.REDIRECTURL);
+		log.debug("Evaluating redirectURL: " + redirectURL);
+		if (redirectURL == null || redirectURL.isEmpty() || redirectURL.contains("\r") || redirectURL.contains("\n") ||
+				redirectURL.contains("<") || redirectURL.toLowerCase().contains("javascript:"))
+			return null;
+		return redirectURL;
 	}
 
 	public String getFormDataContentType(String aParameterName) {
