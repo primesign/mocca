@@ -78,7 +78,7 @@ public class WebRequestHandler extends HttpServlet {
     
     Locale locale = AcceptLanguage.getLocale(req.getHeader("Accept-Language"));
     if (log.isInfoEnabled()) {
-      log.info("Recieved request (Accept-Language locale: {}).", locale);
+      log.info("Received request (Accept-Language locale: {}).", locale);
     }
     
     // create new binding processor
