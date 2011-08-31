@@ -40,17 +40,32 @@
     <p>Im <i>.mocca</i>-Verzeichnis finde sie die Konfigurationsdatei unter <i>.mocca/conf/configuration.xml</i>.
     Diese Datei k&ouml;nnen Sie mit einem beliebigen Editor ansehen und bearbeiten; es handelt sich um eine Text-Datei im
     <a href="http://de.wikipedia.org/wiki/Xml">XML</a>-Format.</p>
-    <p>Beispielkonfiguration:</p>
+    <h2>Beispielkonfiguration:</h2>
 <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 
 &lt;MoccaConfiguration version="1.0"&gt;
   &lt;CCID&gt;
     &lt;disablePinpad&gt;true&lt;/disablePinpad&gt;
   &lt;/CCID&gt;
+  &lt;SSL&gt;
+    &lt;certDirectory&gt;../certs/certStore&lt;/certDirectory&gt;
+    &lt;caDirectory&gt;../certs/trustStore&lt;/caDirectory&gt;
+  &lt;/SSL&gt;
 &lt;/MoccaConfiguration&gt;
 </pre>
-    <p>Mittels dieser Konfiguration verzichten Sie bei Pinpad-Kartenlesern auf die Eingabe &uuml;ber die Tastatur Ihres Kartenlesers,
-    und k&ouml;nnen stattdessen die Tastatur verwenden. Beachten Sie dabei die Sicherheitshinweise auf der <a href="help.pinpad.html">Pinpad-Hilfeseite</a>.</p>
+    <h2>Konfigurationsparameter:</h2>
+    <ul>
+      <li><h3>CCID/disablePinpad</h3>
+        <p>Wenn sie disablePinpad auf <i>true</i> setzen, verzichten Sie bei Pinpad-Kartenlesern auf die Eingabe &uuml;ber die Tastatur Ihres Kartenlesers,
+        und k&ouml;nnen stattdessen die Tastatur verwenden. Beachten Sie dabei die Sicherheitshinweise auf der <a href="help.pinpad.html">Pinpad-Hilfeseite</a>.</p>
+      </li>
+      <li><h3>SSL/certDirectory &amp; SSL/caDirectory</h3>
+        <p>Mit diesen Konfigurationseintr&auml;gen k&ouml;nnen Sie den Zertifikatsspeicher (certDirectory) und den Speicher vertrauensw&uuml;rdiger Zertifikate (caDirectory)
+        in beliebige Verzeichnisse legen. Normalerweise verwendet MOCCA eigene Speicher, die bei jedem Start neu geschrieben werden. Mit der hier beschriebenen Beispielkonfiguration
+        verwenden Sie stattdessen die Verzeichnisse in ihrem <i>.mocca/certs/</i>-Verzeichnis (s.o.).</p>
+        <p>Damit k&ouml;nnen Sie beispielsweise auch neue vertrauensw&uuml;rdige Zertifikate selbst einspielen.</p>
+      </li>
+    </ul>
     <p><br class="clearfloat" /></p>
   </div>
   <div id="footer">
