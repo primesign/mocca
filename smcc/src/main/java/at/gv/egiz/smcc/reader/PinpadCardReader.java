@@ -109,11 +109,16 @@ public class PinpadCardReader extends DefaultCardReader {
       //display: REINER SCT CyberJack 00 00
       if(name.startsWith("gemplus gempc pinpad") || name.startsWith("gemalto gempc pinpad")) {
           // win7(microsoft driver) GemPlus USB GemPC Pinpad Smartcardreader 0 -> no pinpad
-          // win7(gemalto4.0.7.5) Gemalto GemPC Pinpad USB Smart Card Read 0 -> transmitContorlCommand failed (0x7a)
+          // win7(gemalto4.0.7.5) Gemalto GemPC Pinpad USB Smart Card Read 0 -> transmitControlCommand failed (0x7a)
           //     (same with timeouts set to 0000 and 3c0f)
           // winXP (verify failed, sw=d2(ecard) sw=92(acos), cf. wiki):
           // winXP (without setting wPINMax: sw=6b:80)
           // linux (ok): Gemplus GemPC Pinpad 00 00
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+          log.trace("Disabling direct pin entry as workaround for Windows");
+          VERIFY_DIRECT = false;
+          MODIFY_DIRECT = false;
+        }
         log.trace("Setting custom wPINMaxExtraDigitH (0x04) for {}.", name);
         wPINMaxExtraDigitMin = 0x04;
         log.trace("Setting custom wPINMaxExtraDigitL (0x08) for {}.", name);
