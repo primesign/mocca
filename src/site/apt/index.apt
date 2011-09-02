@@ -33,8 +33,11 @@ Releases
 
 Licensing
 
-	The MOCCA project as provided by {{{http://www.egiz.gv.at}EGIZ}} is licensed according to the terms of the {{{http://www.apache.org/licenses/LICENSE-2.0.html}Apache License 2.0}}.
+	Since version 1.3.6, the MOCCA project as provided by {{{http://www.egiz.gv.at}EGIZ}} is licensed according to the terms of the {{{http://osor.eu/eupl}EUPL v1.1}}.
 
-	MOCCA also requires software provided by third parties. Most of this software is free and open source. Some required software is licensed under a commercial license. This includes software provided by {{{http://www.sic.st/}Stiftung Secure Information and Communication Technologies (SIC)}}, which however grants a free-of-charge license for the use of their software together with the unchanged software provided by the MOCCA project.
+	Up to and including version 1.3.6 of this product were published under an {{{http://www.apache.org/licenses/LICENSE-2.0.html}Apache License 2.0}}.
 
-	{{{http://www.sic.st/}Stiftung Secure Information and Communication Technologies (SIC)}} also offers a free-of-charge {{{http://jce.iaik.tugraz.at/sic/Sales/Licences/License-for-Open-Source-Projects}license for open source projects}} which are released under {{{http://www.fsf.org/licenses/gpl.html}GPL Version 2.0}}. This allows open source projects to change or extend software developed by the MOCCA project and obtain a free-of-charge license for software required by MOCCA, as long as such projects are released under GPL Version 2.0. The licensee is responsible for obtaining any required licenses.
+	This product includes software developed by third parties and provided under an {{{http://www.opensource.org}open source license}}.
+
+	This product includes software provided by {{{http://www.sic.st/}Stiftung Secure Information and Communication Technologies (SIC)}}
+
