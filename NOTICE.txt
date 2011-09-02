@@ -14,7 +14,7 @@ Federal Chancellery Austria and Graz University of Technology.
 
 
 This product includes software developed by
-by third parties and provided under an open source license (www.opensource.org).
+third parties and provided under an open source license (www.opensource.org).
 
 
 This product includes software provided by
