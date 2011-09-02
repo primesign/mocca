@@ -6,10 +6,8 @@
         <version>1.3.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>at.gv.egiz</groupId>
     <artifactId>STAL</artifactId>
     <name>STAL</name>
-    <version>1.3.6-SNAPSHOT</version>
     <dependencies>
     </dependencies>
     <description>Security Token Access Layer</description>

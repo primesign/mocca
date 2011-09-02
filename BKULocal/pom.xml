@@ -5,12 +5,9 @@
 		<version>1.3.6-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>at.gv.egiz</groupId>
 	<artifactId>BKULocal</artifactId>
 	<packaging>war</packaging>
 	<name>MOCCA Local</name>
-	<version>1.3.6-SNAPSHOT</version>
-
 	<description>MOCCA Local</description>
 	<build>
     <plugins>

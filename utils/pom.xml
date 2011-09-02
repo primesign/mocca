@@ -5,11 +5,9 @@
 		<version>1.3.6-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>at.gv.egiz</groupId>
 	<artifactId>utils</artifactId>
 	<name>Utils</name>
 	<packaging>jar</packaging>
-	<version>1.3.6-SNAPSHOT</version>
 	<description>Utilities</description>
 	<dependencies>
 		<dependency>
