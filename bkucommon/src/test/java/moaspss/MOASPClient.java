@@ -91,7 +91,7 @@ public class MOASPClient {
   public static class ClientJAXBContextFactory implements JAXBContextFactory {
 
     public JAXBRIContext createJAXBContext(final SEIModel sei,
-        final List<Class> classesToBind, final List<TypeReference> typeReferences)
+        @SuppressWarnings("rawtypes") final List<Class> classesToBind, final List<TypeReference> typeReferences)
             throws JAXBException {
 
       System.out.println("Create Context");
@@ -168,7 +168,7 @@ public class MOASPClient {
         }
         
         @Override
-        public Bridge createBridge(TypeReference arg0) {
+        public Bridge<?> createBridge(TypeReference arg0) {
           return context.createBridge(arg0);
         }
       };

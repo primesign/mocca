@@ -33,7 +33,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.InvalidAlgorithmParameterException;
@@ -44,13 +43,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PublicKey;
-import java.security.SignatureException;
-import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
@@ -69,14 +65,21 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.ShortBufferException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.smartcardio.*;
+import javax.smartcardio.Card;
+import javax.smartcardio.CardChannel;
+import javax.smartcardio.CardException;
+import javax.smartcardio.CardTerminal;
+import javax.smartcardio.CommandAPDU;
+import javax.smartcardio.ResponseAPDU;
+import javax.smartcardio.TerminalFactory;
+
+import org.junit.Ignore;
 
 import at.gv.egiz.smcc.pin.gui.PINGUI;
 import at.gv.egiz.smcc.util.SMCCHelper;
 
-import org.junit.Ignore;
-
 @Ignore
+@SuppressWarnings("unused")
 public class ESCardTest extends AbstractSignatureCard {
 
 	private static final String ROOT_CA_MODULO = "EADEDA455332945039DAA404C8EBC4D3B7F5DC869283CDEA2F101E2AB54FB0D0B03D8F030DAF2458028288F54CE552F8FA57AB2FB103B112427E11131D1D27E10A5B500EAAE5D940301E30EB26C3E9066B257156ED639D70CCC090B863AFBB3BFED8C17BE7673034B9823E977ED657252927F9575B9FFF6691DB64F80B5E92CD";

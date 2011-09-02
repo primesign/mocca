@@ -27,7 +27,6 @@ package at.gv.egiz.smcc.cio;
 
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.util.ISO7816Utils;
-import at.gv.egiz.smcc.util.TLVSequence;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;

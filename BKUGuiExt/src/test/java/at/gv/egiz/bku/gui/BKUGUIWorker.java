@@ -24,13 +24,6 @@
 
 package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.smcc.PinInfo;
-import at.gv.egiz.stal.HashDataInput;
-import at.gv.egiz.stal.impl.ByteArrayHashDataInput;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -48,81 +41,81 @@ public class BKUGUIWorker implements Runnable {
   public void run() {
         try {
 
-    final PinInfo signPinSpec = new SimplePinInfo(6, 10, "[0-9]", "Signatur-PIN", (byte)0x00, null, PinInfo.UNKNOWN_RETRIES);
+//    final PinInfo signPinSpec = new SimplePinInfo(6, 10, "[0-9]", "Signatur-PIN", (byte)0x00, null, PinInfo.UNKNOWN_RETRIES);
 
 
-    final ActionListener cancelListener = new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-        System.out.println("CANCEL EVENT OCCURED: " + e);
-      }
-    };
-    ActionListener okListener = new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        System.out.println("OK EVENT OCCURED: " + e);
-      }
-    };
-    final ActionListener signListener = new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-        System.out.println("SIGN EVENT OCCURED: " + e);
-      }
-    };
-    ActionListener hashdataListener = new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-        System.out.println("HASHDATA EVENT OCCURED: " + e);
-        ActionListener returnListener = new ActionListener() {
-
-          @Override
-          public void actionPerformed(ActionEvent e) {
-            gui.showSignaturePINDialog(signPinSpec, -1, signListener, "sign", cancelListener, "cancel", null, "hashdata");
-          }
-        };
-        HashDataInput signedRef1 = new ByteArrayHashDataInput(
-                "Ich bin ein einfacher Text mit Umlauten: öäüßéç@€\n123\n456\n\tHello, world!\n\nlkjsd\nnksdjf".getBytes(), 
-                "ref-id-0000000000000000000000001", 
-                "text/plain", 
-                "UTF-8",
-                "filename.txt");
-        
-        HashDataInput signedRef2 = new ByteArrayHashDataInput(
-                "<xml>HashDataInput_002</xml>".getBytes(), 
-                "ref-id-000000002", 
-                "application/xhtml+xml", 
-                "UTF-8",
-                "filename.xhtml");
-        
-        HashDataInput signedRef3 = new ByteArrayHashDataInput(
-                "<xml>HashDataInput_003</xml>".getBytes(), 
-                "ref-id-000000003", 
-                "application/xhtml+xml", 
-                "UTF-8",
-                "filename.xhtml");
-
-        HashDataInput signedRef4 = new ByteArrayHashDataInput(
-                "<xml>HashDataInput_004</xml>".getBytes(), 
-                "ref-id-000000004", 
-                "text/xml", 
-                "UTF-8",
-                "filename.xml");
-
-        //
-        List<HashDataInput> signedRefs = new ArrayList();
-        signedRefs.add(signedRef1);
-                    signedRefs.add(signedRef2);
-                    signedRefs.add(signedRef3);
-                    signedRefs.add(signedRef4);
+//    final ActionListener cancelListener = new ActionListener() {
+//
+//      public void actionPerformed(ActionEvent e) {
+//        System.out.println("CANCEL EVENT OCCURED: " + e);
+//      }
+//    };
+//    ActionListener okListener = new ActionListener() {
+//
+//      @Override
+//      public void actionPerformed(ActionEvent e) {
+//        System.out.println("OK EVENT OCCURED: " + e);
+//      }
+//    };
+//    final ActionListener signListener = new ActionListener() {
+//
+//      public void actionPerformed(ActionEvent e) {
+//        System.out.println("SIGN EVENT OCCURED: " + e);
+//      }
+//    };
+//    ActionListener hashdataListener = new ActionListener() {
+//
+//      public void actionPerformed(ActionEvent e) {
+//        System.out.println("HASHDATA EVENT OCCURED: " + e);
+//        ActionListener returnListener = new ActionListener() {
+//
+//          @Override
+//          public void actionPerformed(ActionEvent e) {
+//            gui.showSignaturePINDialog(signPinSpec, -1, signListener, "sign", cancelListener, "cancel", null, "hashdata");
+//          }
+//        };
+//        HashDataInput signedRef1 = new ByteArrayHashDataInput(
+//                "Ich bin ein einfacher Text mit Umlauten: öäüßéç@€\n123\n456\n\tHello, world!\n\nlkjsd\nnksdjf".getBytes(), 
+//                "ref-id-0000000000000000000000001", 
+//                "text/plain", 
+//                "UTF-8",
+//                "filename.txt");
+//        
+//        HashDataInput signedRef2 = new ByteArrayHashDataInput(
+//                "<xml>HashDataInput_002</xml>".getBytes(), 
+//                "ref-id-000000002", 
+//                "application/xhtml+xml", 
+//                "UTF-8",
+//                "filename.xhtml");
+//        
+//        HashDataInput signedRef3 = new ByteArrayHashDataInput(
+//                "<xml>HashDataInput_003</xml>".getBytes(), 
+//                "ref-id-000000003", 
+//                "application/xhtml+xml", 
+//                "UTF-8",
+//                "filename.xhtml");
+//
+//        HashDataInput signedRef4 = new ByteArrayHashDataInput(
+//                "<xml>HashDataInput_004</xml>".getBytes(), 
+//                "ref-id-000000004", 
+//                "text/xml", 
+//                "UTF-8",
+//                "filename.xml");
+//
+//        //
+//        List<HashDataInput> signedRefs = new ArrayList();
+//        signedRefs.add(signedRef1);
+//                    signedRefs.add(signedRef2);
+//                    signedRefs.add(signedRef3);
 //                    signedRefs.add(signedRef4);
-//                    signedRefs.add(signedRef4);
-//                    signedRefs.add(signedRef4);
-//                    signedRefs.add(signedRef4);
-//                    signedRefs = Collections.singletonList(signedRef1);
-        gui.showSecureViewer(signedRefs, returnListener, "return");
-      }
-    };
+////                    signedRefs.add(signedRef4);
+////                    signedRefs.add(signedRef4);
+////                    signedRefs.add(signedRef4);
+////                    signedRefs.add(signedRef4);
+////                    signedRefs = Collections.singletonList(signedRef1);
+//        gui.showSecureViewer(signedRefs, returnListener, "return");
+//      }
+//    };
 
 
 

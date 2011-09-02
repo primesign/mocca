@@ -31,15 +31,15 @@ import at.gv.egiz.bku.slcommands.SLCommand;
 
 public abstract class CommandParamChecker {
 
-	protected List<Tupel<String, String>> paramList = new LinkedList<Tupel<String, String>>();
+	protected List<Pair<String, String>> paramList = new LinkedList<Pair<String, String>>();
 
-	public static class Tupel<T, Q> {
+	public static class Pair<T, Q> {
 		private T key;
 		private Q val;
 
-		public Tupel(T key, Q val) {
+		public Pair(T key, Q val) {
 			if ((key == null) || (val == null)) {
-				throw new NullPointerException("Tupel key and value must not be null");
+				throw new NullPointerException("Pair key and value must not be null");
 			}
 			this.key = key;
 			this.val = val;
@@ -54,8 +54,8 @@ public abstract class CommandParamChecker {
 		}
 
 		public boolean equals(Object other) {
-			if (other instanceof Tupel) {
-				Tupel ot = (Tupel) other;
+			if (other instanceof Pair) {
+				Pair<?, ?> ot = (Pair<?, ?>) other;
 				return (key.equals(ot.key) && val.equals(ot.val));
 			}
 			return false;
@@ -67,7 +67,7 @@ public abstract class CommandParamChecker {
 	}
 
 	public void addParameter(String key, String value) {
-		paramList.add(new Tupel<String, String>(key, value));
+		paramList.add(new Pair<String, String>(key, value));
 	}
 
 	public abstract boolean checkParameter(SLCommand cmd);

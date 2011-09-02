@@ -64,7 +64,7 @@ public class HttpUtil {
       boolean replaceNullWithDefault) {
     ParameterParser pf = new ParameterParser();
     pf.setLowerCaseNames(true);
-    Map map = pf.parse(contentType, SEPERATOR);
+    Map<?, ?> map = pf.parse(contentType, SEPERATOR);
     String retVal = (String) map.get(CHAR_SET);
     if ((retVal == null) && (replaceNullWithDefault)) {
       if (map.containsKey(APPLICATION_URL_ENCODED)) {

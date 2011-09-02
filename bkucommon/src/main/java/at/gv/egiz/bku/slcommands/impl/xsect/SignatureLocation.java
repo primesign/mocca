@@ -222,8 +222,9 @@ public class SignatureLocation {
       return namespaceContext.getPrefix(namespaceURI);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Iterator getPrefixes(String namespaceURI) {
+    public Iterator<String> getPrefixes(String namespaceURI) {
       return namespaceContext.getPrefixes(namespaceURI);
     }
     

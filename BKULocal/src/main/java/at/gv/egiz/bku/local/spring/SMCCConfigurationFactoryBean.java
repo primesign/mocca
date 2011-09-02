@@ -64,7 +64,7 @@ public class SMCCConfigurationFactoryBean implements FactoryBean {
     }
 
     @Override
-    public Class getObjectType() {
+    public Class<SMCCConfiguration> getObjectType() {
         return SMCCConfiguration.class;
     }
 

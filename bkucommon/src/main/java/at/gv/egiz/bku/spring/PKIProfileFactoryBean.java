@@ -92,6 +92,7 @@ public class PKIProfileFactoryBean implements FactoryBean, ResourceLoaderAware {
       return getURL(SSL_CA_DIRECTORY);
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getRevocationServiceOrder() throws Exception {
       return configuration.getList(SSL_REVOCATION_SERVICE_ORDER);
     }

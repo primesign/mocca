@@ -24,6 +24,8 @@
 
 package at.gv.egiz.stal.service.impl;
 
+import at.buergerkarte.namespaces.cardchannel.service.ObjectFactory;
+
 import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.ws.api.model.SEIModel;
@@ -43,19 +45,20 @@ public class STALXJAXBContextFactory implements JAXBContextFactory {
   private final Logger log = LoggerFactory.getLogger(STALXJAXBContextFactory.class);
 
   @Override
-  public JAXBRIContext createJAXBContext(SEIModel sei, List<Class> classesToBind, List<TypeReference> typeReferences) throws JAXBException {
+  public JAXBRIContext createJAXBContext(SEIModel sei, @SuppressWarnings("rawtypes") List<Class> classesToBind, List<TypeReference> typeReferences) throws JAXBException {
     if (log.isTraceEnabled()) {
       log.trace("JAXBContext seed for SEI " + sei.getTargetNamespace() + ":");
-      for (Class class1 : classesToBind) {
+      for (Class<?> class1 : classesToBind) {
         log.trace(" " + class1);
       }
       for (TypeReference typeReference : typeReferences) {
         log.trace(" typeRef " + typeReference.tagName + " -> " + typeReference.type);
       }
     }
-    List<Class> classes = new ArrayList<Class>();
+    @SuppressWarnings("rawtypes")
+	List<Class> classes = new ArrayList<Class>();
     classes.addAll(classesToBind);
-    Class ccOF = at.buergerkarte.namespaces.cardchannel.service.ObjectFactory.class;
+    Class<ObjectFactory> ccOF = ObjectFactory.class;
     if (!classes.contains(ccOF)) {
       log.debug("adding " + ccOF + " to JAXBContext seed");
       classes.add(ccOF);

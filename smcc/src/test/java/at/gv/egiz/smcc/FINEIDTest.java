@@ -81,9 +81,9 @@ public class FINEIDTest extends AbstractSignatureCard {
 
 	public void testPIN() {
 		
-		PinInfo pinInfo = new PinInfo(6, 8, "[0-9]",
-				"at/gv/egiz/smcc/FINEIDCard", "sig.pin", (byte) 0x00,
-				new byte[] {}, PinInfo.UNKNOWN_RETRIES);
+//		PinInfo pinInfo = new PinInfo(6, 8, "[0-9]",
+//				"at/gv/egiz/smcc/FINEIDCard", "sig.pin", (byte) 0x00,
+//				new byte[] {}, PinInfo.UNKNOWN_RETRIES);
 		
 		VerifyAPDUSpec apduSpec = new VerifyAPDUSpec(new byte[] { (byte) 0x00,
 				(byte) 0x20, (byte) 0x00, (byte)0x82 }, 0,

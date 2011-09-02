@@ -37,9 +37,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.AllPermission;
 import java.security.KeyStore;
-import java.security.Permissions;
 import java.security.cert.Certificate;
 import java.util.Locale;
 
@@ -272,18 +270,18 @@ public class Container {
    * @param webappDir
    * @return
    */
-  private Permissions getPermissions(File webappDir) {
-    Permissions perms = new Permissions();
-    perms.add(new AllPermission());
-//      perms.add(new FilePermission(new File(System.getProperty("user.home")).getAbsolutePath(), "read, write"));
-//      perms.add(new FilePermission(new File(System.getProperty("user.home") + "/-").getAbsolutePath(), "read, write"));
-//      perms.add(new FilePermission(new File(System.getProperty("user.home") + "/.mocca/logs/*").getAbsolutePath(), "read, write,delete"));
-//      perms.add(new FilePermission(new File(System.getProperty("user.home") + "/.mocca/certs/-").getAbsolutePath(), "read, write,delete"));
-
-//    perms.add(new FilePermission("<<ALL FILES>>", "read, write"));
-
-    return perms;
-  }
+//  private Permissions getPermissions(File webappDir) {
+//    Permissions perms = new Permissions();
+//    perms.add(new AllPermission());
+////      perms.add(new FilePermission(new File(System.getProperty("user.home")).getAbsolutePath(), "read, write"));
+////      perms.add(new FilePermission(new File(System.getProperty("user.home") + "/-").getAbsolutePath(), "read, write"));
+////      perms.add(new FilePermission(new File(System.getProperty("user.home") + "/.mocca/logs/*").getAbsolutePath(), "read, write,delete"));
+////      perms.add(new FilePermission(new File(System.getProperty("user.home") + "/.mocca/certs/-").getAbsolutePath(), "read, write,delete"));
+//
+////    perms.add(new FilePermission("<<ALL FILES>>", "read, write"));
+//
+//    return perms;
+//  }
 
   public void start() throws Exception {
     server.start();

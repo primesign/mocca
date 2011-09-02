@@ -27,7 +27,6 @@ package at.gv.egiz.smcc;
 import at.gv.egiz.smcc.reader.CardReader;
 import at.gv.egiz.smcc.reader.ReaderFactory;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
@@ -41,7 +40,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
 
   private final Logger log = LoggerFactory.getLogger(AbstractSignatureCard.class);
 
-  private Locale locale = Locale.getDefault();
+  protected Locale locale = Locale.getDefault();
 
   private Card card_;
   

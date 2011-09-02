@@ -34,15 +34,12 @@ import javax.smartcardio.CardException;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import at.gv.egiz.smcc.util.TLV;
 
 public abstract class AbstractISCard extends AbstractSignatureCard implements
 		SignatureCard {
 
-	private final Logger log = LoggerFactory.getLogger(AbstractISCard.class);
+//	private final Logger log = LoggerFactory.getLogger(AbstractISCard.class);
 
 	protected static final byte[] OID = new byte[] { (byte) 0x30, (byte) 0x21, (byte) 0x30,
 			(byte) 0x09, (byte) 0x06, (byte) 0x05, (byte) 0x2b,
@@ -148,12 +145,11 @@ public abstract class AbstractISCard extends AbstractSignatureCard implements
 					"Cannot retrieve enduser certificate.", e);
 		}
 
-		if (cert == null) {
-
-			log.error("Retrieved certificate is null.");
-			throw new SignatureCardException(
-					"Cannot retrieve enduser certificate.");
-		}
+//		if (cert == null ) {
+//			log.error("Retrieved certificate is null.");
+//			throw new SignatureCardException(
+//					"Cannot retrieve enduser certificate.");
+//		}
 
 		return cert;
 	}

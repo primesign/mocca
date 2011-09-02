@@ -31,8 +31,6 @@ package at.gv.egiz.smcc.conf;
  */
 public class SMCCConfiguration {
 
-  private static final long serialVersionUID = 1L;
-
   boolean disablePinpad;
 
   /**

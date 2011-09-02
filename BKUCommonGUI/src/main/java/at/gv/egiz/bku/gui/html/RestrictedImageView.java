@@ -26,7 +26,6 @@
 package at.gv.egiz.bku.gui.html;
 
 import javax.swing.text.Element;
-import javax.swing.text.html.HTML;
 import javax.swing.text.html.ImageView;
 
 /**
@@ -58,18 +57,18 @@ import javax.swing.text.html.ImageView;
 //      return super.getImage();
 //    }
     
-    /**
-     * check whether this URL corresponds to the data URI scheme 
-     * (and the referenced content is directly included in the document).
-     * @return
-     */
-    private boolean isDataURI() {
-      String src = (String)getElement().getAttributes().
-                             getAttribute(HTML.Attribute.SRC);
-      if (src == null) {
-        return false;
-      }
-
-      return src.toLowerCase().startsWith("data");
-    }
+//    /**
+//     * check whether this URL corresponds to the data URI scheme 
+//     * (and the referenced content is directly included in the document).
+//     * @return
+//     */
+//    private boolean isDataURI() {
+//      String src = (String)getElement().getAttributes().
+//                             getAttribute(HTML.Attribute.SRC);
+//      if (src == null) {
+//        return false;
+//      }
+//
+//      return src.toLowerCase().startsWith("data");
+//    }
   }

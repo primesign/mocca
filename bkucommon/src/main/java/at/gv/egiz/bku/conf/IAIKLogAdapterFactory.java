@@ -63,7 +63,7 @@ public class IAIKLogAdapterFactory extends LogFactory {
    * @see iaik.logging.LogFactory#getInstance(java.lang.Class)
    */
   @Override
-  public synchronized Log getInstance(Class clazz) throws LogConfigurationException {
+  public synchronized Log getInstance(@SuppressWarnings("rawtypes") Class clazz) throws LogConfigurationException {
     Logger logger = LoggerFactory.getLogger(clazz);
     Log log = instances.get(logger);
     if (log == null) {

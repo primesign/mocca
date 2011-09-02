@@ -49,7 +49,7 @@ public class BKUGUIWorker implements Runnable {
         try {
 
     final PinInfo signPinSpec = new SimplePinInfo(6, 10, "[0-9]", "Test-PIN", (byte) 0x81, null, PinInfo.UNKNOWN_RETRIES);
-    final PinInfo cardPinSpec = new SimplePinInfo(4, 4, "[0-9]", "Test-PIN", (byte) 0x01, null, PinInfo.UNKNOWN_RETRIES);
+//    final PinInfo cardPinSpec = new SimplePinInfo(4, 4, "[0-9]", "Test-PIN", (byte) 0x01, null, PinInfo.UNKNOWN_RETRIES);
 
 
     final ActionListener cancelListener = new ActionListener() {
@@ -58,13 +58,13 @@ public class BKUGUIWorker implements Runnable {
         System.out.println("CANCEL EVENT OCCURED: " + e);
       }
     };
-    ActionListener okListener = new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        System.out.println("OK EVENT OCCURED: " + e);
-      }
-    };
+//    ActionListener okListener = new ActionListener() {
+//
+//      @Override
+//      public void actionPerformed(ActionEvent e) {
+//        System.out.println("OK EVENT OCCURED: " + e);
+//      }
+//    };
     final ActionListener signListener = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -89,29 +89,28 @@ public class BKUGUIWorker implements Runnable {
                 "UTF-8",
                 "file.txt");
         
-        HashDataInput signedRef2 = new ByteArrayHashDataInput(
-                "<xml>HashDataInput_002</xml>".getBytes(), 
-                "ref-id-000000002", 
-                "application/xhtml+xml", 
-                "UTF-8",
-                "file.xhtml");
-        
-        HashDataInput signedRef3 = new ByteArrayHashDataInput(
-                "<xml>HashDataInput_003</xml>".getBytes(), 
-                "ref-id-000000003", 
-                "application/xhtml+xml", 
-                "UTF-8",
-                "file2.xhtml");
+//        HashDataInput signedRef2 = new ByteArrayHashDataInput(
+//                "<xml>HashDataInput_002</xml>".getBytes(), 
+//                "ref-id-000000002", 
+//                "application/xhtml+xml", 
+//                "UTF-8",
+//                "file.xhtml");
+//        
+//        HashDataInput signedRef3 = new ByteArrayHashDataInput(
+//                "<xml>HashDataInput_003</xml>".getBytes(), 
+//                "ref-id-000000003", 
+//                "application/xhtml+xml", 
+//                "UTF-8",
+//                "file2.xhtml");
+//
+//        HashDataInput signedRef4 = new ByteArrayHashDataInput(
+//                "<xml>HashDataInput_004</xml>".getBytes(), 
+//                "ref-id-000000004", 
+//                "text/xml", 
+//                "UTF-8",
+//                "file.xml");
 
-        HashDataInput signedRef4 = new ByteArrayHashDataInput(
-                "<xml>HashDataInput_004</xml>".getBytes(), 
-                "ref-id-000000004", 
-                "text/xml", 
-                "UTF-8",
-                "file.xml");
-
-        //
-        List<HashDataInput> signedRefs = new ArrayList();
+        List<HashDataInput> signedRefs = new ArrayList<HashDataInput>();
         signedRefs.add(signedRef1);
 //                    signedRefs.add(signedRef2);
 //                    signedRefs.add(signedRef3);

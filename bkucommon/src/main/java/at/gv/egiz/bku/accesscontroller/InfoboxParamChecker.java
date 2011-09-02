@@ -50,7 +50,7 @@ public class InfoboxParamChecker extends CommandParamChecker {
 
 		if (cmd instanceof InfoboxReadCommand) {
 			InfoboxReadCommand irc = (InfoboxReadCommand) cmd;
-			for (Tupel<String, String> param : paramList) {
+			for (Pair<String, String> param : paramList) {
 				if (param.getKey().equals(INFOBOX_ID)) {
 					if (!param.getVal().equals(irc.getInfoboxIdentifier())) {
 						return false;

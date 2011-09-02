@@ -286,11 +286,11 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager, Com
     public void run() {
       Collection<BindingProcessorFuture> futures = submittedFutures.values();
       List<Id> toBeRemoved = new ArrayList<Id>();
-      int active = 0;
+//      int active = 0;
       for(BindingProcessorFuture future : futures) {
         BindingProcessor bindingProcessor = future.getBindingProcessor();
         if (!future.isDone()) {
-          active++;
+//          active++;
         }
         if ((bindingProcessor.getLastAccessTime().getTime() - System
             .currentTimeMillis()) > maxAcceptedAge) {

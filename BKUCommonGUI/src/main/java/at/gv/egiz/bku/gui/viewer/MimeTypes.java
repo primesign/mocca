@@ -34,7 +34,9 @@ import java.util.Map;
  */
 public class MimeTypes {
 
-  private static final Map<String , String> FILE_EXTENSIONS = new HashMap<String, String>() {{
+  private static final Map<String , String> FILE_EXTENSIONS = new HashMap<String, String>() {
+    private static final long serialVersionUID = 1L;
+{
     put("application/msword", ".doc");
     put("application/octet-stream", ".bin");
     put("application/pdf", ".pdf");
@@ -44,7 +46,9 @@ public class MimeTypes {
     put("text/xml", ".xml");
   }};
 
-  private static final Map<String , String> DESCRIPTIONS = new HashMap<String, String>() {{
+  private static final Map<String , String> DESCRIPTIONS = new HashMap<String, String>() {
+    private static final long serialVersionUID = 1L;
+{
     put("application/msword", "mimetype.desc.doc");
     put("application/octet-stream", "mimetype.desc.bin");
     put("application/pdf", "mimetype.desc.pdf");
