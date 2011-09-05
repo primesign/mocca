@@ -249,9 +249,9 @@ public class SLUnmarshaller {
       log.trace("After unmarshal().");
     } catch (UnmarshalException e) {
       if (log.isDebugEnabled()) {
-          log.debug("Failed to unmarshall security layer message.", e);
+          log.debug("Failed to unmarshal security layer message.", e);
       } else {
-          log.info("Failed to unmarshall security layer message." + e.getMessage());
+          log.info("Failed to unmarshal security layer message." + (e.getMessage() != null ? " " + e.getMessage() : ""));
       }
       
       if (validationEventHandler.getErrorEvent() != null) {
