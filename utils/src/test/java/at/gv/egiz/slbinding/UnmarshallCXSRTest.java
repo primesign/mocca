@@ -26,6 +26,7 @@
 package at.gv.egiz.slbinding;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -40,7 +41,7 @@ import static org.junit.Assert.*;
 public class UnmarshallCXSRTest {
 
   @Test
-  public void testUnmarshallCreateXMLSignatureResponse() throws XMLStreamException, JAXBException {
+  public void testUnmarshalCreateXMLSignatureResponse() throws XMLStreamException, JAXBException {
     
     ClassLoader cl = UnmarshallCXSRTest.class.getClassLoader();
     InputStream s = cl.getResourceAsStream("at/gv/egiz/slbinding/CreateXMLSignatureResponse.xml");
@@ -48,7 +49,7 @@ public class UnmarshallCXSRTest {
     assertNotNull(s);
     
     SLUnmarshaller unmarshaller = new SLUnmarshaller();
-    Object object = unmarshaller.unmarshal(new StreamSource(s));
+    Object object = unmarshaller.unmarshal(new StreamSource(new InputStreamReader(s)));
 
     assertTrue(object.getClass().getName(), object instanceof JAXBElement<?>);
 

@@ -94,7 +94,9 @@ public class SLCommandFactory extends SLUnmarshaller {
    * <code>context</code>.
    * 
    * @param source
-   *          the <code>Source</code> to unmarshall from
+   *          the <code>StreamSource</code> to unmarshal from
+   *          Note that the StreamSource _must_ contain a Reader set with
+   *          setReader()
    * @return the <code>SLCommand</code> unmarshalled from the given
    *         <code>source</code>
    * @throws SLRequestException
@@ -113,11 +115,10 @@ public class SLCommandFactory extends SLUnmarshaller {
 
     DebugReader dr = null;
     if (log.isTraceEnabled() && source instanceof StreamSource) {
-      StreamSource streamSource = (StreamSource) source;
-      if (streamSource.getReader() != null) {
-        dr = new DebugReader(streamSource.getReader(),
+      if (source.getReader() != null) {
+        dr = new DebugReader(source.getReader(),
             "SLCommand unmarshalled from:\n");
-        streamSource.setReader(dr);
+        source.setReader(dr);
       }
     }
 

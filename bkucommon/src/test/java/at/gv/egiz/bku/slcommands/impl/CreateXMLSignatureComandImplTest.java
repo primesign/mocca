@@ -29,6 +29,7 @@ import static org.junit.Assert.assertTrue;
 import iaik.xml.crypto.XSecProvider;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -93,7 +94,7 @@ public class CreateXMLSignatureComandImplTest {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/createxmlsignaturerequest/CreateXMLSignatureRequest.xml");
     assertNotNull(inputStream);
     
-    SLCommand command = factory.createSLCommand(new StreamSource(inputStream));
+    SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
     assertTrue(command instanceof CreateXMLSignatureCommand);
     
     SLCommandContext context = new SLCommandContext(stal, urlDereferencer);
@@ -106,7 +107,7 @@ public class CreateXMLSignatureComandImplTest {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.Invalid-1.xml");
     assertNotNull(inputStream);
     
-    SLCommand command = factory.createSLCommand(new StreamSource(inputStream));
+    SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
     assertTrue(command instanceof InfoboxReadCommand);
   }
 
@@ -115,7 +116,7 @@ public class CreateXMLSignatureComandImplTest {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.Invalid-2.xml");
     assertNotNull(inputStream);
     
-    SLCommand command = factory.createSLCommand(new StreamSource(inputStream));
+    SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
     assertTrue(command instanceof InfoboxReadCommandImpl);
     
     SLCommandContext context = new SLCommandContext(stal, urlDereferencer);

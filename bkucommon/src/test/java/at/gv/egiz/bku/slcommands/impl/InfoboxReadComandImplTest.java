@@ -28,6 +28,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -92,7 +93,7 @@ public class InfoboxReadComandImplTest {
     
     SLCommandContext context = new SLCommandContext(stal, urlDereferencer);
     context.setSTAL(stal);
-    SLCommand command = factory.createSLCommand(new StreamSource(inputStream));
+    SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
     assertTrue(command instanceof InfoboxReadCommand);
     
     SLResult result = command.execute(context);
@@ -104,7 +105,7 @@ public class InfoboxReadComandImplTest {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.Invalid-1.xml");
     assertNotNull(inputStream);
     
-    SLCommand command = factory.createSLCommand(new StreamSource(inputStream));
+    SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
     assertTrue(command instanceof InfoboxReadCommand);
   }
 
@@ -113,7 +114,7 @@ public class InfoboxReadComandImplTest {
     assertNotNull(inputStream);
     
     SLCommandContext context = new SLCommandContext(stal, urlDereferencer);
-    SLCommand command = factory.createSLCommand(new StreamSource(inputStream));
+    SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
     assertTrue(command instanceof InfoboxReadCommand);
     
     SLResult result = command.execute(context);

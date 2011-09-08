@@ -31,6 +31,7 @@ import iaik.xml.crypto.XSecProvider;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -134,7 +135,7 @@ public class SVPersonendatenInfoboxImplTest {
     assertNotNull(inputStream);
     
     SLCommandContext context = new SLCommandContext(stal, urlDereferencer);
-    SLCommand command = factory.createSLCommand(new StreamSource(inputStream));
+    SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
     assertTrue(command instanceof InfoboxReadCommand);
     
     SLResult result = command.execute(context);
@@ -146,7 +147,7 @@ public class SVPersonendatenInfoboxImplTest {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.Invalid-1.xml");
     assertNotNull(inputStream);
     
-    SLCommand command = factory.createSLCommand(new StreamSource(inputStream));
+    SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
     assertTrue(command instanceof InfoboxReadCommand);
   }
 
@@ -156,7 +157,7 @@ public class SVPersonendatenInfoboxImplTest {
     assertNotNull(inputStream);
     
     SLCommandContext context = new SLCommandContext(stal, urlDereferencer);
-    SLCommand command = factory.createSLCommand(new StreamSource(inputStream));
+    SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
     assertTrue(command instanceof InfoboxReadCommand);
     
     SLResult result = command.execute(context);

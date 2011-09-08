@@ -228,7 +228,13 @@ public class SLUnmarshaller {
     this.jaxbContext = createJAXBContext(packageNames);
   }
 
-  public Object unmarshal(StreamSource source) throws XMLStreamException, JAXBException {
+  /**
+   * @param source a StreamSource wrapping a Reader (!) for the marshalled Object
+   * @return the unmarshalled Object
+   * @throws XMLStreamException
+   * @throws JAXBException
+   */
+public Object unmarshal(StreamSource source) throws XMLStreamException, JAXBException {
     
     ReportingValidationEventHandler validationEventHandler = new ReportingValidationEventHandler();
     XMLInputFactory inputFactory = XMLInputFactory.newInstance();
