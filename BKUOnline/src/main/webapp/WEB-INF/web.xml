@@ -159,7 +159,7 @@
 	</welcome-file-list>
 	<error-page>
 		<error-code>404</error-code>
-		<location>/404.html</location>
+		<location>/404.jsp</location>
 	</error-page>
 	<!-- 
 	Servlet Filter for Request/Session tracking.
