@@ -162,7 +162,7 @@
               <keystore>NONE</keystore>
               <storetype>PKCS11</storetype>
               <providerClass>iaik.pkcs.pkcs11.provider.IAIKPkcs11</providerClass>
-              <alias>a-sit</alias>
+              <alias>a-sit-2</alias>
               <storepass>${pkcs11-pass}</storepass>
               <verify>true</verify>
               <keystoreConfig>
