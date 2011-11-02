@@ -11,76 +11,76 @@
   <build>
     <plugins>
       <plugin>
-				<groupId>com.pyx4me</groupId>
-				<artifactId>proguard-maven-plugin</artifactId>
-				<version>2.0.4</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>proguard</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-				  <obfuscate>false</obfuscate>
-				  <options>
-				    <option>-keep public class * extends at.gv.egiz.smcc.SignatureCard { *; }</option>
-				    <option>-keep public class * extends java.applet.Applet { *; }</option>
-				    <option>-keep @javax.xml.bind.annotation.** class * { *; }</option>
+        <groupId>com.pyx4me</groupId>
+        <artifactId>proguard-maven-plugin</artifactId>
+        <version>2.0.4</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>proguard</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <obfuscate>false</obfuscate>
+          <options>
+            <option>-keep public class * extends at.gv.egiz.smcc.SignatureCard { *; }</option>
+            <option>-keep public class * extends java.applet.Applet { *; }</option>
+            <option>-keep @javax.xml.bind.annotation.** class * { *; }</option>
             <option>-keep @javax.xml.ws.** class * { *; }</option>
-				    <option>-ignorewarnings</option>
+            <option>-ignorewarnings</option>
             <option>-printusage ${project.build.directory}/proguard_usage.txt</option>
-				    <option>-dontoptimize</option>
-				    <option>-dontpreverify</option>
-				    <option>-target 1.6</option>
-				  </options>
-				  <libs>
+            <option>-dontoptimize</option>
+            <option>-dontpreverify</option>
+            <option>-target 1.6</option>
+          </options>
+          <libs>
             <lib>${java.home}/lib/rt.jar</lib>
-				    <lib>${java.home}/lib/jce.jar</lib>
+            <lib>${java.home}/lib/jce.jar</lib>
             <lib>${java.home}/lib/jsse.jar</lib>
-				  </libs>
-				  <attach>true</attach>
-				  <appendClassifier>true</appendClassifier>
+          </libs>
+          <attach>true</attach>
+          <appendClassifier>true</appendClassifier>
           <attachArtifactClassifier>single</attachArtifactClassifier>
-					<assembly>
-						<inclusions>
-						  <inclusion>
-					      <groupId>iaik</groupId>
-					      <artifactId>iaik_jce_me4se</artifactId>
-						  </inclusion>
-							<inclusion>
-								<groupId>at.gv.egiz</groupId>
-								<artifactId>smcc</artifactId>
-							</inclusion>
-							<inclusion>
-								<groupId>at.gv.egiz</groupId>
-								<artifactId>STAL</artifactId>
-							</inclusion>
-							<inclusion>
-								<groupId>at.gv.egiz</groupId>
-								<artifactId>STALService</artifactId>
-							</inclusion>
-							<inclusion>
-								<groupId>at.gv.egiz</groupId>
-								<artifactId>smccSTAL</artifactId>
-							</inclusion>
-							<inclusion>
-								<groupId>at.gv.egiz</groupId>
-								<artifactId>BKUCommonGUI</artifactId>
-							</inclusion>
-							<inclusion>
-								<groupId>org.slf4j</groupId>
-								<artifactId>slf4j-api</artifactId>
-							</inclusion>
-							<inclusion>
-								<groupId>org.slf4j</groupId>
-								<artifactId>slf4j-jdk14</artifactId>
-							</inclusion>
-						</inclusions>
-					</assembly>
-				</configuration>
-			</plugin>
-			<plugin>
+          <assembly>
+            <inclusions>
+              <inclusion>
+                <groupId>iaik</groupId>
+                <artifactId>iaik_jce_me4se</artifactId>
+              </inclusion>
+              <inclusion>
+                <groupId>at.gv.egiz</groupId>
+                <artifactId>smcc</artifactId>
+              </inclusion>
+              <inclusion>
+                <groupId>at.gv.egiz</groupId>
+                <artifactId>STAL</artifactId>
+              </inclusion>
+              <inclusion>
+                <groupId>at.gv.egiz</groupId>
+                <artifactId>STALService</artifactId>
+              </inclusion>
+              <inclusion>
+                <groupId>at.gv.egiz</groupId>
+                <artifactId>smccSTAL</artifactId>
+              </inclusion>
+              <inclusion>
+                <groupId>at.gv.egiz</groupId>
+                <artifactId>BKUCommonGUI</artifactId>
+              </inclusion>
+              <inclusion>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+              </inclusion>
+              <inclusion>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-jdk14</artifactId>
+              </inclusion>
+            </inclusions>
+          </assembly>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>buildnumber-maven-plugin</artifactId>
         <executions>
@@ -94,7 +94,7 @@
         <configuration>
           <doCheck>false</doCheck>
           <doUpdate>false</doUpdate>
-					<revisionOnScmFailure>SvnRevMissing</revisionOnScmFailure>
+          <revisionOnScmFailure>SvnRevMissing</revisionOnScmFailure>
         </configuration>
       </plugin>
       <plugin>
@@ -131,30 +131,30 @@
       </plugin>
     </plugins>
   </build>
-	<profiles>
-		<profile>
-			<id>proguard-osx</id>
-			<activation>
-				<os>
-					<family>mac</family>
-				</os>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.pyx4me</groupId>
-						<artifactId>proguard-maven-plugin</artifactId>
-						<configuration>
-							<libs>
-								<lib>${java.home}/../Classes/classes.jar</lib>
-								<lib>${java.home}/lib/jce.jar</lib>
-								<lib>${java.home}/../Classes/jsse.jar</lib>
-							</libs>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
+  <profiles>
+    <profile>
+      <id>proguard-osx</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.pyx4me</groupId>
+            <artifactId>proguard-maven-plugin</artifactId>
+            <configuration>
+              <libs>
+                <lib>${java.home}/../Classes/classes.jar</lib>
+                <lib>${java.home}/lib/jce.jar</lib>
+                <lib>${java.home}/../Classes/jsse.jar</lib>
+              </libs>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
     <profile>
       <id>pkcs11-sign</id>
       <build>
@@ -169,6 +169,63 @@
               <providerClass>iaik.pkcs.pkcs11.provider.IAIKPkcs11</providerClass>
               <alias>a-sit-2</alias>
               <storepass>${pkcs11-pass}</storepass>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!--
+      This profile is here for triggering when another scm than svn is
+      used (for example git). Instead of getting the version build number
+      from svn we will use the build date and the user name.
+      -->
+      <id>buildnumber-git</id>
+      <activation>
+        <file>
+          <missing>.svn</missing>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.groovy.maven</groupId>
+            <artifactId>gmaven-plugin</artifactId>
+            <version>1.0</version>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <source>
+                    def gitSvnProc = ["sh", "-c", "git svn info | awk '/Revision:/ { print \$2 }'"].execute()
+                    gitSvnProc.waitFor()
+                    project.properties['gitSvnRev'] = gitSvnProc.in.text.trim()
+                  </source>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>buildnumber-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>create</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <doCheck>false</doCheck>
+              <doUpdate>false</doUpdate>
+              <format>{0}</format>
+              <items>
+                <item>${gitSvnRev}</item>
+              </items>
             </configuration>
           </plugin>
         </plugins>
@@ -206,16 +263,16 @@
       <version>${project.parent.version}</version>
       <optional>true</optional>
      </dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-jdk14</artifactId>
-			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 </project>

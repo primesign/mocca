@@ -1,16 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <parent>
-        <artifactId>mocca</artifactId>
-        <groupId>at.gv.egiz</groupId>
-        <version>1.3.6-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>BKUAppletExt</artifactId>
-    <name>BKU Applet Ext</name>
-    <description>Card management extension for Java Applet used by MOCCA Online</description>
-    <build>
-      <plugins>
-        <plugin>
+  <parent>
+    <artifactId>mocca</artifactId>
+    <groupId>at.gv.egiz</groupId>
+    <version>1.3.6-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>BKUAppletExt</artifactId>
+  <name>BKU Applet Ext</name>
+  <description>Card management extension for Java Applet used by MOCCA Online</description>
+  <build>
+    <plugins>
+      <plugin>
         <groupId>com.pyx4me</groupId>
         <artifactId>proguard-maven-plugin</artifactId>
         <version>2.0.4</version>
@@ -82,77 +82,77 @@
               </inclusion>
               <!-- card management extensions -->
               <inclusion>
-		            <groupId>at.gv.egiz</groupId>
-		            <artifactId>STALExt</artifactId>
+                <groupId>at.gv.egiz</groupId>
+                <artifactId>STALExt</artifactId>
               </inclusion>
               <inclusion>
-		            <groupId>at.gv.egiz</groupId>
-		            <artifactId>STALXService</artifactId>
+                <groupId>at.gv.egiz</groupId>
+                <artifactId>STALXService</artifactId>
               </inclusion>
               <inclusion>
-		            <groupId>at.gv.egiz</groupId>
-		            <artifactId>smccSTALExt</artifactId>
+                <groupId>at.gv.egiz</groupId>
+                <artifactId>smccSTALExt</artifactId>
               </inclusion>
               <inclusion>
-		            <groupId>at.gv.egiz</groupId>
-		            <artifactId>BKUGuiExt</artifactId>
+                <groupId>at.gv.egiz</groupId>
+                <artifactId>BKUGuiExt</artifactId>
               </inclusion>
             </inclusions>
           </assembly>
         </configuration>
       </plugin>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>buildnumber-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>validate</phase>
-                <goals>
-                  <goal>create</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <doCheck>false</doCheck>
-              <doUpdate>false</doUpdate>
-							<revisionOnScmFailure>SvnRevMissing</revisionOnScmFailure>
-            </configuration>
-          </plugin>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<groupId>org.apache.maven.plugins</groupId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>sign</goal>
-						</goals>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <doCheck>false</doCheck>
+          <doUpdate>false</doUpdate>
+          <revisionOnScmFailure>SvnRevMissing</revisionOnScmFailure>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>sign</goal>
+            </goals>
             <configuration>
               <jarPath>${project.build.directory}/${project.build.finalName}-single.${project.packaging}</jarPath>
             </configuration>
-					</execution>
-				</executions>
-				<configuration>
-					<archive>
-						<addMavenDescriptor>false</addMavenDescriptor>
-						<index>false</index>
-						<manifest>
-							<addClasspath>false</addClasspath>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-						</manifest>
-						<manifestEntries>
-							<Implementation-Build>${project.version}-r${buildNumber}</Implementation-Build>
-						</manifestEntries>
-					</archive>
-					<alias>test-applet signer</alias>
-					<keystore>./keystore.ks</keystore>
-					<storepass>storepass</storepass>
-					<keypass>keypass</keypass>
-					<verify>true</verify>
-				</configuration>
-			</plugin>
-     </plugins>
-    </build>
-    <profiles>
+          </execution>
+        </executions>
+        <configuration>
+          <archive>
+            <addMavenDescriptor>false</addMavenDescriptor>
+            <index>false</index>
+            <manifest>
+              <addClasspath>false</addClasspath>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Implementation-Build>${project.version}-r${buildNumber}</Implementation-Build>
+            </manifestEntries>
+          </archive>
+          <alias>test-applet signer</alias>
+          <keystore>./keystore.ks</keystore>
+          <storepass>storepass</storepass>
+          <keypass>keypass</keypass>
+          <verify>true</verify>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
     <profile>
       <id>proguard-osx</id>
       <activation>
@@ -176,73 +176,130 @@
         </plugins>
       </build>
     </profile>
-      <profile>
-        <id>pkcs11-sign</id>
-        <build>
-          <plugins>
-            <plugin>
-              <artifactId>maven-jar-plugin</artifactId>
-              <groupId>org.apache.maven.plugins</groupId>
-              <version>2.2-mocca</version>
-              <configuration>
-                <keystore>NONE</keystore>
-                <type>PKCS11</type>
-                <providerClass>iaik.pkcs.pkcs11.provider.IAIKPkcs11</providerClass>
-                <alias>a-sit-2</alias>
-                <storepass>${pkcs11-pass}</storepass>
-              </configuration>
-            </plugin>
-          </plugins>
-        </build>
-      </profile>
-    </profiles>
-    <dependencies>
-        <dependency>
-            <groupId>at.gv.egiz</groupId>
-            <artifactId>STALExt</artifactId>
-            <version>${project.parent.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>at.gv.egiz</groupId>
-            <artifactId>STALXService</artifactId>
-            <version>${project.parent.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>at.gv.egiz</groupId>
-            <artifactId>smccSTAL</artifactId>
-            <version>${project.parent.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>at.gv.egiz</groupId>
-            <artifactId>BKUApplet</artifactId>
-            <version>${project.parent.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>at.gv.egiz</groupId>
-            <artifactId>BKUGuiExt</artifactId>
-            <version>${project.parent.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>at.gv.egiz</groupId>
-            <artifactId>smccSTALExt</artifactId>
-            <version>${project.parent.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-        	<groupId>org.slf4j</groupId>
-        	<artifactId>slf4j-api</artifactId>
-        	<optional>true</optional>
-        </dependency>
-        <dependency>
-        	<groupId>org.slf4j</groupId>
-        	<artifactId>slf4j-jdk14</artifactId>
-        	<scope>compile</scope>
-        	<optional>true</optional>
-        </dependency>
-    </dependencies>
+    <profile>
+      <id>pkcs11-sign</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+            <groupId>org.apache.maven.plugins</groupId>
+            <version>2.2-mocca</version>
+            <configuration>
+              <keystore>NONE</keystore>
+              <type>PKCS11</type>
+              <providerClass>iaik.pkcs.pkcs11.provider.IAIKPkcs11</providerClass>
+              <alias>a-sit-2</alias>
+              <storepass>${pkcs11-pass}</storepass>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!--
+      This profile is here for triggering when another scm than svn is
+      used (for example git). Instead of getting the version build number
+      from svn we will use the build date and the user name.
+      -->
+      <id>buildnumber-git</id>
+      <activation>
+        <file>
+          <missing>.svn</missing>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.groovy.maven</groupId>
+            <artifactId>gmaven-plugin</artifactId>
+            <version>1.0</version>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <source>
+                    def gitSvnProc = ["sh", "-c", "git svn info | awk '/Revision:/ { print \$2 }'"].execute()
+                    gitSvnProc.waitFor()
+                    project.properties['gitSvnRev'] = gitSvnProc.in.text.trim()
+                  </source>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>buildnumber-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>create</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <doCheck>false</doCheck>
+              <doUpdate>false</doUpdate>
+              <format>{0}</format>
+              <items>
+                <item>${gitSvnRev}</item>
+              </items>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+  <dependencies>
+    <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>STALExt</artifactId>
+      <version>${project.parent.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>STALXService</artifactId>
+      <version>${project.parent.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>smccSTAL</artifactId>
+      <version>${project.parent.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>BKUApplet</artifactId>
+      <version>${project.parent.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>BKUGuiExt</artifactId>
+      <version>${project.parent.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>smccSTALExt</artifactId>
+      <version>${project.parent.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
 </project>

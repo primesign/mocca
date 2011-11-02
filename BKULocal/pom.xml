@@ -1,15 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<parent>
-		<artifactId>mocca</artifactId>
-		<groupId>at.gv.egiz</groupId>
-		<version>1.3.6-SNAPSHOT</version>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>BKULocal</artifactId>
-	<packaging>war</packaging>
-	<name>MOCCA Local</name>
-	<description>MOCCA Local</description>
-	<build>
+  <parent>
+    <artifactId>mocca</artifactId>
+    <groupId>at.gv.egiz</groupId>
+    <version>1.3.6-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>BKULocal</artifactId>
+  <packaging>war</packaging>
+  <name>MOCCA Local</name>
+  <description>MOCCA Local</description>
+  <build>
     <plugins>
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
@@ -40,7 +40,7 @@
         <configuration>
           <doCheck>false</doCheck>
           <doUpdate>false</doUpdate>
-					<revisionOnScmFailure>SvnRevMissing</revisionOnScmFailure>
+          <revisionOnScmFailure>SvnRevMissing</revisionOnScmFailure>
         </configuration>
       </plugin>
       <plugin>
@@ -71,11 +71,11 @@
               <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
             </configuration>
           </execution>
-					<!-- http://jira.egovlabs.gv.at/browse/MOCCA-762
+          <!-- http://jira.egovlabs.gv.at/browse/MOCCA-762
            |   do not provide certificates in webapp filesystem (default trust/certstores) -->
 
           <execution>
-						<id>copy-certificates</id>
+            <id>copy-certificates</id>
             <goals>
               <goal>unpack-dependencies</goal>
             </goals>
@@ -91,27 +91,27 @@
     </plugins>
   </build>
 
-	<dependencies>
-		<dependency>
-			<groupId>at.gv.egiz</groupId>
-			<artifactId>STAL</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>at.gv.egiz</groupId>
-			<artifactId>bkucommon</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>at.gv.egiz</groupId>
-			<artifactId>smcc</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>at.gv.egiz</groupId>
-			<artifactId>smccSTAL</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
+  <dependencies>
+    <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>STAL</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>bkucommon</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>smcc</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>smccSTAL</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUGuiExt</artifactId>
@@ -154,49 +154,106 @@
       <groupId>iaik</groupId>
       <artifactId>iaik_ecc_signed</artifactId>
     </dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<scope>compile</scope>
-		</dependency>
-	</dependencies>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
 
-    <profiles>
-      <profile>
-        <id>tomcat-deploy</id>
-        <dependencies>
-          <dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-            <scope>compile</scope>
-          </dependency>
-        </dependencies>
-        <properties>
-          <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
-        </properties>
-      </profile>
-    </profiles>
+  <profiles>
+    <profile>
+      <id>tomcat-deploy</id>
+      <dependencies>
+        <dependency>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+          <scope>compile</scope>
+        </dependency>
+      </dependencies>
+      <properties>
+        <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
+      </properties>
+    </profile>
+    <profile>
+      <!--
+      This profile is here for triggering when another scm than svn is
+      used (for example git). Instead of getting the version build number
+      from svn we will use the build date and the user name.
+      -->
+      <id>buildnumber-git</id>
+      <activation>
+        <file>
+          <missing>.svn</missing>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.groovy.maven</groupId>
+            <artifactId>gmaven-plugin</artifactId>
+            <version>1.0</version>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <source>
+                    def gitSvnProc = ["sh", "-c", "git svn info | awk '/Revision:/ { print \$2 }'"].execute()
+                    gitSvnProc.waitFor()
+                    project.properties['gitSvnRev'] = gitSvnProc.in.text.trim()
+                  </source>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>buildnumber-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>create</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <doCheck>false</doCheck>
+              <doUpdate>false</doUpdate>
+              <format>{0}</format>
+              <items>
+                <item>${gitSvnRev}</item>
+              </items>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

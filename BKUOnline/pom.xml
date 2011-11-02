@@ -58,10 +58,10 @@
       <groupId>iaik</groupId>
       <artifactId>iaik_xsect</artifactId>
     </dependency>
-		<dependency>
-			<groupId>iaik</groupId>
-			<artifactId>iaik_jce_full_signed</artifactId>
-		</dependency>
+    <dependency>
+      <groupId>iaik</groupId>
+      <artifactId>iaik_jce_full_signed</artifactId>
+    </dependency>
     <dependency>
       <groupId>iaik</groupId>
       <artifactId>iaik_ecc_signed</artifactId>
@@ -99,9 +99,9 @@
       <artifactId>servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
-		<!--
+    <!--
          | see https://wsit.dev.java.net/issues/show_bug.cgi?id=970
-		-->
+    -->
     <dependency>
       <groupId>com.sun.xml.ws</groupId>
       <artifactId>jaxws-rt</artifactId>
@@ -112,12 +112,12 @@
           <artifactId>wstx-asl</artifactId>
         </exclusion>
       </exclusions>
-			<!--
-				conflict with SAAJ from java 6 ? <exclusions> <exclusion>
-				<groupId>javax.xml.soap</groupId> <artifactId>saaj-api</artifactId>
-				</exclusion> <exclusion>
-				<groupId>com.sun.xml.messaging.saaj</groupId>
-				<artifactId>saaj-impl</artifactId> </exclusion> </exclusions -->
+      <!--
+        conflict with SAAJ from java 6 ? <exclusions> <exclusion>
+        <groupId>javax.xml.soap</groupId> <artifactId>saaj-api</artifactId>
+        </exclusion> <exclusion>
+        <groupId>com.sun.xml.messaging.saaj</groupId>
+        <artifactId>saaj-impl</artifactId> </exclusion> </exclusions -->
     </dependency>
     <dependency>
       <artifactId>sjsxp</artifactId>
@@ -144,11 +144,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-    	<groupId>javax.servlet</groupId>
-    	<artifactId>jstl</artifactId>
-    	<version>1.2</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+      <type>jar</type>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
   <description>MOCCA Online</description>
@@ -173,6 +173,7 @@
           </execution>
           <execution>
             <id>unpack-fonts</id>
+            <phase>package</phase>
             <goals>
               <goal>unpack-dependencies</goal>
             </goals>
@@ -240,7 +241,7 @@
         <configuration>
           <doCheck>false</doCheck>
           <doUpdate>false</doUpdate>
-					<revisionOnScmFailure>SvnRevMissing</revisionOnScmFailure>
+          <revisionOnScmFailure>SvnRevMissing</revisionOnScmFailure>
         </configuration>
       </plugin>
     </plugins>
@@ -322,6 +323,63 @@
           <type>zip</type>
         </dependency>
       </dependencies>
+    </profile>
+    <profile>
+      <!--
+      This profile is here for triggering when another scm than svn is
+      used (for example git). Instead of getting the version build number
+      from svn we will use the build date and the user name.
+      -->
+      <id>buildnumber-git</id>
+      <activation>
+        <file>
+          <missing>.svn</missing>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.groovy.maven</groupId>
+            <artifactId>gmaven-plugin</artifactId>
+            <version>1.0</version>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <source>
+                    def gitSvnProc = ["sh", "-c", "git svn info | awk '/Revision:/ { print \$2 }'"].execute()
+                    gitSvnProc.waitFor()
+                    project.properties['gitSvnRev'] = gitSvnProc.in.text.trim()
+                  </source>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>buildnumber-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>create</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <doCheck>false</doCheck>
+              <doUpdate>false</doUpdate>
+              <format>{0}</format>
+              <items>
+                <item>${gitSvnRev}</item>
+              </items>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
   <properties>

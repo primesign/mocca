@@ -9,7 +9,7 @@
   <description>MOCCA (Modular Open Citizen Card Architecture) project</description>
   <url>http://mocca.egovlabs.gv.at</url>
   <properties>
-  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <modules>
     <module>utils</module>
@@ -61,13 +61,13 @@
     <name>E-Government Innovation Center (EGIZ)</name>
     <url>http://www.egiz.gv.at</url>
   </organization>
-	<licenses>
-	  <license>
-	    <name>EUPL v1.1</name>
-	    <url>http://www.osor.eu/eupl/european-union-public-licence-eupl-v.1.1</url>
-	    <distribution>manually</distribution>
-	  </license>
-	</licenses>
+  <licenses>
+    <license>
+      <name>EUPL v1.1</name>
+      <url>http://www.osor.eu/eupl/european-union-public-licence-eupl-v.1.1</url>
+      <distribution>manually</distribution>
+    </license>
+  </licenses>
   <build>
     <pluginManagement>
       <plugins>
@@ -77,9 +77,9 @@
           <version>2.1</version>
           <configuration>
             <!--
-						<fork>true</fork>
+            <fork>true</fork>
             <executable>${java_150_sun}/bin/javac</executable>
-						<compilerVersion>1.5</compilerVersion>
+            <compilerVersion>1.5</compilerVersion>
             -->
             <source>1.6</source>
             <target>1.6</target>
@@ -103,12 +103,12 @@
         <plugin>
           <artifactId>maven-dependency-plugin</artifactId>
           <groupId>org.apache.maven.plugins</groupId>
-          <version>2.1</version>
+          <version>2.3</version>
         </plugin>
-				<!--
-					plugin> <artifactId>maven-jaxb2-plugin</artifactId>
-					<groupId>org.jvnet.jaxb2.maven2</groupId> <version>0.6.0</version>
-					</plugin -->
+        <!--
+          plugin> <artifactId>maven-jaxb2-plugin</artifactId>
+          <groupId>org.jvnet.jaxb2.maven2</groupId> <version>0.6.0</version>
+          </plugin -->
         <plugin>
           <artifactId>jaxws-maven-plugin</artifactId>
           <groupId>org.codehaus.mojo</groupId>
@@ -122,7 +122,7 @@
         <plugin>
           <artifactId>buildnumber-maven-plugin</artifactId>
           <groupId>org.codehaus.mojo</groupId>
-          <version>1.0-beta-4</version>
+          <version>1.0</version>
         </plugin>
         <plugin>
           <artifactId>webstart-maven-plugin</artifactId>
@@ -141,13 +141,60 @@
           <groupId>org.apache.maven.plugins</groupId>
           <version>2.5</version>
           <configuration>
-	          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+            <redirectTestOutputToFile>true</redirectTestOutputToFile>
           </configuration>
         </plugin>
         <plugin>
-        	<groupId>org.apache.maven.plugins</groupId>
-        	<artifactId>maven-site-plugin</artifactId>
-        	<version>2.1</version>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>2.1</version>
+        </plugin>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>
+                      org.apache.maven.plugins
+                    </groupId>
+                    <artifactId>
+                      maven-dependency-plugin
+                    </artifactId>
+                    <versionRange>[2.1,)</versionRange>
+                    <goals>
+                      <goal>copy-dependencies</goal>
+                      <goal>unpack-dependencies</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <execute />
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>
+                      org.codehaus.groovy.maven
+                    </groupId>
+                    <artifactId>
+                      gmaven-plugin
+                    </artifactId>
+                    <versionRange>[1.0,)</versionRange>
+                    <goals>
+                      <goal>execute</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <execute />
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -187,28 +234,28 @@
     </dependency>
   </dependencies>
   <reporting>
-  	<plugins>
-  		<plugin>
-  			<groupId>org.apache.maven.plugins</groupId>
-  			<artifactId>maven-project-info-reports-plugin</artifactId>
-  			<version>2.1.2</version>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.1.2</version>
         <configuration>
           <dependencyDetailsEnabled>true</dependencyDetailsEnabled>
           <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
         </configuration>
-  			<reportSets>
-  				<reportSet>
-  				  <reports>
+        <reportSets>
+          <reportSet>
+            <reports>
               <report>index</report>
               <report>summary</report>
               <report>license</report>
               <report>dependencies</report>
               <report>dependency-management</report>
-  				  </reports>
-  				</reportSet>
-  			</reportSets>
-  		</plugin>
-  	</plugins>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
   </reporting>
   <dependencyManagement>
     <dependencies>
@@ -261,12 +308,12 @@
         <version>1.0-MOCCA</version>
         <scope>compile</scope>
       </dependency>
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>servlet-api</artifactId>
-				<version>2.5</version>
-				<scope>provided</scope>
-			</dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5</version>
+        <scope>provided</scope>
+      </dependency>
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
@@ -311,7 +358,7 @@
       <dependency>
         <groupId>at.gv.egiz</groupId>
         <artifactId>BKUCertificates</artifactId>
-        <version>1.5</version>
+        <version>1.6</version>
       </dependency>
       <dependency>
         <groupId>at.gv.egiz</groupId>
@@ -319,14 +366,14 @@
         <version>1.2</version>
       </dependency>
       <dependency>
-      	<groupId>org.springframework</groupId>
-      	<artifactId>spring-web</artifactId>
-      	<version>2.5.5</version>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <version>2.5.5</version>
       </dependency>
       <dependency>
-      	<groupId>commons-configuration</groupId>
-      	<artifactId>commons-configuration</artifactId>
-      	<version>1.6</version>
+        <groupId>commons-configuration</groupId>
+        <artifactId>commons-configuration</artifactId>
+        <version>1.6</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -336,25 +383,25 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-      	<groupId>org.slf4j</groupId>
-      	<artifactId>slf4j-api</artifactId>
-      	<version>1.5.11</version>
-      	<type>jar</type>
-      	<scope>compile</scope>
-      </dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-jdk14</artifactId>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
         <version>1.5.11</version>
         <type>jar</type>
-				<scope>runtime</scope>
-			</dependency>
+        <scope>compile</scope>
+      </dependency>
       <dependency>
-      	<groupId>org.springframework</groupId>
-      	<artifactId>spring-aop</artifactId>
-      	<version>2.5.5</version>
-      	<type>jar</type>
-      	<scope>compile</scope>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>1.5.11</version>
+        <type>jar</type>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
+        <version>2.5.5</version>
+        <type>jar</type>
+        <scope>compile</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -364,5 +411,8 @@
       <url>scp://egovlabs.gv.at/var/lib/gforge/chroot/home/groups/mocca/htdocs</url>
     </site>
   </distributionManagement>
-  
+  <issueManagement>
+    <system>JIRA</system>
+    <url>http://jira.egovlabs.gv.at/</url>
+  </issueManagement>
 </project>
