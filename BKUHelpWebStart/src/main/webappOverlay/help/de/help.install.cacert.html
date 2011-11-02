@@ -23,6 +23,7 @@
     <!-- end #header --></div>
   <div id="mainContent" style="margin: 1.5em 1.5em 0 1.5em">
     <h1>Installation des CA Zertifikats</h1>
+    <h2>Hintergrundinformation</h2>
     <p>Die lokale B&uuml;rgerkartenumgebung authentifiziert sich mittels eines TLS Zertifikats ausgestellt auf
       <code>CN=127.0.0.1, O=MOCCA, OU=MOCCA TLS Server</code>.
       Beim Aufruf der B&uuml;rgerkartenumgebung (zum Beispiel bei einem Anmeldevorgang mit B&uuml;rgerkarte)
@@ -35,17 +36,41 @@
       Sollten Sie Internet Explorer oder Safari in Windows Vista oder 7 benutzen, dann w&auml;hlen Sie bei der Installation des Zertifikats ausdr&uuml;cklich 'zu vertrauensw&uuml;rdigen Stammzertifizierungsstellen hinzuf&uuml;gen'.
     </p>
 
+    <h2>Installation</h2>
+    <p><a href="#ie">Am Beispiel von Internet Explorer</a></p>
+    <p><a href="#ff">Am Beispiel von Firefox</a></p>
+
+    <h3><a name="ie">Am Beispiel von Internet Explorer</a></h3>
+    <p>
+      Klicken Sie dazu auf die Verkn&uuml;pfung <a href="/ca.crt">CA Zertifikat installieren</a>
+      und w&auml;hlen Sie im darauf erscheinenden Dialog die Option '&ouml;ffnen'.
+      (Anmerkung: Der genaue Wortlaut kann abh&auml;ngig von Betriebssystem und Browser abweichen).<br/>
+      Sollte daraufhin ein Sicherheitsdialog erscheinen, w&auml;hlen Sie die Option 'Zulassen'.
+    </p>
+    <p>
+      Anschlie&szlig;end erscheint der unten dargestellte Zertifikatsdialog. W&auml;hlen Sie hier die
+      Option "Zertifikat installieren".<br/>
+      Der nun erscheinende Assistent installiert das Zertifikat - best&auml;tigen Sie die Auswahl
+      "Zertifikatsspeicher automatisch ausw&auml;hlen".
+    </p>
+    <p><img src="img/help.install.cacert.ie.png" alt="Bildschirmfoto des Zertifikatsinstallationsdialogs" width="402" height="482"/></p>
+    <p style="font-size:70%;"><strong>Hinweis:</strong> Der tats&auml;chliche Dialog kann vom oben dargestellten abweichen und h&auml;ngt von Betriebssystem und Browserversion ab.</p>
+
+    <h3><a name="ff">Am Beispiel von Firefox</a></h3>
     <p>
       Klicken Sie dazu auf die Verkn&uuml;pfung <a href="/ca.crt">CA Zertifikat installieren</a>
       und w&auml;hlen Sie im angezeigten Dialog die Option 'Dieser CA vertrauen um Websites zu identifizieren'.
-      (Anmerkung: Der genaue Wortlaut h&auml;ngt vom verwendeten Web-Browser ab).
+      (Anmerkung: Der genaue Wortlaut h&auml;ngt vom verwendeten Web-Browser und der Version ab).
     </p>
     <p><img src="img/help.install.cacert.png" alt="Bildschirmfoto des Zertifikatsinstallationsdialogs" height="287" width="565"/></p>
     <p style="font-size:70%;"><strong>Hinweis:</strong> Der tats&auml;chliche Dialog kann vom oben dargestellten abweichen und h&auml;ngt vom verwendeten Web-Browser ab.</p>
-    <p>Kopieren Sie diese Verkn&uuml;pfung und rufen Sie sie in weiteren Web-Browsern ihrer Wahl auf um das Zertifikat auch dort zu installieren.</p>
+
+    <h2>Anmerkungen</h2>
+    <p>Kopieren Sie <a href="/ca.crt">diese Verkn&uuml;pfung</a> und rufen Sie sie in weiteren Web-Browsern ihrer Wahl auf, um das Zertifikat auch dort zu installieren.</p>
 
     <p>Das CA Zertifikat wird ausschließlich zur Identifikation der lokalen B&uuml;rgerkartenumgebung verwendet
     und kann bei der Deinstallation der B&uuml;rgerkartenumgebung aus dem Web-Browser entfernt werden.</p>
+
     <p><br class="clearfloat" /></p>
     </div>
   <div id="footer">
