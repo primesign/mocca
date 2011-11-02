@@ -123,7 +123,7 @@
         padding: 0.25em 0.5em 0.25em 0.5em;
       }
     </style>
-    <script type="text/javascript" src="https://www.java.com/js/deployJava.js"></script>
+    <script type="text/javascript" src="js/deployJava.js"></script>
     <script type="text/javascript">
       var iframe = false;
       try {
