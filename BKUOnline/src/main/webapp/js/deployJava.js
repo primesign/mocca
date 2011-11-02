@@ -37,6 +37,7 @@
  *   (not needed anymore)
  * [#424] Web Start loading via java plugin (Sun deployment script) fails on WinXP/Vista
  *   (not needed anymore)
+ * Open Java Installation in new Window/Tab (to escape iFrame)
  *
  * features:
  * [#425] Disable WebStart Launch Button for MacOS X < 1.6
@@ -241,7 +242,7 @@ var deployJava = {
                         setInterval("deployJava.poll()", 3000);
                 }
 
-                location.href = deployJava.EarlyAccessURL;
+                window.open(deployJava.EarlyAccessURL);
 
                 // we have to return false although there may be an install
                 // in progress now, when complete it may go to return page
@@ -253,13 +254,13 @@ var deployJava = {
                            (platform.indexOf('win32') != -1)) {
                     return deployJava.FFInstall();
                 } else {
-                    location.href = deployJava.getJavaURL + 
+                    window.open(deployJava.getJavaURL + 
                         ((deployJava.returnPage != null) ?
                         ('&returnPage=' + deployJava.returnPage) : '') + 
                         ((deployJava.locale != null) ?
                         ('&locale=' + deployJava.locale) : '') +
                         ((deployJava.brand != null) ? 
-                         ('&brand=' + deployJava.brand) : '');
+                         ('&brand=' + deployJava.brand) : ''));
                 }
                 // we have to return false although there may be an install
                 // in progress now, when complete it may go to return page
@@ -952,14 +953,14 @@ var deployJava = {
     
     IEInstall: function() {
     
-        location.href = deployJava.getJavaURL + 
+        window.open(deployJava.getJavaURL + 
             ((deployJava.returnPage != null) ?
             ('&returnPage=' + deployJava.returnPage) : '') +
             ((deployJava.locale != null) ?
             ('&locale=' + deployJava.locale) : '') +
             ((deployJava.brand != null) ? ('&brand=' + deployJava.brand) : '') +
             ((deployJava.installType != null) ? 
-             ('&type=' + deployJava.installType) : '');
+             ('&type=' + deployJava.installType) : ''));
 
          // should not actually get here
          return false;
@@ -970,14 +971,14 @@ var deployJava = {
     
     FFInstall: function() {
 
-        location.href = deployJava.getJavaURL + 
+        window.open(deployJava.getJavaURL + 
             ((deployJava.returnPage != null) ?
             ('&returnPage=' + deployJava.returnPage) : '') +
             ((deployJava.locale != null) ?
             ('&locale=' + deployJava.locale) : '') +
             ((deployJava.brand != null) ? ('&brand=' + deployJava.brand) : '') +
             ((deployJava.installType != null) ? 
-                ('&type=' + deployJava.installType) : '');
+                ('&type=' + deployJava.installType) : ''));
 
          // should not actually get here
          return false;
