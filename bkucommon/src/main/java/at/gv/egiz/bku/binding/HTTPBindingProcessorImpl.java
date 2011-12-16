@@ -610,7 +610,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 	public String getRedirectURL() {
 		String redirectURL = getFormParameterAsString(FixedFormParameters.REDIRECTURL);
 		log.debug("Evaluating redirectURL: " + redirectURL);
-		if (redirectURL == null || redirectURL.isEmpty() || redirectURL.contains("\r") || redirectURL.contains("\n") ||
+		if (redirectURL == null || redirectURL.trim().isEmpty() || redirectURL.contains("\r") || redirectURL.contains("\n") ||
 				redirectURL.contains("<") || redirectURL.toLowerCase().contains("javascript:"))
 			return null;
 		return redirectURL;
