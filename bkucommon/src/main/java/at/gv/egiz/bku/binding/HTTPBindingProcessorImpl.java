@@ -761,13 +761,20 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 					}
 					String charset = HttpUtil.getCharset(ct, true);
 					assignXMLRequest(fp.getFormParameterValue(), charset);
-				} else {
-					FormParameterStore fps = new FormParameterStore();
-					fps.init(fp);
-					//if (!fps.isEmpty()) {
-						log.debug("Setting form parameter: {}.", fps.getFormParameterName());
-						formParameterMap.put(fps.getFormParameterName(), fps);
-					//}
+				}
+				else {
+					if (fp.getFormParameterName().equals(FixedFormParameters.REDIRECTURL)
+							&& formParameterMap.containsKey(FixedFormParameters.REDIRECTURL)) {
+						log.info("Not updating previously set RedirectURL!");
+					}
+					else {
+						FormParameterStore fps = new FormParameterStore();
+						fps.init(fp);
+						//if (!fps.isEmpty()) {
+							log.debug("Setting form parameter: {}.", fps.getFormParameterName());
+							formParameterMap.put(fps.getFormParameterName(), fps);
+						//}
+					}
 				}
 			}
 			if (slCommand == null) {
