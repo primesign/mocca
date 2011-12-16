@@ -365,9 +365,9 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 					}
 				}
 				if (log.isDebugEnabled()) {
-				  Object[] args = {fp.getFormParameterName(), contentType, contentTransferEncoding};
-				  log.debug("Setting form parameter '{}'" +
-				  		" (content-type {}, charset {}, content transfer encoding {})", args);
+					Object[] args = {fp.getFormParameterName(), contentType, charSet, contentTransferEncoding};
+					log.debug("Setting form parameter '{}'" +
+							" (content-type {}, charset {}, content transfer encoding {})", args);
 				}
 				conn.setHTTPFormParameter(fp.getFormParameterName(), fp
 						.getFormParameterValue(), contentType, charSet,
