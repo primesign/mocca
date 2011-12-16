@@ -723,7 +723,10 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 			srcContex.setSourceUrl(srcUrl);
 			srcContex.setSourceIsDataURL(false);
 			log.debug("Start consuming request stream.");
+			FormParameter redirectURL = formParameterMap.get(FixedFormParameters.REDIRECTURL);
 			formParameterMap.clear();
+			if (redirectURL != null)
+				formParameterMap.put(FixedFormParameters.REDIRECTURL, redirectURL);
 			String ct = headerMap
 					.get(HttpUtil.HTTP_HEADER_CONTENT_TYPE.toLowerCase());
 			if (ct == null) {
