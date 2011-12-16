@@ -98,42 +98,44 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 	protected static String XML_MIME_TYPE = "text/xml";
 	protected static String BINARY_MIME_TYPE = "application/octet-stream";
 
-  /**
-   * The citizen card environment identifier for <code>Server</code> and
-   * <code>UserAgent</code> headers.
-   */
-  protected static String CITIZENC_CARD_ENVIRONMENT = "citizen-card-environment/1.2";
-	
-  /**
-   * The configuration facade used to access the MOCCA configuration.
-   */
-  protected ConfigurationFacade configurationFacade = new ConfigurationFacade();
+	/**
+	 * The citizen card environment identifier for <code>Server</code> and
+	 * <code>UserAgent</code> headers.
+	 */
+	protected static String CITIZENC_CARD_ENVIRONMENT = "citizen-card-environment/1.2";
 
-  public class ConfigurationFacade implements MoccaConfigurationFacade {
-    
-    public static final String DATAURLCLIENT_MAXHOPS = "DataURLConnection.MaxHops";
+	/**
+	 * The configuration facade used to access the MOCCA configuration.
+	 */
+	protected ConfigurationFacade configurationFacade = new ConfigurationFacade();
 
-    public int getMaxDataUrlHops() {
-      return configuration.getInt(DATAURLCLIENT_MAXHOPS, 10);
-    }
+	public class ConfigurationFacade implements MoccaConfigurationFacade {
 
-    public String getProductName() {
-      return configuration.getString(
-          ConfigurationFactoryBean.MOCCA_IMPLEMENTATIONNAME_PROPERTY, "MOCCA");
-    }
-    
-    public String getProductVersion() {
-      return configuration.getString(
-          ConfigurationFactoryBean.MOCCA_IMPLEMENTATIONVERSION_PROPERTY,
-          "UNKNOWN");
-    }
-    
-    public String getSignatureLayout() {
-      return configuration
-          .getString(ConfigurationFactoryBean.SIGNATURE_LAYOUT_PROPERTY);
-    }
-    
-  }  
+		public static final String DATAURLCLIENT_MAXHOPS = "DataURLConnection.MaxHops";
+
+		public int getMaxDataUrlHops() {
+			return configuration.getInt(DATAURLCLIENT_MAXHOPS, 10);
+		}
+
+		public String getProductName() {
+			return configuration.getString(
+					ConfigurationFactoryBean.MOCCA_IMPLEMENTATIONNAME_PROPERTY,
+					"MOCCA");
+		}
+
+		public String getProductVersion() {
+			return configuration
+					.getString(
+							ConfigurationFactoryBean.MOCCA_IMPLEMENTATIONVERSION_PROPERTY,
+							"UNKNOWN");
+		}
+
+		public String getSignatureLayout() {
+			return configuration
+					.getString(ConfigurationFactoryBean.SIGNATURE_LAYOUT_PROPERTY);
+		}
+
+	}
 	
 	/**
 	 * If null everything is ok and the result is taken from the command invoker.
@@ -156,42 +158,43 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 	protected Map<String, String> responseHeaders = Collections.EMPTY_MAP;
 	protected boolean finished = false;
 
-    @Override
-    public void setUrlDereferencer(URLDereferencer urlDereferencer) {
-      super.setUrlDereferencer(new FormDataURLDereferencer(urlDereferencer, this));
-    }
+	@Override
+	public void setUrlDereferencer(URLDereferencer urlDereferencer) {
+		super.setUrlDereferencer(new FormDataURLDereferencer(urlDereferencer,
+				this));
+	}
 
-    /**
-     * @return the sslSocketFactory
-     */
-    public SSLSocketFactory getSslSocketFactory() {
-      return sslSocketFactory;
-    }
-  
-    /**
-     * @param sslSocketFactory
-     *          the sslSocketFactory to set
-     */
-    public void setSslSocketFactory(SSLSocketFactory sslSocketFactory) {
-      this.sslSocketFactory = sslSocketFactory;
-    }
-  
-    /**
-     * @return the hostnameVerifier
-     */
-    public HostnameVerifier getHostnameVerifier() {
-      return hostnameVerifier;
-    }
-  
-    /**
-     * @param hostnameVerifier
-     *          the hostnameVerifier to set
-     */
-    public void setHostnameVerifier(HostnameVerifier hostnameVerifier) {
-      this.hostnameVerifier = hostnameVerifier;
-    }
-	
-    protected void sendSTALQuit() {
+	/**
+	 * @return the sslSocketFactory
+	 */
+	public SSLSocketFactory getSslSocketFactory() {
+		return sslSocketFactory;
+	}
+
+	/**
+	 * @param sslSocketFactory
+	 *            the sslSocketFactory to set
+	 */
+	public void setSslSocketFactory(SSLSocketFactory sslSocketFactory) {
+		this.sslSocketFactory = sslSocketFactory;
+	}
+
+	/**
+	 * @return the hostnameVerifier
+	 */
+	public HostnameVerifier getHostnameVerifier() {
+		return hostnameVerifier;
+	}
+
+	/**
+	 * @param hostnameVerifier
+	 *            the hostnameVerifier to set
+	 */
+	public void setHostnameVerifier(HostnameVerifier hostnameVerifier) {
+		this.hostnameVerifier = hostnameVerifier;
+	}
+
+	protected void sendSTALQuit() {
 		log.debug("Sending QUIT command to STAL.");
 		List<STALRequest> quit = new ArrayList<STALRequest>(1);
 		quit.add(new QuitRequest());
@@ -379,7 +382,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 			if (conn.getServerCertificates() instanceof X509Certificate[]) {
 			  serverCertificate = (X509Certificate) conn.getServerCertificates()[0];
 			}
-            targetContext.setTargetCertificate(serverCertificate);
+			targetContext.setTargetCertificate(serverCertificate);
 			targetContext.setTargetUrl(conn.getURL());
 			SLResult result = commandInvoker.getResult(targetContext);
 
@@ -409,9 +412,10 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 						currentState = State.PROCESS;
 					} else if (((contentType.startsWith(HttpUtil.TXT_HTML))
 							|| (contentType.startsWith(HttpUtil.TXT_PLAIN))
-              || (contentType.startsWith(HttpUtil.TXT_XML)))
+							|| (contentType.startsWith(HttpUtil.TXT_XML)))
 							&& (dataUrlResponse.isHttpResponseXMLOK())) {
-						log.info("Dataurl response matches <ok/> with content type: {}.", contentType);
+						log.info(
+								"Dataurl response matches <ok/> with content type: {}.", contentType);
 						currentState = State.TRANSFORM;
 
 					} else if ((contentType.startsWith(HttpUtil.TXT_XML))
@@ -469,8 +473,9 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 							.get(HttpUtil.HTTP_HEADER_REFERER));
 
 				} else {
-					log.debug("Received dataurl response code 307 non XML content: {}.", 
-					    dataUrlResponse.getContentType());
+					log.debug(
+							"Received dataurl response code 307 non XML content: {}.",
+							dataUrlResponse.getContentType());
 					resultContentType = dataUrlResponse.getContentType();
 					currentState = State.FINISHED;
 				}
@@ -489,9 +494,9 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 
 			default:
 				// issue error
-				log.info("Unexpected response code from dataurl server: {}.", 
-				    dataUrlResponse.getResponseCode());
-                throw new SLBindingException(2007);
+				log.info("Unexpected response code from dataurl server: {}.",
+						dataUrlResponse.getResponseCode());
+				throw new SLBindingException(2007);
 			}
 
 		} catch (SLException slx) {
@@ -562,16 +567,16 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 	// activity diagram --
 	//----------------------------------------------------------------------------
 
-    public String getServerHeaderValue() {
-      return CITIZENC_CARD_ENVIRONMENT + " "
-          + configurationFacade.getProductName() + "/"
-          + configurationFacade.getProductVersion();
-    }
+	public String getServerHeaderValue() {
+		return CITIZENC_CARD_ENVIRONMENT + " "
+				+ configurationFacade.getProductName() + "/"
+				+ configurationFacade.getProductVersion();
+	}
 
-    public String getSignatureLayoutHeaderValue() {
-      return configurationFacade.getSignatureLayout();
-    }
-	
+	public String getSignatureLayoutHeaderValue() {
+		return configurationFacade.getSignatureLayout();
+	}
+
 	/**
 	 * Sets the headers of the SL Request. IMPORTANT: make sure to set all headers
 	 * before invoking {@link #consumeRequestStream(String, InputStream)}
@@ -579,7 +584,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 	 * @param aHeaderMap
 	 *          if null all header will be cleared.
 	 */
-    @Override
+	@Override
 	public void setHTTPHeaders(Map<String, String> aHeaderMap) {
 		headerMap = new HashMap<String, String>();
 		// ensure lowercase keys
@@ -627,20 +632,20 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 	public InputStream getFormData(String aParameterName) {
 		FormParameter fp = formParameterMap.get(aParameterName);
 		if (fp != null) {
-		  final String enc = fp.getHeaderValue("Content-Transfer-Encoding");
-		  if (enc == null || "binary".equals(enc)) {
-            return fp.getFormParameterValue();
-		  } else if ("base64".equals(enc)) {
-		    return new Base64InputStream(fp.getFormParameterValue());
-		  } else {
-            return new InputStream() {
-              @Override
-              public int read() throws IOException {
-                throw new IOException("Content-Transfer-Encoding : " + enc
-                    + " is not supported.");
-              }
-            };
-		  }
+			final String enc = fp.getHeaderValue("Content-Transfer-Encoding");
+			if (enc == null || "binary".equals(enc)) {
+				return fp.getFormParameterValue();
+			} else if ("base64".equals(enc)) {
+				return new Base64InputStream(fp.getFormParameterValue());
+			} else {
+				return new InputStream() {
+					@Override
+					public int read() throws IOException {
+						throw new IOException("Content-Transfer-Encoding : "
+								+ enc + " is not supported.");
+					}
+				};
+			}
 		}
 		return null;
 	}
@@ -649,10 +654,10 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 			throws IOException, SLException {
 		Reader r = new InputStreamReader(is, charset);
 		StreamSource source = new StreamSource(r);
-        slCommand = slCommandFactory.createSLCommand(source);
-        log.info("XMLRequest={}. Created new command: {}.", slCommand.getName(), slCommand
-            .getClass().getName());
-  }
+		slCommand = slCommandFactory.createSLCommand(source);
+		log.info("XMLRequest={}. Created new command: {}.",
+				slCommand.getName(), slCommand.getClass().getName());
+	}
 
 	@Override
 	public void process() {
@@ -675,7 +680,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 						handleDataUrl();
 						if (++hopcounter > configurationFacade.getMaxDataUrlHops()) {
 							log.error("Maximum number ({}) of dataurl hops reached.", 
-							    configurationFacade.getMaxDataUrlHops());
+									configurationFacade.getMaxDataUrlHops());
 							bindingProcessorError = new SLBindingException(2000);
 							currentState = State.FINISHED;
 						}
@@ -714,9 +719,9 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 	@Override
 	public void consumeRequestStream(String url, InputStream is) {
 		try {
-          this.srcUrl = new URL(url);
-          srcContex.setSourceUrl(srcUrl);
-	        srcContex.setSourceIsDataURL(false);
+			this.srcUrl = new URL(url);
+			srcContex.setSourceUrl(srcUrl);
+			srcContex.setSourceIsDataURL(false);
 			log.debug("Start consuming request stream.");
 			formParameterMap.clear();
 			String ct = headerMap
@@ -773,11 +778,12 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 			bindingProcessorError = new SLException(2000);
 		} finally {
 			try {
-			  if (is.read() != -1) {
-			    log.warn("Request input stream not completely read.");
-			    while (is.read() != -1);
-			  }
-			  log.debug("Finished consuming request stream.");
+				if (is.read() != -1) {
+					log.warn("Request input stream not completely read.");
+					while (is.read() != -1)
+						;
+				}
+				log.debug("Finished consuming request stream.");
 			} catch (IOException e) {
 				log.error("Failed to read request input stream.", e);
 			}
@@ -815,13 +821,13 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 	}
 
 	protected Writer writeXMLDeclarationAndProcessingInstruction(OutputStream os, String encoding) throws IOException {
-      if (encoding == null) {
-        encoding = HttpUtil.DEFAULT_CHARSET;
-      }
-      OutputStreamWriter writer = new OutputStreamWriter(os, encoding);
-      writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
-      writer.write("<?xml-stylesheet type=\"text/css\" href=\"errorresponse.css\"?>\n");
-      return writer;
+		if (encoding == null) {
+			encoding = HttpUtil.DEFAULT_CHARSET;
+		}
+		OutputStreamWriter writer = new OutputStreamWriter(os, encoding);
+		writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
+		writer.write("<?xml-stylesheet type=\"text/css\" href=\"errorresponse.css\"?>\n");
+		return writer;
 	}
 	
 	@Override
@@ -866,10 +872,11 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 			boolean fragment = false;
 			Writer writer;
 			if (slResult instanceof ErrorResult) {
-			  writer = writeXMLDeclarationAndProcessingInstruction(os, encoding);
-			  fragment = true;
+				writer = writeXMLDeclarationAndProcessingInstruction(os,
+						encoding);
+				fragment = true;
 			} else {
-	          writer = new OutputStreamWriter(os, encoding);
+				writer = new OutputStreamWriter(os, encoding);
 			}
 			slResult.writeTo(new StreamResult(writer), templates, fragment);
 			writer.flush();
@@ -895,15 +902,16 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 	 */
 	@Override
 	public Map<String, String> getResponseHeaders() {
-	  LinkedHashMap<String, String> headers = new LinkedHashMap<String, String>();
-	  headers.put(HttpUtil.HTTP_HEADER_SERVER, getServerHeaderValue());
-	  headers.put(HttpUtil.HTTP_HEADER_SIGNATURE_LAYOUT, getSignatureLayoutHeaderValue());
-	  headers.putAll(responseHeaders);
-	  return headers;
+		LinkedHashMap<String, String> headers = new LinkedHashMap<String, String>();
+		headers.put(HttpUtil.HTTP_HEADER_SERVER, getServerHeaderValue());
+		headers.put(HttpUtil.HTTP_HEADER_SIGNATURE_LAYOUT,
+				getSignatureLayoutHeaderValue());
+		headers.putAll(responseHeaders);
+		return headers;
 	}
 
-  public boolean isFinished() {
-    return finished;
-  }
+	public boolean isFinished() {
+		return finished;
+	}
 
 }
