@@ -129,6 +129,8 @@ PINMgmtSignatureCard {
 	  public void init(Card card, CardTerminal cardTerminal) {
 	    super.init(card, cardTerminal);
 
+	    log.info("A-Sign premium ACOS card found");
+
 	    // determine application version
 	    try {
 	      CardChannel channel = getCardChannel();

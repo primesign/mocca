@@ -152,6 +152,8 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
   public void init(Card card, CardTerminal cardTerminal) {
     super.init(card, cardTerminal);
 
+    log.info("STARCOS card found");
+
     // determine application version
     CardChannel channel = getCardChannel();
     try {
