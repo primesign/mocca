@@ -551,7 +551,7 @@ public class PinpadCardReader extends DefaultCardReader {
     s.write((0xF & apduSpec.getPinLengthSize()) << 4
         | (0xF & apduSpec.getPinLength()));
     // bmPINLengthFormat
-    s.write(// system unit = bit
+    s.write(// system unit = byte
         (0xF & apduSpec.getPinLengthPos()));
     // wPINMaxExtraDigit (little endian)
     s.write(Math.min(pinSpec.getMaxLength(), wPINMaxExtraDigitMax)); // max PIN length
