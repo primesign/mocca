@@ -98,6 +98,7 @@ public class CreateXMLSignatureCommandImpl extends
     private Configuration configuration;
 
     public static final String USE_STRONG_HASH = "useStrongHash";
+    public static final String USE_XADES_1_4 = "useXAdES14";
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
@@ -106,7 +107,11 @@ public class CreateXMLSignatureCommandImpl extends
     public boolean getUseStrongHash() {
         return configuration.getBoolean(USE_STRONG_HASH, false);
     }
-  }
+
+    public boolean getUseXAdES14() {
+        return configuration.getBoolean(USE_XADES_1_4, false);
+    }
+}
 
   public void setConfiguration(Configuration configuration) {
     configurationFacade.setConfiguration(configuration);
@@ -132,7 +137,7 @@ public class CreateXMLSignatureCommandImpl extends
     }
 
     signature = new Signature(commandContext.getURLDereferencer(),
-        idValueFactory, algorithmMethodFactory);
+        idValueFactory, algorithmMethodFactory, configurationFacade.getUseXAdES14());
 
     // SigningTime
     signature.setSigningTime(new Date());

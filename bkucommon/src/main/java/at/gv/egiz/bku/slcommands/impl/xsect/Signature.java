@@ -61,8 +61,8 @@ import javax.xml.stream.XMLStreamException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.etsi.uri._01903.v1_1.DataObjectFormatType;
-import org.etsi.uri._01903.v1_1.QualifyingPropertiesType;
+//import org.etsi.uri._01903.v1_1.DataObjectFormatType;
+//import org.etsi.uri._01903.v1_1.QualifyingPropertiesType;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -93,6 +93,7 @@ import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 import at.gv.egiz.dom.DOMUtils;
 import at.gv.egiz.slbinding.impl.XMLContentType;
 import at.gv.egiz.stal.STAL;
+import at.gv.egiz.xades.QualifyingProperties1_4Factory;
 import at.gv.egiz.xades.QualifyingPropertiesException;
 import at.gv.egiz.xades.QualifyingPropertiesFactory;
 
@@ -157,12 +158,20 @@ public class Signature {
   private Date signingTime;
   
   /**
+   * Whether to use XAdES v1.4 (v1.1 else)
+   */
+  private boolean useXAdES14;
+  
+  /**
    * Creates a new SLXMLSignature instance.
    * @param urlDereferencer TODO
    */
   public Signature(URLDereferencer urlDereferencer,
       IdValueFactory idValueFactory,
-      AlgorithmMethodFactory algorithmMethodFactory) {
+      AlgorithmMethodFactory algorithmMethodFactory,
+      boolean useXAdES14) {
+    
+    this.useXAdES14 = useXAdES14;
     
     domImplLS = DOMUtils.getDOMImplementationLS();
     
@@ -345,7 +354,10 @@ public class Signature {
       }
     }
 
-    addXAdESObjectAndReference(objects, references, signatureId);
+    if (useXAdES14)
+      addXAdES1_4ObjectAndReference(objects, references, signatureId);
+    else
+      addXAdESObjectAndReference(objects, references, signatureId);
     
     XMLSignatureFactory signatureFactory = ctx.getSignatureFactory();
     AlgorithmMethodFactory algorithmMethodFactory = ctx.getAlgorithmMethodFactory();
@@ -621,7 +633,7 @@ public class Signature {
     // XAdES QualifyingProperties. However MOA-SP supports only version 1.1.1. Therefore,
     // the version 1.1.1 is used in order to be compatible with current MOA-SP versions.
     
-    List<DataObjectFormatType> dataObjectFormats = new ArrayList<DataObjectFormatType>();
+    List<org.etsi.uri._01903.v1_1.DataObjectFormatType> dataObjectFormats = new ArrayList<org.etsi.uri._01903.v1_1.DataObjectFormatType>();
     for (DataObject dataObject : dataObjects) {
       if (dataObject.getMimeType() != null && dataObject.getReference() != null) {
         Reference reference = dataObject.getReference();
@@ -647,7 +659,7 @@ public class Signature {
       throw new SLCommandException(4006);
     }
     
-    JAXBElement<QualifyingPropertiesType> qualifyingProperties;
+    JAXBElement<org.etsi.uri._01903.v1_1.QualifyingPropertiesType> qualifyingProperties;
     try {
       qualifyingProperties = factory.createQualifyingProperties111(target, date, signingCertificates, idValue, dataObjectFormats, dm);
     } catch (QualifyingPropertiesException e) {
@@ -705,6 +717,135 @@ public class Signature {
     Node child = fragment.getFirstChild();
     if (child instanceof Element) {
       NodeList nodes = ((Element) child).getElementsByTagNameNS(QualifyingPropertiesFactory.NS_URI_V1_1_1, "SignedProperties");
+      if (nodes.getLength() > 0) {
+        IdAttribute idAttribute = new IdAttribute();
+        idAttribute.element = (Element) nodes.item(0);
+        idAttribute.namespaceURI = null;
+        idAttribute.localName = "Id";
+        idAttributes.add(idAttribute);
+      }
+    }
+    
+  }
+
+  /**
+   * Adds the XAdES 1.4 <code>QualifyingProperties</code> as an
+   * <code>ds:Object</code> and a corresponding <code>ds:Reference</code> to
+   * it's <code>SignedProperties</code> element to this Signature.
+   * 
+   * @param objects
+   *          the list of <code>ds:Objects</code> to add the created
+   *          <code>ds:Object</code> to
+   * @param references
+   *          the list of <code>ds:References</code> to add the created
+   *          <code>ds:Reference</code> to
+   * @param signatureId TODO
+   * @throws SLCommandException
+   *           if creating and adding the XAdES
+   *           <code>QualifyingProperties</code> fails
+   * @throws NullPointerException
+   *           if <code>objects</code> or <code>references</code> is
+   *           <code>null</code>
+   */
+  private void addXAdES1_4ObjectAndReference(List<XMLObject> objects, List<Reference> references, String signatureId) throws SLCommandException {
+    
+    QualifyingProperties1_4Factory factory = QualifyingProperties1_4Factory.getInstance();
+    
+    String idValue = ctx.getIdValueFactory().createIdValue("SignedProperties");
+    
+    Date date = (signingTime != null) ? signingTime : new Date();
+    
+    List<X509Certificate> signingCertificates;
+    if (signerCertificate != null) {
+      signingCertificates = Collections.singletonList(signerCertificate);
+    } else {
+      signingCertificates = Collections.emptyList();
+    }
+    
+    List<org.etsi.uri._01903.v1_3.DataObjectFormatType> dataObjectFormats = new ArrayList<org.etsi.uri._01903.v1_3.DataObjectFormatType>();
+    for (DataObject dataObject : dataObjects) {
+      if (dataObject.getMimeType() != null && dataObject.getReference() != null) {
+        Reference reference = dataObject.getReference();
+        if (reference.getId() != null) {
+          String objectReference = "#" + reference.getId();
+          dataObjectFormats.add(factory.createDataObjectFormatType(
+              objectReference, dataObject.getMimeType(), dataObject
+                  .getDescription()));
+        }
+      }
+    }
+    
+    String target = "#" + signatureId;
+    
+    DigestMethod dm;
+    try {
+      dm = ctx.getAlgorithmMethodFactory().createDigestMethod(ctx);
+    } catch (NoSuchAlgorithmException e) {
+      log.error("Failed to get DigestMethod algorithm.", e);
+      throw new SLCommandException(4006);
+    } catch (InvalidAlgorithmParameterException e) {
+      log.error("Failed to get DigestMethod algorithm.", e);
+      throw new SLCommandException(4006);
+    }
+    
+    JAXBElement<org.etsi.uri._01903.v1_3.QualifyingPropertiesType> qualifyingProperties;
+    try {
+      qualifyingProperties = factory.createQualifyingProperties141(target, date, signingCertificates, idValue, dataObjectFormats, dm);
+    } catch (QualifyingPropertiesException e) {
+      log.error("Failed to create QualifyingProperties.", e);
+      throw new SLCommandException(4000);
+    }
+    
+    DocumentFragment fragment = ctx.getDocument().createDocumentFragment();
+    
+    try {
+      factory.marshallQualifyingProperties(qualifyingProperties, fragment);
+    } catch (JAXBException e) {
+      log.error("Failed to marshal QualifyingProperties.", e);
+      throw new SLCommandException(4000);
+    }
+    
+    List<DOMStructure> content = Collections.singletonList(new DOMStructure(fragment.getFirstChild()));
+    
+    String objectIdValue = ctx.getIdValueFactory().createIdValue("Object");
+    
+    XMLObject object = ctx.getSignatureFactory().newXMLObject(content, objectIdValue, null, null);
+    
+    objects.add(object);
+
+    // TODO: Report MOA-SP Bug
+    //
+    // Direct referencing of the SignedPorperties Id-attribute is not supported by MOA-SP
+    // because the QualifyingProperties are parsed without the XAdES schema. Therefore,
+    // the shorthand XPointer could not be resolved.
+    //
+    // The following workaround uses an XPointer to select the SignedProperties in order
+    // to allow the signature to be verified with MOA-SP.
+    
+    String referenceURI = "#xmlns(xades=http://uri.etsi.org/01903/v1.4.1%23)%20xpointer(id('"
+        + objectIdValue
+        + "')/child::xades:QualifyingProperties/child::xades:SignedProperties)";
+    
+    String referenceIdValue = ctx.getIdValueFactory().createIdValue("Reference");
+    String referenceType = QualifyingProperties1_4Factory.SIGNED_PROPERTIES_REFERENCE_TYPE_V1_4_1;
+    
+    try {
+      dm = ctx.getAlgorithmMethodFactory().createDigestMethod(ctx);
+    } catch (NoSuchAlgorithmException e) {
+      log.error("Failed to get DigestMethod algorithm.", e);
+      throw new SLCommandException(4006);
+    } catch (InvalidAlgorithmParameterException e) {
+      log.error("Failed to get DigestMethod algorithm.", e);
+      throw new SLCommandException(4006);
+    }
+
+    Reference reference = ctx.getSignatureFactory().newReference(referenceURI, dm, null, referenceType, referenceIdValue);
+    
+    references.add(reference);
+    
+    Node child = fragment.getFirstChild();
+    if (child instanceof Element) {
+      NodeList nodes = ((Element) child).getElementsByTagNameNS(QualifyingProperties1_4Factory.NS_URI_V1_4_1, "SignedProperties");
       if (nodes.getLength() > 0) {
         IdAttribute idAttribute = new IdAttribute();
         idAttribute.element = (Element) nodes.item(0);
