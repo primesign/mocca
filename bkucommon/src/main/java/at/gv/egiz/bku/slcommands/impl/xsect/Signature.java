@@ -813,18 +813,7 @@ public class Signature {
     
     objects.add(object);
 
-    // TODO: Report MOA-SP Bug
-    //
-    // Direct referencing of the SignedPorperties Id-attribute is not supported by MOA-SP
-    // because the QualifyingProperties are parsed without the XAdES schema. Therefore,
-    // the shorthand XPointer could not be resolved.
-    //
-    // The following workaround uses an XPointer to select the SignedProperties in order
-    // to allow the signature to be verified with MOA-SP.
-    
-    String referenceURI = "#xmlns(xades=http://uri.etsi.org/01903/v1.4.1%23)%20xpointer(id('"
-        + objectIdValue
-        + "')/child::xades:QualifyingProperties/child::xades:SignedProperties)";
+    String referenceURI = "#" + objectIdValue;
     
     String referenceIdValue = ctx.getIdValueFactory().createIdValue("Reference");
     String referenceType = QualifyingProperties1_4Factory.SIGNED_PROPERTIES_REFERENCE_TYPE_V1_4_1;
