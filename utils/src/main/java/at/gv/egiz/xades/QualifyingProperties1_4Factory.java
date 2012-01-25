@@ -43,6 +43,8 @@ import javax.xml.crypto.dsig.DigestMethod;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.etsi.uri._01903.v1_3.CertIDListType;
 import org.etsi.uri._01903.v1_3.CertIDType;
@@ -55,6 +57,7 @@ import org.etsi.uri._01903.v1_3.SignedPropertiesType;
 import org.etsi.uri._01903.v1_3.SignedSignaturePropertiesType;
 import org.w3._2000._09.xmldsig_.DigestMethodType;
 import org.w3._2000._09.xmldsig_.X509IssuerSerialType;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import at.gv.egiz.marshal.MarshallerFactory;
@@ -197,7 +200,13 @@ public class QualifyingProperties1_4Factory {
     
     // SignaturePolicy
     SignaturePolicyIdentifierType signaturePolicyIdentifierType = qpFactory_v1_3.createSignaturePolicyIdentifierType();
-    signaturePolicyIdentifierType.setSignaturePolicyImplied("");
+    try {
+        Element e = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument().createElement("SignaturePolicyImplied");
+        signaturePolicyIdentifierType.setSignaturePolicyImplied(e);
+    } catch (ParserConfigurationException e1) {
+        //Should not fail
+        throw new RuntimeException(e1);
+    }
     signedSignaturePropertiesType.setSignaturePolicyIdentifier(signaturePolicyIdentifierType);
 
     // SignedProperties
