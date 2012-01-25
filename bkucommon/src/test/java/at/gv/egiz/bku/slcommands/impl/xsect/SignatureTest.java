@@ -267,7 +267,29 @@ public class SignatureTest {
 
     SignatureInfoCreationType signatureInfo = unmarshalSignatureInfo("SignatureInfo_Base64_1.xml");
     
-    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null);
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null, false);
+    
+    signature.setSignatureInfo(signatureInfo);
+    
+    Node parent = signature.getParent();
+    Node nextSibling = signature.getNextSibling();
+
+    assertNotNull(parent);
+    assertTrue("urn:document".equals(parent.getNamespaceURI()));
+    assertTrue("XMLDocument".equals(parent.getLocalName()));
+    
+    assertNotNull(nextSibling);
+    assertTrue("urn:document".equals(nextSibling.getNamespaceURI()));
+    assertTrue("Paragraph".equals(nextSibling.getLocalName()));
+
+  }
+
+  @Test
+  public void testSetSignatureInfo_Base64_14_1() throws JAXBException, SLCommandException, XMLStreamException {
+
+    SignatureInfoCreationType signatureInfo = unmarshalSignatureInfo("SignatureInfo_Base64_1.xml");
+    
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null, true);
     
     signature.setSignatureInfo(signatureInfo);
     
@@ -289,7 +311,27 @@ public class SignatureTest {
 
     SignatureInfoCreationType signatureInfo = unmarshalSignatureInfo("SignatureInfo_Base64_2.xml");
     
-    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null);
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null, false);
+    
+    signature.setSignatureInfo(signatureInfo);
+    
+    Node parent = signature.getParent();
+    Node nextSibling = signature.getNextSibling();
+
+    assertNotNull(parent);
+    assertTrue("XMLDocument".equals(parent.getLocalName()));
+    
+    assertNotNull(nextSibling);
+    assertTrue("Paragraph".equals(nextSibling.getLocalName()));
+    
+  }
+
+  @Test
+  public void testSetSignature_Base64_14_2() throws JAXBException, SLCommandException, XMLStreamException {
+
+    SignatureInfoCreationType signatureInfo = unmarshalSignatureInfo("SignatureInfo_Base64_2.xml");
+    
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null, true);
     
     signature.setSignatureInfo(signatureInfo);
     
@@ -309,7 +351,27 @@ public class SignatureTest {
 
     SignatureInfoCreationType signatureInfo = unmarshalSignatureInfo("SignatureInfo_Base64_3.xml");
     
-    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null);
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null, false);
+    
+    signature.setSignatureInfo(signatureInfo);
+    
+    Node parent = signature.getParent();
+    Node nextSibling = signature.getNextSibling();
+
+    assertNotNull(parent);
+    assertTrue("XMLDocument".equals(parent.getLocalName()));
+    
+    assertNotNull(nextSibling);
+    assertTrue("Paragraph".equals(nextSibling.getLocalName()));
+
+  }
+
+  @Test
+  public void testSetSignature_Base64_14_3() throws JAXBException, SLCommandException, XMLStreamException {
+
+    SignatureInfoCreationType signatureInfo = unmarshalSignatureInfo("SignatureInfo_Base64_3.xml");
+    
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null, true);
     
     signature.setSignatureInfo(signatureInfo);
     
@@ -329,7 +391,27 @@ public class SignatureTest {
 
     SignatureInfoCreationType signatureInfo = unmarshalSignatureInfo("SignatureInfo_XMLContent_1.xml");
     
-    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null);
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null, false);
+    
+    signature.setSignatureInfo(signatureInfo);
+    
+    Node parent = signature.getParent();
+    Node nextSibling = signature.getNextSibling();
+
+    assertNotNull(parent);
+    assertTrue("urn:document".equals(parent.getNamespaceURI()));
+    assertTrue("Whole".equals(parent.getLocalName()));
+
+    assertNull(nextSibling);
+
+  }
+
+  @Test
+  public void testSetSignatureInfo_XMLContent_14_1() throws JAXBException, SLCommandException, XMLStreamException {
+
+    SignatureInfoCreationType signatureInfo = unmarshalSignatureInfo("SignatureInfo_XMLContent_1.xml");
+    
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null, true);
     
     signature.setSignatureInfo(signatureInfo);
     
@@ -349,7 +431,27 @@ public class SignatureTest {
 
     SignatureInfoCreationType signatureInfo = unmarshalSignatureInfo("SignatureInfo_Reference_1.xml");
     
-    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null);
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null, false);
+    
+    signature.setSignatureInfo(signatureInfo);
+    
+    Node parent = signature.getParent();
+    Node nextSibling = signature.getNextSibling();
+    
+    assertNotNull(parent);
+    assertTrue("urn:document".equals(parent.getNamespaceURI()));
+    assertTrue("Paragraph".equals(parent.getLocalName()));
+    
+    assertNull(nextSibling);
+    
+  }
+
+  @Test
+  public void testSetSignature_Reference_14_1() throws JAXBException, SLCommandException, XMLStreamException {
+
+    SignatureInfoCreationType signatureInfo = unmarshalSignatureInfo("SignatureInfo_Reference_1.xml");
+    
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null, true);
     
     signature.setSignatureInfo(signatureInfo);
     
@@ -414,7 +516,46 @@ public class SignatureTest {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Base64Content_1.xml");
     
-    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), false);
+    
+    for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
+      signature.addDataObject(dataObjectInfo);
+    }
+    
+    signature.setSignerCeritifcate(certificate);
+    
+    signature.buildXMLSignature();
+    
+    signAndMarshalSignature(signature);
+    
+    List<Reference> references = signature.getReferences();
+    assertTrue(references.size() == 2);
+
+    Reference reference = references.get(0);
+    assertNotNull(reference.getId());
+    
+    List<?> transforms = reference.getTransforms();
+    assertTrue(transforms.size() == 1);
+    
+    Transform transform = (Transform) transforms.get(0);
+    assertTrue(Transform.BASE64.equals(transform.getAlgorithm()));
+  
+    List<XMLObject> objects = signature.getXMLObjects();
+    assertNotNull(objects);
+    assertTrue("Size " + objects.size() + " but should be 2.", objects.size() == 2);
+    
+    XMLObject object = objects.get(0);
+    
+    assertTrue(("#" + object.getId()).equals(reference.getURI()));
+    
+  }
+
+  @Test
+  public void testDataObject_Base64Content_14_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
+
+    List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Base64Content_1.xml");
+    
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), true);
     
     for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
       signature.addDataObject(dataObjectInfo);
@@ -455,7 +596,48 @@ public class SignatureTest {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_XMLContent_1.xml");
     
-    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), false);
+    
+    for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
+      signature.addDataObject(dataObjectInfo);
+    }
+    
+    signature.setSignerCeritifcate(certificate);
+    
+    signature.buildXMLSignature();
+    
+    signAndMarshalSignature(signature);
+
+    List<Reference> references = signature.getReferences();
+    assertTrue(references.size() == 2);
+
+    Reference reference = references.get(0);
+    assertNotNull(reference.getId());
+    
+    List<?> transforms = reference.getTransforms();
+    assertTrue(transforms.size() == 2);
+    
+    Transform transform = (Transform) transforms.get(0);
+    assertTrue(Transform.XPATH2.equals(transform.getAlgorithm()));
+  
+    List<XMLObject> objects = signature.getXMLObjects();
+    assertNotNull(objects);
+    assertTrue("Size " + objects.size() + " but should be 2.", objects.size() == 2);
+    
+    XMLObject object = objects.get(0);
+    
+    assertTrue(("#" + object.getId()).equals(reference.getURI()));
+    
+  }
+
+  @Test
+  public void testDataObject_XMLContent_14_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
+
+    System.out.println("\n ****************** testDataObject_XMLContent_1 \n");
+
+    List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_XMLContent_1.xml");
+    
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), true);
     
     for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
       signature.addDataObject(dataObjectInfo);
@@ -496,7 +678,7 @@ public class SignatureTest {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_XMLContent_2.xml");
     
-    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), false);
     
     for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
       signature.addDataObject(dataObjectInfo);
@@ -530,7 +712,47 @@ public class SignatureTest {
     
   }
 
+  @Test
+  public void testDataObject_XMLContent_14_2() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
+
+    System.out.println("\n ****************** testDataObject_XMLContent_2 \n");
+
+    List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_XMLContent_2.xml");
+    
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), true);
+    
+    for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
+      signature.addDataObject(dataObjectInfo);
+    }
+    
+    signature.setSignerCeritifcate(certificate);
+    
+    signature.buildXMLSignature();
+    
+    signAndMarshalSignature(signature);
+
+    List<Reference> references = signature.getReferences();
+    assertTrue(references.size() == 2);
+
+    Reference reference = references.get(0);
+    assertNotNull(reference.getId());
+    
+    List<?> transforms = reference.getTransforms();
+    assertTrue(transforms.size() == 2);
+    
+    Transform transform = (Transform) transforms.get(0);
+    assertTrue(Transform.XPATH2.equals(transform.getAlgorithm()));
   
+    List<XMLObject> objects = signature.getXMLObjects();
+    assertNotNull(objects);
+    assertTrue("Size " + objects.size() + " but should be 2.", objects.size() == 2);
+    
+    XMLObject object = objects.get(0);
+    
+    assertTrue(("#" + object.getId()).equals(reference.getURI()));
+    
+  }
+
   @Test
   public void testDataObject_LocRefContent_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
 
@@ -538,7 +760,46 @@ public class SignatureTest {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_LocRefContent_1.xml");
     
-    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), false);
+    
+    for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
+      signature.addDataObject(dataObjectInfo);
+    }
+    
+    signature.buildXMLSignature();
+
+    signAndMarshalSignature(signature);
+
+    List<Reference> references = signature.getReferences();
+    assertTrue(references.size() == 2);
+
+    Reference reference = references.get(0);
+    assertNotNull(reference.getId());
+    
+    List<?> transforms = reference.getTransforms();
+    assertTrue(transforms.size() == 2);
+    
+    Transform transform = (Transform) transforms.get(0);
+    assertTrue(Transform.XPATH2.equals(transform.getAlgorithm()));
+  
+    List<XMLObject> objects = signature.getXMLObjects();
+    assertNotNull(objects);
+    assertTrue("Size " + objects.size() + " but should be 2.", objects.size() == 2);
+    
+    XMLObject object = objects.get(0);
+    
+    assertTrue(("#" + object.getId()).equals(reference.getURI()));
+    
+  }
+
+  @Test
+  public void testDataObject_LocRefContent_14_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
+
+    System.out.println("\n ****************** testDataObject_LocRefContent_1 \n");
+
+    List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_LocRefContent_1.xml");
+    
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), true);
     
     for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
       signature.addDataObject(dataObjectInfo);
@@ -577,7 +838,46 @@ public class SignatureTest {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_LocRefContent_2.xml");
     
-    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), false);
+    
+    for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
+      signature.addDataObject(dataObjectInfo);
+    }
+    
+    signature.buildXMLSignature();
+    
+    signAndMarshalSignature(signature);
+    
+    List<Reference> references = signature.getReferences();
+    assertTrue(references.size() == 2);
+
+    Reference reference = references.get(0);
+    assertNotNull(reference.getId());
+    
+    List<?> transforms = reference.getTransforms();
+    assertTrue(transforms.size() == 1);
+    
+    Transform transform = (Transform) transforms.get(0);
+    assertTrue(Transform.BASE64.equals(transform.getAlgorithm()));
+  
+    List<XMLObject> objects = signature.getXMLObjects();
+    assertNotNull(objects);
+    assertTrue("Size " + objects.size() + " but should be 2.", objects.size() == 2);
+    
+    XMLObject object = objects.get(0);
+    
+    assertTrue(("#" + object.getId()).equals(reference.getURI()));
+    
+  }
+
+  @Test
+  public void testDataObject_LocRefContent_14_2() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
+
+    System.out.println("\n ****************** testDataObject_LocRefContent_2 \n");
+
+    List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_LocRefContent_2.xml");
+    
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), true);
     
     for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
       signature.addDataObject(dataObjectInfo);
@@ -616,7 +916,46 @@ public class SignatureTest {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Reference_1.xml");
     
-    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), false);
+    
+    for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
+      signature.addDataObject(dataObjectInfo);
+    }
+    
+    signature.buildXMLSignature();
+    
+    signAndMarshalSignature(signature);
+    
+    List<Reference> references = signature.getReferences();
+    assertTrue(references.size() == 2);
+
+    Reference reference = references.get(0);
+    assertNotNull(reference.getId());
+    
+    List<?> transforms = reference.getTransforms();
+    assertTrue(transforms.size() == 1);
+    
+    Transform transform = (Transform) transforms.get(0);
+    assertTrue(Transform.BASE64.equals(transform.getAlgorithm()));
+  
+    List<XMLObject> objects = signature.getXMLObjects();
+    assertNotNull(objects);
+    assertTrue("Size " + objects.size() + " but should be 2.", objects.size() == 2);
+    
+    XMLObject object = objects.get(0);
+    
+    assertTrue(("#" + object.getId()).equals(reference.getURI()));
+    
+  }
+
+  @Test
+  public void testDataObject_Reference_14_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
+
+    System.out.println("\n ****************** testDataObject_Reference_1 \n");
+
+    List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Reference_1.xml");
+    
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), true);
     
     for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
       signature.addDataObject(dataObjectInfo);
@@ -655,7 +994,7 @@ public class SignatureTest {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Detached_1.xml");
     
-    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), false);
     
     for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
       signature.addDataObject(dataObjectInfo);
@@ -679,7 +1018,39 @@ public class SignatureTest {
     assertTrue(objects.size() == 1);
     
   }
-  
+
+  @Test
+  public void testDataObject_Detached_14_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
+
+    System.out.println("\n ****************** testDataObject_Detached_1 \n");
+
+    List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Detached_1.xml");
+    
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), true);
+    
+    for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
+      signature.addDataObject(dataObjectInfo);
+    }
+    
+    signature.buildXMLSignature();
+    
+    signAndMarshalSignature(signature);
+    
+    List<Reference> references = signature.getReferences();
+    assertTrue(references.size() == 2);
+
+    Reference reference = references.get(0);
+    assertNotNull(reference.getId());
+    
+    List<?> transforms = reference.getTransforms();
+    assertTrue(transforms.size() == 0);
+    
+    List<XMLObject> objects = signature.getXMLObjects();
+    assertNotNull(objects);
+    assertTrue(objects.size() == 1);
+    
+  }
+
   @Test
   public void testDataObject_Detached_Base64Content() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
 
@@ -687,7 +1058,7 @@ public class SignatureTest {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Detached_Base64Content.xml");
     
-    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), false);
     
     for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
       signature.addDataObject(dataObjectInfo);
@@ -711,7 +1082,39 @@ public class SignatureTest {
     assertTrue(objects.size() == 1);
     
   }
-  
+
+  @Test
+  public void testDataObject_Detached_Base64Content_14() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
+
+    System.out.println("\n ****************** testDataObject_Detached_Base64Content \n");
+
+    List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Detached_Base64Content.xml");
+    
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), true);
+    
+    for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
+      signature.addDataObject(dataObjectInfo);
+    }
+    
+    signature.buildXMLSignature();
+    
+    signAndMarshalSignature(signature);
+    
+    List<?> references = signature.getReferences();
+    assertTrue(references.size() == 2);
+
+    Reference reference = (Reference) references.get(0);
+    assertNotNull(reference.getId());
+    
+    List<?> transforms = reference.getTransforms();
+    assertTrue(transforms.size() == 0);
+    
+    List<XMLObject> objects = signature.getXMLObjects();
+    assertNotNull(objects);
+    assertTrue(objects.size() == 1);
+    
+  }
+
   @Test
   public void testDataObject_Detached_LocRefContent() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
 
@@ -719,7 +1122,39 @@ public class SignatureTest {
 
     List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Detached_LocRefContent.xml");
 
-    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), false);
+
+    for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
+      signature.addDataObject(dataObjectInfo);
+    }
+
+    signature.buildXMLSignature();
+
+    signAndMarshalSignature(signature);
+
+    List<Reference> references = signature.getReferences();
+    assertTrue(references.size() == 2);
+
+    Reference reference = references.get(0);
+    assertNotNull(reference.getId());
+
+    List<?> transforms = reference.getTransforms();
+    assertTrue(transforms.size() == 0);
+
+    List<XMLObject> objects = signature.getXMLObjects();
+    assertNotNull(objects);
+    assertTrue(objects.size() == 1);
+
+  }
+
+  @Test
+  public void testDataObject_Detached_LocRefContent_14() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
+
+    System.out.println("\n ****************** testDataObject_Detached_LocRefContent \n");
+
+    List<DataObjectInfoType> dataObjectInfos = unmarshalDataObjectInfo("DataObjectInfo_Detached_LocRefContent.xml");
+
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), true);
 
     for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
       signature.addDataObject(dataObjectInfo);
@@ -768,7 +1203,47 @@ public class SignatureTest {
 
     CreateXMLSignatureRequestType requestType = unmarshalCreateXMLSignatureRequest("TransformsInfo_1.xml");
     
-    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), false);
+
+
+    signature.setSignatureInfo(requestType.getSignatureInfo());
+    
+    List<DataObjectInfoType> dataObjectInfos = requestType.getDataObjectInfo();
+    
+    for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
+      signature.addDataObject(dataObjectInfo);
+    }
+    
+    signature.setSignerCeritifcate(certificate);
+    
+    signature.buildXMLSignature();
+    
+    signAndMarshalSignature(signature);
+    
+    List<Reference> references = signature.getReferences();
+    assertTrue(references.size() == 2);
+
+    Reference reference = references.get(0);
+    assertNotNull(reference.getId());
+    
+    List<?> transforms = reference.getTransforms();
+    assertTrue("Size " + transforms.size() + "", transforms.size() == 3);
+    
+    Transform transform = (Transform) transforms.get(0);
+    assertTrue(Transform.ENVELOPED.equals(transform.getAlgorithm()));
+  
+    List<XMLObject> objects = signature.getXMLObjects();
+    assertNotNull(objects);
+    assertTrue("Size " + objects.size() + " but should be 1.", objects.size() == 1);
+    
+  }
+
+  @Test
+  public void testTransformsInfo_14_1() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
+
+    CreateXMLSignatureRequestType requestType = unmarshalCreateXMLSignatureRequest("TransformsInfo_1.xml");
+    
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), true);
 
 
     signature.setSignatureInfo(requestType.getSignatureInfo());
@@ -808,7 +1283,7 @@ public class SignatureTest {
 
     CreateXMLSignatureRequestType requestType = unmarshalCreateXMLSignatureRequest("TransformsInfo_2.xml");
 
-    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl());
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), false);
 
 
     signature.setSignatureInfo(requestType.getSignatureInfo());
@@ -843,5 +1318,43 @@ public class SignatureTest {
 
   }
 
-  
+  @Test
+  public void testTransformsInfo_14_2() throws JAXBException, SLCommandException, XMLStreamException, SLRequestException, MarshalException, XMLSignatureException, SLViewerException {
+
+    CreateXMLSignatureRequestType requestType = unmarshalCreateXMLSignatureRequest("TransformsInfo_2.xml");
+
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), new AlgorithmMethodFactoryImpl(), true);
+
+
+    signature.setSignatureInfo(requestType.getSignatureInfo());
+
+    List<DataObjectInfoType> dataObjectInfos = requestType.getDataObjectInfo();
+
+    for (DataObjectInfoType dataObjectInfo : dataObjectInfos) {
+      signature.addDataObject(dataObjectInfo);
+    }
+
+    signature.setSignerCeritifcate(certificate);
+
+    signature.buildXMLSignature();
+
+    signAndMarshalSignature(signature);
+
+    List<Reference> references = signature.getReferences();
+    assertTrue(references.size() == 2);
+
+    Reference reference = references.get(0);
+    assertNotNull(reference.getId());
+
+    List<?> transforms = reference.getTransforms();
+    assertTrue("Size " + transforms.size() + "", transforms.size() == 2);
+
+    Transform transform = (Transform) transforms.get(0);
+    assertTrue(Transform.XSLT.equals(transform.getAlgorithm()));
+
+    List<XMLObject> objects = signature.getXMLObjects();
+    assertNotNull(objects);
+    assertTrue("Size " + objects.size() + " but should be 1.", objects.size() == 1);
+
+  }
 }
