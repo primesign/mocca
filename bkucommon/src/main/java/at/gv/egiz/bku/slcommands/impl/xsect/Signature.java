@@ -751,7 +751,7 @@ public class Signature {
     
     QualifyingProperties1_4Factory factory = QualifyingProperties1_4Factory.getInstance();
     
-    String idValue = ctx.getIdValueFactory().createIdValue("SignedProperties");
+    String signedPropertiesIdValue = ctx.getIdValueFactory().createIdValue("SignedProperties");
     
     Date date = (signingTime != null) ? signingTime : new Date();
     
@@ -790,7 +790,7 @@ public class Signature {
     
     JAXBElement<org.etsi.uri._01903.v1_3.QualifyingPropertiesType> qualifyingProperties;
     try {
-      qualifyingProperties = factory.createQualifyingProperties141(target, date, signingCertificates, idValue, dataObjectFormats, dm);
+      qualifyingProperties = factory.createQualifyingProperties141(target, date, signingCertificates, signedPropertiesIdValue, dataObjectFormats, dm);
     } catch (QualifyingPropertiesException e) {
       log.error("Failed to create QualifyingProperties.", e);
       throw new SLCommandException(4000);
@@ -813,7 +813,7 @@ public class Signature {
     
     objects.add(object);
 
-    String referenceURI = "#" + objectIdValue;
+    String referenceURI = "#" + signedPropertiesIdValue;
     
     String referenceIdValue = ctx.getIdValueFactory().createIdValue("Reference");
     String referenceType = QualifyingProperties1_4Factory.SIGNED_PROPERTIES_REFERENCE_TYPE;
