@@ -61,9 +61,10 @@ import at.gv.egiz.marshal.MarshallerFactory;
 
 public class QualifyingProperties1_4Factory {
   
-  public static String NS_URI_V1_4_1 = "http://uri.etsi.org/01903/v1.4.1#";
+  public static String NS_URI = "http://uri.etsi.org/01903#";
+  public static String NS_URI_V1_3_2 = "http://uri.etsi.org/01903/v1.3.2#";
   
-  public static String SIGNED_PROPERTIES_REFERENCE_TYPE_V1_4_1 = NS_URI_V1_4_1 + "SignedProperties";
+  public static String SIGNED_PROPERTIES_REFERENCE_TYPE = NS_URI + "SignedProperties";
 
   private static QualifyingProperties1_4Factory instance;
   

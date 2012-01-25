@@ -816,7 +816,7 @@ public class Signature {
     String referenceURI = "#" + objectIdValue;
     
     String referenceIdValue = ctx.getIdValueFactory().createIdValue("Reference");
-    String referenceType = QualifyingProperties1_4Factory.SIGNED_PROPERTIES_REFERENCE_TYPE_V1_4_1;
+    String referenceType = QualifyingProperties1_4Factory.SIGNED_PROPERTIES_REFERENCE_TYPE;
     
     try {
       dm = ctx.getAlgorithmMethodFactory().createDigestMethod(ctx);
@@ -834,7 +834,7 @@ public class Signature {
     
     Node child = fragment.getFirstChild();
     if (child instanceof Element) {
-      NodeList nodes = ((Element) child).getElementsByTagNameNS(QualifyingProperties1_4Factory.NS_URI_V1_4_1, "SignedProperties");
+      NodeList nodes = ((Element) child).getElementsByTagNameNS(QualifyingProperties1_4Factory.NS_URI_V1_3_2, "SignedProperties");
       if (nodes.getLength() > 0) {
         IdAttribute idAttribute = new IdAttribute();
         idAttribute.element = (Element) nodes.item(0);
