@@ -596,7 +596,7 @@ public class Signature {
   /**
    * Adds the XAdES <code>QualifyingProperties</code> as an
    * <code>ds:Object</code> and a corresponding <code>ds:Reference</code> to
-   * it's <code>SignedProperties</code> element to this Signature.
+   * its <code>SignedProperties</code> element to this Signature.
    * 
    * @param objects
    *          the list of <code>ds:Objects</code> to add the created
@@ -731,7 +731,7 @@ public class Signature {
   /**
    * Adds the XAdES 1.4 <code>QualifyingProperties</code> as an
    * <code>ds:Object</code> and a corresponding <code>ds:Reference</code> to
-   * it's <code>SignedProperties</code> element to this Signature.
+   * its <code>SignedProperties</code> element to this Signature.
    * 
    * @param objects
    *          the list of <code>ds:Objects</code> to add the created
