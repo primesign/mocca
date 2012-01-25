@@ -51,6 +51,8 @@ public class NamespacePrefixMapperImpl extends NamespacePrefixMapper {
     prefixMap.put("http://reference.e-government.gv.at/namespace/persondata/20020228#", "pr");
     prefixMap.put("urn:oasis:names:tc:SAML:1.0:assertion", "saml");
     prefixMap.put("http://uri.etsi.org/01903/v1.1.1#", "xades");
+    prefixMap.put("http://uri.etsi.org/01903/v1.3.2#", "xades");
+    prefixMap.put("http://uri.etsi.org/01903#", "xades");
     prefixMap.put("http://www.buergerkarte.at/namespaces/securitylayer/20020225#", "sl10");
     prefixMap.put("http://www.buergerkarte.at/namespaces/securitylayer/20020831#", "sl11");
   }
