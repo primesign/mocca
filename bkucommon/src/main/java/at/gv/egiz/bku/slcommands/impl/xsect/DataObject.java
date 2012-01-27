@@ -1107,10 +1107,10 @@ public class DataObject {
     }
   
     if (transforms == null) {
-      List<Transform> newTransfroms = new ArrayList<Transform>();
-      newTransfroms.add(xpathTransform);
-      newTransfroms.add(c14nTransform);
-      transforms = new XSECTTransforms(newTransfroms);
+      List<Transform> newTransforms = new ArrayList<Transform>();
+      newTransforms.add(xpathTransform);
+      newTransforms.add(c14nTransform);
+      transforms = new XSECTTransforms(newTransforms);
     } else {
       transforms.insertTransform(xpathTransform);
     }
