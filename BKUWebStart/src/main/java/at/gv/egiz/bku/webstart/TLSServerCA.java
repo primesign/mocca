@@ -44,10 +44,10 @@ import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
+import java.security.SecureRandom;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +80,7 @@ public class TLSServerCA {
 
     caKeyPair = generateKeyPair();
     caCert = new X509Certificate();
-    caCert.setSerialNumber(new BigInteger(20, new Random()));
+    caCert.setSerialNumber(new BigInteger(20, new SecureRandom()));
     caCert.setSubjectDN(subject);
     caCert.setPublicKey(caKeyPair.getPublic());
     caCert.setIssuerDN(subject);
@@ -116,7 +116,7 @@ public class TLSServerCA {
 
     serverKeyPair = generateKeyPair();
     serverCert = new X509Certificate();
-    serverCert.setSerialNumber(new BigInteger(20, new Random()));
+    serverCert.setSerialNumber(new BigInteger(20, new SecureRandom()));
     serverCert.setSubjectDN(subject);
     serverCert.setPublicKey(serverKeyPair.getPublic());
     serverCert.setIssuerDN(caCert.getSubjectDN());

@@ -26,7 +26,7 @@ package at.gv.egiz.bku.slcommands.impl.xsect;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
+import java.security.SecureRandom;
 
 /**
  * An implementation of the IdValueFactory.
@@ -108,7 +108,7 @@ public class IdValueFactoryImpl implements IdValueFactory {
    */
   public IdValueFactoryImpl() {
 
-    Random random = new Random();
+    SecureRandom random = new SecureRandom();
     int rand = random.nextInt();
     seed = Integer.toHexString(rand);
 

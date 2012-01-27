@@ -32,6 +32,7 @@ import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateFactory;
@@ -42,7 +43,6 @@ import java.security.spec.KeySpec;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Arrays;
-import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -122,7 +122,7 @@ public class DNIeCryptoUtil {
 
 		for (int i = 0; i < length; i++) {
 
-			Random rand = new Random();
+			SecureRandom rand = new SecureRandom();
 			byte current = (byte) rand.nextInt(255);
 			result[i] = current;
 		}
