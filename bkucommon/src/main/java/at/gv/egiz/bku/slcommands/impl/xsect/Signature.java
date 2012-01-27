@@ -61,8 +61,6 @@ import javax.xml.stream.XMLStreamException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import org.etsi.uri._01903.v1_1.DataObjectFormatType;
-//import org.etsi.uri._01903.v1_1.QualifyingPropertiesType;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
