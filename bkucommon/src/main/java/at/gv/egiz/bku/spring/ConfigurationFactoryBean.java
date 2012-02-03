@@ -57,13 +57,15 @@ public class ConfigurationFactoryBean implements FactoryBean, ResourceLoaderAwar
   protected static final Logger log = LoggerFactory.getLogger(ConfigurationFactoryBean.class);
 
   public static final String DEFAULT_CONFIG = "/WEB-INF/conf/configuration.xml";
-  
+
   public static final String MOCCA_IMPLEMENTATIONNAME_PROPERTY = "ProductName";
 
   public static final String MOCCA_IMPLEMENTATIONVERSION_PROPERTY = "ProductVersion";
-  
+
   public static final String SIGNATURE_LAYOUT_PROPERTY = "SignatureLayout";
-  
+
+  public static final String USE_STYLESHEETURL_PROPERTY = "UseStylesheetURL";
+
   /**
    * The URL of the configuration file.
    */

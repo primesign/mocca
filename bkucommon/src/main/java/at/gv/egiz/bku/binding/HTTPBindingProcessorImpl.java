@@ -135,6 +135,11 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 					.getString(ConfigurationFactoryBean.SIGNATURE_LAYOUT_PROPERTY);
 		}
 
+		public boolean getEnableStylesheetURL() {
+			return configuration
+					.getBoolean(ConfigurationFactoryBean.USE_STYLESHEETURL_PROPERTY, false);
+		}
+
 	}
 	
 	/**
@@ -538,7 +543,15 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 				resultContentType = HttpUtil.TXT_XML;
 			}
 		}
-		templates = getTemplates(getStyleSheetUrl());
+		String stylesheetURL = getStyleSheetUrl();
+		if (configurationFacade.getEnableStylesheetURL())
+			templates = getTemplates(stylesheetURL);
+		else
+		{
+			templates = null;
+			if (stylesheetURL != null)
+				log.info("Ignoring StylesheetURL ({})", stylesheetURL);
+		}
 		if (templates != null) {
 			log.debug("Output transformation required.");
 			resultContentType = templates.getOutputProperties().getProperty("media-type");
