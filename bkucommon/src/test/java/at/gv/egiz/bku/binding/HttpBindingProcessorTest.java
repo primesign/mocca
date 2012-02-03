@@ -108,11 +108,12 @@ public class HttpBindingProcessorTest extends AbstractBindingProcessorTest {
     server.setResponseHeaders(serverHeaderMap);
 
     bindingProcessor = (HTTPBindingProcessorImpl) createBindingProcessor("http");
-    
+
     clientHeaderMap = new HashMap<String, String>();
     clientHeaderMap.put("Content-Type",
         "application/x-www-form-urlencoded;charset=utf8");
     bindingProcessor.setHTTPHeaders(clientHeaderMap);
+    bindingProcessor.configuration.addProperty("UseStylesheetURL", true);
   }
 
   protected String resultAsString(String encoding) throws IOException {
