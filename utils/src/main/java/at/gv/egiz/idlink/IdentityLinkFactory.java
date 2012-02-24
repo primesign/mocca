@@ -366,6 +366,7 @@ public class IdentityLinkFactory {
         keyInfo, Collections.singletonList(xmlObject), null, null);
 
     DOMSignContext signContext = new DOMSignContext(key, assertion);
+    signContext.putNamespacePrefix(XMLSignature.XMLNS, "dsig");
     
     if (log.isTraceEnabled()) {
       signContext.setProperty("javax.xml.crypto.dsig.cacheReference", Boolean.TRUE);
