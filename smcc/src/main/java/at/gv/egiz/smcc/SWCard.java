@@ -218,7 +218,7 @@ public class SWCard implements SignatureCard {
       for (int l; (l = reader.read(b)) != -1;) {
         sb.append(b, 0, l);
       }
-      return sb.toString().toCharArray();
+      return sb.toString().trim().toCharArray();
     } catch (IOException e) {
       throw new SignatureCardException("Failed to read file '" + passwordFileName + "'.");
     }
