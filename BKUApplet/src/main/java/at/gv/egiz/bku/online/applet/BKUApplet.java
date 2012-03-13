@@ -24,38 +24,44 @@
 
 package at.gv.egiz.bku.online.applet;
 
-import at.gv.egiz.bku.online.applet.viewer.URLFontLoader;
-import at.gv.egiz.bku.gui.BKUGUIFacade.Style;
-import at.gv.egiz.bku.gui.SwitchFocusListener;
-import at.gv.egiz.smcc.SignatureCardFactory;
-import at.gv.egiz.stal.service.translator.STALTranslator;
-
+import java.applet.AppletContext;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Point;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.AllPermission;
 import java.util.Locale;
-
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+
+import javax.accessibility.AccessibleContext;
 import javax.net.ssl.HttpsURLConnection;
 import javax.swing.JApplet;
+import javax.swing.JLayeredPane;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.JRootPane;
+import javax.swing.text.html.parser.ParserDelegator;
+import javax.xml.namespace.QName;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.bku.gui.BKUGUIFacade.Style;
 import at.gv.egiz.bku.gui.BKUGUIImpl;
 import at.gv.egiz.bku.gui.HelpListener;
+import at.gv.egiz.bku.gui.SwitchFocusListener;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
+import at.gv.egiz.bku.online.applet.viewer.URLFontLoader;
+import at.gv.egiz.smcc.SignatureCardFactory;
 import at.gv.egiz.stal.service.STALPortType;
 import at.gv.egiz.stal.service.STALService;
-import java.applet.AppletContext;
-import java.awt.Color;
-import java.awt.Container;
-import javax.swing.text.html.parser.ParserDelegator;
-
-import javax.xml.namespace.QName;
+import at.gv.egiz.stal.service.translator.STALTranslator;
 
 /**
  * Note: all swing code is executed by the event dispatch thread (see
@@ -359,11 +365,92 @@ public class BKUApplet extends JApplet {
   }
 
   public void getFocusFromBrowser() {
-	  
-	  log.debug("Obtained focus from browser.");
+    log.debug("Obtained focus from browser.");
 
     worker.getFocusFromBrowser();
   }
+
+private boolean checkPermissions() {
+	try {
+		AccessController.checkPermission(new AllPermission());
+		return true;
+	} catch (Exception e) {
+		if (log.isDebugEnabled())
+			log.debug("Not enough permissions for " + e.getStackTrace()[1].getMethodName());
+	}
+	return false;
+}
+
+@Override
+public AccessibleContext getAccessibleContext() {
+	return checkPermissions() ? super.getAccessibleContext() : null;
+}
+
+@Override
+public Container getContentPane() {
+	return checkPermissions() ? super.getContentPane() : null;
+}
+
+@Override
+public Component getGlassPane() {
+	return checkPermissions() ? super.getGlassPane() : null;
+}
+
+@Override
+public JMenuBar getJMenuBar() {
+	return checkPermissions() ? super.getJMenuBar() : null;
+}
+
+@Override
+public JLayeredPane getLayeredPane() {
+	return checkPermissions() ? super.getLayeredPane() : null;
+}
+
+@Override
+public JRootPane getRootPane() {
+	return checkPermissions() ? super.getRootPane() : null;
+}
+
+@Override
+public Component findComponentAt(int arg0, int arg1) {
+	return checkPermissions() ? super.findComponentAt(arg0, arg1) : null;
+}
+
+@Override
+public Component findComponentAt(Point arg0) {
+	return checkPermissions() ? super.findComponentAt(arg0) : null;
+}
+
+@Override
+public Component getComponent(int arg0) {
+	return checkPermissions() ? super.getComponent(arg0) : null;
+}
+
+@Override
+public Component getComponentAt(int arg0, int arg1) {
+	return checkPermissions() ? super.getComponentAt(arg0, arg1) : null;
+}
+
+@Override
+public Component getComponentAt(Point arg0) {
+	return checkPermissions() ? super.getComponentAt(arg0) : null;
+}
+
+@Override
+public Component[] getComponents() {
+	return checkPermissions() ? super.getComponents() : null;
+}
+
+@SuppressWarnings("deprecation")
+@Override
+public Component locate(int arg0, int arg1) {
+	return checkPermissions() ? super.locate(arg0, arg1) : null;
+}
+
+@Override
+public Container getParent() {
+	return checkPermissions() ? super.getParent() : null;
+}
 
   // ///////////////////////////////////////////////////////////////////////////
   // utility methods
