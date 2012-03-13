@@ -33,8 +33,8 @@
 // replace  ${catalina.base}/work/Catalina/localhost/bkuonline
 //    with  ${catalina.base}/work/Catalina/localhost/<mocca_context> (the path to the compiled JSPs, excl. package dir: org/apache/jsp/)
 // replace  version info in 
-//          ${catalina.base}/webapps/bkuonline/WEB-INF/lib/utils-1.3.3.jar and
-//          ${catalina.base}/webapps/bkuonline/WEB-INF/lib/bkucommon-1.3.3.jar
+//          ${catalina.base}/webapps/bkuonline/WEB-INF/lib/utils-1.3.7.jar and
+//          ${catalina.base}/webapps/bkuonline/WEB-INF/lib/bkucommon-1.3.7.jar
 //    with  current version
 // replace  www.sozialversicherung.gv.at:443
 //    with  <DataURL_host:DataURL_port>
@@ -137,12 +137,12 @@ grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/classes/-" {
       permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
 };
 
-grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/utils-1.3.3.jar" {
+grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/utils-1.3.7.jar" {
 //      permission java.lang.RuntimePermission "accessDeclaredMembers";
       permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
 };
 
-grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/bkucommon-1.3.3.jar" {
+grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/bkucommon-1.3.7.jar" {
       permission java.io.FilePermission "${catalina.base}/webapps/bkuonline/WEB-INF/classes/at/gv/egiz/bku/certs/certStore", "write";
       permission java.io.FilePermission "${catalina.base}/webapps/bkuonline/WEB-INF/classes/at/gv/egiz/bku/certs/certStore/-", "write";
       permission java.io.FilePermission "${catalina.base}/webapps/bkuonline/WEB-INF/classes/at/gv/egiz/bku/certs/certStore/toBeAdded/-", "delete";
