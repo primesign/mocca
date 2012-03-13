@@ -65,7 +65,7 @@ public abstract class AbstractSMCCSTAL implements STAL {
   /**
    * Implementations must assign the signature card within this method.
    * 
-   * @return if the user canceled
+   * @return whether the user canceled
    */
   protected abstract boolean waitForCard();
 

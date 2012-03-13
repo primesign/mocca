@@ -118,7 +118,8 @@ public abstract class AbstractBKUWorker extends AbstractSMCCSTAL implements Acti
     actionCommandList.clear();
     actionCommandList.add("cancel");
     // while no sigcard found or cancel button pressed
-    int oldValue = SMCCHelper.PC_SC_NOT_SUPPORTED; // this is a save default
+    int oldValue = SMCCHelper.PC_SC_NOT_SUPPORTED; // this is a safe default
+    actionPerformed = false;
     while ((signatureCard == null) && (!actionPerformed)) {
       switch (smccHelper.getResultCode()) {
       case SMCCHelper.PC_SC_NOT_SUPPORTED:
