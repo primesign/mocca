@@ -32,12 +32,14 @@ import java.net.URL;
 import java.util.Locale;
 
 
+import at.gv.egiz.bku.conf.MoccaConfigurationFacade;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUIcons;
 import at.gv.egiz.bku.gui.PINManagementGUI;
 import at.gv.egiz.bku.gui.PINManagementGUIFacade;
 import at.gv.egiz.bku.local.gui.GUIProxy;
 import at.gv.egiz.bku.local.gui.LocalHelpListener;
+import at.gv.egiz.smcc.util.SMCCHelper;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
 import javax.swing.JFrame;
@@ -61,7 +63,19 @@ public class LocalSTALFactory implements STALFactory {
   
   protected Configuration configuration;
   
-  
+	/**
+	 * The configuration facade used to access the MOCCA configuration.
+	 */
+	protected ConfigurationFacade configurationFacade = new ConfigurationFacade();
+
+	public class ConfigurationFacade implements MoccaConfigurationFacade {
+
+		public static final String USE_SWCARD = "UseSWCard";
+
+		public boolean getUseSWCard() {
+			return configuration.getBoolean(USE_SWCARD, false);
+		}
+	}
 
   @Override
   public STAL createSTAL() {
@@ -94,6 +108,7 @@ public class LocalSTALFactory implements STALFactory {
             helpListener,
             null);
     BKUGUIFacade proxy = (BKUGUIFacade) GUIProxy.newInstance(gui, dialog, new Class[] { PINManagementGUIFacade.class} );
+    SMCCHelper.setUseSWCard(configurationFacade.getUseSWCard());
     stal = new LocalBKUWorker(proxy, dialog);
     dialog.setPreferredSize(PREFERRED_SIZE);
     dialog.pack();

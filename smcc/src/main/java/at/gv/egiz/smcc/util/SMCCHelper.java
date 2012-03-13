@@ -67,6 +67,7 @@ public class SMCCHelper {
   public synchronized void update(int sleep) {
     SignatureCardFactory factory = SignatureCardFactory.getInstance();
     if (useSWCard) {
+      log.info("Using SW Card");
       try {
         signatureCard = factory.createSignatureCard(null, null);
         resultCode = CARD_FOUND;
