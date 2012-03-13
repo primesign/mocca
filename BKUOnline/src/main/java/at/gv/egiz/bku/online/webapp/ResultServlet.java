@@ -26,8 +26,8 @@ package at.gv.egiz.bku.online.webapp;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+//import java.net.MalformedURLException;
+//import java.net.URL;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -68,12 +68,14 @@ public class ResultServlet extends HttpServlet {
     }
     String url = getServletConfig().getInitParameter("expiredPageUrl");
     if (url != null) {
-      try {
-        expiredPageUrl = new URL(url).toString();
-        log.info("Init expiredPageUrl to: {}.", expiredPageUrl);
-      } catch (MalformedURLException e) {
-        log.error("Failed to set expiredUrlPage {}.", url, e);
-      }
+//      try {
+//        expiredPageUrl = new URL(url).toString();
+//        log.info("Init expiredPageUrl to: {}.", expiredPageUrl);
+//      } catch (MalformedURLException e) {
+//        log.error("Failed to set expiredUrlPage '{}': {}.", url, e);
+//      }
+      expiredPageUrl = url;
+      log.info("Init expiredPageUrl to: {}.", expiredPageUrl);
     }
   }
 
