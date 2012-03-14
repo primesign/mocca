@@ -320,6 +320,8 @@ public class BKUApplet extends JApplet {
    */
   public STALPortType getSTALPort() throws MalformedURLException {
     URL wsdlURL = getURLParameter(WSDL_URL);
+    if (wsdlURL.toString().contains(";jsessionid="))
+        wsdlURL = new URL(wsdlURL.toString().replaceAll("\\;jsessionid=[^\\?#]*", ""));
     log.debug("Setting STAL WSDL: {}.", wsdlURL);
     QName endpointName = new QName(STAL_WSDL_NS, STAL_SERVICE);
     STALService stal = new STALService(wsdlURL, endpointName);
