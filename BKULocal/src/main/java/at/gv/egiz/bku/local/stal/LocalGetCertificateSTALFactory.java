@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 public class LocalGetCertificateSTALFactory implements STALFactory {
 
 	  private final Logger log = LoggerFactory.getLogger(LocalGetCertificateSTALFactory.class);
-	  protected static final Dimension PREFERRED_SIZE = new Dimension(340, 270);
+	  protected static final Dimension PREFERRED_SIZE = new Dimension(320, 270);
 	  protected URL helpURL;
 	  protected Locale locale;
 	  
@@ -72,7 +72,7 @@ public class LocalGetCertificateSTALFactory implements STALFactory {
 	    dialog.setIconImages(BKUIcons.icons);
 //	    dialog.setUndecorated(true);
 //	    dialog.getRootPane().setWindowDecorationStyle(JRootPane.NONE);
-
+	    
 	    if (locale != null) {
 	      dialog.setLocale(locale);
 	    }
