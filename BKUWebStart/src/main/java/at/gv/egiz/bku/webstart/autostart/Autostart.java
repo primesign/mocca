@@ -41,8 +41,8 @@ public class Autostart {
 				_autostart = new AutostartLinux();
 			else if (os.toLowerCase().contains("windows"))
 				_autostart = new AutostartWindows();
-//			else if (os.toLowerCase().contains("os x"))
-//				_autostart = new AutostartMacOSX();
+			else if (os.toLowerCase().contains("os x"))
+				_autostart = new AutostartMacOSX();
 			else
 				_log.debug("Unsupported OS: " + os);
 			if (_autostart != null && _webstartName != null)
