@@ -27,7 +27,6 @@ import java.awt.Container;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.Locale;
 
 import javax.swing.GroupLayout;

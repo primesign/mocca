@@ -26,7 +26,6 @@ package at.gv.egiz.bku.gui;
 import java.awt.Container;
 import java.awt.event.ActionListener;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.Locale;
 
 import javax.swing.GroupLayout;
