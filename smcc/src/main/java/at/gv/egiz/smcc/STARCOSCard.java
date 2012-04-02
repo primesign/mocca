@@ -142,6 +142,8 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
 
   protected double version = 1.1;
 
+  protected String friendlyName;
+
   protected PinInfo cardPinInfo;
   protected PinInfo ssPinInfo;
 
@@ -165,8 +167,21 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
       byte[] ver = ISO7816Utils.readRecord(channel, 1);
       if (ver[0] == (byte) 0xa5 && ver[2] == (byte) 0x53) {
         version = (0x0F & ver[4]) + (0xF0 & ver[5])/160.0 + (0x0F & ver[5])/100.0;
-        String generation = (version < 1.2) ? "<= G2" : "G3";
-        log.info("e-card version=" + version + " (" + generation + ")");
+        friendlyName = (version < 1.2) ? "<= G2" : "G3";
+        if (version == 1.2)
+        {
+          // SELECT application
+          execSELECT_AID(channel, AID_INFOBOX);
+          // SELECT file
+          try {
+            // the file identifier has changed with version G3b
+            execSELECT_FID(channel, EF_INFOBOX);
+            friendlyName = "G3b";
+          } catch (FileNotFoundException e) {
+            friendlyName = "G3a";
+          }
+        }
+        log.info("e-card version=" + version + " (" + friendlyName + ")");
       }
     } catch (CardException e) {
       log.warn("Failed to execute command.", e);
@@ -632,7 +647,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
 
   @Override
   public String toString() {
-    return "e-card";
+    return ("e-card version " + version + " (" + friendlyName + ")");
   }
   
   ////////////////////////////////////////////////////////////////////////
