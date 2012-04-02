@@ -73,6 +73,10 @@
                 border: 1px solid;
                 padding: 2px 6px
             }
+
+            fieldset.submit legend {
+                border: 0 none #FFF;
+            }
         </style>
 
     </head>
@@ -85,21 +89,21 @@
             <fieldset><legend>Enter XML Request</legend>
                 <p><label for="XMLRequest">XML Request</label> <textarea
                         name="XMLRequest" rows=15 cols="60" id="XMLRequest">
-<?xml version="1.0" encoding="UTF-8"?>
-<sl:CreateXMLSignatureRequest 
-   xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#">
-<sl:KeyboxIdentifier>SecureSignatureKeypair</sl:KeyboxIdentifier>
-   <sl:DataObjectInfo Structure="enveloping">
-     <sl:DataObject>
-       <sl:XMLContent>Ich bin ein einfacher Text.</sl:XMLContent>
-     </sl:DataObject>
-    <sl:TransformsInfo>
-      <sl:FinalDataMetaInfo>
-       <sl:MimeType>text/plain</sl:MimeType>
-       </sl:FinalDataMetaInfo>
-    </sl:TransformsInfo>
-  </sl:DataObjectInfo>
-</sl:CreateXMLSignatureRequest> 
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;sl:CreateXMLSignatureRequest 
+   xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#"&gt;
+&lt;sl:KeyboxIdentifier&gt;SecureSignatureKeypair&lt;/sl:KeyboxIdentifier&gt;
+   &lt;sl:DataObjectInfo Structure="enveloping"&gt;
+     &lt;sl:DataObject&gt;
+       &lt;sl:XMLContent&gt;Ich bin ein einfacher Text.&lt;/sl:XMLContent&gt;
+     &lt;/sl:DataObject&gt;
+    &lt;sl:TransformsInfo&gt;
+      &lt;sl:FinalDataMetaInfo&gt;
+       &lt;sl:MimeType&gt;text/plain&lt;/sl:MimeType&gt;
+       &lt;/sl:FinalDataMetaInfo&gt;
+    &lt;/sl:TransformsInfo&gt;
+  &lt;/sl:DataObjectInfo&gt;
+&lt;/sl:CreateXMLSignatureRequest&gt;
                 </textarea></p>
                 <!--
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -175,35 +179,35 @@
             <fieldset><legend>Request Parameters</legend>
                 <p>
                     <label for="appletGuiStyle">GUI Style</label>
-                    <input type="radio" name="appletGuiStyle" value="tiny" onclick="setAppletDimension(152, 145)">tiny
+                    <input type="radio" name="appletGuiStyle" id="appletGuiStyle" value="tiny" onclick="setAppletDimension(152, 145)">tiny
                     <input type="radio" name="appletGuiStyle" value="simple" checked="checked" onclick="setAppletDimension(190,130)">simple
                     <input type="radio" name="appletGuiStyle" value="advanced" onclick="setAppletDimension(300, 180)">advanced
                 </p>
                 
                 <p><label for="appletWidth">Applet Width</label> <input
-                    name="appletWidth" value="190" id="appletWidth">
+                    name="appletWidth" id="appletWidth" value="190">
                 <p><label for="appletHeight">Applet Height</label> <input
-                    name="appletHeight" value="130" id="appletHeight">
+                    name="appletHeight" id="appletHeight" value="130">
                 <p><label for="appletBackground">Applet Background</label> <input
-                    name="appletBackground" value="" id="appletBackground">
+                    name="appletBackground" id="appletBackground" value="">
                 <p><label for="appletBackgroundColor">Applet Background Color</label> <input
-                    name="appletBackgroundColor" value="" id="appletBackgroundColor">
+                    name="appletBackgroundColor" id="appletBackgroundColor" value="">
                 </p>
 
                 <p>
                     <label for="appletPage">Applet Page</label>
-                    <input type="radio" name="applet.jsp" value="BKUApplet" checked="checked">Default
+                    <input type="radio" name="applet.jsp" id="appletPage" value="BKUApplet" checked="checked">Default
                     <input type="radio" name="applet.jsp" value="BKUAppletAlternative">Alternative
                 </p>
 
                 <p>
-                    <label for="appletPage">Locale</label>
-                    <input value="de_AT" name="locale"/>
+                    <label for="locale">Locale</label>
+                    <input value="de_AT" name="locale" id="locale">
                 </p>
                 
                 <p>
                     <label for="appletExtension">Extensions</label>
-                    <input type="radio" name="appletExtension" value="" checked="checked">None
+                    <input type="radio" name="appletExtension" id="appletExtension" value="" checked="checked">None
                     <input type="radio" name="appletExtension" value="pin" onclick="setAppletDimension(295, 235)">PIN Management Applet
                     <input type="radio" name="appletExtension" value="identity" onclick="setAppletDimension(295, 235)">Identity Link Applet
                     <input type="radio" name="appletExtension" value="getcertificate" onclick="setAppletDimension(295, 235)">Get Certificate Applet
@@ -221,7 +225,7 @@
 -->
                 
             </fieldset>
-            <fieldset class="submit"><input type="submit" class="submit"/></fieldset>
+            <fieldset class="submit"><legend></legend><input type="submit" class="submit"></fieldset>
         </form>
 
     </body>
