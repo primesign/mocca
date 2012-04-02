@@ -33,6 +33,12 @@ package at.gv.egiz.bku.webstart.gui;
 
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
+import java.awt.Font;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -44,7 +50,24 @@ public class AboutDialog extends javax.swing.JDialog {
    * 
    */
   private static final long serialVersionUID = 1L;
-  
+
+  private final Logger log = LoggerFactory.getLogger(AboutDialog.class);
+
+  // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JButton jButton1;
+  private javax.swing.JLabel jLabel1;
+  private javax.swing.JLabel jLabel2;
+  private javax.swing.JLabel jLabel3;
+  private javax.swing.JPanel jPanel1;
+  private javax.swing.JPanel jPanel3;
+  // End of variables declaration//GEN-END:variables
+
+  private String version;
+
+  protected Integer baseWidth;
+  protected Integer baseHeight;
+  protected Integer baseFontSize;
+
     /** Creates new form AboutDialog */
     public AboutDialog(java.awt.Frame parent, boolean modal, String version) {
         super(parent, modal);
@@ -66,6 +89,9 @@ public class AboutDialog extends javax.swing.JDialog {
     jLabel3 = new javax.swing.JLabel();
     jPanel3 = new javax.swing.JPanel();
     jButton1 = new javax.swing.JButton();
+
+    baseFontSize = jLabel1.getFont().getSize();
+    jButton1.setFont(new Font("Dialog", Font.PLAIN, baseFontSize));
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("at/gv/egiz/bku/webstart/messages"); // NOI18N
@@ -145,6 +171,14 @@ public class AboutDialog extends javax.swing.JDialog {
     );
 
     pack();
+
+    addComponentListener(new ComponentAdapter() {
+        @Override
+        public void componentResized(ComponentEvent e) {
+            resize();
+            super.componentResized(e);
+        }
+    });
   }// </editor-fold>//GEN-END:initComponents
 
     private String getVersionText(ResourceBundle bundle) {
@@ -155,14 +189,57 @@ public class AboutDialog extends javax.swing.JDialog {
       setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 
+	protected float getResizeFactor() {
+
+		if (baseWidth == null || baseHeight == null || baseWidth == 0
+				|| baseHeight == 0) {
+
+			// first call - determine base width and height
+			baseWidth = getContentPane().getWidth();
+			baseHeight = getContentPane().getHeight();
+		}
+
+		float factor = (float) getContentPane().getSize().getWidth()
+				/ (float) baseWidth;
+
+		return factor;
+	}
+
+	public void resize() {
+		log.debug("Resizing About dialog...");
+
+		float factor = getResizeFactor();
+
+		if (jButton1 != null) {
+			jButton1.setFont(jButton1.getFont().deriveFont(
+					(float) (baseFontSize * factor)));
+		}
+
+		if (jLabel1 != null) {
+			jLabel1.setFont(jLabel1.getFont().deriveFont(
+					(float) (baseFontSize * factor)));
+		}
+
+		if (jLabel2 != null) {
+			jLabel2.setFont(jLabel2.getFont().deriveFont(
+					(float) (baseFontSize * factor)));
+		}
+
+		if (jLabel3 != null) {
+			jLabel3.setFont(jLabel3.getFont().deriveFont(
+					(float) (baseFontSize * factor)));
+		}
+	}
+
     /**
     * @param args the command line arguments
     */
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                AboutDialog dialog = new AboutDialog(new javax.swing.JFrame(), true, "1.2.3");
+                final AboutDialog dialog = new AboutDialog(new javax.swing.JFrame(), true, "1.2.3");
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);
                     }
@@ -171,15 +248,4 @@ public class AboutDialog extends javax.swing.JDialog {
             }
         });
     }
-
-  // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JButton jButton1;
-  private javax.swing.JLabel jLabel1;
-  private javax.swing.JLabel jLabel2;
-  private javax.swing.JLabel jLabel3;
-  private javax.swing.JPanel jPanel1;
-  private javax.swing.JPanel jPanel3;
-  // End of variables declaration//GEN-END:variables
-
-  private String version;
 }
