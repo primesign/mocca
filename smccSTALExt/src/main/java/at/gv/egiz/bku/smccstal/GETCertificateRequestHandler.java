@@ -86,9 +86,7 @@ public class GETCertificateRequestHandler extends AbstractRequestHandler {
 			        	fstream.close();
 			        	
 			        	log.debug("qualified certificate are saved to | " + file.getAbsolutePath() + ".");
-			        	
-			        	return new GETCertificateResponse();
-				        			        	
+			        					        			        	
 				     } else if ("getsimcert".equals(actionCommand)) {
 							
 			        	File file = gui.showSaveDialog(GetCertificateGUIFacade.FILENAME_SIM_CERT);
@@ -99,8 +97,7 @@ public class GETCertificateRequestHandler extends AbstractRequestHandler {
 			        	fstream.close();
 			        
 			        	log.debug("simple certificate are saved to | " + file.getAbsolutePath() + ".");
-			        	
-			        	return new GETCertificateResponse();									
+			        										
 					}
 				    else {
 				       	log.info("unknown command resolved.");
