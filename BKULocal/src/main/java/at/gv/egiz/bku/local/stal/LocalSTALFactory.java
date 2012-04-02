@@ -73,7 +73,10 @@ public class LocalSTALFactory implements STALFactory {
 		public static final String USE_SWCARD = "UseSWCard";
 
 		public boolean getUseSWCard() {
-			return configuration.getBoolean(USE_SWCARD, false);
+			if (configuration == null)
+				return false;
+			else
+				return configuration.getBoolean(USE_SWCARD, false);
 		}
 	}
 
