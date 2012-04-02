@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 public class LocalSTALFactory implements STALFactory {
 
   private final Logger log = LoggerFactory.getLogger(LocalSTALFactory.class);
-  protected static final Dimension PREFERRED_SIZE = new Dimension(318, 200);
+  protected static final Dimension PREFERRED_SIZE = new Dimension(318, 250);
   protected URL helpURL;
   protected Locale locale;
   
