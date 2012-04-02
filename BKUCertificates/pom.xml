@@ -11,7 +11,7 @@
    |   and don't forget to update dependency management 
    |   (depending modules: BKUOnline, BKULocal & BKUWebstart)
    |-->
-  <version>1.6</version>
+  <version>1.7</version>
   <name>BKU Certificates</name>
 
   <description>Trusted certificates for TLS/SSL authentication</description>
