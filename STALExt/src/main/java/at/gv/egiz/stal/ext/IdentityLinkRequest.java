@@ -22,35 +22,16 @@
  */
 
 
-package at.gv.egiz.bku.gui;
+package at.gv.egiz.stal.ext;
 
-import java.awt.event.ActionListener;
+import at.gv.egiz.stal.STALRequest;
+
 
 /**
+ * Dummy STAL request to trigger display of identity link.
  * 
  * @author Andreas Fitzek <andreas.fitzek@iaik.tugraz.at>
  */
-public interface PersonIdentityLinkGUIFacade extends BKUGUIFacade {
+public class IdentityLinkRequest extends STALRequest {
 
-	public static final String FIRSTNAME = "identity.firstname";
-	public static final String DATEOFBIRTH = "identity.dateofbirth";
-	public static final String LASTNAME = "identity.lastname";
-	public static final String TITLE_IDENITY = "title.identity";
-	
-	public static final String MESSAGE_IDENITY = "identity.msg";
-	
-	public static final String ERR_INFOBOX_INVALID = "err.infobox.invalid";
-	
-	/**
-	 * Currently dummy method to display anything ...
-	 * 
-	 * @param firstName
-	 * @param surName
-	 */
-	public void showPersonIdentityLinkInformationDialog(
-			ActionListener activateListener,
-			String actionCommand,
-			String firstName, 
-			String surName,
-			String birthdate);
 }

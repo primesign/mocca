@@ -29,6 +29,6 @@ import at.gv.egiz.stal.STALResponse;
  * 
  * @author Andreas Fitzek <andreas.fitzek@iaik.tugraz.at>
  */
-public class PersonIdentityLinkResponse extends STALResponse {
+public class IdentityLinkResponse extends STALResponse {
 
 }

@@ -31,26 +31,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.PINManagementGUIFacade;
-import at.gv.egiz.bku.gui.PersonIdentityLinkGUIFacade;
+import at.gv.egiz.bku.gui.IdentityLinkGUIFacade;
 import at.gv.egiz.bku.pin.gui.VerifyPINGUI;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
-import at.gv.egiz.stal.ext.PersonIdentityLinkRequest;
-import at.gv.egiz.stal.ext.PersonIdentityLinkResponse;
+import at.gv.egiz.stal.ext.IdentityLinkRequest;
+import at.gv.egiz.stal.ext.IdentityLinkResponse;
 
 /**
  * 
  * @author Andreas Fitzek <andreas.fitzek@iaik.tugraz.at>
  */
-public class PersonIdentityLinkRequestHandler extends AbstractRequestHandler {
+public class IdentityLinkRequestHandler extends AbstractRequestHandler {
 
 	private final static String IdentityInfoBox = "IdentityLink";
 	
-	private final Logger log = LoggerFactory.getLogger(PersonIdentityLinkRequestHandler.class);
+	private final Logger log = LoggerFactory.getLogger(IdentityLinkRequestHandler.class);
 
-	//PersonIdentityLinkGUIFacade person_gui = (PersonIdentityLinkGUIFacade) this.gui;
+	//IdentityLinkGUIFacade il_gui = (IdentityLinkGUIFacade) this.gui;
 	
 	@Override
 	public boolean requireCard() {
@@ -60,7 +60,7 @@ public class PersonIdentityLinkRequestHandler extends AbstractRequestHandler {
 	@Override
 	public STALResponse handleRequest(STALRequest request)
 			throws InterruptedException {
-		if(request instanceof PersonIdentityLinkRequest)
+		if(request instanceof IdentityLinkRequest)
 		{
 			try
 			{
@@ -68,32 +68,32 @@ public class PersonIdentityLinkRequestHandler extends AbstractRequestHandler {
 				
 				ASN1 identity_object = new ASN1(identity_asn1);
 				
-				String firstname = IdentityLinkExtractor.getPersonFirstName(identity_object);
-				String lastname = IdentityLinkExtractor.getPersonLastName(identity_object);
-				String dateofBirth = IdentityLinkExtractor.getPersonDateOfBirth(identity_object);
+				String firstname = IdentityLinkExtractor.getFirstName(identity_object);
+				String lastname = IdentityLinkExtractor.getLastName(identity_object);
+				String dateofBirth = IdentityLinkExtractor.getDateOfBirth(identity_object);
 				
 				// TODO: correct error handling ...
-				PersonIdentityLinkGUIFacade person_gui = null;
+				IdentityLinkGUIFacade il_gui = null;
 				
-				if(gui instanceof PersonIdentityLinkGUIFacade)
+				if(gui instanceof IdentityLinkGUIFacade)
 				{
-					person_gui = (PersonIdentityLinkGUIFacade) gui;
+					il_gui = (IdentityLinkGUIFacade) gui;
 				}
 				
-				if(person_gui == null)
+				if(il_gui == null)
 				{
-					log.warn("Failed to cast gui to PersonIdentityLinkGUIFacade!");
+					log.warn("Failed to cast gui to IdentityLinkGUIFacade!");
 					return new ErrorResponse(1000);
 				}
 				
-				person_gui.showPersonIdentityLinkInformationDialog(this, "ok_action", 
+				il_gui.showIdentityLinkInformationDialog(this, "ok_action", 
 						firstname, 
 						lastname,
 						dateofBirth);
 				
 				waitForAction();
 				
-				return new PersonIdentityLinkResponse();
+				return new IdentityLinkResponse();
 			}
 			catch(SignatureCardException ex)
 			{
@@ -104,7 +104,7 @@ public class PersonIdentityLinkRequestHandler extends AbstractRequestHandler {
 				return new ErrorResponse(1000);
 			} catch (IOException ex) {
 				log.error(ex.getMessage(), ex);
-				gui.showErrorDialog(PersonIdentityLinkGUIFacade.ERR_INFOBOX_INVALID,
+				gui.showErrorDialog(IdentityLinkGUIFacade.ERR_INFOBOX_INVALID,
 			              null, this, "cancel");
 				waitForAction();
 				return new ErrorResponse(1000);

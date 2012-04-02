@@ -41,7 +41,7 @@ import at.gv.egiz.bku.local.stal.LocalIdentityLinkSTALFactory;
 import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALResponse;
-import at.gv.egiz.stal.ext.PersonIdentityLinkRequest;
+import at.gv.egiz.stal.ext.IdentityLinkRequest;
 
 /**
  * IdentityLink BKU Worker for non-applet version
@@ -86,7 +86,7 @@ public class IdentityLinkServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		log.info("processRequest: IdentityLinkServlet");
 		STAL pinMgmtSTAL = stalFactory.createSTAL();
-	    List<STALResponse> stalResps = pinMgmtSTAL.handleRequest(Collections.singletonList(new PersonIdentityLinkRequest()));
+	    List<STALResponse> stalResps = pinMgmtSTAL.handleRequest(Collections.singletonList(new IdentityLinkRequest()));
 	    log.debug("Received STAL reponse {}.", stalResps.get(0).getClass());
 	    pinMgmtSTAL.handleRequest(Collections.singletonList(new QuitRequest()));
 

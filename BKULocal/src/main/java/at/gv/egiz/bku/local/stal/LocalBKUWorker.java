@@ -29,13 +29,13 @@ import at.gv.egiz.bku.smccstal.AbstractBKUWorker;
 import at.gv.egiz.bku.smccstal.GETCertificateRequestHandler;
 import at.gv.egiz.bku.smccstal.GETHardwareInfoRequestHandler;
 import at.gv.egiz.bku.smccstal.PINManagementRequestHandler;
-import at.gv.egiz.bku.smccstal.PersonIdentityLinkRequestHandler;
+import at.gv.egiz.bku.smccstal.IdentityLinkRequestHandler;
 import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 
-import at.gv.egiz.stal.ext.PersonIdentityLinkRequest;
+import at.gv.egiz.stal.ext.IdentityLinkRequest;
 import at.gv.egiz.stal.ext.GETCertificateRequest;
 import at.gv.egiz.stal.ext.GETHardwareInfoRequest;
 import at.gv.egiz.stal.ext.PINManagementRequest;
@@ -56,7 +56,7 @@ public class LocalBKUWorker extends AbstractBKUWorker {
     addRequestHandler(SignRequest.class, 
             new LocalSignRequestHandler(new LocalSecureViewer(gui)));
     addRequestHandler(PINManagementRequest.class, new PINManagementRequestHandler());
-    addRequestHandler(PersonIdentityLinkRequest.class, new PersonIdentityLinkRequestHandler());
+    addRequestHandler(IdentityLinkRequest.class, new IdentityLinkRequestHandler());
     addRequestHandler(GETCertificateRequest.class, new GETCertificateRequestHandler());
     addRequestHandler(GETHardwareInfoRequest.class, new GETHardwareInfoRequestHandler());
   }

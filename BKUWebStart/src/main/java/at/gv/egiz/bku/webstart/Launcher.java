@@ -321,8 +321,8 @@ public class Launcher implements BKUControllerInterface {
 	}
 
 	@Override
-	public void personIdentityLink(Locale locale) {
-		new Thread(new PersonIdentityLinkInvoker(status)).start();
+	public void getIdentityLink(Locale locale) {
+		new Thread(new IdentityLinkInvoker(status)).start();
 	}
 
 	@Override

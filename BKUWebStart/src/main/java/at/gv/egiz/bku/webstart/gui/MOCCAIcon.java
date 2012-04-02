@@ -274,8 +274,8 @@ public class MOCCAIcon implements StatusNotifier, ActionListener, ItemListener {
 			break;
 
 		case IDENTITYLINK_COMMAND:
-			log.debug("person identity link dialog requested via tray menu");
-			controller.personIdentityLink(messages.getLocale());
+			log.debug("identity link dialog requested via tray menu");
+			controller.getIdentityLink(messages.getLocale());
 			break;
 			
 		default:

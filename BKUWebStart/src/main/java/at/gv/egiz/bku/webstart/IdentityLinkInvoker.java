@@ -36,13 +36,13 @@ import at.gv.egiz.bku.webstart.gui.StatusNotifier;
  * 
  * @author Andreas Fitzek <andreas.fitzek@iaik.tugraz.at>
  */
-public class PersonIdentityLinkInvoker implements Runnable {
+public class IdentityLinkInvoker implements Runnable {
 	
-	private static final Logger log = LoggerFactory.getLogger(PersonIdentityLinkInvoker.class);
+	private static final Logger log = LoggerFactory.getLogger(IdentityLinkInvoker.class);
 	  
 	private StatusNotifier status;
 	
-	public PersonIdentityLinkInvoker(StatusNotifier status) {
+	public IdentityLinkInvoker(StatusNotifier status) {
 	      this.status = status;
 	  }
 
@@ -50,7 +50,7 @@ public class PersonIdentityLinkInvoker implements Runnable {
 	public void run() {
 		HttpURLConnection connection = null;
 	    try {
-	      log.info("Connecting to: " + Launcher.IDENTITY_LINK_URL);
+	      log.debug("Connecting to: " + Launcher.IDENTITY_LINK_URL);
 
 	      connection = (HttpURLConnection) Launcher.IDENTITY_LINK_URL.openConnection();
 
@@ -59,12 +59,12 @@ public class PersonIdentityLinkInvoker implements Runnable {
 	      connection.connect();
 
 	      if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-	        log.info("person identity link dialog returned");
+	        log.debug("identity link dialog returned");
 	      } else {
-	        log.error("unexpected response from person identity link: " + connection.getResponseMessage());
+	        log.error("unexpected response from identity link: " + connection.getResponseMessage());
 	      }
 	    } catch (IOException ex) {
-	      log.error("Failed to connect to person identity link", ex);
+	      log.error("Failed to connect to identity link", ex);
 	      status.error(StatusNotifier.ERROR_IDENTITY_LINK);
 	    } finally {
 	      if (connection != null) {

@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUIcons;
-import at.gv.egiz.bku.gui.PersonIdentityLinkGUI;
-import at.gv.egiz.bku.gui.PersonIdentityLinkGUIFacade;
+import at.gv.egiz.bku.gui.IdentityLinkGUI;
+import at.gv.egiz.bku.gui.IdentityLinkGUIFacade;
 import at.gv.egiz.bku.local.gui.GUIProxy;
 import at.gv.egiz.bku.local.gui.LocalHelpListener;
 import at.gv.egiz.bku.viewer.ResourceFontLoader;
@@ -78,13 +78,13 @@ public class LocalIdentityLinkSTALFactory implements STALFactory {
 	    } else {
 	      log.warn("No HELP URL configured, help system disabled.");
 	    }
-	    PersonIdentityLinkGUIFacade gui = new PersonIdentityLinkGUI(dialog.getContentPane(),
+	    IdentityLinkGUIFacade gui = new IdentityLinkGUI(dialog.getContentPane(),
 	            dialog.getLocale(),
 	            null,
 	            new ResourceFontLoader(),
 	            helpListener,
 	            null);
-	    BKUGUIFacade proxy = (BKUGUIFacade) GUIProxy.newInstance(gui, dialog, new Class[] { PersonIdentityLinkGUIFacade.class} );
+	    BKUGUIFacade proxy = (BKUGUIFacade) GUIProxy.newInstance(gui, dialog, new Class[] { IdentityLinkGUIFacade.class} );
 	    stal = new LocalBKUWorker(proxy, dialog);
 	    dialog.setPreferredSize(PREFERRED_SIZE);
 	    dialog.pack();

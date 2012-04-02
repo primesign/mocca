@@ -35,7 +35,7 @@ public class IdentityLinkExtractor {
 	
 	private static final Logger log = LoggerFactory.getLogger(IdentityLinkExtractor.class);
 	
-	private static ASN1 getPersonData(ASN1 identityLink) throws IOException
+	private static ASN1 getData(ASN1 identityLink) throws IOException
 	{
 		if(identityLink.getSize() > 4 )
 		{
@@ -54,9 +54,9 @@ public class IdentityLinkExtractor {
 		}
 	}  
 	
-	public static String getPersonFirstName(ASN1 identityLink) throws IOException
+	public static String getFirstName(ASN1 identityLink) throws IOException
 	{
-		ASN1 personData = getPersonData(identityLink);
+		ASN1 personData = getData(identityLink);
 		if(personData != null)
 		{
 			return personData.getElementAt(1).gvString();
@@ -64,9 +64,9 @@ public class IdentityLinkExtractor {
 		return null;
 	}
 	
-	public static String getPersonLastName(ASN1 identityLink) throws IOException
+	public static String getLastName(ASN1 identityLink) throws IOException
 	{
-		ASN1 personData = getPersonData(identityLink);
+		ASN1 personData = getData(identityLink);
 		if(personData != null)
 		{
 			return personData.getElementAt(2).gvString();
@@ -74,9 +74,9 @@ public class IdentityLinkExtractor {
 		return null;
 	}
 	
-	public static String getPersonDateOfBirth(ASN1 identityLink) throws IOException
+	public static String getDateOfBirth(ASN1 identityLink) throws IOException
 	{
-		ASN1 personData = getPersonData(identityLink);
+		ASN1 personData = getData(identityLink);
 		if(personData != null)
 		{
 			return personData.getElementAt(3).gvString();

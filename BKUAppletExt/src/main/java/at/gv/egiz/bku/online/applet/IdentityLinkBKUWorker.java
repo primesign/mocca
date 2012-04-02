@@ -31,24 +31,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
-import at.gv.egiz.bku.gui.PersonIdentityLinkGUIFacade;
-import at.gv.egiz.bku.smccstal.PersonIdentityLinkRequestHandler;
+import at.gv.egiz.bku.gui.IdentityLinkGUIFacade;
+import at.gv.egiz.bku.smccstal.IdentityLinkRequestHandler;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
-import at.gv.egiz.stal.ext.PersonIdentityLinkRequest;
-import at.gv.egiz.stal.ext.PersonIdentityLinkResponse;
+import at.gv.egiz.stal.ext.IdentityLinkRequest;
+import at.gv.egiz.stal.ext.IdentityLinkResponse;
 
 public class IdentityLinkBKUWorker extends AppletBKUWorker {
 	private final Logger log = LoggerFactory.getLogger(IdentityLinkBKUWorker.class);
 	
-	public IdentityLinkBKUWorker(BKUApplet applet, PersonIdentityLinkGUIFacade gui) {
+	public IdentityLinkBKUWorker(BKUApplet applet, IdentityLinkGUIFacade gui) {
 	    super(applet, gui);
 	    removeRequestHandler(InfoboxReadRequest.class);
 	    removeRequestHandler(SignRequest.class);
-	    addRequestHandler(PersonIdentityLinkRequest.class, new PersonIdentityLinkRequestHandler());
+	    addRequestHandler(IdentityLinkRequest.class, new IdentityLinkRequestHandler());
 	  }
 	
 	@Override
@@ -59,12 +59,12 @@ public class IdentityLinkBKUWorker extends AppletBKUWorker {
 
 	    try {
 
-	      List<STALResponse> responses = handleRequest(Collections.singletonList(new PersonIdentityLinkRequest()));
+	      List<STALResponse> responses = handleRequest(Collections.singletonList(new IdentityLinkRequest()));
 	      handleRequest(Collections.singletonList(new QuitRequest()));
 	      
 	      if (responses.size() == 1) {
 	        STALResponse response = responses.get(0);
-	        if (response instanceof PersonIdentityLinkResponse) {
+	        if (response instanceof IdentityLinkResponse) {
 	          log.info("Identity Link dialog terminated.");
 	        } else if (response instanceof ErrorResponse) {
 	          log.info("Identity Link dialog terminated with error.");

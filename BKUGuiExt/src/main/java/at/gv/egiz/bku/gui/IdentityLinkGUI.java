@@ -43,15 +43,15 @@ import org.slf4j.LoggerFactory;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
 
 /**
- * Implements GUI for the person identity link informations
+ * Implements GUI for the identity link informations
  * 
  * @author Andreas Fitzek <andreas.fitzek@iaik.tugraz.at>
  */
-public class PersonIdentityLinkGUI extends CardMgmtGUI implements
-		PersonIdentityLinkGUIFacade {
+public class IdentityLinkGUI extends CardMgmtGUI implements
+		IdentityLinkGUIFacade {
 
 	private final Logger log = LoggerFactory
-			.getLogger(PersonIdentityLinkGUI.class);
+			.getLogger(IdentityLinkGUI.class);
 
 	protected JLabel mgmtLabel;
 	
@@ -65,7 +65,7 @@ public class PersonIdentityLinkGUI extends CardMgmtGUI implements
 	
 	protected JButton activateButton;
 
-	public PersonIdentityLinkGUI(Container contentPane, Locale locale, URL backgroundImgURL, FontProvider fontProvider,
+	public IdentityLinkGUI(Container contentPane, Locale locale, URL backgroundImgURL, FontProvider fontProvider,
 			HelpListener helpListener, SwitchFocusListener switchFocusListener) {
 		super(contentPane, locale, Style.advanced, backgroundImgURL, fontProvider,
 				helpListener, switchFocusListener);
@@ -74,19 +74,19 @@ public class PersonIdentityLinkGUI extends CardMgmtGUI implements
 	}
 
 	@Override
-	public void showPersonIdentityLinkInformationDialog(
+	public void showIdentityLinkInformationDialog(
 			final ActionListener activateListener,
 			final String actionCommand,
 			final String firstName,
 			final String surName,
 			final String birthdate) {
-		log.debug("Scheduling Person Identity Link dialog.");
+		log.debug("Scheduling Identity Link dialog.");
 
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override
 			public void run() {
-				log.debug("Show Person Identity Link dialog.");
+				log.debug("Show Identity Link dialog.");
 
 				mainPanel.removeAll();
 				buttonPanel.removeAll();
@@ -96,10 +96,10 @@ public class PersonIdentityLinkGUI extends CardMgmtGUI implements
 						mgmtLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
 
 				if (renderHeaderPanel) {
-					titleLabel.setText(getMessage(PersonIdentityLinkGUIFacade.TITLE_IDENITY));
-					mgmtLabel.setText(getMessage(PersonIdentityLinkGUIFacade.MESSAGE_IDENITY));
+					titleLabel.setText(getMessage(IdentityLinkGUIFacade.TITLE_IDENITY));
+					mgmtLabel.setText(getMessage(IdentityLinkGUIFacade.MESSAGE_IDENITY));
 				} else {
-					mgmtLabel.setText(getMessage(PersonIdentityLinkGUIFacade.TITLE_IDENITY));
+					mgmtLabel.setText(getMessage(IdentityLinkGUIFacade.TITLE_IDENITY));
 				}
 				
 				activateButton.setFont(activateButton.getFont().deriveFont(
@@ -111,12 +111,12 @@ public class PersonIdentityLinkGUI extends CardMgmtGUI implements
 				activateButton.setText(getMessage(BUTTON_CLOSE));
 				
 				firstNameLabel_description = new JLabel();
-				firstNameLabel_description.setText(getMessage(PersonIdentityLinkGUIFacade.FIRSTNAME));
+				firstNameLabel_description.setText(getMessage(IdentityLinkGUIFacade.FIRSTNAME));
 				lastNameLabel_description = new JLabel();
-				lastNameLabel_description.setText(getMessage(PersonIdentityLinkGUIFacade.LASTNAME));
+				lastNameLabel_description.setText(getMessage(IdentityLinkGUIFacade.LASTNAME));
 				
 				birthdateLabel_description = new JLabel();
-				birthdateLabel_description.setText(getMessage(PersonIdentityLinkGUIFacade.DATEOFBIRTH));
+				birthdateLabel_description.setText(getMessage(IdentityLinkGUIFacade.DATEOFBIRTH));
 				
 				
 				firstNameLabel = new JLabel();
@@ -137,7 +137,7 @@ public class PersonIdentityLinkGUI extends CardMgmtGUI implements
 				birthdateLabel.setFont(birthdateLabel.getFont().deriveFont(
 						birthdateLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
 				
-				updateMethodToRunAtResize("at.gv.egiz.bku.gui.PersonIdentityLinkGUI", "renderContentAndButtons");
+				updateMethodToRunAtResize("at.gv.egiz.bku.gui.IdentityLinkGUI", "renderContentAndButtons");
 				
 				renderContentAndButtons();
 				

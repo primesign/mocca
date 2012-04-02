@@ -38,7 +38,7 @@ public interface BKUControllerInterface {
 	
 	public void getCertificate(Locale locale);
 
-	public void personIdentityLink(Locale locale);
+	public void getIdentityLink(Locale locale);
 
 	public void hardwareInfo(Locale locale);
 

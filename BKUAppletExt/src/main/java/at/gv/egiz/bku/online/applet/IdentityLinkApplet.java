@@ -30,8 +30,8 @@ import java.util.Locale;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.HelpListener;
-import at.gv.egiz.bku.gui.PersonIdentityLinkGUI;
-import at.gv.egiz.bku.gui.PersonIdentityLinkGUIFacade;
+import at.gv.egiz.bku.gui.IdentityLinkGUI;
+import at.gv.egiz.bku.gui.IdentityLinkGUIFacade;
 import at.gv.egiz.bku.gui.SwitchFocusListener;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
 
@@ -47,13 +47,13 @@ private static final long serialVersionUID = 1L;
 			BKUGUIFacade.Style guiStyle, URL backgroundImgURL,
 			FontProvider fontProvider, HelpListener helpListener,
 			SwitchFocusListener switchFocusListener) {
-		return new PersonIdentityLinkGUI(contentPane, locale,
+		return new IdentityLinkGUI(contentPane, locale,
 				backgroundImgURL, fontProvider, helpListener,
 				switchFocusListener);
 	}
 
 	@Override
 	protected AppletBKUWorker createBKUWorker(BKUApplet applet, BKUGUIFacade gui) {
-		return new IdentityLinkBKUWorker(applet, (PersonIdentityLinkGUIFacade) gui);
+		return new IdentityLinkBKUWorker(applet, (IdentityLinkGUIFacade) gui);
 	}
 }
