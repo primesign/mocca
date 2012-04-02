@@ -85,8 +85,10 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 				mainPanel.removeAll();
 				buttonPanel.removeAll();
 			 
+				titleLabel.setText(getMessage(TITLE_HARDWAREINFO));
+				
 				backButton.setFont(backButton.getFont().deriveFont(backButton.getFont().getStyle()& ~java.awt.Font.BOLD));
-				backButton.setText(getMessage(BUTTON_BACK));
+				backButton.setText(getMessage(BUTTON_CLOSE));
 				backButton.setActionCommand(backcmd);
 				backButton.addActionListener(hardwareinfolistener);
 				backButton.setEnabled(true);
@@ -144,6 +146,7 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 				
 				renderHardwareInfoFrame();
 				
+				backButton.requestFocus();
 				contentPanel.validate();
 				
 				resize();			

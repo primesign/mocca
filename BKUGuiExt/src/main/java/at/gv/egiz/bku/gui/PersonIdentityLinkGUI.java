@@ -108,7 +108,7 @@ public class PersonIdentityLinkGUI extends CardMgmtGUI implements
 				activateButton.addActionListener(activateListener);
 				activateButton.setActionCommand(actionCommand);
 				
-				activateButton.setText(getMessage(PersonIdentityLinkGUIFacade.IDENTIFY_BUTTON));
+				activateButton.setText(getMessage(BUTTON_CLOSE));
 				
 				firstNameLabel_description = new JLabel();
 				firstNameLabel_description.setText(getMessage(PersonIdentityLinkGUIFacade.FIRSTNAME));
@@ -238,5 +238,64 @@ public class PersonIdentityLinkGUI extends CardMgmtGUI implements
 		buttonPanelLayout.setHorizontalGroup(buttonHorizontal);
 		buttonPanelLayout.setVerticalGroup(buttonVertical);
 
+	}
+	
+	@Override
+	public void resize() {
+	
+		log.debug("Resizing Personal IdentityLink Applet ...");
+
+		float factor = getResizeFactor();
+		
+		
+		if (mgmtLabel != null) {
+			mgmtLabel.setFont(mgmtLabel.getFont().deriveFont(
+					(float) ((baseFontSize)* factor)));
+		}
+		
+		if (activateButton != null) {
+			activateButton.setFont(activateButton.getFont().deriveFont(
+					(float) ((baseFontSize)* factor)));
+		}
+		
+		if (firstNameLabel_description != null) {
+			firstNameLabel_description.setFont(firstNameLabel_description.getFont().deriveFont(
+					(float) ((baseFontSize)* factor)));
+		}
+		
+		if (lastNameLabel_description != null) {
+			lastNameLabel_description.setFont(lastNameLabel_description.getFont().deriveFont(
+					(float) ((baseFontSize)* factor)));
+		}
+		
+		if (birthdateLabel_description != null) {
+			birthdateLabel_description.setFont(birthdateLabel_description.getFont().deriveFont(
+					(float) ((baseFontSize)* factor)));
+		}
+
+		if (firstNameLabel != null) {
+			firstNameLabel.setFont(firstNameLabel.getFont().deriveFont(
+					(float) ((baseFontSize)* factor)));
+		}
+
+		if (lastNameLabel != null) {
+			lastNameLabel.setFont(lastNameLabel.getFont().deriveFont(
+					(float) ((baseFontSize)* factor)));
+		}
+
+		if (birthdateLabel != null) {
+			birthdateLabel.setFont(birthdateLabel.getFont().deriveFont(
+					(float) ((baseFontSize)* factor)));
+		}
+
+		
+		if (activateButton != null) {
+
+			activateButton.setFont(activateButton.getFont().deriveFont(
+					(float) (baseFontSize * factor)));
+
+		}
+		
+		super.resize();
 	}
 }

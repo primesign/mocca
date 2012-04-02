@@ -76,7 +76,7 @@ public class GetCertificateGUI extends CardMgmtGUI implements
 				
 				mainPanel.removeAll();
 				buttonPanel.removeAll();
-				
+								
 		        titleLabel.setText(getMessage(TITLE_GETCERTIFICATE));
 				
 				getSimCertButton = new JButton();
@@ -106,7 +106,9 @@ public class GetCertificateGUI extends CardMgmtGUI implements
 				if (windowCloseAdapter != null) {
 					windowCloseAdapter.registerListener(cancelListener, cancelCmd);
 				}
-				        
+				
+				
+				cancelButton.requestFocus();
 				contentPanel.validate();
 				
 				resize();	

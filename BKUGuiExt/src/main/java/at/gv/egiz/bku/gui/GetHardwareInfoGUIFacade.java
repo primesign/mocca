@@ -36,6 +36,8 @@ public interface GetHardwareInfoGUIFacade extends BKUGUIFacade {
 	public static final String LABEL_SMARTCARD = "label.hardwareinfo.smartcard";
 	public static final String LABEL_SMARTCARD_TYPE = "label.hardwareinfo.smartcard.type";
 	public static final String LABEL_SMARTCARD_ATR = "label.hardwareinfo.smartcard.atr";
+	
+	public static final String TITLE_HARDWAREINFO = "title.hardwareinfo";
 		
 	public void showHardwareInfoDialog(final ActionListener hardwareinfolistener, final String backcmd, final String showcardreadername, 
 			final String showsmartcardname, final String showsmartcardATR);
