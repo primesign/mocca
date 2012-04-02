@@ -32,6 +32,8 @@ import java.awt.event.ActionListener;
  */
 public interface IdentityLinkGUIFacade extends BKUGUIFacade {
 
+	public static final String HELP_IDENTITYLINK = "help.identity.link";
+	
 	public static final String FIRSTNAME = "identity.firstname";
 	public static final String DATEOFBIRTH = "identity.dateofbirth";
 	public static final String LASTNAME = "identity.lastname";

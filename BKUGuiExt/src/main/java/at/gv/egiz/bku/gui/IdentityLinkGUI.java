@@ -88,6 +88,8 @@ public class IdentityLinkGUI extends CardMgmtGUI implements
 			public void run() {
 				log.debug("Show Identity Link dialog.");
 
+				helpListener.setHelpTopic(HELP_IDENTITYLINK);
+				
 				mainPanel.removeAll();
 				buttonPanel.removeAll();
 
@@ -201,22 +203,23 @@ public class IdentityLinkGUI extends CardMgmtGUI implements
 								.addGroup(mainPanelLayout.createParallelGroup(Alignment.LEADING)
 									.addComponent(firstNameLabel)
 									.addComponent(lastNameLabel)
-									.addComponent(birthdateLabel)))))
+									.addComponent(birthdateLabel))
+								.addContainerGap(50, Integer.MAX_VALUE))))
 			);
 		mainPanelLayout.setVerticalGroup(
 				mainPanelLayout.createParallelGroup(Alignment.LEADING)
 					.addGroup(mainPanelLayout.createSequentialGroup()
 						//.addContainerGap()
 						.addGroup(messageVertical)
-						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addPreferredGap(ComponentPlacement.RELATED)
 						.addGroup(mainPanelLayout.createParallelGroup(Alignment.BASELINE)
 							.addComponent(firstNameLabel_description)
 							.addComponent(firstNameLabel))
-						//.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addPreferredGap(ComponentPlacement.RELATED)
 						.addGroup(mainPanelLayout.createParallelGroup(Alignment.BASELINE)
 							.addComponent(lastNameLabel_description)
 							.addComponent(lastNameLabel))
-						//.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addPreferredGap(ComponentPlacement.RELATED)
 						.addGroup(mainPanelLayout.createParallelGroup(Alignment.BASELINE)
 							.addComponent(birthdateLabel_description)
 							.addComponent(birthdateLabel)))
