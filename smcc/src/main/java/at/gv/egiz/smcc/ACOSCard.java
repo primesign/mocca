@@ -123,13 +123,18 @@ PINMgmtSignatureCard {
 	  /**
 	   * The version of the card's digital signature application.
 	   */
-	  protected int appVersion = -1;		  
+	  protected int appVersion = -1;
+	
+	  /**
+	   * The detected type of ACOS card.
+	   */
+	  protected String cardType;
 	
 	  @Override
 	  public void init(Card card, CardTerminal cardTerminal) {
 	    super.init(card, cardTerminal);
 
-	    log.info("A-Sign premium ACOS card found");
+	    log.info("ACOS card found");
 
 	    // determine application version
 	    try {
@@ -195,15 +200,19 @@ PINMgmtSignatureCard {
 
 			if (countryID == null) {
 				log.debug("No Country found! - default to ACOS Austria.");
+				cardType = "A-Sign premium";
 				_infoboxHandler = new ACOSATCard(this);
 			}
 			else if (countryID.equalsIgnoreCase("LI")) {
 				log.debug("Identified lisign card.");
+				cardType = "lisign";
 				_infoboxHandler = new ACOSLIESignCard(this);
 			} else {
 				log.debug("No lisign card - default to ACOS Austria.");
+				cardType = "A-Sign premium";
 				_infoboxHandler = new ACOSATCard(this);
 			}
+			log.info("Identified {} card", cardType);
 		} catch (SignatureCardException e) {
 			log.warn("Cannot determine card type by certificate. Using default.", e);
 			_infoboxHandler = new ACOSATCard(this);
@@ -444,7 +453,10 @@ PINMgmtSignatureCard {
 
 	  @Override
 	  public String toString() {
-	    return "a-sign premium (version " + getAppVersion() + ")";
+	    String ret = "ACOS card: " + cardType;
+	    if (getAppVersion() > 0)
+	      ret += " (application version " + getAppVersion() + ")";
+	    return ret;
 	  }
 
 	  ////////////////////////////////////////////////////////////////////////
