@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.GetHardwareInfoGUIFacade;
+import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.ext.GETHardwareInfoRequest;
@@ -54,23 +55,14 @@ public class GETHardwareInfoRequestHandler extends AbstractRequestHandler {
 		
 		if (request instanceof GETHardwareInfoRequest) {
 			
-			try {
-			  String terminal = card.getTerminalName();
-			  String smartcard = card.toString();
-			  String smartcard_ATR = toString(card.getCard().getATR().getBytes());
-			  
-	    } catch (SignatureCardException e) {
-	        log.error("Some error occur during card communication.", e);
-	            gui.showErrorDialog(GetHardwareInfoGUIFacade.ERR_CARD_NOTACTIVATED,
-	                 null, this, "cancel");
-      }
-		  
-			
-			
 			GetHardwareInfoGUIFacade gui = (GetHardwareInfoGUIFacade) this.gui;
 			
+			String terminal = card.getTerminalName();
+			String smartcard = card.toString();
+			String smartcard_ATR = toString(card.getCard().getATR().getBytes());
+		 							
 			gui.showHardwareInfoDialog(this, "back", terminal, smartcard, smartcard_ATR);
-			
+								
 			while (true) {
 			
 				waitForAction();
@@ -83,6 +75,7 @@ public class GETHardwareInfoRequestHandler extends AbstractRequestHandler {
 					 log.info("unknown command resolved.");
 				 }
 			}
+					
 		}
 		return new GETHardwareInfoResponse();
 	}

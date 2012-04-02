@@ -90,9 +90,7 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 				backButton.setActionCommand(backcmd);
 				backButton.addActionListener(hardwareinfolistener);
 				backButton.setEnabled(true);
-				
-				//------------------------------------------------------------------------------------
-				
+								
 				readerpanel_border = new TitledBorder(null, getMessage(LABEL_CARDREADER), TitledBorder.LEADING, TitledBorder.TOP, null, null); 
 				readerpanel_border.setTitleFont(readerpanel_border.getTitleFont().deriveFont(
 						readerpanel_border.getTitleFont().getStyle()
@@ -100,8 +98,6 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 				readerpanel = new JPanel();
 				readerpanel.setBorder(readerpanel_border);
 
-				
-				
 				cardpanel_border = new TitledBorder(null, getMessage(LABEL_SMARTCARD), TitledBorder.LEADING, TitledBorder.TOP, null, null); 
 				cardpanel_border.setTitleFont(cardpanel_border.getTitleFont().deriveFont(
 						cardpanel_border.getTitleFont().getStyle()
@@ -111,30 +107,11 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 				cardpanel.setFont(cardpanel.getFont().deriveFont(
 						cardpanel.getFont().getStyle()
 						& java.awt.Font.BOLD));
-				
-				GroupLayout gl_contentPane = new GroupLayout(mainPanel);
-				gl_contentPane.setHorizontalGroup(
-					gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
-								.addComponent(cardpanel, GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)
-								.addComponent(readerpanel, GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)))
-				);
-				gl_contentPane.setVerticalGroup(
-					gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(readerpanel, GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
-							.addGap(8)
-							.addComponent(cardpanel, GroupLayout.PREFERRED_SIZE, 89, Short.MAX_VALUE)
-							.addContainerGap())
-				);
-				
+								
 				lblTyp = new JLabel(getMessage(LABEL_SMARTCARD_TYPE));
 				lblTyp.setFont(lblTyp.getFont().deriveFont(
 						lblTyp.getFont().getStyle()
 						& java.awt.Font.BOLD));
-				
 				
 				lblAtr = new JLabel(getMessage(LABEL_SMARTCARD_ATR));
 				lblAtr.setFont(lblAtr.getFont().deriveFont(
@@ -145,44 +122,12 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 				lblNewLabel_1.setFont(lblNewLabel_1.getFont().deriveFont(
 						lblNewLabel_1.getFont().getStyle()
 						& ~java.awt.Font.BOLD));
-				
-				
+					
 				lblNewLabel_2 = new JLabel(makeATRString(showsmartcardATR, 40));
 				lblNewLabel_2.setVerticalAlignment(SwingConstants.CENTER);
 				lblNewLabel_2.setFont(lblNewLabel_2.getFont().deriveFont(
 						lblNewLabel_2.getFont().getStyle()
 						& ~java.awt.Font.BOLD));
-				
-				GroupLayout gl_cardpanel = new GroupLayout(cardpanel);
-				gl_cardpanel.setHorizontalGroup(
-						gl_cardpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addGroup(gl_cardpanel.createSequentialGroup()
-								.addContainerGap()
-								.addGroup(gl_cardpanel.createParallelGroup(GroupLayout.Alignment.TRAILING)
-									.addComponent(lblTyp, GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
-									.addComponent(lblAtr, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-								.addPreferredGap(ComponentPlacement.UNRELATED)
-								.addGroup(gl_cardpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-									.addComponent(lblNewLabel_1, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
-									.addComponent(lblNewLabel_2, GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)))
-					);
-				gl_cardpanel.setVerticalGroup(
-					gl_cardpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addGroup(gl_cardpanel.createSequentialGroup()
-							.addGroup(gl_cardpanel.createParallelGroup(GroupLayout.Alignment.BASELINE)
-								.addGroup(gl_cardpanel.createSequentialGroup()
-									.addGap(2)
-									.addComponent(lblTyp, GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE))
-								.addComponent(lblNewLabel_1, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(gl_cardpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-								.addComponent(lblNewLabel_2, GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
-								.addGroup(gl_cardpanel.createSequentialGroup()
-									.addComponent(lblAtr, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
-									.addGap(6)))
-							.addGap(3))
-				);
-				cardpanel.setLayout(gl_cardpanel);
 				
 				lblNewLabel = new JLabel(showcardreadername);
 				lblNewLabel.setVerticalAlignment(SwingConstants.CENTER);
@@ -190,46 +135,107 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 						lblNewLabel.getFont().getStyle()
 						& ~java.awt.Font.BOLD));
 				
-				GroupLayout gl_readerpanel = new GroupLayout(readerpanel);
-				gl_readerpanel.setHorizontalGroup(
-					gl_readerpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addGroup(gl_readerpanel.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 276, Short.MAX_VALUE))
-				);
-				gl_readerpanel.setVerticalGroup(
-					gl_readerpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 15, Short.MAX_VALUE)
-				);
-				readerpanel.setLayout(gl_readerpanel);
-				mainPanel.setLayout(gl_contentPane);
-				
-				//------------------------------------------------------------------------------------				
-				
-				GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
-				buttonPanel.setLayout(buttonPanelLayout);
-				
-				GroupLayout.ParallelGroup buttonHorizontal = buttonPanelLayout
-						.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(backButton, GroupLayout.PREFERRED_SIZE,	buttonSize, GroupLayout.PREFERRED_SIZE);
-
-				GroupLayout.Group buttonVertical = buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-						.addComponent(backButton);
-				
-				
-				buttonPanelLayout.setHorizontalGroup(buttonHorizontal);
-				buttonPanelLayout.setVerticalGroup(buttonVertical);
-				
 				
 				if (windowCloseAdapter != null) {
 					windowCloseAdapter.registerListener(hardwareinfolistener, backcmd);
 				}
+				
+				updateMethodToRunAtResize("at.gv.egiz.bku.gui.GetHardwareInfoGUI", "renderHardwareInfoFrame");
+				
+				renderHardwareInfoFrame();
 				
 				contentPanel.validate();
 				
 				resize();			
 			}
 		});
+	}
+	
+	public void renderHardwareInfoFrame() {
+		
+		GroupLayout gl_contentPane = new GroupLayout(mainPanel);
+		gl_contentPane.setHorizontalGroup(
+			gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
+//						.addComponent(cardpanel, GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)
+//						.addComponent(readerpanel, GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)))
+						.addComponent(cardpanel, 0, 298, Short.MAX_VALUE)
+						.addComponent(readerpanel, 0, 298, Short.MAX_VALUE)))
+		);
+		gl_contentPane.setVerticalGroup(
+			gl_contentPane.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+//					.addComponent(readerpanel, GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
+//					.addGap(8)
+//					.addComponent(cardpanel, GroupLayout.PREFERRED_SIZE, 89, Short.MAX_VALUE)
+					.addComponent(readerpanel, 0, 45, Short.MAX_VALUE)
+					.addGap(8)
+					.addComponent(cardpanel, 0, 89, Short.MAX_VALUE)
+					.addContainerGap())
+		);
+		
+		GroupLayout gl_cardpanel = new GroupLayout(cardpanel);
+		gl_cardpanel.setHorizontalGroup(
+				gl_cardpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
+					.addGroup(gl_cardpanel.createSequentialGroup()
+						.addContainerGap()
+						.addGroup(gl_cardpanel.createParallelGroup(GroupLayout.Alignment.TRAILING)
+							.addComponent(lblTyp, GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
+							.addComponent(lblAtr, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addGroup(gl_cardpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(lblNewLabel_1, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+							.addComponent(lblNewLabel_2, GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)))
+			);
+		gl_cardpanel.setVerticalGroup(
+			gl_cardpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(gl_cardpanel.createSequentialGroup()
+					.addGroup(gl_cardpanel.createParallelGroup(GroupLayout.Alignment.BASELINE)
+						.addGroup(gl_cardpanel.createSequentialGroup()
+							.addGap(2)
+							.addComponent(lblTyp, GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE))
+						.addComponent(lblNewLabel_1, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_cardpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
+						.addComponent(lblNewLabel_2, GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
+						.addGroup(gl_cardpanel.createSequentialGroup()
+							.addComponent(lblAtr, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+							.addGap(6)))
+					.addGap(3))
+		);
+		cardpanel.setLayout(gl_cardpanel);
+				
+		GroupLayout gl_readerpanel = new GroupLayout(readerpanel);
+		gl_readerpanel.setHorizontalGroup(
+			gl_readerpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(gl_readerpanel.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 276, Short.MAX_VALUE))
+		);
+		gl_readerpanel.setVerticalGroup(
+			gl_readerpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 15, Short.MAX_VALUE)
+		);
+		readerpanel.setLayout(gl_readerpanel);
+		mainPanel.setLayout(gl_contentPane);
+		
+		//------------------------------------------------------------------------------------				
+		
+		GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+		buttonPanel.setLayout(buttonPanelLayout);
+		
+		GroupLayout.ParallelGroup buttonHorizontal = buttonPanelLayout
+				.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addComponent(backButton, GroupLayout.PREFERRED_SIZE,	buttonSize, GroupLayout.PREFERRED_SIZE);
+
+		GroupLayout.Group buttonVertical = buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+				.addComponent(backButton);
+		
+		
+		buttonPanelLayout.setHorizontalGroup(buttonHorizontal);
+		buttonPanelLayout.setVerticalGroup(buttonVertical);
 	}
 	
 	@Override

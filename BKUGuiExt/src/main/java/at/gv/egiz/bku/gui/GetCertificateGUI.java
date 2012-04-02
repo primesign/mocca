@@ -98,52 +98,10 @@ public class GetCertificateGUI extends CardMgmtGUI implements
 				cancelButton.setActionCommand(cancelCmd);
 				cancelButton.addActionListener(cancelListener);
 				cancelButton.setEnabled(true);
+							
+				updateMethodToRunAtResize("at.gv.egiz.bku.gui.GetCertificateGUI", "renderGetCertificateFrame");
 				
-				GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
-				buttonPanel.setLayout(buttonPanelLayout);
-				
-	//---------------------------------------------------------------------------------------------------------
-				
-				GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
-				mainPanelLayout.setHorizontalGroup(
-						mainPanelLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addGroup(mainPanelLayout.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-								.addGroup(GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-									.addComponent(getQualCertButton, GroupLayout.DEFAULT_SIZE, 
-											GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addGap(12))
-								.addGroup(GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-									.addGap(1)
-									.addComponent(getSimCertButton, GroupLayout.DEFAULT_SIZE, 
-											getQualCertButton.getSize().width, Short.MAX_VALUE)
-									.addContainerGap())))
-				);
-				mainPanelLayout.setVerticalGroup(
-						mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addGroup(mainPanelLayout.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(getSimCertButton, GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
-							.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-							.addComponent(getQualCertButton, GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
-							));
-				
-				mainPanel.setLayout(mainPanelLayout);
-	//---------------------------------------------------------------------------------------------------------
-				
-				
-				GroupLayout.ParallelGroup buttonHorizontal = buttonPanelLayout
-						.createParallelGroup(GroupLayout.Alignment.CENTER)
-						.addComponent(cancelButton, GroupLayout.PREFERRED_SIZE,	buttonSize, GroupLayout.PREFERRED_SIZE);
-
-				GroupLayout.Group buttonVertical = buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-						.addComponent(cancelButton);
-								
-				buttonPanelLayout.setHorizontalGroup(buttonHorizontal);
-				buttonPanelLayout.setVerticalGroup(buttonVertical);
-				
-				
+				renderGetCertificateFrame();
 				
 				if (windowCloseAdapter != null) {
 					windowCloseAdapter.registerListener(cancelListener, cancelCmd);
@@ -156,6 +114,53 @@ public class GetCertificateGUI extends CardMgmtGUI implements
 		});
 	}
 
+	public void renderGetCertificateFrame() {
+				
+//---------------------------------------------------------------------------------------------------------
+		
+		GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
+		mainPanelLayout.setHorizontalGroup(
+				mainPanelLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addGroup(mainPanelLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+						.addGroup(GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+							.addComponent(getQualCertButton, 0, 
+									GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addGap(12))
+						.addGroup(GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+							.addGap(1)
+							.addComponent(getSimCertButton, 0, 
+									getQualCertButton.getSize().width, Short.MAX_VALUE)
+							.addContainerGap())))
+		);
+		mainPanelLayout.setVerticalGroup(
+				mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+				.addGroup(mainPanelLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(getSimCertButton, GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+					.addComponent(getQualCertButton, GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+					));
+		
+		mainPanel.setLayout(mainPanelLayout);
+//---------------------------------------------------------------------------------------------------------
+		
+		GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+		
+		GroupLayout.ParallelGroup buttonHorizontal = buttonPanelLayout
+				.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addComponent(cancelButton, GroupLayout.PREFERRED_SIZE,	buttonSize, GroupLayout.PREFERRED_SIZE);
+
+		GroupLayout.Group buttonVertical = buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+				.addComponent(cancelButton);
+		
+		buttonPanelLayout.setHorizontalGroup(buttonHorizontal);
+		buttonPanelLayout.setVerticalGroup(buttonVertical);
+		
+		buttonPanel.setLayout(buttonPanelLayout);
+	}
+	
 	@Override
 	public void resize() {
 		
@@ -177,6 +182,12 @@ public class GetCertificateGUI extends CardMgmtGUI implements
 
 		}
 		
+		if (cancelButton != null) {
+
+			cancelButton.setFont(cancelButton.getFont().deriveFont(
+					(float) (baseFontSize * factor)));
+
+		}
 		
 		super.resize();
 	}
