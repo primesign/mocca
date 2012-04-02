@@ -39,6 +39,9 @@ public interface PersonIdentityLinkGUIFacade extends BKUGUIFacade {
 	
 	public static final String MESSAGE_IDENITY = "identity.msg";
 	public static final String IDENTIFY_BUTTON = "identity.button";
+	
+	public static final String ERR_INFOBOX_INVALID = "err.infobox.invalid";
+	
 	/**
 	 * Currently dummy method to display anything ...
 	 * 

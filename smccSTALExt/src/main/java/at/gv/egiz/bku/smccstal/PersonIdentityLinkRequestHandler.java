@@ -98,13 +98,15 @@ public class PersonIdentityLinkRequestHandler extends AbstractRequestHandler {
 			catch(SignatureCardException ex)
 			{
 				log.error(ex.getMessage(), ex);
-				//gui.showErrorDialog(errorMsgKey, errorMsgParams)
-				//waitForAction();
+				gui.showErrorDialog(PINManagementGUIFacade.ERR_CARD_NOTACTIVATED,
+			              null, this, "cancel");
+				waitForAction();
 				return new ErrorResponse(1000);
 			} catch (IOException ex) {
 				log.error(ex.getMessage(), ex);
-				//gui.showErrorDialog(errorMsgKey, errorMsgParams)
-				//waitForAction();
+				gui.showErrorDialog(PersonIdentityLinkGUIFacade.ERR_INFOBOX_INVALID,
+			              null, this, "cancel");
+				waitForAction();
 				return new ErrorResponse(1000);
 			}
 		}
