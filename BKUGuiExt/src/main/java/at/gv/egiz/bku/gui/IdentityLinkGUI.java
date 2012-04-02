@@ -199,12 +199,13 @@ public class IdentityLinkGUI extends CardMgmtGUI implements
 									.addComponent(firstNameLabel_description)
 									.addComponent(lastNameLabel_description)
 									.addComponent(birthdateLabel_description))
-								.addPreferredGap(ComponentPlacement.RELATED)
+								.addPreferredGap(ComponentPlacement.RELATED, 5, 5)
 								.addGroup(mainPanelLayout.createParallelGroup(Alignment.LEADING)
 									.addComponent(firstNameLabel)
 									.addComponent(lastNameLabel)
 									.addComponent(birthdateLabel))
-								.addContainerGap(50, Integer.MAX_VALUE))))
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addContainerGap(0, Integer.MAX_VALUE))))
 			);
 		mainPanelLayout.setVerticalGroup(
 				mainPanelLayout.createParallelGroup(Alignment.LEADING)
