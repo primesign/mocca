@@ -51,11 +51,11 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 
 	private final Logger log = LoggerFactory.getLogger(GetHardwareInfoGUI.class);
 	
-	protected JLabel lblTyp;
+	protected JLabel lblType;
 	protected JLabel lblAtr;
-	protected JLabel lblNewLabel;
-	protected JLabel lblNewLabel_1;
-	protected JLabel lblNewLabel_2;
+	protected JLabel lblReaderContent;
+	protected JLabel lblTypeContent;
+	protected JLabel lblAtrContent;
 	protected JPanel cardpanel;
 	protected JPanel readerpanel;
 	protected TitledBorder readerpanel_border;
@@ -109,9 +109,9 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 						cardpanel.getFont().getStyle()
 						& java.awt.Font.BOLD));
 								
-				lblTyp = new JLabel(getMessage(LABEL_SMARTCARD_TYPE));
-				lblTyp.setFont(lblTyp.getFont().deriveFont(
-						lblTyp.getFont().getStyle()
+				lblType = new JLabel(getMessage(LABEL_SMARTCARD_TYPE));
+				lblType.setFont(lblType.getFont().deriveFont(
+						lblType.getFont().getStyle()
 						& java.awt.Font.BOLD));
 				
 				lblAtr = new JLabel(getMessage(LABEL_SMARTCARD_ATR));
@@ -119,21 +119,21 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 						lblAtr.getFont().getStyle()
 						& java.awt.Font.BOLD));
 				
-				lblNewLabel_1 = new JLabel(showsmartcardname);
-				lblNewLabel_1.setFont(lblNewLabel_1.getFont().deriveFont(
-						lblNewLabel_1.getFont().getStyle()
+				lblTypeContent = new JLabel(showsmartcardname);
+				lblTypeContent.setFont(lblTypeContent.getFont().deriveFont(
+						lblTypeContent.getFont().getStyle()
 						& ~java.awt.Font.BOLD));
 					
-				lblNewLabel_2 = new JLabel(makeATRString(showsmartcardATR, 40));
-				lblNewLabel_2.setVerticalAlignment(SwingConstants.CENTER);
-				lblNewLabel_2.setFont(lblNewLabel_2.getFont().deriveFont(
-						lblNewLabel_2.getFont().getStyle()
+				lblAtrContent = new JLabel(makeATRString(showsmartcardATR, 40));
+				lblAtrContent.setVerticalAlignment(SwingConstants.CENTER);
+				lblAtrContent.setFont(lblAtrContent.getFont().deriveFont(
+						lblAtrContent.getFont().getStyle()
 						& ~java.awt.Font.BOLD));
 				
-				lblNewLabel = new JLabel(showcardreadername);
-				lblNewLabel.setVerticalAlignment(SwingConstants.CENTER);
-				lblNewLabel.setFont(lblNewLabel.getFont().deriveFont(
-						lblNewLabel.getFont().getStyle()
+				lblReaderContent = new JLabel(showcardreadername);
+				lblReaderContent.setVerticalAlignment(SwingConstants.CENTER);
+				lblReaderContent.setFont(lblReaderContent.getFont().deriveFont(
+						lblReaderContent.getFont().getStyle()
 						& ~java.awt.Font.BOLD));
 				
 				
@@ -184,12 +184,12 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 					.addGroup(gl_cardpanel.createSequentialGroup()
 						.addContainerGap()
 						.addGroup(gl_cardpanel.createParallelGroup(GroupLayout.Alignment.TRAILING)
-							.addComponent(lblTyp, GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
+							.addComponent(lblType, GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
 							.addComponent(lblAtr, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 						.addPreferredGap(ComponentPlacement.UNRELATED)
 						.addGroup(gl_cardpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(lblNewLabel_1, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
-							.addComponent(lblNewLabel_2, GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)))
+							.addComponent(lblTypeContent, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+							.addComponent(lblAtrContent, GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)))
 			);
 		gl_cardpanel.setVerticalGroup(
 			gl_cardpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -197,11 +197,11 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 					.addGroup(gl_cardpanel.createParallelGroup(GroupLayout.Alignment.BASELINE)
 						.addGroup(gl_cardpanel.createSequentialGroup()
 							.addGap(2)
-							.addComponent(lblTyp, GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE))
-						.addComponent(lblNewLabel_1, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE))
+							.addComponent(lblType, GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE))
+						.addComponent(lblTypeContent, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_cardpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addComponent(lblNewLabel_2, GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
+						.addComponent(lblAtrContent, GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
 						.addGroup(gl_cardpanel.createSequentialGroup()
 							.addComponent(lblAtr, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
 							.addGap(6)))
@@ -214,11 +214,11 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 			gl_readerpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(gl_readerpanel.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 276, Short.MAX_VALUE))
+					.addComponent(lblReaderContent, GroupLayout.PREFERRED_SIZE, 276, Short.MAX_VALUE))
 		);
 		gl_readerpanel.setVerticalGroup(
 			gl_readerpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 15, Short.MAX_VALUE)
+				.addComponent(lblReaderContent, GroupLayout.DEFAULT_SIZE, 15, Short.MAX_VALUE)
 		);
 		readerpanel.setLayout(gl_readerpanel);
 		mainPanel.setLayout(gl_contentPane);
@@ -248,8 +248,8 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 		float factor = getResizeFactor();
 		
 		
-		if (lblTyp != null) {
-			lblTyp.setFont(lblTyp.getFont().deriveFont(
+		if (lblType != null) {
+			lblType.setFont(lblType.getFont().deriveFont(
 					(float) ((baseFontSize - 2)* factor)));
 		}
 		
@@ -258,18 +258,18 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 					(float) ((baseFontSize - 2)* factor)));
 		}
 		
-		if (lblNewLabel != null) {
-			lblNewLabel.setFont(lblNewLabel.getFont().deriveFont(
+		if (lblReaderContent != null) {
+			lblReaderContent.setFont(lblReaderContent.getFont().deriveFont(
 					(float) ((baseFontSize - 2)* factor)));
 		}
 		
-		if (lblNewLabel_1 != null) {
-			lblNewLabel_1.setFont(lblNewLabel_1.getFont().deriveFont(
+		if (lblTypeContent != null) {
+			lblTypeContent.setFont(lblTypeContent.getFont().deriveFont(
 					(float) ((baseFontSize - 2)* factor)));
 		}
 		
-		if (lblNewLabel_2 != null) {
-			lblNewLabel_2.setFont(lblNewLabel_2.getFont().deriveFont(
+		if (lblAtrContent != null) {
+			lblAtrContent.setFont(lblAtrContent.getFont().deriveFont(
 					(float) ((baseFontSize - 2)* factor)));
 		}
 		
