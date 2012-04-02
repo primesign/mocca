@@ -204,6 +204,7 @@ public abstract class SLResultImpl implements SLResult {
     if (templates == null) {
       try {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         Transformer transformer = transformerFactory.newTransformer();
         if (fragment) {
           transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");

@@ -48,6 +48,7 @@ import java.util.Map;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLSocketFactory;
+import javax.xml.XMLConstants;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -825,6 +826,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 		}
 		try {
 			TransformerFactory factory = TransformerFactory.newInstance();
+			factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 			factory.setURIResolver(new URIResolverAdapter(urlDereferencer));
 			StreamData sd = urlDereferencer.dereference(styleSheetURL);
 			return factory.newTemplates(new StreamSource(sd.getStream()));
