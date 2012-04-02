@@ -66,19 +66,25 @@ public class Launcher implements BKUControllerInterface {
 	public static final URL INSTALL_CERT_URL;
 	public static final URL PIN_MANAGEMENT_URL;
 	public static final URL IDENTITY_LINK_URL;
+	public static final URL GETCERTIFICATE_URL;
 	public static final URL HELP_URL;
+	public static final URL HARDWAREINFO_URL;
 
 	static {
 		URL http = null;
 		URL https = null;
 		URL pin = null;
 		URL ident = null;
+		URL getcertificate = null;
+		URL hardwareinfo = null;
 		URL cert = null;
 		URL help = null;
 		try {
 			http = new URL("http://localhost:" + Integer.getInteger(Container.HTTPS_PORT_PROPERTY, 3495).intValue() + '/');
 			https = new URL("https://localhost:" + Integer.getInteger(Container.HTTPS_PORT_PROPERTY, 3496).intValue() + '/');
 			pin = new URL(http, "/PINManagement");
+			getcertificate = new URL(http, "/GETCertificate");
+			hardwareinfo = new URL(http, "/GETHardwareinfo");
 			cert = new URL(http, "/ca.crt");
 			help = new URL(http, "/help/");
 			ident = new URL(http, "/IdentityLink");
@@ -89,6 +95,8 @@ public class Launcher implements BKUControllerInterface {
 			HTTPS_SECURITY_LAYER_URL = https;
 			PIN_MANAGEMENT_URL = pin;
 			IDENTITY_LINK_URL = ident;
+			GETCERTIFICATE_URL = getcertificate;
+			HARDWAREINFO_URL = hardwareinfo;
 			INSTALL_CERT_URL = cert;
 			HELP_URL = help;
 		}
@@ -315,5 +323,15 @@ public class Launcher implements BKUControllerInterface {
 	@Override
 	public void personIdentityLink(Locale locale) {
 		new Thread(new PersonIdentityLinkInvoker(status)).start();
+	}
+
+	@Override
+	public void getCertificate(Locale locale) {
+		new Thread(new GetCertificateInvoker(status)).start();
+	}
+
+	@Override
+	public void hardwareInfo(Locale locale) {
+		new Thread(new HardwareInfoInvoker(status)).start();
 	}
 }

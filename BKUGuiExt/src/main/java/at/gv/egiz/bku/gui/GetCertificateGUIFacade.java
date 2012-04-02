@@ -21,43 +21,31 @@
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
+package at.gv.egiz.bku.gui;
 
-package at.gv.egiz.bku.webstart.gui;
+import java.awt.event.ActionListener;
+import java.io.File;
 
-import java.util.Locale;
+/**
+*
+* @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
+*/
 
-public interface BKUControllerInterface {
-  
-  public void shutDown();
+public interface GetCertificateGUIFacade extends BKUGUIFacade {
 
-	public String getVersion();
+	 public static final String BUTTON_SIM_CERT = "button.simple.certificate";
+	 public static final String BUTTON_QUAL_CERT = "button.qualified.certificate";
+	 public static final String FILE_TYPE_NAME = "file.certificate"; 
+	 public static final String TITEL_FILESAVE = "title.certificate.save";
+	 public static final String TITLE_GETCERTIFICATE = "title.get.certificate";
+	 
+	 public static final String FILENAME_QUAL_CERT = "qualified.cer";
+	 public static final String FILENAME_SIM_CERT =  "simple.cer";
+	 
 	
-	public void showHelp(Locale locale);
-
-	public void pinManagement(Locale locale);
+	public void showGETCertificateDialog(ActionListener certificateListener, String showGetQualCert, 
+			String showGetSimCert, ActionListener cancelListener, String cancelCmd);
 	
-	public void getCertificate(Locale locale);
-
-	public void personIdentityLink(Locale locale);
-
-	public void hardwareInfo(Locale locale);
-
-	/**
-	 * Check if MOCCA Autostart is possible
-	 * @return autostart possibility
-	 */
-	boolean isAutostartPossible();
-
-	/**
-	 * Check if MOCCA Autostart is enabled
-	 * @return autostart state
-	 */
-	boolean isAutostartEnabled();
-
-	/**
-	 * Set MOCCA Autostart
-	 * @param doAutostart whether to enable or disable autostart
-	 * @return new autostart state
-	 */
-	public boolean setAutostart(boolean doAutostart);
+	public File showSaveDialog(String defaultfilename);
+	
 }

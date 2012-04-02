@@ -48,6 +48,8 @@ import org.slf4j.LoggerFactory;
 /**
  * @author clemenso
  * @author tkellner
+ * @author tlenz
+ * @author afitzek
  */
 public class MOCCAIcon implements StatusNotifier, ActionListener, ItemListener {
 
@@ -57,14 +59,17 @@ public class MOCCAIcon implements StatusNotifier, ActionListener, ItemListener {
 	public static final String LABEL_ABOUT = "tray.label.about";
 	public static final String LABEL_SETTINGS = "tray.label.settings";
 	public static final String LABEL_AUTOSTART = "tray.label.autostart";
-	public static final String LABEL_IDENTITYLINK = "tray.label.identitylink";
-	public static final String LABEL_INFOMENU = "tray.label.infomenu";
 	public static final String TOOLTIP_DEFAULT = "tray.tooltip.default";
+	public static final String LABEL_CARD = "tray.label.card";
+	public static final String LABEL_GETCERTIFICATE = "tray.label.getcertificate";
+	public static final String LABEL_INFO = "tray.label.info";
+	public static final String LABEL_IDENTITYLINK = "tray.label.identitylink";
+	public static final String LABEL_HARDWAREINFO = "tray.label.hardwareinfo";
 
 	/** action commands for tray menu */
 	private static enum COMMANDS {
-		SHUTDOWN_COMMAND, PIN_COMMAND, ABOUT_COMMAND, 
-		HELP_COMMAND, AUTOSTART_COMMAND, IDENTITYLINK_COMMAND 
+		SHUTDOWN_COMMAND, PIN_COMMAND, ABOUT_COMMAND, HELP_COMMAND, AUTOSTART_COMMAND, 
+		GETCERTIFICATE_COMMAND, HARDWAREINFO_COMMAND, IDENTITYLINK_COMMAND
 	};
 
 	private static final Logger log = LoggerFactory.getLogger(MOCCAIcon.class);
@@ -107,19 +112,33 @@ public class MOCCAIcon implements StatusNotifier, ActionListener, ItemListener {
 				helpItem.addActionListener(this);
 				helpItem.setActionCommand(COMMANDS.HELP_COMMAND.name());
 				menu.add(helpItem);
-				
-				Menu infoMenu = new Menu(messages.getString(LABEL_INFOMENU));
-				
-				MenuItem identityLinkItem = new MenuItem(messages.getString(LABEL_IDENTITYLINK));
-				identityLinkItem.addActionListener(this);
-				identityLinkItem.setActionCommand(COMMANDS.IDENTITYLINK_COMMAND.name());
-				infoMenu.add(identityLinkItem);
 
+				Menu cardMenu = new Menu(messages.getString(LABEL_CARD));
+				menu.add(cardMenu);
+				
 				MenuItem pinItem = new MenuItem(messages.getString(LABEL_PIN));
 				pinItem.addActionListener(this);
 				pinItem.setActionCommand(COMMANDS.PIN_COMMAND.name());
-				menu.add(pinItem);
+				cardMenu.add(pinItem);
 
+				MenuItem getcertificateItem = new MenuItem(messages.getString(LABEL_GETCERTIFICATE));
+				getcertificateItem.addActionListener(this);
+				getcertificateItem.setActionCommand(COMMANDS.GETCERTIFICATE_COMMAND.name());
+				cardMenu.add(getcertificateItem);
+				
+				Menu infoMenu = new Menu(messages.getString(LABEL_INFO));
+				menu.add(infoMenu);
+
+				MenuItem identitylinkItem = new MenuItem(messages.getString(LABEL_IDENTITYLINK));
+				identitylinkItem.addActionListener(this);
+				identitylinkItem.setActionCommand(COMMANDS.IDENTITYLINK_COMMAND.name());
+				infoMenu.add(identitylinkItem);
+				
+				MenuItem hardwareinfoItem = new MenuItem(messages.getString(LABEL_HARDWAREINFO));
+				hardwareinfoItem.addActionListener(this);
+				hardwareinfoItem.setActionCommand(COMMANDS.HARDWAREINFO_COMMAND.name());
+				infoMenu.add(hardwareinfoItem);
+				
 				MenuItem aboutItem = new MenuItem(
 						messages.getString(LABEL_ABOUT));
 				aboutItem.setActionCommand(COMMANDS.ABOUT_COMMAND.name());
@@ -239,6 +258,16 @@ public class MOCCAIcon implements StatusNotifier, ActionListener, ItemListener {
 			controller.pinManagement(messages.getLocale());
 			break;
 
+		case GETCERTIFICATE_COMMAND:
+			log.debug("get-certificate dialog requested via tray menu");
+			controller.getCertificate(messages.getLocale());
+			break;
+			
+		case HARDWAREINFO_COMMAND:
+			log.debug("hardware-info dialog requested via tray menu");
+			controller.hardwareInfo(messages.getLocale());
+			break;
+			
 		case HELP_COMMAND:
 			log.debug("help page requested via tray menu");
 			controller.showHelp(messages.getLocale());

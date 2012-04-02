@@ -65,6 +65,14 @@
     <c:set var="appletArchive" value="BKUAppletExt-single.jar"/>
     <c:set var="appletClass" value="at.gv.egiz.bku.online.applet.IdentityLinkApplet.class"/>
   </c:when>
+  <c:when test="${requestScope.moccaParam.extension == 'getcertificate'}">
+    <c:set var="appletArchive" value="BKUAppletExt-single.jar"/>
+    <c:set var="appletClass" value="at.gv.egiz.bku.online.applet.GETCertificateApplet.class"/>
+  </c:when>
+  <c:when test="${requestScope.moccaParam.extension == 'hardwareinfo'}">
+    <c:set var="appletArchive" value="BKUAppletExt-single.jar"/>
+    <c:set var="appletClass" value="at.gv.egiz.bku.online.applet.HardwareInfoApplet.class"/>
+  </c:when>
   <c:otherwise>
     <c:set var="appletArchive" value="BKUApplet-single.jar"/>
     <c:set var="appletClass" value="at.gv.egiz.bku.online.applet.BKUApplet.class"/>

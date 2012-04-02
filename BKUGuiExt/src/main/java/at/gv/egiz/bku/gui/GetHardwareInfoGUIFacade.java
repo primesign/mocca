@@ -21,43 +21,23 @@
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
+package at.gv.egiz.bku.gui;
 
-package at.gv.egiz.bku.webstart.gui;
+import java.awt.event.ActionListener;
 
-import java.util.Locale;
+/**
+*
+* @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
+*/
 
-public interface BKUControllerInterface {
-  
-  public void shutDown();
+public interface GetHardwareInfoGUIFacade extends BKUGUIFacade {
 
-	public String getVersion();
+	public static final String LABEL_CARDREADER = "label.hardwareinfo.cardreader";
+	public static final String LABEL_SMARTCARD = "label.hardwareinfo.smartcard";
+	public static final String LABEL_SMARTCARD_TYPE = "label.hardwareinfo.smartcard.type";
+	public static final String LABEL_SMARTCARD_ATR = "label.hardwareinfo.smartcard.atr";
+		
+	public void showHardwareInfoDialog(final ActionListener hardwareinfolistener, final String backcmd, final String showcardreadername, 
+			final String showsmartcardname, final String showsmartcardATR);
 	
-	public void showHelp(Locale locale);
-
-	public void pinManagement(Locale locale);
-	
-	public void getCertificate(Locale locale);
-
-	public void personIdentityLink(Locale locale);
-
-	public void hardwareInfo(Locale locale);
-
-	/**
-	 * Check if MOCCA Autostart is possible
-	 * @return autostart possibility
-	 */
-	boolean isAutostartPossible();
-
-	/**
-	 * Check if MOCCA Autostart is enabled
-	 * @return autostart state
-	 */
-	boolean isAutostartEnabled();
-
-	/**
-	 * Set MOCCA Autostart
-	 * @param doAutostart whether to enable or disable autostart
-	 * @return new autostart state
-	 */
-	public boolean setAutostart(boolean doAutostart);
 }

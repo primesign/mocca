@@ -111,6 +111,12 @@ public class AbstractSMCCSTALTest extends AbstractSMCCSTAL implements
       // TODO Auto-generated method stub
       
     }
+
+	@Override
+	public String getTerminalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
    };
     return false;
   }

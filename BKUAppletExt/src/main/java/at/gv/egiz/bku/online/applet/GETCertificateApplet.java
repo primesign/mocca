@@ -21,43 +21,41 @@
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
+package at.gv.egiz.bku.online.applet;
 
-package at.gv.egiz.bku.webstart.gui;
-
+import java.awt.Container;
+import java.net.URL;
 import java.util.Locale;
 
-public interface BKUControllerInterface {
-  
-  public void shutDown();
+import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.bku.gui.GetCertificateGUI;
+import at.gv.egiz.bku.gui.GetCertificateGUIFacade;
+import at.gv.egiz.bku.gui.HelpListener;
+import at.gv.egiz.bku.gui.SwitchFocusListener;
+import at.gv.egiz.bku.gui.viewer.FontProvider;
 
-	public String getVersion();
+/**
+*
+* @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
+*/
+
+public class GETCertificateApplet extends BKUApplet {
+
+	private static final long serialVersionUID = 1L;
 	
-	public void showHelp(Locale locale);
+	@Override
+	protected BKUGUIFacade createGUI(Container contentPane, Locale locale,
+			BKUGUIFacade.Style guiStyle, URL backgroundImgURL,
+			FontProvider fontProvider, HelpListener helpListener,
+			SwitchFocusListener switchFocusListener) {
+		return new GetCertificateGUI(contentPane, locale,
+				backgroundImgURL, fontProvider, helpListener,
+				switchFocusListener);
+	}
 
-	public void pinManagement(Locale locale);
+	@Override
+	protected AppletBKUWorker createBKUWorker(BKUApplet applet, BKUGUIFacade gui) {
+		return new GETCertificateBKUWorker(applet, (GetCertificateGUIFacade) gui);
+	}
 	
-	public void getCertificate(Locale locale);
-
-	public void personIdentityLink(Locale locale);
-
-	public void hardwareInfo(Locale locale);
-
-	/**
-	 * Check if MOCCA Autostart is possible
-	 * @return autostart possibility
-	 */
-	boolean isAutostartPossible();
-
-	/**
-	 * Check if MOCCA Autostart is enabled
-	 * @return autostart state
-	 */
-	boolean isAutostartEnabled();
-
-	/**
-	 * Set MOCCA Autostart
-	 * @param doAutostart whether to enable or disable autostart
-	 * @return new autostart state
-	 */
-	public boolean setAutostart(boolean doAutostart);
 }

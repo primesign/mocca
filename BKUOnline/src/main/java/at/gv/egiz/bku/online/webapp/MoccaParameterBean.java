@@ -61,7 +61,8 @@ public class MoccaParameterBean {
   public static final String[] VALUES_APPLET_GUI_STYLE = new String[] {"tiny", "simple", "advanced"};
 
   public static final String PARAM_APPLET_EXTENSION = "appletExtension";
-  public static final String[] VALUES_APPLET_EXTENSION = new String[] {"pin", "activation", "identity"};
+  public static final String[] VALUES_APPLET_EXTENSION = new String[] {"pin", "activation", 
+	  "getcertificate", "hardwareinfo", "identity"};
 
   public static final String PARAM_LOCALE = "locale";
   public static final Pattern PATTERN_LOCALE = Pattern.compile("[a-zA-Z][a-zA-Z](_[a-zA-Z][a-zA-Z]){0,2}");

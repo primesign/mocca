@@ -43,6 +43,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
   protected Locale locale = Locale.getDefault();
 
   private Card card_;
+  private String cardterminalname;
   
   protected CardReader reader;
 
@@ -67,6 +68,7 @@ public abstract class AbstractSignatureCard implements SignatureCard {
   public void init(Card card, CardTerminal cardTerminal) {
     this.card_ = card;
     this.reader = ReaderFactory.getReader(card, cardTerminal);
+    this.cardterminalname = cardTerminal.getName();
   }
   
   @Override
@@ -74,6 +76,10 @@ public abstract class AbstractSignatureCard implements SignatureCard {
     return card_;
   }
 
+  public String getTerminalName() {
+	  return(cardterminalname);
+  }
+  
   protected CardChannel getCardChannel() {
 	  
 	  if(card_.getProtocol().equalsIgnoreCase("T=0")) {

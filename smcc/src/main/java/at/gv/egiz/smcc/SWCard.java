@@ -121,6 +121,10 @@ public class SWCard implements SignatureCard {
     return null;
   }
 
+  public String getTerminalName() {
+	  return null;
+  }
+  
   private String getFileName(String fileName) {
     String fs = System.getProperty("file.separator");
     return swCardDir + fs + fileName;

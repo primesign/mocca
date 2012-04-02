@@ -21,43 +21,15 @@
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
+package at.gv.egiz.stal.ext;
 
-package at.gv.egiz.bku.webstart.gui;
+import at.gv.egiz.stal.STALResponse;
 
-import java.util.Locale;
+/**
+*
+* @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
+*/
 
-public interface BKUControllerInterface {
-  
-  public void shutDown();
+public class GETHardwareInfoResponse extends STALResponse {
 
-	public String getVersion();
-	
-	public void showHelp(Locale locale);
-
-	public void pinManagement(Locale locale);
-	
-	public void getCertificate(Locale locale);
-
-	public void personIdentityLink(Locale locale);
-
-	public void hardwareInfo(Locale locale);
-
-	/**
-	 * Check if MOCCA Autostart is possible
-	 * @return autostart possibility
-	 */
-	boolean isAutostartPossible();
-
-	/**
-	 * Check if MOCCA Autostart is enabled
-	 * @return autostart state
-	 */
-	boolean isAutostartEnabled();
-
-	/**
-	 * Set MOCCA Autostart
-	 * @param doAutostart whether to enable or disable autostart
-	 * @return new autostart state
-	 */
-	public boolean setAutostart(boolean doAutostart);
 }

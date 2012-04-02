@@ -85,6 +85,8 @@ public interface SignatureCard {
   
   public Card getCard();
 
+  public String getTerminalName();
+  
   public byte[] getCertificate(KeyboxName keyboxName, PINGUI pinGUI)
       throws SignatureCardException, InterruptedException;
   

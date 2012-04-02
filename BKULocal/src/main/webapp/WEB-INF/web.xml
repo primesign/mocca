@@ -51,6 +51,14 @@
         <servlet-name>IdentityLinkServlet</servlet-name>
         <servlet-class>at.gv.egiz.bku.local.webapp.IdentityLinkServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GETCertificateServlet</servlet-name>
+        <servlet-class>at.gv.egiz.bku.local.webapp.GETCertificateServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GETHardwareInfoServlet</servlet-name>
+        <servlet-class>at.gv.egiz.bku.local.webapp.GetHardwareInfoServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
     <servlet-name>BKUServlet</servlet-name>
     <url-pattern>/http-security-layer-request</url-pattern>
@@ -60,7 +68,6 @@
     <url-pattern>/https-security-layer-request</url-pattern>
   </servlet-mapping>
   <!--  Begin BKU Config -->
-
     <servlet-mapping>
         <servlet-name>PINManagementServlet</servlet-name>
         <url-pattern>/PINManagement</url-pattern>
@@ -68,6 +75,14 @@
     <servlet-mapping>
         <servlet-name>IdentityLinkServlet</servlet-name>
         <url-pattern>/IdentityLink</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GETCertificateServlet</servlet-name>
+        <url-pattern>/GETCertificate</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GETHardwareInfoServlet</servlet-name>
+        <url-pattern>/GETHardwareinfo</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
     <welcome-file>index.html</welcome-file>
