@@ -33,6 +33,8 @@ import java.io.File;
 
 public interface GetCertificateGUIFacade extends BKUGUIFacade {
 
+	 public static final String HELP_GETCERT = "help.get.certificate";
+	
 	 public static final String BUTTON_SIM_CERT = "button.simple.certificate";
 	 public static final String BUTTON_QUAL_CERT = "button.qualified.certificate";
 	 public static final String FILE_TYPE_NAME = "file.certificate"; 

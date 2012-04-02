@@ -76,7 +76,9 @@ public class GetCertificateGUI extends CardMgmtGUI implements
 				
 				mainPanel.removeAll();
 				buttonPanel.removeAll();
-								
+				
+				helpListener.setHelpTopic(HELP_GETCERT);
+				
 		        titleLabel.setText(getMessage(TITLE_GETCERTIFICATE));
 				
 				getSimCertButton = new JButton();

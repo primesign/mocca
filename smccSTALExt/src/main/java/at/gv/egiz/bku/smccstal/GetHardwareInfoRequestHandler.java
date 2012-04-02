@@ -60,7 +60,7 @@ public class GetHardwareInfoRequestHandler extends AbstractRequestHandler {
 			String terminal = card.getTerminalName();
 			String smartcard = card.toString();
 			String smartcard_ATR = toString(card.getCard().getATR().getBytes());
-		 							
+		 	
 			gui.showHardwareInfoDialog(this, "back", terminal, smartcard, smartcard_ATR);
 								
 			while (true) {
