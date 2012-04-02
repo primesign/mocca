@@ -22,38 +22,33 @@
  */
 
 
-package at.gv.egiz.bku.webstart.gui;
+package at.gv.egiz.bku.gui;
 
-import java.util.Locale;
+import java.awt.event.ActionListener;
 
-public interface BKUControllerInterface {
-  
-  public void shutDown();
+/**
+ * 
+ * @author Andreas Fitzek <andreas.fitzek@iaik.tugraz.at>
+ */
+public interface PersonIdentityLinkGUIFacade extends BKUGUIFacade {
 
-	public String getVersion();
+	public static final String FIRSTNAME = "identity.firstname";
+	public static final String DATEOFBIRTH = "identity.dateofbirth";
+	public static final String LASTNAME = "identity.lastname";
+	public static final String TITLE_IDENITY = "title.identity";
 	
-	public void showHelp(Locale locale);
-
-	public void pinManagement(Locale locale);
-
-	public void personIdentityLink(Locale locale);
-
+	public static final String MESSAGE_IDENITY = "identity.msg";
+	public static final String IDENTIFY_BUTTON = "identity.button";
 	/**
-	 * Check if MOCCA Autostart is possible
-	 * @return autostart possibility
+	 * Currently dummy method to display anything ...
+	 * 
+	 * @param firstName
+	 * @param surName
 	 */
-	boolean isAutostartPossible();
-
-	/**
-	 * Check if MOCCA Autostart is enabled
-	 * @return autostart state
-	 */
-	boolean isAutostartEnabled();
-
-	/**
-	 * Set MOCCA Autostart
-	 * @param doAutostart whether to enable or disable autostart
-	 * @return new autostart state
-	 */
-	public boolean setAutostart(boolean doAutostart);
+	public void showPersonIdentityLinkInformationDialog(
+			ActionListener activateListener,
+			String actionCommand,
+			String firstName, 
+			String surName,
+			String birthdate);
 }

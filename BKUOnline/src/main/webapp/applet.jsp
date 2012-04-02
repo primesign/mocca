@@ -61,6 +61,10 @@
     <c:set var="appletArchive" value="BKUAppletExt-single.jar"/>
     <c:set var="appletClass" value="at.gv.egiz.bku.online.applet.PINManagementApplet.class"/>
   </c:when>
+  <c:when test="${requestScope.moccaParam.extension == 'identity'}">
+    <c:set var="appletArchive" value="BKUAppletExt-single.jar"/>
+    <c:set var="appletClass" value="at.gv.egiz.bku.online.applet.IdentityLinkApplet.class"/>
+  </c:when>
   <c:otherwise>
     <c:set var="appletArchive" value="BKUApplet-single.jar"/>
     <c:set var="appletClass" value="at.gv.egiz.bku.online.applet.BKUApplet.class"/>

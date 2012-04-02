@@ -57,11 +57,14 @@ public class MOCCAIcon implements StatusNotifier, ActionListener, ItemListener {
 	public static final String LABEL_ABOUT = "tray.label.about";
 	public static final String LABEL_SETTINGS = "tray.label.settings";
 	public static final String LABEL_AUTOSTART = "tray.label.autostart";
+	public static final String LABEL_IDENTITYLINK = "tray.label.identitylink";
+	public static final String LABEL_INFOMENU = "tray.label.infomenu";
 	public static final String TOOLTIP_DEFAULT = "tray.tooltip.default";
 
 	/** action commands for tray menu */
 	private static enum COMMANDS {
-		SHUTDOWN_COMMAND, PIN_COMMAND, ABOUT_COMMAND, HELP_COMMAND, AUTOSTART_COMMAND
+		SHUTDOWN_COMMAND, PIN_COMMAND, ABOUT_COMMAND, 
+		HELP_COMMAND, AUTOSTART_COMMAND, IDENTITYLINK_COMMAND 
 	};
 
 	private static final Logger log = LoggerFactory.getLogger(MOCCAIcon.class);
@@ -104,6 +107,13 @@ public class MOCCAIcon implements StatusNotifier, ActionListener, ItemListener {
 				helpItem.addActionListener(this);
 				helpItem.setActionCommand(COMMANDS.HELP_COMMAND.name());
 				menu.add(helpItem);
+				
+				Menu infoMenu = new Menu(messages.getString(LABEL_INFOMENU));
+				
+				MenuItem identityLinkItem = new MenuItem(messages.getString(LABEL_IDENTITYLINK));
+				identityLinkItem.addActionListener(this);
+				identityLinkItem.setActionCommand(COMMANDS.IDENTITYLINK_COMMAND.name());
+				infoMenu.add(identityLinkItem);
 
 				MenuItem pinItem = new MenuItem(messages.getString(LABEL_PIN));
 				pinItem.addActionListener(this);
@@ -114,8 +124,10 @@ public class MOCCAIcon implements StatusNotifier, ActionListener, ItemListener {
 						messages.getString(LABEL_ABOUT));
 				aboutItem.setActionCommand(COMMANDS.ABOUT_COMMAND.name());
 				aboutItem.addActionListener(this);
-				menu.add(aboutItem);
+				infoMenu.add(aboutItem);
 
+				menu.add(infoMenu);
+				
 				menu.addSeparator();
 
 				Menu settingsMenu = new Menu(messages.getString(LABEL_SETTINGS));
@@ -232,6 +244,11 @@ public class MOCCAIcon implements StatusNotifier, ActionListener, ItemListener {
 			controller.showHelp(messages.getLocale());
 			break;
 
+		case IDENTITYLINK_COMMAND:
+			log.debug("person identity link dialog requested via tray menu");
+			controller.personIdentityLink(messages.getLocale());
+			break;
+			
 		default:
 			log.error("unknown tray menu command: " + e.getActionCommand());
 		}

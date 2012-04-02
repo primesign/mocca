@@ -49,6 +49,7 @@ public interface StatusNotifier {
     public static final String ERROR_BIND = "tray.error.bind";
     public static final String ERROR_CONFIG = "tray.error.config";
     public static final String ERROR_PIN = "tray.error.pin.connect";
+    public static final String ERROR_IDENTITY_LINK = "tray.error.identity_link.connect";
     public static final String ERROR_OPEN_URL = "tray.error.open.url";
 
     

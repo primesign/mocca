@@ -27,11 +27,13 @@ package at.gv.egiz.bku.local.stal;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.smccstal.AbstractBKUWorker;
 import at.gv.egiz.bku.smccstal.PINManagementRequestHandler;
+import at.gv.egiz.bku.smccstal.PersonIdentityLinkRequestHandler;
 import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 
+import at.gv.egiz.stal.ext.PersonIdentityLinkRequest;
 import at.gv.egiz.stal.ext.PINManagementRequest;
 import java.util.List;
 import javax.swing.JFrame;
@@ -50,6 +52,7 @@ public class LocalBKUWorker extends AbstractBKUWorker {
     addRequestHandler(SignRequest.class, 
             new LocalSignRequestHandler(new LocalSecureViewer(gui)));
     addRequestHandler(PINManagementRequest.class, new PINManagementRequestHandler());
+    addRequestHandler(PersonIdentityLinkRequest.class, new PersonIdentityLinkRequestHandler());
   }
 
   /** does not change container's visibility (use quit request to close) */

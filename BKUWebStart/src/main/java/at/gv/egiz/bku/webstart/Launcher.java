@@ -65,12 +65,14 @@ public class Launcher implements BKUControllerInterface {
 	public static final URL HTTPS_SECURITY_LAYER_URL;
 	public static final URL INSTALL_CERT_URL;
 	public static final URL PIN_MANAGEMENT_URL;
+	public static final URL IDENTITY_LINK_URL;
 	public static final URL HELP_URL;
 
 	static {
 		URL http = null;
 		URL https = null;
 		URL pin = null;
+		URL ident = null;
 		URL cert = null;
 		URL help = null;
 		try {
@@ -79,12 +81,14 @@ public class Launcher implements BKUControllerInterface {
 			pin = new URL(http, "/PINManagement");
 			cert = new URL(http, "/ca.crt");
 			help = new URL(http, "/help/");
+			ident = new URL(http, "/IdentityLink");
 		} catch (MalformedURLException ex) {
 			log.error("Failed to create URL.", ex);
 		} finally {
 			HTTP_SECURITY_LAYER_URL = http;
 			HTTPS_SECURITY_LAYER_URL = https;
 			PIN_MANAGEMENT_URL = pin;
+			IDENTITY_LINK_URL = ident;
 			INSTALL_CERT_URL = cert;
 			HELP_URL = help;
 		}
@@ -306,5 +310,10 @@ public class Launcher implements BKUControllerInterface {
 	@Override
 	public boolean setAutostart(boolean doAutostart) {
 		return autostart.set(doAutostart);
+	}
+
+	@Override
+	public void personIdentityLink(Locale locale) {
+		new Thread(new PersonIdentityLinkInvoker(status)).start();
 	}
 }

@@ -22,38 +22,38 @@
  */
 
 
-package at.gv.egiz.bku.webstart.gui;
+package at.gv.egiz.bku.online.applet;
 
+import java.awt.Container;
+import java.net.URL;
 import java.util.Locale;
 
-public interface BKUControllerInterface {
-  
-  public void shutDown();
+import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.bku.gui.HelpListener;
+import at.gv.egiz.bku.gui.PersonIdentityLinkGUI;
+import at.gv.egiz.bku.gui.PersonIdentityLinkGUIFacade;
+import at.gv.egiz.bku.gui.SwitchFocusListener;
+import at.gv.egiz.bku.gui.viewer.FontProvider;
 
-	public String getVersion();
+/**
+ * 
+ * @author Andreas Fitzek <andreas.fitzek@iaik.tugraz.at>
+ */
+public class IdentityLinkApplet extends BKUApplet {
+private static final long serialVersionUID = 1L;
 	
-	public void showHelp(Locale locale);
+	@Override
+	protected BKUGUIFacade createGUI(Container contentPane, Locale locale,
+			BKUGUIFacade.Style guiStyle, URL backgroundImgURL,
+			FontProvider fontProvider, HelpListener helpListener,
+			SwitchFocusListener switchFocusListener) {
+		return new PersonIdentityLinkGUI(contentPane, locale,
+				backgroundImgURL, fontProvider, helpListener,
+				switchFocusListener);
+	}
 
-	public void pinManagement(Locale locale);
-
-	public void personIdentityLink(Locale locale);
-
-	/**
-	 * Check if MOCCA Autostart is possible
-	 * @return autostart possibility
-	 */
-	boolean isAutostartPossible();
-
-	/**
-	 * Check if MOCCA Autostart is enabled
-	 * @return autostart state
-	 */
-	boolean isAutostartEnabled();
-
-	/**
-	 * Set MOCCA Autostart
-	 * @param doAutostart whether to enable or disable autostart
-	 * @return new autostart state
-	 */
-	public boolean setAutostart(boolean doAutostart);
+	@Override
+	protected AppletBKUWorker createBKUWorker(BKUApplet applet, BKUGUIFacade gui) {
+		return new IdentityLinkBKUWorker(applet, (PersonIdentityLinkGUIFacade) gui);
+	}
 }
