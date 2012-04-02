@@ -63,7 +63,7 @@ public class IdentityLinkServlet extends HttpServlet {
 	public IdentityLinkServlet() {
 		stalFactory = new LocalIdentityLinkSTALFactory();
 		try {
-			stalFactory.setHelpURL("http://localhost:3495/help/help.identity.link.html");
+			stalFactory.setHelpURL("http://localhost:3495/help/");
 		} catch (MalformedURLException e) {
 			log.info("Failed to set help URL.", e);
 		}
