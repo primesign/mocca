@@ -35,8 +35,9 @@ public interface GetCertificateGUIFacade extends BKUGUIFacade {
 
 	 public static final String HELP_GETCERT = "help.get.certificate";
 	
-	 public static final String BUTTON_SIM_CERT = "button.simple.certificate";
-	 public static final String BUTTON_QUAL_CERT = "button.qualified.certificate";
+	 public static final String LABEL_SIM_CERT = "label.simple.certificate";
+	 public static final String LABEL_QUAL_CERT = "label.qualified.certificate";
+	 public static final String BUTTON_SAVE_AS = "button.certificate.saveas"; 
 	 public static final String FILE_TYPE_NAME = "file.certificate"; 
 	 public static final String TITEL_FILESAVE = "title.certificate.save";
 	 public static final String TITLE_GETCERTIFICATE = "title.get.certificate";

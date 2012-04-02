@@ -67,7 +67,7 @@
   </c:when>
   <c:when test="${requestScope.moccaParam.extension == 'getcertificate'}">
     <c:set var="appletArchive" value="BKUAppletExt-single.jar"/>
-    <c:set var="appletClass" value="at.gv.egiz.bku.online.applet.GETCertificateApplet.class"/>
+    <c:set var="appletClass" value="at.gv.egiz.bku.online.applet.GetCertificateApplet.class"/>
   </c:when>
   <c:when test="${requestScope.moccaParam.extension == 'hardwareinfo'}">
     <c:set var="appletArchive" value="BKUAppletExt-single.jar"/>

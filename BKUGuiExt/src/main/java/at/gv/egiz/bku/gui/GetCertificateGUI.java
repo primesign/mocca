@@ -33,6 +33,7 @@ import java.util.Locale;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.LayoutStyle;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
@@ -54,6 +55,9 @@ public class GetCertificateGUI extends CardMgmtGUI implements
 	
 	protected JButton getSimCertButton;
 	protected JButton getQualCertButton;
+	protected JLabel lblSimcert;
+	protected JLabel lblQualcert;
+	
 	
 	public GetCertificateGUI(Container contentPane, Locale locale,
 			 URL backgroundImgURL, FontProvider fontProvider,
@@ -81,16 +85,26 @@ public class GetCertificateGUI extends CardMgmtGUI implements
 				
 		        titleLabel.setText(getMessage(TITLE_GETCERTIFICATE));
 				
+				lblSimcert = new JLabel(getMessage(LABEL_SIM_CERT));
+				lblSimcert.setFont(lblSimcert.getFont().deriveFont(
+						lblSimcert.getFont().getStyle()
+						& ~java.awt.Font.BOLD));
+				
+				lblQualcert = new JLabel(getMessage(LABEL_QUAL_CERT));
+				lblQualcert.setFont(lblQualcert.getFont().deriveFont(
+						lblQualcert.getFont().getStyle()
+						& ~java.awt.Font.BOLD));
+		        
 				getSimCertButton = new JButton();
 				getSimCertButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle()& ~java.awt.Font.BOLD));
-				getSimCertButton.setText(getMessage(BUTTON_SIM_CERT));
+				getSimCertButton.setText(getMessage(BUTTON_SAVE_AS));
 				getSimCertButton.setActionCommand(showGetSimCert);
 				getSimCertButton.addActionListener(certificateListener);
 				getSimCertButton.setEnabled(true);
 				
 				getQualCertButton = new JButton();
 				getQualCertButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle()& ~java.awt.Font.BOLD));
-				getQualCertButton.setText(getMessage(BUTTON_QUAL_CERT));
+				getQualCertButton.setText(getMessage(BUTTON_SAVE_AS));
 				getQualCertButton.setActionCommand(showGetQualCert);
 				getQualCertButton.addActionListener(certificateListener);
 				getQualCertButton.setEnabled(true);
@@ -104,14 +118,13 @@ public class GetCertificateGUI extends CardMgmtGUI implements
 				updateMethodToRunAtResize("at.gv.egiz.bku.gui.GetCertificateGUI", "renderGetCertificateFrame");
 				
 				renderGetCertificateFrame();
+								
+				cancelButton.requestFocus();
+				contentPanel.validate();
 				
 				if (windowCloseAdapter != null) {
 					windowCloseAdapter.registerListener(cancelListener, cancelCmd);
 				}
-				
-				
-				cancelButton.requestFocus();
-				contentPanel.validate();
 				
 				resize();	
 			}
@@ -121,34 +134,37 @@ public class GetCertificateGUI extends CardMgmtGUI implements
 	public void renderGetCertificateFrame() {
 				
 //---------------------------------------------------------------------------------------------------------
+		GroupLayout gl_panel = new GroupLayout(mainPanel);
+		gl_panel.setHorizontalGroup(
+				gl_panel.createParallelGroup(GroupLayout.Alignment.LEADING)
+					.addGroup(gl_panel.createSequentialGroup()
+						.addContainerGap()
+						.addGroup(gl_panel.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(lblSimcert)
+							.addComponent(lblQualcert))
+						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+						.addGroup(gl_panel.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+							.addComponent(getSimCertButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(getQualCertButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addContainerGap())
+			);
+			gl_panel.setVerticalGroup(
+				gl_panel.createParallelGroup(GroupLayout.Alignment.LEADING)
+					.addGroup(gl_panel.createSequentialGroup()
+						.addContainerGap()
+						.addGroup(gl_panel.createParallelGroup(GroupLayout.Alignment.BASELINE)
+							.addComponent(lblSimcert)
+							.addComponent(getSimCertButton))
+						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+						.addGroup(gl_panel.createParallelGroup(GroupLayout.Alignment.BASELINE)
+							.addComponent(getQualCertButton)
+							.addComponent(lblQualcert))
+						.addContainerGap())
+			);
 		
-		GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
-		mainPanelLayout.setHorizontalGroup(
-				mainPanelLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-				.addGroup(mainPanelLayout.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addGroup(GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-							.addComponent(getQualCertButton, 0, 
-									GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addGap(12))
-						.addGroup(GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-							.addGap(1)
-							.addComponent(getSimCertButton, 0, 
-									getQualCertButton.getSize().width, Short.MAX_VALUE)
-							.addContainerGap())))
-		);
-		mainPanelLayout.setVerticalGroup(
-				mainPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(mainPanelLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(getSimCertButton, GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
-					.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-					.addComponent(getQualCertButton, GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
-					));
-		
-		mainPanel.setLayout(mainPanelLayout);
-//---------------------------------------------------------------------------------------------------------
+			mainPanel.setLayout(gl_panel);
+			
+		//---------------------------------------------------------------------------------------------------------			
 		
 		GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
 		
@@ -172,17 +188,31 @@ public class GetCertificateGUI extends CardMgmtGUI implements
 
 		float factor = getResizeFactor();
 		
+		if (lblSimcert != null) {
+
+			lblSimcert.setFont(lblSimcert.getFont().deriveFont(
+					(float) ((baseFontSize ) * factor)));
+
+		}
+		
+		if (lblQualcert != null) {
+
+			lblQualcert.setFont(lblQualcert.getFont().deriveFont(
+					(float) ((baseFontSize ) * factor)));
+
+		}
+		
 		if (getQualCertButton != null) {
 
 			getQualCertButton.setFont(getQualCertButton.getFont().deriveFont(
-					(float) (baseFontSize * factor)));
+					(float) ((baseFontSize ) * factor)));
 
 		}
 		
 		if (getSimCertButton != null) {
 
 			getSimCertButton.setFont(getSimCertButton.getFont().deriveFont(
-					(float) (baseFontSize * factor)));
+					(float) ((baseFontSize ) * factor)));
 
 		}
 		

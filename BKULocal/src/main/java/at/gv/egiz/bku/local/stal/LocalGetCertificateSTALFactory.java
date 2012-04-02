@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 public class LocalGetCertificateSTALFactory implements STALFactory {
 
 	  private final Logger log = LoggerFactory.getLogger(LocalGetCertificateSTALFactory.class);
-	  protected static final Dimension PREFERRED_SIZE = new Dimension(318, 200);
+	  protected static final Dimension PREFERRED_SIZE = new Dimension(340, 270);
 	  protected URL helpURL;
 	  protected Locale locale;
 	  
