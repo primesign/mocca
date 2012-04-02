@@ -119,7 +119,8 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 						lblAtr.getFont().getStyle()
 						& java.awt.Font.BOLD));
 				
-				lblTypeContent = new JLabel(showsmartcardname);
+				lblTypeContent = new JLabel("<html>" + showsmartcardname + "</html>");
+				lblTypeContent.setVerticalAlignment(SwingConstants.CENTER);
 				lblTypeContent.setFont(lblTypeContent.getFont().deriveFont(
 						lblTypeContent.getFont().getStyle()
 						& ~java.awt.Font.BOLD));
@@ -130,7 +131,7 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 						lblAtrContent.getFont().getStyle()
 						& ~java.awt.Font.BOLD));
 				
-				lblReaderContent = new JLabel(showcardreadername);
+				lblReaderContent = new JLabel("<html>" + showcardreadername+ "</html>");
 				lblReaderContent.setVerticalAlignment(SwingConstants.CENTER);
 				lblReaderContent.setFont(lblReaderContent.getFont().deriveFont(
 						lblReaderContent.getFont().getStyle()
