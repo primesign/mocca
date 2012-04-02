@@ -31,6 +31,7 @@ import java.util.Locale;
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.LayoutStyle;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -192,22 +193,20 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 							.addComponent(lblTypeContent, GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
 							.addComponent(lblAtrContent, GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)))
 			);
+				
 		gl_cardpanel.setVerticalGroup(
-			gl_cardpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(gl_cardpanel.createSequentialGroup()
-					.addGroup(gl_cardpanel.createParallelGroup(GroupLayout.Alignment.BASELINE)
-						.addGroup(gl_cardpanel.createSequentialGroup()
-							.addGap(2)
-							.addComponent(lblType, GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE))
-						.addComponent(lblTypeContent, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_cardpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addComponent(lblAtrContent, GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
-						.addGroup(gl_cardpanel.createSequentialGroup()
-							.addComponent(lblAtr, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
-							.addGap(6)))
-					.addGap(3))
-		);
+				gl_cardpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
+					.addGroup(gl_cardpanel.createSequentialGroup()
+						.addGroup(gl_cardpanel.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(lblType, GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE)
+							.addComponent(lblTypeContent, GroupLayout.DEFAULT_SIZE, 23, Short.MAX_VALUE))
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(gl_cardpanel.createParallelGroup(GroupLayout.Alignment.BASELINE)
+							.addComponent(lblAtrContent, GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
+							.addComponent(lblAtr, GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE))
+						.addContainerGap())
+			);
+		
 		cardpanel.setLayout(gl_cardpanel);
 				
 		GroupLayout gl_readerpanel = new GroupLayout(readerpanel);
