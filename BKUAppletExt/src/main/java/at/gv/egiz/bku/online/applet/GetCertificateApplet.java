@@ -39,7 +39,7 @@ import at.gv.egiz.bku.gui.viewer.FontProvider;
 * @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
 */
 
-public class GETCertificateApplet extends BKUApplet {
+public class GetCertificateApplet extends BKUApplet {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -55,7 +55,7 @@ public class GETCertificateApplet extends BKUApplet {
 
 	@Override
 	protected AppletBKUWorker createBKUWorker(BKUApplet applet, BKUGUIFacade gui) {
-		return new GETCertificateBKUWorker(applet, (GetCertificateGUIFacade) gui);
+		return new GetCertificateBKUWorker(applet, (GetCertificateGUIFacade) gui);
 	}
 	
 }

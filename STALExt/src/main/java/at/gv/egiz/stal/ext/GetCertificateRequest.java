@@ -23,13 +23,13 @@
 
 package at.gv.egiz.stal.ext;
 
-import at.gv.egiz.stal.STALResponse;
+import at.gv.egiz.stal.STALRequest;
 
 /**
 *
 * @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
 */
 
-public class GETHardwareInfoResponse extends STALResponse {
+public class GetCertificateRequest extends STALRequest {
 
 }

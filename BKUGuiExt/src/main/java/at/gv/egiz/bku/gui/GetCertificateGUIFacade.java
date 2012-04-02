@@ -43,7 +43,7 @@ public interface GetCertificateGUIFacade extends BKUGUIFacade {
 	 public static final String FILENAME_SIM_CERT =  "simple.cer";
 	 
 	
-	public void showGETCertificateDialog(ActionListener certificateListener, String showGetQualCert, 
+	public void showGetCertificateDialog(ActionListener certificateListener, String showGetQualCert, 
 			String showGetSimCert, ActionListener cancelListener, String cancelCmd);
 	
 	public File showSaveDialog(String defaultfilename);

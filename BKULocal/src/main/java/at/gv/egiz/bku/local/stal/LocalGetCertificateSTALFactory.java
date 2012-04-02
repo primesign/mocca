@@ -50,9 +50,9 @@ import org.slf4j.LoggerFactory;
 * @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
 */
 
-public class LocalGETCertificateSTALFactory implements STALFactory {
+public class LocalGetCertificateSTALFactory implements STALFactory {
 
-	  private final Logger log = LoggerFactory.getLogger(LocalGETCertificateSTALFactory.class);
+	  private final Logger log = LoggerFactory.getLogger(LocalGetCertificateSTALFactory.class);
 	  protected static final Dimension PREFERRED_SIZE = new Dimension(318, 200);
 	  protected URL helpURL;
 	  protected Locale locale;

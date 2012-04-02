@@ -65,7 +65,7 @@ public class GetCertificateGUI extends CardMgmtGUI implements
 	}
 
 	@Override
-	public void showGETCertificateDialog(final ActionListener certificateListener,
+	public void showGetCertificateDialog(final ActionListener certificateListener,
 			final String showGetQualCert, final String showGetSimCert,
 			final ActionListener cancelListener, final String cancelCmd) {
 		

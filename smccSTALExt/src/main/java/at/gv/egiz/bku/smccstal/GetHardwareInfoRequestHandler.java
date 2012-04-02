@@ -30,17 +30,17 @@ import at.gv.egiz.bku.gui.GetHardwareInfoGUIFacade;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
-import at.gv.egiz.stal.ext.GETHardwareInfoRequest;
-import at.gv.egiz.stal.ext.GETHardwareInfoResponse;
+import at.gv.egiz.stal.ext.GetHardwareInfoRequest;
+import at.gv.egiz.stal.ext.GetHardwareInfoResponse;
 
 /**
 *
 * @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
 */
 
-public class GETHardwareInfoRequestHandler extends AbstractRequestHandler {
+public class GetHardwareInfoRequestHandler extends AbstractRequestHandler {
 
-	private final Logger log = LoggerFactory.getLogger(GETHardwareInfoRequestHandler.class);
+	private final Logger log = LoggerFactory.getLogger(GetHardwareInfoRequestHandler.class);
 	
 	@Override
 	public boolean requireCard() {
@@ -53,7 +53,7 @@ public class GETHardwareInfoRequestHandler extends AbstractRequestHandler {
 		
 		log.debug("handle a get-hardware info request");
 		
-		if (request instanceof GETHardwareInfoRequest) {
+		if (request instanceof GetHardwareInfoRequest) {
 			
 			GetHardwareInfoGUIFacade gui = (GetHardwareInfoGUIFacade) this.gui;
 			
@@ -69,7 +69,7 @@ public class GETHardwareInfoRequestHandler extends AbstractRequestHandler {
 				
 				 if ("back".equals(actionCommand)) {
 			          log.debug("show hardware info response back.");
-			          return new GETHardwareInfoResponse();
+			          return new GetHardwareInfoResponse();
 			          
 				 } else {
 					 log.info("unknown command resolved.");
@@ -77,7 +77,7 @@ public class GETHardwareInfoRequestHandler extends AbstractRequestHandler {
 			}
 					
 		}
-		return new GETHardwareInfoResponse();
+		return new GetHardwareInfoResponse();
 	}
 	
 	  private static String toString(byte[] b) {

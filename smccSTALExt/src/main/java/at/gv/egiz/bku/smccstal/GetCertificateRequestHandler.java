@@ -41,12 +41,12 @@ import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
-import at.gv.egiz.stal.ext.GETCertificateRequest;
-import at.gv.egiz.stal.ext.GETCertificateResponse;
+import at.gv.egiz.stal.ext.GetCertificateRequest;
+import at.gv.egiz.stal.ext.GetCertificateResponse;
 
-public class GETCertificateRequestHandler extends AbstractRequestHandler {
+public class GetCertificateRequestHandler extends AbstractRequestHandler {
 
-	private final Logger log = LoggerFactory.getLogger(GETCertificateRequestHandler.class);
+	private final Logger log = LoggerFactory.getLogger(GetCertificateRequestHandler.class);
 	
 	@Override
 	public boolean requireCard() {
@@ -57,13 +57,13 @@ public class GETCertificateRequestHandler extends AbstractRequestHandler {
 	public STALResponse handleRequest(STALRequest request)
 			throws InterruptedException {
 		
-		log.debug("handle a GETCertificateRequest");
+		log.debug("handle a GetCertificateRequest");
 		
-		if (request instanceof GETCertificateRequest) {
+		if (request instanceof GetCertificateRequest) {
 			
 			GetCertificateGUIFacade gui = (GetCertificateGUIFacade) this.gui;
 			
-			gui.showGETCertificateDialog(this, "getqualcert", "getsimcert", this, "cancel");
+			gui.showGetCertificateDialog(this, "getqualcert", "getsimcert", this, "cancel");
 			
 			while (true) {
 			
@@ -73,7 +73,7 @@ public class GETCertificateRequestHandler extends AbstractRequestHandler {
 					
 					 if ("cancel".equals(actionCommand)) {
 				          log.debug("get certificate response cancel.");
-				          return new GETCertificateResponse();
+				          return new GetCertificateResponse();
 				          
 				     } else if ("getqualcert".equals(actionCommand)) {
 				        	
@@ -120,7 +120,7 @@ public class GETCertificateRequestHandler extends AbstractRequestHandler {
 			}
 		}
 		
-		return new GETCertificateResponse();
+		return new GetCertificateResponse();
 	}
 	
 }

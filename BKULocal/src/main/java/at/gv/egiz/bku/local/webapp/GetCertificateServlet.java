@@ -37,27 +37,27 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.gv.egiz.bku.local.stal.LocalGETCertificateSTALFactory;
+import at.gv.egiz.bku.local.stal.LocalGetCertificateSTALFactory;
 import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALResponse;
-import at.gv.egiz.stal.ext.GETCertificateRequest;
+import at.gv.egiz.stal.ext.GetCertificateRequest;
 
 /**
 *
 * @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
 */
 
-public class GETCertificateServlet extends HttpServlet {
+public class GetCertificateServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-	 private final Logger log = LoggerFactory.getLogger(GETCertificateServlet.class);
+	 private final Logger log = LoggerFactory.getLogger(GetCertificateServlet.class);
 
-	LocalGETCertificateSTALFactory stalFactory;
+	LocalGetCertificateSTALFactory stalFactory;
 	  
-	public GETCertificateServlet() {
-	    log.debug("Constuctor: " + GETCertificateServlet.class);
-	   stalFactory = new LocalGETCertificateSTALFactory();
+	public GetCertificateServlet() {
+	    log.debug("Constuctor: " + GetCertificateServlet.class);
+	   stalFactory = new LocalGetCertificateSTALFactory();
 	   try {
 	     stalFactory.setHelpURL("http://localhost:3495/help/");
 	   } catch (MalformedURLException e) {
@@ -77,7 +77,7 @@ public class GETCertificateServlet extends HttpServlet {
 		  
 		STAL getCerTificateSTAL = stalFactory.createSTAL();
 	    
-	    List<STALResponse> stalResps = getCerTificateSTAL.handleRequest(Collections.singletonList(new GETCertificateRequest()));
+	    List<STALResponse> stalResps = getCerTificateSTAL.handleRequest(Collections.singletonList(new GetCertificateRequest()));
 
 	    log.debug("Received STAL reponse {}.", stalResps.get(0).getClass());
 	    

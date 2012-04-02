@@ -26,8 +26,8 @@ package at.gv.egiz.bku.local.stal;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.smccstal.AbstractBKUWorker;
-import at.gv.egiz.bku.smccstal.GETCertificateRequestHandler;
-import at.gv.egiz.bku.smccstal.GETHardwareInfoRequestHandler;
+import at.gv.egiz.bku.smccstal.GetCertificateRequestHandler;
+import at.gv.egiz.bku.smccstal.GetHardwareInfoRequestHandler;
 import at.gv.egiz.bku.smccstal.PINManagementRequestHandler;
 import at.gv.egiz.bku.smccstal.IdentityLinkRequestHandler;
 import at.gv.egiz.stal.QuitRequest;
@@ -36,8 +36,8 @@ import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 
 import at.gv.egiz.stal.ext.IdentityLinkRequest;
-import at.gv.egiz.stal.ext.GETCertificateRequest;
-import at.gv.egiz.stal.ext.GETHardwareInfoRequest;
+import at.gv.egiz.stal.ext.GetCertificateRequest;
+import at.gv.egiz.stal.ext.GetHardwareInfoRequest;
 import at.gv.egiz.stal.ext.PINManagementRequest;
 import java.util.List;
 import javax.swing.JFrame;
@@ -57,8 +57,8 @@ public class LocalBKUWorker extends AbstractBKUWorker {
             new LocalSignRequestHandler(new LocalSecureViewer(gui)));
     addRequestHandler(PINManagementRequest.class, new PINManagementRequestHandler());
     addRequestHandler(IdentityLinkRequest.class, new IdentityLinkRequestHandler());
-    addRequestHandler(GETCertificateRequest.class, new GETCertificateRequestHandler());
-    addRequestHandler(GETHardwareInfoRequest.class, new GETHardwareInfoRequestHandler());
+    addRequestHandler(GetCertificateRequest.class, new GetCertificateRequestHandler());
+    addRequestHandler(GetHardwareInfoRequest.class, new GetHardwareInfoRequestHandler());
   }
 
   /** does not change container's visibility (use quit request to close) */

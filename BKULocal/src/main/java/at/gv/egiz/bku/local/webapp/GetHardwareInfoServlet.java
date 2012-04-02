@@ -41,7 +41,7 @@ import at.gv.egiz.bku.local.stal.LocalGetHardwareInfoSTALFactory;
 import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALResponse;
-import at.gv.egiz.stal.ext.GETHardwareInfoRequest;
+import at.gv.egiz.stal.ext.GetHardwareInfoRequest;
 
 /**
 *
@@ -56,7 +56,7 @@ public class GetHardwareInfoServlet extends HttpServlet {
 	LocalGetHardwareInfoSTALFactory stalFactory;
 	  
 	public GetHardwareInfoServlet() {
-	    log.debug("Constuctor: " + GetHardwareInfoServlet.class);
+	   log.debug("Constructor: " + GetHardwareInfoServlet.class);
 	   stalFactory = new LocalGetHardwareInfoSTALFactory();
 	   try {
 	     stalFactory.setHelpURL("http://localhost:3495/help/");
@@ -77,7 +77,7 @@ public class GetHardwareInfoServlet extends HttpServlet {
 		  
 		STAL getHardwareInfoSTAL = stalFactory.createSTAL();
 	    
-	    List<STALResponse> stalResps = getHardwareInfoSTAL.handleRequest(Collections.singletonList(new GETHardwareInfoRequest()));
+	    List<STALResponse> stalResps = getHardwareInfoSTAL.handleRequest(Collections.singletonList(new GetHardwareInfoRequest()));
 
 	    log.debug("Received STAL reponse {}.", stalResps.get(0).getClass());
 	    

@@ -31,29 +31,29 @@ import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.GetCertificateGUIFacade;
-import at.gv.egiz.bku.smccstal.GETCertificateRequestHandler;
+import at.gv.egiz.bku.smccstal.GetCertificateRequestHandler;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
-import at.gv.egiz.stal.ext.GETCertificateRequest;
-import at.gv.egiz.stal.ext.GETCertificateResponse;
+import at.gv.egiz.stal.ext.GetCertificateRequest;
+import at.gv.egiz.stal.ext.GetCertificateResponse;
 
 /**
 *
 * @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
 */
 
-public class GETCertificateBKUWorker extends AppletBKUWorker {
+public class GetCertificateBKUWorker extends AppletBKUWorker {
 	
-	private final Logger log = LoggerFactory.getLogger(GETCertificateBKUWorker.class);
+	private final Logger log = LoggerFactory.getLogger(GetCertificateBKUWorker.class);
 
-	  public GETCertificateBKUWorker(BKUApplet applet, GetCertificateGUIFacade gui) {
+	  public GetCertificateBKUWorker(BKUApplet applet, GetCertificateGUIFacade gui) {
 	    super(applet, gui);
 	    removeRequestHandler(InfoboxReadRequest.class);
 	    removeRequestHandler(SignRequest.class);
-	    addRequestHandler(GETCertificateRequest.class, new GETCertificateRequestHandler());
+	    addRequestHandler(GetCertificateRequest.class, new GetCertificateRequestHandler());
 	  }
 
 	  @Override
@@ -63,15 +63,15 @@ public class GETCertificateBKUWorker extends AppletBKUWorker {
 
 	    try {
 
-	      List<STALResponse> responses = handleRequest(Collections.singletonList(new GETCertificateRequest()));
+	      List<STALResponse> responses = handleRequest(Collections.singletonList(new GetCertificateRequest()));
 	      handleRequest(Collections.singletonList(new QuitRequest()));
 	      
 	      if (responses.size() == 1) {
 	        STALResponse response = responses.get(0);
-	        if (response instanceof GETCertificateResponse) {
-	          log.debug("GET certificate dialog terminated.");
+	        if (response instanceof GetCertificateResponse) {
+	          log.debug("Get certificate dialog terminated.");
 	        } else if (response instanceof ErrorResponse) {
-	          log.debug("GET certificate dialog terminated with error.");
+	          log.debug("Get certificate dialog terminated with error.");
 	        } else {
 	          throw new RuntimeException("Invalid STAL response: " + response.getClass().getName());
 	        }

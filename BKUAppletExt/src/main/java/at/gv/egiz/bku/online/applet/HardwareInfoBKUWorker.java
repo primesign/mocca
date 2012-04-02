@@ -31,14 +31,14 @@ import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.GetHardwareInfoGUIFacade;
-import at.gv.egiz.bku.smccstal.GETHardwareInfoRequestHandler;
+import at.gv.egiz.bku.smccstal.GetHardwareInfoRequestHandler;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
-import at.gv.egiz.stal.ext.GETHardwareInfoRequest;
-import at.gv.egiz.stal.ext.GETHardwareInfoResponse;
+import at.gv.egiz.stal.ext.GetHardwareInfoRequest;
+import at.gv.egiz.stal.ext.GetHardwareInfoResponse;
 
 /**
 *
@@ -52,7 +52,7 @@ public class HardwareInfoBKUWorker extends AppletBKUWorker {
 	    super(applet, gui);
 	    removeRequestHandler(InfoboxReadRequest.class);
 	    removeRequestHandler(SignRequest.class);
-	    addRequestHandler(GETHardwareInfoRequest.class, new GETHardwareInfoRequestHandler());
+	    addRequestHandler(GetHardwareInfoRequest.class, new GetHardwareInfoRequestHandler());
 	  }
 
 	  @Override
@@ -62,12 +62,12 @@ public class HardwareInfoBKUWorker extends AppletBKUWorker {
 
 	    try {
 
-	      List<STALResponse> responses = handleRequest(Collections.singletonList(new GETHardwareInfoRequest()));
+	      List<STALResponse> responses = handleRequest(Collections.singletonList(new GetHardwareInfoRequest()));
 	      handleRequest(Collections.singletonList(new QuitRequest()));
 	      
 	      if (responses.size() == 1) {
 	        STALResponse response = responses.get(0);
-	        if (response instanceof GETHardwareInfoResponse) {
+	        if (response instanceof GetHardwareInfoResponse) {
 	          log.debug("hardware-info dialog terminated.");
 	        } else if (response instanceof ErrorResponse) {
 	          log.debug("hardware-info dialog terminated with error.");

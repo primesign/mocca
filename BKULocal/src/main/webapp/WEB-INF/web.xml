@@ -52,11 +52,11 @@
         <servlet-class>at.gv.egiz.bku.local.webapp.IdentityLinkServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GETCertificateServlet</servlet-name>
-        <servlet-class>at.gv.egiz.bku.local.webapp.GETCertificateServlet</servlet-class>
+        <servlet-name>GetCertificateServlet</servlet-name>
+        <servlet-class>at.gv.egiz.bku.local.webapp.GetCertificateServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GETHardwareInfoServlet</servlet-name>
+        <servlet-name>GetHardwareInfoServlet</servlet-name>
         <servlet-class>at.gv.egiz.bku.local.webapp.GetHardwareInfoServlet</servlet-class>
     </servlet>
     <servlet-mapping>
@@ -77,12 +77,12 @@
         <url-pattern>/IdentityLink</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GETCertificateServlet</servlet-name>
-        <url-pattern>/GETCertificate</url-pattern>
+        <servlet-name>GetCertificateServlet</servlet-name>
+        <url-pattern>/GetCertificate</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GETHardwareInfoServlet</servlet-name>
-        <url-pattern>/GETHardwareinfo</url-pattern>
+        <servlet-name>GetHardwareInfoServlet</servlet-name>
+        <url-pattern>/GetHardwareinfo</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
     <welcome-file>index.html</welcome-file>
