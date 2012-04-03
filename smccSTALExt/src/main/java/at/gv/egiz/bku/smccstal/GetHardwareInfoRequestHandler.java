@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.GetHardwareInfoGUIFacade;
-import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.ext.GetHardwareInfoRequest;
