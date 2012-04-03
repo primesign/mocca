@@ -173,7 +173,7 @@
           </execution>
           <execution>
             <id>unpack-fonts</id>
-            <phase>package</phase>
+            <!--phase>package</phase-->
             <goals>
               <goal>unpack-dependencies</goal>
             </goals>
