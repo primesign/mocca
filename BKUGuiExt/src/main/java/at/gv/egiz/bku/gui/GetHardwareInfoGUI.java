@@ -92,17 +92,19 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 				backButton.addActionListener(hardwareinfolistener);
 				backButton.setEnabled(true);
 								
-				readerpanel_border = new TitledBorder(null, getMessage(LABEL_CARDREADER), TitledBorder.LEADING, TitledBorder.TOP, null, null); 
-				readerpanel_border.setTitleFont(readerpanel_border.getTitleFont().deriveFont(
-						readerpanel_border.getTitleFont().getStyle()
-						& java.awt.Font.BOLD));				
+				readerpanel_border = new TitledBorder(null, getMessage(LABEL_CARDREADER), TitledBorder.LEADING, TitledBorder.TOP, null, null);
+				if (readerpanel_border.getTitleFont() != null)
+					readerpanel_border.setTitleFont(readerpanel_border.getTitleFont().deriveFont(
+							readerpanel_border.getTitleFont().getStyle()
+							& java.awt.Font.BOLD));
 				readerpanel = new JPanel();
 				readerpanel.setBorder(readerpanel_border);
 
 				cardpanel_border = new TitledBorder(null, getMessage(LABEL_SMARTCARD), TitledBorder.LEADING, TitledBorder.TOP, null, null); 
-				cardpanel_border.setTitleFont(cardpanel_border.getTitleFont().deriveFont(
-						cardpanel_border.getTitleFont().getStyle()
-						& java.awt.Font.BOLD));
+				if (cardpanel_border.getTitleFont() != null)
+					cardpanel_border.setTitleFont(cardpanel_border.getTitleFont().deriveFont(
+							cardpanel_border.getTitleFont().getStyle()
+							& java.awt.Font.BOLD));
 				cardpanel = new JPanel();
 				cardpanel.setBorder(cardpanel_border);
 				cardpanel.setFont(cardpanel.getFont().deriveFont(
@@ -272,12 +274,12 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 					(float) ((baseFontSize - 2)* factor)));
 		}
 		
-		if (cardpanel_border != null) {
+		if (cardpanel_border != null && cardpanel_border.getTitleFont() != null) {
 			cardpanel_border.setTitleFont(cardpanel_border.getTitleFont().deriveFont(
 					(float) ((baseFontSize)* factor)));
 		}
 		
-		if (readerpanel_border != null) {
+		if (readerpanel_border != null && readerpanel_border.getTitleFont() != null) {
 			readerpanel_border.setTitleFont(readerpanel_border.getTitleFont().deriveFont(
 					(float) ((baseFontSize)* factor)));
 		}
