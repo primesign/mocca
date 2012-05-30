@@ -464,11 +464,11 @@ public Container getParent() {
       try {
         return new URL(getCodeBase(), urlParam);
       } catch (MalformedURLException ex) {
-        log.error("Applet paremeter {} ist not a valid URL. {}", urlParam, ex.getMessage());
+        log.error("Applet parameter {} ist not a valid URL. {}", urlParam, ex.getMessage());
         throw ex;
       }
     } else {
-      log.error("Applet paremeter {} not set.", paramKey);
+      log.error("Applet parameter {} not set.", paramKey);
       throw new MalformedURLException(paramKey + " not set");
     }
   }
