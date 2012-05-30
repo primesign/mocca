@@ -37,6 +37,7 @@ import iaik.pki.store.truststore.TrustStoreFactory;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.Set;
 
 import javax.net.ssl.X509TrustManager;
 
@@ -148,13 +149,16 @@ public class PKITrustManager implements X509TrustManager {
     try {
       
       TrustStore trustStore = TrustStoreFactory.getInstance(pkiProfile.getTrustStoreProfile(), tid);
-      return (X509Certificate[]) trustStore.getTrustedCertificates(tid).toArray();
-      
+      @SuppressWarnings("unchecked")
+      Set<X509Certificate> certs = trustStore.getTrustedCertificates(tid);
+      return certs.toArray(new X509Certificate[certs.size()]);
     } catch (TrustStoreException e) {
       log.warn("Failed to get list of accepted issuers.", e);
       return new X509Certificate[] {};
+    } catch (ClassCastException e) {
+      log.error("Failed to cast list of accepted issuers.", e);
+      return new X509Certificate[] {};
     }
-
   }
 
   private static iaik.x509.X509Certificate[] convertCerts(
