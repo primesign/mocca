@@ -8,7 +8,7 @@
   <artifactId>BKUWebStart</artifactId>
   <packaging>jar</packaging>
   <name>MOCCA Webstart</name>
-  <url>http://mocca.egovlabs.gv.at/</url>
+  <url>http://joinup.ec.europa.eu/site/mocca/</url>
   <description>Bürgerkartenumgebung</description>
   
   <build>

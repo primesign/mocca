@@ -7,7 +7,7 @@
   <version>1.3.8-SNAPSHOT</version>
   <name>MOCCA</name>
   <description>MOCCA (Modular Open Citizen Card Architecture) project</description>
-  <url>http://mocca.egovlabs.gv.at</url>
+  <url>http://joinup.ec.europa.eu/site/mocca/</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -53,9 +53,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:svn:svn://svn.egovlabs.gv.at/svnroot/mocca/trunk</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.egovlabs.gv.at/svnroot/mocca/trunk</developerConnection>
-    <url>svn://svn.egovlabs.gv.at/svnroot/mocca/trunk</url>
+    <connection>scm:svn:https://joinup.ec.europa.eu/svn/mocca/trunk</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/mocca/trunk</developerConnection>
+    <url>https://joinup.ec.europa.eu/svn/mocca/trunk</url>
   </scm>
   <organization>
     <name>E-Government Innovation Center (EGIZ)</name>
@@ -206,9 +206,9 @@
   </build>
   <repositories>
     <repository>
-      <id>mocca-egovlabs</id>
-      <name>MOCCA EGovLabs</name>
-      <url>http://mocca.egovlabs.gv.at/m2/repository/</url>
+      <id>mocca-joinup</id>
+      <name>MOCCA JoinUp</name>
+      <url>http://joinup.ec.europa.eu/site/mocca/m2/repository/</url>
     </repository>
     <repository>
       <id>maven2-repository.dev.java.net</id>
@@ -413,7 +413,7 @@
   <distributionManagement>
     <site>
       <id>project</id>
-      <url>scp://egovlabs.gv.at/var/lib/gforge/chroot/home/groups/mocca/htdocs</url>
+      <url>dav:https://joinup.ec.europa.eu/webdav/mocca/www</url>
     </site>
   </distributionManagement>
   <issueManagement>
