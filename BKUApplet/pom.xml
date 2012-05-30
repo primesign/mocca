@@ -34,6 +34,7 @@
             <option>-dontpreverify</option>
             <option>-target 1.6</option>
           </options>
+          <proguardVersion>4.7</proguardVersion>
           <libs>
             <lib>${java.home}/lib/rt.jar</lib>
             <lib>${java.home}/lib/jce.jar</lib>
@@ -79,6 +80,14 @@
             </inclusions>
           </assembly>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>net.sf.proguard</groupId>
+            <artifactId>proguard</artifactId>
+            <version>4.7</version>
+            <scope>runtime</scope>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
