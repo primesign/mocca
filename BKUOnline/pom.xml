@@ -9,13 +9,6 @@
   <artifactId>BKUOnline</artifactId>
   <packaging>war</packaging>
   <name>MOCCA Online</name>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>tlc</id>
-      <name>TLC Repository</name>
-      <url>http://commons.ucalgary.ca/pub/m2</url>
-    </pluginRepository>
-  </pluginRepositories>
 
   <dependencies>
     <dependency>
