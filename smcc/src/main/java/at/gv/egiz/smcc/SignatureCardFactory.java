@@ -387,6 +387,24 @@ public class SignatureCardFactory {
 						(byte) 0xff, (byte) 0xff },
 				"at.gv.egiz.smcc.BELPICCard"));
 
+		// Cypriotic EID
+		supportedCards.add(new SupportedCard(
+				// ATR [3B:DD:18:00:81:31:FE.45:80:F9:A0:00:00:00:77:01:08:00:07::90:00:FE]
+				new byte[] { (byte) 0x3b, (byte) 0xdd, (byte) 0x18, 
+						(byte) 0x00, (byte) 0x81, (byte) 0x31, (byte) 0xfe, 
+						(byte) 0x45, (byte) 0x80, (byte) 0xf9, (byte) 0xa0,
+						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x77,
+						(byte) 0x01, (byte) 0x08, (byte) 0x00, (byte) 0x07,
+						(byte) 0x90, (byte) 0x00, (byte) 0xfe},
+				// mas (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
+				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, 
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff},
+				"at.gv.egiz.smcc.CypriotEID"));	
+		
 		// ES DNIe
 		supportedCards.add(new SupportedCard(
 		// ATR [3b:7f:38:00:00:00:6a:44:4e:49:65:20:02:4c:34:01:13:03:90:00]
