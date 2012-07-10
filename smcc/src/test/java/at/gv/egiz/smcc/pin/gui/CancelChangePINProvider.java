@@ -44,4 +44,10 @@ public class CancelChangePINProvider extends DummyChangePINGUI implements Modify
     throw new CancelledException("cancelled by cancelPINProvider");
   }
 
+  @Override
+  public char[] providePUK(PinInfo pinInfo, PinInfo pukInfo, int retries)
+          throws CancelledException, InterruptedException {
+    throw new CancelledException("cancelled by cancelPINProvider");
+  }
+
 }

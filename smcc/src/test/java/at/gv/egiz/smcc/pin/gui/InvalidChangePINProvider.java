@@ -61,4 +61,10 @@ public class InvalidChangePINProvider extends DummyChangePINGUI implements Modif
   public char[] provideNewPIN(PinInfo spec) {
     return pin;
   }
+
+  @Override
+  public char[] providePUK(PinInfo pinInfo, PinInfo pukInfo, int retries)
+          throws CancelledException, InterruptedException {
+    return null;
+  }
 }

@@ -54,4 +54,10 @@ public class ChangePINProvider extends DummyChangePINGUI implements ModifyPINGUI
     return pin;
   }
 
+  @Override
+  public char[] providePUK(PinInfo pinInfo, PinInfo pukInfo, int retries)
+          throws CancelledException, InterruptedException {
+    return null;
+  }
+
 }
