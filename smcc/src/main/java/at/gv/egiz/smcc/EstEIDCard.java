@@ -42,6 +42,12 @@ import at.gv.egiz.smcc.pin.gui.PINGUI;
 import at.gv.egiz.smcc.util.ISO7816Utils;
 import at.gv.egiz.smcc.util.SMCCHelper;
 
+/*
+ * This class implements support for EstEID card v1.0, v1.1 and v3.0.
+ * Note that signatures created with c3.0 cards cannot be verified by MOA-SP
+ * due to wrong encoding of the signer certificate (public key modulus is negative) 
+ */
+
 public class EstEIDCard extends AbstractSignatureCard {
 
   private final Logger log = LoggerFactory.getLogger(EstEIDCard.class);
