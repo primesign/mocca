@@ -117,6 +117,13 @@ public interface PINManagementGUIFacade extends BKUGUIFacade {
           ActionListener cancelListener, String cancelCmd);
 
   /**
+   * "software" puk and pin-entry dialog (change, unblock)
+   */
+  public void showPUKDialog(DIALOG type, PinInfo pinSpec, PinInfo pukSpec, int retries,
+          ActionListener okListener, String okCmd,
+          ActionListener cancelListener, String cancelCmd);
+  
+  /**
    * <b>direct</b> pinpad pin-entry dialog
    */
   public void showModifyPINDirect(DIALOG type, PinInfo pinSpec, int retries);

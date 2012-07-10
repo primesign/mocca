@@ -94,4 +94,27 @@ public class ManagementPINProvider extends AbstractPINProvider implements Modify
     }
     return gui.getPin();
   }
+
+@Override
+public char[] providePUK(PinInfo pinInfo, PinInfo pukInfo, int retries)
+		throws CancelledException, InterruptedException {
+	gui.showPUKDialog(type, pinInfo, pukInfo, (retry) ? retries : -1,
+            this, "change",
+            this, "cancel");
+
+    log.trace("[{}] wait for action.", Thread.currentThread().getName());
+    waitForAction();
+    log.trace("[{}] received action {}.", Thread.currentThread().getName(), action);
+
+    gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
+            BKUGUIFacade.MESSAGE_WAIT);
+
+    if ("cancel".equals(action)) {
+      throw new CancelledException(pukInfo.getLocalizedName() +
+              " entry cancelled");
+    }
+    retry = true;
+    return gui.getOldPin();
+}
+
 }

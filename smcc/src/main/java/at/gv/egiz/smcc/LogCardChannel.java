@@ -69,6 +69,7 @@ public class LogCardChannel extends CardChannel {
       switch (command.getINS()) {
       case 0x20:    // VERIFY
       case 0x21:    // VERIFY
+      case 0x2C:	// RESET RETRY COUNTER 
       case 0x24: {  // CHANGE REFERENCE DATA
         // Don't log possibly sensitive command data
         StringBuilder sb = new StringBuilder();

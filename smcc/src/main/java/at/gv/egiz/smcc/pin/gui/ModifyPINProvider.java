@@ -53,4 +53,6 @@ public interface ModifyPINProvider {
   public char[] provideNewPIN(PinInfo pinInfo)
           throws CancelledException, InterruptedException;
 
+  public char[] providePUK(PinInfo pinInfo, PinInfo pukInfo, int retries)
+		  throws CancelledException, InterruptedException;
 }
