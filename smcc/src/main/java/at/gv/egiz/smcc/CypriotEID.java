@@ -47,15 +47,11 @@ import javax.smartcardio.ResponseAPDU;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.gv.egiz.smcc.SignatureCard.KeyboxName;
 import at.gv.egiz.smcc.cio.ObjectDirectory;
 import at.gv.egiz.smcc.pin.gui.ModifyPINGUI;
 import at.gv.egiz.smcc.pin.gui.PINGUI;
-import at.gv.egiz.smcc.util.ISO7816Utils;
 import at.gv.egiz.smcc.util.SMCCHelper;
-import at.gv.egiz.smcc.util.TLV;
-import at.gv.egiz.smcc.util.TLVSequence;
-import at.gv.egiz.smcc.util.TransparentFileInputStream;
+
 
 public class CypriotEID extends AbstractSignatureCard implements
 		PINMgmtSignatureCard {
@@ -92,8 +88,6 @@ public class CypriotEID extends AbstractSignatureCard implements
 
 		pinPinInfo = new PinInfo(4, 64, "[0-9]", "at/gv/egiz/smcc/CypriotEID",
 				"sig.pin", KID_PIN_SIG, AID_SIG, 3);
-
-		// pinPinInfo.setActive(3);
 
 		pukPinInfo = new PinInfo(4, 64, "[0-9]", "at/gv/egiz/smcc/CypriotEID",
 				"sig.puk", KID_PUK_SIG, AID_SIG, 3);
