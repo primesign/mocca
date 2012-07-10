@@ -192,10 +192,34 @@ public class EstEIDCard extends AbstractSignatureCard {
     
   }
 
-  protected void execSELECT_MF(CardChannel channel)
-      throws SignatureCardException, CardException {
-    execSELECT(channel, 0x00, 0x04, MF);
-  }
+	// protected void execSELECT_MF(CardChannel channel)
+	// throws SignatureCardException, CardException {
+	// execSELECT(channel, 0x00, 0x04, MF);
+	// }
+  
+    // In contrast to older cards,
+    // v3 cards require MF to be selected by APDU [00 A4 00 0C]
+	protected void execSELECT_MF(CardChannel channel)
+			throws SignatureCardException, CardException {
+
+		CommandAPDU command = new CommandAPDU((byte) 0x00, (byte) 0xA4,
+				(byte) 0x00, (byte) 0x0C);
+
+		ResponseAPDU resp = channel.transmit(command);
+
+		if (resp.getSW() == 0x6A82) {
+			String msg = "Master file not found. SW="
+					+ Integer.toHexString(resp.getSW()) + ".";
+			log.info(msg);
+			throw new FileNotFoundException(msg);
+		} else if (resp.getSW() != 0x9000) {
+			String msg = "Failed to select master file. SW="
+					+ Integer.toHexString(resp.getSW()) + ".";
+			log.error(msg);
+			throw new SignatureCardException(msg);
+		}
+
+	}  
   
   protected void execSELECT_DF(CardChannel channel, byte[] fid)
       throws SignatureCardException, CardException {
