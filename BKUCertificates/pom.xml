@@ -8,8 +8,7 @@
   <artifactId>BKUCertificates</artifactId>
   <!-- DON'T CHANGE VERSION UNLESS THE INCLUDED CERTIFICATES CHANGED
    |   PLEASE COMMIT CHANGES to src/main/changes/changes.txt
-   |   and don't forget to update dependency management 
-   |   (depending modules: BKUOnline, BKULocal & BKUWebstart)
+   |   and don't forget to update version in main pom
    |-->
   <version>1.8</version>
   <name>BKU Certificates</name>
