@@ -5,6 +5,24 @@ Tags:
 * ''REMOVED''  ... certificate removed in this release
 * TRUSTED	... certificate included in truststore
 
+'''BKUCertificates-1.8 (mocca-1.3.8)'''
+-------------------
+
+GeoTrust_Global_CA.cer (''ADDED'', TRUSTED)
+* Serial Number: 144470 (0x23456)
+* Issuer: C=US, O=GeoTrust Inc., CN=GeoTrust Global CA
+* Subject: C=US, O=GeoTrust Inc., CN=GeoTrust Global CA
+* Not Before: May 21 04:00:00 2002 GMT
+* Not After : May 21 04:00:00 2022 GMT
+
+GeoTrust_SSL_CA.cer (''ADDED'')
+* Serial Number: 145104 (0x236d0)
+* Issuer: C=US, O=GeoTrust Inc., CN=GeoTrust Global CA
+* Subject: C=US, O=GeoTrust, Inc., CN=GeoTrust SSL CA
+* Not Before: Feb 19 22:39:26 2010 GMT
+* Not After : Feb 18 22:39:26 2020 GMT
+
+
 '''BKUCertificates-1.7 (mocca-1.3.7)'''
 -------------------
 
