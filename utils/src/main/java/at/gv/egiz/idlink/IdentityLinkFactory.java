@@ -303,7 +303,7 @@ public class IdentityLinkFactory {
         XMLSignatureFactory.getInstance(), KeyInfoFactory.getInstance());
   }
 
-  public void signIdentityLink(Element assertion, X509Certificate certificate, 
+  public void signIdentityLink(Element assertion, X509Certificate certificate,
       PrivateKey key, XMLSignatureFactory signatureFactory,
       KeyInfoFactory keyInfoFactory) throws NoSuchAlgorithmException,
       InvalidAlgorithmParameterException, XMLSignatureException,
