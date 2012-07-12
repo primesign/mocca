@@ -298,11 +298,17 @@ public class IdentityLinkFactory {
       PrivateKey key) throws NoSuchAlgorithmException,
       InvalidAlgorithmParameterException, XMLSignatureException,
       MarshalException {
-    
-    XMLSignatureFactory signatureFactory = XMLSignatureFactory.getInstance();
-    
-    KeyInfoFactory keyInfoFactory = KeyInfoFactory.getInstance();
-    
+
+    signIdentityLink(assertion, certificate, key,
+        XMLSignatureFactory.getInstance(), KeyInfoFactory.getInstance());
+  }
+
+  public void signIdentityLink(Element assertion, X509Certificate certificate, 
+      PrivateKey key, XMLSignatureFactory signatureFactory,
+      KeyInfoFactory keyInfoFactory) throws NoSuchAlgorithmException,
+      InvalidAlgorithmParameterException, XMLSignatureException,
+      MarshalException {
+
     List<Reference> references = new ArrayList<Reference>();
     
     // Reference #1
