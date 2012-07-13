@@ -104,6 +104,9 @@ public interface BKUGUIFacade {
   public static final String MESSAGE_HELP = "help";
 
   public static final String WARNING_XHTML = "warning.xhtml";
+  public static final String WARNING_CERT_NOTYETVALID = "warning.cert.notyetvalid";
+  public static final String WARNING_CERT_EXPIRED = "warning.cert.expired";
+
   public static final String LABEL_PIN = "label.pin";
   public static final String LABEL_PINSIZE = "label.pinsize";
   public static final String HELP_WELCOME = "help.welcome";
