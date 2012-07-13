@@ -103,8 +103,12 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
             log.info("signing certificate is valid");
           } catch (CertificateExpiredException e) {
               log.warn("signing certificate has expired!");
+              gui.showWarningDialog(BKUGUIFacade.WARNING_CERT_EXPIRED, null, this, null);
+              waitForAction();
           } catch (CertificateNotYetValidException e) {
               log.warn("signing certificate is not yet valid!");
+              gui.showErrorDialog(BKUGUIFacade.WARNING_CERT_NOTYETVALID, null, this, null);
+              waitForAction();
           } catch (CertificateException e) {
             log.error("Certificate decoding failed:", e);
           }
