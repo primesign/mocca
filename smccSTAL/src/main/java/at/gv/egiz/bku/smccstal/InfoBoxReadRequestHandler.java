@@ -72,22 +72,18 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
           InfoboxReadResponse stalResp = new InfoboxReadResponse();
           stalResp.setInfoboxValue(resp);
           return stalResp;
-        } else if (SignatureCard.KeyboxName.CERTIFIED_KEYPAIR.equals(infoBox
-            .getInfoboxIdentifier())) {
-          log.debug("Handling certified keypair infobox.");
-          byte[] resp = card
-              .getCertificate(SignatureCard.KeyboxName.CERTIFIED_KEYPAIR, new VerifyPINGUI(gui));
-          if (resp == null) {
-            return new ErrorResponse(6001);
+        } else if (SignatureCard.KeyboxName.CERTIFIED_KEYPAIR.equals(infoBox.getInfoboxIdentifier()) ||
+                   SignatureCard.KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(infoBox.getInfoboxIdentifier()))
+        {
+          byte[] resp;
+          if (SignatureCard.KeyboxName.CERTIFIED_KEYPAIR.equals(infoBox.getInfoboxIdentifier()))
+          {
+            log.debug("Handling certified keypair infobox.");
+            resp = card.getCertificate(SignatureCard.KeyboxName.CERTIFIED_KEYPAIR, new VerifyPINGUI(gui));
+          } else {
+            log.debug("Handling secure signature keypair infobox.");
+            resp = card.getCertificate(SignatureCard.KeyboxName.SECURE_SIGNATURE_KEYPAIR, new VerifyPINGUI(gui));
           }
-          InfoboxReadResponse stalResp = new InfoboxReadResponse();
-          stalResp.setInfoboxValue(resp);
-          return stalResp;
-        } else if (SignatureCard.KeyboxName.SECURE_SIGNATURE_KEYPAIR
-            .equals(infoBox.getInfoboxIdentifier())) {
-          log.debug("Handling secure signature keypair infobox.");
-          byte[] resp = card
-              .getCertificate(SignatureCard.KeyboxName.SECURE_SIGNATURE_KEYPAIR, new VerifyPINGUI(gui));
           if (resp == null) {
             return new ErrorResponse(6001);
           }
