@@ -24,6 +24,13 @@
 
 package at.gv.egiz.bku.smccstal;
 
+import java.io.ByteArrayInputStream;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.X509Certificate;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,6 +94,22 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
           if (resp == null) {
             return new ErrorResponse(6001);
           }
+
+          // Check certificate validity
+          try {
+            CertificateFactory certFactory = CertificateFactory.getInstance("X509");
+            X509Certificate cert = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(resp));
+            cert.checkValidity();
+            log.info("signing certificate is valid");
+          } catch (CertificateExpiredException e) {
+              log.warn("signing certificate has expired!");
+          } catch (CertificateNotYetValidException e) {
+              log.warn("signing certificate is not yet valid!");
+          } catch (CertificateException e) {
+            log.error("Certificate decoding failed:", e);
+          }
+
+
           InfoboxReadResponse stalResp = new InfoboxReadResponse();
           stalResp.setInfoboxValue(resp);
           return stalResp;

@@ -231,16 +231,6 @@ public class CreateXMLSignatureCommandImpl extends
         log.info("Got signing certificate.");
       }
 
-      // check certificate for validity
-      try {
-        signingCertificate.checkValidity();
-        log.info("signing certificate is valid");
-      } catch (CertificateExpiredException e) {
-        log.warn("Your signing certificate has expired!");
-      } catch (CertificateNotYetValidException e) {
-        log.warn("Your signing certificate is not yet valid!");
-      }
-
       // prepare the XMLSignature for signing
       log.info("Preparing XML signature.");
       prepareXMLSignature(commandContext);
