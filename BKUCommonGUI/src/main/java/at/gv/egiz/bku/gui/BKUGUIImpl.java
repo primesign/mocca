@@ -1628,6 +1628,23 @@ public class BKUGUIImpl implements BKUGUIFacade {
 	}
 
 	@Override
+	public void showWarningDialog(final String warningMsgKey,
+			final Object[] warningMsgParams, final ActionListener okListener,
+			final String okCommand) {
+
+		showMessageDialog(TITLE_WARNING, WARNING_COLOR, warningMsgKey,
+				warningMsgParams, BUTTON_OK, okListener, okCommand);
+	}
+
+	@Override
+	public void showWarningDialog(final String warningMsgKey,
+			final Object[] warningMsgParams) {
+
+		showMessageDialog(TITLE_WARNING, WARNING_COLOR, warningMsgKey,
+				warningMsgParams, null, null, null);
+	}
+
+	@Override
 	public void showMessageDialog(final String titleKey, final String msgKey,
 			final Object[] msgParams, final String buttonKey,
 			final ActionListener okListener, final String okCommand) {

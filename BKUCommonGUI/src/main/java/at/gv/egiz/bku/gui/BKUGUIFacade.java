@@ -60,6 +60,7 @@ public interface BKUGUIFacade {
   public static final String HELP_IMG_FOCUS = "/at/gv/egiz/bku/gui/help.png"; //help_focus.png";
   public static final String HASHDATA_FONT = "Monospaced";
   public static final Color ERROR_COLOR = Color.RED;
+  public static final Color WARNING_COLOR = Color.ORANGE;
   public static final Color HYPERLINK_COLOR = Color.BLUE;
   public static final Color HELP_COLOR = new Color(70, 148, 169);
   public static final String TITLE_WELCOME = "title.welcome";
@@ -181,6 +182,11 @@ public interface BKUGUIFacade {
           ActionListener okListener, String okCommand);
 
   public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams);
+
+  public void showWarningDialog(String warningMsgKey, Object[] warningMsgParams,
+          ActionListener okListener, String okCommand);
+
+  public void showWarningDialog(String warningMsgKey, Object[] warningMsgParams);
 
   public void showMessageDialog(String titleKey, 
           String msgKey, Object[] msgParams,
