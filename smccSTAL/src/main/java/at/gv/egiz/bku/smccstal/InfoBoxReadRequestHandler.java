@@ -107,7 +107,7 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
               waitForAction();
           } catch (CertificateNotYetValidException e) {
               log.warn("signing certificate is not yet valid!");
-              gui.showErrorDialog(BKUGUIFacade.WARNING_CERT_NOTYETVALID, null, this, null);
+              gui.showWarningDialog(BKUGUIFacade.WARNING_CERT_NOTYETVALID, null, this, null);
               waitForAction();
           } catch (CertificateException e) {
             log.error("Certificate decoding failed:", e);
