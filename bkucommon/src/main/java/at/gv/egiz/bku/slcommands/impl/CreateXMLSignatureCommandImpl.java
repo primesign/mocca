@@ -25,6 +25,8 @@
 package at.gv.egiz.bku.slcommands.impl;
 
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Date;
@@ -227,6 +229,16 @@ public class CreateXMLSignatureCommandImpl extends
         log.debug("Got signing certificate. {}", signingCertificate);
       } else {
         log.info("Got signing certificate.");
+      }
+
+      // check certificate for validity
+      try {
+        signingCertificate.checkValidity();
+        log.info("signing certificate is valid");
+      } catch (CertificateExpiredException e) {
+        log.warn("Your signing certificate has expired!");
+      } catch (CertificateNotYetValidException e) {
+        log.warn("Your signing certificate is not yet valid!");
       }
 
       // prepare the XMLSignature for signing
