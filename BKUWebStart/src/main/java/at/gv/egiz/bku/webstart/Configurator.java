@@ -64,10 +64,18 @@ public class Configurator {
 
   /**
    * MOCCA configuration
-   * configurations with less than this (major) version will be backuped and updated
+   * configurations with less than this (major) version will be backed up and updated
+   * TLS Certificate will be recreated
    * allowed: MAJOR[.MINOR[.X[-SNAPSHOT]]]
    */
   public static final String MIN_CONFIG_VERSION = "1.3.4-SNAPSHOT";
+  /**
+   * configurations with less than this (major) version will be backed up and updated
+   * TLS Certificate will *NOT* be recreated
+   * allowed: MAJOR[.MINOR[.X[-SNAPSHOT]]]
+   */
+  public static final String UPDATE_CONFIG_VERSION = "1.3.8-SNAPSHOT";
+
   public static final String BKU_USER_DIR = ".mocca/";
   public static final String CONFIG_DIR = BKU_USER_DIR + "conf/";
   public static final String CERTS_DIR = BKU_USER_DIR + "certs/";
@@ -114,9 +122,17 @@ public class Configurator {
           File zipFile = new File(moccaDir, "conf-" + version + ".zip");
           ZipOutputStream zipOS = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)));
           log.info("backup configuration to " + zipFile);
-          backupAndDelete(configDir, moccaDir.toURI(), zipOS);
+          backup(configDir, moccaDir.toURI(), zipOS, true);
           zipOS.close();
           initConfig(configDir);
+        } else if (updateRequired(version, UPDATE_CONFIG_VERSION)) {
+          File moccaDir = configDir.getParentFile();
+          File zipFile = new File(moccaDir, "conf-" + version + ".zip");
+          ZipOutputStream zipOS = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)));
+          log.info("backup configuration to " + zipFile);
+          backup(configDir, moccaDir.toURI(), zipOS, false);
+          zipOS.close();
+          updateConfig(configDir);
         }
       }
     } else {
@@ -150,7 +166,7 @@ public class Configurator {
           File zipFile = new File(moccaDir, "certs-" + certsVersion + ".zip");
           ZipOutputStream zipOS = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(zipFile)));
           log.info("backup certificates to " + zipFile);
-          backupAndDelete(certsDir, moccaDir.toURI(), zipOS);
+          backup(certsDir, moccaDir.toURI(), zipOS, true);
           zipOS.close();
 
           createCerts(certsDir, newCertsVersion);
@@ -329,12 +345,13 @@ public class Configurator {
     return true;
   }
 
-  protected static void backupAndDelete(File dir, URI relativeTo, ZipOutputStream zip) throws IOException {
+  protected static void backup(File dir, URI relativeTo, ZipOutputStream zip, boolean doDelete) throws IOException {
     if (dir.isDirectory()) {
       File[] subDirs = dir.listFiles();
       for (File subDir : subDirs) {
-        backupAndDelete(subDir, relativeTo, zip);
-        subDir.delete();
+        backup(subDir, relativeTo, zip, doDelete);
+        if (doDelete)
+          subDir.delete();
       }
     } else {
       URI relativePath = relativeTo.relativize(dir.toURI());
@@ -344,8 +361,18 @@ public class Configurator {
       new StreamCopier(entryIS, zip).copyStream();
       entryIS.close();
       zip.closeEntry();
-      dir.delete();
+      if (doDelete)
+        dir.delete();
     }
+  }
+
+  /**
+   * update MOCCA local configuration
+   * @throws IOException config creation failed
+   */
+  protected void updateConfig(File configDir) throws IOException {
+    createConfig(configDir, Launcher.version);
+    version = Launcher.version;
   }
 
   /**
@@ -356,8 +383,7 @@ public class Configurator {
    * @throws CodingException if MOCCA TLS certificate could not be created
    */
   protected void initConfig(File configDir) throws IOException, GeneralSecurityException, CodingException {
-    createConfig(configDir, Launcher.version);
-    version = Launcher.version;
+    updateConfig(configDir);
     createKeyStore(configDir);
     certRenewed = true;
   }
