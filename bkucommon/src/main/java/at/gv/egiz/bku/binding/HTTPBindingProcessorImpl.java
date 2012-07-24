@@ -114,6 +114,8 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 
 		public static final String DATAURLCLIENT_MAXHOPS = "DataURLConnection.MaxHops";
 
+		public static final String DATAURL_WHITELIST = "DataURLConnection.Whitelist";
+
 		public int getMaxDataUrlHops() {
 			return configuration.getInt(DATAURLCLIENT_MAXHOPS, 10);
 		}
@@ -141,6 +143,25 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 					.getBoolean(ConfigurationFactoryBean.USE_STYLESHEETURL_PROPERTY, false);
 		}
 
+		public List<String> getDataURLWhitelist() {
+			return configuration
+					.getList(DATAURL_WHITELIST);
+		}
+
+		public boolean hasDataURLWhitelist() {
+			return configuration.containsKey(DATAURL_WHITELIST);
+		}
+
+		public boolean matchesDataURLWhitelist(String dataURL) {
+			List<String> dataURLWhitelist = getDataURLWhitelist();
+			log.debug("DataURL Whitelist: " + dataURLWhitelist.toString());
+			for (String regExp : dataURLWhitelist) {
+				log.debug("Matching " + regExp);
+				if (dataURL.matches(regExp))
+					return true;
+			}
+			return false;
+		}
 	}
 	
 	/**
@@ -323,9 +344,19 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 	}
 
 	protected void handleDataUrl() {
-		log.info("Entered State: {}, DataURL={}.", State.DATAURL, getDataUrl());
+		String dataURL = getDataUrl();
+		log.info("Entered State: {}, DataURL={}.", State.DATAURL, dataURL);
 		try {
-			DataUrl dataUrl = new DataUrl(getDataUrl());
+			if (configurationFacade.hasDataURLWhitelist()) {
+				log.debug("Checking DataURL against whitelist");
+				if (!configurationFacade.matchesDataURLWhitelist(dataURL))
+				{
+					log.error("DataURL doesn't match whitelist");
+					throw new SLBindingException(2001);
+				}
+			}
+
+			DataUrl dataUrl = new DataUrl(dataURL);
 			HttpsDataURLConnection conn = (HttpsDataURLConnection) dataUrl.openConnection();
 			
 			// set user agent and signature layout headers
