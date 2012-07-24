@@ -25,8 +25,6 @@
 package at.gv.egiz.bku.slcommands.impl;
 
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Date;
