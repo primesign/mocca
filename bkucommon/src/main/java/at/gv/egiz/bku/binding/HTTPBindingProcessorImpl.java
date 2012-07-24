@@ -116,6 +116,8 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 
 		public static final String DATAURL_WHITELIST = "DataURLConnection.Whitelist";
 
+		public static final String USE_STYLESHEETURL_PROPERTY = "UseStylesheetURL";
+
 		public int getMaxDataUrlHops() {
 			return configuration.getInt(DATAURLCLIENT_MAXHOPS, 10);
 		}
@@ -140,7 +142,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 
 		public boolean getEnableStylesheetURL() {
 			return configuration
-					.getBoolean(ConfigurationFactoryBean.USE_STYLESHEETURL_PROPERTY, false);
+					.getBoolean(USE_STYLESHEETURL_PROPERTY, false);
 		}
 
 		public List<String> getDataURLWhitelist() {

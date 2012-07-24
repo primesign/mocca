@@ -64,8 +64,6 @@ public class ConfigurationFactoryBean implements FactoryBean, ResourceLoaderAwar
 
   public static final String SIGNATURE_LAYOUT_PROPERTY = "SignatureLayout";
 
-  public static final String USE_STYLESHEETURL_PROPERTY = "UseStylesheetURL";
-
   /**
    * The URL of the configuration file.
    */
