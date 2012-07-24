@@ -99,8 +99,8 @@ public class CreateXMLSignatureCommandImpl extends
   private class ConfigurationFacade implements MoccaConfigurationFacade {
     private Configuration configuration;
 
-    public static final String USE_STRONG_HASH = "useStrongHash";
-    public static final String USE_XADES_1_4 = "useXAdES14";
+    public static final String USE_STRONG_HASH = "UseStrongHash";
+    public static final String USE_XADES_1_4 = "UseXAdES14";
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
