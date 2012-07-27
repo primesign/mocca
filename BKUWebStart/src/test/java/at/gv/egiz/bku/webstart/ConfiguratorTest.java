@@ -224,16 +224,16 @@ public class ConfiguratorTest {
   }
 
   /**
-   * Test of backupAndDelete method, of class Configurator.
+   * Test of backup method, of class Configurator.
    */
   @Ignore
   @Test
-  public void testBackupAndDelete() throws Exception {
-    System.out.println("backupAndDelete");
+  public void testBackup() throws Exception {
+    System.out.println("backup");
     File dir = null;
     URI relativeTo = null;
     ZipOutputStream zip = null;
-    Configurator.backupAndDelete(dir, relativeTo, zip);
+    Configurator.backup(dir, relativeTo, zip, true);
     // TODO review the generated test code and remove the default call to fail.
     fail("The test case is a prototype.");
   }
