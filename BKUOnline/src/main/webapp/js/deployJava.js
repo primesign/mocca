@@ -876,6 +876,9 @@ var deployJava = {
         try {
             return (new ActiveXObject(objectName) != null);
         } catch (exception) {
+            if (deployJava.debug) {
+                alert("ActiveXObject exception " + exception.name + ": " + exception.message);
+            }
             return false;
         }
     },
