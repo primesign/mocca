@@ -74,17 +74,17 @@
 					<UserInteraction>confirm</UserInteraction>
 				</Rule>
 				<Rule Id="cmd-rule-localhost">
-          <AuthClass>anonymous</AuthClass>
-          <IPv4Address>127.0.0.1</IPv4Address>
-          <Command Name="Infobox.*">
-            <Param Name="InfoboxIdentifier">IdentityLink</Param>
-            <Param Name="PersonIdentifier">derived</Param>
-          </Command>
-          <Action>
-            <RuleAction>allow</RuleAction>
-          </Action>
-          <UserInteraction>confirm</UserInteraction>
-        </Rule>		
+					<AuthClass>anonymous</AuthClass>
+					<IPv4Address>127.0.0.1</IPv4Address>
+					<Command Name="Infobox.*">
+						<Param Name="InfoboxIdentifier">IdentityLink</Param>
+						<Param Name="PersonIdentifier">derived</Param>
+					</Command>
+					<Action>
+						<RuleAction>allow</RuleAction>
+					</Action>
+					<UserInteraction>confirm</UserInteraction>
+				</Rule>
 				<Rule Id="cmd-rule-2">
 					<AuthClass>anonymous</AuthClass>
 					<Command Name="Infobox.*">
