@@ -45,7 +45,11 @@ MOCCA Configuration
 		This allows to prevent infinite request loops caused by erroneous server implementations.
 		
 		Default: <<<50>>>
-		
+
+		[<<<Whitelist>>>] A list of allowed DataURLs, separated by commas.
+		The entries are interpreted as {{{http://docs.oracle.com/javase/6/docs/api/java/util/regex/Pattern.html}regular expressions}}.
+		If this list is not present, any DataURL will be accepted. If it is empty, all DataURLs will be rejected.
+
 	[<<<ValidateHashDataInputs>>>] Controls if to-be signed data is validated for conformity with the {{{http://www.buergerkarte.at/konzept/securitylayer/spezifikation/aktuell/viewerformat/ViewerFormat.en.html}standardised viewer format}} of the Austrian Citizen Card specification.
 	
 	Default: <<<true>>>
@@ -68,7 +72,7 @@ MOCCA Configuration
 		
 		[<<<revocationServiceOrder>>>] Comma-separated (ordered) list of revocation services to be used, e.g. "<<<CRL,OCSP>>>". Any revocation service not contained in the list will be disabled.
 
-                Default: <<<OCSP,CRL>>>
+		Default: <<<OCSP,CRL>>>
 
 		[]
 		
@@ -83,10 +87,13 @@ MOCCA Configuration
 		Default: <<<false>>>
 
 	[<<<ProductName>>>] May be specified to set the product name given by the <<<Server>>> and <<<User-Agent>>> HTTP headers as specified by {{{http://www.buergerkarte.at/konzept/securitylayer/spezifikation/aktuell/bindings/bindings.en.html#http}HTTP binding}}.
-	
+
+
 	[<<<ProductVersion>>>] May be specified to set the product version given by the <<<Server>>> and <<<User-Agent>>> HTTP headers as specified by {{{http://www.buergerkarte.at/konzept/securitylayer/spezifikation/aktuell/bindings/bindings.en.html#http}HTTP binding}}.
 
+
 	[<<<SignatureLayout>>>] May be specified to set the <<<SignatureLayout>>> HTTP header.
+
 
         [<<<AccessController>>>]
 
@@ -95,6 +102,35 @@ MOCCA Configuration
 		[<<<PolicyResource>>>]
 
 		Default: <<<classpath:/at/gv/egiz/bku/accesscontrol/config/accessControlConfig.xml>>>
+
+		[<<<UseStrongHash>>>] The hash algorithm defaults to SHA-1.
+		If this option is set, SHA-256 or RIPEMD-160 are used, depending on card support.
+
+		Default: <<<false>>>
+
+		[<<<UseStylesheetURL>>>] By default, provided StylesheetURLs will be ignored.
+		To enable this feature, set this to true.
+
+		Default: <<<false>>>
+
+		[<<<UseSWCard>>>] Use provided key and certificate files instead of a smart card.
+		This feature expects the following files:
+
+		* <<<smcc/secure.p12>>>: keystore containing the secure signature key pair (under the friendly name <<<SecureSignatureKeypair>>>)
+
+		* <<<smcc/secure.pwd>>>: plain text file containing the password of the above key store
+
+		* <<<smcc/secure.cer>>>: corresponding certificate
+
+		* <<<smcc/certified.p12>>>: keystore containing the certified key pair (under the friendly name <<<CertifiedKeypair>>>)
+
+		* <<<smcc/certified.pwd>>>: plain text file containing the password of the above key store
+
+		* <<<smcc/certified.cer>>>: corresponding certificate
+
+		[]
+
+		Default: <<<false>>>
 
 ** MOCCA Local Only Configuration Parameters
 
