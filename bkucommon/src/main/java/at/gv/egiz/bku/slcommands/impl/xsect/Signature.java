@@ -439,7 +439,7 @@ public class Signature {
           }
           int errorCode = ((STALSignatureException) cause).getErrorCode();
           SLCommandException commandException = new SLCommandException(errorCode);
-          log.info("Failed to sign signature.", commandException);
+          log.info("Failed to sign signature.", e);
           throw commandException;
         } else {
           cause = cause.getCause();
