@@ -95,7 +95,7 @@ MOCCA Configuration
 	[<<<SignatureLayout>>>] May be specified to set the <<<SignatureLayout>>> HTTP header.
 
 
-        [<<<AccessController>>>]
+	[<<<AccessController>>>]
 
 		Citizen Card Environment access control configuration file
 
@@ -103,34 +103,34 @@ MOCCA Configuration
 
 		Default: <<<classpath:/at/gv/egiz/bku/accesscontrol/config/accessControlConfig.xml>>>
 
-		[<<<UseStrongHash>>>] The hash algorithm defaults to SHA-1.
-		If this option is set, SHA-256 or RIPEMD-160 are used, depending on card support.
+	[<<<UseStrongHash>>>] The hash algorithm defaults to SHA-1.
+	If this option is set, SHA-256 or RIPEMD-160 are used, depending on card support.
 
-		Default: <<<false>>>
+	Default: <<<false>>>
 
-		[<<<UseStylesheetURL>>>] By default, provided StylesheetURLs will be ignored.
-		To enable this feature, set this to true.
+	[<<<UseStylesheetURL>>>] By default, provided StylesheetURLs will be ignored.
+	To enable this feature, set this to true.
 
-		Default: <<<false>>>
+	Default: <<<false>>>
 
-		[<<<UseSWCard>>>] Use provided key and certificate files instead of a smart card.
-		This feature expects the following files:
+	[<<<UseSWCard>>>] Use provided key and certificate files instead of a smart card.
+	This feature expects the following files:
 
-		* <<<smcc/secure.p12>>>: keystore containing the secure signature key pair (under the friendly name <<<SecureSignatureKeypair>>>)
+	* <<<smcc/secure.p12>>>: keystore containing the secure signature key pair (under the friendly name <<<SecureSignatureKeypair>>>)
 
-		* <<<smcc/secure.pwd>>>: plain text file containing the password of the above key store
+	* <<<smcc/secure.pwd>>>: plain text file containing the password of the above key store
 
-		* <<<smcc/secure.cer>>>: corresponding certificate
+	* <<<smcc/secure.cer>>>: corresponding certificate
 
-		* <<<smcc/certified.p12>>>: keystore containing the certified key pair (under the friendly name <<<CertifiedKeypair>>>)
+	* <<<smcc/certified.p12>>>: keystore containing the certified key pair (under the friendly name <<<CertifiedKeypair>>>)
 
-		* <<<smcc/certified.pwd>>>: plain text file containing the password of the above key store
+	* <<<smcc/certified.pwd>>>: plain text file containing the password of the above key store
 
-		* <<<smcc/certified.cer>>>: corresponding certificate
+	* <<<smcc/certified.cer>>>: corresponding certificate
 
-		[]
+	[]
 
-		Default: <<<false>>>
+	Default: <<<false>>>
 
 ** MOCCA Local Only Configuration Parameters
 
