@@ -305,12 +305,12 @@ PINMgmtSignatureCard {
 	          && appVersion >= 2
 	          && "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256".equals(alg)) {
 	        dst.write((byte) 0x44); // SHA-256/ECC
-	        md = MessageDigest.getInstance("SHA256");
+	        md = MessageDigest.getInstance("SHA-256");
 	      } else if (KeyboxName.CERTIFIED_KEYPAIR.equals(keyboxName)
 	          && appVersion >= 2
 	          && "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256".equals(alg)) {
 	        dst.write((byte) 0x41); // SHA-256 with padding according to PKCS#1
-	        md = MessageDigest.getInstance("SHA256");
+	        md = MessageDigest.getInstance("SHA-256");
 	      } else if (KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(keyboxName)
 	          && "http://www.w3.org/2007/05/xmldsig-more#ecdsa-ripemd160".equals(alg)) {
 	        dst.write((byte) 0x14); // No RIPEMD support - use SHA-1/ECC

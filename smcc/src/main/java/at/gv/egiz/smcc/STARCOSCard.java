@@ -405,7 +405,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x04});
         // hash template
         ht = new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x40};
-        md = MessageDigest.getInstance("SHA256");
+        md = MessageDigest.getInstance("SHA-256");
       } else if (version >= 1.2 && "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256".equals(alg)) {
         // local key ID '03' version '00'
         dst.write(new byte[] {(byte) 0x03, (byte) 0x00});
@@ -413,7 +413,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x02});
         // hash template
         ht = new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x40};
-        md = MessageDigest.getInstance("SHA256");
+        md = MessageDigest.getInstance("SHA-256");
       } else if ("http://www.w3.org/2007/05/xmldsig-more#ecdsa-ripemd160".equals(alg)) {
         // local key ID '02' version '00'
         dst.write(new byte[] {(byte) 0x02, (byte) 0x00});

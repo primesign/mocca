@@ -150,7 +150,7 @@ public class CypriotEID extends AbstractSignatureCard implements
 					&& "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"
 							.equals(alg)) {
 				AlgID = (byte) 0x41; // SHA-256 with padding according to PKCS#1
-				md = MessageDigest.getInstance("SHA256");
+				md = MessageDigest.getInstance("SHA-256");
 			} else {
 				throw new SignatureCardException(
 						"Card does not support signature algorithm " + alg
