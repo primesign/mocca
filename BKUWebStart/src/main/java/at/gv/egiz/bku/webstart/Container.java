@@ -39,6 +39,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.mortbay.jetty.Connector;
@@ -54,6 +56,9 @@ public class Container {
 
   public static final String HTTP_PORT_PROPERTY = "mocca.http.port";
   public static final String HTTPS_PORT_PROPERTY = "mocca.https.port";
+
+  private static final String JETTY_TEMP_CLEANER_CLASSNAME = "JettyTempCleaner";
+
   private static Logger log = LoggerFactory.getLogger(Container.class);
 
   static {
@@ -201,68 +206,41 @@ public class Container {
     return webapp.getPath();
   }
 
-//	private boolean deleteRecursive(File f)
-//	{
-//		if (f.isDirectory())
-//		{
-//			String[] children = f.list();
-//			for (String child : children) {
-//				if (!deleteRecursive(new File(f, child)))
-//					return false;
-//			}
-//		}
-//		return f.delete();
-//	}
-//
-//	private void deleteOnExitRecursive(File f)
-//	{
-//		if (f.isDirectory())
-//		{
-//			String[] children = f.list();
-//			for (String child : children)
-//				deleteOnExitRecursive(new File(f, child));
-//		}
-//		f.deleteOnExit();
-//	}
-//
-//  /**
-//   * Workaround for Jetty problem where temporary directory
-//   * doesn't get deleted under Windows due to locking issues.
-//   * 
-//   * @param tempDir Temporary directory to delete
-//   */
-//  private void deleteTempDir(final File tempDir) {
-//    try {
-//      if (tempDir.exists()) {
-//        log.debug("Temp directory still exists - trying to delete");
-//        if (!deleteRecursive(tempDir))
-//        {
-//          log.debug("Deleting temp directory failed - adding shutdown hook");
-//          Runtime.getRuntime().addShutdownHook(
-//            new Thread() {
-//              public void run() {
-//                log.debug("Shutdown hook executing");
-//                if (tempDir.exists()) {
-//                  log.debug("Temp directory still exists - trying to delete");
-//                  if (!deleteRecursive(tempDir))
-//                  {
-//                    log.debug("Deleting temp directory failed");
-//                    deleteOnExitRecursive(tempDir);
-//                  }
-//                  else
-//                    log.debug("Successfully deleted temp directory");
-//                }
-//              }
-//            }
-//          );
-//        }
-//        else
-//          log.debug("Successfully deleted temp directory");
-//      }
-//    } catch (SecurityException ex) {
-//      log.debug("Temp directory access failed", ex);
-//    }
-//  }
+  private void copyCleaner(File dir) throws IOException {
+    File cleanerClass = new File(dir, JETTY_TEMP_CLEANER_CLASSNAME + ".class");
+    log.debug("copying JettyTempCleaner to " + cleanerClass);
+    InputStream is = getClass().getClassLoader().getResourceAsStream(JETTY_TEMP_CLEANER_CLASSNAME + ".class");
+    OutputStream os;
+    os = new BufferedOutputStream(new FileOutputStream(cleanerClass));
+    new StreamCopier(is, os).copyStream();
+    os.close();
+  }
+
+  private void cleanupJettyTemp() {
+    String os = System.getProperty("os.name");
+    if (os.toLowerCase().contains("windows")) {
+      try {
+        File userDir = new File(System.getProperty("user.home") + "/" + Configurator.BKU_USER_DIR);
+        if (!userDir.exists())
+        {
+          log.error("User directory " + userDir + " not found");
+          return;
+        }
+        copyCleaner(userDir);
+        List<String> args = new ArrayList<String>();
+        args.add("java");
+        args.add(JETTY_TEMP_CLEANER_CLASSNAME);
+        args.add(tempDir.getAbsolutePath());
+        ProcessBuilder pb = new ProcessBuilder(args);
+        pb.directory(userDir);
+        log.debug("Starting " + JETTY_TEMP_CLEANER_CLASSNAME + " to remove " + tempDir.getAbsolutePath());
+        pb.start();
+      } catch (IOException e) {
+        log.error("Failed to copy jetty temp cleaner", e);
+        e.printStackTrace();
+      }
+    }
+  }
 
   /**
    * grant all permissions, since we need read/write access to save signature data files anywhere (JFileChooser) in the local filesystem
@@ -285,7 +263,6 @@ public class Container {
 
   public void start() throws Exception {
     server.start();
-    // webapp.getBaseResource() 
     File caCertFile = new File(webapp.getTempDirectory(), "webapp/ca.crt");
     BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(caCertFile));
     bos.write(caCertificate.getEncoded());
@@ -298,17 +275,15 @@ public class Container {
   }
 
   public void stop() throws Exception {
-//    log.debug("Container: stop called");
     server.stop();
 
-//    deleteTempDir(tempDir);
+    cleanupJettyTemp();
   }
 
   public void destroy() {
-//    log.debug("Container: destroy called");
     server.destroy();
 
-//    deleteTempDir(tempDir);
+    cleanupJettyTemp();
 }
 
   public void join() throws InterruptedException {
