@@ -142,7 +142,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
 
   protected double version = 1.1;
 
-  protected String friendlyName;
+  protected String friendlyName = "G1";
 
   protected PinInfo cardPinInfo;
   protected PinInfo ssPinInfo;
