@@ -55,7 +55,7 @@ import at.gv.egiz.stal.signedinfo.SignedInfoType;
 
 public class SignRequestHandler extends AbstractRequestHandler {
 
-    private final Logger log = LoggerFactory.getLogger(SignRequestHandler.class);
+    private final static Logger log = LoggerFactory.getLogger(SignRequestHandler.class);
     private static JAXBContext jaxbContext;
 
     static {
@@ -71,6 +71,14 @@ public class SignRequestHandler extends AbstractRequestHandler {
     
     public SignRequestHandler(SecureViewer secureViewer) {
       this.secureViewer = secureViewer;
+    }
+
+    private ErrorResponse errorResponse(int errorCode, String errorMessage, Exception e)
+    {
+      log.error(errorMessage, e);
+      ErrorResponse err = new ErrorResponse(errorCode);
+      err.setErrorMessage(errorMessage + (e == null ? "" : " " + e));
+      return err;
     }
 
     @SuppressWarnings("unchecked")
@@ -89,50 +97,42 @@ public class SignRequestHandler extends AbstractRequestHandler {
                 byte[] resp = card.createSignature(new ByteArrayInputStream(signReq.getSignedInfo()), kb,
                         new SignPINGUI(gui, secureViewer, si.getValue()), signatureMethod);
                 if (resp == null) {
-                    return new ErrorResponse(6001);
+                    return errorResponse(6001, "Response is null", null);
                 }
                 SignResponse stalResp = new SignResponse();
                 stalResp.setSignatureValue(resp);
                 return stalResp;
             } catch (NotActivatedException e) {
-              log.info("Citizen card not activated.", e);
               gui.showErrorDialog(BKUGUIFacade.ERR_CARD_NOTACTIVATED, null, this, null);
               waitForAction();
               gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
                       BKUGUIFacade.MESSAGE_WAIT);
-              return new ErrorResponse(6001);
+              return errorResponse(6001, "Citizen card not activated.", e);
             } catch (LockedException e) {
-              log.info("Citizen card locked.", e);
               gui.showErrorDialog(BKUGUIFacade.ERR_CARD_LOCKED, null, this, null);
               waitForAction();
               gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
                       BKUGUIFacade.MESSAGE_WAIT);
-              return new ErrorResponse(6001);
+              return errorResponse(6001, "Citizen card locked.", e);
             } catch (CancelledException cx) {
-                log.debug("User cancelled request.");
-                return new ErrorResponse(6001);
+                return errorResponse(6001, "User cancelled request.", null);
             } catch (TimeoutException ex) {
-              log.error("Timeout during pin entry");
               gui.showMessageDialog(BKUGUIFacade.TITLE_ENTRY_TIMEOUT,
                       BKUGUIFacade.ERR_PIN_TIMEOUT, null,
                       BKUGUIFacade.BUTTON_CANCEL, this, null);
               waitForAction();
               gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
                       BKUGUIFacade.MESSAGE_WAIT);
-              return new ErrorResponse(6001);
+              return errorResponse(6001, "Timeout during pin entry.", null);
             } catch (SignatureCardException e) {
-                log.error("Error while creating signature: " + e);
-                return new ErrorResponse(4000);
+                return errorResponse(4000,"Error while creating signature.", e);
             } catch (JAXBException e) {
-                log.error("Cannot unmarshall signed info.", e);
-                return new ErrorResponse(1000);
+                return errorResponse(1000, "Cannot unmarshall signed info.", e);
             } catch (IOException e) {
-              log.error("Error while creating signature: " + e);
-              return new ErrorResponse(4000);
+              return errorResponse(4000, "Error while creating signature.", e);
             } 
         } else {
-            log.error("Got unexpected STAL request: {}.", request);
-            return new ErrorResponse(1000);
+            return errorResponse(1000, "Got unexpected STAL request: " + request + ".", null);
         }
     }
 

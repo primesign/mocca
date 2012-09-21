@@ -53,6 +53,18 @@ public class STALSignatureException extends SignatureException {
    * @param errorCode the error code
    */
   public STALSignatureException(int errorCode) {
+    super();
+    this.errorCode = errorCode;
+  }
+
+  /**
+   * Creates a new instance of this STALSigantureException with
+   * the given <code>errorCode</code>.
+   * 
+   * @param errorCode the error code
+   */
+  public STALSignatureException(int errorCode, String msg) {
+    super(msg);
     this.errorCode = errorCode;
   }
 

@@ -113,7 +113,8 @@ public class STALSignatureMethod extends AbstractSignatureMethodImpl {
     if (response instanceof SignResponse) {
       return ((SignResponse) response).getSignatureValue();
     } else if (response instanceof ErrorResponse) {
-      STALSignatureException se = new STALSignatureException(((ErrorResponse) response).getErrorCode());
+      ErrorResponse err = (ErrorResponse) response;
+      STALSignatureException se = new STALSignatureException(err.getErrorCode(), err.getErrorMessage());
       throw new XMLSignatureException(se);
     } else {
       throw new XMLSignatureException("Failed to access STAL.");

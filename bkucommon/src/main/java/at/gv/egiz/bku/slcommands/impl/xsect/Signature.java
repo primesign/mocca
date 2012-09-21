@@ -434,12 +434,13 @@ public class Signature {
       Throwable cause = e.getCause();
       while (cause != null) {
         if (cause instanceof STALSignatureException) {
-          if (((STALSignatureException) cause).getCause() instanceof SLViewerException) {
-            throw (SLViewerException) ((STALSignatureException) cause).getCause(); 
+          STALSignatureException stalCause = (STALSignatureException) cause;
+          if (stalCause.getCause() instanceof SLViewerException) {
+            throw (SLViewerException) stalCause.getCause(); 
           }
-          int errorCode = ((STALSignatureException) cause).getErrorCode();
+          int errorCode = stalCause.getErrorCode();
           SLCommandException commandException = new SLCommandException(errorCode);
-          log.info("Failed to sign signature.", e);
+          log.info("Failed to sign signature: {}", stalCause.getMessage(), e);
           throw commandException;
         } else {
           cause = cause.getCause();
