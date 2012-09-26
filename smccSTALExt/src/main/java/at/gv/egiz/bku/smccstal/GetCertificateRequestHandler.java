@@ -63,10 +63,10 @@ public class GetCertificateRequestHandler extends AbstractRequestHandler {
 			
 			GetCertificateGUIFacade gui = (GetCertificateGUIFacade) this.gui;
 			
-			gui.showGetCertificateDialog(this, "getqualcert", "getsimcert", this, "cancel");
-			
 			while (true) {
 			
+				gui.showGetCertificateDialog(this, "getqualcert", "getsimcert", this, "cancel");
+				
 				waitForAction();
 				
 				try {
@@ -85,7 +85,7 @@ public class GetCertificateRequestHandler extends AbstractRequestHandler {
 			        	fstream.write(cert);
 			        	fstream.close();
 			        	
-			        	log.debug("qualified certificate are saved to | " + file.getAbsolutePath() + ".");
+			        	log.debug("qualified certificate saved to " + file.getAbsolutePath() + ".");
 			        					        			        	
 				     } else if ("getsimcert".equals(actionCommand)) {
 							
@@ -96,7 +96,7 @@ public class GetCertificateRequestHandler extends AbstractRequestHandler {
 			        			new VerifyPINGUI(gui)));
 			        	fstream.close();
 			        
-			        	log.debug("simple certificate are saved to | " + file.getAbsolutePath() + ".");
+			        	log.debug("simple certificate saved to " + file.getAbsolutePath() + ".");
 			        										
 					}
 				    else {
@@ -104,7 +104,7 @@ public class GetCertificateRequestHandler extends AbstractRequestHandler {
 				    }
 				 
 	        	} catch (FileNotFoundException e) {
-	        		log.error("file to save the certificate could not be found.", e);
+	        		log.error("file to save the certificate to could not be found.", e);
 	        		
 	        	} catch (SignatureCardException e) {
 	        		log.error("Card not activated or certificate is not available.", e);
