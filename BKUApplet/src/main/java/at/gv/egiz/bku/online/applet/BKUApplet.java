@@ -378,7 +378,17 @@ private boolean checkPermissions() {
 		return true;
 	} catch (Exception e) {
 		if (log.isDebugEnabled())
-			log.debug("Not enough permissions for " + e.getStackTrace()[1].getMethodName());
+		{
+			StackTraceElement[] st = e.getStackTrace();
+			String method = "unknown";
+			for (int i = 0; i < st.length; i++) {
+				if (st[i].getClassName().equals(this.getClass().getName())) {
+					method = st[i+1].getMethodName();
+					break;
+				}
+			}
+			log.debug("Not enough permissions for " + method, e);
+		}
 	}
 	return false;
 }
