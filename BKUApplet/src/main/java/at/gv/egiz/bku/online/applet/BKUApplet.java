@@ -34,6 +34,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.AllPermission;
+import java.security.PrivilegedAction;
 import java.util.Locale;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -366,11 +367,17 @@ public class BKUApplet extends JApplet {
     }
   }
 
-  public void getFocusFromBrowser() {
-    log.debug("Obtained focus from browser.");
+	public void getFocusFromBrowser() {
+		log.debug("Obtained focus from browser.");
 
-    worker.getFocusFromBrowser();
-  }
+		AccessController.doPrivileged(new PrivilegedAction<Void>() {
+			@Override
+			public Void run() {
+				worker.getFocusFromBrowser();
+				return null;
+			}
+		});
+	}
 
 private boolean checkPermissions() {
 	try {
