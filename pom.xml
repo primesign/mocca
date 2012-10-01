@@ -422,6 +422,16 @@
       <id>project</id>
       <url>dav:https://joinup.ec.europa.eu/webdav/mocca/www</url>
     </site>
+    <snapshotRepository>
+      <id>mocca-snapshots</id>
+      <name>Mocca Snapshots</name>
+      <url>http://nexus.iaik.tugraz.at/nexus/content/repositories/mocca-snapshots/</url>
+    </snapshotRepository>
+    <repository>
+      <id>mocca-releases</id>
+      <name>Mocca Releases</name>
+      <url>http://nexus.iaik.tugraz.at/nexus/content/repositories/mocca-releases/</url>
+    </repository>
   </distributionManagement>
   <issueManagement>
     <system>JIRA</system>
