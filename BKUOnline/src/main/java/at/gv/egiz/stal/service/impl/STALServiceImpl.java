@@ -162,10 +162,14 @@ public class STALServiceImpl implements STALPortType {
       if (log.isDebugEnabled()) {
         StringBuilder sb = new StringBuilder("Received GetNextRequest containing ");
         sb.append(responsesIn.size());
-        sb.append(" responses: ");
+        sb.append(" responses:");
         for (JAXBElement<? extends ResponseType> respIn : responsesIn) {
-          sb.append(respIn.getValue().getClass());
           sb.append(' ');
+          sb.append(respIn.getValue().getClass());
+          if (respIn.getValue() instanceof ErrorResponseType) {
+            ErrorResponseType err = (ErrorResponseType)respIn.getValue();
+            sb.append(" (" + err.getErrorCode() + " - " + err.getErrorMessage() + ")");
+          }
         }
         log.debug(sb.toString());
       }
