@@ -169,11 +169,15 @@ public class PINManagementRequestHandler extends AbstractRequestHandler {
         gui.showErrorDialog(PINManagementGUIFacade.ERR_UNKNOWN, null,
                 this, "ok");
         waitForAction();
-        return new ErrorResponse(1000);
+        ErrorResponse err = new ErrorResponse(1000);
+        err.setErrorMessage(ex.getMessage());
+        return err;
       }
     } else {
       log.error("Got unexpected STAL request: {}.", request);
-      return new ErrorResponse(1000);
+      ErrorResponse err = new ErrorResponse(1000);
+      err.setErrorMessage("Got unexpected STAL request: " + request);
+      return err;
     }
   }
 

@@ -76,6 +76,14 @@ public class CardMgmtRequestHandler extends AbstractRequestHandler implements Ac
    */
   private int currentActivationScript = 0;
 
+  private ErrorResponse errorResponse(int errorCode, String errorMessage)
+  {
+    log.error(errorMessage);
+    ErrorResponse err = new ErrorResponse(errorCode);
+    err.setErrorMessage(errorMessage);
+    return err;
+  }
+
   @Override
   public STALResponse handleRequest(STALRequest request)
       throws InterruptedException {
@@ -89,9 +97,8 @@ public class CardMgmtRequestHandler extends AbstractRequestHandler implements Ac
       Card icc = card.getCard();
 
       if (icc == null) {
-        log.error("SignatureCard instance '{}' does not support card management requests.",
-            card.getClass().getName());
-        return new ErrorResponse(1000);
+        return errorResponse(1000, "SignatureCard instance '" +
+            card.getClass().getName() + "' does not support card management requests.");
       }
 
       List<RequestScriptElement> script = ((APDUScriptRequest) request).getScript();
@@ -172,8 +179,7 @@ public class CardMgmtRequestHandler extends AbstractRequestHandler implements Ac
       return new APDUScriptResponse(responses);
       
     } else {
-      log.error("Got unexpected STAL request: {}.", request);
-      return new ErrorResponse(1000);
+      return errorResponse(1000, "Got unexpected STAL request: " + request);
     }
     
   }

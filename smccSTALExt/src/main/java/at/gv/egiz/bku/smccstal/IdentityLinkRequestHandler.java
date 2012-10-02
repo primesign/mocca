@@ -57,6 +57,14 @@ public class IdentityLinkRequestHandler extends AbstractRequestHandler {
 		return true;
 	}
 
+	private ErrorResponse errorResponse(int errorCode, String errorMessage, Exception e)
+	{
+		log.error(errorMessage, e);
+		ErrorResponse err = new ErrorResponse(errorCode);
+		err.setErrorMessage(errorMessage + (e == null ? "" : " " + e));
+		return err;
+	}
+
 	@Override
 	public STALResponse handleRequest(STALRequest request)
 			throws InterruptedException {
@@ -82,8 +90,7 @@ public class IdentityLinkRequestHandler extends AbstractRequestHandler {
 				
 				if(il_gui == null)
 				{
-					log.warn("Failed to cast gui to IdentityLinkGUIFacade!");
-					return new ErrorResponse(1000);
+					return errorResponse(1000, "Failed to cast gui to IdentityLinkGUIFacade!", null);
 				}
 				
 				il_gui.showIdentityLinkInformationDialog(this, "ok_action", 
@@ -97,23 +104,20 @@ public class IdentityLinkRequestHandler extends AbstractRequestHandler {
 			}
 			catch(SignatureCardException ex)
 			{
-				log.error(ex.getMessage(), ex);
 				gui.showErrorDialog(PINManagementGUIFacade.ERR_CARD_NOTACTIVATED,
 			              null, this, "cancel");
 				waitForAction();
-				return new ErrorResponse(1000);
+				return errorResponse(1000, ex.getMessage(), ex);
 			} catch (IOException ex) {
-				log.error(ex.getMessage(), ex);
 				gui.showErrorDialog(IdentityLinkGUIFacade.ERR_INFOBOX_INVALID,
 			              null, this, "cancel");
 				waitForAction();
-				return new ErrorResponse(1000);
+				return errorResponse(1000, ex.getMessage(), ex);
 			}
 		}
 		else
 		{
-			log.error("Got unexpected STAL request: {}.", request);
-			return new ErrorResponse(1000);
+			return errorResponse(1000, "Got unexpected STAL request: " + request);
 		}
 	}
 }
