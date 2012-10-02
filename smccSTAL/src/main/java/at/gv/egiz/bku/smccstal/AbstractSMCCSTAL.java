@@ -80,7 +80,9 @@ public abstract class AbstractSMCCSTAL implements STAL {
       if (handler != null) {
         if (handler.requireCard()) {
           if (waitForCard()) {
-            return new ErrorResponse(6001);
+            ErrorResponse err = new ErrorResponse(6001);
+            err.setErrorMessage("Cancel while waiting for card");
+            return err;
           }
         }
         try {
@@ -88,8 +90,8 @@ public abstract class AbstractSMCCSTAL implements STAL {
           STALResponse response = handler.handleRequest(request);
           if (response != null) {
             if (response instanceof ErrorResponse) {
-              log.info("Got an error response.");
               ErrorResponse err = (ErrorResponse) response;
+              log.info("Got an error response: " + err.getErrorMessage());
               if (unrecoverableErrors.contains(err.getErrorCode())) {
                 return response;
               }
@@ -118,15 +120,21 @@ public abstract class AbstractSMCCSTAL implements STAL {
             signatureCard = null;
           } else {
             log.info("Exceeded max retries, returning error.");
-            return new ErrorResponse(6000);
+            ErrorResponse err = new ErrorResponse(6000);
+            err.setErrorMessage("Exceeded max retries trying to read STAL response");
+            return err;
           }
         }
       } else {
         log.error("Cannot find a handler for STAL request: {}.", request);
-        return new ErrorResponse();
+        ErrorResponse err = new ErrorResponse();
+        err.setErrorMessage("Cannot find a handler for STAL request: " + request);
+        return err;
       }
     }
-    return new ErrorResponse(6000);
+    ErrorResponse err = new ErrorResponse(6000);
+    err.setErrorMessage("Exceeded max retries trying to read STAL response");
+    return err;
   }
 
   /**
@@ -148,7 +156,8 @@ public abstract class AbstractSMCCSTAL implements STAL {
         if (response != null) {
           responseList.add(response);
           if (response instanceof ErrorResponse) {
-            log.info("Got an error response, don't process remaining requests.");
+            ErrorResponse err = (ErrorResponse)response;
+            log.info("Got an error response, don't process remaining requests: " + err.getErrorMessage());
             break;
           }
         }

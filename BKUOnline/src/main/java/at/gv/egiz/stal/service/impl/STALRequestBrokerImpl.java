@@ -184,7 +184,9 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                     log.warn("Timeout while waiting to consume response, cleanup requests.");
                     requests.clear(); 
                     hashDataInputs.clear();
-                    return Collections.singletonList((STALResponse) new ErrorResponse(ERR_4500));
+                    ErrorResponse err = new ErrorResponse(ERR_4500);
+                    err.setErrorMessage("Timeout while waiting to consume response");
+                    return Collections.singletonList((STALResponse) err);
                 }
             }
             log.trace("consuming responses");

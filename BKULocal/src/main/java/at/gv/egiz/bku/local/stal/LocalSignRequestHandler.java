@@ -62,7 +62,9 @@ public class LocalSignRequestHandler extends SignRequestHandler {
       return super.handleRequest(request);
     } else {
       log.error("Got unexpected STAL request: {}.", request);
-      return new ErrorResponse(1000);
+      ErrorResponse err = new ErrorResponse(1000);
+      err.setErrorMessage("Got unexpected STAL request: " + request);
+      return err;
     }
 
     

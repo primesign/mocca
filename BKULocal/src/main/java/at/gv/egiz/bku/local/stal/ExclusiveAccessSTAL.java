@@ -71,11 +71,13 @@ public class ExclusiveAccessSTAL implements STAL {
         // time out
         log.info("Timeout while waiting for exclusive access to STAL.");
         ErrorResponse response = new ErrorResponse(6000);
+        response.setErrorMessage("Timeout while waiting for exclusive access to STAL.");
         return Collections.singletonList((STALResponse) response);
       }
     } catch (InterruptedException e) {
       // interrupted
       ErrorResponse response = new ErrorResponse(6000);
+      response.setErrorMessage("Interrupted: " + e);
       return Collections.singletonList((STALResponse) response);
     }
     
