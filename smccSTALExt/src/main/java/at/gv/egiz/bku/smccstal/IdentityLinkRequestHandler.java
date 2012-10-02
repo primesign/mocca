@@ -117,7 +117,7 @@ public class IdentityLinkRequestHandler extends AbstractRequestHandler {
 		}
 		else
 		{
-			return errorResponse(1000, "Got unexpected STAL request: " + request);
+			return errorResponse(1000, "Got unexpected STAL request: " + request, null);
 		}
 	}
 }
