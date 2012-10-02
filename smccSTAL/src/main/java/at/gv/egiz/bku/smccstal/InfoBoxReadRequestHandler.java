@@ -53,6 +53,14 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
   
 //  protected PINProviderFactory pinProviderFactory;
 
+  private ErrorResponse errorResponse(int errorCode, String errorMessage, Exception e)
+  {
+    log.error(errorMessage, e);
+    ErrorResponse err = new ErrorResponse(errorCode);
+    err.setErrorMessage(errorMessage + (e == null ? "" : " " + e));
+    return err;
+  }
+
   @Override
   public STALResponse handleRequest(STALRequest request) throws InterruptedException {
     if (request instanceof InfoboxReadRequest) {
@@ -72,8 +80,7 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
               resp = DomainIdConverter.convertDomainId(resp, infoBox
                   .getDomainIdentifier());
             } catch (Exception e) {
-              log.error("Cannot convert domain specific id.", e);
-              return new ErrorResponse(1000);
+              return errorResponse(1000, "Cannot convert domain specific id.", e);
             }
           }
           InfoboxReadResponse stalResp = new InfoboxReadResponse();
@@ -92,7 +99,7 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
             resp = card.getCertificate(SignatureCard.KeyboxName.SECURE_SIGNATURE_KEYPAIR, new VerifyPINGUI(gui));
           }
           if (resp == null) {
-            return new ErrorResponse(6001);
+            return errorResponse(6001, "Could not get certificate", null);
           }
 
           // Check certificate validity
@@ -124,39 +131,35 @@ public class InfoBoxReadRequestHandler extends AbstractRequestHandler {
                   new VerifyPINGUI(gui),
                   infoBox.getDomainIdentifier());
           if (resp == null) {
-            return new ErrorResponse(6001);
+            return errorResponse(6001, "Could not read infobox", null);
           }
           InfoboxReadResponse stalResp = new InfoboxReadResponse();
           stalResp.setInfoboxValue(resp);
           return stalResp;
         }
       } catch (IllegalArgumentException e) {
-        log.info("Infobox {} not supported.", infoBox.getInfoboxIdentifier());
-        return new ErrorResponse(4002);
+        return errorResponse(4002, "Infobox " + infoBox.getInfoboxIdentifier() + " not supported.", e);
       } catch (NotActivatedException e) {
         log.info("Citizen card not activated.", e);
         gui.showErrorDialog(BKUGUIFacade.ERR_CARD_NOTACTIVATED, null, this, null);
         waitForAction();
         gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
                 BKUGUIFacade.MESSAGE_WAIT);
-        return new ErrorResponse(6001);
+        return errorResponse(6001, "Citizen card not activated.", e);
       } catch (LockedException e) {
         log.info("Citizen card locked.", e);
         gui.showErrorDialog(BKUGUIFacade.ERR_CARD_LOCKED, null, this, null);
         waitForAction();
         gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT,
                 BKUGUIFacade.MESSAGE_WAIT);
-        return new ErrorResponse(6001);
+        return errorResponse(6001, "Citizen card locked.", e);
       } catch (CancelledException cx) {
-        log.debug("User cancelled request.", cx);
-        return new ErrorResponse(6001);
+        return errorResponse(6001, "User cancelled request.", cx);
       } catch (SignatureCardException e) {
-        log.info("Error while reading infobox. " + e);
-        return new ErrorResponse(4000);
+        return errorResponse(4000, "Error while reading infobox. ", e);
       }
     } else {
-      log.error("Got unexpected STAL request: {}.", request);
-      return new ErrorResponse(1000);
+      return errorResponse(1000, "Got unexpected STAL request: " + request, null);
     }
   }
 
