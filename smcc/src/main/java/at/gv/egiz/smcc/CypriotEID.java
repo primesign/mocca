@@ -23,19 +23,15 @@
 
 package at.gv.egiz.smcc;
 
-import iaik.me.asn1.*;
+import iaik.me.asn1.ASN1;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Iterator;
 
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
