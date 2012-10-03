@@ -224,7 +224,13 @@ public class SWCard implements SignatureCard {
       }
       return sb.toString().trim().toCharArray();
     } catch (IOException e) {
-      throw new SignatureCardException("Failed to read file '" + passwordFileName + "'.");
+      throw new SignatureCardException("Failed to read file '" + passwordFileName + "'.", e);
+    } finally {
+      try {
+        keyStorePasswordFile.close();
+      } catch (IOException e) {
+        throw new SignatureCardException("Failed to close file '" + passwordFileName + "'.", e);
+      }
     }
     
   }

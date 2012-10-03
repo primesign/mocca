@@ -63,7 +63,7 @@ public class CreateSignature {
     byte[] signature = createSignature(signatureCard, KeyboxName.SECURE_SIGNATURE_KEYPAIR, data);
     Formatter printf = new Formatter(System.out); 
     printf.format("Signature: %1$x", new BigInteger(signature));
-
+    printf.close();
   }
 
   public static byte[] createSignature(SignatureCard signatureCard, KeyboxName keyboxName, InputStream data) throws SignatureCardException, InterruptedException, IOException {

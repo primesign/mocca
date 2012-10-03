@@ -133,7 +133,7 @@ public class ResultServlet extends HttpServlet {
         outputStream = resp.getOutputStream();
       }
       bp.writeResultTo(outputStream, responseEncoding);
-      outputStream.flush();
+      outputStream.close();
     } finally {
       bindingProcessorManager.removeBindingProcessor(id);
     }

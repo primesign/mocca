@@ -78,7 +78,7 @@ public class URLEncodingOutputStreamTest {
     URLEncodingOutputStream urlEnc = new URLEncodingOutputStream(writer);
     OutputStreamWriter streamWriter = new OutputStreamWriter(urlEnc, UTF_8);
     streamWriter.append(buf);
-    streamWriter.flush();
+    streamWriter.close();
     out1 = writer.toString();
     
     // URLEncoder
@@ -114,7 +114,7 @@ public class URLEncodingOutputStreamTest {
       }
     }
     System.out.println("Time " + dt + "ms");
-    
+    streamWriter.close();
   }
   
   @Ignore

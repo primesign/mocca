@@ -181,7 +181,8 @@ public class XWWWFormUrlInputIterator implements Iterator<FormParameter> {
         // fill buffer if empty
         if (pos >= count) {
           if ((count = in.read(buf)) == -1) {
-            throw new IOException("Invalid URL encoding.");            
+            urldec.close();
+            throw new IOException("Invalid URL encoding.");
           }
           pos = 0;
         }
