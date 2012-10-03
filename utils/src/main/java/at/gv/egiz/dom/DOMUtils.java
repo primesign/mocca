@@ -101,7 +101,7 @@ public final class DOMUtils {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     Base64OutputStream base64OutputStream = new Base64OutputStream(outputStream);
     base64OutputStream.write(bytes);
-    base64OutputStream.flush();
+    base64OutputStream.close();
     return doc.createTextNode(outputStream.toString("ASCII"));
     
   }
@@ -116,7 +116,7 @@ public final class DOMUtils {
       base64OutputStream.write(b, 0, l);
     }
     
-    base64OutputStream.flush();
+    base64OutputStream.close();
     return doc.createTextNode(outputStream.toString("ASCII"));
   }
 

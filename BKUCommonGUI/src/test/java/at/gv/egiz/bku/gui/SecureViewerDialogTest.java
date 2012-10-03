@@ -83,6 +83,7 @@ public class SecureViewerDialogTest {
       BufferedInputStream bis = new BufferedInputStream(new FileInputStream("/home/clemens/IAIK/MOCCA/encoding/test_iso-8859-1.txt"));
       byte[] bytes = new byte[bis.available()];
       bis.read(bytes);
+      bis.close();
       String s = new String(bytes, "iso-8859-1");
       System.out.println("read iso-8859-1 bytes " + s);
 

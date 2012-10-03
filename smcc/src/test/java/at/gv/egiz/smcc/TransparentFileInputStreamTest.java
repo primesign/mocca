@@ -83,7 +83,7 @@ public class TransparentFileInputStreamTest {
       assertEquals(0xFF & i++, b);
     }
     assertEquals(file.length, i);
-    
+    is.close();
   }
   
   @Test
@@ -99,7 +99,7 @@ public class TransparentFileInputStreamTest {
       }
     }
     assertEquals(file.length, i);
-    
+    is.close();
   }
 
   @Test
@@ -115,7 +115,7 @@ public class TransparentFileInputStreamTest {
       }
     }
     assertEquals(file_bs.length, i);
-    
+    is.close();
   }
   
   @Test(expected = IOException.class)
@@ -124,7 +124,7 @@ public class TransparentFileInputStreamTest {
     TransparentFileInputStream is = new TestTransparentFileInputStream(file);
     is.read(new byte[128]);
     is.reset();
-    
+    is.close();
   }
   
   @Test
@@ -141,7 +141,7 @@ public class TransparentFileInputStreamTest {
       }
     }
     assertEquals(file.length, i);
-    
+    is.close();
   }
   
   @Test
@@ -164,7 +164,7 @@ public class TransparentFileInputStreamTest {
       }
     }
     assertEquals(file.length, i);
-    
+    is.close();
   }
 
   
@@ -181,7 +181,7 @@ public class TransparentFileInputStreamTest {
       assertEquals(0xFF & i + j, 0xFF & b[j]);
     }
     is.reset();
-    
+    is.close();
   }
   
   @Test
@@ -196,7 +196,7 @@ public class TransparentFileInputStreamTest {
     for (int j = 0; j < l; j++) {
       assertEquals(0xFF & i + j, 0xFF & b[j]);
     }
-    
+    is.close();
   }
   @Test
   public void testSkipBig() throws IOException {
@@ -210,7 +210,7 @@ public class TransparentFileInputStreamTest {
     for (int j = 0; j < l; j++) {
       assertEquals(0xFF & i + j, 0xFF & b[j]);
     }
-    
+    is.close();
   }
 
 }

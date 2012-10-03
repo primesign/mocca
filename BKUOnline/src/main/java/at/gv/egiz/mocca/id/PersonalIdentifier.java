@@ -71,7 +71,7 @@ public class PersonalIdentifier {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         Base64OutputStream bos = new Base64OutputStream(os);
         bos.write(md.digest((value + '+' + domainId).getBytes("ISO-8859-1")));
-        bos.flush();
+        bos.close();
         return new PersonalIdentifier(domainId, os.toString("ASCII"));
       } catch (NoSuchAlgorithmException e) {
         throw new RuntimeException(e);

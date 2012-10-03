@@ -194,7 +194,7 @@ public class STALHelper {
             writer.flush();
             Base64OutputStream b64os = new Base64OutputStream(certDump);
             b64os.write(cert);
-            b64os.flush();
+            b64os.close();
             writer.write("\n-----END CERTIFICATE-----");
             writer.flush();
           } catch (IOException e1) {
