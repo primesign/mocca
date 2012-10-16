@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<POLICIES xmlns="http://www.w3.org/2002/01/P3Pv1">
+	<EXPIRY max-age="86400" />
+
+	<POLICY name="Policy" discuri="policy.html" xml:lang="en">
+
+		<ENTITY>
+			<DATA-GROUP>
+				<DATA ref="#business.contact-info.online.email">post@egiz.gv.at</DATA>
+				<DATA ref="#business.contact-info.online.uri">https://www.egiz.gv.at/</DATA>
+				<DATA ref="#business.name">EGIZ</DATA>
+			</DATA-GROUP>
+		</ENTITY>
+
+		<ACCESS>
+			<ident-contact />
+		</ACCESS>
+
+		<DISPUTES-GROUP>
+			<DISPUTES resolution-type="service"
+				service="https://www.egiz.gv.at/plain/ueber_egiz/kontakt">
+				<REMEDIES>
+					<correct />
+				</REMEDIES>
+			</DISPUTES>
+		</DISPUTES-GROUP>
+
+		<STATEMENT>
+			<CONSEQUENCE>Our Web server collects access logs containing this
+				information.</CONSEQUENCE>
+
+			<PURPOSE>
+				<current />
+				<admin />
+				<develop />
+				<tailoring />
+				<pseudo-analysis />
+				<pseudo-decision />
+			</PURPOSE>
+
+			<RECIPIENT>
+				<ours />
+				<delivery />
+			</RECIPIENT>
+
+			<RETENTION>
+				<indefinitely />
+			</RETENTION>
+
+			<DATA-GROUP>
+				<DATA ref="#dynamic.clickstream" />
+				<DATA ref="#dynamic.http" />
+			</DATA-GROUP>
+
+		</STATEMENT>
+
+	</POLICY>
+</POLICIES>
