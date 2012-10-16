@@ -67,6 +67,8 @@ public class MoccaParameterBean {
   public static final String PARAM_LOCALE = "locale";
   public static final Pattern PATTERN_LOCALE = Pattern.compile("[a-zA-Z][a-zA-Z](_[a-zA-Z][a-zA-Z]){0,2}");
 
+  public static final String P3P_POLICY = "CP=\"NON DSP COR CUR ADM DEV TAI PSA PSD OUR DEL IND UNI COM NAV INT CNT STA\"";
+
   private Charset charset = Charset.forName("ISO-8859-1");
   
   private HTTPBindingProcessor bindingProcessor;

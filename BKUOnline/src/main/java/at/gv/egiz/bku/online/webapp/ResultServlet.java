@@ -87,6 +87,9 @@ public class ResultServlet extends HttpServlet {
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, java.io.IOException { 
 
+    // Set P3P Policy Header
+    resp.addHeader("P3P", MoccaParameterBean.P3P_POLICY);
+
     BindingProcessorManager bindingProcessorManager = (BindingProcessorManager) getServletContext()
         .getAttribute("bindingProcessorManager");
     if (bindingProcessorManager == null) {

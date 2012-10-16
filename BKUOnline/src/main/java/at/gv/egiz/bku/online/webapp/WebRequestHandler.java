@@ -56,6 +56,10 @@ public class WebRequestHandler extends HttpServlet {
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       java.io.IOException {
 
+
+    // Set P3P Policy Header
+    resp.addHeader("P3P", MoccaParameterBean.P3P_POLICY);
+
     BindingProcessorManager bindingProcessorManager = (BindingProcessorManager) getServletContext()
         .getAttribute("bindingProcessorManager");
     if (bindingProcessorManager == null) {

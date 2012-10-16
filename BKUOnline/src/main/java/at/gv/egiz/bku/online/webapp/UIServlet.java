@@ -70,6 +70,9 @@ public class UIServlet extends HttpServlet {
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
 
+    // Set P3P Policy Header
+    resp.addHeader("P3P", MoccaParameterBean.P3P_POLICY);
+
     BindingProcessorManager bindingProcessorManager = (BindingProcessorManager) getServletContext()
         .getAttribute("bindingProcessorManager");
     if (bindingProcessorManager == null) {
@@ -110,6 +113,10 @@ public class UIServlet extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
+
+    // Set P3P Policy Header
+    resp.addHeader("P3P", MoccaParameterBean.P3P_POLICY);
+
     super.doPost(req, resp);
   }
 
