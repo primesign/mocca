@@ -540,7 +540,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 
 		} catch (SLException slx) {
 			bindingProcessorError = slx;
-			log.error("Error during dataurl communication.");
+			log.error("Error during dataurl communication.", slx);
 			resultContentType = HttpUtil.TXT_XML;
 			currentState = State.TRANSFORM;
 		} catch (SSLHandshakeException hx) {
