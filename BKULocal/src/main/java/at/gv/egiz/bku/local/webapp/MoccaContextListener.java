@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 public class MoccaContextListener implements ServletContextListener {
   
-  private Logger log = LoggerFactory.getLogger(MoccaContextListener.class);
+  private static Logger log = LoggerFactory.getLogger(MoccaContextListener.class);
 
   @Override
   public void contextDestroyed(ServletContextEvent sce) {
@@ -64,7 +64,7 @@ public class MoccaContextListener implements ServletContextListener {
     }
   }
   
-  protected void registerProvider(Provider provider, int position) {
+  protected static void registerProvider(Provider provider, int position) {
     String name = provider.getName();
     if (Security.getProvider(name) == null) {
       // register IAIK provider at first position
@@ -79,8 +79,7 @@ public class MoccaContextListener implements ServletContextListener {
     
   }
   
-  protected void registerProviders() {
-
+  protected static void registerProviders() {
     registerProvider(new IAIK(), 1);
     registerProvider(new ECCProvider(false), 2);
     
