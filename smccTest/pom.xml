@@ -55,11 +55,11 @@
     </dependency>
     <dependency>
       <groupId>iaik</groupId>
-      <artifactId>iaik_jce_full_signed</artifactId>
+      <artifactId>iaik_jce_full</artifactId>
     </dependency>
     <dependency>
       <groupId>iaik</groupId>
-      <artifactId>iaik_ecc_signed</artifactId>
+      <artifactId>iaik_ecc</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
