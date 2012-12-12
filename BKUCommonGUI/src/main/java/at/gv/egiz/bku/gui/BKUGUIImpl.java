@@ -2417,13 +2417,20 @@ public class BKUGUIImpl implements BKUGUIFacade {
 				|| baseHeight == 0) {
 
 			// first call - determine base width and height
-			baseWidth = contentPanel.getWidth();
-			baseHeight = contentPanel.getHeight();
+			int width = contentPanel.getWidth();
+			int height = contentPanel.getHeight();
+			float ratio = ((float) width / height);
+			baseWidth = width < 166 ? width : 166;
+			baseHeight = (int) (baseWidth / ratio);
+			if (baseHeight > height) {
+				baseHeight = height;
+				baseWidth = (int) (baseHeight * ratio);
+			}
+			log.debug("Original gui size: " + width + "x" + height +
+					" - Base: " + baseWidth + "x" + baseHeight);
 		}
 
-		float factor = (float) contentPanel.getSize().getWidth()
-				/ (float) baseWidth;
-
+		float factor = (float) contentPanel.getSize().getWidth() / baseWidth;
 		return factor;
 	}
 
