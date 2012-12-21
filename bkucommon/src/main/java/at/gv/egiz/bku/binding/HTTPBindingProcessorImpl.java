@@ -103,7 +103,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 	 * The citizen card environment identifier for <code>Server</code> and
 	 * <code>UserAgent</code> headers.
 	 */
-	protected static String CITIZENC_CARD_ENVIRONMENT = "citizen-card-environment/1.2";
+	protected static String CITIZEN_CARD_ENVIRONMENT = "citizen-card-environment/1.2";
 
 	/**
 	 * The configuration facade used to access the MOCCA configuration.
@@ -118,6 +118,8 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 
 		public static final String USE_STYLESHEETURL_PROPERTY = "UseStylesheetURL";
 
+		public static final String USE_XADES_1_4 = "UseXAdES14";
+
 		public int getMaxDataUrlHops() {
 			return configuration.getInt(DATAURLCLIENT_MAXHOPS, 10);
 		}
@@ -129,10 +131,9 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 		}
 
 		public String getProductVersion() {
-			return configuration
-					.getString(
-							ConfigurationFactoryBean.MOCCA_IMPLEMENTATIONVERSION_PROPERTY,
-							"UNKNOWN");
+			return configuration.getString(
+					ConfigurationFactoryBean.MOCCA_IMPLEMENTATIONVERSION_PROPERTY,
+					"UNKNOWN") + (getUseXAdES14() ? "-X14" : "");
 		}
 
 		public String getSignatureLayout() {
@@ -163,6 +164,10 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 					return true;
 			}
 			return false;
+		}
+
+		public boolean getUseXAdES14() {
+			return configuration.getBoolean(USE_XADES_1_4, false);
 		}
 	}
 	
@@ -615,7 +620,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 	//----------------------------------------------------------------------------
 
 	public String getServerHeaderValue() {
-		return CITIZENC_CARD_ENVIRONMENT + " "
+		return CITIZEN_CARD_ENVIRONMENT + " "
 				+ configurationFacade.getProductName() + "/"
 				+ configurationFacade.getProductVersion();
 	}

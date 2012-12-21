@@ -42,6 +42,7 @@ import org.w3c.dom.ls.LSSerializer;
 
 import at.buergerkarte.namespaces.securitylayer._1.CreateXMLSignatureRequestType;
 import at.buergerkarte.namespaces.securitylayer._1.DataObjectInfoType;
+import at.gv.egiz.bku.binding.HTTPBindingProcessorImpl;
 import at.gv.egiz.bku.conf.MoccaConfigurationFacade;
 import at.gv.egiz.bku.slcommands.CreateXMLSignatureCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
@@ -98,7 +99,8 @@ public class CreateXMLSignatureCommandImpl extends
     private Configuration configuration;
 
     public static final String USE_STRONG_HASH = "UseStrongHash";
-    public static final String USE_XADES_1_4 = "UseXAdES14";
+    public static final String USE_XADES_1_4 =
+        HTTPBindingProcessorImpl.ConfigurationFacade.USE_XADES_1_4;
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
