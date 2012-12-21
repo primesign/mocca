@@ -2411,8 +2411,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 		return resourceName;
 	}
 
-	protected float getResizeFactor() {
-
+	protected float getResizeFactor(int maxBaseWidth) {
 		if (baseWidth == null || baseHeight == null || baseWidth == 0
 				|| baseHeight == 0) {
 
@@ -2420,7 +2419,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 			int width = contentPanel.getWidth();
 			int height = contentPanel.getHeight();
 			float ratio = ((float) width / height);
-			baseWidth = width < 166 ? width : 166;
+			baseWidth = width < maxBaseWidth ? width : maxBaseWidth;
 			baseHeight = (int) (baseWidth / ratio);
 			if (baseHeight > height) {
 				baseHeight = height;
@@ -2434,12 +2433,25 @@ public class BKUGUIImpl implements BKUGUIFacade {
 		return factor;
 	}
 
+	protected float getResizeFactor() {
+		if (baseWidth == null || baseHeight == null || baseWidth == 0
+				|| baseHeight == 0) {
+
+			// first call - determine base width and height
+			baseWidth = contentPanel.getWidth();
+			baseHeight = contentPanel.getHeight();
+		}
+
+		float factor = (float) contentPanel.getSize().getWidth() / baseWidth;
+		return factor;
+	}
+
 	public void resize() {
 
 		log.debug("Resizing ...");
 		updateHelpLabelIcon();
 
-		float factor = getResizeFactor();
+		float factor = getResizeFactor(166);
 
 		this.sigDataFocusBorder.setBorderWidthFactor(factor);
 		this.helpFocusBorder.setBorderWidthFactor(factor);
