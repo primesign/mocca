@@ -53,16 +53,18 @@ public class MoccaParameterBean {
   public static final String PARAM_APPLET_HEIGHT = "appletHeight";
 
   public static final String PARAM_APPLET_BACKGROUND = "appletBackground";
-  
+
+  public static final String PARAM_REDIRECT_TARGET = "redirectTarget";
+
   public static final String PARAM_APPLET_BACKGROUND_COLOR = "appletBackgroundColor";
   public static final Pattern PATTERM_APPLET_BACKGROUND_COLOR = Pattern.compile("\\#[0-9a-fA-F]{6}");
-  
+
   public static final String PARAM_APPLET_GUI_STYLE = "appletGuiStyle";
   public static final String[] VALUES_APPLET_GUI_STYLE = new String[] {"tiny", "simple", "advanced"};
 
   public static final String PARAM_APPLET_EXTENSION = "appletExtension";
   public static final String[] VALUES_APPLET_EXTENSION = new String[] {"pin", "activation", 
-	  "getcertificate", "hardwareinfo", "identity"};
+    "getcertificate", "hardwareinfo", "identity"};
 
   public static final String PARAM_LOCALE = "locale";
   public static final Pattern PATTERN_LOCALE = Pattern.compile("[a-zA-Z][a-zA-Z](_[a-zA-Z][a-zA-Z]){0,2}");
@@ -132,6 +134,10 @@ public class MoccaParameterBean {
       }
     }
     return null;
+  }
+
+  public String getredirectTarget() {
+    return getString(PARAM_REDIRECT_TARGET);
   }
 
   public String getGuiStyle() {

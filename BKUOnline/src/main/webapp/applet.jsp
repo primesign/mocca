@@ -222,7 +222,7 @@
             HelpURL : '<c:out value="${helpUrl}"/>',
             SessionID : '<c:out value="${requestScope.id}"/>',
             RedirectURL : '<c:out value="${resultUrl}"/>',
-            RedirectTarget: '_parent'
+            RedirectTarget: '<c:out value="${requestScope.moccaParam.redirectTarget}" default="_parent"/>'
           };
           deployJava.runApplet(attributes, parameters, '<c:out value="${minJavaVersion}"/>');
         }
