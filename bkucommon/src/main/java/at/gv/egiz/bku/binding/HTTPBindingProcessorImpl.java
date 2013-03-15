@@ -137,8 +137,13 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 		}
 
 		public String getSignatureLayout() {
-			return configuration
+			String signatureLayout = configuration
 					.getString(ConfigurationFactoryBean.SIGNATURE_LAYOUT_PROPERTY);
+
+			if (getUseXAdES14() && signatureLayout.equals("1.0"))
+				signatureLayout = "1.1"; //bump SignatureLayout version to prevent PDF-AS from generating invalid signatures
+
+			return signatureLayout;
 		}
 
 		public boolean getEnableStylesheetURL() {
