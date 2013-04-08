@@ -1691,17 +1691,17 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
 					renderShowMessageDialogueButtonPanel();
 
-					primaryFocusHolder = msgLabel;
+					primaryFocusHolder = okButton;
 
 				} else {
 					log.debug("No okListener configured.");
 					showMessageOKButton = false;
 				}
 
-        // okListener might be null (up to windowCloseAdapter what to do)
-        if (windowCloseAdapter != null) {
-          windowCloseAdapter.registerListener(okListener, okCommand);
-        }
+				// okListener might be null (up to windowCloseAdapter what to do)
+				if (windowCloseAdapter != null) {
+					windowCloseAdapter.registerListener(okListener, okCommand);
+				}
 
 				updateMethodToRunAtResize("at.gv.egiz.bku.gui.BKUGUIImpl",
 						"renderShowMessageDialogueButtonPanel");
@@ -1709,6 +1709,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 				// put focus to msgLabel to guarantee that label is read by
 				// screen reader upon loading
 				msgLabel.requestFocus();
+				msgLabel.setFocusable(false);
 
 				contentPanel.validate();
 
