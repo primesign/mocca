@@ -82,9 +82,9 @@ public class PINManagementGUI extends CardMgmtGUI implements
 
 	public PINManagementGUI(Container contentPane, Locale locale,
 			URL backgroundImgURL, FontProvider fontProvider,
-			HelpListener helpListener, SwitchFocusListener switchFocusListener) {
+			HelpListener helpListener) {
 		super(contentPane, locale, Style.advanced, backgroundImgURL, fontProvider,
-				helpListener, switchFocusListener);
+				helpListener);
 		
 		cancelButton = new JButton();
 		this.pinStatusRenderer = new PINStatusRenderer(cardmgmtMessages);
@@ -236,10 +236,8 @@ public class PINManagementGUI extends CardMgmtGUI implements
 				// messageHorizontal
 				// .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 0,
 				// Short.MAX_VALUE)
-				// .addComponent(switchFocusDummyLabel)
 				// .addComponent(helpLabel);
 				// messageVertical
-				// .addComponent(switchFocusDummyLabel)
 				// .addComponent(helpLabel);
 				// }
 				//
@@ -301,10 +299,8 @@ public class PINManagementGUI extends CardMgmtGUI implements
 		if (!renderHeaderPanel) {
 			messageHorizontal.addPreferredGap(
 					LayoutStyle.ComponentPlacement.UNRELATED, 0,
-					Short.MAX_VALUE).addComponent(switchFocusDummyLabel)
-					.addComponent(helpLabel);
-			messageVertical.addComponent(switchFocusDummyLabel).addComponent(
-					helpLabel);
+					Short.MAX_VALUE).addComponent(helpLabel);
+			messageVertical.addComponent(helpLabel);
 		}
 
 		mainPanelLayout.setHorizontalGroup(mainPanelLayout.createParallelGroup(
@@ -474,11 +470,8 @@ public class PINManagementGUI extends CardMgmtGUI implements
 				if (!renderHeaderPanel) {
 					infoHorizontal.addPreferredGap(
 							LayoutStyle.ComponentPlacement.UNRELATED, 0,
-							Short.MAX_VALUE)
-							.addComponent(switchFocusDummyLabel).addComponent(
-									helpLabel);
-					infoVertical.addComponent(switchFocusDummyLabel)
-							.addComponent(helpLabel);
+							Short.MAX_VALUE).addComponent(helpLabel);
+					infoVertical.addComponent(helpLabel);
 				}
 
 				GroupLayout.ParallelGroup pinHorizontal;
@@ -977,11 +970,8 @@ public class PINManagementGUI extends CardMgmtGUI implements
 				if (!renderHeaderPanel) {
 					infoHorizontal.addPreferredGap(
 							LayoutStyle.ComponentPlacement.UNRELATED, 0,
-							Short.MAX_VALUE)
-							.addComponent(switchFocusDummyLabel).addComponent(
-									helpLabel);
-					infoVertical.addComponent(switchFocusDummyLabel)
-							.addComponent(helpLabel);
+							Short.MAX_VALUE).addComponent(helpLabel);
+					infoVertical.addComponent(helpLabel);
 				}
 
 				GroupLayout.ParallelGroup pinHorizontal;

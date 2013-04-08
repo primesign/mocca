@@ -86,8 +86,7 @@ public class LocalGetHardwareInfoSTALFactory implements STALFactory {
 	            dialog.getLocale(),
 	            null,
 	            new ResourceFontLoader(),
-	            helpListener,
-	            null);
+	            helpListener);
 	    BKUGUIFacade proxy = (BKUGUIFacade) GUIProxy.newInstance(gui, dialog, new Class[] { GetHardwareInfoGUIFacade.class, } );
 	    stal = new LocalBKUWorker(proxy, dialog);
 	    dialog.setPreferredSize(PREFERRED_SIZE);

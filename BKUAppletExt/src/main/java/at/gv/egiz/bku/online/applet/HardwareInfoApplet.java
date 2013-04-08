@@ -31,7 +31,6 @@ import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.GetHardwareInfoGUI;
 import at.gv.egiz.bku.gui.GetHardwareInfoGUIFacade;
 import at.gv.egiz.bku.gui.HelpListener;
-import at.gv.egiz.bku.gui.SwitchFocusListener;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
 
 /**
@@ -45,11 +44,9 @@ public class HardwareInfoApplet extends BKUApplet {
 	@Override
 	protected BKUGUIFacade createGUI(Container contentPane, Locale locale,
 			BKUGUIFacade.Style guiStyle, URL backgroundImgURL,
-			FontProvider fontProvider, HelpListener helpListener,
-			SwitchFocusListener switchFocusListener) {
+			FontProvider fontProvider, HelpListener helpListener) {
 		return new GetHardwareInfoGUI(contentPane, locale,
-				backgroundImgURL, fontProvider, helpListener,
-				switchFocusListener);
+				backgroundImgURL, fontProvider, helpListener);
 	}
  
 	@Override

@@ -32,7 +32,6 @@ import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.HelpListener;
 import at.gv.egiz.bku.gui.IdentityLinkGUI;
 import at.gv.egiz.bku.gui.IdentityLinkGUIFacade;
-import at.gv.egiz.bku.gui.SwitchFocusListener;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
 
 /**
@@ -45,11 +44,9 @@ private static final long serialVersionUID = 1L;
 	@Override
 	protected BKUGUIFacade createGUI(Container contentPane, Locale locale,
 			BKUGUIFacade.Style guiStyle, URL backgroundImgURL,
-			FontProvider fontProvider, HelpListener helpListener,
-			SwitchFocusListener switchFocusListener) {
+			FontProvider fontProvider, HelpListener helpListener) {
 		return new IdentityLinkGUI(contentPane, locale,
-				backgroundImgURL, fontProvider, helpListener,
-				switchFocusListener);
+				backgroundImgURL, fontProvider, helpListener);
 	}
 
 	@Override

@@ -86,8 +86,7 @@ public class LocalGetCertificateSTALFactory implements STALFactory {
 	            dialog.getLocale(),
 	            null,
 	            new ResourceFontLoader(),
-	            helpListener,
-	            null);
+	            helpListener);
 	    BKUGUIFacade proxy = (BKUGUIFacade) GUIProxy.newInstance(gui, dialog, new Class[] { GetCertificateGUIFacade.class, } );
 	    stal = new LocalBKUWorker(proxy, dialog);
 	    dialog.setPreferredSize(PREFERRED_SIZE);

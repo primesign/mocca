@@ -65,9 +65,9 @@ public class IdentityLinkGUI extends CardMgmtGUI implements
 	protected JButton activateButton;
 
 	public IdentityLinkGUI(Container contentPane, Locale locale, URL backgroundImgURL, FontProvider fontProvider,
-			HelpListener helpListener, SwitchFocusListener switchFocusListener) {
+			HelpListener helpListener) {
 		super(contentPane, locale, Style.advanced, backgroundImgURL, fontProvider,
-				helpListener, switchFocusListener);
+				helpListener);
 		// TODO Auto-generated constructor stub
 		this.activateButton = new JButton();
 	}
@@ -181,10 +181,8 @@ public class IdentityLinkGUI extends CardMgmtGUI implements
 			
 			messageHorizontal.addPreferredGap(
 					LayoutStyle.ComponentPlacement.UNRELATED, 0,
-					Short.MAX_VALUE).addComponent(switchFocusDummyLabel)
-					.addComponent(helpLabel);
-			messageVertical.addComponent(switchFocusDummyLabel).addComponent(
-					helpLabel);
+					Short.MAX_VALUE).addComponent(helpLabel);
+			messageVertical.addComponent(helpLabel);
 		}
 		
 		mainPanelLayout.setHorizontalGroup(

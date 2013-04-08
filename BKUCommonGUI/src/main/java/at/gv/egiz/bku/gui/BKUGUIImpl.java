@@ -93,7 +93,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 	protected SecureViewerDialog secureViewer;
 
 	protected HelpListener helpListener;
-	protected SwitchFocusFocusListener switchFocusKeyListener;
 	protected FontProvider fontProvider;
 
 	protected Container contentPane;
@@ -110,7 +109,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 	protected JLabel titleLabel;
 	protected JLabel msgTitleLabel;
 	protected JLabel helpLabel;
-	protected JLabel switchFocusDummyLabel;
 	/** remember the pinfield to return to worker */
 	protected JPasswordField pinField;
 	protected Document pinpadPIN;
@@ -171,7 +169,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 	 */
 	public BKUGUIImpl(Container contentPane, Locale locale, Style guiStyle,
 			URL background, FontProvider fontProvider,
-			HelpListener helpListener, SwitchFocusListener switchFocusListener) {
+			HelpListener helpListener) {
 		this.contentPane = contentPane;
 		Window w = SwingUtilities.getWindowAncestor(contentPane);
     if (w != null && w instanceof JFrame) {
@@ -208,8 +206,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
 		// ensure that buttons can be fired with enter key too
 		UIManager.put("Button.defaultButtonFollowsFocus", Boolean.TRUE);
-
-		registerSwitchFocusListener(switchFocusListener);
 
 		this.fontProvider = fontProvider;
 		this.helpListener = helpListener;
@@ -387,14 +383,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 			helpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		}
 
-		// This is a hidden label. When it gains focus, it hands over focus to
-		// the web browser
-		switchFocusDummyLabel = new JLabel();
-		switchFocusDummyLabel.setText("");
-		switchFocusDummyLabel.setName(SWITCH_FOCUS_DUMMY_LABEL_NAME);
-		switchFocusDummyLabel.setFocusable(true);
-		switchFocusDummyLabel.addFocusListener(switchFocusKeyListener);
-
 		buttonSize = initButtonSize();
 		baseButtonSize = buttonSize;
 
@@ -428,9 +416,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 						Short.MAX_VALUE).addComponent(helpLabel);
 				verticalHeader.addComponent(helpLabel);
 			}
-
-			horizontalHeader.addComponent(switchFocusDummyLabel);
-			verticalHeader.addComponent(switchFocusDummyLabel);
 
 			headerPanelLayout.setHorizontalGroup(horizontalHeader);
 			headerPanelLayout.setVerticalGroup(verticalHeader);
@@ -515,9 +500,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 				mainPanel.removeAll();
 				buttonPanel.removeAll();
 
-				// avoid that dummy label gains focus during load
-				switchFocusDummyLabel.setFocusable(false);
-
 				if (renderHeaderPanel) {
 					if (numRetries < 0) {
 						String verifyTitle = getMessage(TITLE_VERIFY_PIN);
@@ -559,18 +541,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 							okListener.actionPerformed(e);
 						}
 					}
-				});
-
-				pinField.addFocusListener(new FocusAdapter() {
-
-					@Override
-					public void focusGained(FocusEvent e) {
-
-						// focus has been set accordingly - re-enable dummy
-						// label
-						switchFocusDummyLabel.setFocusable(true);
-					}
-
 				});
 
 				infoLabel = new JLabel();
@@ -633,8 +603,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 								Short.MAX_VALUE).addComponent(helpLabel);
 						infoVertical.addComponent(helpLabel);
 					}
-					infoHorizontal.addComponent(switchFocusDummyLabel);
-					infoVertical.addComponent(switchFocusDummyLabel);
 				}
 
 				// align pinfield and pinsize to the right
@@ -811,9 +779,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 				mainPanel.removeAll();
 				buttonPanel.removeAll();
 
-				// avoid that dummy label gains focus during load
-				switchFocusDummyLabel.setFocusable(false);
-
 				if (renderHeaderPanel) {
 					if (retries < 0) {
 						titleLabel.setText(getMessage(titleKey));
@@ -885,8 +850,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 								Short.MAX_VALUE).addComponent(helpLabel);
 						infoVertical.addComponent(helpLabel);
 					}
-					infoHorizontal.addComponent(switchFocusDummyLabel);
-					infoVertical.addComponent(switchFocusDummyLabel);
 
 				}
 
@@ -960,18 +923,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 								.addGroup(pinVertical));
 
 				infoLabel.setFocusable(true);
-
-				infoLabel.addFocusListener(new FocusAdapter() {
-
-					@Override
-					public void focusGained(FocusEvent e) {
-
-						// focus has been set accordingly - re-enable dummy
-						// label
-						switchFocusDummyLabel.setFocusable(true);
-					}
-
-				});
 
 				String accessibleData = cutOffHTMLTags(infoLabel.getText())
 						+ cutOffHTMLTags(pinLabel.getText())
@@ -1052,9 +1003,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 					contentPanel
 							.setFocusTraversalPolicy(new AdvancedShowSigDataGUIFocusTraversalPolicy());
 				}
-
-				// avoid that dummy label gains focus during load
-				switchFocusDummyLabel.setFocusable(false);
 
 				if (renderHeaderPanel) {
 					titleLabel.setText(getMessage(TITLE_SIGNATURE_DATA));
@@ -1141,8 +1089,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 								Short.MAX_VALUE).addComponent(helpLabel);
 						infoVertical.addComponent(helpLabel);
 					}
-					infoHorizontal.addComponent(switchFocusDummyLabel);
-					infoVertical.addComponent(switchFocusDummyLabel);
 
 				}
 
@@ -1155,18 +1101,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 				enterPINButton.setText(getMessage(BUTTON_SIGN));
 				enterPINButton.setActionCommand(enterPINCommand);
 				enterPINButton.addActionListener(enterPINListener);
-
-				enterPINButton.addFocusListener(new FocusAdapter() {
-
-					@Override
-					public void focusGained(FocusEvent e) {
-
-						// focus has been set accordingly - re-enable dummy
-						// label
-						switchFocusDummyLabel.setFocusable(true);
-					}
-
-				});
 
 				if (renderCancelButton) {
 					cancelButton.setFont(cancelButton.getFont().deriveFont(
@@ -1291,9 +1225,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 					contentPanel
 							.setFocusTraversalPolicy(new AdvancedSigPinGUIFocusTraversalPolicy());
 				}
-
-				// avoid that dummy label gains focus during load
-				switchFocusDummyLabel.setFocusable(false);
 
 				if (renderHeaderPanel) {
 					if (numRetries < 0) {
@@ -1427,24 +1358,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 					}
 				});
 
-				// FIXME: For some reason, the switchFocusDummyLabel obtains the
-				// focus even
-				// if the pinField requests the focus. Therefore, the
-				// switchFocusDummyLabel is
-				// deactivated first and enabled only after the pinField has
-				// obtained the focus
-				pinField.addFocusListener(new FocusAdapter() {
-
-					@Override
-					public void focusGained(FocusEvent e) {
-
-						// focus has been set accordingly - re-enable dummy
-						// label
-						switchFocusDummyLabel.setFocusable(true);
-					}
-
-				});
-
 				pinsizeLabel.setFont(pinsizeLabel.getFont()
 						.deriveFont(
 								pinsizeLabel.getFont().getStyle()
@@ -1475,8 +1388,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 								Short.MAX_VALUE).addComponent(helpLabel);
 						infoVertical.addComponent(helpLabel);
 					}
-					infoHorizontal.addComponent(switchFocusDummyLabel);
-					infoVertical.addComponent(switchFocusDummyLabel);
 
 				}
 
@@ -1690,9 +1601,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 				mainPanel.removeAll();
 				buttonPanel.removeAll();
 
-				// avoid that dummy label gains focus during load
-				switchFocusDummyLabel.setFocusable(false);
-
 				if (renderHeaderPanel) {
 					titleLabel.setText(getMessage(titleKey));
 				}
@@ -1749,8 +1657,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 								Short.MAX_VALUE).addComponent(helpLabel);
 						titleVertical.addComponent(helpLabel);
 					}
-					titleHorizontal.addComponent(switchFocusDummyLabel);
-					titleVertical.addComponent(switchFocusDummyLabel);
 
 					mainHorizontal.addGroup(titleHorizontal);
 					mainVertical.addGroup(titleVertical);
@@ -1764,18 +1670,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 						accessibleData + msgLabel.getText());
 				msgLabel.getAccessibleContext().setAccessibleDescription(
 						accessibleData + msgLabel.getText());
-
-				msgLabel.addFocusListener(new FocusAdapter() {
-
-					@Override
-					public void focusGained(FocusEvent e) {
-
-						// focus has been set accordingly - re-enable dummy
-						// label
-						switchFocusDummyLabel.setFocusable(true);
-					}
-
-				});
 
 				mainPanelLayout.setHorizontalGroup(mainHorizontal
 						.addComponent(msgLabel));
@@ -2107,8 +2001,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 						Short.MAX_VALUE).addComponent(helpLabel);
 				messageVertical.addComponent(helpLabel);
 			}
-			messageHorizontal.addComponent(switchFocusDummyLabel);
-			messageVertical.addComponent(switchFocusDummyLabel);
 		}
 
 		mainPanelLayout.setHorizontalGroup(mainPanelLayout
@@ -2274,28 +2166,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 				// "] displaying signed references list");
 				showSignedReferencesListDialog(sr, bl, bc);
 			}
-		}
-	}
-
-	// //////////////////////////////////////////////////////////////////////////
-	// UTILITY METHODS
-	// //////////////////////////////////////////////////////////////////////////
-
-	private void registerSwitchFocusListener(ActionListener switchFocusListener) {
-		if (switchFocusListener != null) {
-			this.switchFocusKeyListener = new SwitchFocusFocusListener(
-					switchFocusListener);
-
-		} else {
-
-			this.switchFocusKeyListener = new SwitchFocusFocusListener(
-					new ActionListener() {
-
-						@Override
-						public void actionPerformed(ActionEvent e) {
-							log.warn("No switch focus listener registered.");
-						}
-					});
 		}
 	}
 
@@ -2639,19 +2509,13 @@ public class BKUGUIImpl implements BKUGUIFacade {
 					return helpLabel;
 				} else {
 
-					return switchFocusDummyLabel;
+					return null;
 				}
 			}
 
 			if (component.equals(helpLabel)) {
 
-				return switchFocusDummyLabel;
-			}
-
-			// should never be the case
-			if (component.equals(switchFocusDummyLabel)) {
-
-				return pinField;
+				return null;
 			}
 
 			// default
@@ -2664,7 +2528,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
 			if (component.equals(pinField)) {
 
-				return switchFocusDummyLabel;
+				return null;
 			}
 
 			if (component.equals(signButton)) {
@@ -2695,18 +2559,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 				return infoLabel;
 			}
 
-			// should never be the case
-			if (component.equals(switchFocusDummyLabel)) {
-
-				if (helpLabel != null && helpLabel.isVisible()) {
-
-					return helpLabel;
-				} else {
-
-					return infoLabel;
-				}
-			}
-
 			// default
 			return pinField;
 		}
@@ -2726,7 +2578,13 @@ public class BKUGUIImpl implements BKUGUIFacade {
 		@Override
 		public Component getLastComponent(Container container) {
 
-			return switchFocusDummyLabel;
+			if (helpLabel != null && helpLabel.isVisible()) {
+
+				return helpLabel;
+			} else {
+
+				return infoLabel;
+			}
 		}
 	}
 
@@ -2753,19 +2611,13 @@ public class BKUGUIImpl implements BKUGUIFacade {
 					return helpLabel;
 				} else {
 
-					return switchFocusDummyLabel;
+					return null;
 				}
 			}
 
 			if (component.equals(helpLabel)) {
 
-				return switchFocusDummyLabel;
-			}
-
-			// should never be the case
-			if (component.equals(switchFocusDummyLabel)) {
-
-				return enterPINButton;
+				return null;
 			}
 
 			// default
@@ -2777,8 +2629,13 @@ public class BKUGUIImpl implements BKUGUIFacade {
 				Component component) {
 
 			if (component.equals(enterPINButton)) {
+				if (helpLabel != null && helpLabel.isVisible()) {
 
-				return switchFocusDummyLabel;
+					return helpLabel;
+				} else {
+
+					return infoLabel;
+				}
 			}
 
 			if (component.equals(cancelButton)) {
@@ -2794,18 +2651,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 			if (component.equals(helpLabel)) {
 
 				return infoLabel;
-			}
-
-			// should never be the case
-			if (component.equals(switchFocusDummyLabel)) {
-
-				if (helpLabel != null && helpLabel.isVisible()) {
-
-					return helpLabel;
-				} else {
-
-					return infoLabel;
-				}
 			}
 
 			// default
@@ -2827,7 +2672,13 @@ public class BKUGUIImpl implements BKUGUIFacade {
 		@Override
 		public Component getLastComponent(Container container) {
 
-			return switchFocusDummyLabel;
+			if (helpLabel != null && helpLabel.isVisible()) {
+
+				return helpLabel;
+			} else {
+
+				return infoLabel;
+			}
 		}
 	}
 }

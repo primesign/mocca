@@ -50,9 +50,8 @@ public class CardMgmtGUI extends BKUGUIImpl {
           Style guiStyle,
           URL backgroundImgURL,
           FontProvider fontProvider,
-          HelpListener helpListener,
-          SwitchFocusListener switchFocusListener) {
-	  super(contentPane, locale, guiStyle, backgroundImgURL, fontProvider, helpListener, switchFocusListener);  
+          HelpListener helpListener) {
+	  super(contentPane, locale, guiStyle, backgroundImgURL, fontProvider, helpListener);  
   }
 
   @Override

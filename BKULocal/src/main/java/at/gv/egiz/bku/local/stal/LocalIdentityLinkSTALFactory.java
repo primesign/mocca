@@ -82,8 +82,7 @@ public class LocalIdentityLinkSTALFactory implements STALFactory {
 	            dialog.getLocale(),
 	            null,
 	            new ResourceFontLoader(),
-	            helpListener,
-	            null);
+	            helpListener);
 	    BKUGUIFacade proxy = (BKUGUIFacade) GUIProxy.newInstance(gui, dialog, new Class[] { IdentityLinkGUIFacade.class} );
 	    stal = new LocalBKUWorker(proxy, dialog);
 	    dialog.setPreferredSize(PREFERRED_SIZE);

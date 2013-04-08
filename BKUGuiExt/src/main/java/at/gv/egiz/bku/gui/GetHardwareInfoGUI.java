@@ -64,9 +64,9 @@ public class GetHardwareInfoGUI extends CardMgmtGUI implements
 	
 	public GetHardwareInfoGUI(Container contentPane, Locale locale,
 			 URL backgroundImgURL, FontProvider fontProvider,
-			HelpListener helpListener, SwitchFocusListener switchFocusListener) {
+			HelpListener helpListener) {
 		super(contentPane, locale, Style.advanced, backgroundImgURL, fontProvider,
-				helpListener, switchFocusListener);	
+				helpListener);	
 	}
 	
 	

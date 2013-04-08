@@ -56,7 +56,6 @@ import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.BKUGUIFacade.Style;
 import at.gv.egiz.bku.gui.BKUGUIImpl;
 import at.gv.egiz.bku.gui.HelpListener;
-import at.gv.egiz.bku.gui.SwitchFocusListener;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
 import at.gv.egiz.bku.online.applet.viewer.URLFontLoader;
 import at.gv.egiz.smcc.SignatureCardFactory;
@@ -219,10 +218,6 @@ public class BKUApplet extends JApplet {
       log.warn("Cannot set help URL. {}", e.getMessage());
     }
 
-    SwitchFocusListener switchFocusListener = new SwitchFocusListener(
-            getAppletContext(), "focusToBrowser");
-    
-    
 //ViewerHelpListener example:
 //    try {
 //      String absoluteHelpURL = new URL(getCodeBase(), getParameter(HELP_URL)).toString();
@@ -261,7 +256,7 @@ public class BKUApplet extends JApplet {
       System.err.println("invalid font provider URL " + ex.getMessage());
     }
     gui = createGUI(contentPanel, getLocale(), guiStyle,
-              backgroundImgURL, fontProvider, helpListener, switchFocusListener);
+              backgroundImgURL, fontProvider, helpListener);
     worker = createBKUWorker(this, gui);
   }
 
@@ -300,10 +295,9 @@ public class BKUApplet extends JApplet {
   // ///////////////////////////////////////////////////////////////////////////
   protected BKUGUIFacade createGUI(Container contentPane, Locale locale,
           Style guiStyle, URL backgroundImgURL,
-          FontProvider fontProvider, HelpListener helpListener,
-          SwitchFocusListener switchFocusListener) {
+          FontProvider fontProvider, HelpListener helpListener) {
     return new BKUGUIImpl(contentPane, locale, guiStyle, backgroundImgURL,
-            fontProvider, helpListener, switchFocusListener);
+            fontProvider, helpListener);
   }
 
   protected AppletBKUWorker createBKUWorker(BKUApplet applet, BKUGUIFacade gui) {

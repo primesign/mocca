@@ -108,8 +108,7 @@ public class LocalSTALFactory implements STALFactory {
             dialog.getLocale(),
             null,
             new ResourceFontLoader(),
-            helpListener,
-            null);
+            helpListener);
     BKUGUIFacade proxy = (BKUGUIFacade) GUIProxy.newInstance(gui, dialog, new Class[] { PINManagementGUIFacade.class} );
     SMCCHelper.setUseSWCard(configurationFacade.getUseSWCard());
     stal = new LocalBKUWorker(proxy, dialog);

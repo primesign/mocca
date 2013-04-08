@@ -150,9 +150,6 @@
       var buttonWidth = <c:out value="${defaultButtonWidth}"/>;
       var buttonHeight = <c:out value="${defaultButtonHeight}"/>;
       var buttons = ["incButton", "decButton", "helpButton"];
-      function focusToBrowser() {
-        document.getElementById("focus").focus();
-      }
       function focusToApplet() {
         var applet = document.getElementById("moccaapplet");
         if (applet != null) {

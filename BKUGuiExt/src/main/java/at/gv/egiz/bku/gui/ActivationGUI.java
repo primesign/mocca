@@ -63,9 +63,8 @@ public class ActivationGUI extends CardMgmtGUI implements ActivationGUIFacade {
           Style guiStyle,
           URL backgroundImgURL,
           FontProvider fontProvider,
-          HelpListener helpListener,
-          SwitchFocusListener switchFocusListener) {
-    super(contentPane, locale, guiStyle, backgroundImgURL, fontProvider, helpListener, switchFocusListener);
+          HelpListener helpListener) {
+    super(contentPane, locale, guiStyle, backgroundImgURL, fontProvider, helpListener);
 
     progressBar = new JProgressBar();
   }
