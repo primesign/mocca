@@ -294,7 +294,7 @@ public class PtEidCard extends AbstractSignatureCard {
       throw new LockedException();
     } else if (resp.getSW() != 0x9000) {
       throw new SignatureCardException(
-          "PSO: COMPUTE DIGITAL SIGNATRE failed: SW="
+          "PSO: COMPUTE DIGITAL SIGNATURE failed: SW="
               + Integer.toHexString(resp.getSW()));
     } else {
       return resp.getData();

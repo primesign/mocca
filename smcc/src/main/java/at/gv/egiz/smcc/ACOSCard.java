@@ -343,7 +343,7 @@ PINMgmtSignatureCard {
 	        verifyPINLoop(channel, sigPinInfo, provider);
 	        // PERFORM SECURITY OPERATION : HASH
 	        execPSO_HASH(channel, digest);
-	        // PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATRE
+	        // PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATURE
 	        return execPSO_COMPUTE_DIGITAL_SIGNATURE(channel);
 	    
 	      } else if (KeyboxName.CERTIFIED_KEYPAIR.equals(keyboxName)) {
@@ -612,7 +612,7 @@ PINMgmtSignatureCard {
 		    }
 		    if (resp.getSW() != 0x9000) {
 		      throw new SignatureCardException(
-		          "PSO - COMPUTE DIGITAL SIGNATRE failed: SW="
+		          "PSO - COMPUTE DIGITAL SIGNATURE failed: SW="
 		              + Integer.toHexString(resp.getSW()));
 		    } else {
 		      return resp.getData();

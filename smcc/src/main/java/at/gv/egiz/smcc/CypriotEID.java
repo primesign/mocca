@@ -173,7 +173,7 @@ public class CypriotEID extends AbstractSignatureCard implements
 				// MANAGE SECURITY ENVIRONMENT : SET DST
 				exec_MSE(channel, AlgID);
 
-				// PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATRE
+				// PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATURE
 				return exec_sign(channel, digest);
 			} catch (SecurityStatusNotSatisfiedException e) {
 				// NEED to provide PIN code ...
@@ -187,7 +187,7 @@ public class CypriotEID extends AbstractSignatureCard implements
 				// VERIFY
 				verifyPINLoop(channel, pinPinInfo, pinGUI);
 
-				// PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATRE
+				// PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATURE
 				return exec_sign(channel, digest);
 			}
 		} catch (CardException e) {
@@ -538,7 +538,7 @@ public class CypriotEID extends AbstractSignatureCard implements
 		}
 		if (resp.getSW() != 0x9000) {
 			throw new SignatureCardException(
-					"PSO - COMPUTE DIGITAL SIGNATRE failed: SW="
+					"PSO - COMPUTE DIGITAL SIGNATURE failed: SW="
 							+ Integer.toHexString(resp.getSW()));
 		} else {
 			return resp.getData();
