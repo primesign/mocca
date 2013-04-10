@@ -213,6 +213,7 @@
 	<!-- binding processor manager -->
 	<bean id="bindingProcessorManager" class="at.gv.egiz.bku.binding.BindingProcessorManagerImpl"
 		scope="singleton">
+		<property name="configuration" ref="configuration" />
 		<property name="stalFactory" ref="stalFactory" />
 		<property name="slCommandInvoker" ref="slCommandInvoker" />
 		<property name="factories">

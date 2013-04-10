@@ -36,10 +36,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.binding.BindingProcessorManager;
+import at.gv.egiz.bku.binding.BindingProcessorManagerImpl;
 import at.gv.egiz.bku.binding.HTTPBindingProcessor;
 import at.gv.egiz.bku.binding.HttpUtil;
 import at.gv.egiz.bku.binding.Id;
@@ -56,10 +58,6 @@ public class WebRequestHandler extends HttpServlet {
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
       java.io.IOException {
 
-
-    // Set P3P Policy Header
-    resp.addHeader("P3P", MoccaParameterBean.P3P_POLICY);
-
     BindingProcessorManager bindingProcessorManager = (BindingProcessorManager) getServletContext()
         .getAttribute("bindingProcessorManager");
     if (bindingProcessorManager == null) {
@@ -68,6 +66,12 @@ public class WebRequestHandler extends HttpServlet {
       resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
       return;
     }
+
+    Configuration conf = ((BindingProcessorManagerImpl) bindingProcessorManager).getConfiguration();
+    if (conf == null)
+      log.error("No configuration");
+    else
+      MoccaParameterBean.setP3PHeader(conf, resp);
 
     Id id = (Id) req.getAttribute("id");
     if (id == null) {

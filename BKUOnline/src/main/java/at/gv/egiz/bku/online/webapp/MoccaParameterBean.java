@@ -36,6 +36,9 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +72,8 @@ public class MoccaParameterBean {
   public static final String PARAM_LOCALE = "locale";
   public static final Pattern PATTERN_LOCALE = Pattern.compile("[a-zA-Z][a-zA-Z](_[a-zA-Z][a-zA-Z]){0,2}");
 
-  public static final String P3P_POLICY = "policyref=\"w3c/p3p.xml\", CP=\"NON DSP COR CUR ADM DEV TAI PSA PSD OUR DEL IND UNI COM NAV INT CNT STA\"";
+  private static final String P3P_POLICY = "policyref=\"w3c/p3p.xml\", CP=\"NON DSP COR CUR ADM DEV TAI PSA PSD OUR DEL IND UNI COM NAV INT CNT STA\"";
+  private static final String ENABLE_P3P_HEADER = "EnableP3PHeader";
 
   private Charset charset = Charset.forName("ISO-8859-1");
   
@@ -223,5 +227,11 @@ public class MoccaParameterBean {
     }
     return null;
   }
-  
+
+  public static void setP3PHeader(Configuration config, HttpServletResponse response) {
+    if (config.getBoolean(ENABLE_P3P_HEADER, false)) {
+      // Set P3P Policy Header
+      response.addHeader("P3P", P3P_POLICY);
+    }
+  }
 }

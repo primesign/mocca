@@ -26,8 +26,6 @@
 package at.gv.egiz.bku.online.webapp;
 
 import java.io.IOException;
-//import java.net.MalformedURLException;
-//import java.net.URL;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -35,13 +33,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.binding.BindingProcessor;
 import at.gv.egiz.bku.binding.BindingProcessorManager;
+import at.gv.egiz.bku.binding.BindingProcessorManagerImpl;
 import at.gv.egiz.bku.binding.HTTPBindingProcessor;
 import at.gv.egiz.bku.binding.Id;
+//import java.net.MalformedURLException;
+//import java.net.URL;
 
 public class UIServlet extends HttpServlet {
 
@@ -70,9 +72,6 @@ public class UIServlet extends HttpServlet {
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
 
-    // Set P3P Policy Header
-    resp.addHeader("P3P", MoccaParameterBean.P3P_POLICY);
-
     BindingProcessorManager bindingProcessorManager = (BindingProcessorManager) getServletContext()
         .getAttribute("bindingProcessorManager");
     if (bindingProcessorManager == null) {
@@ -81,6 +80,12 @@ public class UIServlet extends HttpServlet {
       resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
       return;
     }
+
+    Configuration conf = ((BindingProcessorManagerImpl) bindingProcessorManager).getConfiguration();
+    if (conf == null)
+      log.error("No configuration");
+    else
+      MoccaParameterBean.setP3PHeader(conf, resp);
 
     Id id = (Id) req.getAttribute("id");
     BindingProcessor bindingProcessor = null;
@@ -114,8 +119,20 @@ public class UIServlet extends HttpServlet {
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
 
-    // Set P3P Policy Header
-    resp.addHeader("P3P", MoccaParameterBean.P3P_POLICY);
+    BindingProcessorManager bindingProcessorManager = (BindingProcessorManager) getServletContext()
+            .getAttribute("bindingProcessorManager");
+    if (bindingProcessorManager == null) {
+      String msg = "Configuration error: BindingProcessorManager missing!";
+      log.error(msg);
+      resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
+      return;
+    }
+
+    Configuration conf = ((BindingProcessorManagerImpl) bindingProcessorManager).getConfiguration();
+    if (conf == null)
+      log.error("No configuration");
+    else
+      MoccaParameterBean.setP3PHeader(conf, resp);
 
     super.doPost(req, resp);
   }
