@@ -43,6 +43,7 @@ import at.gv.egiz.smcc.VerifyAPDUSpec;
 import at.gv.egiz.smcc.pin.gui.ModifyPINGUI;
 import at.gv.egiz.smcc.pin.gui.PINGUI;
 import at.gv.egiz.smcc.util.ISO7816Utils;
+import at.gv.egiz.smcc.util.SMCCHelper;
 
 /**
  *
@@ -69,7 +70,11 @@ public class DefaultCardReader implements CardReader {
         throws SignatureCardException, CardException, InterruptedException {
 
     log.debug("VERIFY");
-    return channel.transmit(ISO7816Utils.createVerifyAPDU(apduSpec, pinGUI.providePIN(pinSpec, retries)));
+    Card card = channel.getCard();
+    boolean regain = dropExclusive(card);
+    char[] pin = pinGUI.providePIN(pinSpec, retries);
+    regainExclusive(card, regain);
+    return channel.transmit(ISO7816Utils.createVerifyAPDU(apduSpec, pin));
   }
 
   @Override
@@ -77,8 +82,11 @@ public class DefaultCardReader implements CardReader {
           ModifyPINGUI pinGUI, PinInfo pinSpec, int retries)
         throws SignatureCardException, CardException, InterruptedException {
     log.debug("MODIFY (CHANGE_REFERENCE_DATA)");
+    Card card = channel.getCard();
+    boolean regain = dropExclusive(card);
     char[] oldPIN = pinGUI.provideCurrentPIN(pinSpec, retries);
     char[] newPIN = pinGUI.provideNewPIN(pinSpec);
+    regainExclusive(card, regain);
     return channel.transmit(ISO7816Utils.createChangeReferenceDataAPDU(apduSpec, oldPIN, newPIN));
   }
 
@@ -87,7 +95,10 @@ public class DefaultCardReader implements CardReader {
           ModifyPINGUI pinGUI, PinInfo pinSpec)
         throws SignatureCardException, CardException, InterruptedException {
     log.debug("MODIFY (NEW_REFERENCE_DATA)");
+    Card card = channel.getCard();
+    boolean regain = dropExclusive(card);
     char[] newPIN = pinGUI.provideNewPIN(pinSpec);
+    regainExclusive(card, regain);
     return channel.transmit(ISO7816Utils.createNewReferenceDataAPDU(apduSpec, newPIN));
   }
 
@@ -111,4 +122,23 @@ public class DefaultCardReader implements CardReader {
     return false;
   }
 
+  private boolean dropExclusive(Card card) throws CardException {
+    if (SMCCHelper.isWindows8()) {
+      log.debug("Win8 - giving up exclusive acess");
+      try {
+        card.endExclusive();
+      } catch (IllegalStateException e) {
+        log.debug("Didn't have exclusive access");
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private void regainExclusive(Card card, boolean doRegainExclusive) throws CardException {
+    if (SMCCHelper.isWindows8() && doRegainExclusive) {
+      log.debug("Win8 - trying to regain exclusive acess");
+      card.beginExclusive();
+    }
+  }
 }

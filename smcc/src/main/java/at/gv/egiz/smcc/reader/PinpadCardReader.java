@@ -596,11 +596,14 @@ public class PinpadCardReader extends DefaultCardReader {
 
     byte[] s = createPINVerifyStructure(apduSpec, pinSpec);
     Card icc = channel.getCard();
+    boolean regain;
 
     if (VERIFY) {
+      regain = dropExclusive(icc);
       pinGUI.enterPIN(pinSpec, retries);
       resp = new ResponseAPDU(verifyPin(icc, s, pinGUI));
     } else if (VERIFY_DIRECT) {
+      regain = dropExclusive(icc);
       pinGUI.enterPINDirect(pinSpec, retries);
       log.debug("VERIFY_PIN_DIRECT [{}]", FEATURES[FEATURE_VERIFY_PIN_DIRECT]);
       resp = new ResponseAPDU(VERIFY_PIN_DIRECT(icc, s));
@@ -608,6 +611,7 @@ public class PinpadCardReader extends DefaultCardReader {
       log.warn("Falling back to default pin-entry.");
       return super.verify(channel, apduSpec, pinGUI, pinSpec, retries);
     }
+    regainExclusive(icc, regain);
 
     switch (resp.getSW()) {
       case 0x6400:
@@ -639,11 +643,14 @@ public class PinpadCardReader extends DefaultCardReader {
 
     byte[] s = createPINModifyStructure(apduSpec, pinSpec);
     Card icc = channel.getCard();
-    
+    boolean regain;
+
     if (MODIFY) {
+      regain = dropExclusive(icc);
       pinGUI.enterCurrentPIN(pinSpec, retries);
       resp = new ResponseAPDU(modifyPin(icc, s, pinGUI, pinSpec));
     } else if (MODIFY_DIRECT) {
+      regain = dropExclusive(icc);
       pinGUI.modifyPINDirect(pinSpec, retries);
       log.debug("MODIFY_PIN_DIRECT [{}]", FEATURES[FEATURE_MODIFY_PIN_DIRECT]);
       resp = new ResponseAPDU(MODIFY_PIN_DIRECT(icc, s));
@@ -651,6 +658,7 @@ public class PinpadCardReader extends DefaultCardReader {
       log.warn("Falling back to default pin-entry.");
       return super.modify(channel, apduSpec, pinGUI, pinSpec, retries);
     }
+    regainExclusive(icc, regain);
 
     switch (resp.getSW()) {
       case 0x6400:
@@ -686,11 +694,14 @@ public class PinpadCardReader extends DefaultCardReader {
 
     byte[] s = createPINModifyStructure(apduSpec, pinSpec);
     Card icc = channel.getCard();
+    boolean regain;
 
     if (MODIFY) {
+      regain = dropExclusive(icc);
       pinGUI.enterNewPIN(pinSpec);
       resp = new ResponseAPDU(modifyPin(icc, s, pinGUI, pinSpec));
     } else if (MODIFY_DIRECT) {
+      regain = dropExclusive(icc);
       pinGUI.modifyPINDirect(pinSpec, -1);
       log.debug("MODIFY_PIN_DIRECT [{}]", FEATURES[FEATURE_MODIFY_PIN_DIRECT]);
       resp = new ResponseAPDU(MODIFY_PIN_DIRECT(icc, s));
@@ -698,6 +709,7 @@ public class PinpadCardReader extends DefaultCardReader {
       log.warn("Falling back to default pin-entry.");
       return super.modify(channel, apduSpec, pinGUI, pinSpec);
     }
+    regainExclusive(icc, regain);
 
     switch (resp.getSW()) {
       case 0x6400:
@@ -730,5 +742,25 @@ public class PinpadCardReader extends DefaultCardReader {
           throws InterruptedException, CardException, SignatureCardException {
     //TODO
     return modify(channel, (ChangeReferenceDataAPDUSpec) apduSpec, pinGUI, pinSpec, retries);
+  }
+
+  private boolean dropExclusive(Card card) throws CardException {
+    if (SMCCHelper.isWindows8()) {
+      log.debug("Win8 - giving up exclusive acess");
+      try {
+        card.endExclusive();
+      } catch (IllegalStateException e) {
+        log.debug("Didn't have exclusive access");
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private void regainExclusive(Card card, boolean doRegainExclusive) throws CardException {
+    if (SMCCHelper.isWindows8() && doRegainExclusive) {
+      log.debug("Win8 - trying to regain exclusive acess");
+      card.beginExclusive();
+    }
   }
 }
