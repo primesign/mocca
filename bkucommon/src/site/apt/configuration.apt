@@ -141,3 +141,13 @@ MOCCA Configuration
 		[<<<disablePinpad>>>] Whether to disable the pinpad on a card reader and use keyboard pin entry instead.
 
 		Default: <<<false>>>
+
+** MOCCA Online Only Configuration Parameters
+
+	[<<<EnableP3PHeader>>>] Set to true to enable a P3P Header with the following contents:
+
+		CP="NON DSP COR CUR ADM DEV TAI PSA PSD OUR DEL IND UNI COM NAV INT CNT STA";
+
+		This means that you agree not to give away information collected about users (e.g. log files)
+
+		This makes setting cookies from in iFrame served from another domain possible under Internet Explorer
