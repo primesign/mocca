@@ -103,8 +103,8 @@ MOCCA Configuration
 
 		Default: <<<classpath:/at/gv/egiz/bku/accesscontrol/config/accessControlConfig.xml>>>
 
-	[<<<UseStrongHash>>>] The hash algorithm defaults to SHA-1.
-	If this option is set, SHA-256 or RIPEMD-160 are used, depending on card support.
+	[<<<UseStrongHash>>>] The hash algorithms default to SHA-256 or RIPEMD-160, depending on card support.
+	If this option is set to false, SHA-1 is used.
 
 	Default: <<<false>>>
 

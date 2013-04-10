@@ -107,7 +107,7 @@ public class CreateXMLSignatureCommandImpl extends
     }
 
     public boolean getUseStrongHash() {
-        return configuration.getBoolean(USE_STRONG_HASH, false);
+        return configuration.getBoolean(USE_STRONG_HASH, true);
     }
 
     public boolean getUseXAdES14() {
