@@ -106,7 +106,7 @@ MOCCA Configuration
 	[<<<UseStrongHash>>>] The hash algorithms default to SHA-256 or RIPEMD-160, depending on card support.
 	If this option is set to false, SHA-1 is used.
 
-	Default: <<<false>>>
+	Default: <<<true>>>
 
 	[<<<UseStylesheetURL>>>] By default, provided StylesheetURLs will be ignored.
 	To enable this feature, set this to true.
