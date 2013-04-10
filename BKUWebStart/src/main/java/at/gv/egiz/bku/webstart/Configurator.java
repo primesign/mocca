@@ -74,7 +74,7 @@ public class Configurator {
    * TLS Certificate will *NOT* be recreated
    * allowed: MAJOR[.MINOR[.X[-SNAPSHOT]]]
    */
-  public static final String UPDATE_CONFIG_VERSION = "1.3.8-SNAPSHOT";
+  public static final String UPDATE_CONFIG_VERSION = "1.3.9-SNAPSHOT";
 
   public static final String BKU_USER_DIR = ".mocca/";
   public static final String CONFIG_DIR = BKU_USER_DIR + "conf/";
