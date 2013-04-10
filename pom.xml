@@ -4,7 +4,7 @@
   <groupId>at.gv.egiz</groupId>
   <artifactId>mocca</artifactId>
   <packaging>pom</packaging>
-  <version>1.3.9-SNAPSHOT</version>
+  <version>1.3.9</version>
   <name>MOCCA</name>
   <description>MOCCA (Modular Open Citizen Card Architecture) project</description>
   <url>http://joinup.ec.europa.eu/site/mocca/</url>
@@ -53,9 +53,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:svn:https://joinup.ec.europa.eu/svn/mocca/trunk</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/mocca/trunk</developerConnection>
-    <url>https://joinup.ec.europa.eu/svn/mocca/trunk</url>
+    <connection>scm:svn:https://joinup.ec.europa.eu/svn/mocca/tags/mocca-1.3.9</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/mocca/tags/mocca-1.3.9</developerConnection>
+    <url>https://joinup.ec.europa.eu/svn/mocca/tags/mocca-1.3.9</url>
   </scm>
   <organization>
     <name>E-Government Innovation Center (EGIZ)</name>
