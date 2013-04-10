@@ -22,4 +22,5 @@
       <disableAllChecks>true</disableAllChecks>
       <revocationServiceOrder>OCSP, CRL</revocationServiceOrder>
   </SSL-->
+  <!--EnableP3PHeader>true</EnableP3PHeader-->
 </MoccaConfiguration>
