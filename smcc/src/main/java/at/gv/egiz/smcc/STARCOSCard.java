@@ -30,8 +30,9 @@ import at.gv.egiz.smcc.pin.gui.PINGUI;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+
+import iaik.me.security.CryptoException;
+import iaik.me.security.MessageDigest;
 
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
@@ -434,7 +435,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
       } else {
         throw new SignatureCardException("e-card version " + version + " does not support signature algorithm " + alg + ".");
       }
-    } catch (NoSuchAlgorithmException e) {
+    } catch (CryptoException e) {
       log.error("Failed to get MessageDigest.", e);
       throw new SignatureCardException(e);
     }
