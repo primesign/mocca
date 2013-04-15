@@ -308,7 +308,7 @@
       <dependency>
         <groupId>iaik</groupId>
         <artifactId>iaik_jce_me4se</artifactId>
-        <version>3.04</version>
+        <version>3.05</version>
       </dependency>
       <!--dependency>
         <groupId>iaik</groupId>
