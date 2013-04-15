@@ -26,6 +26,7 @@
           <options>
             <option>-keep public class * extends at.gv.egiz.smcc.SignatureCard { *; }</option>
             <option>-keep public class * extends java.applet.Applet { *; }</option>
+            <option>-keep public class * implements iaik.me.security.MessageDigest { *; }</option>
             <option>-keep @javax.xml.bind.annotation.** class * { *; }</option>
             <option>-keep @javax.xml.ws.** class * { *; }</option>
             <option>-ignorewarnings</option>
