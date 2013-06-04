@@ -74,19 +74,19 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager, Com
 
   private Map<Id, BindingProcessorFuture> submittedFutures = Collections
       .synchronizedMap(new HashMap<Id, BindingProcessorFuture>());
-  
-  private int cleanUpInterval = DEFAULT_CLEAN_UP_INTERVAL; 
-  
+
+  private int cleanUpInterval = DEFAULT_CLEAN_UP_INTERVAL;
+
   private long maxAcceptedAge = DEFAULT_MAX_ACCEPTED_AGE;
-   
+
   private ScheduledExecutorService cleanUpService = Executors
       .newSingleThreadScheduledExecutor();
-  
+
   public BindingProcessorManagerImpl() {
-    cleanUpService.scheduleAtFixedRate(new CleanUpTask(), cleanUpInterval,
-        cleanUpInterval, TimeUnit.SECONDS);
+    cleanUpService.scheduleAtFixedRate(new CleanUpTask(), getCleanUpInterval(),
+        getCleanUpInterval(), TimeUnit.SECONDS);
   }
-  
+
   /**
    * @return the configuration
    */
@@ -138,6 +138,34 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager, Com
    */
   public STALFactory getStalFactory() {
     return stalFactory;
+  }
+
+  /**
+   * @return the current BindingProcessor cleanup interval
+   */
+  public int getCleanUpInterval() {
+    return cleanUpInterval;
+  }
+
+  /**
+   * @param cleanUpInterval the BindingProcessor cleanup interval
+   */
+  public void setCleanUpInterval(int cleanUpInterval) {
+    this.cleanUpInterval = cleanUpInterval;
+  }
+
+  /**
+   * @return the current maximum inactive time of a BindingProcessor
+   */
+  public long getMaxAcceptedAge() {
+    return maxAcceptedAge;
+  }
+
+  /**
+   * @param maxAcceptedAge the maximum inactive time of a BindingProcessor
+   */
+  public void setMaxAcceptedAge(long maxAcceptedAge) {
+    this.maxAcceptedAge = maxAcceptedAge;
   }
 
   /**
@@ -292,8 +320,8 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager, Com
         if (!future.isDone()) {
 //          active++;
         }
-        if ((bindingProcessor.getLastAccessTime().getTime() - System
-            .currentTimeMillis()) > maxAcceptedAge) {
+        if ((System.currentTimeMillis() - bindingProcessor
+            .getLastAccessTime().getTime()) > getMaxAcceptedAge()) {
           toBeRemoved.add(bindingProcessor.getId());
         }
       }

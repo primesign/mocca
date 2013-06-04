@@ -116,7 +116,7 @@ public abstract class AbstractBindingProcessor implements BindingProcessor {
 
   @Override
   public void run() {
-    
+    updateLastAccessTime();
     if (this.id != null) {
       MDC.put("id", this.id.toString());
     }
