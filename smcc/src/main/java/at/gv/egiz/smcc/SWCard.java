@@ -375,7 +375,28 @@ public class SWCard implements SignatureCard {
     }
 
     String algorithm = privateKey.getAlgorithm();
-    algorithm = "SHA1with" + algorithm;
+
+    if (algorithm.equals("RSA")) {
+      if (alg == null ||
+          "http://www.w3.org/2000/09/xmldsig#rsa-sha1".equals(alg)) {
+        algorithm = "SHA1withRSA";
+      } else if (
+          "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256".equals(alg)) {
+          algorithm = "SHA256withRSA";
+      }
+    } else if (algorithm.equals("ECDSA")) {
+      if (alg == null ||
+          "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1".equals(alg)) {
+          algorithm = "SHA1withECDSA";
+      } else if (
+          "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256".equals(alg)) {
+          algorithm = "SHA256withECDSA";
+      } else if (
+          "http://www.w3.org/2007/05/xmldsig-more#ecdsa-ripemd160".equals(alg)) {
+          algorithm = "RIPEMD160withECDSA";
+      }
+    }
+
     try {
       Signature signature = Signature.getInstance(algorithm);
       signature.initSign(privateKey);
