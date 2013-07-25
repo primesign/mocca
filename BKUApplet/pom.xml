@@ -130,6 +130,7 @@
             </manifest>
             <manifestEntries>
               <Implementation-Build>${project.version}-r${buildNumber}</Implementation-Build>
+              <Trusted-Library>true</Trusted-Library>
             </manifestEntries>
           </archive>
           <alias>test-applet signer</alias>
