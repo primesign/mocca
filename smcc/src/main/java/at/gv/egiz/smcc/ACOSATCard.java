@@ -90,7 +90,7 @@ public class ACOSATCard extends AbstractACOSCardInfoboxHandler {
 		} catch (FileNotFoundException e) {
 			throw new NotActivatedException();
 		} catch (CardException e) {
-			log.info("Faild to get infobox.", e);
+			log.info("Failed to get infobox.", e);
 			throw new SignatureCardException(e);
 		}
 
