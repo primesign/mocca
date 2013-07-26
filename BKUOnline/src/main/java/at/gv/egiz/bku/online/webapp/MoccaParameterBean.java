@@ -140,7 +140,7 @@ public class MoccaParameterBean {
     return null;
   }
 
-  public String getredirectTarget() {
+  public String getRedirectTarget() {
     return getString(PARAM_REDIRECT_TARGET);
   }
 
