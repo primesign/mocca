@@ -36,7 +36,9 @@ import at.gv.egiz.stal.signedinfo.ReferenceType;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
 import java.awt.event.ActionListener;
 import java.security.DigestException;
-import java.security.MessageDigest;
+
+import iaik.me.security.CryptoException;
+import iaik.me.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -227,12 +229,17 @@ public class AppletSecureViewer implements SecureViewer {
     } else if ("http://www.w3.org/2001/04/xmldsig-more#md5".equals(mdAlg)) {
       mdAlg = "MD5";
     } else if ("http://www.w3.org/2001/04/xmlenc#ripemd160".equals(mdAlg)) {
-      mdAlg = "RipeMD-160";
+      mdAlg = "RIPEMD160";
     } else {
       throw new NoSuchAlgorithmException("Failed to verify digest value: unsupported digest algorithm " + mdAlg);
     }
 
-    MessageDigest md = MessageDigest.getInstance(mdAlg);
+    MessageDigest md;
+    try {
+      md = MessageDigest.getInstance(mdAlg);
+    } catch (CryptoException e) {
+      throw new NoSuchAlgorithmException(e);
+    }
     return md.digest(hashDataInput);
   }
 }
