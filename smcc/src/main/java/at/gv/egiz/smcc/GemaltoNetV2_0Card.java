@@ -4,6 +4,7 @@ import iaik.me.security.CryptoBag;
 import iaik.me.security.CryptoException;
 import iaik.me.security.MessageDigest;
 import iaik.me.security.cipher.TripleDES;
+import iaik.pkcs.pkcs7.DigestInfo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,6 +40,19 @@ public class GemaltoNetV2_0Card extends AbstractSignatureCard implements
 
 	PinInfo pinPinInfo;
 	PinInfo pukPinInfo;
+	
+	private final byte[] SHA1_PADDING = new byte[] {
+
+			(byte) 0x30, (byte) 0x21, (byte) 0x30, (byte) 0x09, (byte) 0x06,
+					(byte) 0x05, (byte) 0x2B, (byte) 0x0E, (byte) 0x03, (byte) 0x02,
+					(byte) 0x1A, (byte) 0x05, (byte) 0x00, (byte) 0x04, (byte) 0x14 };
+	
+	private final byte[] SHA256_PADDING = new byte[] {
+
+			(byte) 0x30, (byte) 0x31, (byte) 0x30, (byte) 0x0d, (byte) 0x06,
+					(byte) 0x09, (byte) 0x60, (byte) 0x86, (byte) 0x48, (byte) 0x01,
+					(byte) 0x65, (byte) 0x03, (byte) 0x04, (byte) 0x02, (byte) 0x01,
+					(byte) 0x05, (byte) 0x00, (byte) 0x04, (byte) 0x20 };
 
 	public void init(Card card, CardTerminal cardTerminal) {
 		super.init(card, cardTerminal);
@@ -111,12 +125,14 @@ public class GemaltoNetV2_0Card extends AbstractSignatureCard implements
 			PINGUI pinGUI, String alg) throws SignatureCardException,
 			InterruptedException, IOException {
 
+		boolean sha1 = false;
 		MessageDigest md;
 		try {
 			if (KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(keyboxName)
 					&& (alg == null || "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
 							.equals(alg))) {
 				md = MessageDigest.getInstance("SHA-1");
+				sha1 = true;
 			} else if (KeyboxName.SECURE_SIGNATURE_KEYPAIR.equals(keyboxName)
 					&& ("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"
 							.equals(alg))) {
@@ -145,8 +161,19 @@ public class GemaltoNetV2_0Card extends AbstractSignatureCard implements
 			MSCMService service = new MSCMService(channel);
 
 			verifyPINLoop(channel, pinPinInfo, pinGUI);
-
-			byte[] paded = padding.pad(digest);
+			
+			ByteArrayOutputStream fdata = new ByteArrayOutputStream();
+			
+			
+			if(sha1) {
+				fdata.write(SHA1_PADDING);
+			} else {
+				fdata.write(SHA256_PADDING);
+			}
+			fdata.write(digest);
+			fdata.close();
+			byte[] msg = fdata.toByteArray();
+			byte[] paded = padding.pad(msg);
 			byte[] sign = service.privateKeyDecrypt((byte) 0, (byte) 2, paded);
 			return sign;
 		} catch (Throwable e) {
