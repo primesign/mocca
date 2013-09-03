@@ -26,6 +26,7 @@ package at.gv.egiz.smcc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
@@ -35,10 +36,9 @@ import javax.smartcardio.ResponseAPDU;
 public class T0CardChannel extends LogCardChannel {
 
 	public T0CardChannel(CardChannel channel) {
-
 		super(channel);
 	}
-
+	
 	@Override
 	public ResponseAPDU transmit(CommandAPDU command) throws CardException {
 

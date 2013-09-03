@@ -405,6 +405,18 @@ public class SignatureCardFactory {
 						(byte) 0xff, (byte) 0xff, (byte) 0xff},
 				"at.gv.egiz.smcc.CypriotEID"));	
 		
+		// Gemalto .NET V2.0
+		supportedCards.add(new SupportedCard(
+				// ATR [3B:16:96:41:73:74:72:69:64]
+				new byte[] { (byte) 0x3b, (byte) 0x16, (byte) 0x96, 
+						(byte) 0x41, (byte) 0x73, (byte) 0x74, (byte) 0x72, 
+						(byte) 0x69, (byte) 0x64},
+				// mas (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
+				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, 
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 
+						(byte) 0xff, (byte) 0xff},
+				"at.gv.egiz.smcc.GemaltoNetV2_0Card"));	
+		
 		// ES DNIe
 		supportedCards.add(new SupportedCard(
 		// ATR [3b:7f:38:00:00:00:6a:44:4e:49:65:20:02:4c:34:01:13:03:90:00]
