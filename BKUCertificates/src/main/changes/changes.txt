@@ -5,6 +5,24 @@ Tags:
 * ''REMOVED''  ... certificate removed in this release
 * TRUSTED	... certificate included in truststore
 
+'''BKUCertificates-1.9 (mocca-1.3.11)'''
+-------------------
+
+gd-class2-root.cer.cer (''ADDED'', TRUSTED)
+* Serial Number: 0 (0x0)
+* Issuer: C=US, O=The Go Daddy Group, Inc., OU=Go Daddy Class 2 Certification Authority
+* Subject: C=US, O=The Go Daddy Group, Inc., OU=Go Daddy Class 2 Certification Authority
+* Not Before: Jun 29 17:06:20 2004 GMT
+* Not After : Jun 29 17:06:20 2034 GMT
+
+valicert_class2_root.cer (''ADDED'', TRUSTED)
+* Serial Number: 1 (0x1)
+* Issuer: L=ValiCert Validation Network, O=ValiCert, Inc., OU=ValiCert Class 2 Policy Validation Authority, CN=http://www.valicert.com//emailAddress=info@valicert.com
+* Subject: L=ValiCert Validation Network, O=ValiCert, Inc., OU=ValiCert Class 2 Policy Validation Authority, CN=http://www.valicert.com//emailAddress=info@valicert.com
+* Not Before: Jun 26 00:19:54 1999 GMT
+* Not After : Jun 26 00:19:54 2019 GMT
+
+
 '''BKUCertificates-1.8 (mocca-1.3.8)'''
 -------------------
 
