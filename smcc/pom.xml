@@ -32,7 +32,7 @@
     </dependency>
     <dependency>
       <groupId>iaik</groupId>
-      <artifactId>iaik_jce_full</artifactId>
+      <artifactId>iaik_jce_full_signed</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

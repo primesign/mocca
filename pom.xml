@@ -312,15 +312,9 @@
         <artifactId>xalan</artifactId>
         <version>2.7.1</version>
       </dependency>
-      <!--dependency>
-        <groupId>iaik</groupId>
-        <artifactId>iaik_jce_full_signed</artifactId>
-        <version>5.01</version>
-        <scope>compile</scope>
-      </dependency-->
       <dependency>
         <groupId>iaik</groupId>
-        <artifactId>iaik_jce_full</artifactId>
+        <artifactId>iaik_jce_full_signed</artifactId>
         <version>5.01</version>
         <scope>compile</scope>
       </dependency>
@@ -329,24 +323,14 @@
         <artifactId>iaik_jce_me4se</artifactId>
         <version>3.05</version>
       </dependency>
-      <!--dependency>
+      <dependency>
         <groupId>iaik</groupId>
         <artifactId>iaik_ecc_signed</artifactId>
         <version>2.19</version>
-      </dependency-->
-      <dependency>
-        <groupId>iaik</groupId>
-        <artifactId>iaik_ecc</artifactId>
-        <version>2.19</version>
       </dependency>
-      <!--dependency>
+      <dependency>
         <groupId>iaik</groupId>
         <artifactId>iaik_xsect_signed</artifactId>
-        <version>1.17</version>
-      </dependency-->
-      <dependency>
-        <groupId>iaik</groupId>
-        <artifactId>iaik_xsect</artifactId>
         <version>1.17</version>
       </dependency>
       <dependency>

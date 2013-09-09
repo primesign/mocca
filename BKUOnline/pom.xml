@@ -49,15 +49,15 @@
     </dependency>
     <dependency>
       <groupId>iaik</groupId>
-      <artifactId>iaik_xsect</artifactId>
+      <artifactId>iaik_xsect_signed</artifactId>
     </dependency>
     <dependency>
       <groupId>iaik</groupId>
-      <artifactId>iaik_jce_full</artifactId>
+      <artifactId>iaik_jce_full_signed</artifactId>
     </dependency>
     <dependency>
       <groupId>iaik</groupId>
-      <artifactId>iaik_ecc</artifactId>
+      <artifactId>iaik_ecc_signed</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
