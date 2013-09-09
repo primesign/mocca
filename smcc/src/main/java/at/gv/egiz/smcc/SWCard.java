@@ -25,6 +25,7 @@
 package at.gv.egiz.smcc;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -97,6 +98,16 @@ public class SWCard implements SignatureCard {
     String userHome = System.getProperty("user.home");
     String fs = System.getProperty("file.separator");
     swCardDir = userHome + fs + BKU_USER_DIR + fs + SWCARD_DIR;
+    String swcDir = System.getProperty("mocca.swcard.directory");
+    if (swcDir != null) {
+      File f = new File(swcDir);
+      if (!f.isAbsolute()) {
+        swcDir = userHome + fs + BKU_USER_DIR + fs + swcDir;
+        f = new File(swcDir);
+      }
+      if (f.isDirectory())
+        swCardDir = swcDir;
+    }
   }
 
   /**
