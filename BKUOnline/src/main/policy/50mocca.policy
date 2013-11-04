@@ -154,7 +154,7 @@ grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/bkucommon-1.
       permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
 };
 
-grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/iaik_jce_full_signed-3.16.jar" {
+grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/iaik_jce_full_signed-5.01.jar" {
       permission java.util.PropertyPermission "*", "read, write";
 };
 
@@ -200,7 +200,7 @@ grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/commons-logg
       permission java.lang.RuntimePermission "defineClassInPackage.java.lang";
 };
 
-grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/log4j-1.2.12.jar" {
+grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/log4j-1.2.17.jar" {
       permission java.io.FilePermission "${catalina.base}/webapps/bkuonline/WEB-INF/classes/log4j.properties", "read";
       permission java.lang.RuntimePermission "defineClassInPackage.java.lang";
 };
