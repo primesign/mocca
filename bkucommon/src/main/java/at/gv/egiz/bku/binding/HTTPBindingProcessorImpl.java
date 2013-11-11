@@ -120,6 +120,8 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 
 		public static final String USE_XADES_1_4 = "UseXAdES14";
 
+		public static final String ALLOW_OTHER_REDIRECTS = "AllowOtherRedirects";
+
 		public int getMaxDataUrlHops() {
 			return configuration.getInt(DATAURLCLIENT_MAXHOPS, 10);
 		}
@@ -173,6 +175,10 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 
 		public boolean getUseXAdES14() {
 			return configuration.getBoolean(USE_XADES_1_4, false);
+		}
+
+		public boolean getAllowOtherRedirects() {
+			return configuration.getBoolean(ALLOW_OTHER_REDIRECTS, false);
 		}
 	}
 	
@@ -440,9 +446,14 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 
 			// process Dataurl response
 			dataUrlResponse = conn.getResponse();
-			log.debug("Received data url response code: {}.", dataUrlResponse.getResponseCode());
+			int code = dataUrlResponse.getResponseCode();
+			log.debug("Received data url response code: {}.", code);
 
-			switch (dataUrlResponse.getResponseCode()) {
+			if (configurationFacade.getAllowOtherRedirects() &&
+					(code >= 301) && (code <= 303))
+				code = 307;
+
+			switch (code) {
 			case 200:
 				String contentType = dataUrlResponse.getContentType();
 				log.debug("Got dataurl response content type: {}.", contentType);
@@ -492,8 +503,8 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 					closeDataUrlConnection();
 					throw new SLBindingException(2007);
 				}
-
 				break;
+
 			case 307:
 				contentType = dataUrlResponse.getContentType();
 				if ((contentType != null) && (contentType.startsWith(HttpUtil.TXT_XML))) {
@@ -521,16 +532,13 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 					srcContex.setSourceHTTPReferer(dataUrlResponse.getResponseHeaders()
 							.get(HttpUtil.HTTP_HEADER_REFERER));
 
-				} else {
-					log.debug(
-							"Received dataurl response code 307 non XML content: {}.",
-							dataUrlResponse.getContentType());
-					resultContentType = dataUrlResponse.getContentType();
-					currentState = State.FINISHED;
+					responseHeaders = dataUrlResponse.getResponseHeaders();
+					responseCode = dataUrlResponse.getResponseCode();
+					break;
 				}
-				responseHeaders = dataUrlResponse.getResponseHeaders();
-				responseCode = dataUrlResponse.getResponseCode();
-				break;
+				log.debug("Received dataurl response code 307 with non XML content: {}.",
+						dataUrlResponse.getContentType());
+				// Fall through to 301-303!
 
 			case 301:
 			case 302:
