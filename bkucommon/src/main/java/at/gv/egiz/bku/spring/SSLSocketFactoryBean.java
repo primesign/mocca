@@ -37,30 +37,65 @@ import org.springframework.beans.factory.FactoryBean;
 import at.gv.egiz.bku.conf.MoccaConfigurationFacade;
 
 public class SSLSocketFactoryBean implements FactoryBean {
-  
+
   protected PKIProfile pkiProfile;
-  
+
   /**
    * The configuration facade.
    */
   protected final ConfigurationFacade configurationFacade = new ConfigurationFacade();
-  
+
   public class ConfigurationFacade implements MoccaConfigurationFacade {
-    
+
     private Configuration configuration;
-    
+
+    //avoid ClassCastException: iaik.security.ecc.ecdsa.ECPublicKey cannot be cast to java.security.interfaces.ECPublicKey
+    private final String DEFAULT_DISABLED_CIPHER_SUITES =
+      "TLS_ECDH_ECDSA_WITH_NULL_SHA," +
+      "TLS_ECDH_ECDSA_WITH_RC4_128_SHA," +
+      "TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA," +
+      "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA," +
+      "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA," +
+      "TLS_ECDHE_ECDSA_WITH_NULL_SHA," +
+      "TLS_ECDHE_ECDSA_WITH_RC4_128_SHA," +
+      "TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA," +
+      "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA," +
+      "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA," +
+      "TLS_ECDH_RSA_WITH_NULL_SHA," +
+      "TLS_ECDH_RSA_WITH_RC4_128_SHA," +
+      "TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA," +
+      "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA," +
+      "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA," +
+      "TLS_ECDHE_RSA_WITH_NULL_SHA," +
+      "TLS_ECDHE_RSA_WITH_RC4_128_SHA," +
+      "TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA," +
+      "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA," +
+      "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA," +
+      "TLS_ECDH_anon_WITH_NULL_SHA," +
+      "TLS_ECDH_anon_WITH_RC4_128_SHA," +
+      "TLS_ECDH_anon_WITH_3DES_EDE_CBC_SHA," +
+      "TLS_ECDH_anon_WITH_AES_128_CBC_SHA," +
+      "TLS_ECDH_anon_WITH_AES_256_CBC_SHA";
+
     public static final String SSL_PROTOCOL = "SSL.sslProtocol";
-    
-    public static final String SSL_DISSABLE_ALL_CHECKS = "SSL.disableAllChecks";
-    
+
+    public static final String SSL_DISABLE_ALL_CHECKS = "SSL.disableAllChecks";
+
+    public static final String SSL_DISABLED_CIPHER_SUITES = "SSL.disabledCipherSuites";
+
     public String getSslProtocol() {
       return configuration.getString(SSL_PROTOCOL, "TLS");
     }
-    
+
     public boolean disableAllSslChecks() {
-      return configuration.getBoolean(SSL_DISSABLE_ALL_CHECKS, false);
+      return configuration.getBoolean(SSL_DISABLE_ALL_CHECKS, false);
     }
-    
+
+    public String[] getDisabledCipherSuites() {
+      String suites = configuration.getString(SSL_DISABLED_CIPHER_SUITES,
+            DEFAULT_DISABLED_CIPHER_SUITES);
+      return suites.split(",");
+    }
   }
 
   /**
@@ -93,15 +128,16 @@ public class SSLSocketFactoryBean implements FactoryBean {
   
   @Override
   public Object getObject() throws Exception {
-    
     PKITrustManager pkiTrustManager = new PKITrustManager();
     pkiTrustManager.setConfiguration(configurationFacade.configuration);
     pkiTrustManager.setPkiProfile(pkiProfile);
-    
+
     SSLContext sslContext = SSLContext.getInstance(configurationFacade.getSslProtocol());
     sslContext.init(null, new TrustManager[] {pkiTrustManager}, null);
-    
-    return sslContext.getSocketFactory();
+
+    SSLSocketFactory ssf = sslContext.getSocketFactory();
+
+    return new InternalSSLSocketFactory(ssf, configurationFacade.getDisabledCipherSuites());
   }
 
   @Override
