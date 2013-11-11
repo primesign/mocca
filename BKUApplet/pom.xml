@@ -129,7 +129,11 @@
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>
             <manifestEntries>
+              <Application-Name>MOCCA</Application-Name>
               <Implementation-Build>${project.version}-r${buildNumber}</Implementation-Build>
+              <Permissions>all-permissions</Permissions>
+              <Codebase>*</Codebase>
+              <Caller-Allowable-Codebase>*</Caller-Allowable-Codebase>
               <Trusted-Library>true</Trusted-Library>
             </manifestEntries>
           </archive>
