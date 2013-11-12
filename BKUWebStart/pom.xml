@@ -65,7 +65,10 @@
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>
             <manifestEntries>
+              <Application-Name>MOCCA</Application-Name>
               <Implementation-Build>${project.version}-r${buildNumber}</Implementation-Build>
+              <Permissions>all-permissions</Permissions>
+              <Codebase>*</Codebase>
             </manifestEntries>
           </archive>
           <verbose>true</verbose>
