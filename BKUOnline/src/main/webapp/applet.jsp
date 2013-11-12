@@ -211,6 +211,7 @@
             id : 'moccaapplet'
           };
           var parameters = {
+            permissions : 'all-permissions',
             GuiStyle : '<c:out value="${requestScope.moccaParam.guiStyle}" default="simple"/>',
             Locale : '<c:out value="${requestScope.moccaParam.locale}" default=""/>',
             Background : '<c:out value="${requestScope.moccaParam.appletBackground}" default=""/>',
@@ -219,7 +220,7 @@
             HelpURL : '<c:out value="${helpUrl}"/>',
             SessionID : '<c:out value="${requestScope.id}"/>',
             RedirectURL : '<c:out value="${resultUrl}"/>',
-            RedirectTarget: '<c:out value="${requestScope.moccaParam.redirectTarget}" default="_parent"/>'
+            RedirectTarget : '<c:out value="${requestScope.moccaParam.redirectTarget}" default="_parent"/>'
           };
           deployJava.runApplet(attributes, parameters, '<c:out value="${minJavaVersion}"/>');
         }
