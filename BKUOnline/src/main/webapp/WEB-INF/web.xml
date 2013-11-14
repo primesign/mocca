@@ -58,6 +58,13 @@
 			<param-name>protocol</param-name>
 			<param-value>HTTP</param-value>
 		</init-param>
+		<init-param>
+			<!--
+				The user interface url the browser will be redirected to
+			-->
+			<param-name>uiRedirectUrl</param-name>
+			<param-value>ui</param-value>
+		</init-param>
 	</servlet>
 	<servlet>
 		<!--

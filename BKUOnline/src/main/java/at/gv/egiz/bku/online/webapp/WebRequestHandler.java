@@ -21,8 +21,6 @@
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
-
-
 package at.gv.egiz.bku.online.webapp;
 
 import java.io.ByteArrayInputStream;
@@ -51,8 +49,19 @@ import at.gv.egiz.org.apache.tomcat.util.http.AcceptLanguage;
 public class WebRequestHandler extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
-  
+
   private final Logger log = LoggerFactory.getLogger(WebRequestHandler.class);
+
+  private String uiRedirectUrl = "ui";
+
+  @Override
+  public void init() throws ServletException {
+    String url = getServletConfig().getInitParameter("uiRedirectUrl");
+    if (url != null) {
+      uiRedirectUrl = url;
+      log.info("Init uiRedirectUrl to: {}.", uiRedirectUrl);
+    }
+  }
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
@@ -138,7 +147,7 @@ public class WebRequestHandler extends HttpServlet {
     bindingProcessorManager.process(id, bindingProcessor);
   
     log.debug("Sending redirect to user interface.");
-    resp.sendRedirect(resp.encodeRedirectURL("ui"));
+    resp.sendRedirect(resp.encodeRedirectURL(uiRedirectUrl));
       
   }
 
@@ -147,5 +156,4 @@ public class WebRequestHandler extends HttpServlet {
       throws ServletException, java.io.IOException {
     doPost(req, resp);
   }
-  
 }
