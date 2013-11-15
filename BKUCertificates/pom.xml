@@ -10,7 +10,7 @@
    |   PLEASE COMMIT CHANGES to src/main/changes/changes.txt
    |   and don't forget to update version in main pom
    |-->
-  <version>1.9</version>
+  <version>1.10</version>
   <name>BKU Certificates</name>
 
   <description>Trusted certificates for TLS/SSL authentication</description>

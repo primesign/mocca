@@ -389,7 +389,7 @@
       <dependency>
         <groupId>at.gv.egiz</groupId>
         <artifactId>BKUCertificates</artifactId>
-        <version>1.9</version>
+        <version>1.10</version>
       </dependency>
       <dependency>
         <groupId>at.gv.egiz</groupId>
