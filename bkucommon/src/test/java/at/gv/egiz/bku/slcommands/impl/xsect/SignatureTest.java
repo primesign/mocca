@@ -522,7 +522,7 @@ public class SignatureTest {
       signature.addDataObject(dataObjectInfo);
     }
     
-    signature.setSignerCeritifcate(certificate);
+    signature.setSignerCertificate(certificate);
     
     signature.buildXMLSignature();
     
@@ -561,7 +561,7 @@ public class SignatureTest {
       signature.addDataObject(dataObjectInfo);
     }
     
-    signature.setSignerCeritifcate(certificate);
+    signature.setSignerCertificate(certificate);
     
     signature.buildXMLSignature();
     
@@ -602,7 +602,7 @@ public class SignatureTest {
       signature.addDataObject(dataObjectInfo);
     }
     
-    signature.setSignerCeritifcate(certificate);
+    signature.setSignerCertificate(certificate);
     
     signature.buildXMLSignature();
     
@@ -643,7 +643,7 @@ public class SignatureTest {
       signature.addDataObject(dataObjectInfo);
     }
     
-    signature.setSignerCeritifcate(certificate);
+    signature.setSignerCertificate(certificate);
     
     signature.buildXMLSignature();
     
@@ -684,7 +684,7 @@ public class SignatureTest {
       signature.addDataObject(dataObjectInfo);
     }
     
-    signature.setSignerCeritifcate(certificate);
+    signature.setSignerCertificate(certificate);
     
     signature.buildXMLSignature();
     
@@ -725,7 +725,7 @@ public class SignatureTest {
       signature.addDataObject(dataObjectInfo);
     }
     
-    signature.setSignerCeritifcate(certificate);
+    signature.setSignerCertificate(certificate);
     
     signature.buildXMLSignature();
     
@@ -1214,7 +1214,7 @@ public class SignatureTest {
       signature.addDataObject(dataObjectInfo);
     }
     
-    signature.setSignerCeritifcate(certificate);
+    signature.setSignerCertificate(certificate);
     
     signature.buildXMLSignature();
     
@@ -1254,7 +1254,7 @@ public class SignatureTest {
       signature.addDataObject(dataObjectInfo);
     }
     
-    signature.setSignerCeritifcate(certificate);
+    signature.setSignerCertificate(certificate);
     
     signature.buildXMLSignature();
     
@@ -1294,7 +1294,7 @@ public class SignatureTest {
       signature.addDataObject(dataObjectInfo);
     }
 
-    signature.setSignerCeritifcate(certificate);
+    signature.setSignerCertificate(certificate);
 
     signature.buildXMLSignature();
 
@@ -1334,7 +1334,7 @@ public class SignatureTest {
       signature.addDataObject(dataObjectInfo);
     }
 
-    signature.setSignerCeritifcate(certificate);
+    signature.setSignerCertificate(certificate);
 
     signature.buildXMLSignature();
 

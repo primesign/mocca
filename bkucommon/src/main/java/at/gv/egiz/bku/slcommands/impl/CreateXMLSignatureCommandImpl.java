@@ -145,7 +145,7 @@ public class CreateXMLSignatureCommandImpl extends
     signature.setSigningTime(new Date());
 
     // SigningCertificate
-    signature.setSignerCeritifcate(signingCertificate);
+    signature.setSignerCertificate(signingCertificate);
 
     // SignatureInfo
     if (request.getSignatureInfo() != null) {

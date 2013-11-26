@@ -325,7 +325,7 @@ public class Signature {
    * 
    * @param certificate the signer's certificate
    */
-  public void setSignerCeritifcate(X509Certificate certificate) {
+  public void setSignerCertificate(X509Certificate certificate) {
     this.signerCertificate = certificate;
   }
   
