@@ -201,8 +201,8 @@
     <profile>
       <!--
       This profile is here for triggering when another scm than svn is
-      used (for example git). Instead of getting the version build number
-      from svn we will use the build date and the user name.
+      used (for example git). Try to get the associated svn revision
+      from git-svn.
       -->
       <id>buildnumber-git</id>
       <activation>
@@ -224,9 +224,19 @@
                 </goals>
                 <configuration>
                   <source>
-                    def gitSvnProc = ["sh", "-c", "git svn info | awk '/Revision:/ { print \$2 }'"].execute()
+                    def shell = "sh"
+                    def param = "-c"
+                    if (System.getProperty("os.name").toUpperCase().contains("WINDOWS")) {
+                      shell = "cmd"
+                      param = "/c"
+                    }
+                    def gitSvnProc = [shell, param, "git svn info | grep Revision:"].execute()
                     gitSvnProc.waitFor()
-                    project.properties['gitSvnRev'] = gitSvnProc.in.text.trim()
+                    def svnref = "unknown"
+                    def out = gitSvnProc.in.text.split(" ")
+                    if (out.size() == 2)
+                      svnref = out[1].trim()
+                    project.properties['gitSvnRev'] = svnref
                   </source>
                 </configuration>
               </execution>
