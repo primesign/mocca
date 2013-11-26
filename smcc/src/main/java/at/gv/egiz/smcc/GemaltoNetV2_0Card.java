@@ -4,24 +4,19 @@ import iaik.me.security.CryptoBag;
 import iaik.me.security.CryptoException;
 import iaik.me.security.MessageDigest;
 import iaik.me.security.cipher.TripleDES;
-import iaik.pkcs.pkcs7.DigestInfo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-import javax.print.attribute.standard.Severity;
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
-import javax.smartcardio.CommandAPDU;
-import javax.smartcardio.ResponseAPDU;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
