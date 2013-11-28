@@ -65,6 +65,10 @@ public class SignRequest
     protected byte[] signedInfo;
     @XmlTransient
     protected List<HashDataInput> hashData;
+    @XmlTransient
+    protected boolean signedInfoIsRawData = false;
+    @XmlTransient
+    protected String signatureMethod;
 
     /**
      * Gets the value of the keyIdentifier property.
@@ -118,5 +122,21 @@ public class SignRequest
 
     public void setHashDataInput(List<HashDataInput> hashData) {
         this.hashData = hashData;
+    }
+
+    public boolean getSignedInfoIsRawData() {
+      return signedInfoIsRawData;
+    }
+
+    public void setSignedInfoIsRawData(boolean signedInfoIsRawData) {
+      this.signedInfoIsRawData = signedInfoIsRawData;
+    }
+
+    public String getSignatureMethod() {
+      return signatureMethod;
+    }
+
+    public void setSignatureMethod(String signatureMethod) {
+      this.signatureMethod = signatureMethod;
     }
 }

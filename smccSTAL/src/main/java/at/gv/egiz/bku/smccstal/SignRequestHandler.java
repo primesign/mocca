@@ -50,7 +50,9 @@ import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.SignResponse;
+import at.gv.egiz.stal.signedinfo.CanonicalizationMethodType;
 import at.gv.egiz.stal.signedinfo.ObjectFactory;
+import at.gv.egiz.stal.signedinfo.SignatureMethodType;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
 
 public class SignRequestHandler extends AbstractRequestHandler {
@@ -89,13 +91,29 @@ public class SignRequestHandler extends AbstractRequestHandler {
             try {
                 Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
                 InputStream is = new ByteArrayInputStream(signReq.getSignedInfo());
-                JAXBElement<SignedInfoType> si = (JAXBElement<SignedInfoType>) unmarshaller.unmarshal(is);
-                String signatureMethod = si.getValue().getSignatureMethod().getAlgorithm();
+
+                SignedInfoType signedInfo;
+                if (signReq.getSignedInfoIsRawData()) {
+                  signedInfo = new SignedInfoType();
+                  CanonicalizationMethodType canonicalizationMethod =
+                      new CanonicalizationMethodType();
+                  canonicalizationMethod.setAlgorithm("");
+                  SignatureMethodType signatureMethod = new SignatureMethodType();
+                  signatureMethod.setAlgorithm(signReq.getSignatureMethod());
+                  signedInfo.setCanonicalizationMethod(canonicalizationMethod);
+                  signedInfo.setSignatureMethod(signatureMethod);
+                  signedInfo.setId("");
+                } else {
+                  JAXBElement<SignedInfoType> si =
+                      (JAXBElement<SignedInfoType>) unmarshaller.unmarshal(is);
+                  signedInfo = si.getValue();
+                }
+                String signatureMethod = signedInfo.getSignatureMethod().getAlgorithm();
                 log.debug("Found signature method: {}.", signatureMethod);
                 KeyboxName kb = SignatureCard.KeyboxName.getKeyboxName(signReq.getKeyIdentifier());
 
                 byte[] resp = card.createSignature(new ByteArrayInputStream(signReq.getSignedInfo()), kb,
-                        new SignPINGUI(gui, secureViewer, si.getValue()), signatureMethod);
+                        new SignPINGUI(gui, secureViewer, signedInfo), signatureMethod);
                 if (resp == null) {
                     return errorResponse(6001, "Response is null", null);
                 }
