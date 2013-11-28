@@ -74,7 +74,7 @@ public class SLCommandFactoryTest {
   @Test(expected=SLCommandException.class)
   public void createUnsupportedCommand() throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
     Reader requestReader = new StringReader(
-      "<CreateCMSSignatureRequest xmlns=\"http://www.buergerkarte.at/namespaces/securitylayer/1.2#\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.buergerkarte.at/namespaces/securitylayer/1.2# file:/home/clemens/IAIK/BKU2/svn/bku/utils/src/main/schema/Core-1.2.xsd\" Structure=\"detached\"><KeyboxIdentifier></KeyboxIdentifier><DataObject><MetaInfo><MimeType></MimeType></MetaInfo><Content><Base64Content></Base64Content></Content></DataObject></CreateCMSSignatureRequest>");
+      "<CreateHashRequest xmlns=\"http://www.buergerkarte.at/namespaces/securitylayer/1.2#\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.buergerkarte.at/namespaces/securitylayer/1.2# file:/home/clemens/IAIK/BKU2/svn/bku/utils/src/main/schema/Core-1.2.xsd\"><HashInfo RespondHashData=\"true\"><HashData><MetaInfo><MimeType></MimeType></MetaInfo><Content><XMLContent></XMLContent></Content></HashData><HashAlgorithm></HashAlgorithm></HashInfo></CreateHashRequest>");
     StreamSource source = new StreamSource(requestReader);
     
     factory.createSLCommand(source);
