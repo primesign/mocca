@@ -344,7 +344,7 @@ public class ObjectFactory {
      *
      */
     public at.buergerkarte.namespaces.securitylayer._1.XMLContentType createXMLContentType() {
-        return new at.gv.egiz.slbinding.impl.XMLContentType();
+        return new XMLContentType();
     }
 
     /**
@@ -680,7 +680,7 @@ public class ObjectFactory {
      *
      */
     public at.buergerkarte.namespaces.securitylayer._1.SignatureLocationType createSignatureLocationType() {
-        return new at.gv.egiz.slbinding.impl.SignatureLocationType();
+        return new SignatureLocationType();
     }
 
     /**
@@ -864,7 +864,7 @@ public class ObjectFactory {
      *
      */
     public at.buergerkarte.namespaces.securitylayer._1.TransformsInfoType createTransformsInfoType() {
-        return new at.gv.egiz.slbinding.impl.TransformsInfoType();
+        return new TransformsInfoType();
     }
 
     /**
@@ -1212,7 +1212,7 @@ public class ObjectFactory {
      *
      */
     @XmlElementDecl(namespace = "http://www.buergerkarte.at/namespaces/securitylayer/1.2#", name = "CreateXMLSignatureResponse")
-    public JAXBElement<CreateXMLSignatureResponseType> createCreateXMLSignatureResponse(at.gv.egiz.slbinding.impl.CreateXMLSignatureResponseType value) {
+    public JAXBElement<CreateXMLSignatureResponseType> createCreateXMLSignatureResponse(CreateXMLSignatureResponseType value) {
       return new JAXBElement<CreateXMLSignatureResponseType>(_CreateXMLSignatureResponse_QNAME, CreateXMLSignatureResponseType.class, null, value);
     }
 

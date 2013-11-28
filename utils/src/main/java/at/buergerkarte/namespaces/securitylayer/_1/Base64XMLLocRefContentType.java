@@ -53,7 +53,7 @@ public class Base64XMLLocRefContentType {
     @XmlElement(name = "Base64Content")
     protected byte[] base64Content;
     @XmlElement(name = "XMLContent", type = at.gv.egiz.slbinding.impl.XMLContentType.class)
-    protected at.gv.egiz.slbinding.impl.XMLContentType xmlContent;
+    protected XMLContentType xmlContent;
     @XmlElement(name = "LocRefContent")
     @XmlSchemaType(name = "anyURI")
     protected String locRefContent;
@@ -101,7 +101,7 @@ public class Base64XMLLocRefContentType {
      *     
      */
     public void setXMLContent(at.buergerkarte.namespaces.securitylayer._1.XMLContentType value) {
-        this.xmlContent = ((at.gv.egiz.slbinding.impl.XMLContentType) value);
+        this.xmlContent = value;
     }
 
     /**

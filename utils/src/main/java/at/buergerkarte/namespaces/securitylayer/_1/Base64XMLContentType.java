@@ -49,7 +49,7 @@ public class Base64XMLContentType {
     @XmlElement(name = "Base64Content")
     protected byte[] base64Content;
     @XmlElement(name = "XMLContent", type = at.gv.egiz.slbinding.impl.XMLContentType.class)
-    protected at.gv.egiz.slbinding.impl.XMLContentType xmlContent;
+    protected XMLContentType xmlContent;
 
     /**
      * Gets the value of the base64Content property.
@@ -94,7 +94,7 @@ public class Base64XMLContentType {
      *     
      */
     public void setXMLContent(at.buergerkarte.namespaces.securitylayer._1.XMLContentType value) {
-        this.xmlContent = ((at.gv.egiz.slbinding.impl.XMLContentType) value);
+        this.xmlContent = value;
     }
 
 }

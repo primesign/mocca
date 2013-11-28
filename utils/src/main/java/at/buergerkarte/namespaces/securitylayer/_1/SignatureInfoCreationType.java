@@ -48,7 +48,7 @@ public class SignatureInfoCreationType {
     @XmlElement(name = "SignatureEnvironment", required = true)
     protected Base64XMLOptRefContentType signatureEnvironment;
     @XmlElement(name = "SignatureLocation", required = true, type = at.gv.egiz.slbinding.impl.SignatureLocationType.class)
-    protected at.gv.egiz.slbinding.impl.SignatureLocationType signatureLocation;
+    protected SignatureLocationType signatureLocation;
     @XmlElement(name = "Supplement")
     protected List<DataObjectAssociationType> supplement;
 
@@ -97,7 +97,7 @@ public class SignatureInfoCreationType {
      *     
      */
     public void setSignatureLocation(at.buergerkarte.namespaces.securitylayer._1.SignatureLocationType value) {
-        this.signatureLocation = ((at.gv.egiz.slbinding.impl.SignatureLocationType) value);
+        this.signatureLocation = value;
     }
 
     /**

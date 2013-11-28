@@ -57,7 +57,7 @@ import javax.xml.bind.annotation.XmlValue;
 public class DecryptXMLResponseType {
 
     @XmlElement(name = "CandidateDocument", type = at.gv.egiz.slbinding.impl.XMLContentType.class)
-    protected at.gv.egiz.slbinding.impl.XMLContentType candidateDocument;
+    protected XMLContentType candidateDocument;
     @XmlElement(name = "DecryptedBinaryData")
     protected List<DecryptXMLResponseType.DecryptedBinaryData> decryptedBinaryData;
 
@@ -82,7 +82,7 @@ public class DecryptXMLResponseType {
      *     
      */
     public void setCandidateDocument(at.buergerkarte.namespaces.securitylayer._1.XMLContentType value) {
-        this.candidateDocument = ((at.gv.egiz.slbinding.impl.XMLContentType) value);
+        this.candidateDocument = value;
     }
 
     /**
