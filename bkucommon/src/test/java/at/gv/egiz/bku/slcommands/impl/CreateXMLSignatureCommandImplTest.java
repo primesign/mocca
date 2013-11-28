@@ -55,7 +55,7 @@ import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
 //@Ignore
-public class CreateXMLSignatureComandImplTest {
+public class CreateXMLSignatureCommandImplTest {
 
   protected static ApplicationContext appCtx;
   private SLCommandFactory factory;
