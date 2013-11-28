@@ -32,6 +32,7 @@
         <xsd:sequence>
           <xsd:element name="MetaInfo" type="MetaInfoType"/>
           <xsd:element name="Content" type="Base64OptRefContentType"/>
+          <xsd:element name="ExcludedByteRange" type="ExcludedByteRangeType" minOccurs="0"/>
         </xsd:sequence>
       </xsd:restriction>
     </xsd:complexContent>
@@ -40,10 +41,17 @@
     <xsd:sequence>
       <xsd:element name="MetaInfo" type="MetaInfoType" minOccurs="0"/>
       <xsd:element name="Content" type="Base64OptRefContentType"/>
+      <xsd:element name="ExcludedByteRange" type="ExcludedByteRangeType" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="ExcludedByteRangeType">
+    <xsd:sequence>
+      <xsd:element name="From" type="xsd:unsignedLong"/>
+      <xsd:element name="To" type="xsd:unsignedLong"/>
     </xsd:sequence>
   </xsd:complexType>
   <!--====================================================================== -->
-  <!--= Create CMS Siganture Response                                      = -->
+  <!--= Create CMS Signature Response                                      = -->
   <!--====================================================================== -->
   <xsd:element name="CreateCMSSignatureResponse" type="CreateCMSSignatureResponseType"/>
   <xsd:complexType name="CreateCMSSignatureResponseType">
@@ -767,6 +775,143 @@
       <xsd:enumeration value="removed"/>
     </xsd:restriction>
   </xsd:simpleType>
+  <!--###################################################################### -->
+  <!--# CardManagement                                                     # -->
+  <!--###################################################################### -->
+  <!--====================================================================== -->
+  <!--= CardManagement Request                                             = -->
+  <!--====================================================================== -->
+  <xsd:element name="CardManagementRequest">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="CardAction" type="CardActionElement" minOccurs="0" maxOccurs="unbounded" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="CardActionElement">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="Action" type="CardActionType" use="required" />
+        <xsd:attribute name="ApplicationIdentifier" type="ApplicationIdentifierType" use="required" />
+        <xsd:attribute name="Name" type="xsd:string" use="optional" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <!--====================================================================== -->
+  <!--= CardManagement Response                                            = -->
+  <!--====================================================================== -->
+  <xsd:element name="CardManagementResponse">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="Result" type="ResultElement" minOccurs="0" maxOccurs="unbounded" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="ResultApplElement">
+    <xsd:attribute name="ApplicationIdentifier" type="ApplicationIdentifierType" use="required" />
+    <xsd:attribute name="Name" type="xsd:string" use="required" />
+    <xsd:attribute name="Status" type="CardActionResponseType" use="required" />
+    <xsd:attribute name="RetryCount" type="xsd:integer" use="optional" />
+  </xsd:complexType>
+  <xsd:complexType name="ResultElement">
+    <xsd:attribute name="CardAction" type="CardActionType" use="required" />
+    <xsd:attribute name="ApplicationIdentifier" type="ApplicationIdentifierType" use="required" />
+    <xsd:attribute name="Result" type="CardActionResponseType" use="required" />
+    <xsd:attribute name="RetryCount" type="xsd:integer" use="optional" />
+  </xsd:complexType>
+  <xsd:simpleType name="CardActionType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="ActivatePIN" />
+      <xsd:enumeration value="ChangePIN" />
+      <xsd:enumeration value="ReadPINStatus" />
+      <xsd:enumeration value="UnblockPIN" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="ApplicationIdentifierType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="SecureSignatureApplication" />
+      <xsd:enumeration value="CertifiedApplication" />
+      <xsd:enumeration value="InfoboxApplication" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="CardActionResponseType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="OK" />
+      <xsd:enumeration value="Error" />
+      <xsd:enumeration value="Blocked" />
+      <xsd:enumeration value="Activ" />
+      <xsd:enumeration value="Inactive" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <!--###################################################################### -->
+  <!--# CardChannel                                                        # -->
+  <!--###################################################################### -->
+  <!--====================================================================== -->
+  <!--= CardChannel Request                                                = -->
+  <!--====================================================================== -->
+  <xsd:element name="CardChannelRequest">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="1" maxOccurs="1">
+        <xsd:element name="Script" type="ScriptElement" minOccurs="1" maxOccurs="1" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="ScriptElement">
+    <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+      <xsd:element name="Reset" type="ResetType" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="CommandAPDU" type="CommandAPDUType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="ResetType">
+    <xsd:attribute name="cold" type="ResetColdType" use="optional" />
+  </xsd:complexType>
+  <xsd:simpleType name="ResetColdType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="true" />
+      <xsd:enumeration value="false" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:complexType name="CommandAPDUType">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="sequence" type="xsd:integer" use="required" />
+        <xsd:attribute name="of" type="xsd:integer" use="required" />
+        <xsd:attribute name="expectedSW" type="xsd:string" use="optional" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <!--====================================================================== -->
+  <!--= CardChannel Response                                               = -->
+  <!--====================================================================== -->
+  <xsd:element name="CardChannelResponse">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="1" maxOccurs="1">
+        <xsd:element name="Response" type="APDUResponseElement" minOccurs="1" maxOccurs="1" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="APDUResponseElement">
+    <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+      <xsd:element name="ATR" type="APDUATRType" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="ResponseAPDU" type="ResponseAPDUType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="APDUATRType">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="rc" type="xsd:integer" use="required" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <xsd:complexType name="ResponseAPDUType">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="sequence" type="xsd:integer" use="required" />
+        <xsd:attribute name="rc" type="xsd:integer" use="required" />
+        <xsd:attribute name="SW" type="xsd:string" use="required" />
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
   <!--###################################################################### -->
   <!--# Error Response                                                     # -->
   <!--###################################################################### -->
