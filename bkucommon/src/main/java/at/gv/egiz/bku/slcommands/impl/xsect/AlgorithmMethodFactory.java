@@ -84,4 +84,7 @@ public interface AlgorithmMethodFactory {
       SignatureContext signatureContext) throws NoSuchAlgorithmException,
       InvalidAlgorithmParameterException;
 
+  public String getSignatureAlgorithmURI();
+
+  public String getDigestAlgorithmURI();
 }

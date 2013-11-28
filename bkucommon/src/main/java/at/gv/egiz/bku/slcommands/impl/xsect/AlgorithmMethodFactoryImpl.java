@@ -177,4 +177,14 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
     return new STALSignatureMethod(signatureAlgorithmURI, signatureMethodParameterSpec);
   }
 
+  @Override
+  public String getSignatureAlgorithmURI() {
+    return signatureAlgorithmURI;
+  }
+
+  @Override
+  public String getDigestAlgorithmURI() {
+    return digestAlgorithmURI;
+  }
+
 }
