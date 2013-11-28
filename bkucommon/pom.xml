@@ -91,6 +91,10 @@
     </dependency>
     <dependency>
       <groupId>iaik</groupId>
+      <artifactId>iaik_cms</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>iaik</groupId>
       <artifactId>iaik_pki</artifactId>
       <scope>compile</scope>
     </dependency>

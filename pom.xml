@@ -335,6 +335,11 @@
       </dependency>
       <dependency>
         <groupId>iaik</groupId>
+        <artifactId>iaik_cms</artifactId>
+        <version>4.1</version>
+      </dependency>
+      <dependency>
+        <groupId>iaik</groupId>
         <artifactId>iaik_pki</artifactId>
         <version>1.0-MOCCA</version>
         <scope>compile</scope>
