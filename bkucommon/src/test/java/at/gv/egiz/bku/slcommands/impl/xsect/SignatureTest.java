@@ -129,6 +129,16 @@ public class SignatureTest {
       } 
   
     }
+
+    @Override
+    public String getSignatureAlgorithmURI() {
+      return SignatureMethod.RSA_SHA1;
+    }
+
+    @Override
+    public String getDigestAlgorithmURI() {
+      return DigestMethod.SHA1;
+    }
     
   }
 
