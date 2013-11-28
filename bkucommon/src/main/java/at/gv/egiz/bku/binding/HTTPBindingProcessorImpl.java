@@ -411,7 +411,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 				String charSet = HttpUtil.getCharset(contentType, false);
 				if (charSet != null) {
 					contentType = contentType.substring(0, contentType
-							.lastIndexOf(HttpUtil.SEPERATOR[0]));
+							.lastIndexOf(HttpUtil.SEPARATOR[0]));
 				}
 				for (Iterator<String> header = fp.getHeaderNames(); header.hasNext();) {
 					if (HttpUtil.CONTENT_TRANSFER_ENCODING
@@ -459,7 +459,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 				log.debug("Got dataurl response content type: {}.", contentType);
 				if (contentType != null) {
 					if ((contentType.startsWith(HttpUtil.APPLICATION_URL_ENCODED))
-							|| (contentType.startsWith(HttpUtil.MULTIPART_FOTMDATA))) {
+							|| (contentType.startsWith(HttpUtil.MULTIPART_FORMDATA))) {
 						log.debug("Detected SL Request in dataurl response.");
 						// process headers and request
 						setHTTPHeaders(dataUrlResponse.getResponseHeaders());

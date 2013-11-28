@@ -168,10 +168,10 @@ public class DataUrlConnectionImpl extends HttpsDataURLConnection {
           HttpUtil.APPLICATION_URL_ENCODED);
     } else {
       log.debug("Setting DataURL Content-Type to {}.",
-          HttpUtil.MULTIPART_FOTMDATA_BOUNDARY);
+          HttpUtil.MULTIPART_FORMDATA_BOUNDARY);
       connection.addRequestProperty(HttpUtil.HTTP_HEADER_CONTENT_TYPE,
-          HttpUtil.MULTIPART_FOTMDATA + HttpUtil.SEPERATOR[0]
-              + HttpUtil.MULTIPART_FOTMDATA_BOUNDARY + "=" + boundary);
+          HttpUtil.MULTIPART_FORMDATA + HttpUtil.SEPARATOR[0]
+              + HttpUtil.MULTIPART_FORMDATA_BOUNDARY + "=" + boundary);
     }
     log.trace("Connecting to URL '{}'.", url);
     connection.connect();
@@ -326,7 +326,7 @@ public class DataUrlConnectionImpl extends HttpsDataURLConnection {
       StringBuffer value = new StringBuffer();
       for (String val : httpHeaders.get(key)) {
         value.append(val);
-        value.append(HttpUtil.SEPERATOR[0]);
+        value.append(HttpUtil.SEPARATOR[0]);
       }
       String valString = value.substring(0, value.length() - 1);
       if ((key != null) && (value.length() > 0)) {

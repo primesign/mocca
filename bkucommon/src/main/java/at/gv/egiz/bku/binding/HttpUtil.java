@@ -42,15 +42,15 @@ public class HttpUtil {
   public final static String HTTP_HEADER_REFERER = "Referer";
   public static final String HTTP_HEADER_SIGNATURE_LAYOUT = "SignatureLayout";
   public final static String CONTENT_TRANSFER_ENCODING = "Content-Transfer-Encoding";
-  public final static String MULTIPART_FOTMDATA = "multipart/form-data";
-  public final static String MULTIPART_FOTMDATA_BOUNDARY = "boundary";
+  public final static String MULTIPART_FORMDATA = "multipart/form-data";
+  public final static String MULTIPART_FORMDATA_BOUNDARY = "boundary";
   public final static String TXT_XML = "text/xml";
   public final static String TXT_PLAIN = "text/plain";
   public final static String TXT_HTML = "text/html";
   public final static String APPLICATION_URL_ENCODED = "application/x-www-form-urlencoded";
   public final static String HTTP_HEADER_LOCATION = "Location";
 
-  public final static char[] SEPERATOR = { ';' };
+  public final static char[] SEPARATOR = { ';' };
 
   /**
    * Extracts charset from a content type header.
@@ -64,7 +64,7 @@ public class HttpUtil {
       boolean replaceNullWithDefault) {
     ParameterParser pf = new ParameterParser();
     pf.setLowerCaseNames(true);
-    Map<?, ?> map = pf.parse(contentType, SEPERATOR);
+    Map<?, ?> map = pf.parse(contentType, SEPARATOR);
     String retVal = (String) map.get(CHAR_SET);
     if ((retVal == null) && (replaceNullWithDefault)) {
       if (map.containsKey(APPLICATION_URL_ENCODED)) {
