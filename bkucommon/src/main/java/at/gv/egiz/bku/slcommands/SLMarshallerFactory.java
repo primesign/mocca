@@ -64,7 +64,7 @@ public class SLMarshallerFactory {
   private SLMarshallerFactory() {
     // context is initialized immediately while the legacy context is initialized only on demand
     try {
-      String slPkg = at.buergerkarte.namespaces.securitylayer._1.ObjectFactory.class.getPackage().getName();
+      String slPkg = at.buergerkarte.namespaces.securitylayer._1_2_3.ObjectFactory.class.getPackage().getName();
       String xmldsigPkg = org.w3._2000._09.xmldsig_.ObjectFactory.class.getPackage().getName();
       String cardChannelPkg = at.buergerkarte.namespaces.cardchannel.ObjectFactory.class.getPackage().getName();
       context = JAXBContext.newInstance(slPkg + ":" + xmldsigPkg + ":" + cardChannelPkg);

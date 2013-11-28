@@ -76,11 +76,11 @@ import org.w3c.dom.ls.LSParser;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.w3c.dom.ls.LSSerializer;
 
-import at.buergerkarte.namespaces.securitylayer._1.Base64XMLLocRefReqRefContentType;
-import at.buergerkarte.namespaces.securitylayer._1.Base64XMLOptRefContentType;
-import at.buergerkarte.namespaces.securitylayer._1.DataObjectAssociationType;
-import at.buergerkarte.namespaces.securitylayer._1.DataObjectInfoType;
-import at.buergerkarte.namespaces.securitylayer._1.SignatureInfoCreationType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.Base64XMLLocRefReqRefContentType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.Base64XMLOptRefContentType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.DataObjectAssociationType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.DataObjectInfoType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.SignatureInfoCreationType;
 import at.gv.egiz.bku.binding.HttpUtil;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;

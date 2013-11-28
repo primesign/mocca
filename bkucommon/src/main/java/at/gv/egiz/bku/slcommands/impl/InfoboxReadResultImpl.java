@@ -28,10 +28,10 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.transform.Result;
 import javax.xml.transform.Templates;
 
-import at.buergerkarte.namespaces.securitylayer._1.Base64XMLContentType;
-import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadDataAssocArrayType;
-import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadResponseType;
-import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.Base64XMLContentType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.InfoboxReadDataAssocArrayType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.InfoboxReadResponseType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.ObjectFactory;
 import at.gv.egiz.bku.slcommands.InfoboxReadResult;
 
 public class InfoboxReadResultImpl extends SLResultImpl implements InfoboxReadResult {

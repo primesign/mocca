@@ -24,9 +24,9 @@
 
 package at.gv.egiz.bku.slcommands.impl;
 
-import at.buergerkarte.namespaces.securitylayer._1.GetStatusResponseType;
-import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
-import at.buergerkarte.namespaces.securitylayer._1.TokenStatusType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.GetStatusResponseType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.ObjectFactory;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.TokenStatusType;
 import at.gv.egiz.bku.slcommands.GetStatusResult;
 import javax.xml.bind.JAXBElement;
 import javax.xml.transform.Result;

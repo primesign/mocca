@@ -65,7 +65,7 @@ public class SLClient {
     private static JAXBContext context;
 
     {
-      String slPkg = at.buergerkarte.namespaces.securitylayer._1.ObjectFactory.class.getPackage().getName();
+      String slPkg = at.buergerkarte.namespaces.securitylayer._1_2_3.ObjectFactory.class.getPackage().getName();
       String xmldsigPkg = org.w3._2000._09.xmldsig_.ObjectFactory.class.getPackage().getName();
       String samlPkg = oasis.names.tc.saml._1_0.assertion.ObjectFactory.class.getPackage().getName();
       String prPkg = at.buergerkarte.namespaces.personenbindung._20020506_.ObjectFactory.class.getPackage().getName();

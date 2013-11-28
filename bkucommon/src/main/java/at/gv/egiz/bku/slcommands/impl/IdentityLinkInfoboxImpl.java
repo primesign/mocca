@@ -51,8 +51,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import at.buergerkarte.namespaces.personenbindung._20020506_.CompressedIdentityLinkType;
-import at.buergerkarte.namespaces.securitylayer._1.AnyChildrenType;
-import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadRequestType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.AnyChildrenType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.InfoboxReadRequestType;
 import at.gv.egiz.bku.slcommands.InfoboxReadResult;
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;

@@ -24,7 +24,7 @@
 
 package at.gv.egiz.bku.slcommands.impl;
 
-import at.buergerkarte.namespaces.securitylayer._1.NullOperationRequestType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.NullOperationRequestType;
 import at.gv.egiz.bku.slcommands.NullOperationCommand;
 import at.gv.egiz.bku.slcommands.NullOperationResult;
 import at.gv.egiz.bku.slcommands.SLCommandContext;

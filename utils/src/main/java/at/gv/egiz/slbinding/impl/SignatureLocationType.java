@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author clemens
  */
-public class SignatureLocationType extends at.buergerkarte.namespaces.securitylayer._1.SignatureLocationType implements NamespaceContextCallback {
+public class SignatureLocationType extends at.buergerkarte.namespaces.securitylayer._1_2_3.SignatureInfoCreationType.SignatureLocation implements NamespaceContextCallback {
 
     @XmlTransient
     private final Logger log = LoggerFactory.getLogger(SignatureLocationType.class);

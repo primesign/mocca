@@ -27,7 +27,7 @@ package at.gv.egiz.bku.slcommands.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadRequestType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.InfoboxReadRequestType;
 import at.gv.egiz.bku.slcommands.InfoboxReadCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLResult;

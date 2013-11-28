@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
-import at.buergerkarte.namespaces.securitylayer._1.SignatureInfoCreationType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.SignatureInfoCreationType;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.slbinding.impl.SignatureLocationType;
 

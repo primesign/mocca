@@ -28,18 +28,18 @@
  */
 package at.gv.egiz.slbinding;
 
-import at.buergerkarte.namespaces.securitylayer._1.Base64XMLLocRefOptRefContentType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.Base64XMLLocRefOptRefContentType;
 import javax.xml.bind.JAXBException;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import at.buergerkarte.namespaces.securitylayer._1.CreateXMLSignatureRequestType;
-import at.buergerkarte.namespaces.securitylayer._1.DataObjectAssociationType;
-import at.buergerkarte.namespaces.securitylayer._1.DataObjectInfoType;
-import at.buergerkarte.namespaces.securitylayer._1.MetaInfoType;
-import at.buergerkarte.namespaces.securitylayer._1.SignatureInfoCreationType;
-import at.buergerkarte.namespaces.securitylayer._1.TransformsInfoType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.CreateXMLSignatureRequestType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.DataObjectAssociationType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.DataObjectInfoType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.MetaInfoType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.SignatureInfoCreationType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.TransformsInfoType;
 import at.gv.egiz.slbinding.impl.SignatureLocationType;
 import at.gv.egiz.slbinding.impl.XMLContentType;
 import java.io.BufferedInputStream;
@@ -80,7 +80,7 @@ public class RedirectTest {
     @Test
     public void testRedirect() {
         try {
-            String slPkg = at.buergerkarte.namespaces.securitylayer._1.ObjectFactory.class.getPackage().getName();
+            String slPkg = at.buergerkarte.namespaces.securitylayer._1_2_3.ObjectFactory.class.getPackage().getName();
             String dsigPkg = org.w3._2000._09.xmldsig_.ObjectFactory.class.getPackage().getName();
 
             JAXBContext jaxbContext = JAXBContext.newInstance(slPkg + ":" + dsigPkg);

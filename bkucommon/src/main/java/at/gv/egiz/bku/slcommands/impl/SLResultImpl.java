@@ -49,8 +49,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 
-import at.buergerkarte.namespaces.securitylayer._1.ErrorResponseType;
-import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.ErrorResponseType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.ObjectFactory;
 import at.gv.egiz.bku.slcommands.SLMarshallerFactory;
 import at.gv.egiz.bku.slcommands.SLResult;
 import at.gv.egiz.bku.slexceptions.SLBindingException;

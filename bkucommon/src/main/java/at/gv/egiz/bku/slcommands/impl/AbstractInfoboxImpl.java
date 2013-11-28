@@ -24,8 +24,8 @@
 
 package at.gv.egiz.bku.slcommands.impl;
 
-import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadRequestType;
-import at.buergerkarte.namespaces.securitylayer._1.InfoboxUpdateRequestType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.InfoboxReadRequestType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.InfoboxUpdateRequestType;
 import at.gv.egiz.bku.slcommands.InfoboxReadResult;
 import at.gv.egiz.bku.slcommands.InfoboxUpdateResult;
 import at.gv.egiz.bku.slcommands.SLCommandContext;

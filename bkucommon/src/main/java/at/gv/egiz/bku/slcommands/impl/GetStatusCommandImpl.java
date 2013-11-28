@@ -25,7 +25,7 @@
 
 package at.gv.egiz.bku.slcommands.impl;
 
-import at.buergerkarte.namespaces.securitylayer._1.GetStatusRequestType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.GetStatusRequestType;
 import at.gv.egiz.bku.slcommands.GetStatusCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLResult;

@@ -27,8 +27,8 @@ package at.gv.egiz.bku.slcommands.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadParamsBinaryFileType;
-import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadRequestType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.InfoboxReadParamsBinaryFileType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.InfoboxReadRequestType;
 
 /**
  * An abstract base class for {@link Infobox} implementations of type binary file.

@@ -79,10 +79,10 @@ import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSParser;
 import org.w3c.dom.ls.LSSerializer;
 
-import at.buergerkarte.namespaces.securitylayer._1.Base64XMLLocRefOptRefContentType;
-import at.buergerkarte.namespaces.securitylayer._1.DataObjectInfoType;
-import at.buergerkarte.namespaces.securitylayer._1.MetaInfoType;
-import at.buergerkarte.namespaces.securitylayer._1.TransformsInfoType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.Base64XMLLocRefOptRefContentType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.DataObjectInfoType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.MetaInfoType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.TransformsInfoType;
 import at.gv.egiz.bku.binding.HttpUtil;
 import at.gv.egiz.bku.gui.viewer.MimeTypes;
 import at.gv.egiz.bku.slcommands.SLMarshallerFactory;
@@ -1200,10 +1200,10 @@ public class DataObject {
       fragment = ctx.getDocument().createDocumentFragment();
       Marshaller marshaller = SLMarshallerFactory.getInstance().createMarshaller(false);
       
-      JAXBElement<at.buergerkarte.namespaces.securitylayer._1.XMLContentType> element = 
-        new JAXBElement<at.buergerkarte.namespaces.securitylayer._1.XMLContentType>(
+      JAXBElement<at.buergerkarte.namespaces.securitylayer._1_2_3.XMLContentType> element =
+        new JAXBElement<at.buergerkarte.namespaces.securitylayer._1_2_3.XMLContentType>(
           new QName("dummy"),
-          at.buergerkarte.namespaces.securitylayer._1.XMLContentType.class,
+          at.buergerkarte.namespaces.securitylayer._1_2_3.XMLContentType.class,
           xmlContent);
       
       try {

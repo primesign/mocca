@@ -40,8 +40,8 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 
-import at.buergerkarte.namespaces.securitylayer._1.CreateXMLSignatureRequestType;
-import at.buergerkarte.namespaces.securitylayer._1.DataObjectInfoType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.CreateXMLSignatureRequestType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.DataObjectInfoType;
 import at.gv.egiz.bku.binding.HTTPBindingProcessorImpl;
 import at.gv.egiz.bku.conf.MoccaConfigurationFacade;
 import at.gv.egiz.bku.slcommands.CreateXMLSignatureCommand;

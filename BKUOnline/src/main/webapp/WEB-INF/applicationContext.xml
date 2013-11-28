@@ -165,7 +165,7 @@
 		<!--
 		<property name="jaxbContextPackageNames">
 		  <list>
-		    <value>at.buergerkarte.namespaces.securitylayer._1</value>
+		    <value>at.buergerkarte.namespaces.securitylayer._1_2_3</value>
 		    <value>org.w3._2000._09.xmldsig_</value>
         <value>at.buergerkarte.namespaces.cardchannel</value>
         <value>at.buergerkarte.namespaces.securitylayer._20020225_</value>

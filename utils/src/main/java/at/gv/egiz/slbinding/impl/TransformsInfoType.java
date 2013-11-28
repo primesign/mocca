@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author clemens
  */
-public class TransformsInfoType extends at.buergerkarte.namespaces.securitylayer._1.TransformsInfoType implements RedirectCallback {
+public class TransformsInfoType extends at.buergerkarte.namespaces.securitylayer._1_2_3.TransformsInfoType implements RedirectCallback {
 
     @XmlTransient
     private final Logger log = LoggerFactory.getLogger(TransformsInfoType.class);

@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author clemens
  */
-public class CreateXMLSignatureResponseType extends at.buergerkarte.namespaces.securitylayer._1.CreateXMLSignatureResponseType implements RedirectCallback {
+public class CreateXMLSignatureResponseType extends at.buergerkarte.namespaces.securitylayer._1_2_3.CreateXMLSignatureResponseType implements RedirectCallback {
 
     @XmlTransient
     private final Logger log = LoggerFactory.getLogger(CreateXMLSignatureResponseType.class);

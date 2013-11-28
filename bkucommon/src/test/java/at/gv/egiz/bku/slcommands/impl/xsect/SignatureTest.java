@@ -72,10 +72,10 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 
-import at.buergerkarte.namespaces.securitylayer._1.CreateXMLSignatureRequestType;
-import at.buergerkarte.namespaces.securitylayer._1.DataObjectInfoType;
-import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
-import at.buergerkarte.namespaces.securitylayer._1.SignatureInfoCreationType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.CreateXMLSignatureRequestType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.DataObjectInfoType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.ObjectFactory;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.SignatureInfoCreationType;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
 import at.gv.egiz.bku.slexceptions.SLViewerException;

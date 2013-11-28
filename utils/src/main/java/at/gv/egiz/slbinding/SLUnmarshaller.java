@@ -129,7 +129,7 @@ public class SLUnmarshaller {
   private static class DefaultContext {
     
     private static final String[] packageNames = {
-      at.buergerkarte.namespaces.securitylayer._1.ObjectFactory.class.getPackage().getName(),
+      at.buergerkarte.namespaces.securitylayer._1_2_3.ObjectFactory.class.getPackage().getName(),
       org.w3._2000._09.xmldsig_.ObjectFactory.class.getPackage().getName(),
       at.buergerkarte.namespaces.cardchannel.ObjectFactory.class.getPackage().getName(),
       at.buergerkarte.namespaces.securitylayer._20020225_.ObjectFactory.class.getPackage().getName(),

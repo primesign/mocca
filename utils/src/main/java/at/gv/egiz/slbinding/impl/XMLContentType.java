@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author clemens
  */
-public class XMLContentType extends at.buergerkarte.namespaces.securitylayer._1.XMLContentType implements RedirectCallback {
+public class XMLContentType extends at.buergerkarte.namespaces.securitylayer._1_2_3.XMLContentType implements RedirectCallback {
 
     @XmlTransient
     private final Logger log = LoggerFactory.getLogger(XMLContentType.class);

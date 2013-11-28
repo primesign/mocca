@@ -37,8 +37,8 @@ import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import at.buergerkarte.namespaces.securitylayer._1.CreateXMLSignatureResponseType;
-import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.CreateXMLSignatureResponseType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.ObjectFactory;
 import at.gv.egiz.bku.slcommands.CreateXMLSignatureResult;
 import at.gv.egiz.bku.slcommands.SLMarshallerFactory;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;

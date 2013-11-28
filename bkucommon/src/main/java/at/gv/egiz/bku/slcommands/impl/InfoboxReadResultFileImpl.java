@@ -42,10 +42,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import at.buergerkarte.namespaces.securitylayer._1.Base64XMLContentType;
-import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadResponseType;
-import at.buergerkarte.namespaces.securitylayer._1.ObjectFactory;
-import at.buergerkarte.namespaces.securitylayer._1.XMLContentType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.Base64XMLContentType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.InfoboxReadResponseType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.ObjectFactory;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.XMLContentType;
 import at.gv.egiz.bku.slcommands.InfoboxReadResult;
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slcommands.SLMarshallerFactory;

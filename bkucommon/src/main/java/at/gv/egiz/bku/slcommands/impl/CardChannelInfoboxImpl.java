@@ -49,10 +49,10 @@ import at.buergerkarte.namespaces.cardchannel.ResponseAPDUType;
 import at.buergerkarte.namespaces.cardchannel.ResponseType;
 import at.buergerkarte.namespaces.cardchannel.ScriptType;
 import at.buergerkarte.namespaces.cardchannel.VerifyAPDUType;
-import at.buergerkarte.namespaces.securitylayer._1.Base64XMLContentType;
-import at.buergerkarte.namespaces.securitylayer._1.InfoboxReadRequestType;
-import at.buergerkarte.namespaces.securitylayer._1.InfoboxUpdateRequestType;
-import at.buergerkarte.namespaces.securitylayer._1.XMLContentType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.Base64XMLContentType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.InfoboxReadRequestType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.InfoboxUpdateRequestType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.XMLContentType;
 import at.gv.egiz.bku.slcommands.InfoboxReadResult;
 import at.gv.egiz.bku.slcommands.InfoboxUpdateResult;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
@@ -93,8 +93,8 @@ public class CardChannelInfoboxImpl extends AbstractBinaryFileInfobox {
   public InfoboxReadResult read(InfoboxReadRequestType request,
       SLCommandContext cmdCtx) throws SLCommandException {
     
-    at.buergerkarte.namespaces.securitylayer._1.ObjectFactory objectFactory 
-    = new at.buergerkarte.namespaces.securitylayer._1.ObjectFactory();
+    at.buergerkarte.namespaces.securitylayer._1_2_3.ObjectFactory objectFactory
+    = new at.buergerkarte.namespaces.securitylayer._1_2_3.ObjectFactory();
 
     Base64XMLContentType content = objectFactory.createBase64XMLContentType();
     XMLContentType xmlContent = objectFactory.createXMLContentType();

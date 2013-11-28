@@ -55,7 +55,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import at.buergerkarte.namespaces.securitylayer._1.ErrorResponseType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.ErrorResponseType;
 
 @Ignore
 public class TestCreateAndVerifySignature {
