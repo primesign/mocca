@@ -29,12 +29,22 @@ import iaik.utils.Base64OutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
@@ -45,12 +55,14 @@ public final class DOMUtils {
    * DOM Implementation.
    */
   private static String DOM_LS_3_0 = "LS 3.0";
-  
+
   private static DOMImplementationLS domImplLS;
-  
+
+  private final static Logger log = LoggerFactory.getLogger(DOMUtils.class);
+
   private DOMUtils() {
   }
-  
+
   private static synchronized void ensureDOMImplementation() {
     
     if (domImplLS == null) {
@@ -79,7 +91,7 @@ public final class DOMUtils {
     
     return domImplLS;
   }
-  
+
   public static Document createDocument() {
     
     // This does not work with the Xerces-J version (2.6.2) included in Java 6
@@ -95,7 +107,37 @@ public final class DOMUtils {
     return db.newDocument();
        
   }
-  
+
+  public static String documentToString(Document doc) {
+    StringWriter sw = new StringWriter();
+    try {
+      TransformerFactory tf = TransformerFactory.newInstance();
+      Transformer transformer = tf.newTransformer();
+      transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+      transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+      transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+      transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+
+      transformer.transform(new DOMSource(doc), new StreamResult(sw));
+    } catch (TransformerException ex) {
+      log.error("documentToString Transformer Exception");
+    }
+    return sw.toString();
+  }
+
+  public static String nodeToString(Node node) {
+    StringWriter sw = new StringWriter();
+    try {
+      Transformer t = TransformerFactory.newInstance().newTransformer();
+      t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+      t.setOutputProperty(OutputKeys.INDENT, "yes");
+      t.transform(new DOMSource(node), new StreamResult(sw));
+    } catch (TransformerException te) {
+      log.error("nodeToString Transformer Exception");
+    }
+    return sw.toString();
+  }
+
   public static Text createBase64Text(byte[] bytes, Document doc) throws IOException {
     
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -105,7 +147,7 @@ public final class DOMUtils {
     return doc.createTextNode(outputStream.toString("ASCII"));
     
   }
-  
+
   public static Text createBase64Text(InputStream bytes, Document doc) throws IOException {
     
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
