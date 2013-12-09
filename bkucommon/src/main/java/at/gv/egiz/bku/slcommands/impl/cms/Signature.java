@@ -88,10 +88,12 @@ public class Signature {
   @SuppressWarnings("unused")
   private String digestAlgorithmURI;
 
-  public Signature(CMSDataObjectRequiredMetaType dataObject,
-      X509Certificate signingCertificate, Date signingTime, boolean useStrongHash) throws NoSuchAlgorithmException, CertificateEncodingException, CertificateException, X509ExtensionException, InvalidParameterException, CodingException {
+  public Signature(CMSDataObjectRequiredMetaType dataObject, String structure,
+      X509Certificate signingCertificate, Date signingTime, boolean useStrongHash)
+          throws NoSuchAlgorithmException, CertificateEncodingException, CertificateException, X509ExtensionException, InvalidParameterException, CodingException {
     byte[] data = getContent(dataObject);
-    this.signedData = new SignedData(data, SignedData.EXPLICIT);
+    int mode = structure.equalsIgnoreCase("enveloping") ? SignedData.IMPLICIT : SignedData.EXPLICIT;
+    this.signedData = new SignedData(data, mode);
     setAlgorithmIDs(signingCertificate, useStrongHash);
     createSignerInfo(signingCertificate);
     setSignerCertificate(signingCertificate);

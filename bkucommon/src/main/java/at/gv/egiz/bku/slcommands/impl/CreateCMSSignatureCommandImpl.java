@@ -110,8 +110,8 @@ public class CreateCMSSignatureCommandImpl extends
     // DataObject, SigningCertificate, SigningTime
     Date signingTime = new Date();
     try {
-      signature = new Signature(request.getDataObject(), signingCertificate,
-          signingTime, configurationFacade.getUseStrongHash());
+      signature = new Signature(request.getDataObject(), request.getStructure(),
+          signingCertificate, signingTime, configurationFacade.getUseStrongHash());
     } catch (Exception e) {
       log.error("Error creating CMS Signature.", e);
       throw new SLCommandException(4000);
