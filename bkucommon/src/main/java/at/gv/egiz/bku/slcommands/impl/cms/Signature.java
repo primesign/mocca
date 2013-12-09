@@ -228,16 +228,16 @@ public class Signature {
       }
       
       if (useStrongHash && fieldSize >= 512) {
-        signatureAlgorithm = AlgorithmID.ecdsa_plain_With_SHA512;
+        signatureAlgorithm = AlgorithmID.ecdsa_With_SHA512;
         digestAlgorithm = AlgorithmID.sha512;
       } else if (useStrongHash && fieldSize >= 256) {
-        signatureAlgorithm = AlgorithmID.ecdsa_plain_With_SHA256;
+        signatureAlgorithm = AlgorithmID.ecdsa_With_SHA256;
         digestAlgorithm = AlgorithmID.sha256;
       } else if (useStrongHash) {
           signatureAlgorithm = AlgorithmID.ecdsa_plain_With_RIPEMD160;
           digestAlgorithm = AlgorithmID.ripeMd160;
       } else {
-        signatureAlgorithm = AlgorithmID.ecdsa_plain_With_SHA1;
+        signatureAlgorithm = AlgorithmID.ecdsa_With_SHA1;
         digestAlgorithm = AlgorithmID.sha1;
       }
     } else {
