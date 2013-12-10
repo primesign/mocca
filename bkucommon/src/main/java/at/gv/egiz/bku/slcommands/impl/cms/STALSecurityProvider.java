@@ -1,13 +1,18 @@
 package at.gv.egiz.bku.slcommands.impl.cms;
 
+import iaik.asn1.DerCoder;
+import iaik.asn1.INTEGER;
+import iaik.asn1.SEQUENCE;
 import iaik.asn1.structures.AlgorithmID;
 import iaik.cms.IaikProvider;
 import iaik.utils.Util;
 
+import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.SignatureException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,7 +57,7 @@ public class STALSecurityProvider extends IaikProvider {
     signRequest.setSignedInfoIsRawData(true);
     signRequest.setSignatureMethod(privateKey.getAlgorithm());
 
-    log.debug("Sending STAL request");
+    log.debug("Sending STAL request ({})", privateKey.getAlgorithm());
     List<STALResponse> responses =
       stal.handleRequest(Collections.singletonList((STALRequest) signRequest));
 
@@ -62,8 +67,9 @@ public class STALSecurityProvider extends IaikProvider {
 
     STALResponse response = responses.get(0);
     if (response instanceof SignResponse) {
-      log.debug("Got STAL response: " + Util.toBase64String(((SignResponse) response).getSignatureValue()));
-      return ((SignResponse) response).getSignatureValue();
+      byte[] sig = ((SignResponse) response).getSignatureValue();
+      log.debug("Got STAL response: " + Util.toBase64String(sig));
+      return wrapSignatureValue(sig, signatureAlgorithm);
     } else if (response instanceof ErrorResponse) {
       ErrorResponse err = (ErrorResponse) response;
       STALSignatureException se = new STALSignatureException(err.getErrorCode(), err.getErrorMessage());
@@ -71,6 +77,24 @@ public class STALSecurityProvider extends IaikProvider {
     } else {
       throw new SignatureException("Failed to access STAL.");
     }
+  }
+
+  private static byte[] wrapSignatureValue(byte[] sig, AlgorithmID sigAlgorithmID) {
+    String id = sigAlgorithmID.getAlgorithm().getID();
+    // 0.4.0.127.0.7.1.1.4.1...: ecdsa-plain-signatures
+    // 1.2.840.10045.4...:       id-ecSigType
+    if (id.startsWith("1.2.840.10045.4")) //X9.62 Format ECDSA signatures
+    {
+      //Wrap r and s in ASN.1 SEQUENCE
+      byte[] r = Arrays.copyOfRange(sig, 0, sig.length/2);
+      byte[] s = Arrays.copyOfRange(sig, sig.length/2, sig.length);
+      SEQUENCE sigS = new SEQUENCE();
+      sigS.addComponent(new INTEGER(new BigInteger(1, r)));
+      sigS.addComponent(new INTEGER(new BigInteger(1, s)));
+      return DerCoder.encode(sigS);
+    }
+    else
+      return sig;
   }
 
 }
