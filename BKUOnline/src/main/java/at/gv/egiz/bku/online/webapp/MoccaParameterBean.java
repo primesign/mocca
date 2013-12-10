@@ -36,6 +36,8 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.configuration.Configuration;
@@ -47,8 +49,8 @@ import at.gv.egiz.bku.utils.StreamUtil;
 
 public class MoccaParameterBean {
 
-  private final Logger log = LoggerFactory.getLogger(MoccaParameterBean.class);
-  
+  private static final Logger log = LoggerFactory.getLogger(MoccaParameterBean.class);
+
   public static final String PARAM_UI_PAGE_P = "appletPage";
 
   public static final String PARAM_APPLET_WIDTH = "appletWidth";
@@ -233,5 +235,16 @@ public class MoccaParameterBean {
       // Set P3P Policy Header
       response.addHeader("P3P", P3P_POLICY);
     }
+  }
+
+  public static String getInitParameter(String name, ServletConfig config,
+      ServletContext context) {
+    String initVal = config.getInitParameter(name);
+    String contextVal = context.getInitParameter(config.getServletName() + "." + name);
+    log.debug("Reading init param " + name + ": " + initVal +
+        " - context param " + (config.getServletName() + "." + name) + ": " + contextVal);
+    if (contextVal != null)
+      return contextVal;
+    return initVal;
   }
 }

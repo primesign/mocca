@@ -63,12 +63,12 @@ public class ResultServlet extends HttpServlet {
 
   @Override
   public void init() throws ServletException {
-    String encoding = getServletConfig().getInitParameter("responseEncoding");
+    String encoding = MoccaParameterBean.getInitParameter("responseEncoding", getServletConfig(), getServletContext());
     if (encoding != null) {
       log.info("Init default responseEncoding to: {}.", encoding);
       responseEncoding = encoding;
     }
-    String url = getServletConfig().getInitParameter("expiredPageUrl");
+    String url = MoccaParameterBean.getInitParameter("expiredPageUrl", getServletConfig(), getServletContext());
     if (url != null) {
 //      try {
 //        expiredPageUrl = new URL(url).toString();

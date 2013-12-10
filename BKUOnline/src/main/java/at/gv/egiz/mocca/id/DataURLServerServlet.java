@@ -53,6 +53,7 @@ import at.gv.egiz.bku.binding.FormParameter;
 import at.gv.egiz.bku.binding.Id;
 import at.gv.egiz.bku.binding.InputDecoder;
 import at.gv.egiz.bku.binding.InputDecoderFactory;
+import at.gv.egiz.bku.online.webapp.MoccaParameterBean;
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slcommands.SLMarshallerFactory;
 import at.gv.egiz.bku.slcommands.SLResult;
@@ -185,12 +186,12 @@ public class DataURLServerServlet extends HttpServlet {
     }
     
     // create new binding processor
-    String protocol = getServletConfig().getInitParameter("protocol");
+    String protocol = MoccaParameterBean.getInitParameter("protocol", getServletConfig(), getServletContext());
     if (protocol == null || protocol.isEmpty()) {
       protocol = req.getScheme();
     }
     SAMLBindingProcessorImpl bindingProcessor = (SAMLBindingProcessorImpl) bindingProcessorManager
-        .createBindingProcessor(protocol, locale);    
+        .createBindingProcessor(protocol, locale);
 
     if (bindingProcessor != null && respElement != null) {
       

@@ -56,7 +56,7 @@ public class WebRequestHandler extends HttpServlet {
 
   @Override
   public void init() throws ServletException {
-    String url = getServletConfig().getInitParameter("uiRedirectUrl");
+    String url = MoccaParameterBean.getInitParameter("uiRedirectUrl", getServletConfig(), getServletContext());
     if (url != null) {
       uiRedirectUrl = url;
       log.info("Init uiRedirectUrl to: {}.", uiRedirectUrl);
@@ -99,7 +99,7 @@ public class WebRequestHandler extends HttpServlet {
     }
     
     // create new binding processor
-    String protocol = getServletConfig().getInitParameter("protocol");
+    String protocol = MoccaParameterBean.getInitParameter("protocol", getServletConfig(), getServletContext());
     if (protocol == null || protocol.isEmpty()) {
       protocol = req.getScheme();
     }

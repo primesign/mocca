@@ -55,7 +55,7 @@ public class UIServlet extends HttpServlet {
 
   @Override
   public void init() throws ServletException {
-    String url = getServletConfig().getInitParameter("expiredPageUrl");
+    String url = MoccaParameterBean.getInitParameter("expiredPageUrl", getServletConfig(), getServletContext());
     if (url != null) {
 //      try {
 //        expiredPageUrl = new URL(url).toString();
@@ -99,7 +99,7 @@ public class UIServlet extends HttpServlet {
     MoccaParameterBean parameterBean = new MoccaParameterBean((HTTPBindingProcessor) bindingProcessor);
     req.setAttribute("moccaParam", parameterBean);
     
-    String uiPage = getServletConfig().getInitParameter("uiPage");
+    String uiPage = MoccaParameterBean.getInitParameter("uiPage", getServletConfig(), getServletContext());
     uiPage = parameterBean.getUIPage(uiPage);
     if (uiPage == null) {
       uiPage = "applet.jsp";
