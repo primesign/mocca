@@ -39,7 +39,7 @@ import javax.xml.bind.JAXBElement;
 public interface STALRequestBroker extends STAL {
 
     public static final int ERR_4500 = 4500;
-    public static final long DEFAULT_TIMEOUT_MS = 1000*60*5; //5mn
+    public static final long DEFAULT_TIMEOUT_MS = 1000*60*4; //4mn
 
     public List<JAXBElement<? extends RequestType>> connect();
     

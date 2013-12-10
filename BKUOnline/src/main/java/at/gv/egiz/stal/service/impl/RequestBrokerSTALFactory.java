@@ -49,8 +49,8 @@ public class RequestBrokerSTALFactory implements STALFactory, ComponentMXBean {
 
     public static final String APPLET_TIMEOUT = "AppletTimeout";
 
-    public int getAppletTimeout() {
-      return configuration.getInteger(APPLET_TIMEOUT, -1);
+    public long getAppletTimeout() {
+      return configuration.getLong(APPLET_TIMEOUT, -1);
     }
 
   }
