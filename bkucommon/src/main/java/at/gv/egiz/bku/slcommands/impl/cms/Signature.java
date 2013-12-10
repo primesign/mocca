@@ -33,6 +33,7 @@ import iaik.asn1.structures.AlgorithmID;
 import iaik.asn1.structures.Attribute;
 import iaik.asn1.structures.ChoiceOfTime;
 import iaik.cms.CMSException;
+import iaik.cms.CMSSignatureException;
 import iaik.cms.CertificateIdentifier;
 import iaik.cms.ContentInfo;
 import iaik.cms.IssuerAndSerialNumber;
@@ -47,6 +48,7 @@ import java.security.InvalidParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SignatureException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -66,6 +68,8 @@ import at.buergerkarte.namespaces.securitylayer._1_2_3.CMSDataObjectRequiredMeta
 import at.buergerkarte.namespaces.securitylayer._1_2_3.ExcludedByteRangeType;
 import at.gv.egiz.bku.slcommands.impl.xsect.AlgorithmMethodFactory;
 import at.gv.egiz.bku.slcommands.impl.xsect.AlgorithmMethodFactoryImpl;
+import at.gv.egiz.bku.slcommands.impl.xsect.STALSignatureException;
+import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.stal.STAL;
 
 /**
@@ -183,11 +187,23 @@ public class Signature {
     return data;
   }
 
-  private void setSignerInfo() {
+  private void setSignerInfo() throws SLCommandException, CMSException, CMSSignatureException {
     try {
       signedData.addSignerInfo(signerInfo);
     } catch (NoSuchAlgorithmException e) {
-      log.error("Error setting signer info", e);
+      if (e.getCause() instanceof CMSException) {
+        CMSException e2 = (CMSException) e.getCause();
+        if (e2.getCause() instanceof SignatureException)
+        {
+          SignatureException e3 = (SignatureException) e2.getCause();
+          if (e3.getCause() instanceof STALSignatureException) {
+            STALSignatureException e4 = (STALSignatureException) e3.getCause();
+            throw new SLCommandException(e4.getErrorCode());
+          }
+        }
+        throw e2;
+      }
+      throw new CMSSignatureException(e);
     }
   }
 
@@ -248,7 +264,7 @@ public class Signature {
     }
   }
 
-  public byte[] sign(STAL stal, String keyboxIdentifier) throws CMSException {
+  public byte[] sign(STAL stal, String keyboxIdentifier) throws CMSException, CMSSignatureException, SLCommandException {
     signedData.setSecurityProvider(new STALSecurityProvider(stal, keyboxIdentifier));
     setSignerInfo();
     ContentInfo contentInfo = new ContentInfo(signedData);

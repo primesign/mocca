@@ -25,6 +25,7 @@
 package at.gv.egiz.bku.slcommands.impl;
 
 import iaik.cms.CMSException;
+import iaik.cms.CMSSignatureException;
 
 import java.security.cert.X509Certificate;
 import java.util.Collections;
@@ -158,6 +159,9 @@ public class CreateCMSSignatureCommandImpl extends
     try {
       return signature.sign(commandContext.getSTAL(), keyboxIdentifier);
     } catch (CMSException e) {
+      log.error("Error creating CMSSignature", e);
+      throw new SLCommandException(4000);
+    } catch (CMSSignatureException e) {
       log.error("Error creating CMSSignature", e);
       throw new SLCommandException(4000);
     }
