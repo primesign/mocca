@@ -43,6 +43,7 @@ import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import at.gv.egiz.bku.conf.MoccaConfigurationFacade;
 import at.gv.egiz.bku.jmx.ComponentMXBean;
 import at.gv.egiz.bku.jmx.ComponentState;
 import at.gv.egiz.bku.slcommands.SLCommandInvoker;
@@ -56,15 +57,13 @@ import at.gv.egiz.stal.STALFactory;
  */
 public class BindingProcessorManagerImpl implements BindingProcessorManager, ComponentMXBean {
   
-  public static long DEFAULT_MAX_ACCEPTED_AGE = 2 * 60 * 1000;
+  public static long DEFAULT_MAX_ACCEPTED_AGE = 5 * 60 * 1000; // 5 Minutes
   
   public static int DEFAULT_CLEAN_UP_INTERVAL = 60;
 
-  private final Logger log = LoggerFactory.getLogger(BindingProcessorManagerImpl.class);
+  private final static Logger log = LoggerFactory.getLogger(BindingProcessorManagerImpl.class);
 
   private List<BindingProcessorFactory> factories = Collections.emptyList();
-
-  private Configuration configuration;
 
   private STALFactory stalFactory;
   
@@ -77,7 +76,21 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager, Com
 
   private int cleanUpInterval = DEFAULT_CLEAN_UP_INTERVAL;
 
-  private long maxAcceptedAge = DEFAULT_MAX_ACCEPTED_AGE;
+  private long maxAcceptedAge = -1;
+
+  public final ConfigurationFacade configurationFacade = new ConfigurationFacade();
+
+  public class ConfigurationFacade implements MoccaConfigurationFacade {
+
+    private Configuration configuration;
+
+    public static final String BINDING_PROCESSOR_TIMEOUT = "BindingProcessorTimeout";
+
+    public long getBindingProcessorTimeout() {
+      return configuration.getLong(BINDING_PROCESSOR_TIMEOUT, DEFAULT_MAX_ACCEPTED_AGE);
+    }
+
+  }
 
   private ScheduledExecutorService cleanUpService = Executors
       .newSingleThreadScheduledExecutor();
@@ -91,14 +104,14 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager, Com
    * @return the configuration
    */
   public Configuration getConfiguration() {
-    return configuration;
+    return configurationFacade.configuration;
   }
 
   /**
    * @param configuration the configuration to set
    */
   public void setConfiguration(Configuration configuration) {
-    this.configuration = configuration;
+    configurationFacade.configuration = configuration;
   }
 
   /**
@@ -158,7 +171,8 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager, Com
    * @return the current maximum inactive time of a BindingProcessor
    */
   public long getMaxAcceptedAge() {
-    return maxAcceptedAge;
+    return maxAcceptedAge < 0 ?
+        configurationFacade.getBindingProcessorTimeout() : maxAcceptedAge;
   }
 
   /**
@@ -322,7 +336,9 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager, Com
         }
         if ((System.currentTimeMillis() - bindingProcessor
             .getLastAccessTime().getTime()) > getMaxAcceptedAge()) {
-          toBeRemoved.add(bindingProcessor.getId());
+          Id id = bindingProcessor.getId();
+          toBeRemoved.add(id);
+          log.debug("Removing BindingProcessor {} for exceeding {}ms", id, getMaxAcceptedAge());
         }
       }
       for (Id id : toBeRemoved) {
