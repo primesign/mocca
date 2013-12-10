@@ -210,9 +210,9 @@ public class Signature {
       if (useStrongHash && keyLength >= 2048) {
         signatureAlgorithm = AlgorithmID.sha256WithRSAEncryption;
         digestAlgorithm = AlgorithmID.sha256;
-      } else if (useStrongHash) {
-        signatureAlgorithm = AlgorithmID.rsaSignatureWithRipemd160;
-        digestAlgorithm = AlgorithmID.ripeMd160;
+//      } else if (useStrongHash) { // Cannot be used if not enabled in AlgorithmMethodFactoryImpl
+//        signatureAlgorithm = AlgorithmID.rsaSignatureWithRipemd160;
+//        digestAlgorithm = AlgorithmID.ripeMd160;
       } else {
         signatureAlgorithm = AlgorithmID.sha1WithRSAEncryption;
         digestAlgorithm = AlgorithmID.sha1;
