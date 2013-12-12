@@ -32,15 +32,17 @@ import java.io.InputStream;
  * @author clemens
  */
 public interface HashDataInput {
-    
+
+    public final static String CMS_DEF_REFERENCE_ID = "Reference-1";
+
     public String getReferenceId();
-    
+
     public String getMimeType();
-    
+
     public String getEncoding();
-    
+
     public String getFilename();
-    
+
     public InputStream getHashDataInput();
 
 }

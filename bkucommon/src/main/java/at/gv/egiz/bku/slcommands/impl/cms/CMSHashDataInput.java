@@ -8,7 +8,6 @@ import at.gv.egiz.stal.HashDataInput;
 public class CMSHashDataInput implements HashDataInput {
 
   private final static String DEFAULT_FILENAME = "SignatureData";
-  private final static String CMS_DEF_REFERENCE_ID = "Reference-1";
 
   private byte[] data;
   private String mimeType;

@@ -47,6 +47,7 @@ import at.gv.egiz.smcc.SignatureCard.KeyboxName;
 import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.TimeoutException;
 import at.gv.egiz.stal.ErrorResponse;
+import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
@@ -63,7 +64,6 @@ public class SignRequestHandler extends AbstractRequestHandler {
 
     private final static String CMS_DEF_SIGNEDINFO_ID = "SignedInfo-1";
     private final static String CMS_DEF_OBJECT_ID = "SignatureData-1";
-    private final static String CMS_DEF_REFERENCE_ID = "Reference-1";
 
     private static JAXBContext jaxbContext;
 
@@ -110,7 +110,7 @@ public class SignRequestHandler extends AbstractRequestHandler {
                   signedInfo.setId(CMS_DEF_SIGNEDINFO_ID);
                   List<ReferenceType> references = signedInfo.getReference();
                   ReferenceType reference = new ReferenceType();
-                  reference.setId(CMS_DEF_REFERENCE_ID);
+                  reference.setId(HashDataInput.CMS_DEF_REFERENCE_ID);
                   reference.setURI(CMS_DEF_OBJECT_ID);
                   references.add(reference);
                 } else {
