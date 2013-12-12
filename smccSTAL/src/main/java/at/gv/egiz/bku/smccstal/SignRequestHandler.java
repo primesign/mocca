@@ -69,7 +69,7 @@ public class SignRequestHandler extends AbstractRequestHandler {
 
     static {
         try {
-            jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
+          jaxbContext = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
         } catch (JAXBException e) {
           Logger log = LoggerFactory.getLogger(SignRequestHandler.class);
           log.error("Cannot init jaxbContext", e);
@@ -157,7 +157,7 @@ public class SignRequestHandler extends AbstractRequestHandler {
             } catch (SignatureCardException e) {
                 return errorResponse(4000,"Error while creating signature.", e);
             } catch (JAXBException e) {
-                return errorResponse(1000, "Cannot unmarshall signed info.", e);
+                return errorResponse(1000, "Cannot unmarshal signed info.", e);
             } catch (IOException e) {
               return errorResponse(4000, "Error while creating signature.", e);
             } 
