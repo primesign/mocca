@@ -52,14 +52,32 @@ public class CMSHashDataInput implements HashDataInput {
     else if (mimeType.equalsIgnoreCase("text/plain")) {
       return ".txt";
     }
+    else if (mimeType.equalsIgnoreCase("text/xml")) {
+      return ".xml";
+    }
+    else if (mimeType.equalsIgnoreCase("text/html")) {
+      return ".html";
+    }
     else if (mimeType.equalsIgnoreCase("application/xml")) {
       return ".xml";
+    }
+    else if (mimeType.equalsIgnoreCase("application/xhtml+xml")) {
+      return ".html";
     }
     else if (mimeType.equalsIgnoreCase("application/zip")) {
       return ".zip";
     }
     else if (mimeType.equalsIgnoreCase("application/gzip")) {
       return ".gz";
+    }
+    else if (mimeType.equalsIgnoreCase("image/gif")) {
+      return ".gif";
+    }
+    else if (mimeType.equalsIgnoreCase("image/jpeg")) {
+      return ".jpg";
+    }
+    else if (mimeType.equalsIgnoreCase("image/png")) {
+      return ".png";
     }
     return null;
   }
