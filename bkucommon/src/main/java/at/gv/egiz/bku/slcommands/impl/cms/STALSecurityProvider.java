@@ -12,6 +12,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.SignatureException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.slcommands.impl.xsect.STALSignatureException;
 import at.gv.egiz.stal.ErrorResponse;
+import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
@@ -29,15 +31,22 @@ import at.gv.egiz.stal.SignResponse;
 
 public class STALSecurityProvider extends IaikProvider {
 
-  private final Logger log = LoggerFactory.getLogger(STALSecurityProvider.class);
+  private final static Logger log = LoggerFactory.getLogger(STALSecurityProvider.class);
+
+  private final static String ID_ECSIGTYPE = "1.2.840.10045.4";
+  @SuppressWarnings("unused")
+  private final static String ECDSA_PLAIN_SIGNATURES = "0.4.0.127.0.7.1.1.4.1";
 
   private String keyboxIdentifier;
-
   private STAL stal;
+  private List<HashDataInput> hashDataInput;
 
-  public STALSecurityProvider(STAL stal, String keyboxIdentifier) {
+  public STALSecurityProvider(STAL stal, String keyboxIdentifier,
+      HashDataInput hashDataInput) {
     this.keyboxIdentifier = keyboxIdentifier;
     this.stal = stal;
+    this.hashDataInput = new ArrayList<HashDataInput>();
+    this.hashDataInput.add(hashDataInput);
   }
 
   /* (non-Javadoc)
@@ -50,12 +59,8 @@ public class STALSecurityProvider extends IaikProvider {
       throws SignatureException, InvalidKeyException, NoSuchAlgorithmException {
     log.debug("calculateSignatureFromSignedAttributes: " + signatureAlgorithm + ", " + digestAlgorithm);
 
-    SignRequest signRequest = new SignRequest();
-    signRequest.setKeyIdentifier(keyboxIdentifier);
-    log.debug("SignedAttributes: " + Util.toBase64String(signedAttributes));
-    signRequest.setSignedInfo(signedAttributes);
-    signRequest.setSignedInfoIsRawData(true);
-    signRequest.setSignatureMethod(privateKey.getAlgorithm());
+    SignRequest signRequest = getSTALSignRequest(keyboxIdentifier, signedAttributes,
+        privateKey.getAlgorithm(), hashDataInput);
 
     log.debug("Sending STAL request ({})", privateKey.getAlgorithm());
     List<STALResponse> responses =
@@ -79,11 +84,21 @@ public class STALSecurityProvider extends IaikProvider {
     }
   }
 
+  private static SignRequest getSTALSignRequest(String keyboxIdentifier,
+      byte[] signedAttributes, String signatureMethod, List<HashDataInput> hashDataInput) {
+    SignRequest signRequest = new SignRequest();
+    signRequest.setKeyIdentifier(keyboxIdentifier);
+    log.debug("SignedAttributes: " + Util.toBase64String(signedAttributes));
+    signRequest.setSignedInfo(signedAttributes);
+    signRequest.setSignedInfoIsCMSSignedAttributes(true);
+    signRequest.setSignatureMethod(signatureMethod);
+    signRequest.setHashDataInput(hashDataInput);
+    return signRequest;
+  }
+
   private static byte[] wrapSignatureValue(byte[] sig, AlgorithmID sigAlgorithmID) {
     String id = sigAlgorithmID.getAlgorithm().getID();
-    // 0.4.0.127.0.7.1.1.4.1...: ecdsa-plain-signatures
-    // 1.2.840.10045.4...:       id-ecSigType
-    if (id.startsWith("1.2.840.10045.4")) //X9.62 Format ECDSA signatures
+    if (id.startsWith(ID_ECSIGTYPE)) //X9.62 Format ECDSA signatures
     {
       //Wrap r and s in ASN.1 SEQUENCE
       byte[] r = Arrays.copyOfRange(sig, 0, sig.length/2);

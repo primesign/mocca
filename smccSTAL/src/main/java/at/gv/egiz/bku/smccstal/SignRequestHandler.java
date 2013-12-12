@@ -24,11 +24,10 @@
 
 package at.gv.egiz.bku.smccstal;
 
-import at.gv.egiz.bku.gui.BKUGUIFacade;
-import at.gv.egiz.bku.pin.gui.SignPINGUI;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -38,12 +37,14 @@ import javax.xml.bind.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.bku.pin.gui.SignPINGUI;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.LockedException;
 import at.gv.egiz.smcc.NotActivatedException;
 import at.gv.egiz.smcc.SignatureCard;
-import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.SignatureCard.KeyboxName;
+import at.gv.egiz.smcc.SignatureCardException;
 import at.gv.egiz.smcc.TimeoutException;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.STALRequest;
@@ -52,12 +53,18 @@ import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.SignResponse;
 import at.gv.egiz.stal.signedinfo.CanonicalizationMethodType;
 import at.gv.egiz.stal.signedinfo.ObjectFactory;
+import at.gv.egiz.stal.signedinfo.ReferenceType;
 import at.gv.egiz.stal.signedinfo.SignatureMethodType;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
 
 public class SignRequestHandler extends AbstractRequestHandler {
 
     private final static Logger log = LoggerFactory.getLogger(SignRequestHandler.class);
+
+    private final static String CMS_DEF_SIGNEDINFO_ID = "SignedInfo-1";
+    private final static String CMS_DEF_OBJECT_ID = "SignatureData-1";
+    private final static String CMS_DEF_REFERENCE_ID = "Reference-1";
+
     private static JAXBContext jaxbContext;
 
     static {
@@ -88,12 +95,10 @@ public class SignRequestHandler extends AbstractRequestHandler {
     public STALResponse handleRequest(STALRequest request) throws InterruptedException {
         if (request instanceof SignRequest) {
             SignRequest signReq = (SignRequest) request;
+            byte[] signedInfoData = signReq.getSignedInfo();
             try {
-                Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-                InputStream is = new ByteArrayInputStream(signReq.getSignedInfo());
-
                 SignedInfoType signedInfo;
-                if (signReq.getSignedInfoIsRawData()) {
+                if (signReq.getSignedInfoIsCMSSignedAttributes()) {
                   signedInfo = new SignedInfoType();
                   CanonicalizationMethodType canonicalizationMethod =
                       new CanonicalizationMethodType();
@@ -102,8 +107,15 @@ public class SignRequestHandler extends AbstractRequestHandler {
                   signatureMethod.setAlgorithm(signReq.getSignatureMethod());
                   signedInfo.setCanonicalizationMethod(canonicalizationMethod);
                   signedInfo.setSignatureMethod(signatureMethod);
-                  signedInfo.setId("");
+                  signedInfo.setId(CMS_DEF_SIGNEDINFO_ID);
+                  List<ReferenceType> references = signedInfo.getReference();
+                  ReferenceType reference = new ReferenceType();
+                  reference.setId(CMS_DEF_REFERENCE_ID);
+                  reference.setURI(CMS_DEF_OBJECT_ID);
+                  references.add(reference);
                 } else {
+                  Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                  InputStream is = new ByteArrayInputStream(signedInfoData);
                   JAXBElement<SignedInfoType> si =
                       (JAXBElement<SignedInfoType>) unmarshaller.unmarshal(is);
                   signedInfo = si.getValue();
@@ -112,7 +124,7 @@ public class SignRequestHandler extends AbstractRequestHandler {
                 log.debug("Found signature method: {}.", signatureMethod);
                 KeyboxName kb = SignatureCard.KeyboxName.getKeyboxName(signReq.getKeyIdentifier());
 
-                byte[] resp = card.createSignature(new ByteArrayInputStream(signReq.getSignedInfo()), kb,
+                byte[] resp = card.createSignature(new ByteArrayInputStream(signedInfoData), kb,
                         new SignPINGUI(gui, secureViewer, signedInfo), signatureMethod);
                 if (resp == null) {
                     return errorResponse(6001, "Response is null", null);

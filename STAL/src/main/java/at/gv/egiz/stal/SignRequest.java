@@ -66,7 +66,7 @@ public class SignRequest
     @XmlTransient
     protected List<HashDataInput> hashData;
     @XmlTransient
-    protected boolean signedInfoIsRawData = false;
+    protected boolean signedInfoIsCMSSignedAttributes = false;
     @XmlTransient
     protected String signatureMethod;
 
@@ -124,12 +124,12 @@ public class SignRequest
         this.hashData = hashData;
     }
 
-    public boolean getSignedInfoIsRawData() {
-      return signedInfoIsRawData;
+    public boolean getSignedInfoIsCMSSignedAttributes() {
+      return signedInfoIsCMSSignedAttributes;
     }
 
-    public void setSignedInfoIsRawData(boolean signedInfoIsRawData) {
-      this.signedInfoIsRawData = signedInfoIsRawData;
+    public void setSignedInfoIsCMSSignedAttributes(boolean signedInfoIsCMSSignedAttributes) {
+      this.signedInfoIsCMSSignedAttributes = signedInfoIsCMSSignedAttributes;
     }
 
     public String getSignatureMethod() {

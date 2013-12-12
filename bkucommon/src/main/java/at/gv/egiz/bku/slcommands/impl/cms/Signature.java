@@ -70,6 +70,7 @@ import at.gv.egiz.bku.slcommands.impl.xsect.AlgorithmMethodFactory;
 import at.gv.egiz.bku.slcommands.impl.xsect.AlgorithmMethodFactoryImpl;
 import at.gv.egiz.bku.slcommands.impl.xsect.STALSignatureException;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
+import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.STAL;
 
 /**
@@ -79,6 +80,9 @@ import at.gv.egiz.stal.STAL;
  * @author tkellner
  */
 public class Signature {
+
+  public final static String ID_AA_ETS_MIMETYPE = "0.4.0.1733.2.1";
+
   /**
    * Logging facility.
    */
@@ -86,6 +90,8 @@ public class Signature {
 
   private SignedData signedData;
   private SignerInfo signerInfo;
+  private byte[] signedDocument;
+  private String mimeType;
   private AlgorithmID signatureAlgorithm;
   private AlgorithmID digestAlgorithm;
   private String signatureAlgorithmURI;
@@ -95,13 +101,14 @@ public class Signature {
   public Signature(CMSDataObjectRequiredMetaType dataObject, String structure,
       X509Certificate signingCertificate, Date signingTime, boolean useStrongHash)
           throws NoSuchAlgorithmException, CertificateEncodingException, CertificateException, X509ExtensionException, InvalidParameterException, CodingException {
-    byte[] data = getContent(dataObject);
+    byte[] dataToBeSigned = getContent(dataObject);
     int mode = structure.equalsIgnoreCase("enveloping") ? SignedData.IMPLICIT : SignedData.EXPLICIT;
-    this.signedData = new SignedData(data, mode);
+    this.signedData = new SignedData(dataToBeSigned, mode);
     setAlgorithmIDs(signingCertificate, useStrongHash);
     createSignerInfo(signingCertificate);
     setSignerCertificate(signingCertificate);
-    setAttributes(dataObject.getMetaInfo().getMimeType(), signingCertificate, signingTime);
+    this.mimeType = dataObject.getMetaInfo().getMimeType();
+    setAttributes(this.mimeType, signingCertificate, signingTime);
   }
 
   private void createSignerInfo(X509Certificate signingCertificate) throws CertificateEncodingException, CertificateException {
@@ -130,7 +137,7 @@ public class Signature {
   }
 
   private void setMimeTypeAttrib(List<Attribute> attributes, String mimeType) {
-    String oidStr = "0.4.0.1733.2.1";
+    String oidStr = ID_AA_ETS_MIMETYPE;
     String name = "mime-type";
     ObjectID mimeTypeOID = new ObjectID(oidStr, name);
 
@@ -167,6 +174,8 @@ public class Signature {
 
   private byte[] getContent(CMSDataObjectRequiredMetaType dataObject) throws InvalidParameterException {
     byte[] data = dataObject.getContent().getBase64Content();
+    this.signedDocument = data.clone();
+
     ExcludedByteRangeType ebr = dataObject.getExcludedByteRange();
     if (ebr == null)
       return data;
@@ -176,6 +185,11 @@ public class Signature {
     if (from > data.length || to > data.length || from > to)
       throw new InvalidParameterException("ExcludeByteRange contains invalid data: [" +
       from + "-" + to + "], Content length: " + data.length);
+
+    // Fill ExcludeByteRange with 0s for document to display in viewer
+    Arrays.fill(this.signedDocument, from, to+1, (byte)0);
+
+    // Remove ExcludeByteRange from data to be signed
     byte[] first = null;
     byte[] second = null;
     if (from > 0)
@@ -264,8 +278,13 @@ public class Signature {
     }
   }
 
+  private HashDataInput getHashDataInput() {
+    return new CMSHashDataInput(signedDocument, mimeType);
+  }
+
   public byte[] sign(STAL stal, String keyboxIdentifier) throws CMSException, CMSSignatureException, SLCommandException {
-    signedData.setSecurityProvider(new STALSecurityProvider(stal, keyboxIdentifier));
+    signedData.setSecurityProvider(
+        new STALSecurityProvider(stal, keyboxIdentifier, getHashDataInput()));
     setSignerInfo();
     ContentInfo contentInfo = new ContentInfo(signedData);
     return contentInfo.getEncoded();
