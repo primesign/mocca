@@ -61,6 +61,7 @@ import javax.xml.bind.annotation.XmlValue;
  *           &lt;/complexType>
  *         &lt;/element>
  *         &lt;element name="SignatureMethod" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="DigestMethod" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -73,7 +74,8 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlType(name = "SignRequestType", propOrder = {
     "keyIdentifier",
     "signedInfo",
-    "signatureMethod"
+    "signatureMethod",
+    "digestMethod"
 })
 public class SignRequestType
     extends RequestType
@@ -85,6 +87,8 @@ public class SignRequestType
     protected SignRequestType.SignedInfo signedInfo;
     @XmlElement(name = "SignatureMethod")
     protected String signatureMethod;
+    @XmlElement(name = "DigestMethod")
+    protected String digestMethod;
 
     /**
      * Gets the value of the keyIdentifier property.
@@ -156,6 +160,30 @@ public class SignRequestType
      */
     public void setSignatureMethod(String value) {
         this.signatureMethod = value;
+    }
+
+    /**
+     * Gets the value of the digestMethod property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDigestMethod() {
+        return digestMethod;
+    }
+
+    /**
+     * Sets the value of the digestMethod property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDigestMethod(String value) {
+        this.digestMethod = value;
     }
 
 

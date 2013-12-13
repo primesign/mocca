@@ -95,7 +95,6 @@ public class Signature {
   private AlgorithmID signatureAlgorithm;
   private AlgorithmID digestAlgorithm;
   private String signatureAlgorithmURI;
-  @SuppressWarnings("unused")
   private String digestAlgorithmURI;
 
   public Signature(CMSDataObjectRequiredMetaType dataObject, String structure,
@@ -116,7 +115,7 @@ public class Signature {
         new iaik.x509.X509Certificate(signingCertificate.getEncoded());
     CertificateIdentifier signerIdentifier =
         new IssuerAndSerialNumber(sigcert);
-    PrivateKey privateKey = new STALPrivateKey(signatureAlgorithmURI);
+    PrivateKey privateKey = new STALPrivateKey(signatureAlgorithmURI, digestAlgorithmURI);
     signerInfo = new SignerInfo(signerIdentifier, digestAlgorithm,
         signatureAlgorithm, privateKey);
   }

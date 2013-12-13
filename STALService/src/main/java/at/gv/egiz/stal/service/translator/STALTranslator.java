@@ -224,6 +224,7 @@ public class STALTranslator {
         signedInfo.setIsCMSSignedAttributes(((SignRequest) request).getSignedInfo().isIsCMSSignedAttributes());
         req.setSignedInfo(signedInfo);
         req.setSignatureMethod(((SignRequest) request).getSignatureMethod());
+        req.setDigestMethod(((SignRequest) request).getDigestMethod());
         //TODO add hashdatainput (refactor signRequestType)
         return of.createGetNextRequestResponseTypeSignRequest(req);
       } else if (request instanceof InfoboxReadRequest) {
@@ -255,6 +256,7 @@ public class STALTranslator {
         signedInfo.setIsCMSSignedAttributes(((SignRequestType) request).getSignedInfo().isIsCMSSignedAttributes());
         stalReq.setSignedInfo(signedInfo);
         stalReq.setSignatureMethod(((SignRequestType) request).getSignatureMethod());
+        stalReq.setDigestMethod(((SignRequestType) request).getDigestMethod());
         return stalReq;
       } else if (request instanceof QuitRequestType) {
         return new QuitRequest();

@@ -60,8 +60,9 @@ public class STALSecurityProvider extends IaikProvider {
       throws SignatureException, InvalidKeyException, NoSuchAlgorithmException {
     log.debug("calculateSignatureFromSignedAttributes: " + signatureAlgorithm + ", " + digestAlgorithm);
 
+    STALPrivateKey spk = (STALPrivateKey) privateKey;
     SignRequest signRequest = getSTALSignRequest(keyboxIdentifier, signedAttributes,
-        privateKey.getAlgorithm(), hashDataInput);
+        spk.getAlgorithm(), spk.getDigestAlgorithm(), hashDataInput);
 
     log.debug("Sending STAL request ({})", privateKey.getAlgorithm());
     List<STALResponse> responses =
@@ -86,7 +87,8 @@ public class STALSecurityProvider extends IaikProvider {
   }
 
   private static SignRequest getSTALSignRequest(String keyboxIdentifier,
-      byte[] signedAttributes, String signatureMethod, List<HashDataInput> hashDataInput) {
+      byte[] signedAttributes, String signatureMethod, String digestMethod,
+      List<HashDataInput> hashDataInput) {
     SignRequest signRequest = new SignRequest();
     signRequest.setKeyIdentifier(keyboxIdentifier);
     log.debug("SignedAttributes: " + Util.toBase64String(signedAttributes));
@@ -95,6 +97,7 @@ public class STALSecurityProvider extends IaikProvider {
     signedInfo.setIsCMSSignedAttributes(true);
     signRequest.setSignedInfo(signedInfo);
     signRequest.setSignatureMethod(signatureMethod);
+    signRequest.setDigestMethod(digestMethod);
     signRequest.setHashDataInput(hashDataInput);
     return signRequest;
   }

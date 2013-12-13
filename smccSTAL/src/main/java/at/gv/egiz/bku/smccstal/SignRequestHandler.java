@@ -180,7 +180,7 @@ public class SignRequestHandler extends AbstractRequestHandler {
       reference.setId(HashDataInput.CMS_DEF_REFERENCE_ID);
       reference.setURI(CMS_DEF_OBJECT_ID);
       DigestMethodType digestMethod = new DigestMethodType();
-      digestMethod.setAlgorithm("CMS:" + signReq.getSignatureMethod());
+      digestMethod.setAlgorithm(signReq.getDigestMethod());
       reference.setDigestMethod(digestMethod);
       byte[] messageDigest = null;
       try {

@@ -54,6 +54,7 @@ import javax.xml.bind.annotation.XmlValue;
  *           &lt;/complexType>
  *         &lt;/element>
  *         &lt;element name="SignatureMethod" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="DigestMethod" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -66,7 +67,8 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlType(name = "SignRequestType", propOrder = {
     "keyIdentifier",
     "signedInfo",
-    "signatureMethod"
+    "signatureMethod",
+    "digestMethod"
 })
 public class SignRequest
   extends STALRequest {
@@ -77,6 +79,8 @@ public class SignRequest
     protected SignRequest.SignedInfo signedInfo;
     @XmlElement(name = "SignatureMethod")
     protected String signatureMethod;
+    @XmlElement(name = "DigestMethod")
+    protected String digestMethod;
     @XmlTransient
     protected List<HashDataInput> hashData;
 
@@ -150,6 +154,30 @@ public class SignRequest
      */
     public void setSignatureMethod(String value) {
         this.signatureMethod = value;
+    }
+
+    /**
+     * Gets the value of the digestMethod property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDigestMethod() {
+        return digestMethod;
+    }
+
+    /**
+     * Sets the value of the digestMethod property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDigestMethod(String value) {
+        this.digestMethod = value;
     }
 
     public List<HashDataInput> getHashDataInput() {

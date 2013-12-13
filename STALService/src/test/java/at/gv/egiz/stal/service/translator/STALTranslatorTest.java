@@ -106,6 +106,7 @@ public class STALTranslatorTest {
     assertEquals(request.getSignedInfo().getValue(), resultT.getSignedInfo().getValue());
     assertEquals(request.getSignedInfo().isIsCMSSignedAttributes(), resultT.getSignedInfo().isIsCMSSignedAttributes());
     assertEquals(request.getSignatureMethod(), resultT.getSignatureMethod());
+    assertEquals(request.getDigestMethod(), resultT.getDigestMethod());
   }
 
   /**
@@ -120,6 +121,7 @@ public class STALTranslatorTest {
     signedInfo.setValue("signedinfo".getBytes());
     req.setSignedInfo(signedInfo);
     req.setSignatureMethod("signatureMethod");
+    req.setDigestMethod("digestMethod");
     JAXBElement<? extends RequestType> request = of.createGetNextRequestResponseTypeSignRequest(req);
     STALTranslator instance = new STALTranslator();
     STALRequest result = instance.translateWSRequest(request);
@@ -128,6 +130,7 @@ public class STALTranslatorTest {
     assertEquals(req.getSignedInfo().getValue(), ((SignRequest) result).getSignedInfo().getValue());
     assertEquals(req.getSignedInfo().isIsCMSSignedAttributes(), ((SignRequest) result).getSignedInfo().isIsCMSSignedAttributes());
     assertEquals(req.getSignatureMethod(), ((SignRequest) result).getSignatureMethod());
+    assertEquals(req.getDigestMethod(), ((SignRequest) result).getDigestMethod());
   }
 
   @Test(expected=RuntimeException.class)
