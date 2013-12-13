@@ -25,6 +25,8 @@
 
 package at.gv.egiz.bku.slcommands.impl.xsect;
 
+import iaik.xml.crypto.dsig.AbstractSignatureMethodImpl;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,9 +50,8 @@ import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
+import at.gv.egiz.stal.SignRequest.SignedInfo;
 import at.gv.egiz.stal.SignResponse;
-
-import iaik.xml.crypto.dsig.AbstractSignatureMethodImpl;
 
 public class STALSignatureMethod extends AbstractSignatureMethodImpl {
   
@@ -99,7 +100,9 @@ public class STALSignatureMethod extends AbstractSignatureMethodImpl {
     
     SignRequest signRequest = new SignRequest();
     signRequest.setKeyIdentifier(keyboxIdentifier);
-    signRequest.setSignedInfo(m.toByteArray());
+    SignedInfo signedInfo = new SignedInfo();
+    signedInfo.setValue(m.toByteArray());
+    signRequest.setSignedInfo(signedInfo);
     signRequest.setHashDataInput(hashDataInputs);
 
     List<STALResponse> responses = 

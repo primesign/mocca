@@ -27,9 +27,11 @@ package at.gv.egiz.stal;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
  * <p>Java class for SignRequestType complex type.
@@ -42,7 +44,16 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://www.egiz.gv.at/stal}RequestType">
  *       &lt;sequence>
  *         &lt;element name="KeyIdentifier" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="SignedInfo" type="{http://www.w3.org/2001/XMLSchema}base64Binary"/>
+ *         &lt;element name="SignedInfo">
+ *           &lt;complexType>
+ *             &lt;simpleContent>
+ *               &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>base64Binary">
+ *                 &lt;attribute name="IsCMSSignedAttributes" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *               &lt;/extension>
+ *             &lt;/simpleContent>
+ *           &lt;/complexType>
+ *         &lt;/element>
+ *         &lt;element name="SignatureMethod" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -54,7 +65,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "SignRequestType", propOrder = {
     "keyIdentifier",
-    "signedInfo"
+    "signedInfo",
+    "signatureMethod"
 })
 public class SignRequest
   extends STALRequest {
@@ -62,13 +74,11 @@ public class SignRequest
     @XmlElement(name = "KeyIdentifier", required = true)
     protected String keyIdentifier;
     @XmlElement(name = "SignedInfo", required = true)
-    protected byte[] signedInfo;
+    protected SignRequest.SignedInfo signedInfo;
+    @XmlElement(name = "SignatureMethod")
+    protected String signatureMethod;
     @XmlTransient
     protected List<HashDataInput> hashData;
-    @XmlTransient
-    protected boolean signedInfoIsCMSSignedAttributes = false;
-    @XmlTransient
-    protected String signatureMethod;
 
     /**
      * Gets the value of the keyIdentifier property.
@@ -99,9 +109,10 @@ public class SignRequest
      * 
      * @return
      *     possible object is
-     *     byte[]
+     *     {@link SignRequestType.SignedInfo }
+     *     
      */
-    public byte[] getSignedInfo() {
+    public SignRequest.SignedInfo getSignedInfo() {
         return signedInfo;
     }
 
@@ -110,10 +121,35 @@ public class SignRequest
      * 
      * @param value
      *     allowed object is
-     *     byte[]
+     *     {@link SignRequestType.SignedInfo }
+     *     
      */
-    public void setSignedInfo(byte[] value) {
-        this.signedInfo = ((byte[]) value);
+    public void setSignedInfo(SignRequest.SignedInfo value) {
+        this.signedInfo = value;
+    }
+
+    /**
+     * Gets the value of the signatureMethod property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getSignatureMethod() {
+        return signatureMethod;
+    }
+
+    /**
+     * Sets the value of the signatureMethod property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setSignatureMethod(String value) {
+        this.signatureMethod = value;
     }
 
     public List<HashDataInput> getHashDataInput() {
@@ -124,19 +160,83 @@ public class SignRequest
         this.hashData = hashData;
     }
 
-    public boolean getSignedInfoIsCMSSignedAttributes() {
-      return signedInfoIsCMSSignedAttributes;
-    }
+    /**
+     * <p>Java class for anonymous complex type.
+     * 
+     * <p>The following schema fragment specifies the expected content contained within this class.
+     * 
+     * <pre>
+     * &lt;complexType>
+     *   &lt;simpleContent>
+     *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>base64Binary">
+     *       &lt;attribute name="IsCMSSignedAttributes" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+     *     &lt;/extension>
+     *   &lt;/simpleContent>
+     * &lt;/complexType>
+     * </pre>
+     * 
+     * 
+     */
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "", propOrder = {
+        "value"
+    })
+    public static class SignedInfo {
 
-    public void setSignedInfoIsCMSSignedAttributes(boolean signedInfoIsCMSSignedAttributes) {
-      this.signedInfoIsCMSSignedAttributes = signedInfoIsCMSSignedAttributes;
-    }
+        @XmlValue
+        protected byte[] value;
+        @XmlAttribute(name = "IsCMSSignedAttributes")
+        protected Boolean isCMSSignedAttributes;
 
-    public String getSignatureMethod() {
-      return signatureMethod;
-    }
+        /**
+         * Gets the value of the value property.
+         * 
+         * @return
+         *     possible object is
+         *     byte[]
+         */
+        public byte[] getValue() {
+            return value;
+        }
 
-    public void setSignatureMethod(String signatureMethod) {
-      this.signatureMethod = signatureMethod;
+        /**
+         * Sets the value of the value property.
+         * 
+         * @param value
+         *     allowed object is
+         *     byte[]
+         */
+        public void setValue(byte[] value) {
+            this.value = ((byte[]) value);
+        }
+
+        /**
+         * Gets the value of the isCMSSignedAttributes property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link Boolean }
+         *     
+         */
+        public boolean isIsCMSSignedAttributes() {
+            if (isCMSSignedAttributes == null) {
+                return false;
+            } else {
+                return isCMSSignedAttributes;
+            }
+        }
+
+        /**
+         * Sets the value of the isCMSSignedAttributes property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link Boolean }
+         *     
+         */
+        public void setIsCMSSignedAttributes(Boolean value) {
+            this.isCMSSignedAttributes = value;
+        }
+
     }
 }

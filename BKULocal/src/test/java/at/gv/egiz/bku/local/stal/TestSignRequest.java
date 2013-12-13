@@ -34,6 +34,7 @@ import at.gv.egiz.bku.utils.StreamUtil;
 import at.gv.egiz.smcc.SignatureCard;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.SignRequest;
+import at.gv.egiz.stal.SignRequest.SignedInfo;
 
 @Ignore
 public class TestSignRequest {
@@ -43,7 +44,9 @@ public class TestSignRequest {
     StreamUtil.copyStream(getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/local/stal/sigInfo.xml"), os);
     byte[] signedInfo = os.toByteArray();
     SignRequest sr = new SignRequest();
-    sr.setSignedInfo(signedInfo);
+    SignedInfo si = new SignedInfo();
+    si.setValue(signedInfo);
+    sr.setSignedInfo(si);
     sr.setKeyIdentifier(SignatureCard.KeyboxName.SECURE_SIGNATURE_KEYPAIR.getKeyboxName());
     List<STALRequest> reqList = new ArrayList<STALRequest>(1);
     reqList.add(sr);

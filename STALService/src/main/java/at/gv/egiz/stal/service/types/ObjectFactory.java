@@ -121,6 +121,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link SignRequestType.SignedInfo }
+     * 
+     */
+    public SignRequestType.SignedInfo createSignRequestTypeSignedInfo() {
+      return new SignRequestType.SignedInfo();
+    }
+
+    /**
      * Create an instance of {@link GetHashDataInputType.Reference }
      * 
      */

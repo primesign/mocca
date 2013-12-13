@@ -27,6 +27,7 @@ import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
+import at.gv.egiz.stal.SignRequest.SignedInfo;
 import at.gv.egiz.stal.SignResponse;
 
 public class STALSecurityProvider extends IaikProvider {
@@ -89,8 +90,10 @@ public class STALSecurityProvider extends IaikProvider {
     SignRequest signRequest = new SignRequest();
     signRequest.setKeyIdentifier(keyboxIdentifier);
     log.debug("SignedAttributes: " + Util.toBase64String(signedAttributes));
-    signRequest.setSignedInfo(signedAttributes);
-    signRequest.setSignedInfoIsCMSSignedAttributes(true);
+    SignedInfo signedInfo = new SignedInfo();
+    signedInfo.setValue(signedAttributes);
+    signedInfo.setIsCMSSignedAttributes(true);
+    signRequest.setSignedInfo(signedInfo);
     signRequest.setSignatureMethod(signatureMethod);
     signRequest.setHashDataInput(hashDataInput);
     return signRequest;

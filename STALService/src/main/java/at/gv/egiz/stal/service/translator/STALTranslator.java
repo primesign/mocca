@@ -41,6 +41,7 @@ import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
+import at.gv.egiz.stal.SignRequest.SignedInfo;
 import at.gv.egiz.stal.SignResponse;
 import at.gv.egiz.stal.StatusRequest;
 import at.gv.egiz.stal.StatusResponse;
@@ -218,7 +219,11 @@ public class STALTranslator {
       if (request instanceof SignRequest) {
         SignRequestType req = of.createSignRequestType();
         req.setKeyIdentifier(((SignRequest) request).getKeyIdentifier());
-        req.setSignedInfo(((SignRequest) request).getSignedInfo());
+        SignRequestType.SignedInfo signedInfo = of.createSignRequestTypeSignedInfo();
+        signedInfo.setValue(((SignRequest) request).getSignedInfo().getValue());
+        signedInfo.setIsCMSSignedAttributes(((SignRequest) request).getSignedInfo().isIsCMSSignedAttributes());
+        req.setSignedInfo(signedInfo);
+        req.setSignatureMethod(((SignRequest) request).getSignatureMethod());
         //TODO add hashdatainput (refactor signRequestType)
         return of.createGetNextRequestResponseTypeSignRequest(req);
       } else if (request instanceof InfoboxReadRequest) {
@@ -245,7 +250,11 @@ public class STALTranslator {
       } else if (request instanceof SignRequestType) {
         SignRequest stalReq = new SignRequest();
         stalReq.setKeyIdentifier(((SignRequestType) request).getKeyIdentifier());
-        stalReq.setSignedInfo(((SignRequestType) request).getSignedInfo());
+        SignedInfo signedInfo = new SignedInfo();
+        signedInfo.setValue(((SignRequestType) request).getSignedInfo().getValue());
+        signedInfo.setIsCMSSignedAttributes(((SignRequestType) request).getSignedInfo().isIsCMSSignedAttributes());
+        stalReq.setSignedInfo(signedInfo);
+        stalReq.setSignatureMethod(((SignRequestType) request).getSignatureMethod());
         return stalReq;
       } else if (request instanceof QuitRequestType) {
         return new QuitRequest();

@@ -408,7 +408,9 @@ public class STALServiceImpl implements STALPortType {
     log.info("[TestSession] add SIGN " + keyIdentifier + " request");
     SignRequestType sigT = stalObjFactory.createSignRequestType();
     sigT.setKeyIdentifier(keyIdentifier);
-    sigT.setSignedInfo(TestSignatureData.SIGNED_INFO.get(1)); //select! 
+    SignRequestType.SignedInfo sigI = stalObjFactory.createSignRequestTypeSignedInfo();
+    sigI.setValue(TestSignatureData.SIGNED_INFO.get(1));
+    sigT.setSignedInfo(sigI); //select!
     reqs.add(stalObjFactory.createGetNextRequestResponseTypeSignRequest(sigT));
   }
 

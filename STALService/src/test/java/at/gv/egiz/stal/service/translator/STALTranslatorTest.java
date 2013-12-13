@@ -28,6 +28,7 @@ package at.gv.egiz.stal.service.translator;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
+import at.gv.egiz.stal.SignRequest.SignedInfo;
 import at.gv.egiz.stal.service.translator.STALTranslator.TranslationHandler;
 import at.gv.egiz.stal.service.types.ObjectFactory;
 import at.gv.egiz.stal.service.types.RequestType;
@@ -94,13 +95,17 @@ public class STALTranslatorTest {
     System.out.println("translate");
     SignRequest request = new SignRequest();
     request.setKeyIdentifier("kid");
-    request.setSignedInfo("signedinfo".getBytes());
+    SignedInfo signedInfo = new SignedInfo();
+    signedInfo.setValue("signedinfo".getBytes());
+    request.setSignedInfo(signedInfo);
     STALTranslator instance = new STALTranslator();
     JAXBElement<? extends RequestType> result = instance.translate(request);
     assertEquals(SignRequestType.class, result.getValue().getClass());
     SignRequestType resultT = (SignRequestType) result.getValue();
     assertEquals(request.getKeyIdentifier(), resultT.getKeyIdentifier());
-    assertEquals(request.getSignedInfo(), resultT.getSignedInfo());
+    assertEquals(request.getSignedInfo().getValue(), resultT.getSignedInfo().getValue());
+    assertEquals(request.getSignedInfo().isIsCMSSignedAttributes(), resultT.getSignedInfo().isIsCMSSignedAttributes());
+    assertEquals(request.getSignatureMethod(), resultT.getSignatureMethod());
   }
 
   /**
@@ -111,13 +116,18 @@ public class STALTranslatorTest {
     System.out.println("translate");
     SignRequestType req = of.createSignRequestType();
     req.setKeyIdentifier("kid");
-    req.setSignedInfo("signedinfo".getBytes());
+    SignRequestType.SignedInfo signedInfo = of.createSignRequestTypeSignedInfo();
+    signedInfo.setValue("signedinfo".getBytes());
+    req.setSignedInfo(signedInfo);
+    req.setSignatureMethod("signatureMethod");
     JAXBElement<? extends RequestType> request = of.createGetNextRequestResponseTypeSignRequest(req);
     STALTranslator instance = new STALTranslator();
     STALRequest result = instance.translateWSRequest(request);
     assertEquals(SignRequest.class, result.getClass());
     assertEquals(req.getKeyIdentifier(), ((SignRequest) result).getKeyIdentifier());
-    assertEquals(req.getSignedInfo(), ((SignRequest) result).getSignedInfo());
+    assertEquals(req.getSignedInfo().getValue(), ((SignRequest) result).getSignedInfo().getValue());
+    assertEquals(req.getSignedInfo().isIsCMSSignedAttributes(), ((SignRequest) result).getSignedInfo().isIsCMSSignedAttributes());
+    assertEquals(req.getSignatureMethod(), ((SignRequest) result).getSignatureMethod());
   }
 
   @Test(expected=RuntimeException.class)

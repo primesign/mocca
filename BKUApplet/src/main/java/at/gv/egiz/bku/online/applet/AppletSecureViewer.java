@@ -196,12 +196,16 @@ public class AppletSecureViewer implements SecureViewer {
           log.debug("Digesting reference " + signedRefId + " (" + mimeType + ";" + encoding + ")");
         }
 
-        byte[] hashDataInputDigest = digest(hdi, signedDigestAlg);
+        if (signedDigestAlg.startsWith("CMS:")) {
+          log.info("CMS signature - skip verifying hashdata for now");
+        } else {
+          byte[] hashDataInputDigest = digest(hdi, signedDigestAlg);
 
-        log.debug("Comparing digest to claimed digest value for reference {}.", signedRefId);
-        if (!Arrays.equals(hashDataInputDigest, signedDigest)) {
-          log.error("Bad digest value for reference {}.", signedRefId);
-          throw new DigestException("Bad digest value for reference " + signedRefId);
+          log.debug("Comparing digest to claimed digest value for reference {}.", signedRefId);
+          if (!Arrays.equals(hashDataInputDigest, signedDigest)) {
+            log.error("Bad digest value for reference {}.", signedRefId);
+            throw new DigestException("Bad digest value for reference " + signedRefId);
+          }
         }
 
         verifiedHashDataInputs.add(new ByteArrayHashDataInput(hdi, signedRefId, mimeType, encoding, filename));

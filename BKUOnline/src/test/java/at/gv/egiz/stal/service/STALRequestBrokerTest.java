@@ -114,7 +114,9 @@ public class STALRequestBrokerTest {
         List<STALRequest> requests = new ArrayList<STALRequest>();
         SignRequest r1 = new SignRequest();
         r1.setKeyIdentifier("keybox1");
-        r1.setSignedInfo("1234".getBytes());
+        SignRequest.SignedInfo si1 = new SignRequest.SignedInfo();
+        si1.setValue("1234".getBytes());
+        r1.setSignedInfo(si1);
         HashDataInput hdi = new HashDataInput() {
 
             @Override
@@ -166,7 +168,9 @@ public class STALRequestBrokerTest {
         List<STALRequest> requests = new ArrayList<STALRequest>();
         SignRequest r1 = new SignRequest();
         r1.setKeyIdentifier("keybox1");
-        r1.setSignedInfo("1234".getBytes());
+        SignRequest.SignedInfo si1 = new SignRequest.SignedInfo();
+        si1.setValue("1234".getBytes());
+        r1.setSignedInfo(si1);
         HashDataInput hdi = new HashDataInput() {
 
             @Override
@@ -230,7 +234,9 @@ public class STALRequestBrokerTest {
         List<STALRequest> requests = new ArrayList<STALRequest>();
         SignRequest r1 = new SignRequest();
         r1.setKeyIdentifier("keybox1");
-        r1.setSignedInfo("1234".getBytes());
+        SignRequest.SignedInfo si1 = new SignRequest.SignedInfo();
+        si1.setValue("1234".getBytes());
+        r1.setSignedInfo(si1);
         HashDataInput hdi = new HashDataInput() {
 
             @Override
@@ -263,7 +269,9 @@ public class STALRequestBrokerTest {
         List<STALRequest> requests2 = new ArrayList<STALRequest>();
         SignRequest r2 = new SignRequest();
         r2.setKeyIdentifier("keybox2");
-        r2.setSignedInfo("6789".getBytes());
+        SignRequest.SignedInfo si2 = new SignRequest.SignedInfo();
+        si2.setValue("6789".getBytes());
+        r2.setSignedInfo(si2);
         HashDataInput hdi2 = new HashDataInput() {
 
             @Override

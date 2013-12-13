@@ -24,9 +24,12 @@
 
 package at.gv.egiz.bku.smccstal;
 
+import iaik.me.asn1.ASN1;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.SignatureException;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -53,6 +56,7 @@ import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.SignResponse;
 import at.gv.egiz.stal.signedinfo.CanonicalizationMethodType;
+import at.gv.egiz.stal.signedinfo.DigestMethodType;
 import at.gv.egiz.stal.signedinfo.ObjectFactory;
 import at.gv.egiz.stal.signedinfo.ReferenceType;
 import at.gv.egiz.stal.signedinfo.SignatureMethodType;
@@ -64,6 +68,7 @@ public class SignRequestHandler extends AbstractRequestHandler {
 
     private final static String CMS_DEF_SIGNEDINFO_ID = "SignedInfo-1";
     private final static String CMS_DEF_OBJECT_ID = "SignatureData-1";
+    private final static String OID_MESSAGEDIGEST = "1.2.840.113549.1.9.4";
 
     private static JAXBContext jaxbContext;
 
@@ -82,7 +87,7 @@ public class SignRequestHandler extends AbstractRequestHandler {
       this.secureViewer = secureViewer;
     }
 
-    private ErrorResponse errorResponse(int errorCode, String errorMessage, Exception e)
+    private static ErrorResponse errorResponse(int errorCode, String errorMessage, Exception e)
     {
       log.error(errorMessage, e);
       ErrorResponse err = new ErrorResponse(errorCode);
@@ -90,32 +95,19 @@ public class SignRequestHandler extends AbstractRequestHandler {
       return err;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public STALResponse handleRequest(STALRequest request) throws InterruptedException {
         if (request instanceof SignRequest) {
             SignRequest signReq = (SignRequest) request;
-            byte[] signedInfoData = signReq.getSignedInfo();
+            byte[] signedInfoData = signReq.getSignedInfo().getValue();
             try {
                 SignedInfoType signedInfo;
-                if (signReq.getSignedInfoIsCMSSignedAttributes()) {
-                  signedInfo = new SignedInfoType();
-                  CanonicalizationMethodType canonicalizationMethod =
-                      new CanonicalizationMethodType();
-                  canonicalizationMethod.setAlgorithm("");
-                  SignatureMethodType signatureMethod = new SignatureMethodType();
-                  signatureMethod.setAlgorithm(signReq.getSignatureMethod());
-                  signedInfo.setCanonicalizationMethod(canonicalizationMethod);
-                  signedInfo.setSignatureMethod(signatureMethod);
-                  signedInfo.setId(CMS_DEF_SIGNEDINFO_ID);
-                  List<ReferenceType> references = signedInfo.getReference();
-                  ReferenceType reference = new ReferenceType();
-                  reference.setId(HashDataInput.CMS_DEF_REFERENCE_ID);
-                  reference.setURI(CMS_DEF_OBJECT_ID);
-                  references.add(reference);
+                if (signReq.getSignedInfo().isIsCMSSignedAttributes()) {
+                  signedInfo = createCMSSignedInfo(signReq);
                 } else {
                   Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
                   InputStream is = new ByteArrayInputStream(signedInfoData);
+                  @SuppressWarnings("unchecked")
                   JAXBElement<SignedInfoType> si =
                       (JAXBElement<SignedInfoType>) unmarshaller.unmarshal(is);
                   signedInfo = si.getValue();
@@ -160,10 +152,60 @@ public class SignRequestHandler extends AbstractRequestHandler {
                 return errorResponse(1000, "Cannot unmarshal signed info.", e);
             } catch (IOException e) {
               return errorResponse(4000, "Error while creating signature.", e);
+            } catch (SignatureException e) {
+              return errorResponse(4000, "Error while parsing CMS signature.", e);
             } 
         } else {
             return errorResponse(1000, "Got unexpected STAL request: " + request + ".", null);
         }
+    }
+
+    private static SignedInfoType createCMSSignedInfo(SignRequest signReq) throws SignatureException {
+      SignedInfoType signedInfo = new SignedInfoType();
+      byte[] signedInfoData = signReq.getSignedInfo().getValue();
+
+      CanonicalizationMethodType canonicalizationMethod =
+          new CanonicalizationMethodType();
+      canonicalizationMethod.setAlgorithm("");
+      signedInfo.setCanonicalizationMethod(canonicalizationMethod);
+
+      SignatureMethodType signatureMethod = new SignatureMethodType();
+      signatureMethod.setAlgorithm(signReq.getSignatureMethod());
+      signedInfo.setSignatureMethod(signatureMethod);
+
+      signedInfo.setId(CMS_DEF_SIGNEDINFO_ID);
+
+      List<ReferenceType> references = signedInfo.getReference();
+      ReferenceType reference = new ReferenceType();
+      reference.setId(HashDataInput.CMS_DEF_REFERENCE_ID);
+      reference.setURI(CMS_DEF_OBJECT_ID);
+      DigestMethodType digestMethod = new DigestMethodType();
+      digestMethod.setAlgorithm("CMS:" + signReq.getSignatureMethod());
+      reference.setDigestMethod(digestMethod);
+      byte[] messageDigest = null;
+      try {
+        ASN1 signedAttributes = new ASN1(signedInfoData);
+        if (!signedAttributes.isConstructed())
+          throw new SignatureException("Error while parsing CMS signature");
+        for (int i = 0; i < signedAttributes.getSize(); ++i) {
+          ASN1 signedAttribute = signedAttributes.getElementAt(i);
+          if (!signedAttribute.isConstructed())
+            throw new SignatureException("Error while parsing CMS signature");
+          ASN1 oid = signedAttribute.getElementAt(0);
+          if (oid.gvObjectId().equals(OID_MESSAGEDIGEST)) {
+            ASN1 value = signedAttribute.getElementAt(1);
+            if (!value.isConstructed())
+              throw new SignatureException("Error while parsing CMS signature");
+            messageDigest = value.getElementAt(0).gvByteArray();
+            break;
+          }
+        }
+      } catch (IOException e) {
+        throw new SignatureException(e);
+      }
+      reference.setDigestValue(messageDigest);
+      references.add(reference);
+      return signedInfo;
     }
 
     @Override
