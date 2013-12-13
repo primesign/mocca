@@ -129,6 +129,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link SignRequestType.ExcludedByteRange }
+     * 
+     */
+    public SignRequestType.ExcludedByteRange createSignRequestTypeExcludedByteRange() {
+        return new SignRequestType.ExcludedByteRange();
+    }
+
+    /**
      * Create an instance of {@link GetHashDataInputType.Reference }
      * 
      */

@@ -24,6 +24,19 @@
 
 package at.gv.egiz.bku.online.applet;
 
+import iaik.me.security.CryptoException;
+import iaik.me.security.MessageDigest;
+
+import java.awt.event.ActionListener;
+import java.security.DigestException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.smccstal.SecureViewer;
 import at.gv.egiz.stal.HashDataInput;
@@ -34,17 +47,6 @@ import at.gv.egiz.stal.service.types.GetHashDataInputResponseType;
 import at.gv.egiz.stal.service.types.GetHashDataInputType;
 import at.gv.egiz.stal.signedinfo.ReferenceType;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
-import java.awt.event.ActionListener;
-import java.security.DigestException;
-
-import iaik.me.security.CryptoException;
-import iaik.me.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -196,17 +198,30 @@ public class AppletSecureViewer implements SecureViewer {
           log.debug("Digesting reference " + signedRefId + " (" + mimeType + ";" + encoding + ")");
         }
 
-//        if (signedDigestAlg.startsWith("CMS:")) {
-//          log.info("CMS signature - skip verifying hashdata for now");
-//        } else {
-          byte[] hashDataInputDigest = digest(hdi, signedDigestAlg);
+        byte[] hashDataInputDigest;
+        if ((signedRef.getURI() != null) && signedRef.getURI().startsWith("CMSExcludedByteRange:")) {
+          String range = signedRef.getURI().substring(21);
+          int sep = range.indexOf('-');
+          int from = Integer.parseInt(range.substring(0, sep));
+          int to = Integer.parseInt(range.substring(sep+1));
 
-          log.debug("Comparing digest to claimed digest value for reference {}.", signedRefId);
-          if (!Arrays.equals(hashDataInputDigest, signedDigest)) {
-            log.error("Bad digest value for reference {}.", signedRefId);
-            throw new DigestException("Bad digest value for reference " + signedRefId);
-          }
-//        }
+          Arrays.fill(hdi, from, to+1, (byte)0);
+
+          byte[] hashData = new byte[hdi.length - ((to+1) - from)];
+          if (from > 0)
+            System.arraycopy(hdi, 0, hashData, 0, from);
+          if ((to+1) < hdi.length)
+            System.arraycopy(hdi, to+1, hashData, from, hdi.length - (to+1));
+          hashDataInputDigest = digest(hashData, signedDigestAlg);
+        } else {
+          hashDataInputDigest = digest(hdi, signedDigestAlg);
+        }
+
+        log.debug("Comparing digest to claimed digest value for reference {}.", signedRefId);
+        if (!Arrays.equals(hashDataInputDigest, signedDigest)) {
+          log.error("Bad digest value for reference {}.", signedRefId);
+          throw new DigestException("Bad digest value for reference " + signedRefId);
+        }
 
         verifiedHashDataInputs.add(new ByteArrayHashDataInput(hdi, signedRefId, mimeType, encoding, filename));
       }

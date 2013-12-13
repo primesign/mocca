@@ -25,6 +25,8 @@
 
 package at.gv.egiz.stal.service.translator;
 
+import java.math.BigInteger;
+
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
@@ -107,6 +109,12 @@ public class STALTranslatorTest {
     assertEquals(request.getSignedInfo().isIsCMSSignedAttributes(), resultT.getSignedInfo().isIsCMSSignedAttributes());
     assertEquals(request.getSignatureMethod(), resultT.getSignatureMethod());
     assertEquals(request.getDigestMethod(), resultT.getDigestMethod());
+    if (request.getExcludedByteRange() == null)
+      assertNull(resultT.getExcludedByteRange());
+    else {
+      assertEquals(request.getExcludedByteRange().getFrom(), resultT.getExcludedByteRange().getFrom());
+      assertEquals(request.getExcludedByteRange().getTo(), resultT.getExcludedByteRange().getTo());
+    }
   }
 
   /**
@@ -122,6 +130,10 @@ public class STALTranslatorTest {
     req.setSignedInfo(signedInfo);
     req.setSignatureMethod("signatureMethod");
     req.setDigestMethod("digestMethod");
+    SignRequestType.ExcludedByteRange excludedByteRange = of.createSignRequestTypeExcludedByteRange();
+    excludedByteRange.setFrom(BigInteger.ZERO);
+    excludedByteRange.setTo(BigInteger.ONE);
+    req.setExcludedByteRange(excludedByteRange);
     JAXBElement<? extends RequestType> request = of.createGetNextRequestResponseTypeSignRequest(req);
     STALTranslator instance = new STALTranslator();
     STALRequest result = instance.translateWSRequest(request);
@@ -131,6 +143,12 @@ public class STALTranslatorTest {
     assertEquals(req.getSignedInfo().isIsCMSSignedAttributes(), ((SignRequest) result).getSignedInfo().isIsCMSSignedAttributes());
     assertEquals(req.getSignatureMethod(), ((SignRequest) result).getSignatureMethod());
     assertEquals(req.getDigestMethod(), ((SignRequest) result).getDigestMethod());
+    if (req.getExcludedByteRange() == null)
+      assertNull(((SignRequest) result).getExcludedByteRange());
+    else {
+      assertEquals(req.getExcludedByteRange().getFrom(), ((SignRequest) result).getExcludedByteRange().getFrom());
+      assertEquals(req.getExcludedByteRange().getTo(), ((SignRequest) result).getExcludedByteRange().getTo());
+    }
   }
 
   @Test(expected=RuntimeException.class)

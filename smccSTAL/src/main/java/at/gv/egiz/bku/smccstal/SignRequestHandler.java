@@ -67,7 +67,6 @@ public class SignRequestHandler extends AbstractRequestHandler {
     private final static Logger log = LoggerFactory.getLogger(SignRequestHandler.class);
 
     private final static String CMS_DEF_SIGNEDINFO_ID = "SignedInfo-1";
-    private final static String CMS_DEF_OBJECT_ID = "SignatureData-1";
     private final static String OID_MESSAGEDIGEST = "1.2.840.113549.1.9.4";
 
     private static JAXBContext jaxbContext;
@@ -178,7 +177,6 @@ public class SignRequestHandler extends AbstractRequestHandler {
       List<ReferenceType> references = signedInfo.getReference();
       ReferenceType reference = new ReferenceType();
       reference.setId(HashDataInput.CMS_DEF_REFERENCE_ID);
-      reference.setURI(CMS_DEF_OBJECT_ID);
       DigestMethodType digestMethod = new DigestMethodType();
       digestMethod.setAlgorithm(signReq.getDigestMethod());
       reference.setDigestMethod(digestMethod);
@@ -204,6 +202,13 @@ public class SignRequestHandler extends AbstractRequestHandler {
         throw new SignatureException(e);
       }
       reference.setDigestValue(messageDigest);
+      if (signReq.getExcludedByteRange() != null) {
+        // Abuse URI to store ExcludedByteRange
+        String range = "CMSExcludedByteRange:" +
+            signReq.getExcludedByteRange().getFrom() + "-" +
+            signReq.getExcludedByteRange().getTo();
+        reference.setURI(range);
+      }
       references.add(reference);
       return signedInfo;
     }

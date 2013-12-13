@@ -24,14 +24,18 @@
 
 package at.gv.egiz.stal;
 
+import java.math.BigInteger;
 import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
+
 
 /**
  * <p>Java class for SignRequestType complex type.
@@ -55,6 +59,16 @@ import javax.xml.bind.annotation.XmlValue;
  *         &lt;/element>
  *         &lt;element name="SignatureMethod" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="DigestMethod" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="ExcludedByteRange" minOccurs="0">
+ *           &lt;complexType>
+ *             &lt;complexContent>
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *                 &lt;attribute name="from" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+ *                 &lt;attribute name="to" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+ *               &lt;/restriction>
+ *             &lt;/complexContent>
+ *           &lt;/complexType>
+ *         &lt;/element>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -68,7 +82,8 @@ import javax.xml.bind.annotation.XmlValue;
     "keyIdentifier",
     "signedInfo",
     "signatureMethod",
-    "digestMethod"
+    "digestMethod",
+    "excludedByteRange"
 })
 public class SignRequest
   extends STALRequest {
@@ -81,6 +96,8 @@ public class SignRequest
     protected String signatureMethod;
     @XmlElement(name = "DigestMethod")
     protected String digestMethod;
+    @XmlElement(name = "ExcludedByteRange")
+    protected SignRequest.ExcludedByteRange excludedByteRange;
     @XmlTransient
     protected List<HashDataInput> hashData;
 
@@ -180,6 +197,30 @@ public class SignRequest
         this.digestMethod = value;
     }
 
+    /**
+     * Gets the value of the excludedByteRange property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ExcludedByteRange.ExcludedByteRange }
+     *     
+     */
+    public SignRequest.ExcludedByteRange getExcludedByteRange() {
+        return excludedByteRange;
+    }
+
+    /**
+     * Sets the value of the excludedByteRange property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ExcludedByteRange.ExcludedByteRange }
+     *     
+     */
+    public void setExcludedByteRange(SignRequest.ExcludedByteRange value) {
+        this.excludedByteRange = value;
+    }
+
     public List<HashDataInput> getHashDataInput() {
         return hashData;
     }
@@ -187,6 +228,87 @@ public class SignRequest
     public void setHashDataInput(List<HashDataInput> hashData) {
         this.hashData = hashData;
     }
+
+
+    /**
+     * <p>Java class for anonymous complex type.
+     * 
+     * <p>The following schema fragment specifies the expected content contained within this class.
+     * 
+     * <pre>
+     * &lt;complexType>
+     *   &lt;complexContent>
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+     *       &lt;attribute name="from" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+     *       &lt;attribute name="to" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+     *     &lt;/restriction>
+     *   &lt;/complexContent>
+     * &lt;/complexType>
+     * </pre>
+     * 
+     * 
+     */
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "")
+    public static class ExcludedByteRange {
+
+        @XmlAttribute(required = true)
+        @XmlSchemaType(name = "unsignedLong")
+        protected BigInteger from;
+        @XmlAttribute(required = true)
+        @XmlSchemaType(name = "unsignedLong")
+        protected BigInteger to;
+
+        /**
+         * Gets the value of the from property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link BigInteger }
+         *     
+         */
+        public BigInteger getFrom() {
+            return from;
+        }
+
+        /**
+         * Sets the value of the from property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link BigInteger }
+         *     
+         */
+        public void setFrom(BigInteger value) {
+            this.from = value;
+        }
+
+        /**
+         * Gets the value of the to property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link BigInteger }
+         *     
+         */
+        public BigInteger getTo() {
+            return to;
+        }
+
+        /**
+         * Sets the value of the to property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link BigInteger }
+         *     
+         */
+        public void setTo(BigInteger value) {
+            this.to = value;
+        }
+
+    }
+
 
     /**
      * <p>Java class for anonymous complex type.
@@ -267,4 +389,5 @@ public class SignRequest
         }
 
     }
+
 }

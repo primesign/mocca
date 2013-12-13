@@ -96,6 +96,7 @@ public class Signature {
   private AlgorithmID digestAlgorithm;
   private String signatureAlgorithmURI;
   private String digestAlgorithmURI;
+  private ExcludedByteRangeType excludedByteRange;
 
   public Signature(CMSDataObjectRequiredMetaType dataObject, String structure,
       X509Certificate signingCertificate, Date signingTime, boolean useStrongHash)
@@ -175,20 +176,20 @@ public class Signature {
     byte[] data = dataObject.getContent().getBase64Content();
     this.signedDocument = data.clone();
 
-    ExcludedByteRangeType ebr = dataObject.getExcludedByteRange();
-    if (ebr == null)
+    this.excludedByteRange = dataObject.getExcludedByteRange();
+    if (this.excludedByteRange == null)
       return data;
 
-    int from = dataObject.getExcludedByteRange().getFrom().intValue();
-    int to = dataObject.getExcludedByteRange().getTo().intValue();
+    int from = this.excludedByteRange.getFrom().intValue();
+    int to = this.excludedByteRange.getTo().intValue();
     if (from > data.length || to > data.length || from > to)
-      throw new InvalidParameterException("ExcludeByteRange contains invalid data: [" +
+      throw new InvalidParameterException("ExcludedByteRange contains invalid data: [" +
       from + "-" + to + "], Content length: " + data.length);
 
-    // Fill ExcludeByteRange with 0s for document to display in viewer
+    // Fill ExcludedByteRange with 0s for document to display in viewer
     Arrays.fill(this.signedDocument, from, to+1, (byte)0);
 
-    // Remove ExcludeByteRange from data to be signed
+    // Remove ExcludedByteRange from data to be signed
     byte[] first = null;
     byte[] second = null;
     if (from > 0)
@@ -196,7 +197,7 @@ public class Signature {
     if ((to + 1) < data.length)
       second = Arrays.copyOfRange(data, to + 1, data.length);
     data = ArrayUtils.addAll(first, second);
-    log.debug("ExcludeByteRange [" + from + "-" + to + "], Content length: " + data.length);
+    log.debug("ExcludedByteRange [" + from + "-" + to + "], Content length: " + data.length);
     return data;
   }
 
@@ -282,8 +283,8 @@ public class Signature {
   }
 
   public byte[] sign(STAL stal, String keyboxIdentifier) throws CMSException, CMSSignatureException, SLCommandException {
-    signedData.setSecurityProvider(
-        new STALSecurityProvider(stal, keyboxIdentifier, getHashDataInput()));
+    signedData.setSecurityProvider(new STALSecurityProvider(
+        stal, keyboxIdentifier, getHashDataInput(), this.excludedByteRange));
     setSignerInfo();
     ContentInfo contentInfo = new ContentInfo(signedData);
     return contentInfo.getEncoded();

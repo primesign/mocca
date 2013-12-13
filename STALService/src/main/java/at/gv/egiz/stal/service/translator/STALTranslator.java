@@ -41,6 +41,7 @@ import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
+import at.gv.egiz.stal.SignRequest.ExcludedByteRange;
 import at.gv.egiz.stal.SignRequest.SignedInfo;
 import at.gv.egiz.stal.SignResponse;
 import at.gv.egiz.stal.StatusRequest;
@@ -225,6 +226,12 @@ public class STALTranslator {
         req.setSignedInfo(signedInfo);
         req.setSignatureMethod(((SignRequest) request).getSignatureMethod());
         req.setDigestMethod(((SignRequest) request).getDigestMethod());
+        if (((SignRequest) request).getExcludedByteRange() != null) {
+          SignRequestType.ExcludedByteRange excludedByteRange = of.createSignRequestTypeExcludedByteRange();
+          excludedByteRange.setFrom(((SignRequest) request).getExcludedByteRange().getFrom());
+          excludedByteRange.setTo(((SignRequest) request).getExcludedByteRange().getTo());
+          req.setExcludedByteRange(excludedByteRange);
+        }
         //TODO add hashdatainput (refactor signRequestType)
         return of.createGetNextRequestResponseTypeSignRequest(req);
       } else if (request instanceof InfoboxReadRequest) {
@@ -257,6 +264,12 @@ public class STALTranslator {
         stalReq.setSignedInfo(signedInfo);
         stalReq.setSignatureMethod(((SignRequestType) request).getSignatureMethod());
         stalReq.setDigestMethod(((SignRequestType) request).getDigestMethod());
+        if (((SignRequestType) request).getExcludedByteRange() != null) {
+          ExcludedByteRange excludedByteRange = new ExcludedByteRange();
+          excludedByteRange.setFrom(((SignRequestType) request).getExcludedByteRange().getFrom());
+          excludedByteRange.setTo(((SignRequestType) request).getExcludedByteRange().getTo());
+          stalReq.setExcludedByteRange(excludedByteRange);
+        }
         return stalReq;
       } else if (request instanceof QuitRequestType) {
         return new QuitRequest();

@@ -134,6 +134,12 @@
           </element>
           <element name="SignatureMethod" type="string" minOccurs="0"/>
           <element name="DigestMethod" type="string" minOccurs="0"/>
+          <element name="ExcludedByteRange" minOccurs="0">
+            <complexType>
+              <attribute name="from" type="unsignedLong" use="required"/>
+              <attribute name="to" type="unsignedLong" use="required"/>
+            </complexType>
+          </element>
         </sequence>
       </extension>
     </complexContent>
