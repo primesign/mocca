@@ -36,27 +36,43 @@ public class MimeTypes {
 
   private static final Map<String , String> FILE_EXTENSIONS = new HashMap<String, String>() {
     private static final long serialVersionUID = 1L;
-{
-    put("application/msword", ".doc");
-    put("application/octet-stream", ".bin");
-    put("application/pdf", ".pdf");
-    put("application/xhtml+xml", ".xhtml");
-    put("text/html", ".html");
-    put("text/plain", ".txt");
-    put("text/xml", ".xml");
-  }};
+    {
+      put("application/gzip", ".gz");
+      put("application/msword", ".doc");
+      put("application/octet-stream", ".bin");
+      put("application/pdf", ".pdf");
+      put("application/vnd.openxmlformats-officedocument.wordprocessingml.document", ".docx");
+      put("application/xhtml+xml", ".xhtml");
+      put("application/xml", ".xml");
+      put("application/zip", ".zip");
+      put("image/gif", ".gif");
+      put("image/jpeg", ".jpg");
+      put("image/png", ".png");
+      put("text/html", ".html");
+      put("text/plain", ".txt");
+      put("text/xml", ".xml");
+    }
+  };
 
   private static final Map<String , String> DESCRIPTIONS = new HashMap<String, String>() {
     private static final long serialVersionUID = 1L;
-{
-    put("application/msword", "mimetype.desc.doc");
-    put("application/octet-stream", "mimetype.desc.bin");
-    put("application/pdf", "mimetype.desc.pdf");
-    put("application/xhtml+xml", "mimetype.desc.xhtml");
-    put("text/html", "mimetype.desc.html");
-    put("text/plain", "mimetype.desc.txt");
-    put("text/xml", "mimetype.desc.xml");
-  }};
+    {
+      put("application/gzip", "mimetype.desc.gz");
+      put("application/msword", "mimetype.desc.doc");
+      put("application/octet-stream", "mimetype.desc.bin");
+      put("application/pdf", "mimetype.desc.pdf");
+      put("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "mimetype.desc.docx");
+      put("application/xhtml+xml", "mimetype.desc.xhtml");
+      put("application/xml", "mimetype.desc.xml");
+      put("application/zip", "mimetype.desc.zip");
+      put("image/gif", "mimetype.desc.gif");
+      put("image/jpeg", "mimetype.desc.jpg");
+      put("image/png", "mimetype.desc.png");
+      put("text/html", "mimetype.desc.html");
+      put("text/plain", "mimetype.desc.txt");
+      put("text/xml", "mimetype.desc.xml");
+    }
+  };
 
   public static String getExtension(String mimetype) {
     if (FILE_EXTENSIONS.containsKey(mimetype)) {
