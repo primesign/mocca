@@ -24,6 +24,8 @@
 
 package at.gv.egiz.smcc;
 
+import iaik.me.asn1.ASN1;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -80,7 +82,7 @@ public class SWCard implements SignatureCard {
   
   private static String swCardDir;
 
-  private final Logger log = LoggerFactory.getLogger(SWCard.class);
+  private static final Logger log = LoggerFactory.getLogger(SWCard.class);
 
   private KeyStore certifiedKeyStore;
   
@@ -415,21 +417,55 @@ public class SWCard implements SignatureCard {
       for (byte[] b = new byte[20]; (l = input.read(b)) != -1;) {
         signature.update(b, 0, l);
       }
-      return signature.sign();
+      return unwrapSignature(signature.sign(), algorithm);
     } catch (NoSuchAlgorithmException e) {
       String msg = "Algorithm + '" + algorithm + "' not supported for signing.";
       log.info(msg, e);
       throw new SignatureCardException(msg, e);
     } catch (SignatureException e) {
-      String msg = "Signing faild.";
+      String msg = "Signing failed.";
       log.info(msg, e);
       throw new SignatureCardException(msg, e);
     } catch (InvalidKeyException e) {
       String msg = "Key not valid for algorithm + '" + algorithm + "'.";
       log.info(msg, e);
       throw new SignatureCardException(msg, e);
+    } catch (IOException e) {
+      String msg = "Error unwrapping signature value.";
+      log.info(msg, e);
+      throw new SignatureCardException(msg, e);
     }
-    
+  }
+
+  private static byte[] unwrapSignature(byte[] signature, String alg) throws IOException {
+    byte[] ret = signature;
+    log.debug("Checking if unwrapping necessary for " + alg);
+    if ("SHA1withECDSA".equals(alg) ||
+        "SHA256withECDSA".equals(alg) ||
+        "RIPEMD160withECDSA".equals(alg)) {
+      log.debug("Unwrapping signature");
+      ASN1 sig = new ASN1(signature);
+      byte[] r = sig.getElementAt(0).gvBigInteger().toByteArray();
+      int r_length = r.length;
+      int r_start = 0;
+      if (r[0] == 0) {
+        //skip leading 0
+        --r_length;
+        ++r_start;
+      }
+      byte[] s = sig.getElementAt(1).gvBigInteger().toByteArray();
+      int s_length = s.length;
+      int s_start = 0;
+      if (s[0] == 0) {
+        //skip leading 0
+        --s_length;
+        ++s_start;
+      }
+      ret = new byte[r_length + s_length];
+      System.arraycopy(r, r_start, ret, 0, r_length);
+      System.arraycopy(s, s_start, ret, r_length, s_length);
+    }
+    return ret;
   }
 
   @Override
