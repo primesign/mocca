@@ -43,6 +43,9 @@ import java.net.URI;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.UUID;
@@ -133,6 +136,11 @@ public class Configurator {
           backup(configDir, moccaDir.toURI(), zipOS, false);
           zipOS.close();
           updateConfig(configDir);
+        }
+        if (caCertificateUpdateRequired()) {
+          log.info("Creating new CA certificate");
+          createKeyStore(configDir);
+          certRenewed = true;
         }
       }
     } else {
@@ -343,6 +351,30 @@ public class Configurator {
     }
     log.debug("no old version, update required");
     return true;
+  }
+
+  private static boolean caCertificateUpdateRequired() {
+    String configDir = System.getProperty("user.home") + '/' + CONFIG_DIR;
+    File keystoreFile = new File(configDir, KEYSTORE_FILE);
+    File passwdFile = new File(configDir, PASSWD_FILE);
+    String passwd;
+    try {
+      passwd = Container.readPassword(passwdFile);
+    } catch (IOException e) {
+      log.error("Error reading password file", e);
+      return true;
+    }
+    X509Certificate cert = (X509Certificate) Container.getCACertificate(keystoreFile, passwd.toCharArray());
+    try {
+      cert.checkValidity();
+    } catch (CertificateExpiredException e) {
+      log.warn("CA Certificate expired");
+      return true;
+    } catch (CertificateNotYetValidException e) {
+      log.error("CA Certificate not yet valid");
+      return true;
+    }
+    return false;
   }
 
   protected static void backup(File dir, URI relativeTo, ZipOutputStream zip, boolean doDelete) throws IOException {

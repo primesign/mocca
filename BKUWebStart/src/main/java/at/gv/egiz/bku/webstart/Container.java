@@ -291,6 +291,12 @@ public class Container {
   }
 
   private void loadCACertificate(File keystoreFile, char[] passwd) {
+    caCertificate = getCACertificate(keystoreFile, passwd);
+    if (caCertificate == null)
+      log.warn("automated web certificate installation will not be available");
+  }
+
+  protected static Certificate getCACertificate(File keystoreFile, char[] passwd) {
     try {
       if (log.isTraceEnabled()) {
         log.trace("local ca certificate from " + keystoreFile);
@@ -299,11 +305,11 @@ public class Container {
       KeyStore sslKeyStore = KeyStore.getInstance("JKS");
       sslKeyStore.load(bis, passwd);
       Certificate[] sslChain = sslKeyStore.getCertificateChain(TLSServerCA.MOCCA_TLS_SERVER_ALIAS);
-      caCertificate = sslChain[sslChain.length - 1];
       bis.close();
+      return sslChain[sslChain.length - 1];
     } catch (Exception ex) {
       log.error("Failed to load local ca certificate", ex);
-      log.warn("automated web certificate installation will not be available");
+      return null;
     }
   }
 }
