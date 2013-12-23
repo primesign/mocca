@@ -80,7 +80,7 @@ public class Launcher implements BKUControllerInterface {
 		URL cert = null;
 		URL help = null;
 		try {
-			http = new URL("http://localhost:" + Integer.getInteger(Container.HTTPS_PORT_PROPERTY, 3495).intValue() + '/');
+			http = new URL("http://localhost:" + Integer.getInteger(Container.HTTP_PORT_PROPERTY, 3495).intValue() + '/');
 			https = new URL("https://localhost:" + Integer.getInteger(Container.HTTPS_PORT_PROPERTY, 3496).intValue() + '/');
 			pin = new URL(http, "/PINManagement");
 			getcertificate = new URL(http, "/GetCertificate");
