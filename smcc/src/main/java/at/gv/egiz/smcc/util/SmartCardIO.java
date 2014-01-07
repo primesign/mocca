@@ -37,8 +37,10 @@ import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
 import javax.smartcardio.CardTerminals.State;
 
+import org.openecard.scio.osx.SunOSXPCSC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 /**
  *
@@ -65,7 +67,12 @@ public class SmartCardIO {
   private void updateTerminalFactory() {
     TerminalFactory terminalFactory;
     try {
-      terminalFactory = TerminalFactory.getInstance("PC/SC", null);
+      String osName = System.getProperty("os.name");
+      if (osName.contains("OS X")) {
+        terminalFactory = TerminalFactory.getInstance("PC/SC", null, new SunOSXPCSC());
+      } else {
+        terminalFactory = TerminalFactory.getInstance("PC/SC", null);
+      }
     } catch (NoSuchAlgorithmException e) {
       log.info("Failed to get TerminalFactory of type 'PC/SC'.", e);
       terminalFactory = TerminalFactory.getDefault();
