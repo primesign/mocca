@@ -24,6 +24,8 @@
 
 package at.gv.egiz.smcc.util;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.math.BigInteger;
 import java.util.Locale;
 import java.util.Map;
@@ -77,6 +79,18 @@ public class SMCCHelper {
       }
       return;
     }
+
+    String osName = System.getProperty("os.name");
+    if (osName.startsWith("Linux")) {
+      File libFile;
+      try {
+        libFile = LinuxLibraryFinder.getLibraryPath("pcsclite", "1");
+        System.setProperty("sun.security.smartcardio.library", libFile.getAbsolutePath());
+      } catch (FileNotFoundException e) {
+        log.error("PC/SC library not found", e);
+      }
+    }
+
     signatureCard = null;
     resultCode = NO_CARD;
     // find pcsc support
