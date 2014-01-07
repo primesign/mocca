@@ -1,7 +1,9 @@
 package at.gv.egiz.smcc.util;
 
 public class MSCMException extends Exception {
-	private short hive;
+  private static final long serialVersionUID = 1L;
+
+  private short hive;
 	
 	public MSCMException(short hive, String netException, String optional) {
 		super(netException + " [ " + optional + " ]");

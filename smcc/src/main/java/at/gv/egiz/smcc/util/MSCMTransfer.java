@@ -11,10 +11,6 @@ import javax.smartcardio.ResponseAPDU;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.gv.egiz.smcc.GemaltoNetV2_0Card;
-
-import java.nio.ByteBuffer;
-
 public class MSCMTransfer implements MSCMConstants {
 
 	private final Logger log = LoggerFactory
@@ -117,8 +113,8 @@ public class MSCMTransfer implements MSCMConstants {
 			return data;
 		}
 		
-		String namespaceString = MSCMDecoder.namespaceHiveToString(data, 0);
-		String typeString = MSCMDecoder.typeHiveToString(data, 4);
+//		String namespaceString = MSCMDecoder.namespaceHiveToString(data, 0);
+//		String typeString = MSCMDecoder.typeHiveToString(data, 4);
 		short resultType = MSCMService.bytesToShort(data, 4);
 		if(expectedType == resultType) {
 			ByteArrayOutputStream str = new ByteArrayOutputStream();
