@@ -37,7 +37,7 @@
     <java version="1.7+" />
     <java version="1.6" java-vm-args="-d32"/>
      $dependencies
-  </resources-->
+  </resources>
 
   <resources>
     <java version="1.6+"/>
