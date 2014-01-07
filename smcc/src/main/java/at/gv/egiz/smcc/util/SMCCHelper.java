@@ -57,8 +57,19 @@ public class SMCCHelper {
   protected static boolean useSWCard = false;
 
   public SMCCHelper() {	
-	
-	System.setProperty("sun.security.smartcardio.t0GetResponse", "false");
+
+    String osName = System.getProperty("os.name");
+    if (osName.startsWith("Linux")) {
+      File libFile;
+      try {
+        libFile = LinuxLibraryFinder.getLibraryPath("pcsclite", "1");
+        System.setProperty("sun.security.smartcardio.library", libFile.getAbsolutePath());
+      } catch (FileNotFoundException e) {
+        log.error("PC/SC library not found", e);
+      }
+    }
+
+    System.setProperty("sun.security.smartcardio.t0GetResponse", "false");
     update();
   }
 
@@ -78,17 +89,6 @@ public class SMCCHelper {
         signatureCard = null;
       }
       return;
-    }
-
-    String osName = System.getProperty("os.name");
-    if (osName.startsWith("Linux")) {
-      File libFile;
-      try {
-        libFile = LinuxLibraryFinder.getLibraryPath("pcsclite", "1");
-        System.setProperty("sun.security.smartcardio.library", libFile.getAbsolutePath());
-      } catch (FileNotFoundException e) {
-        log.error("PC/SC library not found", e);
-      }
     }
 
     signatureCard = null;
