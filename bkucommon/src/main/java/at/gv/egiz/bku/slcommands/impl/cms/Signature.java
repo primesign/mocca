@@ -44,6 +44,9 @@ import iaik.smime.ess.ESSCertID;
 import iaik.smime.ess.ESSCertIDv2;
 import iaik.x509.X509ExtensionException;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.InvalidParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -70,6 +73,7 @@ import at.gv.egiz.bku.slcommands.impl.xsect.AlgorithmMethodFactory;
 import at.gv.egiz.bku.slcommands.impl.xsect.AlgorithmMethodFactoryImpl;
 import at.gv.egiz.bku.slcommands.impl.xsect.STALSignatureException;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
+import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.STAL;
 
@@ -99,9 +103,12 @@ public class Signature {
   private ExcludedByteRangeType excludedByteRange;
 
   public Signature(CMSDataObjectRequiredMetaType dataObject, String structure,
-      X509Certificate signingCertificate, Date signingTime, boolean useStrongHash)
-          throws NoSuchAlgorithmException, CertificateEncodingException, CertificateException, X509ExtensionException, InvalidParameterException, CodingException {
-    byte[] dataToBeSigned = getContent(dataObject);
+      X509Certificate signingCertificate, Date signingTime, URLDereferencer urlDereferencer,
+      boolean useStrongHash)
+          throws NoSuchAlgorithmException, CertificateEncodingException,
+          CertificateException, X509ExtensionException, InvalidParameterException,
+          CodingException, SLCommandException, IOException {
+    byte[] dataToBeSigned = getContent(dataObject, urlDereferencer);
     int mode = structure.equalsIgnoreCase("enveloping") ? SignedData.IMPLICIT : SignedData.EXPLICIT;
     this.signedData = new SignedData(dataToBeSigned, mode);
     setAlgorithmIDs(signingCertificate, useStrongHash);
@@ -172,8 +179,22 @@ public class Signature {
     attributes.add(signingTime);
   }
 
-  private byte[] getContent(CMSDataObjectRequiredMetaType dataObject) throws InvalidParameterException {
+  private byte[] getContent(CMSDataObjectRequiredMetaType dataObject, URLDereferencer urlDereferencer)
+      throws InvalidParameterException, SLCommandException, IOException {
     byte[] data = dataObject.getContent().getBase64Content();
+    if (data == null) {
+      String reference = dataObject.getContent().getReference();
+      if (reference == null)
+        throw new SLCommandException(4003);
+      InputStream is = urlDereferencer.dereference(reference).getStream();
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      byte[] buffer = new byte[1024];
+      for (int i = is.read(buffer); i > -1; i = is.read(buffer)) {
+        baos.write(buffer, 0, i);
+      }
+      data = baos.toByteArray();
+      is.close();
+    }
     this.signedDocument = data.clone();
 
     this.excludedByteRange = dataObject.getExcludedByteRange();

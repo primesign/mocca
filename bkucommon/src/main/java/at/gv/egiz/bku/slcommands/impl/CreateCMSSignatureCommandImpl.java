@@ -27,6 +27,7 @@ package at.gv.egiz.bku.slcommands.impl;
 import iaik.cms.CMSException;
 import iaik.cms.CMSSignatureException;
 
+import java.security.InvalidParameterException;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Date;
@@ -112,7 +113,14 @@ public class CreateCMSSignatureCommandImpl extends
     Date signingTime = new Date();
     try {
       signature = new Signature(request.getDataObject(), request.getStructure(),
-          signingCertificate, signingTime, configurationFacade.getUseStrongHash());
+          signingCertificate, signingTime, commandContext.getURLDereferencer(),
+          configurationFacade.getUseStrongHash());
+    } catch (SLCommandException e) {
+      log.error("Error creating CMS Signature.", e);
+      throw e;
+    } catch (InvalidParameterException e) {
+      log.error("Error creating CMS Signature.", e);
+      throw new SLCommandException(3004);
     } catch (Exception e) {
       log.error("Error creating CMS Signature.", e);
       throw new SLCommandException(4000);
