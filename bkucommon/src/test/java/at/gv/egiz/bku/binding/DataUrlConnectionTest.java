@@ -67,6 +67,8 @@ public class DataUrlConnectionTest extends AbstractBindingProcessorTest {
 
   private final Logger log = LoggerFactory.getLogger(DataUrlConnectionTest.class);
 
+  private static final int PORT = 8082;
+
   static HttpServer server;
   static HTTPBindingProcessorImpl bindingProcessor;
 
@@ -76,7 +78,7 @@ public class DataUrlConnectionTest extends AbstractBindingProcessorTest {
   public static void setUpHTTPServer() throws IOException {
     Logger log = LoggerFactory.getLogger(DataUrlConnectionTest.class);
     log.debug("setting up HTTPServer");
-    InetSocketAddress addr = new InetSocketAddress("localhost", 8081);
+    InetSocketAddress addr = new InetSocketAddress("localhost", PORT);
     server = HttpServer.create(addr, 0);
     server.createContext("/", new DataUrlHandler());
     server.start();
@@ -118,7 +120,7 @@ public class DataUrlConnectionTest extends AbstractBindingProcessorTest {
 //  @Test
   public void openConnectionTest() throws Exception {
 
-    URL dataUrl = new URL("http://localhost:8081/");
+    URL dataUrl = new URL("http://localhost:" + PORT + "/");
 
     log.debug("creating DataUrlConnection " + dataUrl.toString());
     DataUrlConnectionImpl c = new DataUrlConnectionImpl(dataUrl);
