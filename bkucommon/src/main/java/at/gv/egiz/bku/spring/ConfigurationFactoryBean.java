@@ -118,7 +118,7 @@ public class ConfigurationFactoryBean implements FactoryBean, ResourceLoaderAwar
   
   protected Configuration getVersionConfiguration() throws IOException {
     
-    Map<String, String> map = new HashMap<String, String>();
+    Map<String, Object> map = new HashMap<String, Object>();
     map.put(MOCCA_IMPLEMENTATIONNAME_PROPERTY, "MOCCA");
     
     // implementation version

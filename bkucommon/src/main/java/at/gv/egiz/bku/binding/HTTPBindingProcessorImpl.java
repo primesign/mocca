@@ -70,6 +70,7 @@ import at.gv.egiz.bku.slcommands.impl.ErrorResultImpl;
 import at.gv.egiz.bku.slexceptions.SLBindingException;
 import at.gv.egiz.bku.slexceptions.SLException;
 import at.gv.egiz.bku.spring.ConfigurationFactoryBean;
+import at.gv.egiz.bku.utils.ConfigurationUtil;
 import at.gv.egiz.bku.utils.StreamUtil;
 import at.gv.egiz.bku.utils.urldereferencer.StreamData;
 import at.gv.egiz.bku.utils.urldereferencer.URIResolverAdapter;
@@ -154,8 +155,8 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 		}
 
 		public List<String> getDataURLWhitelist() {
-			return configuration
-					.getList(DATAURL_WHITELIST);
+			return ConfigurationUtil.getStringListFromObjectList(
+				configuration.getList(DATAURL_WHITELIST));
 		}
 
 		public boolean hasDataURLWhitelist() {

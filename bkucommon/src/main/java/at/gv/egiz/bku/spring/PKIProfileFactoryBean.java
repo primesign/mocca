@@ -44,11 +44,15 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.FileConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
@@ -56,10 +60,7 @@ import org.springframework.core.io.ResourceLoader;
 
 import at.gv.egiz.bku.conf.IAIKLogAdapterFactory;
 import at.gv.egiz.bku.conf.MoccaConfigurationFacade;
-import java.util.ArrayList;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import at.gv.egiz.bku.utils.ConfigurationUtil;
 
 public class PKIProfileFactoryBean implements FactoryBean, ResourceLoaderAware {
 
@@ -92,9 +93,9 @@ public class PKIProfileFactoryBean implements FactoryBean, ResourceLoaderAware {
       return getURL(SSL_CA_DIRECTORY);
     }
 
-    @SuppressWarnings("unchecked")
     public List<String> getRevocationServiceOrder() throws Exception {
-      return configuration.getList(SSL_REVOCATION_SERVICE_ORDER);
+      return ConfigurationUtil.getStringListFromObjectList(
+        configuration.getList(SSL_REVOCATION_SERVICE_ORDER));
     }
 
     private URL getURL(String key) throws MalformedURLException {

@@ -42,7 +42,6 @@ public class XWWWFormUrlInputDecoder implements InputDecoder {
    */
   protected XWWWFormUrlInputIterator iterator;
 
-  @SuppressWarnings("unchecked")
   @Override
   public void setContentType(String contentType) {
     ParameterParser pp = new ParameterParser();
