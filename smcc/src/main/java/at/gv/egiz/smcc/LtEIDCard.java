@@ -125,6 +125,7 @@ public class LtEIDCard extends AbstractSignatureCard implements SignatureCard {
 						"EF.PrKD not found - cannot get key information.");
 			}
 
+			@SuppressWarnings("unused")
 			List<byte[]> prKDReferences = efod.getPrKDReferences();
 
 			LtEIDCIOKeyDirectory efprkd = new LtEIDCIOKeyDirectory(efod

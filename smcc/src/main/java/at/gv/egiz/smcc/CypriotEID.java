@@ -521,6 +521,7 @@ public class CypriotEID extends AbstractSignatureCard implements
 																				// setup
 				(byte) 0x84, (byte) 0x01, (byte) 0x81 }; // Key setup
 
+		@SuppressWarnings("unused")
 		ResponseAPDU resp = channel.transmit(new CommandAPDU(0x00, 0x22, 0x41,
 				0xB6, secure_setup));
 	}
