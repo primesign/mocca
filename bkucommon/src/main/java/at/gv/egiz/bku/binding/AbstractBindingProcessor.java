@@ -24,6 +24,9 @@
 
 package at.gv.egiz.bku.binding;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.util.Date;
 import java.util.Locale;
 
@@ -87,6 +90,8 @@ public abstract class AbstractBindingProcessor implements BindingProcessor {
     this.id = IdFactory.getInstance().createId(id);
     this.stal = stal;
     this.commandInvoker = commandInvoker;
+    // disable cookies
+    CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_NONE));
   }
 
   @Override
