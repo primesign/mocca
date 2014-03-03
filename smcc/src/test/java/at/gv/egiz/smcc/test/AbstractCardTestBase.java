@@ -53,7 +53,7 @@ public abstract class AbstractCardTestBase {
   
   @BeforeClass
   public static void setupClass() {
-    IAIK.addAsJDK14Provider();
+    IAIK.addAsProvider();
   }
   
   @Before
