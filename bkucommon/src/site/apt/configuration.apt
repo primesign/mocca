@@ -132,6 +132,26 @@ MOCCA Configuration
 
 	Default: <<<false>>>
 
+	[<<<IssuerTemplateCache>>>] Initialize the issuer template transformations cache
+
+	This feature allows to initialize the issuer template transformations cache
+	so they don't have to be downloaded every time MOCCA is restarted.
+
+	Usage:
+
++------------------+
+<IssuerTemplateCache>
+  <entry>
+    <url>http://www.a-trust.at/zmr/persb204.xsl</url>
+    <resource>file:/tmp/issuerTemplates/persb204.xsl</resource>
+  </entry>
+  <entry>
+    ...
+  </entry>
+</IssuerTemplateCache>
++------------------+
+
+
 ** MOCCA Local Only Configuration Parameters
 
 	[<<<CCID>>>]
