@@ -115,8 +115,8 @@ public class ResultServlet extends HttpServlet {
     
     HTTPBindingProcessor bp = (HTTPBindingProcessor) bindingProcessor;
     
+    OutputStream outputStream = null;
     try {
-      OutputStream outputStream;
       String redirectUrl = bp.getRedirectURL();
       if (redirectUrl != null && !redirectUrl.trim().isEmpty()) {
         log.info("Sending (deferred) redirect to {}.", redirectUrl);
@@ -141,8 +141,9 @@ public class ResultServlet extends HttpServlet {
         outputStream = resp.getOutputStream();
       }
       bp.writeResultTo(outputStream, responseEncoding);
-      outputStream.close();
     } finally {
+      if (outputStream != null)
+        outputStream.close();
       bindingProcessorManager.removeBindingProcessor(id);
     }
   }
