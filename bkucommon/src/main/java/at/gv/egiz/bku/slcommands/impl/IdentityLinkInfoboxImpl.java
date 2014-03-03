@@ -60,7 +60,6 @@ import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLExceptionMessages;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 import at.gv.egiz.idlink.CompressedIdentityLinkFactory;
-import at.gv.egiz.idlink.IdentityLinkTransformer;
 import at.gv.egiz.idlink.ans1.IdentityLink;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.STALRequest;

@@ -21,11 +21,7 @@
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
-
-
 package at.gv.egiz.bku.slcommands.impl;
-
-import at.gv.egiz.idlink.IdentityLinkTransformer;
 
 public class IdentityLinkInfoboxFactory extends AbstractInfoboxFactory {
 

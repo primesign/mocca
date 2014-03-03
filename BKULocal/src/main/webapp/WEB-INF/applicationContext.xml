@@ -85,8 +85,9 @@
 	<bean id="identityLinkInfoboxFactory"
 		class="at.gv.egiz.bku.slcommands.impl.IdentityLinkInfoboxFactory">
 		<property name="identityLinkTransformer">
-		  <bean class="at.gv.egiz.idlink.IdentityLinkTransformer">
+		  <bean class="at.gv.egiz.bku.slcommands.impl.IdentityLinkTransformer">
 		    <property name="urlDereferencer" ref="urlDereferencer"/>
+		    <property name="configuration" ref="configuration"/>
 		  </bean>
 		</property>
   </bean>

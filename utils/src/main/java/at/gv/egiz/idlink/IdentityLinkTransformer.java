@@ -27,8 +27,6 @@ package at.gv.egiz.idlink;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.transform.Result;
@@ -52,20 +50,27 @@ import org.w3c.dom.Text;
 import at.gv.egiz.bku.utils.urldereferencer.StreamData;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 
-public class IdentityLinkTransformer {
-  
+public abstract class IdentityLinkTransformer {
+
   private final Logger log = LoggerFactory.getLogger(IdentityLinkTransformer.class);
 
   /**
    * The transformer factory.
    */
-  private TransformerFactory factory = SAXTransformerFactory.newInstance();
+  protected TransformerFactory factory = SAXTransformerFactory.newInstance();
 
   /**
    * The URLDereferencer used to dereference style-sheet URLs.
    */
   private URLDereferencer urlDereferencer;
-  
+
+  /**
+   * Mapping of issuer template URIs to transformation templates.
+   */
+  private Map<String, Templates> templates = null;
+
+  protected abstract Map<String, Templates> getInitialTemplateMap();
+
   /**
    * @return the urlDereferencer
    */
@@ -102,7 +107,6 @@ public class IdentityLinkTransformer {
    * @throws NullPointerException if <code>idLink</code> is <code>null</code>.
    */
   public static void setDomainIdentifier(Node idLink, String domainIdentifier) {
-    
     Element element;
     if (idLink instanceof Element) {
       element = (Element) idLink;
@@ -114,7 +118,7 @@ public class IdentityLinkTransformer {
     } else {
       throw new NullPointerException("Parameter 'idLink' must no be null.");
     }
-    
+
     NodeList nodeList = element.getElementsByTagNameNS(
         "http://reference.e-government.gv.at/namespace/persondata/20020228#",
         "Type");
@@ -132,12 +136,7 @@ public class IdentityLinkTransformer {
     }
     
   }
-  
-  /**
-   * Mapping of issuer template URIs to transformation templates.
-   */
-  private Map<String, Templates> templates = Collections.synchronizedMap(new HashMap<String, Templates>());
-  
+
   /**
    * Transforms an identity link <code>source</code> to <code>result</code> with
    * the given issuer template from the <code>stylesheetURL</code>.
@@ -161,32 +160,30 @@ public class IdentityLinkTransformer {
    *           if transforming the identity link fails.
    */
   public void transformIdLink(String stylesheetURL, Source source, Result result) throws IOException, TransformerException {
+    if (templates == null)
+      templates = getInitialTemplateMap();
 
     Templates templ = templates.get(stylesheetURL);
-    
-    if (templ == null) {
 
+    if (templ == null) {
       // TODO: implement stylesheet cache
       URL url = new URL(stylesheetURL);
 
       if (!"http".equalsIgnoreCase(url.getProtocol()) && !"https".equalsIgnoreCase(url.getProtocol())) {
         throw new MalformedURLException("Protocol " + url.getProtocol() + " not supported for IssuerTemplate URL.");
       }
-      
+
       StreamData data = urlDereferencer.dereference(url.toExternalForm());
-      
+
       log.trace("Trying to create issuer template.");
       templ = factory.newTemplates(new StreamSource(data.getStream()));
       log.trace("Successfully created issuer template");
 
       templates.put(stylesheetURL, templ);
-
     }
-    
+
     Transformer transformer = templ.newTransformer();
-    
     transformer.transform(source, result);
-    
+
   }
-  
 }
