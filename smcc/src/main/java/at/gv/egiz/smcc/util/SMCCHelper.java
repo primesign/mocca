@@ -210,9 +210,4 @@ public class SMCCHelper {
   public static void setUseSWCard(boolean useSWCard) {
     SMCCHelper.useSWCard = useSWCard;
   }
-
-  public static boolean isWindows8() {
-    String osName = System.getProperty("os.name");
-    return osName.contains("Windows 8");
-  }
 }

@@ -123,21 +123,19 @@ public class DefaultCardReader implements CardReader {
   }
 
   private boolean dropExclusive(Card card) throws CardException {
-    if (SMCCHelper.isWindows8()) {
-      log.debug("Win8 - giving up exclusive acess");
-      try {
-        card.endExclusive();
-      } catch (IllegalStateException e) {
-        log.debug("Didn't have exclusive access");
-        return false;
-      }
+    log.debug("Dropping exclusive card access");
+    try {
+      card.endExclusive();
+    } catch (IllegalStateException e) {
+      log.debug("Didn't have exclusive access");
+      return false;
     }
     return true;
   }
 
   private void regainExclusive(Card card, boolean doRegainExclusive) throws CardException {
-    if (SMCCHelper.isWindows8() && doRegainExclusive) {
-      log.debug("Win8 - trying to regain exclusive acess");
+    if (doRegainExclusive) {
+      log.debug("Trying to regain exclusive card access");
       card.beginExclusive();
     }
   }
