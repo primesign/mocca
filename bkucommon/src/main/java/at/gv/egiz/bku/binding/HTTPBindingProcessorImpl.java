@@ -95,7 +95,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 	};
 
 	public final static Collection<String> XML_REQ_TRANSFER_ENCODING = Arrays
-			.asList(new String[] { "binary" });
+			.asList(new String[] { "binary", "8bit" });
 
 	protected static String XML_MIME_TYPE = "text/xml";
 	protected static String BINARY_MIME_TYPE = "application/octet-stream";
@@ -396,9 +396,9 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 					if (keyVal.length == 2) {
 						val = keyVal[1];
 						val = val.trim();
-					}  else {
-					  log.error("Invalid transfer header encoding: {}.", paramString);
-					  throw new SLBindingException(2005);
+					} else {
+						log.error("Invalid transfer header encoding: {}.", paramString);
+						throw new SLBindingException(2005);
 					}
 					log.debug("Setting header '{}' to value '{}'.", key, val);
 					conn.setHTTPHeader(key, val);
@@ -699,7 +699,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 		FormParameter fp = formParameterMap.get(aParameterName);
 		if (fp != null) {
 			final String enc = fp.getHeaderValue("Content-Transfer-Encoding");
-			if (enc == null || "binary".equals(enc)) {
+			if (enc == null || "binary".equals(enc) || "8bit".equals(enc)) {
 				return fp.getFormParameterValue();
 			} else if ("base64".equals(enc)) {
 				return new Base64InputStream(fp.getFormParameterValue());
