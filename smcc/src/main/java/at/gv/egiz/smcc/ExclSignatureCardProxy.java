@@ -38,11 +38,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ExclSignatureCardProxy implements InvocationHandler {
-  
+
   private final Logger log = LoggerFactory.getLogger(ExclSignatureCardProxy.class);
 
   private static final Method init;
-  
+
   static {
     try {
       init = SignatureCard.class.getMethod("init", new Class<?>[] { Card.class,
@@ -53,9 +53,9 @@ public class ExclSignatureCardProxy implements InvocationHandler {
       throw new RuntimeException(e);
     }
   }
-  
+
   private SignatureCard signatureCard;
-  
+
   public ExclSignatureCardProxy(SignatureCard signatureCard) {
     this.signatureCard = signatureCard;
   }
@@ -71,22 +71,22 @@ public class ExclSignatureCardProxy implements InvocationHandler {
         .toArray(new Class[proxyInterfaces.size()]),
         new ExclSignatureCardProxy(signatureCard));
   }
-  
+
   @Override
   public Object invoke(Object proxy, Method method, Object[] args)
       throws Throwable {
 
     Card card = null;
-    
+
     Method target = signatureCard.getClass().getMethod(method.getName(),
         method.getParameterTypes());
-    
+
     if (target.isAnnotationPresent(Exclusive.class)) {
       card = (Card) ((method.equals(init)) 
         ? args[0]
         : signatureCard.getCard());
     }
-    
+
     if (card != null) {
       try {
         log.trace("Invoking method {}() with exclusive access.", method.getName());
@@ -96,7 +96,7 @@ public class ExclSignatureCardProxy implements InvocationHandler {
         throw new SignatureCardException(e);
       }
     }
-      
+
     try {
       return method.invoke(signatureCard, args);
     } catch (InvocationTargetException e) {
@@ -106,8 +106,6 @@ public class ExclSignatureCardProxy implements InvocationHandler {
         card.endExclusive();
       }
     }
-    
-  
   }
 
 }
