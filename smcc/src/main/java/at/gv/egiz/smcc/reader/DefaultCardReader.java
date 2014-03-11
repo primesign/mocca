@@ -43,7 +43,6 @@ import at.gv.egiz.smcc.VerifyAPDUSpec;
 import at.gv.egiz.smcc.pin.gui.ModifyPINGUI;
 import at.gv.egiz.smcc.pin.gui.PINGUI;
 import at.gv.egiz.smcc.util.ISO7816Utils;
-import at.gv.egiz.smcc.util.SMCCHelper;
 
 /**
  *
@@ -72,9 +71,12 @@ public class DefaultCardReader implements CardReader {
     log.debug("VERIFY");
     Card card = channel.getCard();
     boolean regain = dropExclusive(card);
-    char[] pin = pinGUI.providePIN(pinSpec, retries);
-    regainExclusive(card, regain);
-    return channel.transmit(ISO7816Utils.createVerifyAPDU(apduSpec, pin));
+    try {
+      char[] pin = pinGUI.providePIN(pinSpec, retries);
+      return channel.transmit(ISO7816Utils.createVerifyAPDU(apduSpec, pin));
+    } finally {
+      regainExclusive(card, regain);
+    }
   }
 
   @Override
@@ -84,10 +86,13 @@ public class DefaultCardReader implements CardReader {
     log.debug("MODIFY (CHANGE_REFERENCE_DATA)");
     Card card = channel.getCard();
     boolean regain = dropExclusive(card);
-    char[] oldPIN = pinGUI.provideCurrentPIN(pinSpec, retries);
-    char[] newPIN = pinGUI.provideNewPIN(pinSpec);
-    regainExclusive(card, regain);
-    return channel.transmit(ISO7816Utils.createChangeReferenceDataAPDU(apduSpec, oldPIN, newPIN));
+    try {
+      char[] oldPIN = pinGUI.provideCurrentPIN(pinSpec, retries);
+      char[] newPIN = pinGUI.provideNewPIN(pinSpec);
+      return channel.transmit(ISO7816Utils.createChangeReferenceDataAPDU(apduSpec, oldPIN, newPIN));
+    } finally {
+      regainExclusive(card, regain);
+    }
   }
 
   @Override
@@ -97,9 +102,12 @@ public class DefaultCardReader implements CardReader {
     log.debug("MODIFY (NEW_REFERENCE_DATA)");
     Card card = channel.getCard();
     boolean regain = dropExclusive(card);
-    char[] newPIN = pinGUI.provideNewPIN(pinSpec);
-    regainExclusive(card, regain);
-    return channel.transmit(ISO7816Utils.createNewReferenceDataAPDU(apduSpec, newPIN));
+    try {
+      char[] newPIN = pinGUI.provideNewPIN(pinSpec);
+      return channel.transmit(ISO7816Utils.createNewReferenceDataAPDU(apduSpec, newPIN));
+    } finally {
+      regainExclusive(card, regain);
+    }
   }
 
   @Override
