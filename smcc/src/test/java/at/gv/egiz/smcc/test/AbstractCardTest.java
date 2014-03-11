@@ -168,7 +168,7 @@ public abstract class AbstractCardTest extends AbstractCardTestBase {
 
   }
   
-  @Test(expected = CancelledException.class)
+  @Test
   public void testSignSIGConcurrent() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
       NoSuchAlgorithmException, IOException {
@@ -180,10 +180,8 @@ public abstract class AbstractCardTest extends AbstractCardTestBase {
 
         try {
           signatureCard.getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR, null);
-          assertTrue(false);
-          return null;
+          return "123456".toCharArray();
         } catch (SignatureCardException e) {
-          // expected
           throw new CancelledException();
         }
 
@@ -195,7 +193,7 @@ public abstract class AbstractCardTest extends AbstractCardTestBase {
 
   }
 
-  @Test(expected = CancelledException.class)
+  @Test
   public void testSignDECConcurrent() throws SignatureCardException,
       InterruptedException, CardNotSupportedException,
       NoSuchAlgorithmException, IOException {
@@ -207,10 +205,8 @@ public abstract class AbstractCardTest extends AbstractCardTestBase {
 
         try {
           signatureCard.getCertificate(KeyboxName.CERTIFIED_KEYPAIR, null);
-          assertTrue(false);
-          return null;
+          return "1234".toCharArray();
         } catch (SignatureCardException e) {
-          // expected
           throw new CancelledException();
         }
       }

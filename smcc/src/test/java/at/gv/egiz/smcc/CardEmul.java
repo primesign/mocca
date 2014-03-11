@@ -86,7 +86,7 @@ public class CardEmul extends Card {
     if (exclThread == Thread.currentThread()) {
       exclThread = null;
     } else if (exclThread == null) {
-      throw new CardException("Exclusive access has not been assigned.");
+      throw new IllegalStateException("Exclusive access has not been assigned.");
     } else {
       throw new CardException(
           "Exclusive access has not been assigned to current thread.");
