@@ -229,6 +229,11 @@ public class MOCCAIcon implements StatusNotifier, ActionListener, ItemListener {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if ((e == null) || (e.getActionCommand() == null)) {
+			log.debug("tray menu command is null");
+			return;
+		}
+
 		switch (COMMANDS.valueOf(e.getActionCommand())) {
 		case SHUTDOWN_COMMAND:
 			log.debug("shutdown requested via tray menu");
@@ -262,12 +267,12 @@ public class MOCCAIcon implements StatusNotifier, ActionListener, ItemListener {
 			log.debug("get-certificate dialog requested via tray menu");
 			controller.getCertificate(messages.getLocale());
 			break;
-			
+
 		case HARDWAREINFO_COMMAND:
 			log.debug("hardware-info dialog requested via tray menu");
 			controller.hardwareInfo(messages.getLocale());
 			break;
-			
+
 		case HELP_COMMAND:
 			log.debug("help page requested via tray menu");
 			controller.showHelp(messages.getLocale());
@@ -277,7 +282,7 @@ public class MOCCAIcon implements StatusNotifier, ActionListener, ItemListener {
 			log.debug("identity link dialog requested via tray menu");
 			controller.getIdentityLink(messages.getLocale());
 			break;
-			
+
 		default:
 			log.error("unknown tray menu command: " + e.getActionCommand());
 		}
