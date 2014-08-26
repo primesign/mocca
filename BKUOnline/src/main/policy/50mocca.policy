@@ -270,6 +270,7 @@ grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/jaxws-rt-2.1
       permission javax.management.MBeanPermission "com.sun.xml.ws.*", "registerMBean";
       permission javax.management.MBeanTrustPermission "register";
       permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+      permission java.lang.reflect.ReflectPermission "newProxyInPackage.at.gv.egiz.stalx.service";
 };
 
 grant codeBase "file:${catalina.base}/webapps/bkuonline/WEB-INF/lib/jaxb-impl-2.1.9.jar" {
