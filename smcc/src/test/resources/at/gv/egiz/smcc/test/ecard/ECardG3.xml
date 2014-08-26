@@ -33,7 +33,7 @@
 	<bean name="eCardG3" class="at.gv.egiz.smcc.CardEmul"
 		abstract="true">
     <property name="atr"
-      value="3b:bd:18:00:81:31:fe:45:80:51:02:67:05:18:b1:02:02:02:01:81:05:31" />
+      value="3b:dd:96:ff:81:b1:fe:45:1f:03:80:31:b0:52:02:03:64:04:1b:b4:22:81:05:18" />
 		<property name="basicChannel" ref="cardChannel" />
 		<property name="applications">
 			<list>

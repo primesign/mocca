@@ -277,8 +277,8 @@ public class SignatureCardFactory {
 
 		// e-card G3
 		supportedCards.add(new SupportedCard(
-		// ATR
-		// (3b:dd:96:ff:81:b1:fe:45:1f:03:80:31:b0:52:02:03:64:04:1b:b4:22:81:05:18)
+				// ATR
+				// (3b:dd:96:ff:81:b1:fe:45:1f:03:80:31:b0:52:02:03:64:04:1b:b4:22:81:05:18)
 				new byte[] { (byte) 0x3b, (byte) 0xdd, (byte) 0x96,
 						(byte) 0xff, (byte) 0x81, (byte) 0xb1, (byte) 0xfe,
 						(byte) 0x45, (byte) 0x1f, (byte) 0x03, (byte) 0x00,
@@ -286,10 +286,32 @@ public class SignatureCardFactory {
 						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 						(byte) 0x00 },
-				// mask (
+				// mask
+				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:00:00:00:00:00:00:00:00:00:00:00:00:00:00)
 				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0x00,
+						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0x00 }, "at.gv.egiz.smcc.STARCOSCard"));
+
+		// e-card G4
+		supportedCards.add(new SupportedCard(
+				// ATR
+				// (3b:df:18:00:81:31:fe:58:80:31:b0:52:02:04:64:05:c9:03:ac:73:b7:b1:d4:22)
+				new byte[] { (byte) 0x3b, (byte) 0xdf, (byte) 0x18,
+						(byte) 0x00, (byte) 0x81, (byte) 0x31, (byte) 0xfe,
+						(byte) 0x58, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0x00 },
+				// mask
+				// (ff:ff:ff:ff:ff:ff:ff:ff:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00)
+				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,

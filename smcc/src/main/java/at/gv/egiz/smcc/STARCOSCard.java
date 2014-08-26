@@ -21,18 +21,14 @@
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
-
-
 package at.gv.egiz.smcc;
-
-import at.gv.egiz.smcc.pin.gui.ModifyPINGUI;
-import at.gv.egiz.smcc.pin.gui.PINGUI;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 import iaik.me.security.CryptoException;
 import iaik.me.security.MessageDigest;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
@@ -44,6 +40,8 @@ import javax.smartcardio.ResponseAPDU;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import at.gv.egiz.smcc.pin.gui.ModifyPINGUI;
+import at.gv.egiz.smcc.pin.gui.PINGUI;
 import at.gv.egiz.smcc.util.ISO7816Utils;
 import at.gv.egiz.smcc.util.SMCCHelper;
 import at.gv.egiz.smcc.util.TransparentFileInputStream;
@@ -140,12 +138,15 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
       (byte) 0x02 };
 
   public static final byte KID_PIN_CARD = (byte) 0x01;
+  public static final byte KID_PUK_CARD = (byte) 0x02;
 
   protected double version = 1.1;
+  protected int generation = 2;
 
   protected String friendlyName = "G1";
 
   protected PinInfo cardPinInfo;
+  protected PinInfo cardPukInfo = null;
   protected PinInfo ssPinInfo;
 
   /* (non-Javadoc)
@@ -168,18 +169,32 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
       byte[] ver = ISO7816Utils.readRecord(channel, 1);
       if (ver[0] == (byte) 0xa5 && ver[2] == (byte) 0x53) {
         version = (0x0F & ver[4]) + (0xF0 & ver[5])/160.0 + (0x0F & ver[5])/100.0;
-        friendlyName = (version < 1.2) ? "<= G2" : "G3";
+        friendlyName = (version < 1.2) ? "<= G2" : "G3+";
         if (version == 1.2)
         {
-          // SELECT application
-          execSELECT_AID(channel, AID_INFOBOX);
-          // SELECT file
-          try {
-            // the file identifier has changed with version G3b
-            execSELECT_FID(channel, EF_INFOBOX);
-            friendlyName = "G3b";
-          } catch (FileNotFoundException e) {
-            friendlyName = "G3a";
+          // Get Card Generation from ATR historical bytes
+          byte[] hb = card.getATR().getHistoricalBytes();
+          for (int i = 1; i < hb.length; ++i) {
+            if ((hb[i] & 0xf0) == 0x50) {
+              generation = hb[i + 2];
+              break;
+            } else {
+              i += hb[i] & 0x0f;
+            }
+          }
+          friendlyName = "G" + generation;
+
+          if (generation == 3) {
+            // SELECT application
+            execSELECT_AID(channel, AID_INFOBOX);
+            // SELECT file
+            try {
+              // the file identifier has changed with version G3b
+              execSELECT_FID(channel, EF_INFOBOX);
+              friendlyName = "G3b";
+            } catch (FileNotFoundException e) {
+              friendlyName = "G3a";
+            }
           }
         }
         log.info("e-card version=" + version + " (" + friendlyName + ")");
@@ -192,12 +207,19 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
 
     cardPinInfo = new PinInfo(4, 12, "[0-9]",
         "at/gv/egiz/smcc/STARCOSCard", "card.pin", KID_PIN_CARD, null, 10);
+    // Currently not used
+    // if (generation == 4) {
+    //   cardPukInfo = new PinInfo(8, 12, "[0-9]",
+    //       "at/gv/egiz/smcc/STARCOSCard", "card.puk", KID_PUK_CARD, null, 10);
+    // }
     ssPinInfo = new PinInfo(6, 12, "[0-9]",
         "at/gv/egiz/smcc/STARCOSCard", "sig.pin", KID_PIN_SS, AID_DF_SS,
         (version < 1.2) ? 3 : 10);
 
     if (SignatureCardFactory.ENFORCE_RECOMMENDED_PIN_LENGTH) {
       cardPinInfo.setRecLength(4);
+      if (cardPukInfo != null)
+        cardPukInfo.setRecLength(10);
       ssPinInfo.setRecLength(6);
     }
   }
@@ -375,8 +397,10 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     byte[] ht = null;
     
     MessageDigest md = null;
+    byte[] digestInfo = null;
 
-    dst.write(new byte[] {(byte) 0x84, (byte) 0x03, (byte) 0x80});
+    if (generation < 4)
+      dst.write(new byte[] {(byte) 0x84, (byte) 0x03, (byte) 0x80});
     try {
       if (alg == null || "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1".equals(alg)) {
         // local key ID '02' version '00'
@@ -384,36 +408,79 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         if (version < 1.2) {
           // algorithm ID ECDSA with SHA-1
           dst.write(new byte[] {(byte) 0x89, (byte) 0x03, (byte) 0x13, (byte) 0x35, (byte) 0x10});
-        } else {
+        } else if (generation < 4) {
           // portable algorithm reference
           dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x04});
           // hash template
           ht = new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x10};
+        } else {
+          // ECC-Key-ID
+          dst.write(new byte[] { (byte) 0x84, (byte) 0x01, (byte) 0x82 });
+          // usage qualifier
+          dst.write(new byte[] { (byte) 0x95, (byte) 0x01, (byte) 0x40 });
         }
         md = MessageDigest.getInstance("SHA-1");
       } else if (version >= 1.2 && "http://www.w3.org/2000/09/xmldsig#rsa-sha1".equals(alg)) {
-        // local key ID '03' version '00'
-        dst.write(new byte[] {(byte) 0x03, (byte) 0x00});
-        // portable algorithm reference
-        dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x02});
-        // hash template
-        ht = new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x10};
+        if (generation < 4) {
+          // local key ID '03' version '00'
+          dst.write(new byte[] {(byte) 0x03, (byte) 0x00});
+          // portable algorithm reference
+          dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x02});
+          // hash template
+          ht = new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x10};
+        } else {
+          // RSA-Key-ID
+          dst.write(new byte[] { (byte) 0x84, (byte) 0x01, (byte) 0x83 });
+          // usage qualifier
+          dst.write(new byte[] { (byte) 0x95, (byte) 0x01, (byte) 0x40 });
+          // algorithm reference
+          dst.write(new byte[] { (byte) 0x80, (byte) 0x01, (byte) 0x10 });
+          // digestInfo template (SEQUENCE{SEQUENCE{OID, NULL}, OCTET STRING Hash)
+          digestInfo = new byte[] {
+              (byte) 0x30, (byte) 0x21, (byte) 0x30, (byte) 0x09, (byte) 0x06,
+              (byte) 0x05, (byte) 0x2B, (byte) 0x0E, (byte) 0x03, (byte) 0x02,
+              (byte) 0x1A, (byte) 0x05, (byte) 0x00, (byte) 0x04, (byte) 0x14
+          };
+        }
         md = MessageDigest.getInstance("SHA-1");
       } else if (version >= 1.2 && "http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256".equals(alg)) {
-        // local key ID '02' version '00'
-        dst.write(new byte[] {(byte) 0x02, (byte) 0x00});
-        // portable algorithm reference
-        dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x04});
-        // hash template
-        ht = new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x40};
+        if (generation < 4) {
+          // local key ID '02' version '00'
+          dst.write(new byte[] {(byte) 0x02, (byte) 0x00});
+          // portable algorithm reference
+          dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x04});
+          // hash template
+          ht = new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x40};
+        } else {
+          // ECC-Key-ID
+          dst.write(new byte[] { (byte) 0x84, (byte) 0x01, (byte) 0x82 });
+          // usage qualifier
+          dst.write(new byte[] { (byte) 0x95, (byte) 0x01, (byte) 0x40 });
+        }
         md = MessageDigest.getInstance("SHA-256");
       } else if (version >= 1.2 && "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256".equals(alg)) {
-        // local key ID '03' version '00'
-        dst.write(new byte[] {(byte) 0x03, (byte) 0x00});
-        // portable algorithm reference
-        dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x02});
-        // hash template
-        ht = new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x40};
+        if (generation < 4) {
+          // local key ID '03' version '00'
+          dst.write(new byte[] {(byte) 0x03, (byte) 0x00});
+          // portable algorithm reference
+          dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x02});
+          // hash template
+          ht = new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x40};
+        } else {
+          // RSA-Key-ID
+          dst.write(new byte[] { (byte) 0x84, (byte) 0x01, (byte) 0x83 });
+          // usage qualifier
+          dst.write(new byte[] { (byte) 0x95, (byte) 0x01, (byte) 0x40 });
+          // algorithm reference
+          dst.write(new byte[] { (byte) 0x80, (byte) 0x01, (byte) 0x10 });
+          // digestInfo template (SEQUENCE{SEQUENCE{OID, NULL}, OCTET STRING Hash)
+          digestInfo = new byte[] {
+           (byte) 0x30, (byte) 0x31, (byte) 0x30, (byte) 0x0d, (byte) 0x06,
+           (byte) 0x09, (byte) 0x60, (byte) 0x86, (byte) 0x48, (byte) 0x01,
+           (byte) 0x65, (byte) 0x03, (byte) 0x04, (byte) 0x02, (byte) 0x01,
+           (byte) 0x05, (byte) 0x00, (byte) 0x04, (byte) 0x20
+          };
+        }
         md = MessageDigest.getInstance("SHA-256");
       } else if ("http://www.w3.org/2007/05/xmldsig-more#ecdsa-ripemd160".equals(alg)) {
         // local key ID '02' version '00'
@@ -423,29 +490,38 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
           //dst.write(new byte[] {(byte) 0x89, (byte) 0x03, (byte) 0x13, (byte) 0x35, (byte) 0x20});
           // algorithm ID ECDSA with SHA-1
           dst.write(new byte[] {(byte) 0x89, (byte) 0x03, (byte) 0x13, (byte) 0x35, (byte) 0x10});
-        } else {
+        } else if (generation < 4) {
           // portable algorithm reference
           dst.write(new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x04});
           // hash template (SHA-1 - no EF_ALIAS for RIPEMD160)
           //ht = new byte[] {(byte) 0x80, (byte) 0x01, (byte) 0x10};
           // hash template for RIPEMD160
           ht = new byte[] {(byte) 0x89, (byte) 0x02, (byte) 0x14, (byte) 0x30};
+        } else {
+          throw new SignatureCardException("e-card " + friendlyName + " does not support signature algorithm " + alg + ".");
         }
         md = MessageDigest.getInstance("RIPEMD160");
       } else {
-        throw new SignatureCardException("e-card version " + version + " does not support signature algorithm " + alg + ".");
+        throw new SignatureCardException("e-card " + friendlyName + " does not support signature algorithm " + alg + ".");
       }
     } catch (CryptoException e) {
       log.error("Failed to get MessageDigest.", e);
       throw new SignatureCardException(e);
     }
-    
+
     // calculate message digest
     byte[] digest = new byte[md.getDigestLength()];
     for (int l; (l = input.read(digest)) != -1;) {
       md.update(digest, 0, l);
     }
     digest = md.digest();
+    if (digestInfo != null) {
+      // convert into DigestInfo structure for G4
+      byte[] d = new byte[digestInfo.length + digest.length];
+      System.arraycopy(digestInfo, 0, d, 0, digestInfo.length);
+      System.arraycopy(digest, 0, d, digestInfo.length, digest.length);
+      digest = d;
+    }
 
     try {
       
@@ -460,7 +536,8 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         // VERIFY
         verifyPINLoop(channel, ssPinInfo, provider);
         // MANAGE SECURITY ENVIRONMENT : SET DST
-        execMSE(channel, 0x41, 0xb6, dst.toByteArray());
+        if (generation < 4) // not necessary for G4
+          execMSE(channel, 0x41, 0xb6, dst.toByteArray());
         if (version < 1.2) {
           // PERFORM SECURITY OPERATION : HASH
           execPSO_HASH(channel, digest);
@@ -486,12 +563,17 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
           // PERFORM SECURITY OPERATION : SET HT
           execMSE(channel, 0x41, 0xaa, ht);
         }
-        // PERFORM SECURITY OPERATION : HASH
-        execPSO_HASH(channel, digest);
+        if (generation < 4) {
+          // PERFORM SECURITY OPERATION : HASH
+          execPSO_HASH(channel, digest);
+        }
         while (true) {
           try {
             // PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATURE
-            return execPSO_COMPUTE_DIGITAL_SIGNATURE(channel, null);
+            if (generation < 4)
+              return execPSO_COMPUTE_DIGITAL_SIGNATURE(channel, null);
+            else
+              return execPSO_COMPUTE_DIGITAL_SIGNATURE(channel, digest);
           } catch (SecurityStatusNotSatisfiedException e) {
             verifyPINLoop(channel, cardPinInfo, provider);
           }
@@ -624,7 +706,11 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
       getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR, null);
     }
 
-    PinInfo[] pinInfos = new PinInfo[] {cardPinInfo, ssPinInfo};
+    PinInfo[] pinInfos;
+    if (cardPukInfo != null)
+      pinInfos = new PinInfo[] { cardPinInfo, cardPukInfo, ssPinInfo };
+    else
+      pinInfos = new PinInfo[] { cardPinInfo, ssPinInfo };
 
     CardChannel channel = getCardChannel();
     for (PinInfo pinInfo : pinInfos) {
