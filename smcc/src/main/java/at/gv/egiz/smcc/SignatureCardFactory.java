@@ -592,7 +592,27 @@ public class SignatureCardFactory {
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff },
 				"at.gv.egiz.smcc.ITCard"));
-		
+		supportedCards.add(new SupportedCard(
+				// ATR
+				// (3B:DF:18:00:81:31:FE:7D:00:6B:15:0C:01:81:01:01:01:43:4E:53:10:31:80:F8)
+				new byte[] { (byte) 0x3b, (byte) 0xdf, (byte) 0x18,
+						(byte) 0x00, (byte) 0x81, (byte) 0x31, (byte) 0xfe,
+						(byte) 0x7d, (byte) 0x00, (byte) 0x6b, (byte) 0x15,
+						(byte) 0x0c, (byte) 0x01, (byte) 0x81, (byte) 0x01,
+						(byte) 0x01, (byte) 0x01, (byte) 0x43, (byte) 0x4e,
+						(byte) 0x53, (byte) 0x10, (byte) 0x31, (byte) 0x80,
+						(byte) 0xf8},
+				// mask
+				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
+				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff},
+				"at.gv.egiz.smcc.ITCard"));
+
 		// ATR for EstEID v.1.0 realised on Micardo Public 2.1 - Warm ATR
 		// ATR for EstEID v.1.0 realised on Micardo Public 3.0 - Warm ATR
 		// ATR for EstEID v.1.1 for DigiID realised on MultoOS by KeyCorp on IE4 - Cold ATR
@@ -606,7 +626,7 @@ public class SignatureCardFactory {
 				new byte[] { 'E', 's', 't', 'E', 'I', 'D', ' ', 'v', 'e', 'r',
 						' ', '1', '.', '0' },
 				// mask
-				// (ff:00:00:00:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
+				// (ff:00:00:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
 				new byte[] { (byte) 0xff, (byte) 0x00, (byte) 0x00,
 						(byte) 0x00, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
@@ -650,14 +670,14 @@ public class SignatureCardFactory {
 				new byte[] { 'E', 's', 't', 'E', 'I', 'D', ' ', 'v', 'e', 'r',
 						' ', '1', '.', '0' },
 				// mask
-				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:00:00:00:00)
+				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
 				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-						(byte) 0xff, (byte) 0xff, (byte) 0xff },						
+						(byte) 0xff, (byte) 0xff, (byte) 0xff },
 				"at.gv.egiz.smcc.EstEIDCard"));
 
 		supportedCards.add(new SupportedCard(
@@ -671,7 +691,7 @@ public class SignatureCardFactory {
 				new byte[] { 'E', 's', 't', 'E', 'I', 'D', ' ', 'v', 'e', 'r',
 						' ', '1', '.', '0' },
 				// mask
-				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:00:00:00:00)
+				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
 				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
@@ -682,7 +702,7 @@ public class SignatureCardFactory {
 
 		supportedCards.add(new SupportedCard(
 		// EstEID v3.0 (recalled 46 cards) - Warm ATR
-		// (3B:FE:18:00:00:80:31:FE:45:45:73:74:45:49:44:20:76:65:72:20:31:2E:30:A8)
+		// (3B:FE:18:00:00:80:31:FE:45:80:31:80:66:40:90:A4:16:2A:00:83:01:90:00:E1)
 				new byte[] { (byte) 0x3b, (byte) 0xfe, (byte) 0x18,
 						(byte) 0x00, (byte) 0x00, (byte) 0x80, (byte) 0x31,
 						(byte) 0xfe, (byte) 0x45, (byte) 0x80, (byte) 0x31,
@@ -697,7 +717,7 @@ public class SignatureCardFactory {
 						(byte) 0x83, (byte) 0x01, (byte) 0x90, (byte) 0x00,
 						(byte) 0xE1 },
 				// mask
-				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:00:00:00:00)
+				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
 				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
@@ -708,7 +728,7 @@ public class SignatureCardFactory {
 
 		supportedCards.add(new SupportedCard(
 		// EstEID v3.0 and v3.4 - Warm ATR
-		// (3B:FE:18:00:00:80:31:FE:45:45:73:74:45:49:44:20:76:65:72:20:31:2E:30:A8)
+		// (3B:FE:18:00:00:80:31:FE:45:80:31:80:66:40:90:A4:16:2A:00:83:01:90:00:EF)
 				new byte[] { (byte) 0x3b, (byte) 0xfe, (byte) 0x18,
 						(byte) 0x00, (byte) 0x00, (byte) 0x80, (byte) 0x31,
 						(byte) 0xfe, (byte) 0x45, (byte) 0x80, (byte) 0x31,
@@ -723,14 +743,14 @@ public class SignatureCardFactory {
 						(byte) 0x83, (byte) 0x01, (byte) 0x90, (byte) 0x00,
 						(byte) 0xEF },
 				// mask
-				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:00:00:00:00)
+				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
 				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-						(byte) 0xff }, "at.gv.egiz.smcc.EstEIDCard"));		
+						(byte) 0xff }, "at.gv.egiz.smcc.EstEIDCard"));
 		
 		supportedCards.add(new SupportedCard(
 				// ATR (3B:7D:95:00:00:80:31:80:65:B0:83:11:C0:A9:83:00:90:00 -
@@ -741,7 +761,24 @@ public class SignatureCardFactory {
 						(byte) 0x11, (byte) 0xc0, (byte) 0xa9, (byte) 0x83,
 						(byte) 0x00, (byte) 0x90, (byte) 0x00 },
 				// mask
-				// (ff:ff:ff:00:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:00:00:00:00)
+				// (ff:ff:ff:00:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:00:ff:00)
+				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0x00, (byte) 0xff, (byte) 0x00 },
+				"at.gv.egiz.smcc.PtEidCard"));
+
+		supportedCards.add(new SupportedCard(
+				//ATR: (3B:7D:95:00:00:80:31:80:65:B0:83:11:00:C8:83:00:90:00 -
+				// 00:00:00:00)
+				new byte[] { (byte) 0x3b, (byte) 0x7d, (byte) 0x95,
+						(byte) 0x00, (byte) 0x00, (byte) 0x80, (byte) 0x31,
+						(byte) 0x80, (byte) 0x65, (byte) 0xb0, (byte) 0x83,
+						(byte) 0x11, (byte) 0x00, (byte) 0xc8, (byte) 0x83,
+						(byte) 0x00, (byte) 0x90, (byte) 0x00 },
+				// mask
+				// (ff:ff:ff:00:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:00:ff:00)
 				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
