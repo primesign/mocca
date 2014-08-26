@@ -5,6 +5,37 @@ Tags:
 * ''REMOVED''  ... certificate removed in this release
 * TRUSTED	... certificate included in truststore
 
+'''BKUCertificates-1.11 (mocca-1.3.15)'''
+-------------------
+
+A-Trust-Root-05.crt (''ADDED'', TRUSTED)
+* Serial Number: 1035700 (0xfcdb4)
+* Issuer: C=AT, O=A-Trust Ges. f. Sicherheitssysteme im elektr. Datenverkehr GmbH, OU=A-Trust-Root-05, CN=A-Trust-Root-05
+* Subject: C=AT, O=A-Trust Ges. f. Sicherheitssysteme im elektr. Datenverkehr GmbH, OU=A-Trust-Root-05, CN=A-Trust-Root-05
+* Not Before: Sep 23 13:24:11 2013 GMT
+* Not After : Sep 20 11:24:11 2023 GMT
+
+A-Trust-Qual-02a.crt (''ADDED'', TRUSTED)
+* Serial Number: 1330660 (0x144de4)
+* Issuer: C=AT, O=A-Trust Ges. f. Sicherheitssysteme im elektr. Datenverkehr GmbH, OU=A-Trust-Qual-02, CN=A-Trust-Qual-02
+* Subject: C=AT, O=A-Trust Ges. f. Sicherheitssysteme im elektr. Datenverkehr GmbH, OU=A-Trust-Qual-02, CN=A-Trust-Qual-02
+* Not Before: Jul  1 11:23:33 2014 GMT
+* Not After : Jul  1 09:23:33 2024 GMT
+
+A-Trust-nQual-01a_2014.cer (''ADDED'', TRUSTED)
+* Serial Number: 57922 (0xe242)
+* Issuer: C=AT, O=A-Trust, OU=A-Trust-nQual-01, CN=A-Trust-nQual-01
+* Subject: C=AT, O=A-Trust, OU=A-Trust-nQual-01, CN=A-Trust-nQual-01
+* Not Before: Nov 30 23:00:00 2004 GMT
+* Not After : Nov 30 23:00:00 2014 GMT
+
+A-Trust-nQual-03_2014.cer (''ADDED'', TRUSTED)
+* Serial Number: 1357049 (0x14b4f9)
+* Issuer: C=AT, O=A-Trust Ges. f. Sicherheitssysteme im elektr. Datenverkehr GmbH, OU=A-Trust-nQual-03, CN=A-Trust-nQual-03
+* Subject: C=AT, O=A-Trust Ges. f. Sicherheitssysteme im elektr. Datenverkehr GmbH, OU=A-Trust-nQual-03, CN=A-Trust-nQual-03
+* Not Before: Jul 23 10:38:29 2014 GMT
+* Not After : Jul 23 08:38:29 2025 GMT
+
 '''BKUCertificates-1.10 (mocca-1.3.13)'''
 -------------------
 
