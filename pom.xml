@@ -53,9 +53,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:svn:https://joinup.ec.europa.eu/svn/mocca/trunk</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/mocca/trunk</developerConnection>
-    <url>https://joinup.ec.europa.eu/svn/mocca/trunk</url>
+    <connection>scm:git:http://git.egiz.gv.at/git/mocca</connection>
+    <developerConnection>scm:git:git://gitlab@gitlab.iaik.tugraz.at:tobias.kellner/mocca.git</developerConnection>
+    <url>http://git.egiz.gv.at/git/mocca</url>
   </scm>
   <organization>
     <name>E-Government Innovation Center (EGIZ)</name>
