@@ -873,7 +873,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
       NewReferenceDataAPDUSpec apduSpec = new NewReferenceDataAPDUSpec(
           new byte[] {
               (byte) 0x00, (byte) 0x24, (byte) 0x00, pinInfo.getKID(), (byte) 0x10,
-              (byte) 0x26, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0xff,
+              (byte) 0x25, (byte) 0x12, (byte) 0x34, (byte) 0x5f, (byte) 0xff,
               (byte) 0xff, (byte) 0xff, (byte) 0xff, 
               (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
               (byte) 0xff, (byte) 0xff, (byte) 0xff },
