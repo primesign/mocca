@@ -100,7 +100,7 @@ public class TLSServerCA {
     caCert.setValidNotBefore(date.getTime());
     date.add(Calendar.YEAR, CA_VALIDITY_Y);
     caCert.setValidNotAfter(date.getTime());
-    caCert.sign(AlgorithmID.sha1WithRSAEncryption, caKeyPair.getPrivate());
+    caCert.sign(AlgorithmID.sha256WithRSAEncryption, caKeyPair.getPrivate());
     
     log.debug("successfully generated MOCCA TLS Server CA certificate " + caCert.getSubjectDN());
   }
@@ -143,7 +143,7 @@ public class TLSServerCA {
     date.add(Calendar.YEAR,SERVER_VALIDITY_Y);
     date.add(Calendar.HOUR_OF_DAY, -1);
     serverCert.setValidNotAfter(date.getTime());
-    serverCert.sign(AlgorithmID.sha1WithRSAEncryption, caKeyPair.getPrivate());
+    serverCert.sign(AlgorithmID.sha256WithRSAEncryption, caKeyPair.getPrivate());
 
     log.debug("successfully generated MOCCA TLS Server certificate " + serverCert.getSubjectDN());
     caKeyPair = null;
