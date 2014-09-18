@@ -96,9 +96,9 @@ public class RuleCheckerTest {
 		rr = onlyPeerChecker.check(ctx);
 		assertFalse(rr.matchFound());
 		
-		onlyPeerChecker.setPeerId(".*.buergerkarte..*", PEER_TYPE.HOST);
+		onlyPeerChecker.setPeerId(".*.iaik.tugraz..*", PEER_TYPE.HOST);
 		ctx = new AccessCheckerContext(null, null,
-		"https://129.27.142.64:80/index.html");
+		"https://129.27.142.20:80/index.html");
 		rr = onlyPeerChecker.check(ctx);
 		assertTrue(rr.matchFound());
 		
