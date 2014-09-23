@@ -55,7 +55,7 @@
   <scm>
     <connection>scm:git:http://git.egiz.gv.at/git/mocca</connection>
     <developerConnection>scm:git:git://gitlab@gitlab.iaik.tugraz.at:tobias.kellner/mocca.git</developerConnection>
-    <url>http://git.egiz.gv.at/git/mocca</url>
+    <url>http://git.egiz.gv.at/mocca</url>
   </scm>
   <organization>
     <name>E-Government Innovation Center (EGIZ)</name>
