@@ -55,7 +55,7 @@
   <scm>
     <connection>scm:git:http://git.egiz.gv.at/git/mocca</connection>
     <developerConnection>scm:git:git://gitlab@gitlab.iaik.tugraz.at:tobias.kellner/mocca.git</developerConnection>
-    <url>http://git.egiz.gv.at/mocca</url>
+    <url>http://git.egiz.gv.at/git/mocca</url>
   </scm>
   <organization>
     <name>E-Government Innovation Center (EGIZ)</name>
@@ -380,7 +380,7 @@
       <dependency>
         <groupId>com.sun.xml.ws</groupId>
         <artifactId>jaxws-rt</artifactId>
-        <version>2.2.8</version>
+        <version>2.1.5</version>
       </dependency>
       <!-- version not defined in BKUOnline pom "include-webstart" profile,
        |   it wouldn't be adjusted by release:prepare -->
