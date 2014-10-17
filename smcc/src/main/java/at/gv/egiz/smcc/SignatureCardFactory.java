@@ -750,13 +750,13 @@ public class SignatureCardFactory {
 
 		supportedCards.add(new SupportedCard(
 		// EstEID v3.0 and v3.4 - Warm ATR
-		// (3B:FE:18:00:00:80:31:FE:45:80:31:80:66:40:90:A4:16:2A:00:83:01:90:00:EF)
+		// (3B:FE:18:00:00:80:31:FE:45:80:31:80:66:40:90:A4:16:2A:00:83:0F:90:00:EF)
 				new byte[] { (byte) 0x3b, (byte) 0xfe, (byte) 0x18,
 						(byte) 0x00, (byte) 0x00, (byte) 0x80, (byte) 0x31,
 						(byte) 0xfe, (byte) 0x45, (byte) 0x80, (byte) 0x31,
 						(byte) 0x80, (byte) 0x66, (byte) 0x40, (byte) 0x90,
 						(byte) 0xA4, (byte) 0x16, (byte) 0x2A, (byte) 0x00,
-						(byte) 0x83, (byte) 0x01, (byte) 0x90, (byte) 0x00,
+						(byte) 0x83, (byte) 0x0F, (byte) 0x90, (byte) 0x00,
 						(byte) 0xEF },
 				// historical bytes pattern
 				new byte[] { (byte) 0x80, (byte) 0x31,
