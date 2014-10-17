@@ -48,7 +48,7 @@
 			<map>
 				<entry key="0x01">
 					<bean parent="kartenPIN">
-						<property name="pin" value="25:12:34:5f:ff:ff:ff:ff" />
+						<property name="pin" value="26:12:34:56:ff:ff:ff:ff" />
 						<property name="state">
 							<util:constant static-field="at.gv.egiz.smcc.PIN.STATE_PIN_NOTACTIVE" />
 						</property>
@@ -76,7 +76,6 @@
 						<property name="state">
 							<util:constant static-field="at.gv.egiz.smcc.PIN.STATE_PIN_NOTACTIVE" />
 						</property>
-						<property name="pin" value="25:12:34:5f:ff:ff:ff:ff" />
 					</bean>
 				</entry>
 			</map>

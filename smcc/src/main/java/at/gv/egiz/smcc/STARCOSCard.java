@@ -870,14 +870,26 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
 
       resp = reader.modify(channel, apduSpec, provider, pinInfo);
     } else {
-      NewReferenceDataAPDUSpec apduSpec = new NewReferenceDataAPDUSpec(
-          new byte[] {
-              (byte) 0x00, (byte) 0x24, (byte) 0x00, pinInfo.getKID(), (byte) 0x10,
-              (byte) 0x25, (byte) 0x12, (byte) 0x34, (byte) 0x5f, (byte) 0xff,
-              (byte) 0xff, (byte) 0xff, (byte) 0xff, 
-              (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
-              (byte) 0xff, (byte) 0xff, (byte) 0xff },
-          1, VerifyAPDUSpec.PIN_FORMAT_BCD, 7, 4, 4);
+      NewReferenceDataAPDUSpec apduSpec;
+      if (generation < 4) {
+        apduSpec = new NewReferenceDataAPDUSpec(
+            new byte[] {
+                (byte) 0x00, (byte) 0x24, (byte) 0x00, pinInfo.getKID(), (byte) 0x10,
+                (byte) 0x26, (byte) 0x12, (byte) 0x34, (byte) 0x56, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff },
+            1, VerifyAPDUSpec.PIN_FORMAT_BCD, 7, 4, 4);
+      } else {
+        apduSpec = new NewReferenceDataAPDUSpec(
+            new byte[] {
+                (byte) 0x00, (byte) 0x24, (byte) 0x00, pinInfo.getKID(), (byte) 0x10,
+                (byte) 0x25, (byte) 0x12, (byte) 0x34, (byte) 0x5f, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0x20, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+                (byte) 0xff, (byte) 0xff, (byte) 0xff },
+            1, VerifyAPDUSpec.PIN_FORMAT_BCD, 7, 4, 4);
+      }
       apduSpec.setPinInsertionOffsetNew(8);
       resp = reader.modify(channel, apduSpec, provider, pinInfo);
     }
