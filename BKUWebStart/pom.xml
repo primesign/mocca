@@ -2,7 +2,7 @@
   <parent>
     <artifactId>mocca</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.3.16-SNAPSHOT</version>
+    <version>1.3.16</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>BKUWebStart</artifactId>
@@ -167,6 +167,53 @@
               <providerClass>iaik.pkcs.pkcs11.provider.IAIKPkcs11</providerClass>
               <alias>a-sit-2</alias>
               <storepass>${pkcs11-pass}</storepass>
+              <verify>true</verify>
+              <keystoreConfig>
+                <delete>false</delete>
+                <gen>false</gen>
+              </keystoreConfig>
+            </sign>
+            <pack200>false</pack200>
+            <gzip>false</gzip>
+            <outputJarVersions>false</outputJarVersions>
+            <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
+            <verbose>true</verbose>
+          </configuration>
+        </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>ks-sign</id>
+      <build>
+        <plugins>
+        <plugin>
+          <artifactId>webstart-maven-plugin</artifactId>
+          <groupId>org.codehaus.mojo.webstart</groupId>
+          <!-- use pkcs11-patched webstart-maven-plugin-->
+          <version>1.0-beta-1-mocca</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>jnlp-inline</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <excludeTransitive>false</excludeTransitive>
+            <jnlp>
+              <inputTemplateResourcePath>${project.basedir}/src/main/jnlp</inputTemplateResourcePath>
+              <inputTemplate>template.xml</inputTemplate>
+              <outputFile>mocca.jnlp</outputFile>
+              <mainClass>at.gv.egiz.bku.webstart.Launcher</mainClass>
+            </jnlp>
+            <sign>
+              <keystore>${ks-file}</keystore>
+              <alias>a-sit-3</alias>
+              <storepass>${ks-pass}</storepass>
+              <keypass>${ks-pass}</keypass>
               <verify>true</verify>
               <keystoreConfig>
                 <delete>false</delete>
