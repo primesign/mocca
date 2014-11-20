@@ -87,7 +87,7 @@ public class RuleCheckerTest {
 	@Test
 	public void testPeerId() {
 		AccessCheckerContext ctx = new AccessCheckerContext(null, null,
-				"https://129.27.142.20:80/index.html");
+				"https://129.27.142.55:80/index.html");
 		RuleResult rr = onlyPeerChecker.check(ctx);
 		assertTrue(rr.matchFound());
 
@@ -96,14 +96,14 @@ public class RuleCheckerTest {
 		rr = onlyPeerChecker.check(ctx);
 		assertFalse(rr.matchFound());
 		
-		onlyPeerChecker.setPeerId(".*.iaik.tugraz..*", PEER_TYPE.HOST);
+		onlyPeerChecker.setPeerId(".*.buergerkarte..*", PEER_TYPE.HOST);
 		ctx = new AccessCheckerContext(null, null,
-		"https://129.27.142.20:80/index.html");
+		"https://129.27.142.55:80/index.html");
 		rr = onlyPeerChecker.check(ctx);
 		assertTrue(rr.matchFound());
 		
 		onlyPeerChecker.setPeerId("129.27.142..*", PEER_TYPE.IP);
-		ctx = new AccessCheckerContext(null, null, "https://www.iaik.tugraz.at:80/");
+		ctx = new AccessCheckerContext(null, null, "https://www.buergerkarte.at:80/");
 		rr = onlyPeerChecker.check(ctx);
 		assertTrue(rr.matchFound());
 	}
