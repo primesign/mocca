@@ -594,6 +594,7 @@ public class SignatureCardFactory {
 												 * (byte) 0xff, (byte) 0xff
 												 */
 				}, "at.gv.egiz.smcc.ITCard"));
+
 		supportedCards.add(new SupportedCard(
 				// ATR
 				// (3B:FF:18:00:FF:C1:0A:31:FE:55:00:6B:05:08:C8:05:01:01:01:43:4E:53:10:31:80:1C)
@@ -614,6 +615,7 @@ public class SignatureCardFactory {
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff, (byte) 0xff, (byte) 0xff },
 				"at.gv.egiz.smcc.ITCard"));
+
 		supportedCards.add(new SupportedCard(
 				// ATR
 				// (3B:DF:18:00:81:31:FE:7D:00:6B:15:0C:01:81:01:01:01:43:4E:53:10:31:80:F8)
@@ -634,6 +636,253 @@ public class SignatureCardFactory {
 						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
 						(byte) 0xff},
 				"at.gv.egiz.smcc.ITCard"));
+
+		supportedCards.add(new SupportedCard(
+				// ATR = 3B xF x1 31 FE 7D 00 6B 15 0C 01 81 01 01 01 43 4E 53 10 31 80 F8
+				// 0-0 variant
+				new byte[] { (byte) 0x3B, (byte) 0x0F, (byte) 0x01,
+						(byte) 0x31, (byte) 0xFE, (byte) 0x7D, (byte) 0x00,
+						(byte) 0x6B, (byte) 0x15, (byte) 0x0C, (byte) 0x01,
+						(byte) 0x81, (byte) 0x01, (byte) 0x01, (byte) 0x01,
+						(byte) 0x43, (byte) 0x4E, (byte) 0x53, (byte) 0x10,
+						(byte) 0x31, (byte) 0x80, (byte) 0xF8
+				},
+				// mask (ff:0f:0f:ff:ff:ff:ff:ff:ff:ff:ff:ff:..)
+				new byte[] { (byte) 0xff, (byte) 0x0f, (byte) 0x0f,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff
+				}, "at.gv.egiz.smcc.ITCard"));
+
+		supportedCards.add(new SupportedCard(
+				// ATR = 3B xF x1 xx 31 FE 7D 00 6B 15 0C 01 81 01 01 01 43 4E 53 10 31 80 F8
+				// 0-1 variant
+				new byte[] { (byte) 0x3B, (byte) 0x0F, (byte) 0x01, (byte) 0x00,
+						(byte) 0x31, (byte) 0xFE, (byte) 0x7D, (byte) 0x00,
+						(byte) 0x6B, (byte) 0x15, (byte) 0x0C, (byte) 0x01,
+						(byte) 0x81, (byte) 0x01, (byte) 0x01, (byte) 0x01,
+						(byte) 0x43, (byte) 0x4E, (byte) 0x53, (byte) 0x10,
+						(byte) 0x31, (byte) 0x80, (byte) 0xF8
+				},
+				// mask (ff:0f:0f:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:..)
+				new byte[] { (byte) 0xff, (byte) 0x0f, (byte) 0x0f, (byte) 0x00,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff
+				}, "at.gv.egiz.smcc.ITCard"));
+
+		supportedCards.add(new SupportedCard(
+				// ATR = 3B xF x1 xx xx 31 FE 7D 00 6B 15 0C 01 81 01 01 01 43 4E 53 10 31 80 F8
+				// 0-2 variant
+				new byte[] { (byte) 0x3B, (byte) 0x0F, (byte) 0x01, (byte) 0x00, (byte) 0x00,
+						(byte) 0x31, (byte) 0xFE, (byte) 0x7D, (byte) 0x00,
+						(byte) 0x6B, (byte) 0x15, (byte) 0x0C, (byte) 0x01,
+						(byte) 0x81, (byte) 0x01, (byte) 0x01, (byte) 0x01,
+						(byte) 0x43, (byte) 0x4E, (byte) 0x53, (byte) 0x10,
+						(byte) 0x31, (byte) 0x80, (byte) 0xF8
+				},
+				// mask (ff:0f:0f:00:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:..)
+				new byte[] { (byte) 0xff, (byte) 0x0f, (byte) 0x0f, (byte) 0x00, (byte) 0x00,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff
+				}, "at.gv.egiz.smcc.ITCard"));
+
+		supportedCards.add(new SupportedCard(
+				// ATR = 3B xF x1 xx xx xx 31 FE 7D 00 6B 15 0C 01 81 01 01 01 43 4E 53 10 31 80 F8
+				// 0-3 variant
+				new byte[] { (byte) 0x3B, (byte) 0x0F, (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0x31, (byte) 0xFE, (byte) 0x7D, (byte) 0x00,
+						(byte) 0x6B, (byte) 0x15, (byte) 0x0C, (byte) 0x01,
+						(byte) 0x81, (byte) 0x01, (byte) 0x01, (byte) 0x01,
+						(byte) 0x43, (byte) 0x4E, (byte) 0x53, (byte) 0x10,
+						(byte) 0x31, (byte) 0x80, (byte) 0xF8
+				},
+				// mask (ff:0f:0f:00:00:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:..)
+				new byte[] { (byte) 0xff, (byte) 0x0f, (byte) 0x0f, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff
+				}, "at.gv.egiz.smcc.ITCard"));
+
+		supportedCards.add(new SupportedCard(
+				// ATR = 3B xF xx x1 31 FE 7D 00 6B 15 0C 01 81 01 01 01 43 4E 53 10 31 80 F8
+				// 1-0 variant
+				new byte[] { (byte) 0x3B, (byte) 0x0F, (byte) 0x00, (byte) 0x01,
+						(byte) 0x31, (byte) 0xFE, (byte) 0x7D, (byte) 0x00,
+						(byte) 0x6B, (byte) 0x15, (byte) 0x0C, (byte) 0x01,
+						(byte) 0x81, (byte) 0x01, (byte) 0x01, (byte) 0x01,
+						(byte) 0x43, (byte) 0x4E, (byte) 0x53, (byte) 0x10,
+						(byte) 0x31, (byte) 0x80, (byte) 0xF8
+				},
+				// mask (ff:0f:00:0f:ff:ff:ff:ff:ff:ff:ff:ff:ff:..)
+				new byte[] { (byte) 0xff, (byte) 0x0f, (byte) 0x00, (byte) 0x0f,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff
+				}, "at.gv.egiz.smcc.ITCard"));
+
+		supportedCards.add(new SupportedCard(
+				// ATR = 3B xF xx x1 xx 31 FE 7D 00 6B 15 0C 01 81 01 01 01 43 4E 53 10 31 80 F8
+				// 1-1 variant
+				new byte[] { (byte) 0x3B, (byte) 0x0F, (byte) 0x00, (byte) 0x01, (byte) 0x00,
+						(byte) 0x31, (byte) 0xFE, (byte) 0x7D, (byte) 0x00,
+						(byte) 0x6B, (byte) 0x15, (byte) 0x0C, (byte) 0x01,
+						(byte) 0x81, (byte) 0x01, (byte) 0x01, (byte) 0x01,
+						(byte) 0x43, (byte) 0x4E, (byte) 0x53, (byte) 0x10,
+						(byte) 0x31, (byte) 0x80, (byte) 0xF8
+				},
+				// mask (ff:0f:00:0f:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:..)
+				new byte[] { (byte) 0xff, (byte) 0x0f, (byte) 0x00, (byte) 0x0f, (byte) 0x00,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff
+				}, "at.gv.egiz.smcc.ITCard"));
+
+		supportedCards.add(new SupportedCard(
+				// ATR = 3B xF xx x1 xx xx 31 FE 7D 00 6B 15 0C 01 81 01 01 01 43 4E 53 10 31 80 F8
+				// 1-2 variant
+				new byte[] { (byte) 0x3B, (byte) 0x0F, (byte) 0x00, (byte) 0x01, (byte) 0x00, (byte) 0x00,
+						(byte) 0x31, (byte) 0xFE, (byte) 0x7D, (byte) 0x00,
+						(byte) 0x6B, (byte) 0x15, (byte) 0x0C, (byte) 0x01,
+						(byte) 0x81, (byte) 0x01, (byte) 0x01, (byte) 0x01,
+						(byte) 0x43, (byte) 0x4E, (byte) 0x53, (byte) 0x10,
+						(byte) 0x31, (byte) 0x80, (byte) 0xF8
+				},
+				// mask (ff:0f:00:0f:00:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:..)
+				new byte[] { (byte) 0xff, (byte) 0x0f, (byte) 0x00, (byte) 0x0f, (byte) 0x00, (byte) 0x00,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff
+				}, "at.gv.egiz.smcc.ITCard"));
+
+		supportedCards.add(new SupportedCard(
+				// ATR = 3B xF xx x1 xx xx xx 31 FE 7D 00 6B 15 0C 01 81 01 01 01 43 4E 53 10 31 80 F8
+				// 1-3 variant
+				new byte[] { (byte) 0x3B, (byte) 0x0F, (byte) 0x00, (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0x31, (byte) 0xFE, (byte) 0x7D, (byte) 0x00,
+						(byte) 0x6B, (byte) 0x15, (byte) 0x0C, (byte) 0x01,
+						(byte) 0x81, (byte) 0x01, (byte) 0x01, (byte) 0x01,
+						(byte) 0x43, (byte) 0x4E, (byte) 0x53, (byte) 0x10,
+						(byte) 0x31, (byte) 0x80, (byte) 0xF8
+				},
+				// mask (ff:0f:00:0f:00:00:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:..)
+				new byte[] { (byte) 0xff, (byte) 0x0f, (byte) 0x00, (byte) 0x0f, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff
+				}, "at.gv.egiz.smcc.ITCard"));
+
+		supportedCards.add(new SupportedCard(
+				// ATR = 3B xF xx xx x1 31 FE 7D 00 6B 15 0C 01 81 01 01 01 43 4E 53 10 31 80 F8
+				// 2-0 variant
+				new byte[] { (byte) 0x3B, (byte) 0x0F, (byte) 0x00, (byte) 0x00, (byte) 0x01,
+						(byte) 0x31, (byte) 0xFE, (byte) 0x7D, (byte) 0x00,
+						(byte) 0x6B, (byte) 0x15, (byte) 0x0C, (byte) 0x01,
+						(byte) 0x81, (byte) 0x01, (byte) 0x01, (byte) 0x01,
+						(byte) 0x43, (byte) 0x4E, (byte) 0x53, (byte) 0x10,
+						(byte) 0x31, (byte) 0x80, (byte) 0xF8
+				},
+				// mask (ff:0f:00:00:0f:ff:ff:ff:ff:ff:ff:ff:ff:ff:..)
+				new byte[] { (byte) 0xff, (byte) 0x0f, (byte) 0x00, (byte) 0x00, (byte) 0x0f,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff
+				}, "at.gv.egiz.smcc.ITCard"));
+
+		supportedCards.add(new SupportedCard(
+				// ATR = 3B xF xx xx x1 xx 31 FE 7D 00 6B 15 0C 01 81 01 01 01 43 4E 53 10 31 80 F8
+				// 2-1 variant
+				new byte[] { (byte) 0x3B, (byte) 0x0F, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00,
+						(byte) 0x31, (byte) 0xFE, (byte) 0x7D, (byte) 0x00,
+						(byte) 0x6B, (byte) 0x15, (byte) 0x0C, (byte) 0x01,
+						(byte) 0x81, (byte) 0x01, (byte) 0x01, (byte) 0x01,
+						(byte) 0x43, (byte) 0x4E, (byte) 0x53, (byte) 0x10,
+						(byte) 0x31, (byte) 0x80, (byte) 0xF8
+				},
+				// mask (ff:0f:00:00:0f:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:..)
+				new byte[] { (byte) 0xff, (byte) 0x0f, (byte) 0x00, (byte) 0x00, (byte) 0x0f, (byte) 0x00,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff
+				}, "at.gv.egiz.smcc.ITCard"));
+
+		supportedCards.add(new SupportedCard(
+				// ATR = 3B xF xx xx x1 xx xx 31 FE 7D 00 6B 15 0C 01 81 01 01 01 43 4E 53 10 31 80 F8
+				// 2-2 variant
+				new byte[] { (byte) 0x3B, (byte) 0x0F, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00, (byte) 0x00,
+						(byte) 0x31, (byte) 0xFE, (byte) 0x7D, (byte) 0x00,
+						(byte) 0x6B, (byte) 0x15, (byte) 0x0C, (byte) 0x01,
+						(byte) 0x81, (byte) 0x01, (byte) 0x01, (byte) 0x01,
+						(byte) 0x43, (byte) 0x4E, (byte) 0x53, (byte) 0x10,
+						(byte) 0x31, (byte) 0x80, (byte) 0xF8
+				},
+				// mask (ff:0f:00:00:0f:00:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:..)
+				new byte[] { (byte) 0xff, (byte) 0x0f, (byte) 0x00, (byte) 0x00, (byte) 0x0f, (byte) 0x00, (byte) 0x00,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff
+				}, "at.gv.egiz.smcc.ITCard"));
+
+		supportedCards.add(new SupportedCard(
+				// ATR = 3B xF xx xx x1 xx xx xx 31 FE 7D 00 6B 15 0C 01 81 01 01 01 43 4E 53 10 31 80 F8
+				// 2-3 variant
+				new byte[] { (byte) 0x3B, (byte) 0x0F, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0x31, (byte) 0xFE, (byte) 0x7D, (byte) 0x00,
+						(byte) 0x6B, (byte) 0x15, (byte) 0x0C, (byte) 0x01,
+						(byte) 0x81, (byte) 0x01, (byte) 0x01, (byte) 0x01,
+						(byte) 0x43, (byte) 0x4E, (byte) 0x53, (byte) 0x10,
+						(byte) 0x31, (byte) 0x80, (byte) 0xF8
+				},
+				// mask (ff:0f:00:00:0f:00:00:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:..)
+				new byte[] { (byte) 0xff, (byte) 0x0f, (byte) 0x00, (byte) 0x00, (byte) 0x0f, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff
+				}, "at.gv.egiz.smcc.ITCard"));
+
+		supportedCards.add(new SupportedCard(
+				// ATR = 3B xF xx xx xx x1 xx xx xx 31 FE 7D 00 6B 15 0C 01 81 01 01 01 43 4E 53 10 31 80 F8
+				// 3-3 variant
+				new byte[] { (byte) 0x3B, (byte) 0x0F, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x01, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0x31, (byte) 0xFE, (byte) 0x7D, (byte) 0x00,
+						(byte) 0x6B, (byte) 0x15, (byte) 0x0C, (byte) 0x01,
+						(byte) 0x81, (byte) 0x01, (byte) 0x01, (byte) 0x01,
+						(byte) 0x43, (byte) 0x4E, (byte) 0x53, (byte) 0x10,
+						(byte) 0x31, (byte) 0x80, (byte) 0xF8
+				},
+				// mask (ff:0f:00:00:00:0f:00:00:00:ff:ff:ff:ff:ff:ff:ff:ff:ff:..)
+				new byte[] { (byte) 0xff, (byte) 0x0f, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x0f, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff
+				}, "at.gv.egiz.smcc.ITCard"));
 
 		// ATR for EstEID v.1.0 realised on Micardo Public 2.1 - Warm ATR
 		// ATR for EstEID v.1.0 realised on Micardo Public 3.0 - Warm ATR
