@@ -31,6 +31,7 @@ import java.awt.Container;
 import java.awt.Point;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.AllPermission;
@@ -58,6 +59,7 @@ import at.gv.egiz.bku.gui.BKUGUIImpl;
 import at.gv.egiz.bku.gui.HelpListener;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
 import at.gv.egiz.bku.online.applet.viewer.URLFontLoader;
+import at.gv.egiz.bku.utils.JarLocation;
 import at.gv.egiz.smcc.SignatureCardFactory;
 import at.gv.egiz.stal.service.STALPortType;
 import at.gv.egiz.stal.service.STALService;
@@ -107,8 +109,8 @@ public class BKUApplet extends JApplet {
     String tmp = UNKNOWN_VERSION;
     Logger log = LoggerFactory.getLogger(BKUApplet.class);
     try {
-      String BKUAppletJar = BKUApplet.class.getProtectionDomain().getCodeSource().getLocation().toString();
-      URL manifestURL = new URL("jar:" + BKUAppletJar + "!/META-INF/MANIFEST.MF");
+      String bKUAppletJar = JarLocation.get(BKUApplet.class);
+      URL manifestURL = new URL("jar:" + bKUAppletJar + "!/META-INF/MANIFEST.MF");
       log.trace("Read version information from {}.", manifestURL);
       Manifest manifest = new Manifest(manifestURL.openStream());
       Attributes atts = manifest.getMainAttributes();
@@ -116,6 +118,8 @@ public class BKUApplet extends JApplet {
         tmp = atts.getValue("Implementation-Build");
       }
     } catch (IOException ex) {
+      log.error("Failed to read version.", ex);
+    } catch (URISyntaxException ex) {
       log.error("Failed to read version.", ex);
     } finally {
       VERSION = tmp;

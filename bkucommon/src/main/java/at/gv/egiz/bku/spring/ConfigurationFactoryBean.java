@@ -46,6 +46,7 @@ import org.springframework.core.io.ResourceLoader;
 
 import at.gv.egiz.bku.conf.MoccaConfigurationException;
 import at.gv.egiz.bku.slcommands.impl.CreateXMLSignatureCommandImpl;
+import at.gv.egiz.bku.utils.JarLocation;
 
 /**
  * This is a {@link FactoryBean} for the creation of a {@link Configuration}.
@@ -140,10 +141,10 @@ public class ConfigurationFactoryBean implements FactoryBean, ResourceLoaderAwar
     
     // signature layout
     try {
-      String classContainer = CreateXMLSignatureCommandImpl.class.getProtectionDomain()
-          .getCodeSource().getLocation().toString();
+      String classContainer = JarLocation.get(CreateXMLSignatureCommandImpl.class);
       URL manifestUrl = new URL("jar:" + classContainer
           + "!/META-INF/MANIFEST.MF");
+      log.debug(manifestUrl.toString());
       Manifest manifest = new Manifest(manifestUrl.openStream());
       Attributes attributes = manifest.getMainAttributes();
       String signatureLayout = attributes.getValue("SignatureLayout");
@@ -153,10 +154,8 @@ public class ConfigurationFactoryBean implements FactoryBean, ResourceLoaderAwar
     } catch (Exception e) {
       log.warn("Failed to get signature layout from manifest.", e);
     }
-    
-    
+
     return new MapConfiguration(map);
-    
   }
   
   @Override

@@ -29,11 +29,14 @@ import at.gv.egiz.bku.webstart.gui.StatusNotifier;
 import at.gv.egiz.bku.webstart.gui.BKUControllerInterface;
 import at.gv.egiz.bku.webstart.gui.MOCCAIcon;
 import iaik.asn1.CodingException;
+
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.Locale;
 
 import javax.jnlp.UnavailableServiceException;
+
 
 //import com.sun.javaws.security.JavaWebStartSecurity;
 import java.awt.Desktop;
@@ -41,11 +44,15 @@ import java.awt.SplashScreen;
 import java.net.BindException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.security.CodeSource;
 import java.security.GeneralSecurityException;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+
 import javax.jnlp.BasicService;
 import javax.jnlp.ServiceManager;
+
 import org.mortbay.util.MultiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,7 +113,7 @@ public class Launcher implements BKUControllerInterface {
 	static {
 		String tmp = Configurator.UNKOWN_VERSION;
 		try {
-			String bkuWebStartJar = Launcher.class.getProtectionDomain().getCodeSource().getLocation().toString();
+			String bkuWebStartJar = getJarLocation(Launcher.class);
 			URL manifestURL = new URL("jar:" + bkuWebStartJar + "!/META-INF/MANIFEST.MF");
 			if (log.isTraceEnabled()) {
 				log.trace("read version information from " + manifestURL);
@@ -117,6 +124,8 @@ public class Launcher implements BKUControllerInterface {
 				tmp = atts.getValue("Implementation-Build");
 			}
 		} catch (IOException ex) {
+			log.error("failed to read version", ex);
+		} catch (URISyntaxException ex) {
 			log.error("failed to read version", ex);
 		} finally {
 			version = tmp;
@@ -186,6 +195,24 @@ public class Launcher implements BKUControllerInterface {
 			}
 		}
 		throw new IOException("current platform does not support Java Desktop API");
+	}
+
+	private static String getJarLocation(Class<?> c) throws URISyntaxException,
+	UnsupportedEncodingException {
+		CodeSource codeSource = c.getProtectionDomain().getCodeSource();
+
+		String loc;
+
+		if (codeSource.getLocation() != null) {
+			loc = codeSource.getLocation().toString();
+		} else {
+			loc = c.getResource(c.getSimpleName() + ".class").toString();
+		}
+		if (loc.startsWith("jar:")) {
+			loc = loc.substring(loc.indexOf(":") + 1, loc.indexOf("!"));
+			loc = URLDecoder.decode(loc, "UTF-8");
+		}
+		return loc;
 	}
 
 	private void initStart() {
