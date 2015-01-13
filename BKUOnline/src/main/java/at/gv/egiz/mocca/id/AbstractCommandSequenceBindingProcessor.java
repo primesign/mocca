@@ -99,7 +99,7 @@ public abstract class AbstractCommandSequenceBindingProcessor extends AbstractBi
       SLCommand command;
       do {
         command = getNextCommand();
-        SLCommandContext context = new SLCommandContext(getSTAL(), getUrlDereferencer(), locale);
+        SLCommandContext context = new SLCommandContext(getSTAL(), getUrlDereferencer(), null, locale);
         SLResult result = null;
         if (external) {
           result = commandBroker.execute(command, context, 3 * 60 * 1000);

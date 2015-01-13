@@ -97,7 +97,7 @@ public class CreateXMLSignatureCommandImplTest {
     SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
     assertTrue(command instanceof CreateXMLSignatureCommand);
     
-    SLCommandContext context = new SLCommandContext(stal, urlDereferencer);
+    SLCommandContext context = new SLCommandContext(stal, urlDereferencer, null);
     SLResult result = command.execute(context);
     result.writeTo(new StreamResult(System.out), false);
   }
@@ -119,7 +119,7 @@ public class CreateXMLSignatureCommandImplTest {
     SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
     assertTrue(command instanceof InfoboxReadCommandImpl);
     
-    SLCommandContext context = new SLCommandContext(stal, urlDereferencer);
+    SLCommandContext context = new SLCommandContext(stal, urlDereferencer, null);
     SLResult result = command.execute(context);
     assertTrue(result instanceof ErrorResult);
   }

@@ -30,22 +30,25 @@ import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 import at.gv.egiz.stal.STAL;
 
 public class SLCommandContext {
-  
+
   private STAL stal;
-  
+
   private URLDereferencer urlDereferencer;
-  
+
   private Locale locale;
 
-  public SLCommandContext(STAL stal, URLDereferencer urlDereferencer) {
+  private String dataURL;
+
+  public SLCommandContext(STAL stal, URLDereferencer urlDereferencer,
+      String dataURL) {
     this.stal = stal;
     this.urlDereferencer = urlDereferencer;
+    this.dataURL = dataURL;
   }
 
   public SLCommandContext(STAL stal, URLDereferencer urlDereferencer,
-      Locale locale) {
-    this.stal = stal;
-    this.urlDereferencer = urlDereferencer;
+      String dataURL, Locale locale) {
+    this(stal, urlDereferencer, dataURL);
     this.locale = locale;
   }
 
@@ -72,5 +75,8 @@ public class SLCommandContext {
   public void setLocale(Locale locale) {
     this.locale = locale;
   }
-  
+
+  public String getDataURL() {
+    return dataURL;
+  }
 }

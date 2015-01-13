@@ -121,6 +121,10 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 
 		public static final String USE_XADES_1_4 = "UseXAdES14";
 
+		public static final String USE_XADES_1_4_BLACKLIST = "UseXAdES14Blacklist";
+
+		public static final String XADES_1_4_BLACKLIST_URL = "http://www.buergerkarte.at/BKU_XAdES_14_blacklist.txt";
+
 		public static final String ALLOW_OTHER_REDIRECTS = "AllowOtherRedirects";
 
 		public int getMaxDataUrlHops() {
@@ -340,7 +344,8 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 		log.info("Entered State: {}, Processing {}.", State.PROCESS, slCommand.getName());
 		SLCommandContext commandCtx = new SLCommandContext(
 			getSTAL(),
-			new FormDataURLDereferencer(urlDereferencer, this), 
+			new FormDataURLDereferencer(urlDereferencer, this),
+			getDataUrl(),
 			locale);
 		commandInvoker.setCommand(commandCtx, slCommand);
 		responseCode = 200;

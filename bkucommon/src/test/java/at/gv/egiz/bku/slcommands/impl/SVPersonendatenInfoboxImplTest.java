@@ -134,7 +134,7 @@ public class SVPersonendatenInfoboxImplTest {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.xml");
     assertNotNull(inputStream);
     
-    SLCommandContext context = new SLCommandContext(stal, urlDereferencer);
+    SLCommandContext context = new SLCommandContext(stal, urlDereferencer, null);
     SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
     assertTrue(command instanceof InfoboxReadCommand);
     
@@ -156,7 +156,7 @@ public class SVPersonendatenInfoboxImplTest {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/infoboxreadcommand/IdentityLink.Binary.Invalid-2.xml");
     assertNotNull(inputStream);
     
-    SLCommandContext context = new SLCommandContext(stal, urlDereferencer);
+    SLCommandContext context = new SLCommandContext(stal, urlDereferencer, null);
     SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
     assertTrue(command instanceof InfoboxReadCommand);
     

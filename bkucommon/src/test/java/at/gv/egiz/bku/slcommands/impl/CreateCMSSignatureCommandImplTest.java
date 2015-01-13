@@ -96,7 +96,7 @@ public class CreateCMSSignatureCommandImplTest {
     SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
     assertTrue(command instanceof CreateCMSSignatureCommand);
     
-    SLCommandContext context = new SLCommandContext(stal, urlDereferencer);
+    SLCommandContext context = new SLCommandContext(stal, urlDereferencer, null);
     SLResult result = command.execute(context);
     result.writeTo(new StreamResult(System.out), false);
   }
