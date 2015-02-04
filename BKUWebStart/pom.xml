@@ -260,8 +260,7 @@
     <profile>
       <!--
       This profile is here for triggering when another scm than svn is
-      used (for example git). Try to get the associated svn revision
-      from git-svn.
+      used (for example git). Get the git commit hash.
       -->
       <id>buildnumber-git</id>
       <activation>
@@ -289,12 +288,9 @@
                       shell = "cmd"
                       param = "/c"
                     }
-                    def gitSvnProc = [shell, param, "git svn info | grep Revision:"].execute()
+                    def gitSvnProc = [shell, param, "git rev-parse --short HEAD"].execute()
                     gitSvnProc.waitFor()
-                    def svnref = "unknown"
-                    def out = gitSvnProc.in.text.split(" ")
-                    if (out.size() == 2)
-                      svnref = out[1].trim()
+                    def svnref = gitSvnProc.in.text.trim()
                     project.properties['gitSvnRev'] = svnref
                   </source>
                 </configuration>
