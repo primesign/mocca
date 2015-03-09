@@ -181,7 +181,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 		}
 
 		public boolean getUseXAdES14() {
-			return configuration.getBoolean(USE_XADES_1_4, false);
+			return configuration.getBoolean(USE_XADES_1_4, true);
 		}
 
 		public boolean getAllowOtherRedirects() {

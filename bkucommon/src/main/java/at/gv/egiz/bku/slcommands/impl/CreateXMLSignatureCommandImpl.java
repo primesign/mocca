@@ -122,11 +122,11 @@ public class CreateXMLSignatureCommandImpl extends
     }
 
     public boolean getUseXAdES14() {
-      return configuration.getBoolean(USE_XADES_1_4, false);
+      return configuration.getBoolean(USE_XADES_1_4, true);
     }
 
     public boolean getUseXAdES14Blacklist() {
-      return configuration.getBoolean(USE_XADES_1_4_BLACKLIST, false);
+      return configuration.getBoolean(USE_XADES_1_4_BLACKLIST, true);
     }
   }
 
