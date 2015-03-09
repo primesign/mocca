@@ -125,6 +125,8 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 
 		public static final String XADES_1_4_BLACKLIST_URL = "http://www.buergerkarte.at/BKU_XAdES_14_blacklist.txt";
 
+		public static final int XADES_1_4_BLACKLIST_EXPIRY = 60*60*24; //1 day
+
 		public static final String ALLOW_OTHER_REDIRECTS = "AllowOtherRedirects";
 
 		public int getMaxDataUrlHops() {

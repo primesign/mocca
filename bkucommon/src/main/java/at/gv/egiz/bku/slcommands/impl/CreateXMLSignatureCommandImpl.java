@@ -26,6 +26,7 @@ package at.gv.egiz.bku.slcommands.impl;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -107,6 +108,10 @@ public class CreateXMLSignatureCommandImpl extends
       HTTPBindingProcessorImpl.ConfigurationFacade.USE_XADES_1_4;
     public static final String USE_XADES_1_4_BLACKLIST =
       HTTPBindingProcessorImpl.ConfigurationFacade.USE_XADES_1_4_BLACKLIST;
+    public static final String XADES_1_4_BLACKLIST_URL =
+      HTTPBindingProcessorImpl.ConfigurationFacade.XADES_1_4_BLACKLIST_URL;
+    public static final int XADES_1_4_BLACKLIST_EXPIRY =
+        HTTPBindingProcessorImpl.ConfigurationFacade.XADES_1_4_BLACKLIST_EXPIRY;
 
     public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
@@ -125,12 +130,20 @@ public class CreateXMLSignatureCommandImpl extends
     }
   }
 
+  private static long XADES_1_4_BLACKLIST_TS;
   private static final List<String> XADES_1_4_BLACKLIST;
   static {
     XADES_1_4_BLACKLIST = new ArrayList<String>();
+    loadXAdES14Blacklist();
+  }
+
+  private static void loadXAdES14Blacklist() {
+    XADES_1_4_BLACKLIST_TS = System.currentTimeMillis();
+    XADES_1_4_BLACKLIST.clear();
     try {
-      URL bl = new URL(HTTPBindingProcessorImpl.ConfigurationFacade.XADES_1_4_BLACKLIST_URL);
-      InputStream in = bl.openStream();
+      URLConnection blc = new URL(ConfigurationFacade.XADES_1_4_BLACKLIST_URL).openConnection();
+      blc.setUseCaches(false);
+      InputStream in = blc.getInputStream();
       Scanner s = new Scanner(in);
       while (s.hasNext()){
         XADES_1_4_BLACKLIST.add(s.next());
@@ -139,6 +152,24 @@ public class CreateXMLSignatureCommandImpl extends
     } catch (Exception e) {
       log.error("Blacklist load error", e);
     }
+  }
+
+  private static boolean matchesXAdES14Blacklist(String url) {
+    log.debug("Checking DataURL against XAdES14 blacklist: {}", url);
+    if ((System.currentTimeMillis() - XADES_1_4_BLACKLIST_TS) >
+      (ConfigurationFacade.XADES_1_4_BLACKLIST_EXPIRY * 1000)) {
+      log.debug("Updating XAdES14 blacklist");
+      loadXAdES14Blacklist();
+    }
+    if (url != null) {
+      for (String bl_entry : XADES_1_4_BLACKLIST) {
+        if (url.matches(bl_entry)) {
+          log.debug("XAdES14 blacklist match");
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   public void setConfiguration(Configuration configuration) {
@@ -167,15 +198,8 @@ public class CreateXMLSignatureCommandImpl extends
     boolean useXAdES14 = configurationFacade.getUseXAdES14();
     if (useXAdES14 && configurationFacade.getUseXAdES14Blacklist()) {
       String dataURL = commandContext.getDataURL();
-      log.debug("Checking DataURL against XAdES14 blacklist: {}", dataURL);
-      if (dataURL != null) {
-        for (String bl_entry : XADES_1_4_BLACKLIST) {
-          if (dataURL.matches(bl_entry)) {
-            log.debug("XAdES14 blacklist match");
-            useXAdES14 = false;
-          }
-        }
-      }
+      if (matchesXAdES14Blacklist(dataURL))
+        useXAdES14 = false;
     }
 
     signature = new Signature(commandContext.getURLDereferencer(),
