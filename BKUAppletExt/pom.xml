@@ -36,7 +36,7 @@
             <option>-dontpreverify</option>
             <option>-target 1.6</option>
           </options>
-          <proguardVersion>4.7</proguardVersion>
+          <proguardVersion>5.2.1</proguardVersion>
           <libs>
             <lib>${java.home}/lib/rt.jar</lib>
             <lib>${java.home}/lib/jce.jar</lib>
@@ -107,7 +107,7 @@
           <dependency>
             <groupId>net.sf.proguard</groupId>
             <artifactId>proguard</artifactId>
-            <version>4.7</version>
+            <version>5.2.1</version>
             <scope>runtime</scope>
           </dependency>
         </dependencies>
