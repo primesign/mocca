@@ -185,21 +185,26 @@
     <body>
       <div id="container">
         <div id="buttons">
-	        <a href="#" id="focus" onclick="resize(1.2); return false;" style="float: left;"><img alt="<fmt:message key="incTextSize"/>" src="img/inc.png" id="incButton" class="button"></a>
-	        <a href="#" onclick="resize(1/1.2); return false;" style="float: left;"><img alt="<fmt:message key="decTextSize"/>" src="img/dec.png" id="decButton" class="button"></a>
+          <a href="#" id="focus" onclick="resize(1.2); return false;" style="float: left;"><img alt="<fmt:message key="incTextSize"/>" src="img/inc.png" id="incButton" class="button"></a>
+          <a href="#" onclick="resize(1/1.2); return false;" style="float: left;"><img alt="<fmt:message key="decTextSize"/>" src="img/dec.png" id="decButton" class="button"></a>
         </div>
-				<a href="<c:out value="${helpUrl}"/>" onclick="this.href = document.moccaapplet.getHelpURL(); return true;" onblur="focusToApplet()" target="_new" style="float: right;"><img alt="<fmt:message key="help"/>" src="img/help.png" id="helpButton" class="button"></a>
-				<div id="message" style="display: none;">
+        <a href="<c:out value="${helpUrl}"/>" onclick="this.href = document.moccaapplet.getHelpURL(); return true;" onblur="focusToApplet()" target="_new" style="float: right;"><img alt="<fmt:message key="help"/>" src="img/help.png" id="helpButton" class="button"></a>
+        <div id="message" style="display: none;">
           <p><fmt:message key="javaPluginRequired"/></p>
           <p style="text-align: right;">
             <a style="width: 90%; font-size: 100%" href="http://www.java.com" onclick="deployJava.installLatestJRE(); return false;"><fmt:message key="installJava"/></a>
           </p>
+        </div><div id="message_chrome" style="display: none;">
+          <p><fmt:message key="noJavaChrome"/></p>
         </div><script type="text/javascript">
         if (iframe) {
           document.getElementById("buttons").style.visibility = "hidden";
         }
         if (!deployJava.versionCheck('<c:out value="${minJavaVersion}+"/>')) {
-          document.getElementById("message").style.display = "block";
+          if (window.chrome)
+            document.getElementById("message_chrome").style.display = "block";
+          else
+            document.getElementById("message").style.display = "block";
         } else {
           var attributes = {
             codebase :'<c:out value="${codebase}"/>',
