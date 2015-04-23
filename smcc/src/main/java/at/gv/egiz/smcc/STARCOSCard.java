@@ -307,11 +307,19 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
             if (box.isEncrypted()) {
 
               execSELECT_AID(channel, AID_DF_GS);
-              
-              execMSE(channel, 0x41, 0xb8, new byte[] {
-                  (byte) 0x84, (byte) 0x03, (byte) 0x80, (byte) 0x03, (byte) 0x00,
-                  (byte) 0x80, (byte) 0x01, (byte) 0x81});
 
+              byte[] tlv;
+              if (generation < 4)
+                tlv = new byte[] {
+                    (byte) 0x84, (byte) 0x03, (byte) 0x80, (byte) 0x03, (byte) 0x00,
+                    (byte) 0x80, (byte) 0x01, (byte) 0x81};
+              else
+                tlv = new byte[] {
+                    (byte) 0x84, (byte) 0x01, (byte) 0x83,
+                    (byte) 0x95, (byte) 0x01, (byte) 0x40,
+                    (byte) 0x80, (byte) 0x01, (byte) 0x10};
+
+              execMSE(channel, 0x41, 0xb8, tlv);
 
               byte[] plainKey = null;
 
