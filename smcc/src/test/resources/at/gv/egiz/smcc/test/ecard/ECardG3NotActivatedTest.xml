@@ -40,7 +40,7 @@
 
 	<bean name="cardChannel_notActivated" parent="cardChannel">
 		<property name="globalPins">
-			<map>
+			<util:map id="globalPins" key-type="java.lang.Integer">
 				<entry key="0x01">
 					<bean parent="kartenPIN">
 						<property name="state">
@@ -48,7 +48,7 @@
 						</property>
 					</bean>
 				</entry>
-			</map>
+			</util:map>
 		</property>
 	</bean>
 
@@ -81,7 +81,7 @@
 			</list>
 		</property>
 		<property name="pins">
-			<map>
+			<util:map id="pins" key-type="java.lang.Integer">
 				<entry key="0x81">
 					<bean parent="signaturPIN">
 						<property name="pin" value="26:12:34:56:ff:ff:ff:ff" />
@@ -90,7 +90,7 @@
 						</property>
 					</bean>
 				</entry>
-			</map>
+			</util:map>
 		</property>
 	</bean>
 

@@ -47,9 +47,9 @@
 	<bean name="cardChannel" class="at.gv.egiz.smcc.starcos.STARCOSCardChannelEmul">
 		<property name="cardEmul" ref="card" />
 		<property name="globalPins">
-			<map>
+			<util:map id="globalPins" key-type="java.lang.Integer">
 				<entry key="0x01" value-ref="kartenPIN" />
-			</map>
+			</util:map>
 		</property>
 		<property name="globalFiles">
 			<list>

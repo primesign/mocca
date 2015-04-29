@@ -40,9 +40,9 @@
 			</list>
 		</property>
 		<property name="pins">
-			<map>
+			<util:map id="pins" key-type="java.lang.Integer">
 				<entry key="0x81" value-ref="geheimhaltungsPIN" />
-			</map>
+			</util:map>
 		</property>
 	</bean>
 

@@ -55,7 +55,7 @@
 			</list>
 		</property>
 		<property name="pins">
-			<map>
+			<util:map id="pins1" key-type="java.lang.Integer">
 				<entry key="0x81">
 					<bean class="at.gv.egiz.smcc.PIN">
 						<property name="state">
@@ -63,7 +63,7 @@
 						</property>
 					</bean>
 				</entry>
-			</map>
+			</util:map>
 		</property>
 	</bean>
 
@@ -77,7 +77,7 @@
 			</list>
 		</property>
 		<property name="pins">
-			<map>
+			<util:map id="pins2" key-type="java.lang.Integer">
 				<entry key="0x81">
 					<bean class="at.gv.egiz.smcc.PIN">
 						<property name="state">
@@ -85,7 +85,7 @@
 						</property>
 					</bean>
 				</entry>
-			</map>
+			</util:map>
 		</property>
 	</bean>
 
