@@ -138,7 +138,8 @@ public class Signature {
     setMimeTypeAttrib(attributes, mimeType);
     setContentTypeAttrib(attributes);
     setSigningCertificateAttrib(attributes, signingCertificate);
-    setSigningTimeAttrib(attributes, signingTime);
+    if (signingTime != null)
+      setSigningTimeAttrib(attributes, signingTime);
     Attribute[] attributeArray = attributes.toArray(new Attribute[attributes.size()]);
     signerInfo.setSignedAttributes(attributeArray);
   }

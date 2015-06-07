@@ -110,8 +110,8 @@ public class CreateCMSSignatureCommandImpl extends
     CreateCMSSignatureRequestType request = getRequestValue();
 
     // DataObject, SigningCertificate, SigningTime
-    Date signingTime = new Date();
     try {
+      Date signingTime = request.isPAdESCompatibility() ? null : new Date();
       signature = new Signature(request.getDataObject(), request.getStructure(),
           signingCertificate, signingTime, commandContext.getURLDereferencer(),
           configurationFacade.getUseStrongHash());
