@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Securitylayer, Schnittstellenspezifikation -->
-<!-- XML-Schema fuer Schnittstellenspezifikation Version 1.2.2 -->
+<!-- XML-Schema fuer Schnittstellenspezifikation Version 1.2.3 -->
 <!-- 01. 03. 2005, Bundeskanzleramt, Stabsstelle IKT-Strategie, Technik und Standards -->
+<!-- 24. 09. 2013, EGIZ -->
 <xsd:schema targetNamespace="http://www.buergerkarte.at/namespaces/securitylayer/1.2#" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.2.1" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.buergerkarte.at/namespaces/securitylayer/1.2#">
-  <xsd:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig-core-schema.xsd"/>
-  <xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+  <xsd:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="http://www.w3.org/TR/xmldsig-core/xmldsig-core-schema.xsd"/>
+  <xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd"/>
   <!--###################################################################### -->
   <!--# Create CMS Signature                                               # -->
   <!--###################################################################### -->
@@ -25,6 +26,7 @@
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:attribute>
+    <xsd:attribute name="PAdESCompatibility" type="xsd:boolean" use="optional" default="false"/>
   </xsd:complexType>
   <xsd:complexType name="CMSDataObjectRequiredMetaType">
     <xsd:complexContent>
@@ -122,7 +124,7 @@
   <xsd:element name="CreateXMLSignatureResponse" type="CreateXMLSignatureResponseType"/>
   <xsd:complexType name="CreateXMLSignatureResponseType">
     <xsd:sequence>
-      <xsd:any namespace="##any" processContents="lax" minOccurs="0"/>
+      <xsd:any namespace="##any" processContents="lax"/>
     </xsd:sequence>
   </xsd:complexType>
   <!--###################################################################### -->
@@ -911,6 +913,102 @@
         <xsd:attribute name="SW" type="xsd:string" use="required" />
       </xsd:extension>
     </xsd:simpleContent>
+  </xsd:complexType>
+  <!--###################################################################### -->
+  <!--# Bulk Request                                                       # -->
+  <!--###################################################################### -->
+  <xsd:element name="BulkRequest" type="BulkRequestType"/>
+  <xsd:complexType name="BulkRequestType">
+    <xsd:choice>
+      <xsd:element name="CreateSignatureRequest" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:choice>
+             <xsd:element ref="CreateCMSSignatureRequest"/>
+             <xsd:element ref="CreateXMLSignatureRequest"/>
+          </xsd:choice>
+          <xsd:attribute name="displayName" type="xsd:string" use="optional"/>
+          <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="VerifySignatureRequest" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:choice>
+            <xsd:element ref="VerifyCMSSignatureRequest"/>
+            <xsd:element ref="VerifyXMLSignatureRequest"/>
+          </xsd:choice>
+          <xsd:attribute name="displayName" type="xsd:string" use="optional"/>
+          <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="EncryptRequest" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:choice>
+            <xsd:element ref="EncryptCMSRequest"/>
+            <xsd:element ref="EncryptXMLRequest"/>
+          </xsd:choice>
+          <xsd:attribute name="displayName" type="xsd:string" use="optional"/>
+          <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="DecryptRequest" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:choice>
+            <xsd:element ref="DecryptCMSRequest"/>
+            <xsd:element ref="DecryptXMLRequest"/>
+          </xsd:choice>
+          <xsd:attribute name="displayName" type="xsd:string" use="optional"/>
+          <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:choice>
+  </xsd:complexType>
+  <!--###################################################################### -->
+  <!--# Bulk Response                                                      # -->
+  <!--###################################################################### -->
+  <xsd:element name="BulkResponse" type="BulkResponseType"/>
+  <xsd:complexType name="BulkResponseType">
+    <xsd:choice>
+      <xsd:element name="CreateSignatureResponse" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:choice>
+            <xsd:element ref="CreateCMSSignatureResponse"/>
+            <xsd:element ref="CreateXMLSignatureResponse"/>
+            <xsd:element ref="ErrorResponse"/>
+          </xsd:choice>
+          <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="VerifySignatureResponse" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:choice>
+            <xsd:element ref="VerifyCMSSignatureResponse"/>
+            <xsd:element ref="VerifyXMLSignatureResponse"/>
+            <xsd:element ref="ErrorResponse"/>
+          </xsd:choice>
+          <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="EncryptResponse" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:choice>
+            <xsd:element ref="EncryptCMSResponse"/>
+            <xsd:element ref="EncryptXMLResponse"/>
+            <xsd:element ref="ErrorResponse"/>
+          </xsd:choice>
+          <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="DecryptResponse" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:choice>
+            <xsd:element ref="DecryptCMSResponse"/>
+            <xsd:element ref="DecryptXMLResponse"/>
+            <xsd:element ref="ErrorResponse"/>
+          </xsd:choice>
+          <xsd:attribute name="id" type="xsd:ID" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:choice>
   </xsd:complexType>
   <!--###################################################################### -->
   <!--# Error Response                                                     # -->
