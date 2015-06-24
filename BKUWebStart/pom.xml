@@ -77,7 +77,19 @@
       
       <plugin>
           <artifactId>webstart-maven-plugin</artifactId>
-          <groupId>org.codehaus.mojo.webstart</groupId>
+          <groupId>org.codehaus.mojo</groupId>
+			<dependencies>
+				<dependency>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>webstart-pack200-impl</artifactId>
+					<version>1.0-beta-6</version>
+				</dependency>
+				<dependency>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>keytool-api-1.7</artifactId>
+					<version>1.4</version>
+				</dependency>
+			</dependencies>
           <executions>
             <execution>
               <phase>package</phase>
@@ -105,7 +117,9 @@
                 <gen>false</gen>
               </keystoreConfig>
             </sign>
-            <pack200>false</pack200>
+            <pack200>
+            	<enabled>flase</enabled>
+            </pack200>
             <gzip>false</gzip>
             <outputJarVersions>false</outputJarVersions>
             <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
@@ -190,9 +204,19 @@
         <plugins>
         <plugin>
           <artifactId>webstart-maven-plugin</artifactId>
-          <groupId>org.codehaus.mojo.webstart</groupId>
-          <!-- use pkcs11-patched webstart-maven-plugin-->
-          <version>1.0-beta-1-mocca</version>
+          <groupId>org.codehaus.mojo</groupId>
+			<dependencies>
+				<dependency>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>webstart-pack200-impl</artifactId>
+					<version>1.0-beta-6</version>
+				</dependency>
+				<dependency>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>keytool-api-1.7</artifactId>
+					<version>1.4</version>
+				</dependency>
+			</dependencies>
           <executions>
             <execution>
               <phase>package</phase>
@@ -211,7 +235,7 @@
             </jnlp>
             <sign>
               <keystore>${ks-file}</keystore>
-              <alias>a-sit-3</alias>
+              <alias>${ks-alias}</alias>
               <storepass>${ks-pass}</storepass>
               <keypass>${ks-pass}</keypass>
               <verify>true</verify>
@@ -220,7 +244,9 @@
                 <gen>false</gen>
               </keystoreConfig>
             </sign>
-            <pack200>false</pack200>
+            <pack200>
+            	<enabled>false</enabled>
+            </pack200>
             <gzip>false</gzip>
             <outputJarVersions>false</outputJarVersions>
             <unsignAlreadySignedJars>true</unsignAlreadySignedJars>

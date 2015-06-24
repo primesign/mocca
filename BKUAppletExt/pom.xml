@@ -132,16 +132,6 @@
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <groupId>org.apache.maven.plugins</groupId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-            <configuration>
-              <jarPath>${project.build.directory}/${project.build.finalName}-single.${project.packaging}</jarPath>
-            </configuration>
-          </execution>
-        </executions>
         <configuration>
           <archive>
             <addMavenDescriptor>false</addMavenDescriptor>
@@ -159,6 +149,24 @@
               <Trusted-Library>true</Trusted-Library>
             </manifestEntries>
           </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jarsigner-plugin</artifactId>
+        <version>1.4</version>
+        <executions>
+          <execution>
+            <id>sign</id>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+            <configuration>
+              <jarPath>${project.build.directory}/${project.build.finalName}-single.${project.packaging}</jarPath>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
           <alias>test-applet signer</alias>
           <keystore>./keystore.ks</keystore>
           <storepass>storepass</storepass>
@@ -169,29 +177,6 @@
     </plugins>
   </build>
   <profiles>
-    <profile>
-      <id>proguard-osx</id>
-      <activation>
-        <os>
-          <family>mac</family>
-        </os>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.pyx4me</groupId>
-            <artifactId>proguard-maven-plugin</artifactId>
-            <configuration>
-              <libs>
-                <lib>${java.home}/../Classes/classes.jar</lib>
-                <lib>${java.home}/lib/jce.jar</lib>
-                <lib>${java.home}/../Classes/jsse.jar</lib>
-              </libs>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
     <profile>
       <id>pkcs11-sign</id>
       <build>
@@ -215,17 +200,18 @@
       <id>ks-sign</id>
       <build>
         <plugins>
-          <plugin>
-            <artifactId>maven-jar-plugin</artifactId>
-            <groupId>org.apache.maven.plugins</groupId>
-            <version>2.2-mocca</version>
+	      <plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-jarsigner-plugin</artifactId>
+	        <version>1.4</version>
             <configuration>
               <keystore>${ks-file}</keystore>
-              <alias>a-sit-3</alias>
+              <alias>${ks-alias}</alias>
               <storepass>${ks-pass}</storepass>
               <keypass>${ks-pass}</keypass>
+              <verify>true</verify>
             </configuration>
-          </plugin>
+	      </plugin>
         </plugins>
       </build>
     </profile>
