@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MoccaConfiguration version="1.0">
+	<!-- http://joinup.ec.europa.eu/site/mocca/bkucommon/configuration.html -->
+	<RegisterSecurityProviders>false</RegisterSecurityProviders>
+	<ValidateHashDataInputs>true</ValidateHashDataInputs>
+
+	<DataURLConnection>
+		<!-- The maximum number of consecutive Security Layer requests received 
+			from DataURL server before execution is aborted. -->
+		<MaxHops>50</MaxHops>
+		<!-- A list of allowed DataURLs, separated by commas. The entries are interpreted 
+			as regular expressions. -->
+		<Whitelist>
+			<!--
+			-->
+			https?://127\.0\.0\.1(:[0-9]*)?/.*,
+			https?://localhost(:[0-9]*)?/.*
+			https?://www.unterschreibe.at/.*,
+			https?://services\.datentechnik-innovation\.com/.*,
+			https?://beta\.prime-sign\.com/.*
+		</Whitelist>
+	</DataURLConnection>
+
+	<SSL>
+		<certDirectory>./certs/certStore</certDirectory>
+		<caDirectory>./certs/trustStore</caDirectory>
+		<disableHostnameVerification>false</disableHostnameVerification>
+		<disableAllChecks>false</disableAllChecks>
+		<revocationServiceOrder>OCSP, CRL</revocationServiceOrder>
+	</SSL>
+	<CCID>
+		<disablePinpad>false</disablePinpad>
+	</CCID>
+	<!--
+		<SignatureLayout>foo<SignatureLayout>
+	-->
+	<UseStrongHash>true</UseStrongHash>
+	<UseStylesheetURL>false</UseStylesheetURL>
+	<UseXAdES14>false</UseXAdES14>
+	<EnableP3PHeader>true</EnableP3PHeader>
+</MoccaConfiguration>

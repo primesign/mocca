@@ -1,0 +1,2 @@
+export JAVA_ENDORSED_DIRS=$CATALINA_BASE/endorsed
+export CATALINA_OPTS="-Djava.endorsed.dirs=$CATALINA_BASE/endorsed -Djava.io.tmpdir=$CATALINA_BASE/temp -Dlog4j.configuration="file:///$CATALINA_BASE/conf/log4j.properties" -server"

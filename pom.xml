@@ -33,6 +33,7 @@
     <module>BKUGuiExt</module>
     <module>smccSTALExt</module>
     <module>BKUFonts</module>
+    <module>mocca-docker</module>
   </modules>
   <inceptionYear>2007</inceptionYear>
   <developers>
@@ -177,7 +178,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <execute />
+                    <execute/>
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -194,7 +195,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <execute />
+                    <execute/>
                   </action>
                 </pluginExecution>
               </pluginExecutions>
@@ -462,4 +463,3 @@
     <url>http://jira.egovlabs.gv.at/</url>
   </issueManagement>
 </project>
-
