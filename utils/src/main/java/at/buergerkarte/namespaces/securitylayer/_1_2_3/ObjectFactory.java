@@ -484,6 +484,33 @@ public class ObjectFactory {
     public BulkRequestType.CreateSignatureRequest createBulkRequestTypeCreateSignatureRequest() {
         return new BulkRequestType.CreateSignatureRequest();
     }
+    
+    
+    /**
+     * Create an instance of {@link CreateBulkResponse}
+     * 
+     */
+    public BulkResponseType createBulkResponseType() {
+        return new BulkResponseType();
+    }
+    
+    /**
+     * Create an instance of {@link BulkResponseType.CreateSignatureResponse }
+     * 
+     */
+    public BulkResponseType.CreateSignatureResponse createBulkResponseTypeCreateSignatureResponse() {
+        return new BulkResponseType.CreateSignatureResponse();
+    }
+    
+    /**
+     * Create an instance of {@link BulkResponseType.VerifySignatureResponse }
+     * 
+     */
+    public BulkResponseType.VerifySignatureResponse createBulkResponseTypeVerifySignatureResponse() {
+        return new BulkResponseType.VerifySignatureResponse();
+    }
+    
+    
     /**
      * Create an instance of {@link VerifyHashInfoRequestType }
      * 
@@ -1388,7 +1415,7 @@ public class ObjectFactory {
      * 
      */
     @XmlElementDecl(namespace = "http://www.buergerkarte.at/namespaces/securitylayer/1.2#", name = "BulkRequest")
-    public JAXBElement<BulkRequestType> bulkRequest(BulkRequestType value) {
+    public JAXBElement<BulkRequestType> createBulkRequest(BulkRequestType value) {
         return new JAXBElement<BulkRequestType>(_BulkRequest_QNAME, BulkRequestType.class, null, value);
     }
     
@@ -1398,7 +1425,7 @@ public class ObjectFactory {
      * 
      */
     @XmlElementDecl(namespace = "http://www.buergerkarte.at/namespaces/securitylayer/1.2#", name = "BulkResponse")
-	public JAXBElement<BulkResponseType> bulkResponse(BulkResponseType value) {
+	public JAXBElement<BulkResponseType> createBulkResponse(BulkResponseType value) {
         return new JAXBElement<BulkResponseType>(_BulkResponse_QNAME, BulkResponseType.class, null, value);
     }
     
