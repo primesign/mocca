@@ -470,6 +470,21 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link BulkRequestType.VerifySignatureRequest }
+     * 
+     */
+    public BulkRequestType.VerifySignatureRequest createBulkRequestTypeVerifySignatureRequest() {
+        return new BulkRequestType.VerifySignatureRequest();
+    }
+
+    /**
+     * Create an instance of {@link BulkRequestType.CreateSignatureRequest }
+     * 
+     */
+    public BulkRequestType.CreateSignatureRequest createBulkRequestTypeCreateSignatureRequest() {
+        return new BulkRequestType.CreateSignatureRequest();
+    }
+    /**
      * Create an instance of {@link VerifyHashInfoRequestType }
      * 
      */
@@ -1369,19 +1384,24 @@ public class ObjectFactory {
     }
     
     /**
-     * Create an instance of {@link BulkRequestType.VerifySignatureRequest }
+     * Create an instance of {@link JAXBElement }{@code <}{@link BulkRequestType }{@code >}}
      * 
      */
-    public BulkRequestType.VerifySignatureRequest createBulkRequestTypeVerifySignatureRequest() {
-        return new BulkRequestType.VerifySignatureRequest();
+    @XmlElementDecl(namespace = "http://www.buergerkarte.at/namespaces/securitylayer/1.2#", name = "BulkRequest")
+    public JAXBElement<BulkRequestType> bulkRequest(BulkRequestType value) {
+        return new JAXBElement<BulkRequestType>(_BulkRequest_QNAME, BulkRequestType.class, null, value);
     }
-
+    
+    
     /**
-     * Create an instance of {@link BulkRequestType.CreateSignatureRequest }
+     * Create an instance of {@link JAXBElement }{@code <}{@link CreateCMSSignatureResponseType }{@code >}}
      * 
      */
-    public BulkRequestType.CreateSignatureRequest createBulkRequestTypeCreateSignatureRequest() {
-        return new BulkRequestType.CreateSignatureRequest();
+    @XmlElementDecl(namespace = "http://www.buergerkarte.at/namespaces/securitylayer/1.2#", name = "BulkResponse")
+	public JAXBElement<BulkResponseType> bulkResponse(BulkResponseType value) {
+        return new JAXBElement<BulkResponseType>(_BulkResponse_QNAME, BulkResponseType.class, null, value);
     }
+    
+    
 
 }
