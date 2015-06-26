@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Datentechnik Innovation and Prime Sign GmbH, Austria
+ * Copyright 2015 Datentechnik Innovation GmbH and Prime Sign GmbH, Austria
  *
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved by
  * the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -18,6 +18,7 @@
  * The "NOTICE" text file is part of the distribution. Any derivative works
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
+
 package at.gv.egiz.bku.slcommands.impl;
 
 
@@ -28,7 +29,6 @@ import java.security.InvalidParameterException;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
@@ -41,7 +41,10 @@ import at.buergerkarte.namespaces.securitylayer._1_2_3.CreateCMSSignatureRequest
 import at.gv.egiz.bku.slcommands.BulkSignatureCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLResult;
-import at.gv.egiz.bku.slcommands.impl.cms.Signature;
+import at.gv.egiz.bku.slcommands.impl.cms.BulkCollectionSecurityProvider;
+import at.gv.egiz.bku.slcommands.impl.cms.BulkSTALSecurityProvider;
+import at.gv.egiz.bku.slcommands.impl.cms.BulkSignature;
+import at.gv.egiz.bku.slcommands.impl.cms.BulkSignatureInfo;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLException;
 import at.gv.egiz.bku.slexceptions.SLRequestException;
@@ -111,15 +114,18 @@ public class BulkSignatureCommandImpl extends
 	@Override
 	public SLResult execute(SLCommandContext commandContext) {
 
-		List<byte[]> signatures = new LinkedList<byte[]>();
+		List<byte[]> signatures = null;
 		
 		try {
+			
 			
 			List<CreateSignatureRequest> signatureRequests = getRequestValue().getCreateSignatureRequest();
 			
 
 			if (signatureRequests != null && signatureRequests.size() != 0) {
 
+				BulkCollectionSecurityProvider securityProvieder = new BulkCollectionSecurityProvider();
+				
 				log.debug("get keyboxIdentifier from BulkSingatureRequest");
 				keyboxIdentifier = setKeyboxIdentifier(signatureRequests);
 
@@ -131,9 +137,13 @@ public class BulkSignatureCommandImpl extends
 
 					if (request.getCreateCMSSignatureRequest() != null) {
 						log.info("execute CMSSignature request.");
-						signatures.add(executeCMSSignatureRequests(request.getCreateCMSSignatureRequest(), commandContext));
+						prepareCMSSignatureRequests(securityProvieder, request.getCreateCMSSignatureRequest(),
+								commandContext);
 					}
 				}
+
+						signatures  = executeBulkRequest(securityProvieder.getBulkSignatureInfo(), signatureRequests.get(0)
+						.getCreateCMSSignatureRequest(), commandContext);		
 
 			}
 
@@ -141,6 +151,34 @@ public class BulkSignatureCommandImpl extends
 		      return new ErrorResultImpl(e, commandContext.getLocale());
 	    }
 		return new BulkSignatureResultImpl(signatures);
+	}
+
+
+	private List<byte[]> executeBulkRequest(List<BulkSignatureInfo> bulkSignatureInfo, CreateCMSSignatureRequestType request,
+			SLCommandContext commandContext) throws SLCommandException, SLRequestException {
+
+		BulkSignature signature;
+
+		// prepare the CMSSignature for signing
+		log.debug("Preparing CMS signature.");
+		signature = prepareCMSSignature(request, commandContext);
+
+		// prepare BulkSTALSecurityProvider
+		BulkSTALSecurityProvider securityProvider = new BulkSTALSecurityProvider(bulkSignatureInfo,
+				commandContext.getSTAL());
+
+		try {
+
+			 signature.sign(securityProvider, commandContext.getSTAL(), keyboxIdentifier);
+			 return securityProvider.getSignatureValues();
+			 
+		} catch (CMSException e) {
+			log.error("Error creating CMSSignature", e);
+			throw new SLCommandException(4000);
+		} catch (CMSSignatureException e) {
+			log.error("Error creating CMSSignature", e);
+			throw new SLCommandException(4000);
+		}
 	}
 
 
@@ -154,29 +192,31 @@ public class BulkSignatureCommandImpl extends
 		return null;
 	}
 
-	private byte[] executeCMSSignatureRequests(CreateCMSSignatureRequestType request, SLCommandContext commandContext)
-			throws SLCommandException, SLRequestException, SLViewerException {
+	private byte[] prepareCMSSignatureRequests(BulkCollectionSecurityProvider securityProvieder,
+			CreateCMSSignatureRequestType request, SLCommandContext commandContext) throws SLCommandException,
+			SLRequestException, SLViewerException {
 
-		Signature signature;
+		BulkSignature signature;
+
+		// prepare the CMSSignature for signing
+		log.debug("Preparing CMS signature.");
+		signature = prepareCMSSignature(request, commandContext);
+
+		//update securityProvieder with parameters of the given signature
+		securityProvieder.updateBulkCollectionSecurityProvider(keyboxIdentifier, signature.getHashDataInput(), signature.getExcludedByteRange());
 		
-	      // prepare the CMSSignature for signing
-	      log.debug("Preparing CMS signature.");
-	      signature = prepareCMSSignature(request, commandContext);
-	      
-	      
-	      // sign the CMSSignature
-	      log.debug("Signing CMS signature.");
-	      return (signCMSSignature(signature, commandContext));
-	      
+		// prepare the CMSSignatures of the Bulk Request
+		log.debug("Signing CMS signature.");
+		return (prepareStalRequest(securityProvieder, signature, commandContext));
 	}
 
-	private Signature prepareCMSSignature(CreateCMSSignatureRequestType request, SLCommandContext commandContext)
+	private BulkSignature prepareCMSSignature(CreateCMSSignatureRequestType request, SLCommandContext commandContext)
 			throws SLCommandException, SLRequestException {
 
 		    // DataObject, SigningCertificate, SigningTime
 		    Date signingTime = new Date();
 		    try {
-		      return new Signature(request.getDataObject(), request.getStructure(),
+		      return new BulkSignature(request.getDataObject(), request.getStructure(),
 		          signingCertificate, signingTime, commandContext.getURLDereferencer(),
 		          configurationFacade.getUseStrongHash());
 		    } catch (SLCommandException e) {
@@ -192,10 +232,11 @@ public class BulkSignatureCommandImpl extends
 	}
 
 
-	  private byte[] signCMSSignature(Signature signature, SLCommandContext commandContext) throws SLCommandException, SLViewerException {
+	  private byte[] prepareStalRequest(BulkCollectionSecurityProvider securityProvieder, BulkSignature signature, SLCommandContext commandContext) throws SLCommandException, SLViewerException {
 
-	    try {
-	      return signature.sign(commandContext.getSTAL(), keyboxIdentifier);
+	    try {    	
+	 
+	      return signature.sign(securityProvieder, commandContext.getSTAL(), keyboxIdentifier);
 	    } catch (CMSException e) {
 	      log.error("Error creating CMSSignature", e);
 	      throw new SLCommandException(4000);

@@ -39,6 +39,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import at.gv.egiz.stal.BulkSignRequest;
+import at.gv.egiz.stal.BulkSignResponse;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.InfoboxReadResponse;
@@ -84,7 +86,7 @@ public class DummySTAL implements STAL {
     List<STALResponse> responses = new ArrayList<STALResponse>();
     for (STALRequest request : requestList) {
 
-      log.debug("Got STALRequest " + request + ".");
+      log.info("Got STALRequest " + request + ".");
 
       if (request instanceof InfoboxReadRequest) {
 
@@ -96,7 +98,7 @@ public class DummySTAL implements STAL {
         STALResponse response;
         if (stream != null) {
 
-          log.debug("Infobox " + infoboxIdentifier + " found.");
+          log.info("Infobox " + infoboxIdentifier + " found.");
 
           byte[] infobox;
           try {
@@ -147,7 +149,36 @@ public class DummySTAL implements STAL {
           responses.add(new ErrorResponse());
         }
 
-      } else {
+      }
+      
+			else if (request instanceof BulkSignRequest) {
+				
+				try {
+					BulkSignRequest bulkSignReq = (BulkSignRequest) request;
+					
+					BulkSignResponse bulkSignResp = new BulkSignResponse();
+				
+					for(int i=0; i< bulkSignReq.getSignRequests().size(); i++){
+						
+						Signature s = Signature.getInstance("SHA1withRSA");
+						s.initSign(privateKey);
+						s.update( bulkSignReq.getSignRequests().get(0).getSignedInfo().getValue());
+						byte[] sigVal = s.sign();
+						SignResponse resp = new SignResponse();
+						resp.setSignatureValue(sigVal);
+						bulkSignResp.getSignResponse().add(resp);
+					}
+					
+					responses.add(bulkSignResp);
+					
+				} catch (Exception e) {
+					log.error("Failed to create signature.", e);
+					responses.add(new ErrorResponse());
+				}
+
+			}
+
+			else {
 
         log.debug("Request not implemented.");
 

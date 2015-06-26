@@ -38,8 +38,10 @@
     <choice maxOccurs="unbounded">
       <element name="InfoboxReadResponse" type="tns:InfoboxReadResponseType"/>
       <element name="SignResponse" type="tns:SignResponseType"/>
+      <element name="BulkSignResponse" type="tns:BulkSignResponseType"/>
       <element name="ErrorResponse" type="tns:ErrorResponseType"/>
       <element name="StatusResponse" type="tns:StatusResponseType"/>
+      
     </choice>
     <attribute name="SessionId" type="string"/>
   </complexType>
@@ -87,6 +89,7 @@
     <choice maxOccurs="unbounded">
       <element name="InfoboxReadRequest" type="tns:InfoboxReadRequestType"/>
       <element name="SignRequest" type="tns:SignRequestType"/>
+      <element name="BulkSignRequest" type="tns:BulkSignRequestType"/>
       <element name="QuitRequest" type="tns:QuitRequestType"/>
       <element name="StatusRequest" type="tns:StatusRequestType"/>
     </choice>
@@ -144,6 +147,20 @@
       </extension>
     </complexContent>
   </complexType>
+ 
+  <complexType name="BulkSignRequestType">
+  	<sequence minOccurs="1" maxOccurs="unbounded">
+  	<element name="SignResponse" type="tns:SignRequestType"/>
+  	</sequence>
+  </complexType>
+  
+  
+    <complexType name="BulkSignResponseType">
+  	<sequence minOccurs="1" maxOccurs="unbounded">
+  	<element name="SignResponse" type="tns:SignResponseType"/>
+  	</sequence>
+  </complexType>
+
   <complexType name="QuitRequestType">
     <complexContent>
       <extension base="tns:RequestType"/>
