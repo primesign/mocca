@@ -144,6 +144,14 @@
 			value="http://www.buergerkarte.at/namespaces/securitylayer/1.2#" />
 		<constructor-arg value="CreateCMSSignatureRequest" />
 	</bean>
+	<bean id="bulkSignatureCommandFactory"
+		class="at.gv.egiz.bku.slcommands.impl.BulkSignatureCommandFactory"
+		parent="abstractCommandFactory" />
+	<bean id="bulkRequest" class="javax.xml.namespace.QName">
+		<constructor-arg
+			value="http://www.buergerkarte.at/namespaces/securitylayer/1.2#" />
+		<constructor-arg value="BulkRequest"/>
+	</bean>
 	<bean id="getStatusCommandFactory" class="at.gv.egiz.bku.slcommands.impl.GetStatusCommandFactory"
 		parent="abstractCommandFactory" />
 	<bean id="getStatusRequest" class="javax.xml.namespace.QName">
@@ -161,6 +169,7 @@
 				<entry key-ref="infoboxUpdateRequest" value-ref="infoboxUpdateCommandFactory" />
 				<entry key-ref="createXMLSignatureRequest" value-ref="createXMLSignatureCommandFactory" />
 				<entry key-ref="createCMSSignatureRequest" value-ref="createCMSSignatureCommandFactory" />
+        		<entry key-ref="bulkRequest" value-ref="bulkSignatureCommandFactory" />
 				<entry key-ref="getStatusRequest" value-ref="getStatusCommandFactory" />
 			</map>
 		</property>
