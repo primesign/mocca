@@ -21,7 +21,6 @@
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
-
 package at.gv.egiz.stal.dummy;
 
 import java.io.ByteArrayOutputStream;
@@ -50,27 +49,25 @@ import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.SignResponse;
 
-public class DummySTAL implements STAL { 
+public class DummySTAL implements STAL {
 
   private final Logger log = LoggerFactory.getLogger(DummySTAL.class);
 
   protected X509Certificate cert = null;
   protected PrivateKey privateKey = null;
-  
+
   public DummySTAL() {
     try {
       KeyStore ks = KeyStore.getInstance("pkcs12");
-      InputStream ksStream = getClass().getClassLoader().getResourceAsStream(
-      "at/gv/egiz/bku/slcommands/impl/Cert.p12");
+      InputStream ksStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/impl/Cert.p12");
       ks.load(ksStream, "1622".toCharArray());
-      for (Enumeration<String> aliases = ks.aliases(); aliases
-          .hasMoreElements();) {
+      for (Enumeration<String> aliases = ks.aliases(); aliases.hasMoreElements();) {
         String alias = aliases.nextElement();
         log.debug("Found alias " + alias + " in keystore");
         if (ks.isKeyEntry(alias)) {
           log.debug("Found key entry for alias: " + alias);
           privateKey = (PrivateKey) ks.getKey(alias, "1622".toCharArray());
-          cert = (X509Certificate) ks.getCertificate(alias);  
+          cert = (X509Certificate) ks.getCertificate(alias);
           System.out.println(cert);
         }
       }
@@ -90,8 +87,7 @@ public class DummySTAL implements STAL {
 
       if (request instanceof InfoboxReadRequest) {
 
-        String infoboxIdentifier = ((InfoboxReadRequest) request)
-            .getInfoboxIdentifier();
+        String infoboxIdentifier = ((InfoboxReadRequest) request).getInfoboxIdentifier();
         InputStream stream = getClass().getClassLoader().getResourceAsStream(
             "at/gv/egiz/stal/dummy/infoboxes4/" + infoboxIdentifier + ".bin");
 
@@ -116,7 +112,8 @@ public class DummySTAL implements STAL {
           infoboxReadResponse.setInfoboxValue(infobox);
           response = infoboxReadResponse;
 
-        } else if ((infoboxIdentifier.equals("SecureSignatureKeypair")) ||(infoboxIdentifier.equals("CertifiedKeypair"))) {
+        } else if ((infoboxIdentifier.equals("SecureSignatureKeypair"))
+            || (infoboxIdentifier.equals("CertifiedKeypair"))) {
           try {
             InfoboxReadResponse infoboxReadResponse = new InfoboxReadResponse();
             infoboxReadResponse.setInfoboxValue(cert.getEncoded());
@@ -150,35 +147,36 @@ public class DummySTAL implements STAL {
         }
 
       }
-      
-			else if (request instanceof BulkSignRequest) {
-				
-				try {
-					BulkSignRequest bulkSignReq = (BulkSignRequest) request;
-					
-					BulkSignResponse bulkSignResp = new BulkSignResponse();
-				
-					for(int i=0; i< bulkSignReq.getSignRequests().size(); i++){
-						
-						Signature s = Signature.getInstance("SHA1withRSA");
-						s.initSign(privateKey);
-						s.update( bulkSignReq.getSignRequests().get(i).getSignedInfo().getValue());
-						byte[] sigVal = s.sign();
-						SignResponse resp = new SignResponse();
-						resp.setSignatureValue(sigVal);
-						bulkSignResp.getSignResponse().add(resp);
-					}
-					
-					responses.add(bulkSignResp);
-					
-				} catch (Exception e) {
-					log.error("Failed to create signature.", e);
-					responses.add(new ErrorResponse());
-				}
 
-			}
+      //dummy handler for BulkSignRequest
+      else if (request instanceof BulkSignRequest) {
 
-			else {
+        try {
+          BulkSignRequest bulkSignReq = (BulkSignRequest) request;
+
+          BulkSignResponse bulkSignResp = new BulkSignResponse();
+
+          for (int i = 0; i < bulkSignReq.getSignRequests().size(); i++) {
+
+            Signature s = Signature.getInstance("SHA1withRSA");
+            s.initSign(privateKey);
+            s.update(bulkSignReq.getSignRequests().get(i).getSignedInfo().getValue());
+            byte[] sigVal = s.sign();
+            SignResponse resp = new SignResponse();
+            resp.setSignatureValue(sigVal);
+            bulkSignResp.getSignResponse().add(resp);
+          }
+
+          responses.add(bulkSignResp);
+
+        } catch (Exception e) {
+          log.error("Failed to create signature.", e);
+          responses.add(new ErrorResponse());
+        }
+
+      }
+
+      else {
 
         log.debug("Request not implemented.");
 
@@ -189,5 +187,5 @@ public class DummySTAL implements STAL {
 
     return responses;
   }
-  
+
 }

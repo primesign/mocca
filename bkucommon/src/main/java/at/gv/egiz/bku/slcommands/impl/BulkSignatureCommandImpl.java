@@ -21,7 +21,6 @@
 
 package at.gv.egiz.bku.slcommands.impl;
 
-
 import iaik.asn1.DerCoder;
 import iaik.asn1.INTEGER;
 import iaik.asn1.SEQUENCE;
@@ -70,289 +69,274 @@ import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.SignRequest.SignedInfo;
 
 /**
- * This class implements the security layer command
- * <code>BulkRequest</code>.
+ * This class implements the security layer command <code>BulkRequest</code>.
  * 
  * @author szoescher
  */
-public class BulkSignatureCommandImpl extends
-		SLCommandImpl<BulkRequestType> implements
-		BulkSignatureCommand {
-	
-	private final static String ID_ECSIGTYPE = "1.2.840.10045.4";
-	
-	
-	  /**
-	   * Logging facility.
-	   */
-	  private final static Logger log = LoggerFactory.getLogger(CreateXMLSignatureCommandImpl.class);	    
-		  
-	  /**
-	   * The signing certificate.
-	   */
-	  protected X509Certificate signingCertificate;
+public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> implements BulkSignatureCommand {
 
-	  /**
-	   * The keybox identifier of the key used for signing.
-	   */
-	  protected String keyboxIdentifier;
-	  
-	  
-	  /**
-	   * The configuration facade used to access the MOCCA configuration.
-	   */
-	  private ConfigurationFacade configurationFacade = new ConfigurationFacade();
+  private final static String ID_ECSIGTYPE = "1.2.840.10045.4";
 
-	  private class ConfigurationFacade implements MoccaConfigurationFacade {
-	    private Configuration configuration;
-	    
-	    
-	    public static final String USE_STRONG_HASH = "UseStrongHash";
+  /**
+   * Logging facility.
+   */
+  private final static Logger log = LoggerFactory.getLogger(BulkSignatureCommandImpl.class);
 
-	    public void setConfiguration(Configuration configuration) {
-	        this.configuration = configuration;
-	    }
+  /**
+   * The signing certificate.
+   */
+  protected X509Certificate signingCertificate;
 
-	    public boolean getUseStrongHash() {
-	        return configuration.getBoolean(USE_STRONG_HASH, true);
-	    }
-	}
+  /**
+   * The keybox identifier of the key used for signing.
+   */
+  protected String keyboxIdentifier;
 
-	  @Override
-	  public String getName() {
-	    return "BulkRequestCommandImpl";
-	  }
-	  
-	  public void setConfiguration(Configuration configuration) {
-		    configurationFacade.setConfiguration(configuration);
-		  }
-	  
+  /**
+   * The configuration facade used to access the MOCCA configuration.
+   */
+  private ConfigurationFacade configurationFacade = new ConfigurationFacade();
 
-	  
-	  
-	@Override
-	public SLResult execute(SLCommandContext commandContext) {
+  private class ConfigurationFacade implements MoccaConfigurationFacade {
+    private Configuration configuration;
 
-		List<BulkSignature> signatures = new LinkedList<BulkSignature>();
-		
-		try {
-			
-			
-			List<CreateSignatureRequest> signatureRequests = getRequestValue().getCreateSignatureRequest();
-			
-			
+    public static final String USE_STRONG_HASH = "UseStrongHash";
 
-			if (signatureRequests != null && signatureRequests.size() != 0) {
+    public void setConfiguration(Configuration configuration) {
+      this.configuration = configuration;
+    }
 
-				BulkCollectionSecurityProvider securityProvieder = new BulkCollectionSecurityProvider();
-				
-				log.debug("get keyboxIdentifier from BulkSingatureRequest");
-				keyboxIdentifier = setKeyboxIdentifier(signatureRequests);
+    public boolean getUseStrongHash() {
+      return configuration.getBoolean(USE_STRONG_HASH, true);
+    }
+  }
 
-				log.info("Requesting signing certificate.");
-				signingCertificate = requestSigningCertificate(keyboxIdentifier, commandContext);
-				log.debug("Got signing certificate. {}", signingCertificate);
+  @Override
+  public String getName() {
+    return "BulkRequestCommandImpl";
+  }
 
-			
-				for (CreateSignatureRequest request : signatureRequests) {
+  public void setConfiguration(Configuration configuration) {
+    configurationFacade.setConfiguration(configuration);
+  }
 
-					if (request.getCreateCMSSignatureRequest() != null) {
-						log.info("execute CMSSignature request.");
-						signatures.add(prepareCMSSignatureRequests(securityProvieder, request.getCreateCMSSignatureRequest(),
-								commandContext));
-					}
-				}
+  @Override
+  public SLResult execute(SLCommandContext commandContext) {
 
-				return new BulkSignatureResultImpl((sendBulkRequest(securityProvieder.getBulkSignatureInfo(), commandContext, signatures)));		
+    List<BulkSignature> signatures = new LinkedList<BulkSignature>();
 
-			}
+    try {
 
-		} catch (SLException e) {
-		      return new ErrorResultImpl(e, commandContext.getLocale());
-	    }
-		return null;
+      List<CreateSignatureRequest> signatureRequests = getRequestValue().getCreateSignatureRequest();
 
-	}
+      if (signatureRequests != null && signatureRequests.size() != 0) {
 
+        BulkCollectionSecurityProvider securityProvieder = new BulkCollectionSecurityProvider();
 
-	private List<byte[]> sendBulkRequest(List<BulkSignatureInfo> bulkSignatureInfo,
-			SLCommandContext commandContext, List<BulkSignature> signatures) throws SLCommandException, SLRequestException {
+        log.debug("get keyboxIdentifier from BulkSingatureRequest");
+        keyboxIdentifier = setKeyboxIdentifier(signatureRequests);
 
-		try {
-			
-			List<byte[]> signatureValues;
-			
-			
-			BulkSignRequest signRequest = getSTALSignRequest(bulkSignatureInfo);
-			
-			List<STALResponse> responses = commandContext.getSTAL().handleRequest(Collections.singletonList((STALRequest) signRequest));
+        log.info("Requesting signing certificate.");
+        signingCertificate = requestSigningCertificate(keyboxIdentifier, commandContext);
+        log.debug("Got signing certificate. {}", signingCertificate);
 
-			if (responses == null || responses.size() != 1) {
-				throw new SignatureException("Failed to access STAL.");
-			}
+        for (CreateSignatureRequest request : signatureRequests) {
 
-			STALResponse response = responses.get(0);
-			if (response instanceof BulkSignResponse) {
-				BulkSignResponse bulkSignatureResponse = ((BulkSignResponse) response);
+          if (request.getCreateCMSSignatureRequest() != null) {
+            log.info("execute CMSSignature request.");
+            signatures.add(prepareCMSSignatureRequests(securityProvieder, request.getCreateCMSSignatureRequest(),
+                commandContext));
+          }
+        }
 
-				signatureValues = new LinkedList<byte[]>();
-				for (int i = 0; i < bulkSignatureResponse.getSignResponse().size(); i++) {
-					byte[] sig = ((BulkSignResponse) response).getSignResponse().get(i).getSignatureValue();
-					log.debug("Got signature response: " + Util.toBase64String(sig));
-					signatures.get(i).getSignerInfo().setSignatureValue(wrapSignatureValue(sig, bulkSignatureInfo.get(i).getSignatureAlgorithm()));
-					signatureValues.add(signatures.get(i).getEncoded());    
-				}
-								
-				return signatureValues;
-				
-			} else if (response instanceof ErrorResponse) {
+        return new BulkSignatureResultImpl((signBulkRequest(securityProvieder.getBulkSignatureInfo(), commandContext,
+            signatures)));
 
-				ErrorResponse err = (ErrorResponse) response;
-				STALSignatureException se = new STALSignatureException(err.getErrorCode(), err.getErrorMessage());
-				throw new SignatureException(se);
-			}
-			 
-		} catch (SignatureException e) {
-			log.error("Error creating CMSSignature", e);
-			throw new SLCommandException(4000);
-		} catch (CMSException e) {
-			log.error("Error creating CMSSignature", e);
-		}
-		return null;
-	}
+      }
 
+    } catch (SLException e) {
+      return new ErrorResultImpl(e, commandContext.getLocale());
+    }
+    return null;
 
-	private String setKeyboxIdentifier( List<CreateSignatureRequest> signatureRequests) {
-		for(CreateSignatureRequest request : signatureRequests){
-			if(request.getCreateCMSSignatureRequest() != null){
-				return request.getCreateCMSSignatureRequest().getKeyboxIdentifier();
-			}
-		}
+  }
 
-		return null;
-	}
+  private List<byte[]> signBulkRequest(List<BulkSignatureInfo> bulkSignatureInfo, SLCommandContext commandContext,
+      List<BulkSignature> signatures) throws SLCommandException, SLRequestException {
 
-	private BulkSignature prepareCMSSignatureRequests(BulkCollectionSecurityProvider securityProvieder,
-			CreateCMSSignatureRequestType request, SLCommandContext commandContext) throws SLCommandException,
-			SLRequestException, SLViewerException {
+    try {
 
-		BulkSignature signature;
+      List<byte[]> signatureValues;
 
-		// prepare the CMSSignature for signing
-		log.debug("Preparing CMS signature.");
-		signature = prepareCMSSignature(request, commandContext);
+      BulkSignRequest signRequest = getSTALSignRequest(bulkSignatureInfo);
 
-		//update securityProvieder with parameters of the given signature
-		securityProvieder.updateBulkCollectionSecurityProvider(keyboxIdentifier, signature.getHashDataInput(), signature.getExcludedByteRange());
-		
-		// prepare the CMSSignatures of the Bulk Request
-		log.debug("Signing CMS signature.");
-		return (prepareStalRequest(securityProvieder, signature, commandContext));
+      // send BulkStalRequest
+      List<STALResponse> responses = commandContext.getSTAL().handleRequest(
+          Collections.singletonList((STALRequest) signRequest));
 
-	}	
+      if (responses == null || responses.size() != 1) {
+        throw new SignatureException("Failed to access STAL.");
+      }
 
-	private BulkSignature prepareCMSSignature(CreateCMSSignatureRequestType request, SLCommandContext commandContext)
-			throws SLCommandException, SLRequestException {
+      STALResponse response = responses.get(0);
+      
+      // setSignatureValues from STALResponse  
+      if (response instanceof BulkSignResponse) {
+        BulkSignResponse bulkSignatureResponse = ((BulkSignResponse) response);
 
-		    // DataObject, SigningCertificate, SigningTime
-		    Date signingTime = new Date();
-		    try {
-		      return new BulkSignature(request.getDataObject(), request.getStructure(),
-		          signingCertificate, signingTime, commandContext.getURLDereferencer(),
-		          configurationFacade.getUseStrongHash());
-		    } catch (SLCommandException e) {
-		      log.error("Error creating CMS Signature.", e);
-		      throw e;
-		    } catch (InvalidParameterException e) {
-		      log.error("Error creating CMS Signature.", e);
-		      throw new SLCommandException(3004);
-		    } catch (Exception e) {
-		      log.error("Error creating CMS Signature.", e);
-		      throw new SLCommandException(4000);
-		    }
-	}
+        signatureValues = new LinkedList<byte[]>();
+        for (int i = 0; i < bulkSignatureResponse.getSignResponse().size(); i++) {
+          byte[] sig = ((BulkSignResponse) response).getSignResponse().get(i).getSignatureValue();
+          log.debug("Got signature response: " + Util.toBase64String(sig));
+          signatures.get(i).getSignerInfo()
+              .setSignatureValue(wrapSignatureValue(sig, bulkSignatureInfo.get(i).getSignatureAlgorithm()));
+          signatureValues.add(signatures.get(i).getEncoded());
+        }
 
+        return signatureValues;
 
-	  private BulkSignature prepareStalRequest(BulkCollectionSecurityProvider securityProvieder, BulkSignature signature, SLCommandContext commandContext) throws SLCommandException, SLViewerException {
+      } else if (response instanceof ErrorResponse) {
 
-	    try {    	
-	 
-	      signature.sign(securityProvieder, commandContext.getSTAL(), keyboxIdentifier);
-	      return signature;
-	    } catch (CMSException e) {
-	      log.error("Error creating CMSSignature", e);
-	      throw new SLCommandException(4000);
-	    } catch (CMSSignatureException e) {
-	      log.error("Error creating CMSSignature", e);
-	      throw new SLCommandException(4000);
-	    }
-	  }
-	
-	  private X509Certificate requestSigningCertificate(String keyboxIdentifier, SLCommandContext commandContext) throws SLCommandException {
+        ErrorResponse err = (ErrorResponse) response;
+        STALSignatureException se = new STALSignatureException(err.getErrorCode(), err.getErrorMessage());
+        throw new SignatureException(se);
+      }
 
-	    InfoboxReadRequest stalRequest = new InfoboxReadRequest();
-	    stalRequest.setInfoboxIdentifier(keyboxIdentifier);
+    } catch (SignatureException e) {
+      log.error("Error creating CMSSignature", e);
+      throw new SLCommandException(4000);
+    } catch (CMSException e) {
+      log.error("Error creating CMSSignature", e);
+    }
+    return null;
+  }
 
-	    STALHelper stalHelper = new STALHelper(commandContext.getSTAL());
+  private String setKeyboxIdentifier(List<CreateSignatureRequest> signatureRequests) {
+    for (CreateSignatureRequest request : signatureRequests) {
+      if (request.getCreateCMSSignatureRequest() != null) {
+        return request.getCreateCMSSignatureRequest().getKeyboxIdentifier();
+      }
+    }
 
-	    stalHelper.transmitSTALRequest(Collections.singletonList((STALRequest) stalRequest));
-	    List<X509Certificate> certificates = stalHelper.getCertificatesFromResponses();
-	    if (certificates == null || certificates.size() != 1) {
-	      log.info("Got an unexpected number of certificates from STAL.");
-	      throw new SLCommandException(4000);
-	    }
-	    return signingCertificate = certificates.get(0);
+    return null;
+  }
 
-	  }
+  private BulkSignature prepareCMSSignatureRequests(BulkCollectionSecurityProvider securityProvieder,
+      CreateCMSSignatureRequestType request, SLCommandContext commandContext) throws SLCommandException,
+      SLRequestException, SLViewerException {
 
+    BulkSignature signature;
 
-		private static BulkSignRequest getSTALSignRequest(List<BulkSignatureInfo> bulkSignatureInfo) {
-			BulkSignRequest bulkSignRequest = new BulkSignRequest();
+    // prepare the CMSSignature for signing
+    log.debug("Preparing CMS signature.");
+    signature = prepareCMSSignature(request, commandContext);
 
-			for (BulkSignatureInfo signatureInfo : bulkSignatureInfo) {
-				SignRequest signRequest = new SignRequest();
-				signRequest.setKeyIdentifier(signatureInfo.getKeyboxIdentifier());
-				log.debug("SignedAttributes: " + Util.toBase64String(signatureInfo.getSignedAttributes()));
-				SignedInfo signedInfo = new SignedInfo();
-				signedInfo.setValue(signatureInfo.getSignedAttributes());
-				signedInfo.setIsCMSSignedAttributes(true);
-				signRequest.setSignedInfo(signedInfo);
+    // update securityProvieder with parameters of the given signature
+    securityProvieder.updateBulkCollectionSecurityProvider(keyboxIdentifier, signature.getHashDataInput(),
+        signature.getExcludedByteRange());
 
-				signRequest.setSignatureMethod(signatureInfo.getSignatureMethod());
-				signRequest.setDigestMethod(signatureInfo.getDigestMethod());
-				signRequest.setHashDataInput(signatureInfo.getHashDataInput());
+    // prepare the CMSSignatures of the Bulk Request
+    log.debug("Signing CMS signature.");
+    return (prepareStalRequest(securityProvieder, signature, commandContext));
 
-				ExcludedByteRangeType excludedByteRange = signatureInfo.getExcludedByteRange();
-				if (excludedByteRange != null) {
-					SignRequest.ExcludedByteRange ebr = new SignRequest.ExcludedByteRange();
-					ebr.setFrom(excludedByteRange.getFrom());
-					ebr.setTo(excludedByteRange.getTo());
-					signRequest.setExcludedByteRange(ebr);
-				}
-				
-				bulkSignRequest.getSignRequests().add(signRequest);
-			}
-			return bulkSignRequest;
-		}
+  }
 
-	  private static byte[] wrapSignatureValue(byte[] sig, AlgorithmID sigAlgorithmID) {
-	    String id = sigAlgorithmID.getAlgorithm().getID();
-	    if (id.startsWith(ID_ECSIGTYPE)) //X9.62 Format ECDSA signatures
-	    {
-	      //Wrap r and s in ASN.1 SEQUENCE
-	      byte[] r = Arrays.copyOfRange(sig, 0, sig.length/2);
-	      byte[] s = Arrays.copyOfRange(sig, sig.length/2, sig.length);
-	      SEQUENCE sigS = new SEQUENCE();
-	      sigS.addComponent(new INTEGER(new BigInteger(1, r)));
-	      sigS.addComponent(new INTEGER(new BigInteger(1, s)));
-	      return DerCoder.encode(sigS);
-	    }
-	    else
-	      return sig;
-	  }
-	
+  private BulkSignature prepareCMSSignature(CreateCMSSignatureRequestType request, SLCommandContext commandContext)
+      throws SLCommandException, SLRequestException {
 
+    // DataObject, SigningCertificate, SigningTime
+    Date signingTime = new Date();
+    try {
+      return new BulkSignature(request.getDataObject(), request.getStructure(), signingCertificate, signingTime,
+          commandContext.getURLDereferencer(), configurationFacade.getUseStrongHash());
+    } catch (SLCommandException e) {
+      log.error("Error creating CMS Signature.", e);
+      throw e;
+    } catch (InvalidParameterException e) {
+      log.error("Error creating CMS Signature.", e);
+      throw new SLCommandException(3004);
+    } catch (Exception e) {
+      log.error("Error creating CMS Signature.", e);
+      throw new SLCommandException(4000);
+    }
+  }
 
+  private BulkSignature prepareStalRequest(BulkCollectionSecurityProvider securityProvieder, BulkSignature signature,
+      SLCommandContext commandContext) throws SLCommandException, SLViewerException {
 
+    try {
+
+      signature.sign(securityProvieder, commandContext.getSTAL(), keyboxIdentifier);
+      return signature;
+    } catch (CMSException e) {
+      log.error("Error creating CMSSignature", e);
+      throw new SLCommandException(4000);
+    } catch (CMSSignatureException e) {
+      log.error("Error creating CMSSignature", e);
+      throw new SLCommandException(4000);
+    }
+  }
+
+  private X509Certificate requestSigningCertificate(String keyboxIdentifier, SLCommandContext commandContext)
+      throws SLCommandException {
+
+    InfoboxReadRequest stalRequest = new InfoboxReadRequest();
+    stalRequest.setInfoboxIdentifier(keyboxIdentifier);
+
+    STALHelper stalHelper = new STALHelper(commandContext.getSTAL());
+
+    stalHelper.transmitSTALRequest(Collections.singletonList((STALRequest) stalRequest));
+    List<X509Certificate> certificates = stalHelper.getCertificatesFromResponses();
+    if (certificates == null || certificates.size() != 1) {
+      log.info("Got an unexpected number of certificates from STAL.");
+      throw new SLCommandException(4000);
+    }
+    return signingCertificate = certificates.get(0);
+
+  }
+
+  private static BulkSignRequest getSTALSignRequest(List<BulkSignatureInfo> bulkSignatureInfo) {
+    BulkSignRequest bulkSignRequest = new BulkSignRequest();
+
+    for (BulkSignatureInfo signatureInfo : bulkSignatureInfo) {
+      SignRequest signRequest = new SignRequest();
+      signRequest.setKeyIdentifier(signatureInfo.getKeyboxIdentifier());
+      log.debug("SignedAttributes: " + Util.toBase64String(signatureInfo.getSignedAttributes()));
+      SignedInfo signedInfo = new SignedInfo();
+      signedInfo.setValue(signatureInfo.getSignedAttributes());
+      signedInfo.setIsCMSSignedAttributes(true);
+      signRequest.setSignedInfo(signedInfo);
+
+      signRequest.setSignatureMethod(signatureInfo.getSignatureMethod());
+      signRequest.setDigestMethod(signatureInfo.getDigestMethod());
+      signRequest.setHashDataInput(signatureInfo.getHashDataInput());
+
+      ExcludedByteRangeType excludedByteRange = signatureInfo.getExcludedByteRange();
+      if (excludedByteRange != null) {
+        SignRequest.ExcludedByteRange ebr = new SignRequest.ExcludedByteRange();
+        ebr.setFrom(excludedByteRange.getFrom());
+        ebr.setTo(excludedByteRange.getTo());
+        signRequest.setExcludedByteRange(ebr);
+      }
+
+      bulkSignRequest.getSignRequests().add(signRequest);
+    }
+    return bulkSignRequest;
+  }
+
+  private static byte[] wrapSignatureValue(byte[] sig, AlgorithmID sigAlgorithmID) {
+    String id = sigAlgorithmID.getAlgorithm().getID();
+    if (id.startsWith(ID_ECSIGTYPE)) // X9.62 Format ECDSA signatures
+    {
+      // Wrap r and s in ASN.1 SEQUENCE
+      byte[] r = Arrays.copyOfRange(sig, 0, sig.length / 2);
+      byte[] s = Arrays.copyOfRange(sig, sig.length / 2, sig.length);
+      SEQUENCE sigS = new SEQUENCE();
+      sigS.addComponent(new INTEGER(new BigInteger(1, r)));
+      sigS.addComponent(new INTEGER(new BigInteger(1, s)));
+      return DerCoder.encode(sigS);
+    } else
+      return sig;
+  }
 
 }

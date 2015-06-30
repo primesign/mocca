@@ -19,7 +19,6 @@
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
-
 package at.gv.egiz.bku.slcommands.impl;
 
 import java.util.List;
@@ -45,7 +44,8 @@ import at.gv.egiz.bku.slcommands.SLMarshallerFactory;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
 
 /**
- * This implements the result of the security layer command <code>BulkRequest</code>.
+ * This implements the result of the security layer command
+ * <code>BulkRequest</code>.
  * 
  * @author szoescher
  */
@@ -84,36 +84,35 @@ public class BulkSignatureResultImpl extends SLResultImpl implements BulkSignatu
    * Marshalls the <code>BulkResponseType</code>.
    */
   private void marshallBulkSignatureResponse() {
-	
-	    ObjectFactory factory = new ObjectFactory();
-	    
-	    BulkResponseType bulkResponseType = factory.createBulkResponseType();
-	   
-	    
-	    for(byte[] signature : signatures) {
-			
-	    	 CreateSignatureResponse createSignatureResponse = factory.createBulkResponseTypeCreateSignatureResponse();
-		    CreateCMSSignatureResponseType createCreateCMSSignatureResponseType = factory.createCreateCMSSignatureResponseType();
-		    createCreateCMSSignatureResponseType.setCMSSignature(signature);
-		    createSignatureResponse.setCreateCMSSignatureResponse(createCreateCMSSignatureResponseType);
-		    bulkResponseType.getCreateSignatureResponse().add(createSignatureResponse);
 
-	    }
-	    
-	    JAXBElement<BulkResponseType> createBulkResponse = factory.createBulkResponse(bulkResponseType);
-	    DOMResult res = new DOMResult();
+    ObjectFactory factory = new ObjectFactory();
 
-	    Marshaller marshaller = SLMarshallerFactory.getInstance().createMarshaller(false);
-	
-	    try {
-	        marshaller.marshal(createBulkResponse, res);
-	      } catch (JAXBException e) {
-	        log.error("Failed to marshall 'createBulkResponse'.", e);
-	        throw new SLRuntimeException(e);
-	      }
-	      content = ((Document)res.getNode()).getDocumentElement();
-	    }
+    BulkResponseType bulkResponseType = factory.createBulkResponseType();
 
+    for (byte[] signature : signatures) {
+
+      CreateSignatureResponse createSignatureResponse = factory.createBulkResponseTypeCreateSignatureResponse();
+      CreateCMSSignatureResponseType createCreateCMSSignatureResponseType = factory
+          .createCreateCMSSignatureResponseType();
+      createCreateCMSSignatureResponseType.setCMSSignature(signature);
+      createSignatureResponse.setCreateCMSSignatureResponse(createCreateCMSSignatureResponseType);
+      bulkResponseType.getCreateSignatureResponse().add(createSignatureResponse);
+
+    }
+
+    JAXBElement<BulkResponseType> createBulkResponse = factory.createBulkResponse(bulkResponseType);
+    DOMResult res = new DOMResult();
+
+    Marshaller marshaller = SLMarshallerFactory.getInstance().createMarshaller(false);
+
+    try {
+      marshaller.marshal(createBulkResponse, res);
+    } catch (JAXBException e) {
+      log.error("Failed to marshall 'createBulkResponse'.", e);
+      throw new SLRuntimeException(e);
+    }
+    content = ((Document) res.getNode()).getDocumentElement();
+  }
 
   @Override
   public void writeTo(Result result, Templates templates, boolean fragment) {
