@@ -31,15 +31,13 @@ import iaik.cms.CMSSignatureException;
 import iaik.utils.Util;
 
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
 import java.security.InvalidParameterException;
-import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
@@ -135,12 +133,13 @@ public class BulkSignatureCommandImpl extends
 	@Override
 	public SLResult execute(SLCommandContext commandContext) {
 
-		List<byte[]> signatures = null;
+		List<BulkSignature> signatures = new LinkedList<BulkSignature>();
 		
 		try {
 			
 			
 			List<CreateSignatureRequest> signatureRequests = getRequestValue().getCreateSignatureRequest();
+			
 			
 
 			if (signatureRequests != null && signatureRequests.size() != 0) {
@@ -159,29 +158,30 @@ public class BulkSignatureCommandImpl extends
 
 					if (request.getCreateCMSSignatureRequest() != null) {
 						log.info("execute CMSSignature request.");
-						prepareCMSSignatureRequests(securityProvieder, request.getCreateCMSSignatureRequest(),
-								commandContext);
+						signatures.add(prepareCMSSignatureRequests(securityProvieder, request.getCreateCMSSignatureRequest(),
+								commandContext));
 					}
 				}
 
-						signatures  = sendBulkRequest(securityProvieder.getBulkSignatureInfo(), commandContext);		
+				return new BulkSignatureResultImpl((sendBulkRequest(securityProvieder.getBulkSignatureInfo(), commandContext, signatures)));		
 
 			}
 
 		} catch (SLException e) {
 		      return new ErrorResultImpl(e, commandContext.getLocale());
 	    }
-		return new BulkSignatureResultImpl(signatures);
+		return null;
+
 	}
 
 
 	private List<byte[]> sendBulkRequest(List<BulkSignatureInfo> bulkSignatureInfo,
-			SLCommandContext commandContext) throws SLCommandException, SLRequestException {
+			SLCommandContext commandContext, List<BulkSignature> signatures) throws SLCommandException, SLRequestException {
 
 		try {
-
 			
 			List<byte[]> signatureValues;
+			
 			
 			BulkSignRequest signRequest = getSTALSignRequest(bulkSignatureInfo);
 			
@@ -195,12 +195,12 @@ public class BulkSignatureCommandImpl extends
 			if (response instanceof BulkSignResponse) {
 				BulkSignResponse bulkSignatureResponse = ((BulkSignResponse) response);
 
-				signatureValues = new ArrayList<byte[]>(bulkSignatureResponse.getSignResponse().size());
-
+				signatureValues = new LinkedList<byte[]>();
 				for (int i = 0; i < bulkSignatureResponse.getSignResponse().size(); i++) {
 					byte[] sig = ((BulkSignResponse) response).getSignResponse().get(i).getSignatureValue();
 					log.debug("Got signature response: " + Util.toBase64String(sig));
-					signatureValues.add(wrapSignatureValue(sig, bulkSignatureInfo.get(i).getSignatureAlgorithm()));
+					signatures.get(i).getSignerInfo().setSignatureValue(wrapSignatureValue(sig, bulkSignatureInfo.get(i).getSignatureAlgorithm()));
+					signatureValues.add(signatures.get(i).getEncoded());    
 				}
 								
 				return signatureValues;
@@ -215,6 +215,8 @@ public class BulkSignatureCommandImpl extends
 		} catch (SignatureException e) {
 			log.error("Error creating CMSSignature", e);
 			throw new SLCommandException(4000);
+		} catch (CMSException e) {
+			log.error("Error creating CMSSignature", e);
 		}
 		return null;
 	}
@@ -230,7 +232,7 @@ public class BulkSignatureCommandImpl extends
 		return null;
 	}
 
-	private byte[] prepareCMSSignatureRequests(BulkCollectionSecurityProvider securityProvieder,
+	private BulkSignature prepareCMSSignatureRequests(BulkCollectionSecurityProvider securityProvieder,
 			CreateCMSSignatureRequestType request, SLCommandContext commandContext) throws SLCommandException,
 			SLRequestException, SLViewerException {
 
@@ -246,7 +248,8 @@ public class BulkSignatureCommandImpl extends
 		// prepare the CMSSignatures of the Bulk Request
 		log.debug("Signing CMS signature.");
 		return (prepareStalRequest(securityProvieder, signature, commandContext));
-	}
+
+	}	
 
 	private BulkSignature prepareCMSSignature(CreateCMSSignatureRequestType request, SLCommandContext commandContext)
 			throws SLCommandException, SLRequestException {
@@ -270,11 +273,12 @@ public class BulkSignatureCommandImpl extends
 	}
 
 
-	  private byte[] prepareStalRequest(BulkCollectionSecurityProvider securityProvieder, BulkSignature signature, SLCommandContext commandContext) throws SLCommandException, SLViewerException {
+	  private BulkSignature prepareStalRequest(BulkCollectionSecurityProvider securityProvieder, BulkSignature signature, SLCommandContext commandContext) throws SLCommandException, SLViewerException {
 
 	    try {    	
 	 
-	      return signature.sign(securityProvieder, commandContext.getSTAL(), keyboxIdentifier);
+	      signature.sign(securityProvieder, commandContext.getSTAL(), keyboxIdentifier);
+	      return signature;
 	    } catch (CMSException e) {
 	      log.error("Error creating CMSSignature", e);
 	      throw new SLCommandException(4000);
@@ -300,53 +304,7 @@ public class BulkSignatureCommandImpl extends
 	    return signingCertificate = certificates.get(0);
 
 	  }
-	
 
-	  
-	  /* (non-Javadoc)
-	   * @see iaik.cms.IaikProvider#calculateSignatureFromSignedAttributes(iaik.asn1.structures.AlgorithmID, iaik.asn1.structures.AlgorithmID, java.security.PrivateKey, byte[])
-	   */
-
-		public List<byte[]> calculateBulkSignature(List<BulkSignatureInfo> bulkSignatureInfo, SLCommandContext commandContext) throws SignatureException, InvalidKeyException,
-				NoSuchAlgorithmException {
-
-			
-			List<byte[]> signatureValues;
-			
-			BulkSignRequest signRequest = getSTALSignRequest(bulkSignatureInfo);
-			
-			List<STALResponse> responses = commandContext.getSTAL().handleRequest(Collections.singletonList((STALRequest) signRequest));
-
-			if (responses == null || responses.size() != 1) {
-				throw new SignatureException("Failed to access STAL.");
-			}
-
-			STALResponse response = responses.get(0);
-			if (response instanceof BulkSignResponse) {
-				BulkSignResponse bulkSignatureResponse = ((BulkSignResponse) response);
-
-				signatureValues = new ArrayList<byte[]>(bulkSignatureResponse.getSignResponse().size());
-
-				for (int i = 0; i < bulkSignatureResponse.getSignResponse().size(); i++) {
-					byte[] sig = ((BulkSignResponse) response).getSignResponse().get(i).getSignatureValue();
-					log.debug("Got signature response: " + Util.toBase64String(sig));
-					signatureValues.add(wrapSignatureValue(sig, bulkSignatureInfo.get(i).getSignatureAlgorithm()));
-				}
-				
-				
-				return signatureValues;
-
-
-				
-			} else if (response instanceof ErrorResponse) {
-
-				ErrorResponse err = (ErrorResponse) response;
-				STALSignatureException se = new STALSignatureException(err.getErrorCode(), err.getErrorMessage());
-				throw new SignatureException(se);
-			} else {
-				throw new SignatureException("Failed to access STAL.");
-			}
-		}
 
 		private static BulkSignRequest getSTALSignRequest(List<BulkSignatureInfo> bulkSignatureInfo) {
 			BulkSignRequest bulkSignRequest = new BulkSignRequest();

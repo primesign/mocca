@@ -162,7 +162,7 @@ public class DummySTAL implements STAL {
 						
 						Signature s = Signature.getInstance("SHA1withRSA");
 						s.initSign(privateKey);
-						s.update( bulkSignReq.getSignRequests().get(0).getSignedInfo().getValue());
+						s.update( bulkSignReq.getSignRequests().get(i).getSignedInfo().getValue());
 						byte[] sigVal = s.sign();
 						SignResponse resp = new SignResponse();
 						resp.setSignatureValue(sigVal);
@@ -189,4 +189,5 @@ public class DummySTAL implements STAL {
 
     return responses;
   }
+  
 }

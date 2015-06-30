@@ -28,6 +28,7 @@ import iaik.cms.CMSException;
 import iaik.cms.CMSSignatureException;
 import iaik.cms.ContentInfo;
 import iaik.cms.SecurityProvider;
+import iaik.cms.SignerInfo;
 import iaik.x509.X509ExtensionException;
 
 import java.io.IOException;
@@ -93,5 +94,20 @@ public class BulkSignature extends Signature {
   public ExcludedByteRangeType getExcludedByteRange() {
 		return excludedByteRange;
 	}
+  
+  public SignerInfo getSignerInfo() {
+		return signerInfo;
+	}
+
+	public void setSignerInfo(SignerInfo signerInfo) {
+		this.signerInfo = signerInfo;
+	}
+	
+	public byte[] getEncoded() throws CMSException{
+	    ContentInfo contentInfo = new ContentInfo(signedData);
+	    return contentInfo.getEncoded();
+	}
+  
+  
 }
 
