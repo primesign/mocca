@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "BulkSignResponseType", propOrder = {
     "signResponse"
 })
-public class BulkSignResponseType {
+public class BulkSignResponseType extends ResponseType {
 
     @XmlElement(name = "SignResponse", required = true)
     protected List<SignResponseType> signResponse;

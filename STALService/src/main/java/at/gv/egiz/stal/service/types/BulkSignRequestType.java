@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "BulkSignRequestType", propOrder = {
     "signRequests"
 })
-public class BulkSignRequestType {
+public class BulkSignRequestType extends RequestType {
 
     @XmlElement(name = "SignRequests", required = true)
     protected List<SignRequestType> signRequests;

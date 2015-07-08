@@ -3,13 +3,13 @@
 	xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#" >
 	<sl:CreateSignatureRequest displayName="Urlaubsantrag &quot;RÃ¶ssler&quot;">
 		<sl:CreateCMSSignatureRequest Structure="detached">
-			<sl:KeyboxIdentifier>CertifiedKeypair</sl:KeyboxIdentifier>
+			<sl:KeyboxIdentifier>SecureSignatureKeypair</sl:KeyboxIdentifier>
 			<sl:DataObject>
 				<sl:MetaInfo>
 					<sl:MimeType>text/plain</sl:MimeType>
 				</sl:MetaInfo>
 				<sl:Content Reference="">
-					<sl:Base64Content>Vm9uIGRlciBTaWduYXR1ciB1bXNjaGxvc3NlbmUgRGF0ZW4u
+					<sl:Base64Content>QW5kIG5vdyB0byBzb21ldGhpbmcgY29tcGxldGx5IGRpZmZlcmVudA==
 					</sl:Base64Content>
 				</sl:Content>
 			</sl:DataObject>
@@ -19,7 +19,7 @@
 		<sl:CreateCMSSignatureRequest
 			xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#"
 			Structure="detached">
-			<sl:KeyboxIdentifier>CertifiedKeypair</sl:KeyboxIdentifier>
+			<sl:KeyboxIdentifier>SecureSignatureKeypair</sl:KeyboxIdentifier>
 			<sl:DataObject>
 				<sl:MetaInfo>
 					<sl:MimeType>text/plain</sl:MimeType>

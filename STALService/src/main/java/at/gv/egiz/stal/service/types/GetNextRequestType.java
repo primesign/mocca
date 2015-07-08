@@ -1,27 +1,3 @@
-/*
- * Copyright 2011 by Graz University of Technology, Austria
- * MOCCA has been developed by the E-Government Innovation Center EGIZ, a joint
- * initiative of the Federal Chancellery Austria and Graz University of Technology.
- *
- * Licensed under the EUPL, Version 1.1 or - as soon they will be approved by
- * the European Commission - subsequent versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at:
- * http://www.osor.eu/eupl/
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and
- * limitations under the Licence.
- *
- * This product combines work with different licenses. See the "NOTICE" text
- * file for details on the various modules and licenses.
- * The "NOTICE" text file is part of the distribution. Any derivative works
- * that you distribute must include a readable copy of the "NOTICE" text file.
- */
-
-
 
 package at.gv.egiz.stal.service.types;
 
@@ -48,6 +24,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;choice maxOccurs="unbounded">
  *         &lt;element name="InfoboxReadResponse" type="{http://www.egiz.gv.at/stal}InfoboxReadResponseType"/>
  *         &lt;element name="SignResponse" type="{http://www.egiz.gv.at/stal}SignResponseType"/>
+ *         &lt;element name="BulkSignResponse" type="{http://www.egiz.gv.at/stal}BulkSignResponseType"/>
  *         &lt;element name="ErrorResponse" type="{http://www.egiz.gv.at/stal}ErrorResponseType"/>
  *         &lt;element name="StatusResponse" type="{http://www.egiz.gv.at/stal}StatusResponseType"/>
  *         &lt;element ref="{http://www.egiz.gv.at/stal}OtherResponse"/>
@@ -62,53 +39,55 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetNextRequestType", propOrder = {
-    "infoboxReadResponseOrSignResponseOrErrorResponse"
+    "infoboxReadResponseOrSignResponseOrBulkSignResponse"
 })
 public class GetNextRequestType {
 
     @XmlElementRefs({
-        @XmlElementRef(name = "StatusResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
+        @XmlElementRef(name = "SignResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
         @XmlElementRef(name = "InfoboxReadResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
-        @XmlElementRef(name = "OtherResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
+        @XmlElementRef(name = "BulkSignResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
         @XmlElementRef(name = "ErrorResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
-        @XmlElementRef(name = "SignResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class)
+        @XmlElementRef(name = "StatusResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class),
+        @XmlElementRef(name = "OtherResponse", namespace = "http://www.egiz.gv.at/stal", type = JAXBElement.class)
     })
-    protected List<JAXBElement<? extends at.gv.egiz.stal.service.types.ResponseType>> infoboxReadResponseOrSignResponseOrErrorResponse;
+    protected List<JAXBElement<? extends at.gv.egiz.stal.service.types.ResponseType>> infoboxReadResponseOrSignResponseOrBulkSignResponse;
     @XmlAttribute(name = "SessionId")
     protected String sessionId;
 
     /**
-     * Gets the value of the infoboxReadResponseOrSignResponseOrErrorResponse property.
+     * Gets the value of the infoboxReadResponseOrSignResponseOrBulkSignResponse property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the infoboxReadResponseOrSignResponseOrErrorResponse property.
+     * This is why there is not a <CODE>set</CODE> method for the infoboxReadResponseOrSignResponseOrBulkSignResponse property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getInfoboxReadResponseOrSignResponseOrErrorResponse().add(newItem);
+     *    getInfoboxReadResponseOrSignResponseOrBulkSignResponse().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link at.buergerkarte.namespaces.cardchannel.service.ResponseType }{@code >}
-     * {@link JAXBElement }{@code <}{@link StatusResponseType }{@code >}
-     * {@link JAXBElement }{@code <}{@link at.gv.egiz.stal.service.types.ResponseType }{@code >}
-     * {@link JAXBElement }{@code <}{@link ErrorResponseType }{@code >}
      * {@link JAXBElement }{@code <}{@link SignResponseType }{@code >}
      * {@link JAXBElement }{@code <}{@link InfoboxReadResponseType }{@code >}
+     * {@link JAXBElement }{@code <}{@link BulkSignResponseType }{@code >}
+     * {@link JAXBElement }{@code <}{@link ErrorResponseType }{@code >}
+     * {@link JAXBElement }{@code <}{@link StatusResponseType }{@code >}
+     * {@link JAXBElement }{@code <}{@link at.buergerkarte.namespaces.cardchannel.service.ResponseType }{@code >}
+     * {@link JAXBElement }{@code <}{@link at.gv.egiz.stal.service.types.ResponseType }{@code >}
      * 
      * 
      */
-    public List<JAXBElement<? extends at.gv.egiz.stal.service.types.ResponseType>> getInfoboxReadResponseOrSignResponseOrErrorResponse() {
-        if (infoboxReadResponseOrSignResponseOrErrorResponse == null) {
-            infoboxReadResponseOrSignResponseOrErrorResponse = new ArrayList<JAXBElement<? extends at.gv.egiz.stal.service.types.ResponseType>>();
+    public List<JAXBElement<? extends at.gv.egiz.stal.service.types.ResponseType>> getInfoboxReadResponseOrSignResponseOrBulkSignResponse() {
+        if (infoboxReadResponseOrSignResponseOrBulkSignResponse == null) {
+            infoboxReadResponseOrSignResponseOrBulkSignResponse = new ArrayList<JAXBElement<? extends at.gv.egiz.stal.service.types.ResponseType>>();
         }
-        return this.infoboxReadResponseOrSignResponseOrErrorResponse;
+        return this.infoboxReadResponseOrSignResponseOrBulkSignResponse;
     }
 
     /**

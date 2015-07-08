@@ -120,7 +120,7 @@ public class STALServiceImpl implements STALPortType {
       if (stal != null) {
   
         List<JAXBElement<? extends RequestType>> requestsOut = ((STALRequestBroker) stal).connect();
-        response.getInfoboxReadRequestOrSignRequestOrQuitRequest().addAll(requestsOut);
+        response.getInfoboxReadRequestOrSignRequestOrBulkSignRequest().addAll(requestsOut);
   
         if (log.isDebugEnabled()) {
           StringBuilder sb = new StringBuilder("Returning initial GetNextRequestResponse containing ");
@@ -136,7 +136,7 @@ public class STALServiceImpl implements STALPortType {
         log.error("Failed to get STAL, returning QuitRequest.");
         QuitRequestType quitT = stalObjFactory.createQuitRequestType();
         JAXBElement<QuitRequestType> quit = stalObjFactory.createGetNextRequestResponseTypeQuitRequest(quitT);
-        response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(quit);
+        response.getInfoboxReadRequestOrSignRequestOrBulkSignRequest().add(quit);
       }
       return response;
       
@@ -157,7 +157,7 @@ public class STALServiceImpl implements STALPortType {
 
     try {
 
-      List<JAXBElement<? extends ResponseType>> responsesIn = request.getInfoboxReadResponseOrSignResponseOrErrorResponse();
+      List<JAXBElement<? extends ResponseType>> responsesIn = request.getInfoboxReadResponseOrSignResponseOrBulkSignResponse();
 
       if (log.isDebugEnabled()) {
         StringBuilder sb = new StringBuilder("Received GetNextRequest containing ");
@@ -186,7 +186,7 @@ public class STALServiceImpl implements STALPortType {
       if (stal != null) {
   
         List<JAXBElement<? extends RequestType>> requestsOut = ((STALRequestBroker) stal).nextRequest(responsesIn);
-        response.getInfoboxReadRequestOrSignRequestOrQuitRequest().addAll(requestsOut);
+        response.getInfoboxReadRequestOrSignRequestOrBulkSignRequest().addAll(requestsOut);
   
         if (log.isDebugEnabled()) {
           StringBuilder sb = new StringBuilder("Returning GetNextRequestResponse containing ");
@@ -202,7 +202,7 @@ public class STALServiceImpl implements STALPortType {
         log.error("Failed to get STAL, returning QuitRequest.");
         QuitRequestType quitT = stalObjFactory.createQuitRequestType();
         JAXBElement<QuitRequestType> quit = stalObjFactory.createGetNextRequestResponseTypeQuitRequest(quitT);
-        response.getInfoboxReadRequestOrSignRequestOrQuitRequest().add(quit);
+        response.getInfoboxReadRequestOrSignRequestOrBulkSignRequest().add(quit);
       }
       return response;
       
@@ -345,7 +345,7 @@ public class STALServiceImpl implements STALPortType {
     GetNextRequestResponseType response = new GetNextRequestResponseType();
     response.setSessionId(TEST_SESSION_ID.toString());
 
-    List<JAXBElement<? extends RequestType>> reqs = response.getInfoboxReadRequestOrSignRequestOrQuitRequest();
+    List<JAXBElement<? extends RequestType>> reqs = response.getInfoboxReadRequestOrSignRequestOrBulkSignRequest();
 
     if (responsesIn == null) {
       log.info("[TestSession] CONNECT");
