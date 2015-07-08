@@ -103,15 +103,20 @@ public class BulkSignRequestHandler extends AbstractRequestHandler {
       BulkSignResponse stalResp = new BulkSignResponse();
 
       BulkSignPINGUI pinGUI = new BulkSignPINGUI(gui, secureViewer, null);
-
+ 
       for (SignRequest signReq : bulkSignRequest.getSignRequests()) {
 
-        // TODO extend for multiple sign requests.
         STALResponse response = handleSignRequest(signReq, pinGUI);
+        pinGUI.setShowSignaturePINDialog(false);
 
         if (response instanceof SignResponse) {
           stalResp.getSignResponse().add((SignResponse) response);
         }
+        
+        if(response instanceof ErrorResponse) {
+          return response;
+        }
+        
       }
 
       return stalResp;

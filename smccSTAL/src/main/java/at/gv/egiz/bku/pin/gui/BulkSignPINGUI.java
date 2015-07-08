@@ -47,16 +47,36 @@ public class BulkSignPINGUI extends SignPINGUI implements PINGUI {
   private boolean retry = false;
 
   private char[] pin;
+  
+  boolean showSignaturePINDialog;
 
   public BulkSignPINGUI(BKUGUIFacade gui, SecureViewer viewer, SignedInfoType signedInfo) {
     super(gui, viewer, signedInfo);
+    
+    showSignaturePINDialog =true;
   }
+  
+  
+
+
+  public boolean isShowSignaturePINDialog() {
+    return showSignaturePINDialog;
+  }
+
+
+
+
+  public void setShowSignaturePINDialog(boolean showSignaturePINDialog) {
+    this.showSignaturePINDialog = showSignaturePINDialog;
+  }
+
+
 
 
   @Override
   public char[] providePIN(PinInfo spec, int retries) throws CancelledException, InterruptedException {
 
-    if (pin == null) {
+    if (showSignaturePINDialog) {
 
       gui.showSignaturePINDialog(spec, (retry) ? retries : -1, this, "sign", this, "cancel", this, "secureViewer");
 
