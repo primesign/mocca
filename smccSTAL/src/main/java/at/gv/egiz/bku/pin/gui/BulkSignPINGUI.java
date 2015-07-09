@@ -23,12 +23,14 @@ package at.gv.egiz.bku.pin.gui;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.smccstal.SecureViewer;
+import at.gv.egiz.smcc.BulkSignException;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.pin.gui.PINGUI;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
 
 import java.security.DigestException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,36 +50,44 @@ public class BulkSignPINGUI extends SignPINGUI implements PINGUI {
 
   private char[] pin;
   
-  boolean showSignaturePINDialog;
+  private boolean showSignaturePINDialog;
+  
+  private int maxSignatures;
+  
+  private int signatureCount;
+  
+  List<SignedInfoType> signedInfo;
 
-  public BulkSignPINGUI(BKUGUIFacade gui, SecureViewer viewer, SignedInfoType signedInfo) {
-    super(gui, viewer, signedInfo);
-    
-    showSignaturePINDialog =true;
+  
+  public BulkSignPINGUI(BKUGUIFacade gui, SecureViewer viewer, List<SignedInfoType> signedInfo, int maxSignatures) {
+    super(gui, viewer, null);
+
+    this.signedInfo = signedInfo;
+    this.maxSignatures = maxSignatures;
+
+    showSignaturePINDialog = true;
+    signatureCount = 0;
   }
-  
-  
 
+  public int getSignatureCount() {
+    return signatureCount;
+  }
 
   public boolean isShowSignaturePINDialog() {
     return showSignaturePINDialog;
   }
 
-
-
-
   public void setShowSignaturePINDialog(boolean showSignaturePINDialog) {
     this.showSignaturePINDialog = showSignaturePINDialog;
   }
 
-
-
-
+  
   @Override
-  public char[] providePIN(PinInfo spec, int retries) throws CancelledException, InterruptedException {
+  public char[] providePIN(PinInfo spec, int retries) throws CancelledException, InterruptedException, BulkSignException {
 
     if (showSignaturePINDialog) {
-
+      
+      signatureCount = 1;
       gui.showSignaturePINDialog(spec, (retry) ? retries : -1, this, "sign", this, "cancel", this, "secureViewer");
 
       do {
@@ -87,7 +97,9 @@ public class BulkSignPINGUI extends SignPINGUI implements PINGUI {
 
         if ("secureViewer".equals(action)) {
           try {
+            
             viewer.displayDataToBeSigned(signedInfo, this, "pinEntry");
+            
           } catch (DigestException ex) {
             log.error("Bad digest value: {}", ex.getMessage());
             gui.showErrorDialog(BKUGUIFacade.ERR_INVALID_HASH, new Object[] { ex.getMessage() }, this, "error");
@@ -96,7 +108,7 @@ public class BulkSignPINGUI extends SignPINGUI implements PINGUI {
             gui.showErrorDialog(BKUGUIFacade.ERR_DISPLAY_HASHDATA, new Object[] { ex.getMessage() }, this, "error");
           }
         } else if ("sign".equals(action)) {
-          gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT, BKUGUIFacade.MESSAGE_WAIT);
+          gui.showMessageDialog(BKUGUIFacade.TITLE_BULKSIGNATURE, BKUGUIFacade.MESSAGE_BULKSIGN, new Object[]{signatureCount,maxSignatures});
           retry = true;
           pin = gui.getPin();
           return pin;
@@ -110,6 +122,14 @@ public class BulkSignPINGUI extends SignPINGUI implements PINGUI {
         }
       } while (true);
     } else {
+      
+      signatureCount ++;
+      
+      if(signatureCount > maxSignatures) {     
+        throw new BulkSignException("Limit of "+ signatureCount + "Signatures exceeded.");
+      }
+      
+      gui.showMessageDialog(BKUGUIFacade.TITLE_BULKSIGNATURE, BKUGUIFacade.MESSAGE_BULKSIGN, new Object[]{signatureCount,maxSignatures});
       return pin;
     }
   }

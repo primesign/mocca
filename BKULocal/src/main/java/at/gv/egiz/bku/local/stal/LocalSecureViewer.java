@@ -26,7 +26,9 @@ package at.gv.egiz.bku.local.stal;
 
 import at.gv.egiz.bku.slcommands.impl.DataObjectHashDataInput;
 import at.gv.egiz.bku.smccstal.SecureViewer;
+
 import java.io.IOException;
+import java.security.DigestException;
 import java.util.ArrayList;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
@@ -34,11 +36,13 @@ import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.impl.ByteArrayHashDataInput;
 import at.gv.egiz.stal.signedinfo.ReferenceType;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
+
 import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,39 +74,9 @@ public class LocalSecureViewer implements SecureViewer {
   public void displayDataToBeSigned(SignedInfoType signedInfo,
           ActionListener okListener, String okCommand)
           throws Exception {
-    if (signedInfo.getReference().size() == 0) {
-      log.error("No hashdata input selected to be displayed: null.");
-      throw new Exception("No HashData Input selected to be displayed.");
-    }
-
     ArrayList<HashDataInput> selectedHashDataInputs = new ArrayList<HashDataInput>();
-    for (ReferenceType dsigRef : signedInfo.getReference()) {
-      // don't get Manifest, QualifyingProperties, ...
-      if (dsigRef.getType() == null) {
-        String dsigRefId = dsigRef.getId();
-        if (dsigRefId != null) {
-          boolean hdiAvailable = false;
-          for (HashDataInput hashDataInput : hashDataInputs) {
-            if (dsigRefId.equals(hashDataInput.getReferenceId())) {
-              log.debug("Display hashdata input for dsig:SignedReference {}.",
-                  dsigRefId);
-              selectedHashDataInputs.add(
-                      ensureCachedHashDataInput(hashDataInput));
-              hdiAvailable = true;
-              break;
-            }
-          }
-          if (!hdiAvailable) {
-            log.error("No hashdata input for dsig:SignedReference {}.", dsigRefId);
-            throw new Exception(
-              "No HashDataInput available for dsig:SignedReference " + dsigRefId);
-          }
-        } else {
-          throw new Exception(
-            "Cannot get HashDataInput for dsig:Reference without Id attribute");
-        }
-      }
-    }
+
+      selectedHashDataInputs.addAll(getHashDataInputs(signedInfo));
 
     if (selectedHashDataInputs.size() < 1) {
       log.error("dsig:SignedInfo does not contain a data reference.");
@@ -132,6 +106,58 @@ public class LocalSecureViewer implements SecureViewer {
               hashDataInput.getFilename());
     }
     return hashDataInput;
+  }
+
+  @Override
+  public void displayDataToBeSigned(List<SignedInfoType> signedInfo, ActionListener okListener, String okCommand)
+      throws DigestException, Exception {
+
+    ArrayList<HashDataInput> selectedHashDataInputs = new ArrayList<HashDataInput>();
+
+    for (SignedInfoType nextSignedInfo : signedInfo) {
+      selectedHashDataInputs.addAll(getHashDataInputs(nextSignedInfo));
+    }
+
+    if (selectedHashDataInputs.size() < 1) {
+      log.error("dsig:SignedInfo does not contain a data reference.");
+      throw new Exception("dsig:SignedInfo does not contain a data reference.");
+    }
+    gui.showSecureViewer(selectedHashDataInputs, okListener, okCommand);
+
+  }
+
+  private List<HashDataInput> getHashDataInputs(SignedInfoType signedInfo) throws Exception {
+
+    if (signedInfo.getReference().size() == 0) {
+      log.error("No hashdata input selected to be displayed: null.");
+      throw new Exception("No HashData Input selected to be displayed.");
+    }
+
+    ArrayList<HashDataInput> selectedHashDataInputs = new ArrayList<HashDataInput>();
+    for (ReferenceType dsigRef : signedInfo.getReference()) {
+      // don't get Manifest, QualifyingProperties, ...
+      if (dsigRef.getType() == null) {
+        String dsigRefId = dsigRef.getId();
+        if (dsigRefId != null) {
+          boolean hdiAvailable = false;
+          for (HashDataInput hashDataInput : hashDataInputs) {
+            if (dsigRefId.equals(hashDataInput.getReferenceId())) {
+              log.debug("Display hashdata input for dsig:SignedReference {}.", dsigRefId);
+              selectedHashDataInputs.add(ensureCachedHashDataInput(hashDataInput));
+              hdiAvailable = true;
+              break;
+            }
+          }
+          if (!hdiAvailable) {
+            log.error("No hashdata input for dsig:SignedReference {}.", dsigRefId);
+            throw new Exception("No HashDataInput available for dsig:SignedReference " + dsigRefId);
+          }
+        } else {
+          throw new Exception("Cannot get HashDataInput for dsig:Reference without Id attribute");
+        }
+      }
+    }
+    return selectedHashDataInputs;
   }
 
 }

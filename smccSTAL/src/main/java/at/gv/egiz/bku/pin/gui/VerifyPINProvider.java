@@ -25,9 +25,11 @@
 package at.gv.egiz.bku.pin.gui;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.smcc.BulkSignException;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.pin.gui.PINProvider;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +57,7 @@ public class VerifyPINProvider extends AbstractPINProvider implements PINProvide
 
   @Override
   public char[] providePIN(PinInfo spec, int retries)
-          throws CancelledException, InterruptedException {
+          throws CancelledException, InterruptedException, BulkSignException {
 
     gui.showVerifyPINDialog(spec, (retry) ? retries : -1,
             this, "verify",

@@ -28,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.SignatureException;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.pin.gui.BulkSignPINGUI;
+import at.gv.egiz.smcc.BulkSignException;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.LockedException;
 import at.gv.egiz.smcc.NotActivatedException;
@@ -102,21 +104,33 @@ public class BulkSignRequestHandler extends AbstractRequestHandler {
       BulkSignRequest bulkSignRequest = (BulkSignRequest) request;
       BulkSignResponse stalResp = new BulkSignResponse();
 
-      BulkSignPINGUI pinGUI = new BulkSignPINGUI(gui, secureViewer, null);
- 
-      for (SignRequest signReq : bulkSignRequest.getSignRequests()) {
 
-        STALResponse response = handleSignRequest(signReq, pinGUI);
-        pinGUI.setShowSignaturePINDialog(false);
+      LinkedList<SignedInfoType> signedInfo = new LinkedList<SignedInfoType>();
+      try {
+        
+        for(SignRequest signRequest : bulkSignRequest.getSignRequests()){
+          signedInfo.add(createCMSSignedInfo(signRequest));
+        }
 
-        if (response instanceof SignResponse) {
-          stalResp.getSignResponse().add((SignResponse) response);
+      BulkSignPINGUI pinGUI = new BulkSignPINGUI(gui, secureViewer, signedInfo, bulkSignRequest.getSignRequests().size());
+      
+      
+        for (SignRequest signRequest : bulkSignRequest.getSignRequests()) {
+
+          STALResponse response = handleSignRequest(signRequest, pinGUI);
+          pinGUI.setShowSignaturePINDialog(false);
+
+          if (response instanceof SignResponse) {
+            stalResp.getSignResponse().add((SignResponse) response);
+          }
+
+          if (response instanceof ErrorResponse) {
+            return response;
+          }
+
         }
-        
-        if(response instanceof ErrorResponse) {
-          return response;
-        }
-        
+      } catch (SignatureException e) {
+        return errorResponse(4000, "Error while parsing CMS signature.", e);
       }
 
       return stalResp;
@@ -136,6 +150,7 @@ public class BulkSignRequestHandler extends AbstractRequestHandler {
       SignRequest signReq = (SignRequest) request;
       byte[] signedInfoData = signReq.getSignedInfo().getValue();
       try {
+        
         SignedInfoType signedInfo;
         if (signReq.getSignedInfo().isIsCMSSignedAttributes()) {
           signedInfo = createCMSSignedInfo(signReq);
@@ -171,7 +186,9 @@ public class BulkSignRequestHandler extends AbstractRequestHandler {
         return errorResponse(6001, "Citizen card locked.", e);
       } catch (CancelledException cx) {
         return errorResponse(6001, "User cancelled request.", null);
-      } catch (TimeoutException ex) {
+      }catch (BulkSignException cx) {
+        return errorResponse(6001, "Limit of Signatures exceeded.", null);
+      }  catch (TimeoutException ex) {
         gui.showMessageDialog(BKUGUIFacade.TITLE_ENTRY_TIMEOUT, BKUGUIFacade.ERR_PIN_TIMEOUT, null,
             BKUGUIFacade.BUTTON_CANCEL, this, null);
         waitForAction();

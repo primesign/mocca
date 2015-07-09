@@ -1,7 +1,5 @@
 /*
- * Copyright 2011 by Graz University of Technology, Austria
- * MOCCA has been developed by the E-Government Innovation Center EGIZ, a joint
- * initiative of the Federal Chancellery Austria and Graz University of Technology.
+ * Copyright 2015 Datentechnik Innovation GmbH and Prime Sign GmbH, Austria
  *
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved by
  * the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -21,32 +19,29 @@
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
+/**
+ * @author szoescher szoescher
+ */
+package at.gv.egiz.smcc;
 
-package at.gv.egiz.smcc.pin.gui;
+public class BulkSignException extends SignatureCardException {
 
-import at.gv.egiz.smcc.BulkSignException;
-import at.gv.egiz.smcc.CancelledException;
-import at.gv.egiz.smcc.PinInfo;
+  private static final long serialVersionUID = 1L;
 
-public class SMCCTestPINProvider extends DummyPINGUI implements PINGUI {
-
-  public int provided = 0;
-  char[] pin;
-
-  public SMCCTestPINProvider(char[] pin) {
-    this.pin = pin;
+  public BulkSignException() {
+    super();
   }
 
-  @Override
-  public char[] providePIN(PinInfo spec, int retries)
-          throws CancelledException, InterruptedException, BulkSignException {
-    provided++;
-    return pin;
+  public BulkSignException(String message, Throwable cause) {
+    super(message, cause);
   }
 
-  public int getProvided() {
-    return provided;
+  public BulkSignException(String message) {
+    super(message);
   }
 
- 
+  public BulkSignException(Throwable cause) {
+    super(cause);
+  }
+
 }

@@ -35,6 +35,7 @@ import java.nio.charset.Charset;
 import java.util.Formatter;
 import java.util.Locale;
 
+import at.gv.egiz.smcc.BulkSignException;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.SignatureCard;
@@ -96,7 +97,7 @@ public class CreateSignature {
 
     @Override
     public char[] providePIN(PinInfo pinSpec, int retries)
-        throws CancelledException, InterruptedException {
+        throws CancelledException, InterruptedException, BulkSignException {
       System.out.print("Enter " + pinSpec.getLocalizedName() + ": ");
       BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
       String pin;

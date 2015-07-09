@@ -22,15 +22,19 @@
 
 package at.gv.egiz.bku.local.stal;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.smccstal.BulkSignRequestHandler;
-
 import at.gv.egiz.stal.BulkSignRequest;
 import at.gv.egiz.stal.ErrorResponse;
+import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
+import at.gv.egiz.stal.SignRequest;
 
 /**
  * 
@@ -56,6 +60,16 @@ public class LocalBulkSignRequestHandler extends BulkSignRequestHandler {
 
     if (request instanceof BulkSignRequest) {
 
+      BulkSignRequest bulkSignRequest = (BulkSignRequest) request;
+      
+      List<HashDataInput> hashDataInputs = new LinkedList<HashDataInput>();
+      
+      for(SignRequest signRequest : bulkSignRequest.getSignRequests()){
+        
+        hashDataInputs.addAll(signRequest.getHashDataInput());
+      }
+      
+      ((LocalSecureViewer) secureViewer).setDataToBeSigned(hashDataInputs);
       
       // TODO set hashDataInput
       // ((LocalSecureViewer) secureViewer).setDataToBeSigned(signReq.getHashDataInput());

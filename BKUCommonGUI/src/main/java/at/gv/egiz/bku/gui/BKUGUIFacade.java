@@ -26,6 +26,7 @@ package at.gv.egiz.bku.gui;
 
   import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.smcc.PinInfo;
+
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -74,6 +75,7 @@ public interface BKUGUIFacade {
   public static final String TITLE_ENTRY_TIMEOUT = "title.entry.timeout";
   public static final String TITLE_RETRY = "title.retry";
   public static final String TITLE_WAIT = "title.wait";
+  public static final String TITLE_BULKSIGNATURE = "title.bulksign";
   public static final String TITLE_SIGNATURE_DATA = "title.signature.data";
   public static final String WINDOWTITLE_SAVE = "windowtitle.save";
   public static final String WINDOWTITLE_ERROR = "windowtitle.error";
@@ -103,6 +105,7 @@ public interface BKUGUIFacade {
   public static final String MESSAGE_LAST_RETRY_PINPAD = "retries.pinpad.last";
   public static final String MESSAGE_OVERWRITE = "overwrite";
   public static final String MESSAGE_HELP = "help";
+  public static final String MESSAGE_BULKSIGN = "bulksign";
 
   public static final String WARNING_XHTML = "warning.xhtml";
   public static final String WARNING_CERT_NOTYETVALID = "warning.cert.notyetvalid";
@@ -132,6 +135,7 @@ public interface BKUGUIFacade {
 
   public static final String SIGDATA_TOOLTIPTEXT = "dialog.sigpin.infolabel.sigdata.tooltiptext";
   public static final String SWITCH_FOCUS_DUMMY_LABEL_NAME = "DummyLabel";
+
   
   public enum DIALOG_TYPE {DIALOGUE_UNDEFINED, DIALOGUE_VERIFY_PIN, DIALOGUE_ENTER_PIN, DIALOGUE_SHOW_SIG_DATA, DIALOGUE_SIGNATURE_PIN, DIALOGUE_MESSAGE};
   

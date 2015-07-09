@@ -25,8 +25,10 @@
 package at.gv.egiz.bku.smccstal;
 
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
+
 import java.awt.event.ActionListener;
 import java.security.DigestException;
+import java.util.List;
 
 /**
  *
@@ -48,4 +50,9 @@ public interface SecureViewer {
   void displayDataToBeSigned(SignedInfoType signedInfo,
           ActionListener okListener, String okCommand)
         throws DigestException, Exception;
+  
+  
+  void displayDataToBeSigned(List<SignedInfoType> signedInfo,
+      ActionListener okListener, String okCommand)
+    throws DigestException, Exception;
 }

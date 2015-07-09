@@ -261,4 +261,27 @@ public class AppletSecureViewer implements SecureViewer {
     }
     return md.digest(hashDataInput);
   }
+
+  @Override
+  public void displayDataToBeSigned(List<SignedInfoType> signedInfo, ActionListener okListener, String okCommand)
+      throws DigestException, Exception {
+
+    if (verifiedDataToBeSigned == null) {
+
+      verifiedDataToBeSigned = new ArrayList<HashDataInput>();
+
+      for (SignedInfoType nextSignedInfo : signedInfo) {
+        log.info("Retrieve data to be signed for dsig:SignedInfo {}.", nextSignedInfo.getId());
+        List<GetHashDataInputResponseType.Reference> hdi = getHashDataInput(nextSignedInfo.getReference());
+        verifiedDataToBeSigned.addAll(verifyHashDataInput(nextSignedInfo.getReference(), hdi));
+      }
+    }
+
+    if (verifiedDataToBeSigned.size() > 0) {
+      gui.showSecureViewer(verifiedDataToBeSigned, okListener, okCommand);
+    } else {
+      throw new Exception("No data to be signed (apart from any QualifyingProperties or a Manifest)");
+    }
+
+  }
 }

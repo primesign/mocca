@@ -26,11 +26,14 @@ package at.gv.egiz.bku.pin.gui;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.smccstal.SecureViewer;
+import at.gv.egiz.smcc.BulkSignException;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.pin.gui.PINProvider;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
+
 import java.security.DigestException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +65,7 @@ public class SignPINProvider extends AbstractPINProvider implements PINProvider 
 
   @Override
   public char[] providePIN(PinInfo spec, int retries)
-          throws CancelledException, InterruptedException {
+          throws CancelledException, InterruptedException, BulkSignException {
 
     gui.showSignaturePINDialog(spec, (retry) ? retries : -1,
             this, "sign",
