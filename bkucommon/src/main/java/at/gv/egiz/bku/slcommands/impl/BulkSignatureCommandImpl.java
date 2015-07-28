@@ -40,6 +40,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,10 +50,12 @@ import at.buergerkarte.namespaces.securitylayer._1_2_3.BulkRequestType.CreateSig
 import at.buergerkarte.namespaces.securitylayer._1_2_3.CreateCMSSignatureRequestType;
 import at.buergerkarte.namespaces.securitylayer._1_2_3.ExcludedByteRangeType;
 import at.gv.egiz.bku.conf.MoccaConfigurationFacade;
+import at.gv.egiz.bku.gui.viewer.MimeTypes;
 import at.gv.egiz.bku.slcommands.BulkSignatureCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLResult;
 import at.gv.egiz.bku.slcommands.impl.cms.BulkCollectionSecurityProvider;
+import at.gv.egiz.bku.slcommands.impl.cms.BulkHashDataInput;
 import at.gv.egiz.bku.slcommands.impl.cms.BulkSignature;
 import at.gv.egiz.bku.slcommands.impl.cms.BulkSignatureInfo;
 import at.gv.egiz.bku.slcommands.impl.xsect.STALSignatureException;
@@ -62,6 +66,7 @@ import at.gv.egiz.bku.slexceptions.SLViewerException;
 import at.gv.egiz.stal.BulkSignRequest;
 import at.gv.egiz.stal.BulkSignResponse;
 import at.gv.egiz.stal.ErrorResponse;
+import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
@@ -140,12 +145,25 @@ public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> imp
         signingCertificate = requestSigningCertificate(keyboxIdentifier, commandContext);
         log.debug("Got signing certificate. {}", signingCertificate);
 
-        for (CreateSignatureRequest request : signatureRequests) {
 
+        for (int i=0; i<signatureRequests.size(); i++) {
+          
+          CreateSignatureRequest request = signatureRequests.get(i);
           if (request.getCreateCMSSignatureRequest() != null) {
             log.info("execute CMSSignature request.");
-            signatures.add(prepareCMSSignatureRequests(securityProvieder, request.getCreateCMSSignatureRequest(),
-                commandContext));
+            
+            BulkSignature signature = prepareCMSSignatureRequests(securityProvieder, request.getCreateCMSSignatureRequest(),
+                commandContext);
+            
+            signatures.add(signature);
+            
+            for(HashDataInput hashDataInput : securityProvieder.getBulkSignatureInfo().get(i).getHashDataInput()){
+              BulkHashDataInput bulkHashDataInput = (BulkHashDataInput) hashDataInput;
+              bulkHashDataInput.setDigest(signature.getSignerInfo().getDigest());
+              
+              log.info("setting fileName {}", getFileName(request, i+1));
+              bulkHashDataInput.setFilename(getFileName(request, i+1));
+            }
           }
         }
 
@@ -156,9 +174,40 @@ public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> imp
 
     } catch (SLException e) {
       return new ErrorResultImpl(e, commandContext.getLocale());
+    } catch (CMSException e) {
+      log.error("Error reading message digest.",e);
     }
     return null;
 
+  }
+
+  private String getFileName(CreateSignatureRequest request, int requestCounter) {
+
+    String referenceURL = request.getCreateCMSSignatureRequest().getDataObject().getContent().getReference();
+
+    if (StringUtils.isNotEmpty(referenceURL)) {
+      return FilenameUtils.getBaseName(referenceURL);
+    }
+
+    else {
+
+      StringBuilder fileNameBuilder = new StringBuilder();
+
+      if (StringUtils.isNotEmpty(request.getDisplayName())) {
+        fileNameBuilder.append(request.getDisplayName());
+      } else {
+        fileNameBuilder.append(BulkHashDataInput.DEFAULT_FILENAME);
+        fileNameBuilder.append("_");
+        fileNameBuilder.append(requestCounter);
+      }
+
+      String mimeType = request.getCreateCMSSignatureRequest().getDataObject().getMetaInfo().getMimeType();
+      if (mimeType != null) {
+        fileNameBuilder.append(MimeTypes.getExtension(mimeType));
+      }
+
+      return fileNameBuilder.toString();
+    }
   }
 
   private List<byte[]> signBulkRequest(List<BulkSignatureInfo> bulkSignatureInfo, SLCommandContext commandContext,
@@ -230,14 +279,24 @@ public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> imp
     // prepare the CMSSignature for signing
     log.debug("Preparing CMS signature.");
     signature = prepareCMSSignature(request, commandContext);
+    
+    try {
+     
+      // update securityProvieder with parameters of the given signature
+      securityProvieder.updateBulkCollectionSecurityProvider(keyboxIdentifier, signature.getHashDataInput(),
+          signature.getExcludedByteRange());
 
-    // update securityProvieder with parameters of the given signature
-    securityProvieder.updateBulkCollectionSecurityProvider(keyboxIdentifier, signature.getHashDataInput(),
-        signature.getExcludedByteRange());
-
-    // prepare the CMSSignatures of the Bulk Request
-    log.debug("Signing CMS signature.");
-    return (prepareStalRequest(securityProvieder, signature, commandContext));
+      // prepare the CMSSignatures of the Bulk Request
+      log.debug("Signing CMS signature.");
+     
+    
+    
+    return prepareStalRequest(securityProvieder, signature, commandContext);
+   
+    } catch (Exception e) {
+      log.error("Error creating CMS Signature.", e);
+      throw new SLCommandException(4000);
+    }
 
   }
 
@@ -298,14 +357,19 @@ public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> imp
   private static BulkSignRequest getSTALSignRequest(List<BulkSignatureInfo> bulkSignatureInfo) {
     BulkSignRequest bulkSignRequest = new BulkSignRequest();
 
-    for (BulkSignatureInfo signatureInfo : bulkSignatureInfo) {
+    for (int i = 0; i< bulkSignatureInfo.size(); i++) {
+      
+      BulkSignatureInfo signatureInfo = bulkSignatureInfo.get(i);
       SignRequest signRequest = new SignRequest();
       signRequest.setKeyIdentifier(signatureInfo.getKeyboxIdentifier());
       log.debug("SignedAttributes: " + Util.toBase64String(signatureInfo.getSignedAttributes()));
       SignedInfo signedInfo = new SignedInfo();
       signedInfo.setValue(signatureInfo.getSignedAttributes());
       signedInfo.setIsCMSSignedAttributes(true);
-      signRequest.setSignedInfo(signedInfo);
+      signRequest.setSignedInfo(signedInfo);   
+      log.info("set displayName for Request {}", signatureInfo.getHashDataInput().get(0).getFilename());
+      signRequest.setDisplayName(signatureInfo.getHashDataInput().get(0).getFilename());
+      signRequest.setMimeType(signatureInfo.getHashDataInput().get(0).getMimeType());
 
       signRequest.setSignatureMethod(signatureInfo.getSignatureMethod());
       signRequest.setDigestMethod(signatureInfo.getDigestMethod());
