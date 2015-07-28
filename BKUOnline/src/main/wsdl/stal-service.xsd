@@ -174,6 +174,7 @@
       <element name="Reference" maxOccurs="unbounded">
         <complexType>
           <attribute name="ID" type="string"/>
+          <attribute use="optional" name="digest" type="base64Binary"/>
         </complexType>
       </element>
     </sequence>
