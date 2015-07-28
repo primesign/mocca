@@ -242,20 +242,33 @@ public class STALServiceImpl implements STALPortType {
         if (hashDataInputs != null) {
   
           Map<String, HashDataInput> hashDataIdMap = new HashMap<String, HashDataInput>();
+          Map<String, HashDataInput> hashDataDigestMap = new HashMap<String, HashDataInput>();
           for (HashDataInput hdi : hashDataInputs) {
             if (log.isTraceEnabled()) {
               log.trace("Provided HashDataInput for reference {}.", hdi.getReferenceId());
             }
+            
+            log.trace("Provided HashDataInput for digest {}.", hdi.getDigest());
+            hashDataDigestMap.put(new String(hdi.getDigest()), hdi);
+            
+            log.trace("Provided HashDataInput for reference {}.", hdi.getReferenceId());
             hashDataIdMap.put(hdi.getReferenceId(), hdi);
           }
   
           List<GetHashDataInputType.Reference> reqRefs = request.getReference();
           for (GetHashDataInputType.Reference reqRef : reqRefs) {
             String reqRefId = reqRef.getID();
-            HashDataInput reqHdi = hashDataIdMap.get(reqRefId);
+            String digest = new String(reqRef.getDigest());
+              
+            log.info("looking for digest {}", digest);
+            HashDataInput reqHdi = hashDataDigestMap.get(digest);
+            if (reqHdi == null) {
+              log.info("looking for referenceId {}", reqRefId);
+               reqHdi = hashDataIdMap.get(reqRefId);
+            }
             if (reqHdi == null) {
               String msg = "Failed to resolve HashDataInput for reference " + reqRefId;
-              log.error(msg);
+              log.info(msg);
               GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
               faultInfo.setErrorCode(1);
               faultInfo.setErrorMessage(msg);

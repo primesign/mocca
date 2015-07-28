@@ -338,6 +338,8 @@ public class STALTranslator {
       req.setSignedInfo(signedInfo);
       req.setSignatureMethod(((SignRequest) request).getSignatureMethod());
       req.setDigestMethod(((SignRequest) request).getDigestMethod());
+      req.setMimeType(((SignRequest) request).getMimeType());
+      req.setDisplayName(((SignRequest) request).getDisplayName());
       if (((SignRequest) request).getExcludedByteRange() != null) {
         SignRequestType.ExcludedByteRange excludedByteRange = of.createSignRequestTypeExcludedByteRange();
         excludedByteRange.setFrom(((SignRequest) request).getExcludedByteRange().getFrom());
@@ -357,6 +359,8 @@ public class STALTranslator {
       stalReq.setSignedInfo(signedInfo);
       stalReq.setSignatureMethod(request.getSignatureMethod());
       stalReq.setDigestMethod(request.getDigestMethod());
+      stalReq.setDisplayName(request.getDisplayName());
+      stalReq.setMimeType(request.getMimeType());
       if (request.getExcludedByteRange() != null) {
         ExcludedByteRange excludedByteRange = new ExcludedByteRange();
         excludedByteRange.setFrom(request.getExcludedByteRange().getFrom());
