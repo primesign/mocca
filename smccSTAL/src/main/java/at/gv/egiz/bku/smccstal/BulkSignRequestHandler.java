@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.bku.gui.viewer.SecureViewer;
 import at.gv.egiz.bku.pin.gui.BulkSignPINGUI;
 import at.gv.egiz.smcc.BulkSignException;
 import at.gv.egiz.smcc.CancelledException;
@@ -57,6 +58,7 @@ import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.SignResponse;
+import at.gv.egiz.stal.SignatureInfo;
 import at.gv.egiz.stal.signedinfo.CanonicalizationMethodType;
 import at.gv.egiz.stal.signedinfo.DigestMethodType;
 import at.gv.egiz.stal.signedinfo.ObjectFactory;
@@ -105,19 +107,34 @@ public class BulkSignRequestHandler extends AbstractRequestHandler {
       BulkSignResponse stalResp = new BulkSignResponse();
 
 
-      LinkedList<SignedInfoType> signedInfo = new LinkedList<SignedInfoType>();
+      LinkedList<SignatureInfo> signatureInfoList = new LinkedList<SignatureInfo>();
       try {
         
         for(SignRequest signRequest : bulkSignRequest.getSignRequests()){
-          signedInfo.add(createCMSSignedInfo(signRequest));
+          
+          byte[] signedInfoData = signRequest.getSignedInfo().getValue();
+
+            SignatureInfo signatureInfo;
+            if (signRequest.getSignedInfo().isIsCMSSignedAttributes()) {
+              signatureInfo = createCMSSignedInfo(signRequest);
+            } else {
+              
+              Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+              InputStream is = new ByteArrayInputStream(signedInfoData);
+              @SuppressWarnings("unchecked")
+              JAXBElement<SignedInfoType> si = (JAXBElement<SignedInfoType>) unmarshaller.unmarshal(is);
+              
+              signatureInfo = new SignatureInfo(si.getValue(), signRequest.getDisplayName(), signRequest.getMimeType());
+            }
+            signatureInfoList.add(signatureInfo);      
         }
 
-      BulkSignPINGUI pinGUI = new BulkSignPINGUI(gui, secureViewer, signedInfo, bulkSignRequest.getSignRequests().size());
+      BulkSignPINGUI pinGUI = new BulkSignPINGUI(gui, secureViewer, signatureInfoList, bulkSignRequest.getSignRequests().size());
       
       
-        for (SignRequest signRequest : bulkSignRequest.getSignRequests()) {
-
-          STALResponse response = handleSignRequest(signRequest, pinGUI);
+        for (int i = 0; i < bulkSignRequest.getSignRequests().size(); i++) {
+          SignRequest signRequest = bulkSignRequest.getSignRequests().get(i);
+          STALResponse response = handleSignRequest(signRequest, pinGUI, signatureInfoList.get(i));
           pinGUI.setShowSignaturePINDialog(false);
 
           if (response instanceof SignResponse) {
@@ -131,6 +148,8 @@ public class BulkSignRequestHandler extends AbstractRequestHandler {
         }
       } catch (SignatureException e) {
         return errorResponse(4000, "Error while parsing CMS signature.", e);
+      } catch (JAXBException e) {
+        return errorResponse(1000, "Cannot unmarshal signed info.", e);
       }
 
       return stalResp;
@@ -144,24 +163,14 @@ public class BulkSignRequestHandler extends AbstractRequestHandler {
     return true;
   }
 
-  private STALResponse handleSignRequest(SignRequest request, BulkSignPINGUI pinGUI) throws InterruptedException {
+  private STALResponse handleSignRequest(SignRequest request, BulkSignPINGUI pinGUI, SignatureInfo signatureInfo) throws InterruptedException {
     if (request instanceof SignRequest) {
 
       SignRequest signReq = (SignRequest) request;
       byte[] signedInfoData = signReq.getSignedInfo().getValue();
       try {
         
-        SignedInfoType signedInfo;
-        if (signReq.getSignedInfo().isIsCMSSignedAttributes()) {
-          signedInfo = createCMSSignedInfo(signReq);
-        } else {
-          Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-          InputStream is = new ByteArrayInputStream(signedInfoData);
-          @SuppressWarnings("unchecked")
-          JAXBElement<SignedInfoType> si = (JAXBElement<SignedInfoType>) unmarshaller.unmarshal(is);
-          signedInfo = si.getValue();
-        }
-        String signatureMethod = signedInfo.getSignatureMethod().getAlgorithm();
+        String signatureMethod = signatureInfo.getSignatureMethod().getAlgorithm();
         log.debug("Found signature method: {}.", signatureMethod);
         KeyboxName kb = SignatureCard.KeyboxName.getKeyboxName(signReq.getKeyIdentifier());
 
@@ -196,20 +205,18 @@ public class BulkSignRequestHandler extends AbstractRequestHandler {
         return errorResponse(6001, "Timeout during pin entry.", null);
       } catch (SignatureCardException e) {
         return errorResponse(4000, "Error while creating signature.", e);
-      } catch (JAXBException e) {
-        return errorResponse(1000, "Cannot unmarshal signed info.", e);
       } catch (IOException e) {
         return errorResponse(4000, "Error while creating signature.", e);
-      } catch (SignatureException e) {
-        return errorResponse(4000, "Error while parsing CMS signature.", e);
       }
     } else {
       return errorResponse(1000, "Got unexpected STAL request: " + request + ".", null);
     }
   }
 
-  private static SignedInfoType createCMSSignedInfo(SignRequest signReq) throws SignatureException {
+  private static SignatureInfo createCMSSignedInfo(SignRequest signReq) throws SignatureException {
     SignedInfoType signedInfo = new SignedInfoType();
+    
+    log.trace("createCMSSignedInfo from SignRequest");
     byte[] signedInfoData = signReq.getSignedInfo().getValue();
 
     CanonicalizationMethodType canonicalizationMethod = new CanonicalizationMethodType();
@@ -256,8 +263,11 @@ public class BulkSignRequestHandler extends AbstractRequestHandler {
           + signReq.getExcludedByteRange().getTo();
       reference.setURI(range);
     }
+    
     references.add(reference);
-    return signedInfo;
+    
+    log.trace("Added SignatureInfo {} with name {} of type{}", new Object[] { signedInfo.getId(), signReq.getDisplayName(), signReq.getMimeType() });
+    return new SignatureInfo(signedInfo, signReq.getDisplayName(), signReq.getMimeType());
   }
 
 }

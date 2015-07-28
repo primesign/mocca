@@ -28,6 +28,7 @@ import iaik.cms.CMSException;
 import iaik.cms.CMSSignatureException;
 import iaik.cms.ContentInfo;
 import iaik.cms.SecurityProvider;
+import iaik.cms.SignedData;
 import iaik.cms.SignerInfo;
 import iaik.x509.X509ExtensionException;
 
@@ -64,7 +65,7 @@ public class BulkSignature extends Signature {
    */
   private final Logger log = LoggerFactory.getLogger(BulkSignature.class);
 
-
+  
   public BulkSignature(CMSDataObjectRequiredMetaType dataObject, String structure,
       X509Certificate signingCertificate, Date signingTime, URLDereferencer urlDereferencer,
       boolean useStrongHash)
@@ -88,7 +89,7 @@ public class BulkSignature extends Signature {
   
   @Override
   public HashDataInput getHashDataInput() {
-	  	return new CMSHashDataInput(signedDocument, mimeType);
+    return new BulkHashDataInput(signedDocument, mimeType);
 	  }
   
   public ExcludedByteRangeType getExcludedByteRange() {
@@ -103,11 +104,16 @@ public class BulkSignature extends Signature {
 		this.signerInfo = signerInfo;
 	}
 	
+	
+	public SignedData getSignedData()  {
+	  return signedData;
+	}
+	
 	public byte[] getEncoded() throws CMSException{
 	    ContentInfo contentInfo = new ContentInfo(signedData);
 	    return contentInfo.getEncoded();
 	}
   
-  
+	
 }
 

@@ -24,8 +24,9 @@
 
 package at.gv.egiz.bku.gui;
 
-  import at.gv.egiz.stal.HashDataInput;
+import at.gv.egiz.bku.gui.viewer.SecureViewer;
 import at.gv.egiz.smcc.PinInfo;
+import at.gv.egiz.stal.HashDataInput;
 
 import java.awt.Color;
 import java.awt.event.ActionListener;
@@ -68,6 +69,7 @@ public interface BKUGUIFacade {
   public static final String TITLE_INSERTCARD = "title.insertcard";
   public static final String TITLE_CARD_NOT_SUPPORTED = "title.cardnotsupported";
   public static final String TITLE_VERIFY_PIN = "title.verify.pin";
+  public static final String TITLE_OVERRULE_PINPAD = "title.overrule.pinpad";
   public static final String TITLE_SIGN = "title.sign";
   public static final String TITLE_VERIFY_PINPAD = "title.verify.pinpad";
   public static final String TITLE_ERROR = "title.error";
@@ -91,6 +93,7 @@ public interface BKUGUIFacade {
   public static final String MESSAGE_CARD_NOT_SUPPORTED = "cardnotsupported";
   public static final String MESSAGE_ENTERPIN = "enterpin";
   public static final String MESSAGE_ENTERPIN_PINPAD = "enterpin.pinpad";
+  public static final String MESSAGE_OVERRULE_PINPAD = "overrule.pinpad";
   public static final String MESSAGE_ENTERPIN_PINPAD_DIRECT = "enterpin.pinpad.direct";
   public static final String MESSAGE_HASHDATALINK = "hashdatalink";
   public static final String MESSAGE_HASHDATALINK_TINY = "hashdatalink.tiny";
@@ -179,8 +182,9 @@ public interface BKUGUIFacade {
    * needs to be re-paint)
    * @param backCommand
    */
+
   public void showSecureViewer(List<HashDataInput> dataToBeSigned,
-          ActionListener backListener, String backCommand);
+      ActionListener backListener, String backCommand, SecureViewer secureViewer);
 
   public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams,
           ActionListener okListener, String okCommand);
@@ -204,4 +208,7 @@ public interface BKUGUIFacade {
           String msgKey);
   
   public void getFocusFromBrowser();
+
+  public void showPinPadDeactivationDialog(ActionListener okListener, String okCommand, 
+      ActionListener cancelListener, String cancelCommand);
 }

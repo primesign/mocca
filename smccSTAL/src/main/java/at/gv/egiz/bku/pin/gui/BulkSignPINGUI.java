@@ -22,12 +22,12 @@
 package at.gv.egiz.bku.pin.gui;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
-import at.gv.egiz.bku.smccstal.SecureViewer;
+import at.gv.egiz.bku.gui.viewer.SecureViewer;
 import at.gv.egiz.smcc.BulkSignException;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.PinInfo;
-import at.gv.egiz.smcc.pin.gui.PINGUI;
-import at.gv.egiz.stal.signedinfo.SignedInfoType;
+import at.gv.egiz.smcc.pin.gui.OverrulePinpadPINGUI;
+import at.gv.egiz.stal.SignatureInfo;
 
 import java.security.DigestException;
 import java.util.List;
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author szoescher
  */
-public class BulkSignPINGUI extends SignPINGUI implements PINGUI {
+public class BulkSignPINGUI extends SignPINGUI implements OverrulePinpadPINGUI {
 
   private final Logger log = LoggerFactory.getLogger(BulkSignPINGUI.class);
 
@@ -56,10 +56,11 @@ public class BulkSignPINGUI extends SignPINGUI implements PINGUI {
   
   private int signatureCount;
   
-  List<SignedInfoType> signedInfo;
+  List<SignatureInfo> signedInfo;
+  
 
   
-  public BulkSignPINGUI(BKUGUIFacade gui, SecureViewer viewer, List<SignedInfoType> signedInfo, int maxSignatures) {
+  public BulkSignPINGUI(BKUGUIFacade gui, SecureViewer viewer, List<SignatureInfo> signedInfo, int maxSignatures) {
     super(gui, viewer, null);
 
     this.signedInfo = signedInfo;
@@ -80,6 +81,7 @@ public class BulkSignPINGUI extends SignPINGUI implements PINGUI {
   public void setShowSignaturePINDialog(boolean showSignaturePINDialog) {
     this.showSignaturePINDialog = showSignaturePINDialog;
   }
+  
 
   
   @Override
@@ -129,8 +131,36 @@ public class BulkSignPINGUI extends SignPINGUI implements PINGUI {
         throw new BulkSignException("Limit of "+ signatureCount + "Signatures exceeded.");
       }
       
-      gui.showMessageDialog(BKUGUIFacade.TITLE_BULKSIGNATURE, BKUGUIFacade.MESSAGE_BULKSIGN, new Object[]{signatureCount,maxSignatures});
+      gui.showMessageDialog(BKUGUIFacade.TITLE_BULKSIGNATURE, BKUGUIFacade.MESSAGE_BULKSIGN, new Object[]{signatureCount, maxSignatures});
       return pin;
     }
+  }
+
+  @Override
+  public boolean allowOverrulePinpad() throws InterruptedException {
+
+    if (showSignaturePINDialog) {
+      gui.showPinPadDeactivationDialog(this, "cancel", this, "ok");
+
+      do {
+        log.trace("[{}] wait for action.", Thread.currentThread().getName());
+        waitForAction();
+        log.trace("[{}] received action {}.", Thread.currentThread().getName(), action);
+
+        if ("cancel".equals(action)) {
+
+          return false;
+
+        } else if ("ok".equals(action)) {
+
+          return true;
+
+        } else {
+          log.error("Unknown action command {}.", action);
+        }
+      } while (true);
+    }
+
+    return true;
   }
 }

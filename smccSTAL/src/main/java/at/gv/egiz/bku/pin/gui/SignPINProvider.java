@@ -25,12 +25,12 @@
 package at.gv.egiz.bku.pin.gui;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
-import at.gv.egiz.bku.smccstal.SecureViewer;
+import at.gv.egiz.bku.gui.viewer.SecureViewer;
 import at.gv.egiz.smcc.BulkSignException;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.pin.gui.PINProvider;
-import at.gv.egiz.stal.signedinfo.SignedInfoType;
+import at.gv.egiz.stal.SignatureInfo;
 
 import java.security.DigestException;
 
@@ -54,10 +54,10 @@ public class SignPINProvider extends AbstractPINProvider implements PINProvider 
 
   protected BKUGUIFacade gui;
   protected SecureViewer viewer;
-  protected SignedInfoType signedInfo;
+  protected SignatureInfo signedInfo;
   private boolean retry = false;
 
-  public SignPINProvider(BKUGUIFacade gui, SecureViewer viewer, SignedInfoType signedInfo) {
+  public SignPINProvider(BKUGUIFacade gui, SecureViewer viewer, SignatureInfo signedInfo) {
     this.gui = gui;
     this.viewer = viewer;
     this.signedInfo = signedInfo;

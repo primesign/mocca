@@ -72,6 +72,10 @@
                 <artifactId>BKUCommonGUI</artifactId>
               </inclusion>
               <inclusion>
+				<groupId>at.gv.egiz</groupId>
+				<artifactId>bkucommon</artifactId>        
+              </inclusion>
+              <inclusion>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
               </inclusion>
@@ -303,6 +307,12 @@
       <version>${project.parent.version}</version>
       <optional>true</optional>
      </dependency>
+    <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>bkucommon</artifactId>
+      <version>${project.parent.version}</version>
+      <optional>true</optional>
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>

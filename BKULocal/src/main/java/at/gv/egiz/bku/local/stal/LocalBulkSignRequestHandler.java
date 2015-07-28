@@ -71,8 +71,6 @@ public class LocalBulkSignRequestHandler extends BulkSignRequestHandler {
       
       ((LocalSecureViewer) secureViewer).setDataToBeSigned(hashDataInputs);
       
-      // TODO set hashDataInput
-      // ((LocalSecureViewer) secureViewer).setDataToBeSigned(signReq.getHashDataInput());
       return super.handleRequest(request);
     } else {
       log.error("Got unexpected STAL request: {}.", request);

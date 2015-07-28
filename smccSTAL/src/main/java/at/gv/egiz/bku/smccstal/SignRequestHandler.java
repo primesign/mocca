@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.bku.gui.viewer.SecureViewer;
 import at.gv.egiz.bku.pin.gui.SignPINGUI;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.LockedException;
@@ -55,6 +56,7 @@ import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.SignResponse;
+import at.gv.egiz.stal.SignatureInfo;
 import at.gv.egiz.stal.signedinfo.CanonicalizationMethodType;
 import at.gv.egiz.stal.signedinfo.DigestMethodType;
 import at.gv.egiz.stal.signedinfo.ObjectFactory;
@@ -97,10 +99,12 @@ public class SignRequestHandler extends AbstractRequestHandler {
     @Override
     public STALResponse handleRequest(STALRequest request) throws InterruptedException {
         if (request instanceof SignRequest) {
+          
             SignRequest signReq = (SignRequest) request;
+
             byte[] signedInfoData = signReq.getSignedInfo().getValue();
             try {
-                SignedInfoType signedInfo;
+                SignatureInfo signedInfo;
                 if (signReq.getSignedInfo().isIsCMSSignedAttributes()) {
                   signedInfo = createCMSSignedInfo(signReq);
                 } else {
@@ -109,7 +113,8 @@ public class SignRequestHandler extends AbstractRequestHandler {
                   @SuppressWarnings("unchecked")
                   JAXBElement<SignedInfoType> si =
                       (JAXBElement<SignedInfoType>) unmarshaller.unmarshal(is);
-                  signedInfo = si.getValue();
+                  
+                  signedInfo = new SignatureInfo(si.getValue(), signReq.getDisplayName(), signReq.getMimeType());
                 }
                 String signatureMethod = signedInfo.getSignatureMethod().getAlgorithm();
                 log.debug("Found signature method: {}.", signatureMethod);
@@ -159,7 +164,7 @@ public class SignRequestHandler extends AbstractRequestHandler {
         }
     }
 
-    private static SignedInfoType createCMSSignedInfo(SignRequest signReq) throws SignatureException {
+    private static SignatureInfo createCMSSignedInfo(SignRequest signReq) throws SignatureException {
       SignedInfoType signedInfo = new SignedInfoType();
       byte[] signedInfoData = signReq.getSignedInfo().getValue();
 
@@ -210,7 +215,7 @@ public class SignRequestHandler extends AbstractRequestHandler {
         reference.setURI(range);
       }
       references.add(reference);
-      return signedInfo;
+      return new SignatureInfo(signedInfo, signReq.getDisplayName(), signReq.getMimeType());
     }
 
     @Override

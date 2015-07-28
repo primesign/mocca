@@ -599,13 +599,14 @@ public class PinpadCardReader extends DefaultCardReader {
     Card icc = channel.getCard();
 
     if (pinGUI instanceof OverrulePinpadPINGUI && (VERIFY || VERIFY_DIRECT)) {
-    	if (((OverrulePinpadPINGUI) pinGUI).allowOverrulePinpad()) {
-    		return super.verify(channel, apduSpec, pinGUI, pinSpec, retries);
-    	} else {
-    		throw new CancelledException();
-    	}
+      if (((OverrulePinpadPINGUI) pinGUI).allowOverrulePinpad()) {
+        return super.verify(channel, apduSpec, pinGUI, pinSpec, retries);
+      } else {
+        log.debug("The User prohibited deactivation of the pinPad.");
+        throw new CancelledException();
+      }
     }
-    
+
     if (VERIFY) {
       boolean regain = dropExclusive(icc);
       try {
