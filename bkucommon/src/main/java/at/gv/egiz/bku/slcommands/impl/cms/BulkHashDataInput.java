@@ -1,7 +1,5 @@
 /*
- * Copyright 2011 by Graz University of Technology, Austria
- * MOCCA has been developed by the E-Government Innovation Center EGIZ, a joint
- * initiative of the Federal Chancellery Austria and Graz University of Technology.
+ * Copyright 2015 Datentechnik Innovation GmbH and Prime Sign GmbH, Austria
  *
  * Licensed under the EUPL, Version 1.1 or - as soon they will be approved by
  * the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -21,7 +19,6 @@
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
-
 package at.gv.egiz.bku.slcommands.impl.cms;
 
 import java.io.ByteArrayInputStream;
@@ -30,7 +27,11 @@ import java.io.InputStream;
 import at.gv.egiz.bku.gui.viewer.MimeTypes;
 import at.gv.egiz.stal.HashDataInput;
 
-public class CMSHashDataInput implements HashDataInput {
+/**
+ *
+ * @author szoescher
+ */
+public class BulkHashDataInput implements HashDataInput {
 
   public final static String DEFAULT_FILENAME = "SignatureData";
 
@@ -38,26 +39,29 @@ public class CMSHashDataInput implements HashDataInput {
   private byte[] digest;
   private String mimeType;
   private String referenceId;
-  private String finename;
+  private String fileName;
 
-  public CMSHashDataInput(byte[] data, String mimeType) {
-    this.data = data;
-    this.mimeType = mimeType;
-  }
-  
-  public CMSHashDataInput(byte[] data, String mimeType, byte[] digest) {
+  public BulkHashDataInput(byte[] data, String mimeType) {
     this.data = data;
     this.mimeType = mimeType;
   }
 
+  public BulkHashDataInput(byte[] data, String fileName, String mimeType) {
+    this.data = data;
+    this.mimeType = mimeType;
+    this.fileName = fileName;
+  }
+
+  public BulkHashDataInput(String referenceId, String fileName, String mimeType, byte[] digest) {
+    this.mimeType = mimeType;
+    this.fileName = fileName;
+    this.referenceId = referenceId;
+    this.digest = digest;
+  }
 
   @Override
   public String getReferenceId() {
-
-    if (referenceId != null) {
-      return referenceId;
-    }
-    return CMS_DEF_REFERENCE_ID;
+    return referenceId;
   }
 
   @Override
@@ -72,15 +76,20 @@ public class CMSHashDataInput implements HashDataInput {
 
   @Override
   public String getFilename() {
-    if (finename != null) {
-      return finename;
+    if (fileName != null) {
+      return fileName;
     }
     return DEFAULT_FILENAME + MimeTypes.getExtension(mimeType);
   }
 
   @Override
   public InputStream getHashDataInput() {
-    return new ByteArrayInputStream(data);
+
+    if (data != null) {
+      return new ByteArrayInputStream(data);
+    }
+
+    return null;
   }
 
   @Override
@@ -88,9 +97,8 @@ public class CMSHashDataInput implements HashDataInput {
     return digest;
   }
 
-
   public void setFilename(String fileName) {
-    this.finename = fileName;
+    this.fileName = fileName;
   }
 
   public void setDigest(byte[] digest) {
@@ -100,8 +108,4 @@ public class CMSHashDataInput implements HashDataInput {
   public void setReferenceId(String referenceId) {
     this.referenceId = referenceId;
   }
-  
-  
-
-
 }

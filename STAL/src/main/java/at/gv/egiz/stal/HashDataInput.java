@@ -42,6 +42,8 @@ public interface HashDataInput {
     public String getEncoding();
 
     public String getFilename();
+    
+    public byte[] getDigest();
 
     public InputStream getHashDataInput();
 

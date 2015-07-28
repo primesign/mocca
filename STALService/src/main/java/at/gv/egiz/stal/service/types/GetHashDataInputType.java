@@ -21,8 +21,6 @@
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
-
-
 package at.gv.egiz.stal.service.types;
 
 import java.util.ArrayList;
@@ -49,6 +47,7 @@ import javax.xml.bind.annotation.XmlType;
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                 &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *                 &lt;attribute name="digest" type="{http://www.w3.org/2001/XMLSchema}base64Binary" />
  *               &lt;/restriction>
  *             &lt;/complexContent>
  *           &lt;/complexType>
@@ -137,6 +136,7 @@ public class GetHashDataInputType {
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;attribute name="ID" type="{http://www.w3.org/2001/XMLSchema}string" />
+     *       &lt;attribute name="digest" type="{http://www.w3.org/2001/XMLSchema}base64Binary" />
      *     &lt;/restriction>
      *   &lt;/complexContent>
      * &lt;/complexType>
@@ -150,6 +150,8 @@ public class GetHashDataInputType {
 
         @XmlAttribute(name = "ID")
         protected String id;
+        @XmlAttribute
+        protected byte[] digest;
 
         /**
          * Gets the value of the id property.
@@ -173,6 +175,28 @@ public class GetHashDataInputType {
          */
         public void setID(String value) {
             this.id = value;
+        }
+
+        /**
+         * Gets the value of the digest property.
+         * 
+         * @return
+         *     possible object is
+         *     byte[]
+         */
+        public byte[] getDigest() {
+            return digest;
+        }
+
+        /**
+         * Sets the value of the digest property.
+         * 
+         * @param value
+         *     allowed object is
+         *     byte[]
+         */
+        public void setDigest(byte[] value) {
+            this.digest = ((byte[]) value);
         }
 
     }
