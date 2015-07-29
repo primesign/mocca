@@ -248,8 +248,11 @@ public class STALServiceImpl implements STALPortType {
               log.trace("Provided HashDataInput for reference {}.", hdi.getReferenceId());
             }
             
+            
+            if(hdi.getDigest() != null) {
             log.trace("Provided HashDataInput for digest {}.", hdi.getDigest());
             hashDataDigestMap.put(new String(hdi.getDigest()), hdi);
+            }
             
             log.trace("Provided HashDataInput for reference {}.", hdi.getReferenceId());
             hashDataIdMap.put(hdi.getReferenceId(), hdi);
