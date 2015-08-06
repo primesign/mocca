@@ -52,6 +52,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "RequestType")
 @XmlSeeAlso({
 //    ScriptType.class,
+// TODO(SZ): Add missing types (e.g. BulkSignRequestType, ...)
     SignRequestType.class,
     InfoboxReadRequestType.class,
     QuitRequestType.class,

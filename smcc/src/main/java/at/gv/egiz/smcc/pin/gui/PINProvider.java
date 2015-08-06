@@ -53,7 +53,7 @@ public interface PINProvider {
    * @return pin != null
    * @throws at.gv.egiz.smcc.CancelledException
    * @throws java.lang.InterruptedException
-   * @throws BulkSignException TODO
+   * @throws BulkSignException
    */
   char[] providePIN(PinInfo pinSpec, int retries)
           throws CancelledException, InterruptedException, BulkSignException;

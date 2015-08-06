@@ -29,6 +29,7 @@ import at.gv.egiz.stal.signedinfo.SignedInfoType;
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
+//TODO(SZ): Fix javadoc
 /**
  * @author szoescher This class wraps a {@link SignatureInfo} and adds the
  *         additional parameters displayName and mimeType;

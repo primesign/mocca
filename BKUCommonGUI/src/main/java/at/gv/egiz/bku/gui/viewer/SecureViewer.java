@@ -55,7 +55,8 @@ public interface SecureViewer {
   void displayDataToBeSigned(List<SignatureInfo> signatureInfo,
       ActionListener okListener, String okCommand)
     throws Exception;
-
+  
+  //TODO(SZ): Move to separate interface
   HashDataInput getHashDataInput(HashDataInput hashDataInput) throws Exception;
 
 

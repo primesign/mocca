@@ -31,6 +31,8 @@ import at.gv.egiz.stal.HashDataInput;
  *
  * @author szoescher
  */
+//TODO(SZ): Move to STAL project in order to remove dependency of BKUApplet on bkucommon 
+//TODO(SZ): Rename to StubHashDataInput or HashDataInputStub
 public class BulkHashDataInput implements HashDataInput {
 
   public final static String DEFAULT_FILENAME = "SignatureData";

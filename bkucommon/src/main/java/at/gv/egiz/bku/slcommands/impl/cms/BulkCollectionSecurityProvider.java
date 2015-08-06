@@ -97,6 +97,7 @@ public class BulkCollectionSecurityProvider extends IaikProvider {
     bulkSignatureInfo.add(new BulkSignatureInfo(privateKey, signatureAlgorithm, keyboxIdentifier, signedAttributes,
         spk.getAlgorithm(), spk.getDigestAlgorithm(), hashDataInput, excludedByteRange));
 
+      //TODO(SZ): How is size calculated/estimated?
       byte[] signaturePlaceholder = new byte[1024];
       return signaturePlaceholder;   
   }

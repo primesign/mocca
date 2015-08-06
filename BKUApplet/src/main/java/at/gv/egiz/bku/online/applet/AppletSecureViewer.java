@@ -65,6 +65,7 @@ public class AppletSecureViewer implements SecureViewer {
   protected STALPortType stalPort;
   protected String sessId;
   protected List<HashDataInput> verifiedDataToBeSigned;
+  //TODO(SZ): Refactor to get rid of this map (e.g. add another getHashDataInput(String digestValue, String id))
   protected Map<byte[], ReferenceType> referenceMap;
 
   public AppletSecureViewer(BKUGUIFacade gui, STALPortType stalPort,
@@ -99,6 +100,7 @@ public class AppletSecureViewer implements SecureViewer {
           throws DigestException, Exception {
     
     if (verifiedDataToBeSigned == null) {
+      //TODO(SZ): revert log level
       log.trace("Retrieve data to be signed for dsig:SignedInfo {}.", signatureInfo.getId());
       List<GetHashDataInputResponseType.Reference> hdi = 
               getHashDataInput(signatureInfo.getReference());
@@ -129,6 +131,7 @@ public class AppletSecureViewer implements SecureViewer {
         String signedRefId = signedRef.getId();
         byte[] digest = signedRef.getDigestValue();
         if (signedRefId != null || digest != null) {
+          //TODO(SZ): improve logging
           log.trace("Requesting hashdata input for reference {}.", signedRefId);
           GetHashDataInputType.Reference ref = new GetHashDataInputType.Reference();
           ref.setID(signedRefId);
@@ -274,14 +277,14 @@ public class AppletSecureViewer implements SecureViewer {
   public void displayDataToBeSigned(List<SignatureInfo> signatureInfoList, ActionListener okListener, String okCommand)
       throws DigestException, Exception {
 
-      log.trace("Creating referenceMap");
-      referenceMap = new HashMap<byte[], ReferenceType>();
+    log.trace("Creating referenceMap");
+    referenceMap = new HashMap<byte[], ReferenceType>();
 
-      for (SignatureInfo signatureInfo : signatureInfoList) {
-        for (ReferenceType reference : signatureInfo.getReference()) {
-          log.trace("Adding entry {] : {} to referenceMap", reference.getDigestValue(), reference.getId());
-          referenceMap.put(reference.getDigestValue(), reference);
-        }
+    for (SignatureInfo signatureInfo : signatureInfoList) {
+      for (ReferenceType reference : signatureInfo.getReference()) {
+        log.trace("Adding entry {} : {} to referenceMap", reference.getDigestValue(), reference.getId());
+        referenceMap.put(reference.getDigestValue(), reference);
+      }
     }
 
     ArrayList<HashDataInput> selectedHashDataInputs = new ArrayList<HashDataInput>();
@@ -324,6 +327,7 @@ public class AppletSecureViewer implements SecureViewer {
   }
   
   
+  //TODO(SZ): rename to ...StabHashDataInputs
   private Collection<? extends HashDataInput> addEmptyHashDataInputs(SignatureInfo signedInfo) throws Exception {
     if (signedInfo.getReference().size() == 0) {
       log.error("No hashdata input selected to be displayed: null.");

@@ -78,6 +78,7 @@ import at.gv.egiz.stal.SignRequest.SignedInfo;
  * 
  * @author szoescher
  */
+//TODO(SZ): fix name?
 public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> implements BulkSignatureCommand {
 
   private final static String ID_ECSIGTYPE = "1.2.840.10045.4";
@@ -116,6 +117,7 @@ public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> imp
     }
   }
 
+  //TODO(SZ): fix name?
   @Override
   public String getName() {
     return "BulkRequestCommandImpl";
@@ -136,7 +138,7 @@ public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> imp
 
       if (signatureRequests != null && signatureRequests.size() != 0) {
 
-        BulkCollectionSecurityProvider securityProvieder = new BulkCollectionSecurityProvider();
+        BulkCollectionSecurityProvider securityProvider = new BulkCollectionSecurityProvider();
 
         log.debug("get keyboxIdentifier from BulkSingatureRequest");
         keyboxIdentifier = setKeyboxIdentifier(signatureRequests);
@@ -149,26 +151,27 @@ public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> imp
         for (int i=0; i<signatureRequests.size(); i++) {
           
           CreateSignatureRequest request = signatureRequests.get(i);
+          //TODO(SZ): report XMLSignatureRequests as not implemented!
           if (request.getCreateCMSSignatureRequest() != null) {
             log.info("execute CMSSignature request.");
             
-            BulkSignature signature = prepareCMSSignatureRequests(securityProvieder, request.getCreateCMSSignatureRequest(),
+            BulkSignature signature = prepareCMSSignatureRequests(securityProvider, request.getCreateCMSSignatureRequest(),
                 commandContext);
             
             signatures.add(signature);
             
-            for(HashDataInput hashDataInput : securityProvieder.getBulkSignatureInfo().get(i).getHashDataInput()){
+            for(HashDataInput hashDataInput : securityProvider.getBulkSignatureInfo().get(i).getHashDataInput()){
               BulkHashDataInput bulkHashDataInput = (BulkHashDataInput) hashDataInput;
               bulkHashDataInput.setDigest(signature.getSignerInfo().getDigest());
               
-              log.info("setting fileName {}", getFileName(request, i+1));
+              log.debug("setting fileName {}", getFileName(request, i+1));
               bulkHashDataInput.setFilename(getFileName(request, i+1));
             }
           }
         }
 
-        return new BulkSignatureResultImpl((signBulkRequest(securityProvieder.getBulkSignatureInfo(), commandContext,
-            signatures)));
+        return new BulkSignatureResultImpl(signBulkRequest(securityProvider.getBulkSignatureInfo(), commandContext,
+            signatures));
 
       }
 
@@ -187,9 +190,7 @@ public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> imp
 
     if (StringUtils.isNotEmpty(referenceURL)) {
       return FilenameUtils.getBaseName(referenceURL);
-    }
-
-    else {
+    } else {
 
       StringBuilder fileNameBuilder = new StringBuilder();
 
@@ -261,6 +262,7 @@ public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> imp
   }
 
   private String setKeyboxIdentifier(List<CreateSignatureRequest> signatureRequests) {
+    //TODO(SZ): check for consistency
     for (CreateSignatureRequest request : signatureRequests) {
       if (request.getCreateCMSSignatureRequest() != null) {
         return request.getCreateCMSSignatureRequest().getKeyboxIdentifier();
