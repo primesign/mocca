@@ -169,7 +169,7 @@
 				<entry key-ref="infoboxUpdateRequest" value-ref="infoboxUpdateCommandFactory" />
 				<entry key-ref="createXMLSignatureRequest" value-ref="createXMLSignatureCommandFactory" />
 				<entry key-ref="createCMSSignatureRequest" value-ref="createCMSSignatureCommandFactory" />
-        		<entry key-ref="bulkRequest" value-ref="bulkFactory" />
+        <entry key-ref="bulkRequest" value-ref="bulkCommandFactory" />
 				<entry key-ref="getStatusRequest" value-ref="getStatusCommandFactory" />
 			</map>
 		</property>
