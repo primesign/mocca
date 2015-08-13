@@ -28,11 +28,11 @@ import at.gv.egiz.bku.slcommands.AbstractSLCommandFactory;
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 
-public class BulkSignatureCommandFactory extends AbstractSLCommandFactory {
+public class BulkCommandFactory extends AbstractSLCommandFactory {
 
   @Override
   public SLCommand createSLCommand(JAXBElement<?> element) throws SLCommandException {
-    BulkSignatureCommandImpl command = new BulkSignatureCommandImpl();
+    BulkCommandImpl command = new BulkCommandImpl();
     command.init(element);
     command.setConfiguration(configuration);
     return command;

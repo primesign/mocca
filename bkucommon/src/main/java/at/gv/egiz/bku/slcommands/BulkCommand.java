@@ -22,6 +22,6 @@
 package at.gv.egiz.bku.slcommands;
 
 
-public interface BulkSignatureCommand extends SLCommand {
+public interface BulkCommand extends SLCommand {
 
 }

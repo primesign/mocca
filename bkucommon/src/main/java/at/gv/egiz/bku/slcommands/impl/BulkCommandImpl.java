@@ -51,13 +51,13 @@ import at.buergerkarte.namespaces.securitylayer._1_2_3.CreateCMSSignatureRequest
 import at.buergerkarte.namespaces.securitylayer._1_2_3.ExcludedByteRangeType;
 import at.gv.egiz.bku.conf.MoccaConfigurationFacade;
 import at.gv.egiz.bku.gui.viewer.MimeTypes;
-import at.gv.egiz.bku.slcommands.BulkSignatureCommand;
+import at.gv.egiz.bku.slcommands.BulkCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLResult;
 import at.gv.egiz.bku.slcommands.impl.cms.BulkCollectionSecurityProvider;
-import at.gv.egiz.bku.slcommands.impl.cms.BulkHashDataInput;
 import at.gv.egiz.bku.slcommands.impl.cms.BulkSignature;
 import at.gv.egiz.bku.slcommands.impl.cms.BulkSignatureInfo;
+import at.gv.egiz.bku.slcommands.impl.cms.CMSHashDataInput;
 import at.gv.egiz.bku.slcommands.impl.xsect.STALSignatureException;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLException;
@@ -78,15 +78,14 @@ import at.gv.egiz.stal.SignRequest.SignedInfo;
  * 
  * @author szoescher
  */
-//TODO(SZ): fix name?
-public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> implements BulkSignatureCommand {
+public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements BulkCommand {
 
   private final static String ID_ECSIGTYPE = "1.2.840.10045.4";
 
   /**
    * Logging facility.
    */
-  private final static Logger log = LoggerFactory.getLogger(BulkSignatureCommandImpl.class);
+  private final static Logger log = LoggerFactory.getLogger(BulkCommandImpl.class);
 
   /**
    * The signing certificate.
@@ -117,10 +116,9 @@ public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> imp
     }
   }
 
-  //TODO(SZ): fix name?
   @Override
   public String getName() {
-    return "BulkRequestCommandImpl";
+    return "BulkRequest";
   }
 
   public void setConfiguration(Configuration configuration) {
@@ -151,7 +149,6 @@ public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> imp
         for (int i=0; i<signatureRequests.size(); i++) {
           
           CreateSignatureRequest request = signatureRequests.get(i);
-          //TODO(SZ): report XMLSignatureRequests as not implemented!
           if (request.getCreateCMSSignatureRequest() != null) {
             log.info("execute CMSSignature request.");
             
@@ -161,11 +158,16 @@ public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> imp
             signatures.add(signature);
             
             for(HashDataInput hashDataInput : securityProvider.getBulkSignatureInfo().get(i).getHashDataInput()){
-              BulkHashDataInput bulkHashDataInput = (BulkHashDataInput) hashDataInput;
+              CMSHashDataInput bulkHashDataInput = (CMSHashDataInput) hashDataInput;
               bulkHashDataInput.setDigest(signature.getSignerInfo().getDigest());
               
               log.debug("setting fileName {}", getFileName(request, i+1));
               bulkHashDataInput.setFilename(getFileName(request, i+1));
+            }
+          }  else {
+            if (request.getCreateXMLSignatureRequest() != null) {
+              log.error("XML signature requests are currently not supported in bulk signature requests.");
+              throw new SLCommandException(4124);
             }
           }
         }
@@ -197,7 +199,7 @@ public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> imp
       if (StringUtils.isNotEmpty(request.getDisplayName())) {
         fileNameBuilder.append(request.getDisplayName());
       } else {
-        fileNameBuilder.append(BulkHashDataInput.DEFAULT_FILENAME);
+        fileNameBuilder.append(HashDataInput.DEFAULT_FILENAME);
         fileNameBuilder.append("_");
         fileNameBuilder.append(requestCounter);
       }
@@ -261,15 +263,31 @@ public class BulkSignatureCommandImpl extends SLCommandImpl<BulkRequestType> imp
     return null;
   }
 
-  private String setKeyboxIdentifier(List<CreateSignatureRequest> signatureRequests) {
-    //TODO(SZ): check for consistency
+  private String setKeyboxIdentifier(List<CreateSignatureRequest> signatureRequests) throws SLCommandException {
+    
+    String keyboxIdentifier = null;
+
     for (CreateSignatureRequest request : signatureRequests) {
       if (request.getCreateCMSSignatureRequest() != null) {
-        return request.getCreateCMSSignatureRequest().getKeyboxIdentifier();
+
+        if (keyboxIdentifier == null) {
+          keyboxIdentifier = request.getCreateCMSSignatureRequest().getKeyboxIdentifier();
+        } else {
+          if (request.getCreateCMSSignatureRequest().getKeyboxIdentifier() == null) {
+            log.error("No keyboxIdentifier has been specified for this signature request.");
+            throw new SLCommandException(3003);
+
+          } else if (!request.getCreateCMSSignatureRequest().getKeyboxIdentifier().equals(keyboxIdentifier)) {
+
+            log.error("Error creating bulk signature. The bulkSignature value has to be the same fo all signature requests.");
+            throw new SLCommandException(3003);
+          }
+        }
       }
     }
 
-    return null;
+
+    return keyboxIdentifier;
   }
 
   private BulkSignature prepareCMSSignatureRequests(BulkCollectionSecurityProvider securityProvieder,

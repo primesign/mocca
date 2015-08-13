@@ -38,7 +38,7 @@ public class CMSHashDataInput implements HashDataInput {
   private byte[] digest;
   private String mimeType;
   private String referenceId;
-  private String finename;
+  private String fileName;
 
   public CMSHashDataInput(byte[] data, String mimeType) {
     this.data = data;
@@ -72,10 +72,10 @@ public class CMSHashDataInput implements HashDataInput {
 
   @Override
   public String getFilename() {
-    if (finename != null) {
-      return finename;
+    if (fileName != null) {
+      return fileName;
     }
-    return DEFAULT_FILENAME + MimeTypes.getExtension(mimeType);
+    return DEFAULT_FILENAME;
   }
 
   @Override
@@ -90,9 +90,9 @@ public class CMSHashDataInput implements HashDataInput {
 
 
   public void setFilename(String fileName) {
-    this.finename = fileName;
+    this.fileName = fileName;
   }
-
+ 
   public void setDigest(byte[] digest) {
     this.digest = digest;
   }

@@ -19,51 +19,39 @@
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
-package at.gv.egiz.bku.slcommands.impl.cms;
+package at.gv.egiz.stal.hashdata;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import at.gv.egiz.bku.gui.viewer.MimeTypes;
 import at.gv.egiz.stal.HashDataInput;
+import at.gv.egiz.stal.signedinfo.ReferenceType;
 
 /**
- *
+ * A StabHashDataInput is used as a placeholder at client side.
+ * The reference is used to load the corresponding HashDataInput from STAL.
  * @author szoescher
  */
-//TODO(SZ): Move to STAL project in order to remove dependency of BKUApplet on bkucommon 
-//TODO(SZ): Rename to StubHashDataInput or HashDataInputStub
-public class BulkHashDataInput implements HashDataInput {
-
-  public final static String DEFAULT_FILENAME = "SignatureData";
+public class StabHashDataInput implements HashDataInput {
 
   private byte[] data;
-  private byte[] digest;
   private String mimeType;
-  private String referenceId;
+  private ReferenceType reference;
   private String fileName;
 
-  public BulkHashDataInput(byte[] data, String mimeType) {
-    this.data = data;
-    this.mimeType = mimeType;
-  }
 
-  public BulkHashDataInput(byte[] data, String fileName, String mimeType) {
-    this.data = data;
+  public StabHashDataInput(ReferenceType reference, String fileName, String mimeType) {
     this.mimeType = mimeType;
     this.fileName = fileName;
-  }
-
-  public BulkHashDataInput(String referenceId, String fileName, String mimeType, byte[] digest) {
-    this.mimeType = mimeType;
-    this.fileName = fileName;
-    this.referenceId = referenceId;
-    this.digest = digest;
+    this.reference = reference;
   }
 
   @Override
   public String getReferenceId() {
-    return referenceId;
+    if (reference != null) {
+      return reference.getId();
+    }
+    return null;
   }
 
   @Override
@@ -81,7 +69,7 @@ public class BulkHashDataInput implements HashDataInput {
     if (fileName != null) {
       return fileName;
     }
-    return DEFAULT_FILENAME + MimeTypes.getExtension(mimeType);
+    return DEFAULT_FILENAME;
   }
 
   @Override
@@ -96,18 +84,17 @@ public class BulkHashDataInput implements HashDataInput {
 
   @Override
   public byte[] getDigest() {
-    return digest;
+    if (reference != null) {
+      return reference.getDigestValue();
+    }
+    return null;
   }
 
   public void setFilename(String fileName) {
     this.fileName = fileName;
   }
 
-  public void setDigest(byte[] digest) {
-    this.digest = digest;
-  }
-
-  public void setReferenceId(String referenceId) {
-    this.referenceId = referenceId;
+  public ReferenceType getReference() {
+    return reference;
   }
 }

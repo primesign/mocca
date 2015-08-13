@@ -50,12 +50,12 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ResponseType")
 @XmlSeeAlso({
-//TODO(SZ): Add missing types
 //    at.buergerkarte.namespaces.cardchannel.service.ResponseType.class,
     ErrorResponseType.class,
     InfoboxReadResponseType.class,
     SignResponseType.class,
-    StatusResponseType.class
+    StatusResponseType.class,
+    BulkSignResponseType.class
 })
 public abstract class ResponseType {
 

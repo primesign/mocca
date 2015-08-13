@@ -27,10 +27,10 @@ package at.gv.egiz.bku.gui;
 
 import at.gv.egiz.bku.gui.viewer.FontProviderException;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
-import at.gv.egiz.bku.gui.viewer.SecureViewer;
 import at.gv.egiz.bku.gui.viewer.SecureViewerSaveDialog;
 import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.stal.HashDataInput;
+import at.gv.egiz.stal.service.HashDataInputLoader;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -162,7 +162,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 	protected Integer referenceIndex;
 	protected at.gv.egiz.bku.gui.BKUGUIImpl.SignedReferencesSelectionListener.SignedReferencesListDisplayer storedBackToListListener;
 	
-	protected SecureViewer secureViewer;
+	protected HashDataInputLoader hashDataInputLoader;
 
 	/**
 	 * set contentPane init message bundle configure the style register the help
@@ -1916,9 +1916,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
 	 */
   @Override
   public void showSecureViewer(final List<HashDataInput> dataToBeSigned,
-      final ActionListener backListener, final String backCommand, SecureViewer secureViewer) {
+      final ActionListener backListener, final String backCommand, HashDataInputLoader hashDataInputLoader) {
 
-    this.secureViewer = secureViewer;
+    this.hashDataInputLoader = hashDataInputLoader;
     
     if (dataToBeSigned == null) {
       showErrorDialog(getMessage(ERR_NO_HASHDATA),
@@ -2002,7 +2002,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
     try {
       
       log.trace("Opening SecureViewer dialog for list entry {}", referenceIndex);
-      final HashDataInput storedSelection = secureViewer.getHashDataInput(signedReferences.get(referenceIndex));
+      final HashDataInput storedSelection = hashDataInputLoader.getHashDataInput(signedReferences.get(referenceIndex));
 
       if (SecureViewerDialog.SUPPORTED_MIME_TYPES.contains(storedSelection.getMimeType())) {
         log.debug("[{}] Scheduling secure viewer dialog.", Thread.currentThread().getName());

@@ -7,7 +7,6 @@ import at.gv.egiz.stal.signedinfo.ReferenceType;
 import at.gv.egiz.stal.signedinfo.SignatureMethodType;
 import at.gv.egiz.stal.signedinfo.SignedInfoType;
 
-
 /*
  * Copyright 2015 Datentechnik Innovation GmbH and Prime Sign GmbH, Austria
  *
@@ -29,10 +28,10 @@ import at.gv.egiz.stal.signedinfo.SignedInfoType;
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
 
-//TODO(SZ): Fix javadoc
 /**
- * @author szoescher This class wraps a {@link SignatureInfo} and adds the
- *         additional parameters displayName and mimeType;
+ * This class wraps a {@link SignatureInfo} and adds the additional parameters displayName and mimeType.
+ * @author szoescher
+ *
  */
 public class SignatureInfo {
 

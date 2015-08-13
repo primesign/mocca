@@ -89,7 +89,7 @@ public class BulkSignature extends Signature {
   
   @Override
   public HashDataInput getHashDataInput() {
-    return new BulkHashDataInput(signedDocument, mimeType);
+    return new CMSHashDataInput(signedDocument, mimeType);
 	  }
   
   public ExcludedByteRangeType getExcludedByteRange() {

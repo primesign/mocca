@@ -44,7 +44,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import at.buergerkarte.namespaces.securitylayer._1_2_3.BulkResponseType;
-import at.gv.egiz.bku.slcommands.BulkSignatureCommand;
+import at.gv.egiz.bku.slcommands.BulkCommand;
 import at.gv.egiz.bku.slcommands.BulkSignatureResult;
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
@@ -54,7 +54,7 @@ import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 import at.gv.egiz.stal.STAL;
 import at.gv.egiz.stal.STALFactory;
 
-public class BulkSignatureCommandImplTest {
+public class BulkCommandImplTest {
 
   protected static ApplicationContext appCtx;
   private SLCommandFactory factory;
@@ -96,7 +96,7 @@ public class BulkSignatureCommandImplTest {
     assertNotNull(inputStream);
 
     SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
-    assertTrue(command instanceof BulkSignatureCommand);
+    assertTrue(command instanceof BulkCommand);
 
     SLCommandContext context = new SLCommandContext(stal, urlDereferencer, null);
     SLResult result = command.execute(context);

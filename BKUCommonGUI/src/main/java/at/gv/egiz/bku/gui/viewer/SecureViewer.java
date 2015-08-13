@@ -24,7 +24,6 @@
 
 package at.gv.egiz.bku.gui.viewer;
 
-import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.SignatureInfo;
 
 import java.awt.event.ActionListener;
@@ -55,9 +54,5 @@ public interface SecureViewer {
   void displayDataToBeSigned(List<SignatureInfo> signatureInfo,
       ActionListener okListener, String okCommand)
     throws Exception;
-  
-  //TODO(SZ): Move to separate interface
-  HashDataInput getHashDataInput(HashDataInput hashDataInput) throws Exception;
-
 
 }

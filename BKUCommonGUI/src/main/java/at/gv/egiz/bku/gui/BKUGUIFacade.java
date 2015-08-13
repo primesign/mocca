@@ -24,9 +24,9 @@
 
 package at.gv.egiz.bku.gui;
 
-import at.gv.egiz.bku.gui.viewer.SecureViewer;
 import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.stal.HashDataInput;
+import at.gv.egiz.stal.service.HashDataInputLoader;
 
 import java.awt.Color;
 import java.awt.event.ActionListener;
@@ -184,7 +184,7 @@ public interface BKUGUIFacade {
    */
 
   public void showSecureViewer(List<HashDataInput> dataToBeSigned,
-      ActionListener backListener, String backCommand, SecureViewer secureViewer);
+      ActionListener backListener, String backCommand, HashDataInputLoader hashDataInputLoader);
 
   public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams,
           ActionListener okListener, String okCommand);

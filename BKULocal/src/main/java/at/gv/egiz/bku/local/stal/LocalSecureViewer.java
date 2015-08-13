@@ -25,7 +25,6 @@
 package at.gv.egiz.bku.local.stal;
 
 import at.gv.egiz.bku.slcommands.impl.DataObjectHashDataInput;
-import at.gv.egiz.bku.slcommands.impl.cms.BulkHashDataInput;
 
 import java.io.IOException;
 import java.security.DigestException;
@@ -35,7 +34,9 @@ import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.viewer.SecureViewer;
 import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.SignatureInfo;
+import at.gv.egiz.stal.hashdata.StabHashDataInput;
 import at.gv.egiz.stal.impl.ByteArrayHashDataInput;
+import at.gv.egiz.stal.service.HashDataInputLoader;
 import at.gv.egiz.stal.signedinfo.ReferenceType;
 
 import java.awt.event.ActionListener;
@@ -53,7 +54,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
-public class LocalSecureViewer implements SecureViewer {
+public class LocalSecureViewer implements SecureViewer, HashDataInputLoader {
 
   private final Logger log = LoggerFactory.getLogger(LocalSecureViewer.class);
   private List<HashDataInput> hashDataInputs = Collections.emptyList();
@@ -139,7 +140,7 @@ public class LocalSecureViewer implements SecureViewer {
     for (ReferenceType dsigRef : signedInfo.getReference()) {
 
       if (dsigRef.getType() == null) {        
-        selectedHashDataInputs.add(new BulkHashDataInput(dsigRef.getId(), signedInfo.getDisplayName(), signedInfo.getMimeType(), dsigRef.getDigestValue()));
+        selectedHashDataInputs.add(new StabHashDataInput(dsigRef, signedInfo.getDisplayName(), signedInfo.getMimeType()));
       }
     }
     return selectedHashDataInputs;
@@ -194,8 +195,8 @@ public class LocalSecureViewer implements SecureViewer {
     for (ReferenceType dsigRef : signedInfo.getReference()) {
       // don't get Manifest, QualifyingProperties, ...
       if (dsigRef.getType() == null) {
-        HashDataInput emptyHashDataInput = new BulkHashDataInput(dsigRef.getId(), signedInfo.getDisplayName(),
-            signedInfo.getMimeType(), dsigRef.getDigestValue());
+        HashDataInput emptyHashDataInput = new StabHashDataInput(dsigRef, signedInfo.getDisplayName(),
+            signedInfo.getMimeType());
 
         selectedHashDataInputs.add(getHashDataInput(emptyHashDataInput));
 
