@@ -5,6 +5,22 @@ Tags:
 * ''REMOVED''  ... certificate removed in this release
 * TRUSTED	... certificate included in truststore
 
+'''BKUCertificates-1.12 (mocca-1.3.19)'''
+-------------------
+DigiCertHighAssuranceEVRootCA.cer (''ADDED'', TRUSTED)
+* Serial Number: 3553400076410547919724730734378100087 (0x02ac5c266a0b409b8f0b79f2ae462577)
+* Issuer: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert High Assurance EV Root CA
+* Subject: C=US, O=DigiCert Inc, OU=www.digicert.com, CN=DigiCert High Assurance EV Root CA
+* Not Before: Nov 10 00:00:00 2006 GMT
+* Not After : Nov 10 00:00:00 2031 GMT
+
+TERENASSLHighAssuranceCA3.cer(''ADDED'', TRUSTED)
+* Serial Number: 15100258180998422066925747664388448148 (0xb5c3435675b2467c0d73237f90d5f94)
+* Issuer: CN=DigiCert High Assurance EV Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US
+* Subject: CN=TERENA SSL High Assurance CA 3, O=TERENA, L=Amsterdam, ST=Noord-Holland, C=NL
+* Not Before: Nov 18 12:00:00 2014 GMT
+* Not After : Nov 18 12:00:00 2024 GMT
+
 '''BKUCertificates-1.11 (mocca-1.3.15)'''
 -------------------
 
@@ -249,3 +265,4 @@ a-cert-government-3.cer (''ADDED'')
 * Subject: C=AT, ST=Wien, L=Wien, O=ARGE DATEN - \xC3\x96sterreichische Gesellschaft f\xC3\xBCr Datenschutz, CN=A-CERT GOVERNMENT/emailAddress=info@globaltrust.eu
 * Not Before: May  5 00:00:00 2009 GMT
 * Not After : Sep 18 00:00:00 2036 GMT
+
