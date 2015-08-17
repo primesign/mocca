@@ -14,12 +14,19 @@ DigiCertHighAssuranceEVRootCA.cer (''ADDED'', TRUSTED)
 * Not Before: Nov 10 00:00:00 2006 GMT
 * Not After : Nov 10 00:00:00 2031 GMT
 
-TERENASSLHighAssuranceCA3.cer(''ADDED'', TRUSTED)
+TERENASSLHighAssuranceCA3.cer (''ADDED'', TRUSTED)
 * Serial Number: 15100258180998422066925747664388448148 (0xb5c3435675b2467c0d73237f90d5f94)
 * Issuer: CN=DigiCert High Assurance EV Root CA, OU=www.digicert.com, O=DigiCert Inc, C=US
 * Subject: CN=TERENA SSL High Assurance CA 3, O=TERENA, L=Amsterdam, ST=Noord-Holland, C=NL
 * Not Before: Nov 18 12:00:00 2014 GMT
 * Not After : Nov 18 12:00:00 2024 GMT
+
+QuoVadisRootCA2.pem (''ADDED'', TRUSTED)
+* Serial Number: 1289 (0x509)
+* Issuer: C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 2
+* Subject: C=BM, O=QuoVadis Limited, CN=QuoVadis Root CA 2
+* Not Before: Nov 24 18:27:00 2006 GMT
+* Not After : Nov 24 18:23:33 2031 GMT
 
 '''BKUCertificates-1.11 (mocca-1.3.15)'''
 -------------------
