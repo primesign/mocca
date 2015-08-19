@@ -24,9 +24,9 @@
 
 package at.gv.egiz.bku.gui;
 
+import at.gv.egiz.bku.gui.hashdata.HashDataInputLoader;
 import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.stal.HashDataInput;
-import at.gv.egiz.stal.service.HashDataInputLoader;
 
 import java.awt.Color;
 import java.awt.event.ActionListener;

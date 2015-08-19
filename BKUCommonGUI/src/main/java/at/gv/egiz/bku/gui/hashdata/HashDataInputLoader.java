@@ -1,4 +1,4 @@
-package at.gv.egiz.stal.service;
+package at.gv.egiz.bku.gui.hashdata;
 
 import at.gv.egiz.stal.HashDataInput;
 

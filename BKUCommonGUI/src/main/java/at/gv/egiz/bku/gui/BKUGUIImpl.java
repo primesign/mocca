@@ -25,12 +25,12 @@
 
 package at.gv.egiz.bku.gui;
 
+import at.gv.egiz.bku.gui.hashdata.HashDataInputLoader;
 import at.gv.egiz.bku.gui.viewer.FontProviderException;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
 import at.gv.egiz.bku.gui.viewer.SecureViewerSaveDialog;
 import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.stal.HashDataInput;
-import at.gv.egiz.stal.service.HashDataInputLoader;
 
 import java.awt.Color;
 import java.awt.Component;

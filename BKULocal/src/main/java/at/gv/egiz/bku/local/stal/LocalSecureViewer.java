@@ -31,12 +31,12 @@ import java.security.DigestException;
 import java.util.ArrayList;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.bku.gui.hashdata.HashDataInputLoader;
 import at.gv.egiz.bku.gui.viewer.SecureViewer;
 import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.SignatureInfo;
-import at.gv.egiz.stal.hashdata.StabHashDataInput;
+import at.gv.egiz.stal.hashdata.StubHashDataInput;
 import at.gv.egiz.stal.impl.ByteArrayHashDataInput;
-import at.gv.egiz.stal.service.HashDataInputLoader;
 import at.gv.egiz.stal.signedinfo.ReferenceType;
 
 import java.awt.event.ActionListener;
@@ -140,7 +140,7 @@ public class LocalSecureViewer implements SecureViewer, HashDataInputLoader {
     for (ReferenceType dsigRef : signedInfo.getReference()) {
 
       if (dsigRef.getType() == null) {        
-        selectedHashDataInputs.add(new StabHashDataInput(dsigRef, signedInfo.getDisplayName(), signedInfo.getMimeType()));
+        selectedHashDataInputs.add(new StubHashDataInput(dsigRef, signedInfo.getDisplayName(), signedInfo.getMimeType()));
       }
     }
     return selectedHashDataInputs;
@@ -195,7 +195,7 @@ public class LocalSecureViewer implements SecureViewer, HashDataInputLoader {
     for (ReferenceType dsigRef : signedInfo.getReference()) {
       // don't get Manifest, QualifyingProperties, ...
       if (dsigRef.getType() == null) {
-        HashDataInput emptyHashDataInput = new StabHashDataInput(dsigRef, signedInfo.getDisplayName(),
+        HashDataInput emptyHashDataInput = new StubHashDataInput(dsigRef, signedInfo.getDisplayName(),
             signedInfo.getMimeType());
 
         selectedHashDataInputs.add(getHashDataInput(emptyHashDataInput));

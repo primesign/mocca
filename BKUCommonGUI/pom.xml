@@ -19,12 +19,6 @@
       <version>${project.parent.version}</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>at.gv.egiz</groupId>
-      <artifactId>STALService</artifactId>
-      <version>${project.parent.version}</version>
-      <scope>compile</scope>
-    </dependency>
   </dependencies>
   <description>Common GUI functionality</description>
   <build>

@@ -40,13 +40,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
+import at.gv.egiz.bku.gui.hashdata.HashDataInputLoader;
 import at.gv.egiz.bku.gui.viewer.SecureViewer;
 import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.SignatureInfo;
-import at.gv.egiz.stal.hashdata.StabHashDataInput;
+import at.gv.egiz.stal.hashdata.StubHashDataInput;
 import at.gv.egiz.stal.impl.ByteArrayHashDataInput;
 import at.gv.egiz.stal.service.GetHashDataInputFault;
-import at.gv.egiz.stal.service.HashDataInputLoader;
 import at.gv.egiz.stal.service.STALPortType;
 import at.gv.egiz.stal.service.types.GetHashDataInputResponseType;
 import at.gv.egiz.stal.service.types.GetHashDataInputType;
@@ -298,9 +298,9 @@ public class AppletSecureViewer implements SecureViewer, HashDataInputLoader {
   @Override
   public HashDataInput getHashDataInput(HashDataInput hashDataInput) throws Exception {
 
-    if (hashDataInput instanceof StabHashDataInput) {
+    if (hashDataInput instanceof StubHashDataInput) {
       
-      StabHashDataInput stabHashDataInput = (StabHashDataInput) hashDataInput;
+      StubHashDataInput stabHashDataInput = (StubHashDataInput) hashDataInput;
       
       ReferenceType reference = stabHashDataInput.getReference();
 
@@ -335,7 +335,7 @@ public class AppletSecureViewer implements SecureViewer, HashDataInputLoader {
 
       if (dsigRef.getType() == null) {       
         log.trace("Adding HashDataInput with id {}, name {} of type {}",new Object[]{dsigRef.getId(), signedInfo.getDisplayName(), signedInfo.getMimeType()});
-        selectedHashDataInputs.add(new StabHashDataInput(dsigRef, signedInfo.getDisplayName(), signedInfo.getMimeType()));
+        selectedHashDataInputs.add(new StubHashDataInput(dsigRef, signedInfo.getDisplayName(), signedInfo.getMimeType()));
       }
     }
     return selectedHashDataInputs;

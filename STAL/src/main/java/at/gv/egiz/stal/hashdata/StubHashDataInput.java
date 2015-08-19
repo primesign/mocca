@@ -32,7 +32,7 @@ import at.gv.egiz.stal.signedinfo.ReferenceType;
  * The reference is used to load the corresponding HashDataInput from STAL.
  * @author szoescher
  */
-public class StabHashDataInput implements HashDataInput {
+public class StubHashDataInput implements HashDataInput {
 
   private byte[] data;
   private String mimeType;
@@ -40,7 +40,7 @@ public class StabHashDataInput implements HashDataInput {
   private String fileName;
 
 
-  public StabHashDataInput(ReferenceType reference, String fileName, String mimeType) {
+  public StubHashDataInput(ReferenceType reference, String fileName, String mimeType) {
     this.mimeType = mimeType;
     this.fileName = fileName;
     this.reference = reference;
