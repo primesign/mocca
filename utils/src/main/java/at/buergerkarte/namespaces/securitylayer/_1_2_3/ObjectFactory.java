@@ -77,8 +77,6 @@ public class ObjectFactory {
     private final static QName _VerifyCMSSignatureResponseTypeSignerInfo_QNAME = new QName("http://www.buergerkarte.at/namespaces/securitylayer/1.2#", "SignerInfo");
     private final static QName _ReferencesCheckResultInfoTypeFailedReference_QNAME = new QName("http://www.buergerkarte.at/namespaces/securitylayer/1.2#", "FailedReference");
     private final static QName _ManifestRefsCheckResultInfoTypeReferringSigReference_QNAME = new QName("http://www.buergerkarte.at/namespaces/securitylayer/1.2#", "ReferringSigReference");
-    private final static QName _BulkResponse_QNAME = new QName("http://www.buergerkarte.at/namespaces/securitylayer/1.2#", "BulkResponse");
-    private final static QName _BulkRequest_QNAME = new QName("http://www.buergerkarte.at/namespaces/securitylayer/1.2#", "BulkRequest");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: at.buergerkarte.namespaces.securitylayer._1_2_3
@@ -1458,22 +1456,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.buergerkarte.at/namespaces/securitylayer/1.2#", name = "FailedReference", scope = ManifestRefsCheckResultInfoType.class)
     public JAXBElement<BigInteger> createManifestRefsCheckResultInfoTypeFailedReference(BigInteger value) {
         return new JAXBElement<BigInteger>(_ReferencesCheckResultInfoTypeFailedReference_QNAME, BigInteger.class, ManifestRefsCheckResultInfoType.class, value);
-    }
-    
-    /**
-     * Create an instance of {@link BulkRequestType.VerifySignatureRequest }
-     * 
-     */
-    public BulkRequestType.VerifySignatureRequest createBulkRequestTypeVerifySignatureRequest() {
-        return new BulkRequestType.VerifySignatureRequest();
-    }
-
-    /**
-     * Create an instance of {@link BulkRequestType.CreateSignatureRequest }
-     * 
-     */
-    public BulkRequestType.CreateSignatureRequest createBulkRequestTypeCreateSignatureRequest() {
-        return new BulkRequestType.CreateSignatureRequest();
     }
 
 }
