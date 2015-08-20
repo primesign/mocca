@@ -34,6 +34,8 @@ import javax.xml.bind.JAXBElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import at.gv.egiz.stal.BulkSignRequest;
+import at.gv.egiz.stal.BulkSignResponse;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.InfoboxReadResponse;
@@ -46,6 +48,8 @@ import at.gv.egiz.stal.SignRequest.SignedInfo;
 import at.gv.egiz.stal.SignResponse;
 import at.gv.egiz.stal.StatusRequest;
 import at.gv.egiz.stal.StatusResponse;
+import at.gv.egiz.stal.service.types.BulkSignRequestType;
+import at.gv.egiz.stal.service.types.BulkSignResponseType;
 import at.gv.egiz.stal.service.types.ErrorResponseType;
 import at.gv.egiz.stal.service.types.InfoboxReadRequestType;
 import at.gv.egiz.stal.service.types.InfoboxReadResponseType;
@@ -197,18 +201,22 @@ public class STALTranslator {
     public List<Class<?>> getSupportedTypes() {
       return Arrays.asList(new Class<?>[]{InfoboxReadRequest.class,
                 SignRequest.class,
+                BulkSignRequest.class,
                 QuitRequest.class,
                 StatusRequest.class,
                 InfoboxReadRequestType.class,
                 SignRequestType.class,
+                BulkSignRequestType.class,
                 QuitRequestType.class,
                 StatusRequestType.class,
                 InfoboxReadResponse.class,
                 SignResponse.class,
+                BulkSignResponse.class,
                 ErrorResponse.class,
                 StatusResponse.class,
                 InfoboxReadResponseType.class,
                 SignResponseType.class,
+                BulkSignResponseType.class,
                 ErrorResponseType.class,
                 StatusResponseType.class
       });
@@ -218,22 +226,14 @@ public class STALTranslator {
     public JAXBElement<? extends RequestType> translate(STALRequest request) throws TranslationException {
       log.trace("translate " + request.getClass());
       if (request instanceof SignRequest) {
-        SignRequestType req = of.createSignRequestType();
-        req.setKeyIdentifier(((SignRequest) request).getKeyIdentifier());
-        SignRequestType.SignedInfo signedInfo = of.createSignRequestTypeSignedInfo();
-        signedInfo.setValue(((SignRequest) request).getSignedInfo().getValue());
-        signedInfo.setIsCMSSignedAttributes(((SignRequest) request).getSignedInfo().isIsCMSSignedAttributes());
-        req.setSignedInfo(signedInfo);
-        req.setSignatureMethod(((SignRequest) request).getSignatureMethod());
-        req.setDigestMethod(((SignRequest) request).getDigestMethod());
-        if (((SignRequest) request).getExcludedByteRange() != null) {
-          SignRequestType.ExcludedByteRange excludedByteRange = of.createSignRequestTypeExcludedByteRange();
-          excludedByteRange.setFrom(((SignRequest) request).getExcludedByteRange().getFrom());
-          excludedByteRange.setTo(((SignRequest) request).getExcludedByteRange().getTo());
-          req.setExcludedByteRange(excludedByteRange);
+          return translate((SignRequest) request);
+      } else if (request instanceof BulkSignRequest) {
+        BulkSignRequestType bulkReq = of.createBulkSignRequestType();
+        BulkSignRequest bulkSignRequest = (BulkSignRequest) request;
+        for (SignRequest signReq : bulkSignRequest.getSignRequests()) {
+          bulkReq.getSignRequests().add(translate(signReq).getValue());
         }
-        //TODO add hashdatainput (refactor signRequestType)
-        return of.createGetNextRequestResponseTypeSignRequest(req);
+        return of.createGetNextRequestResponseTypeBulkSignRequest(bulkReq);
       } else if (request instanceof InfoboxReadRequest) {
         InfoboxReadRequestType req = of.createInfoboxReadRequestType();
         req.setInfoboxIdentifier(((InfoboxReadRequest) request).getInfoboxIdentifier());
@@ -256,19 +256,12 @@ public class STALTranslator {
         stalReq.setInfoboxIdentifier(((InfoboxReadRequestType) request).getInfoboxIdentifier());
         return stalReq;
       } else if (request instanceof SignRequestType) {
-        SignRequest stalReq = new SignRequest();
-        stalReq.setKeyIdentifier(((SignRequestType) request).getKeyIdentifier());
-        SignedInfo signedInfo = new SignedInfo();
-        signedInfo.setValue(((SignRequestType) request).getSignedInfo().getValue());
-        signedInfo.setIsCMSSignedAttributes(((SignRequestType) request).getSignedInfo().isIsCMSSignedAttributes());
-        stalReq.setSignedInfo(signedInfo);
-        stalReq.setSignatureMethod(((SignRequestType) request).getSignatureMethod());
-        stalReq.setDigestMethod(((SignRequestType) request).getDigestMethod());
-        if (((SignRequestType) request).getExcludedByteRange() != null) {
-          ExcludedByteRange excludedByteRange = new ExcludedByteRange();
-          excludedByteRange.setFrom(((SignRequestType) request).getExcludedByteRange().getFrom());
-          excludedByteRange.setTo(((SignRequestType) request).getExcludedByteRange().getTo());
-          stalReq.setExcludedByteRange(excludedByteRange);
+        return translate((SignRequestType) request);
+      } else if (request instanceof BulkSignRequestType) {
+        BulkSignRequest stalReq = new BulkSignRequest();
+        BulkSignRequestType bulkSignRequestType = (BulkSignRequestType) request;
+        for (SignRequestType requestType : bulkSignRequestType.getSignRequests()) {
+          stalReq.getSignRequests().add(translate(requestType));
         }
         return stalReq;
       } else if (request instanceof QuitRequestType) {
@@ -286,9 +279,14 @@ public class STALTranslator {
         resp.setInfoboxValue(((InfoboxReadResponse) response).getInfoboxValue());
         return of.createGetNextRequestTypeInfoboxReadResponse(resp);
       } else if (response instanceof SignResponse) {
-        SignResponseType resp = of.createSignResponseType();
-        resp.setSignatureValue(((SignResponse) response).getSignatureValue());
-        return of.createGetNextRequestTypeSignResponse(resp);
+        return translate((SignResponse) response);
+      } else if (response instanceof BulkSignResponse) {
+        BulkSignResponseType resp = of.createBulkSignResponseType();
+        BulkSignResponse bulkSignResponse = (BulkSignResponse) response;
+        for (SignResponse signResponse : bulkSignResponse.getSignResponse()) {
+          resp.getSignResponse().add(translate(signResponse).getValue());
+        }
+        return of.createGetNextRequestTypeBulkSignResponse(resp);
       } else if (response instanceof ErrorResponse) {
         ErrorResponseType resp = of.createErrorResponseType();
         resp.setErrorCode(((ErrorResponse) response).getErrorCode());
@@ -309,8 +307,13 @@ public class STALTranslator {
         stalResp.setInfoboxValue(((InfoboxReadResponseType) response).getInfoboxValue());
         return stalResp;
       } else if (response instanceof SignResponseType) {
-        SignResponse stalResp = new SignResponse();
-        stalResp.setSignatureValue(((SignResponseType) response).getSignatureValue());
+        return translate((SignResponseType) response);
+      } else if (response instanceof BulkSignResponseType) {
+        BulkSignResponse stalResp = new BulkSignResponse();
+        BulkSignResponseType bulkSignResponseType = (BulkSignResponseType) response;
+        for (SignResponseType responseType : bulkSignResponseType.getSignResponse()) {
+          stalResp.getSignResponse().add(translate(responseType));
+        }
         return stalResp;
       } else if (response instanceof ErrorResponseType) {
         ErrorResponse stalResp = new ErrorResponse();
@@ -324,6 +327,63 @@ public class STALTranslator {
       }
       throw new TranslationException(response.getClass());
     }
+ 
+    private JAXBElement<SignRequestType> translate(SignRequest request) {
+
+      SignRequestType req = of.createSignRequestType();
+      req.setKeyIdentifier(((SignRequest) request).getKeyIdentifier());
+      SignRequestType.SignedInfo signedInfo = of.createSignRequestTypeSignedInfo();
+      signedInfo.setValue(((SignRequest) request).getSignedInfo().getValue());
+      signedInfo.setIsCMSSignedAttributes(((SignRequest) request).getSignedInfo().isIsCMSSignedAttributes());
+      req.setSignedInfo(signedInfo);
+      req.setSignatureMethod(((SignRequest) request).getSignatureMethod());
+      req.setDigestMethod(((SignRequest) request).getDigestMethod());
+      req.setMimeType(((SignRequest) request).getMimeType());
+      req.setDisplayName(((SignRequest) request).getDisplayName());
+      if (((SignRequest) request).getExcludedByteRange() != null) {
+        SignRequestType.ExcludedByteRange excludedByteRange = of.createSignRequestTypeExcludedByteRange();
+        excludedByteRange.setFrom(((SignRequest) request).getExcludedByteRange().getFrom());
+        excludedByteRange.setTo(((SignRequest) request).getExcludedByteRange().getTo());
+        req.setExcludedByteRange(excludedByteRange);
+      }
+      return of.createGetNextRequestResponseTypeSignRequest(req);
+    }
+    
+    private SignRequest translate(SignRequestType request) {
+
+      SignRequest stalReq = new SignRequest();
+      stalReq.setKeyIdentifier(request.getKeyIdentifier());
+      SignedInfo signedInfo = new SignedInfo();
+      signedInfo.setValue(request.getSignedInfo().getValue());
+      signedInfo.setIsCMSSignedAttributes(request.getSignedInfo().isIsCMSSignedAttributes());
+      stalReq.setSignedInfo(signedInfo);
+      stalReq.setSignatureMethod(request.getSignatureMethod());
+      stalReq.setDigestMethod(request.getDigestMethod());
+      stalReq.setDisplayName(request.getDisplayName());
+      stalReq.setMimeType(request.getMimeType());
+      if (request.getExcludedByteRange() != null) {
+        ExcludedByteRange excludedByteRange = new ExcludedByteRange();
+        excludedByteRange.setFrom(request.getExcludedByteRange().getFrom());
+        excludedByteRange.setTo(request.getExcludedByteRange().getTo());
+        stalReq.setExcludedByteRange(excludedByteRange);
+      }
+      return stalReq;
+
+    }
+    
+ 
+    private JAXBElement<SignResponseType> translate(SignResponse response) {
+      SignResponseType resp = of.createSignResponseType();
+      resp.setSignatureValue(response.getSignatureValue());
+      return of.createGetNextRequestTypeSignResponse(resp);
+    }
+
+    private SignResponse translate(SignResponseType response) {
+      SignResponse stalResp = new SignResponse();
+      stalResp.setSignatureValue(response.getSignatureValue());
+      return stalResp;
+    }
+
   }
 }
 

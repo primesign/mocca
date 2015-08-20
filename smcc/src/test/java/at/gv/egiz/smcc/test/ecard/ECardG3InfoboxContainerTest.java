@@ -29,6 +29,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import at.gv.egiz.smcc.BulkSignException;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.SignatureCardException;
@@ -44,7 +45,7 @@ public class ECardG3InfoboxContainerTest extends AbstractCardTestBase {
     PINGUI pinProvider = new DummyPINGUI() {
       @Override
       public char[] providePIN(PinInfo pinSpec, int retries)
-          throws CancelledException, InterruptedException {
+          throws CancelledException, InterruptedException, BulkSignException {
         // must not require a PIN!
         fail();
         return null;

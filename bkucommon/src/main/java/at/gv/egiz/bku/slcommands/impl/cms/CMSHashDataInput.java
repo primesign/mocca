@@ -32,18 +32,31 @@ import at.gv.egiz.stal.HashDataInput;
 
 public class CMSHashDataInput implements HashDataInput {
 
-  private final static String DEFAULT_FILENAME = "SignatureData";
+  public final static String DEFAULT_FILENAME = "SignatureData";
 
   private byte[] data;
+  private byte[] digest;
   private String mimeType;
+  private String referenceId;
+  private String fileName;
 
   public CMSHashDataInput(byte[] data, String mimeType) {
     this.data = data;
     this.mimeType = mimeType;
   }
+  
+  public CMSHashDataInput(byte[] data, String mimeType, byte[] digest) {
+    this.data = data;
+    this.mimeType = mimeType;
+  }
+
 
   @Override
   public String getReferenceId() {
+
+    if (referenceId != null) {
+      return referenceId;
+    }
     return CMS_DEF_REFERENCE_ID;
   }
 
@@ -59,11 +72,36 @@ public class CMSHashDataInput implements HashDataInput {
 
   @Override
   public String getFilename() {
-    return DEFAULT_FILENAME + MimeTypes.getExtension(mimeType);
+    if (fileName != null) {
+      return fileName;
+    }
+    return DEFAULT_FILENAME;
   }
 
   @Override
   public InputStream getHashDataInput() {
     return new ByteArrayInputStream(data);
   }
+
+  @Override
+  public byte[] getDigest() {
+    return digest;
+  }
+
+
+  public void setFilename(String fileName) {
+    this.fileName = fileName;
+  }
+ 
+  public void setDigest(byte[] digest) {
+    this.digest = digest;
+  }
+
+  public void setReferenceId(String referenceId) {
+    this.referenceId = referenceId;
+  }
+  
+  
+
+
 }

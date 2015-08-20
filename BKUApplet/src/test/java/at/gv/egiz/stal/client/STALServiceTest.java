@@ -69,8 +69,8 @@ public class STALServiceTest {
 //            req.getResponse().add(new ErrorResponse(1234));
             GetNextRequestResponseType nrResp = port.getNextRequest(nrReq);
             assertNotNull(nrResp);
-            System.out.println("got response: " + nrResp.getInfoboxReadRequestOrSignRequestOrQuitRequest().size());
-            for (JAXBElement<? extends RequestType> stalReqElt : nrResp.getInfoboxReadRequestOrSignRequestOrQuitRequest()) {
+            System.out.println("got response: " + nrResp.getInfoboxReadRequestOrSignRequestOrBulkSignRequest().size());
+            for (JAXBElement<? extends RequestType> stalReqElt : nrResp.getInfoboxReadRequestOrSignRequestOrBulkSignRequest()) {
               RequestType stalReq = stalReqElt.getValue();
                 if (stalReq instanceof InfoboxReadRequestType) {
                    String ibid = ((InfoboxReadRequestType) stalReq).getInfoboxIdentifier(); 

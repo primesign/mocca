@@ -36,6 +36,7 @@ import java.security.NoSuchAlgorithmException;
 
 import org.junit.Test;
 
+import at.gv.egiz.smcc.BulkSignException;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.CardNotSupportedException;
 import at.gv.egiz.smcc.LockedException;
@@ -176,7 +177,7 @@ public abstract class AbstractCardTest extends AbstractCardTestBase {
     PINGUI pinProvider = new DummyPINGUI() {
       @Override
       public char[] providePIN(PinInfo spec, int retries)
-          throws CancelledException, InterruptedException {
+          throws CancelledException, InterruptedException, BulkSignException {
 
         try {
           signatureCard.getCertificate(KeyboxName.SECURE_SIGNATURE_KEYPAIR, null);
@@ -201,7 +202,7 @@ public abstract class AbstractCardTest extends AbstractCardTestBase {
     PINGUI pinProvider = new DummyPINGUI() {
       @Override
       public char[] providePIN(PinInfo spec, int retries)
-          throws CancelledException, InterruptedException {
+          throws CancelledException, InterruptedException, BulkSignException {
 
         try {
           signatureCard.getCertificate(KeyboxName.CERTIFIED_KEYPAIR, null);

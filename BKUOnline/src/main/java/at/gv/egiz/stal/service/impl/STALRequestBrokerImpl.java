@@ -25,6 +25,7 @@
 
 package at.gv.egiz.stal.service.impl;
 
+import at.gv.egiz.stal.BulkSignRequest;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.QuitRequest;
@@ -115,8 +116,25 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                   // and getHashDataInput() accesses request obj
                   // (requests are cleared only when we receive the response)
                   // DataObjectHashDataInput with reference caching enabled DataObject
+                  
+              log.info("Adding HashdataInput with id {} and digsest {}", ((SignRequest) stalRequest).getHashDataInput()
+                  .get(0).getReferenceId(), ((SignRequest) stalRequest).getHashDataInput().get(0).getHashDataInput());
                   hashDataInputs.addAll(((SignRequest) stalRequest).getHashDataInput());
-                } else if (stalRequest instanceof QuitRequest) {
+                }
+                
+            if (stalRequest instanceof BulkSignRequest) {
+
+              BulkSignRequest bulkSignRequest = (BulkSignRequest) stalRequest;
+
+              for (SignRequest signRequest : bulkSignRequest.getSignRequests()) {
+                log.info("Adding HashdataInput with id {} and digsest {}", signRequest.getHashDataInput().get(0)
+                    .getReferenceId(), signRequest.getHashDataInput().get(0).getDigest());
+                hashDataInputs.addAll(signRequest.getHashDataInput());
+              }
+
+            }
+            
+                else if (stalRequest instanceof QuitRequest) {
                   log.trace("Received QuitRequest, do not wait for responses.");
                   log.trace("notifying request consumers");
                   requests.notify();

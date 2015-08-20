@@ -91,7 +91,7 @@ public class STALServiceTest {
     System.out.println("connecting to STAL WS [TestSession] ...");
     GetNextRequestResponseType wsResponse = port.connect("TestSession");
 
-    List<JAXBElement<? extends RequestType>> stalRequests = wsResponse.getInfoboxReadRequestOrSignRequestOrQuitRequest();
+    List<JAXBElement<? extends RequestType>> stalRequests = wsResponse.getInfoboxReadRequestOrSignRequestOrBulkSignRequest();
     System.out.println("Received " + wsResponse.getClass() + " containing " + stalRequests.size() + " requests");
     for (JAXBElement<? extends RequestType> jAXBElement : stalRequests) {
       System.out.println(" STALRequest " + jAXBElement.getValue().getClass());

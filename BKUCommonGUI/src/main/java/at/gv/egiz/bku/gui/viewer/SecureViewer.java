@@ -22,11 +22,12 @@
  */
 
 
-package at.gv.egiz.bku.smccstal;
+package at.gv.egiz.bku.gui.viewer;
 
-import at.gv.egiz.stal.signedinfo.SignedInfoType;
+import at.gv.egiz.stal.SignatureInfo;
+
 import java.awt.event.ActionListener;
-import java.security.DigestException;
+import java.util.List;
 
 /**
  *
@@ -45,7 +46,13 @@ public interface SecureViewer {
    * (or any other digest computation error occurs)
    * @throws java.lang.Exception
    */
-  void displayDataToBeSigned(SignedInfoType signedInfo,
+  void displayDataToBeSigned(SignatureInfo signatureInfo,
           ActionListener okListener, String okCommand)
-        throws DigestException, Exception;
+        throws Exception;
+  
+  
+  void displayDataToBeSigned(List<SignatureInfo> signatureInfo,
+      ActionListener okListener, String okCommand)
+    throws Exception;
+
 }

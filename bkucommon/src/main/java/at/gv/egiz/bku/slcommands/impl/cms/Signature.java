@@ -92,17 +92,18 @@ public class Signature {
    */
   private final Logger log = LoggerFactory.getLogger(Signature.class);
 
-  private SignedData signedData;
-  private SignerInfo signerInfo;
-  private byte[] signedDocument;
-  private String mimeType;
-  private AlgorithmID signatureAlgorithm;
-  private AlgorithmID digestAlgorithm;
-  private String signatureAlgorithmURI;
-  private String digestAlgorithmURI;
-  private ExcludedByteRangeType excludedByteRange;
+  protected SignedData signedData;
+  protected SignerInfo signerInfo;
+  protected byte[] signedDocument;
+  protected String mimeType;
+  protected AlgorithmID signatureAlgorithm;
+  protected AlgorithmID digestAlgorithm;
+  protected String signatureAlgorithmURI;
+  protected String digestAlgorithmURI;
+  protected ExcludedByteRangeType excludedByteRange;
+  
 
-  public Signature(CMSDataObjectRequiredMetaType dataObject, String structure,
+public Signature(CMSDataObjectRequiredMetaType dataObject, String structure,
       X509Certificate signingCertificate, Date signingTime, URLDereferencer urlDereferencer,
       boolean useStrongHash)
           throws NoSuchAlgorithmException, CertificateEncodingException,
@@ -223,7 +224,7 @@ public class Signature {
     return data;
   }
 
-  private void setSignerInfo() throws SLCommandException, CMSException, CMSSignatureException {
+  protected void setSignerInfo() throws SLCommandException, CMSException, CMSSignatureException {
     try {
       signedData.addSignerInfo(signerInfo);
     } catch (NoSuchAlgorithmException e) {
@@ -300,7 +301,7 @@ public class Signature {
     }
   }
 
-  private HashDataInput getHashDataInput() {
+  protected HashDataInput getHashDataInput() {
     return new CMSHashDataInput(signedDocument, mimeType);
   }
 
@@ -311,4 +312,7 @@ public class Signature {
     ContentInfo contentInfo = new ContentInfo(signedData);
     return contentInfo.getEncoded();
   }
+ 
 }
+
+

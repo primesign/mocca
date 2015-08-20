@@ -55,7 +55,8 @@ import javax.xml.bind.annotation.XmlType;
     SignRequestType.class,
     InfoboxReadRequestType.class,
     QuitRequestType.class,
-    StatusRequestType.class
+    StatusRequestType.class,
+    BulkSignRequestType.class
 })
 public abstract class RequestType {
 

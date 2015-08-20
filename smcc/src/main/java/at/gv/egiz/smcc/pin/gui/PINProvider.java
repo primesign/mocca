@@ -24,6 +24,7 @@
 
 package at.gv.egiz.smcc.pin.gui;
 
+import at.gv.egiz.smcc.BulkSignException;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.PinInfo;
 
@@ -52,8 +53,9 @@ public interface PINProvider {
    * @return pin != null
    * @throws at.gv.egiz.smcc.CancelledException
    * @throws java.lang.InterruptedException
+   * @throws BulkSignException
    */
   char[] providePIN(PinInfo pinSpec, int retries)
-          throws CancelledException, InterruptedException;
+          throws CancelledException, InterruptedException, BulkSignException;
 
 }

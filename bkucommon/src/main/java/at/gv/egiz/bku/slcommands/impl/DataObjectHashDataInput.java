@@ -27,6 +27,7 @@ package at.gv.egiz.bku.slcommands.impl;
 import at.gv.egiz.bku.binding.HttpUtil;
 import at.gv.egiz.bku.slcommands.impl.xsect.DataObject;
 import at.gv.egiz.stal.HashDataInput;
+
 import java.io.InputStream;
 
 /**
@@ -74,6 +75,11 @@ public class DataObjectHashDataInput implements HashDataInput {
     public String getFilename() {
       //TODO obtain filename from dataObject, if not set return null or get filename (extension!) from mimetype
       return dataObject.getFilename();
+    }
+
+    @Override
+    public byte[] getDigest() {
+      return dataObject.getReference().getDigestValue();
     }
 
 }

@@ -25,8 +25,10 @@
 package at.gv.egiz.bku.online.applet;
 
 import at.gv.egiz.bku.smccstal.AbstractBKUWorker;
+import at.gv.egiz.bku.smccstal.BulkSignRequestHandler;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.smccstal.SignRequestHandler;
+import at.gv.egiz.stal.BulkSignRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
@@ -85,6 +87,8 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
               new AppletSecureViewer(gui, stalPort, sessionId);
       addRequestHandler(SignRequest.class,
               new SignRequestHandler(secureViewer));
+      addRequestHandler(BulkSignRequest.class,
+          new BulkSignRequestHandler(secureViewer));
 
       GetNextRequestResponseType nextRequestResp = stalPort.connect(sessionId);
 
@@ -93,7 +97,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
         List<JAXBElement<? extends ResponseType>> responses = new ArrayList<JAXBElement<? extends ResponseType>>();
 
         try {
-          requests = nextRequestResp.getInfoboxReadRequestOrSignRequestOrQuitRequest();
+          requests = nextRequestResp.getInfoboxReadRequestOrSignRequestOrBulkSignRequest();
           responses.clear();
 
           // (rather use validator)
@@ -167,7 +171,7 @@ public class AppletBKUWorker extends AbstractBKUWorker implements Runnable {
             }
             GetNextRequestType nextRequest = stalObjFactory.createGetNextRequestType();
             nextRequest.setSessionId(sessionId);
-            nextRequest.getInfoboxReadResponseOrSignResponseOrErrorResponse().addAll(responses);
+            nextRequest.getInfoboxReadResponseOrSignResponseOrBulkSignResponse().addAll(responses);
             nextRequestResp = stalPort.getNextRequest(nextRequest);
           }
         }

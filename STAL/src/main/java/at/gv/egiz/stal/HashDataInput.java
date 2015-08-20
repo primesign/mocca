@@ -34,7 +34,8 @@ import java.io.InputStream;
 public interface HashDataInput {
 
     public final static String CMS_DEF_REFERENCE_ID = "Reference-1";
-
+    public final static String DEFAULT_FILENAME = "SignatureData";
+    
     public String getReferenceId();
 
     public String getMimeType();
@@ -42,6 +43,8 @@ public interface HashDataInput {
     public String getEncoding();
 
     public String getFilename();
+    
+    public byte[] getDigest();
 
     public InputStream getHashDataInput();
 
