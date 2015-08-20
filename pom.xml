@@ -34,6 +34,7 @@
     <module>smccSTALExt</module>
     <module>BKUFonts</module>
     <module>mocca-docker</module>
+    <module>mocca-local-docker</module>
   </modules>
   <inceptionYear>2007</inceptionYear>
   <developers>

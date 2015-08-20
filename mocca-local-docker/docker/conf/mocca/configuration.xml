@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MoccaConfiguration version="1.0">
+  <CCID>
+    <!--
+      Disable use of card reader integrated PIN pad
+    -->
+    <disablePinpad>false</disablePinpad>
+  
+  </CCID>
+  <SSL>
+    <!--
+      Use alternative directories for the certificate stores
+      The example below uses the .mocca user directory
+    -->
+    
+    <certDirectory>./certs/certStore</certDirectory>
+    <caDirectory>./certs/trustStore</caDirectory>
+  </SSL>
+  
+
+  <UseSWCard>true</UseSWCard>
+
+  
+  
+  
+  
+</MoccaConfiguration>
