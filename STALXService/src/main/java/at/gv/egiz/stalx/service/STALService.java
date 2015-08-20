@@ -74,7 +74,7 @@ public class STALService
      *     returns STALPortType
      */
     @WebEndpoint(name = "STALPort")
-    public at.gv.egiz.stal.service.STALPortType getSTALPort() {
+    public STALPortType getSTALPort() {
         return super.getPort(new QName("http://www.egiz.gv.at/wsdl/stal", "STALPort"), STALPortType.class);
     }
 
