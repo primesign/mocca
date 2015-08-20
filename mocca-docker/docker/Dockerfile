@@ -1,7 +1,5 @@
 FROM tomcat:7
 
-RUN apt-get -y install unzip
-
 # Add tomcat configuration
 ADD bin $CATALINA_HOME/bin
 ADD conf $CATALINA_HOME/conf
@@ -10,7 +8,7 @@ ADD conf $CATALINA_HOME/conf
 RUN rm -rf $CATALINA_HOME/webapps/*
 
 # Add MOCCA web application
-ADD BKUOnline.war /opt/mocca/apache-tomcat-7.0/webapps/mocca.war
+ADD BKUOnline.war $CATALINA_HOME/webapps/mocca.war
 
 # Copy IAIK security provider to JRE lib/ext and register
 RUN unzip -j $CATALINA_HOME/webapps/mocca.war WEB-INF/lib/iaik_jce_full*.jar WEB-INF/lib/iaik_ecc*.jar WEB-INF/lib/iaik_xsect*.jar -d /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/
