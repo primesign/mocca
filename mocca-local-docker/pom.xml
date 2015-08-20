@@ -62,7 +62,7 @@
 							</execution>
 						</executions>
 						<configuration>
-							<imageName>mocca-local-docker</imageName>
+							<imageName>registry.datentechnik.com/mocca-local</imageName>
 							<dockerDirectory>${basedir}/docker</dockerDirectory>
 						</configuration>
 					</plugin>
