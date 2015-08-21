@@ -63,9 +63,6 @@
 						</executions>
 						<configuration>
 							<imageName>registry.datentechnik.com/mocca-local</imageName>
-              <imageTags>
-                <imageTag>${project.version}</imageTag>
-              </imageTags>
 							<dockerDirectory>${basedir}/docker</dockerDirectory>
 						</configuration>
 					</plugin>
