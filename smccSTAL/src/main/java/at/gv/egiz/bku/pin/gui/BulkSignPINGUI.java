@@ -90,7 +90,7 @@ public class BulkSignPINGUI extends SignPINGUI implements OverrulePinpadPINGUI {
     if (showSignaturePINDialog) {
       
       signatureCount = 1;
-      gui.showSignaturePINDialog(spec, (retry) ? retries : -1, this, "sign", this, "cancel", this, "secureViewer");
+      gui.showSignaturePINDialog(spec, (retry) ? retries : -1, maxSignatures, this, "sign", this, "cancel", this, "secureViewer");
 
       do {
         log.trace("[{}] wait for action.", Thread.currentThread().getName());

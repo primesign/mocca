@@ -172,6 +172,11 @@ public interface BKUGUIFacade {
           ActionListener cancelListener, String cancelCommand,
           ActionListener viewerListener, String viewerCommand);
 
+  public void showSignaturePINDialog(PinInfo pinSpec, int numRetries, int numSignatures, 
+          ActionListener signListener, String signCommand,
+          ActionListener cancelListener, String cancelCommand,
+          ActionListener viewerListener, String viewerCommand);
+
   public char[] getPin();
 
   /**

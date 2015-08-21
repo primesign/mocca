@@ -1212,6 +1212,15 @@ public class BKUGUIImpl implements BKUGUIFacade {
             final ActionListener signListener, final String signCommand,
             final ActionListener cancelListener, final String cancelCommand,
             final ActionListener hashdataListener, final String hashdataCommand) {
+    showSignaturePINDialog(pinSpec, numRetries, 1, signListener, signCommand, cancelListener, cancelCommand,
+        hashdataListener, hashdataCommand);
+  }
+
+  @Override
+  public void showSignaturePINDialog(final PinInfo pinSpec, final int numRetries, final int numSignatures,
+            final ActionListener signListener, final String signCommand,
+            final ActionListener cancelListener, final String cancelCommand,
+            final ActionListener hashdataListener, final String hashdataCommand) {
 
 		log.debug("Scheduling signature-pin dialog.");
 
@@ -1235,7 +1244,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
 				if (renderHeaderPanel) {
 					if (numRetries < 0) {
-						titleLabel.setText(getMessage(TITLE_SIGN));
+					  String msgPattern = getMessage(TITLE_SIGN);
+					  String msg = MessageFormat.format(msgPattern, numSignatures);
+						titleLabel.setText(msg);
 					} else {
 						titleLabel.setText(getMessage(TITLE_RETRY));
 					}
