@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="$jnlpspec" codebase="http://localhost/webstart/" context="http://localhost/" href="$outputFile">
+<jnlp spec="$jnlpspec" codebase="https://dl.bintray.com/primesign/mocca/webstart/latest" href="$outputFile">
 
   <information>
-    <title>${project.name}</title>
-    <vendor>E-Government Innovationszentrum (EGIZ)</vendor>
-    <homepage href="${project.Url}"/>
-    <description>${project.name} - ${project.Description} (BKU)</description>
-    <description kind="short">${project.name}</description>
+    <title>MOCCA PrimeSign Webstart</title>
+    <vendor>PrimeSign GmbH</vendor>
+    <homepage href="https://github.com/primesign/mocca"/>
+    <description>MOCCA PrimeSign Webstart - Bürgerkartenumgebung (BKU)</description>
+    <description kind="short">MOCCA PrimeSign Webstart</description>
     <icon kind="shortcut" href="img/chip16.png" width="16" height="16"/>
     <icon kind="shortcut" href="img/chip24.png" width="24" height="24"/>
     <icon kind="shortcut" href="img/chip32.png" width="32" height="32"/>
