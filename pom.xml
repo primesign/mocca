@@ -10,6 +10,9 @@
   <url>http://joinup.ec.europa.eu/site/mocca/</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
+    <sonar.language>java</sonar.language>
   </properties>
   <modules>
     <module>utils</module>
@@ -469,4 +472,46 @@
     <system>JIRA</system>
     <url>http://jira.egovlabs.gv.at/</url>
   </issueManagement>
+  <profiles>
+    <profile>
+      <id>sonar-coverage</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.jacoco</groupId>
+              <artifactId>jacoco-maven-plugin</artifactId>
+              <version>0.7.5.201505241946</version>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <configuration>
+              <append>true</append>
+            </configuration>
+            <executions>
+              <execution>
+                <id>agent-for-ut</id>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+              </execution>
+              <!-- <execution> <id>agent-for-it</id> <goals> <goal>prepare-agent-integration</goal> 
+                </goals> </execution> -->
+              <execution>
+                <id>jacoco-site</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
