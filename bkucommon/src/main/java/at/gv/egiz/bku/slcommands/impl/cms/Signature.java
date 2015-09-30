@@ -48,7 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3._2000._09.xmldsig_.DigestMethodType;
 
-import at.buergerkarte.namespaces.securitylayer._1_2_3.CMSDataObjectRequiredMetaType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.CMSDataObjectOptionalMetaType;
 import at.buergerkarte.namespaces.securitylayer._1_2_3.DigestAndRefType;
 import at.buergerkarte.namespaces.securitylayer._1_2_3.ExcludedByteRangeType;
 import at.gv.egiz.bku.slcommands.impl.xsect.AlgorithmMethodFactory;
@@ -104,7 +104,7 @@ public class Signature {
   protected ExcludedByteRangeType excludedByteRange;
   
 
-public Signature(CMSDataObjectRequiredMetaType dataObject, String structure,
+public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
       X509Certificate signingCertificate, Date signingTime, URLDereferencer urlDereferencer,
       boolean useStrongHash)
           throws NoSuchAlgorithmException, CertificateEncodingException,
@@ -195,7 +195,7 @@ public Signature(CMSDataObjectRequiredMetaType dataObject, String structure,
     attributes.add(signingTime);
   }
 
-  private byte[] getContent(CMSDataObjectRequiredMetaType dataObject, URLDereferencer urlDereferencer)
+  private byte[] getContent(CMSDataObjectOptionalMetaType dataObject, URLDereferencer urlDereferencer)
       throws InvalidParameterException, SLCommandException, IOException {
     byte[] data = dataObject.getContent().getBase64Content();
     if (data == null) {

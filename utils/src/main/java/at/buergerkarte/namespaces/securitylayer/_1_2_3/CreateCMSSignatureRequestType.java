@@ -52,7 +52,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CreateCMSSignatureRequestType", propOrder = {
     "keyboxIdentifier",
-    "dataObject"
+    "dataObject",
+    "referenceObject"
 })
 public class CreateCMSSignatureRequestType {
 

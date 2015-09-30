@@ -43,7 +43,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.buergerkarte.namespaces.securitylayer._1_2_3.CMSDataObjectRequiredMetaType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.CMSDataObjectOptionalMetaType;
 import at.buergerkarte.namespaces.securitylayer._1_2_3.ExcludedByteRangeType;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
@@ -66,7 +66,7 @@ public class BulkSignature extends Signature {
   private final Logger log = LoggerFactory.getLogger(BulkSignature.class);
 
   
-  public BulkSignature(CMSDataObjectRequiredMetaType dataObject, String structure,
+  public BulkSignature(CMSDataObjectOptionalMetaType dataObject, String structure,
       X509Certificate signingCertificate, Date signingTime, URLDereferencer urlDereferencer,
       boolean useStrongHash)
           throws NoSuchAlgorithmException, CertificateEncodingException,
@@ -83,8 +83,15 @@ public class BulkSignature extends Signature {
   public byte[] sign(SecurityProvider securityProvider, STAL stal, String keyboxIdentifier) throws CMSException, CMSSignatureException, SLCommandException {
 	    signedData.setSecurityProvider(securityProvider);
 	    setSignerInfo();
+	    if (digestValue != null) {
+	      try {
+	        signedData.setMessageDigest(digestAlgorithm, digestValue);
+	      } catch (NoSuchAlgorithmException e) {
+	        throw new CMSSignatureException(e);
+	      }
+	    }
 	    ContentInfo contentInfo = new ContentInfo(signedData);
-	    return null;
+	    return contentInfo.getEncoded();
 	  }
   
   @Override

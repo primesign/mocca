@@ -112,8 +112,9 @@ public class CreateCMSSignatureCommandImpl extends
     // DataObject, SigningCertificate, SigningTime
     try {
       Date signingTime = request.isPAdESCompatibility() ? null : new Date();
-      signature = new Signature(request.getDataObject(), request.getStructure(),
-          signingCertificate, signingTime, commandContext.getURLDereferencer(),
+      signature = new Signature(request.getDataObject() != null ? request.getDataObject()
+          : request.getReferenceObject(), request.getStructure(), signingCertificate, signingTime,
+          commandContext.getURLDereferencer(),
           configurationFacade.getUseStrongHash());
     } catch (SLCommandException e) {
       log.error("Error creating CMS Signature.", e);
