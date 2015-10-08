@@ -133,6 +133,9 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
     try {
 
       List<CreateSignatureRequest> signatureRequests = getRequestValue().getCreateSignatureRequest();
+      
+      
+      List<String> requestIds = new LinkedList<String>();
 
       if (signatureRequests != null && signatureRequests.size() != 0) {
 
@@ -151,6 +154,8 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
           CreateSignatureRequest request = signatureRequests.get(i);
           if (request.getCreateCMSSignatureRequest() != null) {
             log.info("execute CMSSignature request.");
+            
+            requestIds.add(request.getId());
             
             BulkSignature signature = prepareCMSSignatureRequests(securityProvider, request.getCreateCMSSignatureRequest(),
                 commandContext);
@@ -173,8 +178,11 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
           }
         }
 
+
         return new BulkSignatureResultImpl(signBulkRequest(securityProvider.getBulkSignatureInfo(), commandContext,
-            signatures));
+            signatures), requestIds);
+        
+
 
       }
 
