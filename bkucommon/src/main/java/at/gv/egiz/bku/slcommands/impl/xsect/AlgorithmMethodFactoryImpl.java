@@ -24,6 +24,7 @@
 
 package at.gv.egiz.bku.slcommands.impl.xsect;
 
+import iaik.asn1.structures.AlgorithmID;
 import iaik.security.ecc.interfaces.ECDSAParams;
 import iaik.xml.crypto.XmldsigMore;
 
@@ -56,9 +57,19 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
   private String signatureAlgorithmURI;
   
   /**
+   * The signature algorithm ID.
+   */
+  private AlgorithmID signatureAlgorithmID;
+  
+  /**
    * the digest algorithm URI.
    */
   private String digestAlgorithmURI = DigestMethod.SHA1;
+  
+  /**
+   * The digest algorithm ID.
+   */
+  private AlgorithmID digestAlgorithmID = AlgorithmID.sha1;
 
   /**
    * The algorithm parameters for the signature algorithm.
@@ -83,6 +94,7 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
 
     if ("DSA".equals(algorithm)) {
       signatureAlgorithmURI = SignatureMethod.DSA_SHA1;
+      signatureAlgorithmID = AlgorithmID.dsaWithSHA1;
     } else if ("RSA".equals(algorithm)) {
       
       int keyLength = 0;
@@ -92,12 +104,12 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
       
       if (useStrongHash && keyLength >= 2048) {
         signatureAlgorithmURI = XmldsigMore.SIGNATURE_RSA_SHA256;
+        signatureAlgorithmID = AlgorithmID.sha256WithRSAEncryption;
         digestAlgorithmURI = DigestMethod.SHA256;
-//      } else if (useStrongHash) {
-//        signatureAlgorithmURI = XmldsigMore.SIGNATURE_RSA_RIPEMD160_ERRATA;
-//        digestAlgorithmURI = DigestMethod.RIPEMD160;
+        digestAlgorithmID = AlgorithmID.sha256;
       } else {
         signatureAlgorithmURI = SignatureMethod.RSA_SHA1;
+        signatureAlgorithmID = AlgorithmID.sha1WithRSAEncryption;
       }
       
     } else if (("EC".equals(algorithm)) || ("ECDSA".equals(algorithm))) {
@@ -113,15 +125,22 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
       
       if (useStrongHash && fieldSize >= 512) {
         signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_SHA512;
+        signatureAlgorithmID = AlgorithmID.ecdsa_With_SHA512;
         digestAlgorithmURI = DigestMethod.SHA512;
+        digestAlgorithmID = AlgorithmID.sha512;
       } else if (useStrongHash && fieldSize >= 256) {
         signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_SHA256;
+        signatureAlgorithmID = AlgorithmID.ecdsa_With_SHA256;
         digestAlgorithmURI = DigestMethod.SHA256;
+        digestAlgorithmID = AlgorithmID.sha256;
       } else if (useStrongHash) {
           signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_RIPEMD160;
+          signatureAlgorithmID = AlgorithmID.ecdsa_plain_With_RIPEMD160;
           digestAlgorithmURI = DigestMethod.RIPEMD160;
+          digestAlgorithmID = AlgorithmID.ripeMd160;
       } else {
         signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_SHA1;
+        signatureAlgorithmID = AlgorithmID.ecdsa_With_SHA1;
       }
       
     } else {
@@ -185,6 +204,16 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
   @Override
   public String getDigestAlgorithmURI() {
     return digestAlgorithmURI;
+  }
+
+  @Override
+  public AlgorithmID getSignatureAlgorithmID() {
+    return signatureAlgorithmID;
+  }
+
+  @Override
+  public AlgorithmID getDigestAlgorithmID() {
+    return digestAlgorithmID;
   }
 
 }

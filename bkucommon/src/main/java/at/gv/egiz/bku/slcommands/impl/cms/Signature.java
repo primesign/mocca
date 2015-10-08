@@ -24,6 +24,40 @@
 
 package at.gv.egiz.bku.slcommands.impl.cms;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.InvalidParameterException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.SignatureException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import javax.xml.crypto.dsig.DigestMethod;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3._2000._09.xmldsig_.DigestMethodType;
+
+import at.buergerkarte.namespaces.securitylayer._1_2_3.CMSDataObjectOptionalMetaType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.DigestAndRefType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.ExcludedByteRangeType;
+import at.gv.egiz.bku.slcommands.impl.xsect.AlgorithmMethodFactory;
+import at.gv.egiz.bku.slcommands.impl.xsect.AlgorithmMethodFactoryImpl;
+import at.gv.egiz.bku.slcommands.impl.xsect.STALSignatureException;
+import at.gv.egiz.bku.slexceptions.SLCommandException;
+import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
+import at.gv.egiz.stal.HashDataInput;
+import at.gv.egiz.stal.STAL;
 import iaik.asn1.ASN1Object;
 import iaik.asn1.CodingException;
 import iaik.asn1.ObjectID;
@@ -39,43 +73,9 @@ import iaik.cms.ContentInfo;
 import iaik.cms.IssuerAndSerialNumber;
 import iaik.cms.SignedData;
 import iaik.cms.SignerInfo;
-import iaik.security.ecc.interfaces.ECDSAParams;
 import iaik.smime.ess.ESSCertID;
 import iaik.smime.ess.ESSCertIDv2;
 import iaik.x509.X509ExtensionException;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.InvalidParameterException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SignatureException;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.security.interfaces.ECPublicKey;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.ECParameterSpec;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import at.buergerkarte.namespaces.securitylayer._1_2_3.CMSDataObjectRequiredMetaType;
-import at.buergerkarte.namespaces.securitylayer._1_2_3.ExcludedByteRangeType;
-import at.gv.egiz.bku.slcommands.impl.xsect.AlgorithmMethodFactory;
-import at.gv.egiz.bku.slcommands.impl.xsect.AlgorithmMethodFactoryImpl;
-import at.gv.egiz.bku.slcommands.impl.xsect.STALSignatureException;
-import at.gv.egiz.bku.slexceptions.SLCommandException;
-import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
-import at.gv.egiz.stal.HashDataInput;
-import at.gv.egiz.stal.STAL;
 
 /**
  * This class represents a CMS-Signature as to be created by the
@@ -98,20 +98,34 @@ public class Signature {
   protected String mimeType;
   protected AlgorithmID signatureAlgorithm;
   protected AlgorithmID digestAlgorithm;
+  protected byte[] digestValue;
   protected String signatureAlgorithmURI;
   protected String digestAlgorithmURI;
   protected ExcludedByteRangeType excludedByteRange;
   
 
-public Signature(CMSDataObjectRequiredMetaType dataObject, String structure,
+public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
       X509Certificate signingCertificate, Date signingTime, URLDereferencer urlDereferencer,
       boolean useStrongHash)
           throws NoSuchAlgorithmException, CertificateEncodingException,
           CertificateException, X509ExtensionException, InvalidParameterException,
           CodingException, SLCommandException, IOException {
-    byte[] dataToBeSigned = getContent(dataObject, urlDereferencer);
     int mode = structure.equalsIgnoreCase("enveloping") ? SignedData.IMPLICIT : SignedData.EXPLICIT;
-    this.signedData = new SignedData(dataToBeSigned, mode);
+    if (dataObject.getContent() != null) {
+      byte[] dataToBeSigned = getContent(dataObject, urlDereferencer);
+      this.signedData = new SignedData(dataToBeSigned, mode);
+    } else {
+      DigestAndRefType digestAndRef = dataObject.getDigestAndRef();
+      DigestMethodType digestMethod = digestAndRef.getDigestMethod();
+      try {
+        digestAlgorithm = getAlgorithmID(digestMethod.getAlgorithm());
+      } catch (URISyntaxException e) {
+        //TODO: choose proper execption
+        throw new NoSuchAlgorithmException(e);
+      }
+      digestValue = digestAndRef.getDigestValue();
+      this.signedData = new SignedData(ObjectID.pkcs7_data);
+    }
     setAlgorithmIDs(signingCertificate, useStrongHash);
     createSignerInfo(signingCertificate);
     setSignerCertificate(signingCertificate);
@@ -181,7 +195,7 @@ public Signature(CMSDataObjectRequiredMetaType dataObject, String structure,
     attributes.add(signingTime);
   }
 
-  private byte[] getContent(CMSDataObjectRequiredMetaType dataObject, URLDereferencer urlDereferencer)
+  private byte[] getContent(CMSDataObjectOptionalMetaType dataObject, URLDereferencer urlDereferencer)
       throws InvalidParameterException, SLCommandException, IOException {
     byte[] data = dataObject.getContent().getBase64Content();
     if (data == null) {
@@ -245,59 +259,24 @@ public Signature(CMSDataObjectRequiredMetaType dataObject, String structure,
   }
 
   private void setAlgorithmIDs(X509Certificate signingCertificate, boolean useStrongHash) throws NoSuchAlgorithmException {
-    PublicKey publicKey = signingCertificate.getPublicKey();
-    String algorithm = publicKey.getAlgorithm();
     AlgorithmMethodFactory amf = new AlgorithmMethodFactoryImpl(signingCertificate, useStrongHash);
     signatureAlgorithmURI = amf.getSignatureAlgorithmURI();
-    digestAlgorithmURI = amf.getDigestAlgorithmURI();
-
-    if ("DSA".equals(algorithm)) {
-      signatureAlgorithm = AlgorithmID.dsaWithSHA1;
-    } else if ("RSA".equals(algorithm)) {
-
-      int keyLength = 0;
-      if (publicKey instanceof RSAPublicKey) {
-        keyLength = ((RSAPublicKey) publicKey).getModulus().bitLength();
-      }
-
-      if (useStrongHash && keyLength >= 2048) {
-        signatureAlgorithm = AlgorithmID.sha256WithRSAEncryption;
-        digestAlgorithm = AlgorithmID.sha256;
-//      } else if (useStrongHash) { // Cannot be used if not enabled in AlgorithmMethodFactoryImpl
-//        signatureAlgorithm = AlgorithmID.rsaSignatureWithRipemd160;
-//        digestAlgorithm = AlgorithmID.ripeMd160;
+    signatureAlgorithm = amf.getSignatureAlgorithmID();
+    if (digestAlgorithm != null) {
+      if (AlgorithmID.sha1.equals(digestAlgorithm)) {
+        digestAlgorithmURI = DigestMethod.SHA1;
+      } else if (AlgorithmID.sha256.equals(digestAlgorithm)) {
+        digestAlgorithmURI = DigestMethod.SHA256;
+      } else if (AlgorithmID.sha512.equals(digestAlgorithm)) {
+        digestAlgorithmURI = DigestMethod.SHA512;
+      } else if (AlgorithmID.ripeMd160.equals(digestAlgorithm)) {
+        digestAlgorithmURI = DigestMethod.RIPEMD160;
       } else {
-        signatureAlgorithm = AlgorithmID.sha1WithRSAEncryption;
-        digestAlgorithm = AlgorithmID.sha1;
-      }
-      
-    } else if (("EC".equals(algorithm)) || ("ECDSA".equals(algorithm))) {
-
-      int fieldSize = 0;
-      if (publicKey instanceof iaik.security.ecc.ecdsa.ECPublicKey) {
-        ECDSAParams params = ((iaik.security.ecc.ecdsa.ECPublicKey) publicKey).getParameter();
-        fieldSize = params.getG().getCurve().getField().getSize().bitLength();
-      } else if (publicKey instanceof ECPublicKey) {
-        ECParameterSpec params = ((ECPublicKey) publicKey).getParams();
-        fieldSize = params.getCurve().getField().getFieldSize();
-      }
-      
-      if (useStrongHash && fieldSize >= 512) {
-        signatureAlgorithm = AlgorithmID.ecdsa_With_SHA512;
-        digestAlgorithm = AlgorithmID.sha512;
-      } else if (useStrongHash && fieldSize >= 256) {
-        signatureAlgorithm = AlgorithmID.ecdsa_With_SHA256;
-        digestAlgorithm = AlgorithmID.sha256;
-      } else if (useStrongHash) {
-          signatureAlgorithm = AlgorithmID.ecdsa_plain_With_RIPEMD160;
-          digestAlgorithm = AlgorithmID.ripeMd160;
-      } else {
-        signatureAlgorithm = AlgorithmID.ecdsa_With_SHA1;
-        digestAlgorithm = AlgorithmID.sha1;
+        throw new NoSuchAlgorithmException("Algorithm '" + digestAlgorithm + "' not supported.");
       }
     } else {
-      throw new NoSuchAlgorithmException("Public key algorithm '" + algorithm
-          + "' not supported.");
+      digestAlgorithmURI = amf.getDigestAlgorithmURI();
+      digestAlgorithm = amf.getDigestAlgorithmID();
     }
   }
 
@@ -309,8 +288,28 @@ public Signature(CMSDataObjectRequiredMetaType dataObject, String structure,
     signedData.setSecurityProvider(new STALSecurityProvider(
         stal, keyboxIdentifier, getHashDataInput(), this.excludedByteRange));
     setSignerInfo();
+    if (digestValue != null) {
+      try {
+        signedData.setMessageDigest(digestAlgorithm, digestValue);
+      } catch (NoSuchAlgorithmException e) {
+        throw new CMSSignatureException(e);
+      }
+    }
     ContentInfo contentInfo = new ContentInfo(signedData);
     return contentInfo.getEncoded();
+  }
+  
+  protected AlgorithmID getAlgorithmID(String uri) throws URISyntaxException {
+    String oid = null;
+    URI urn = new URI(uri);
+    String scheme = urn.getScheme();
+    if ("URN".equalsIgnoreCase(scheme)) {
+      String schemeSpecificPart = urn.getSchemeSpecificPart().toLowerCase();
+      if (schemeSpecificPart.startsWith("oid:")) {
+        oid = schemeSpecificPart.substring(4, schemeSpecificPart.length());
+      }
+    }
+    return new AlgorithmID(new ObjectID(oid));
   }
  
 }

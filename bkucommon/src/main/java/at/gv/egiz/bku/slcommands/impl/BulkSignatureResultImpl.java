@@ -60,7 +60,11 @@ public class BulkSignatureResultImpl extends SLResultImpl implements BulkSignatu
    * The CMSSignatures data.
    */
   protected List<byte[]> signatures;
-
+  
+  
+  protected List<String> requestIds;
+  
+  
   /**
    * The BulkResponse.
    */
@@ -70,12 +74,14 @@ public class BulkSignatureResultImpl extends SLResultImpl implements BulkSignatu
    * Creates a new instance of this BulkSignatureResultImpl with the given
    * signatures <code>signatures</code>.
    */
-  public BulkSignatureResultImpl(List<byte[]> signatures) {
+  public BulkSignatureResultImpl(List<byte[]> signatures, List<String> requestIds) {
     super();
 
     if (signatures == null || signatures.size() == 0)
       throw new NullPointerException("Argument 'signature' must not be null.");
     this.signatures = signatures;
+    
+    this.requestIds = requestIds;
 
     marshallBulkSignatureResponse();
   }
@@ -89,14 +95,20 @@ public class BulkSignatureResultImpl extends SLResultImpl implements BulkSignatu
 
     BulkResponseType bulkResponseType = factory.createBulkResponseType();
 
-    for (byte[] signature : signatures) {
+    for (int i=0; i< signatures.size(); i++) {
 
+      byte[] signature = signatures.get(i);
       CreateSignatureResponse createSignatureResponse = factory.createBulkResponseTypeCreateSignatureResponse();
+      
+      if (requestIds.get(i) != null) {
+        createSignatureResponse.setId(requestIds.get(i));
+      }
       CreateCMSSignatureResponseType createCreateCMSSignatureResponseType = factory
           .createCreateCMSSignatureResponseType();
       createCreateCMSSignatureResponseType.setCMSSignature(signature);
       createSignatureResponse.setCreateCMSSignatureResponse(createCreateCMSSignatureResponseType);
       bulkResponseType.getCreateSignatureResponse().add(createSignatureResponse);
+      
 
     }
 

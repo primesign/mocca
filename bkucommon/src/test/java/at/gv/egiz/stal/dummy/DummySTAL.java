@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import javax.xml.crypto.dsig.SignatureMethod;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +50,7 @@ import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
 import at.gv.egiz.stal.SignRequest;
 import at.gv.egiz.stal.SignResponse;
+import iaik.xml.crypto.XmldsigMore;
 
 public class DummySTAL implements STAL {
 
@@ -75,6 +78,10 @@ public class DummySTAL implements STAL {
       log.error("Failed to create DummySTAL.", e);
     }
 
+  }
+  
+  public X509Certificate getCert() {
+    return cert;
   }
 
   @Override
@@ -134,7 +141,13 @@ public class DummySTAL implements STAL {
         try {
 
           SignRequest signReq = (SignRequest) request;
-          Signature s = Signature.getInstance("SHA1withRSA");
+          String signatureMethod = ((SignRequest) request).getSignatureMethod();
+          Signature s = null;
+          if (SignatureMethod.RSA_SHA1.equals(signatureMethod)) {
+            s = Signature.getInstance("SHA1withRSA");
+          } else if (XmldsigMore.SIGNATURE_RSA_SHA256.equals(signatureMethod)) {
+            s = Signature.getInstance("SHA256withRSA"); 
+          }
           s.initSign(privateKey);
           s.update(signReq.getSignedInfo().getValue());
           byte[] sigVal = s.sign();

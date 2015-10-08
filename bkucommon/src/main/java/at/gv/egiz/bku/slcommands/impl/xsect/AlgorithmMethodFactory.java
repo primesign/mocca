@@ -32,6 +32,8 @@ import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.crypto.dsig.DigestMethod;
 import javax.xml.crypto.dsig.SignatureMethod;
 
+import iaik.asn1.structures.AlgorithmID;
+
 /**
  * A factory for creating {@link AlgorithmMethod}s.
  * 
@@ -87,4 +89,8 @@ public interface AlgorithmMethodFactory {
   public String getSignatureAlgorithmURI();
 
   public String getDigestAlgorithmURI();
+
+  AlgorithmID getSignatureAlgorithmID();
+
+  AlgorithmID getDigestAlgorithmID();
 }

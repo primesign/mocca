@@ -660,6 +660,14 @@ public class ObjectFactory {
     public CMSDataObjectRequiredMetaType createCMSDataObjectRequiredMetaType() {
         return new CMSDataObjectRequiredMetaType();
     }
+    
+    /**
+     * Create an instance of {@link CMSReferenceObject }
+     * 
+     */
+    public CMSReferenceObject createCMSReferenceObject() {
+        return new CMSReferenceObject();
+    }
 
     /**
      * Create an instance of {@link at.buergerkarte.namespaces.securitylayer._1_2_3.XMLContentType }

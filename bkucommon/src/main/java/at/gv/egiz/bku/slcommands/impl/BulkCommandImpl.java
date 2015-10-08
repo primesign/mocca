@@ -133,6 +133,9 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
     try {
 
       List<CreateSignatureRequest> signatureRequests = getRequestValue().getCreateSignatureRequest();
+      
+      
+      List<String> requestIds = new LinkedList<String>();
 
       if (signatureRequests != null && signatureRequests.size() != 0) {
 
@@ -152,18 +155,21 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
           if (request.getCreateCMSSignatureRequest() != null) {
             log.info("execute CMSSignature request.");
             
+            requestIds.add(request.getId());
+            
             BulkSignature signature = prepareCMSSignatureRequests(securityProvider, request.getCreateCMSSignatureRequest(),
                 commandContext);
             
             signatures.add(signature);
-            
-            for(HashDataInput hashDataInput : securityProvider.getBulkSignatureInfo().get(i).getHashDataInput()){
-              CMSHashDataInput bulkHashDataInput = (CMSHashDataInput) hashDataInput;
-              bulkHashDataInput.setDigest(signature.getSignerInfo().getDigest());
-              
-              log.debug("setting fileName {}", getFileName(request, i+1));
-              bulkHashDataInput.setFilename(getFileName(request, i+1));
-            }
+      
+            //TODO : manage HashDataInputs
+//            for(HashDataInput hashDataInput : securityProvider.getBulkSignatureInfo().get(i).getHashDataInput()){
+//              CMSHashDataInput bulkHashDataInput = (CMSHashDataInput) hashDataInput;
+//              bulkHashDataInput.setDigest(signature.getSignerInfo().getDigest());
+//              
+//              log.debug("setting fileName {}", getFileName(request, i+1));
+//              bulkHashDataInput.setFilename(getFileName(request, i+1));
+//            }
           }  else {
             if (request.getCreateXMLSignatureRequest() != null) {
               log.error("XML signature requests are currently not supported in bulk signature requests.");
@@ -172,16 +178,20 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
           }
         }
 
+
         return new BulkSignatureResultImpl(signBulkRequest(securityProvider.getBulkSignatureInfo(), commandContext,
-            signatures));
+            signatures), requestIds);
+        
+
 
       }
 
     } catch (SLException e) {
       return new ErrorResultImpl(e, commandContext.getLocale());
-    } catch (CMSException e) {
-      log.error("Error reading message digest.",e);
-    }
+   } 
+//    catch (CMSException e) {
+//      log.error("Error reading message digest.",e);
+//    }
     return null;
 
   }
@@ -326,8 +336,10 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
     // DataObject, SigningCertificate, SigningTime
     Date signingTime = new Date();
     try {
-      return new BulkSignature(request.getDataObject(), request.getStructure(), signingCertificate, signingTime,
-          commandContext.getURLDereferencer(), configurationFacade.getUseStrongHash());
+      return new BulkSignature(
+          request.getDataObject() != null ? request.getDataObject() : request.getReferenceObject(),
+          request.getStructure(), signingCertificate, signingTime, commandContext.getURLDereferencer(),
+          configurationFacade.getUseStrongHash());
     } catch (SLCommandException e) {
       log.error("Error creating CMS Signature.", e);
       throw e;
