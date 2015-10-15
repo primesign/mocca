@@ -39,7 +39,6 @@ import iaik.cms.ContentInfo;
 import iaik.cms.IssuerAndSerialNumber;
 import iaik.cms.SignedData;
 import iaik.cms.SignerInfo;
-import iaik.security.ecc.interfaces.ECDSAParams;
 import iaik.smime.ess.ESSCertID;
 import iaik.smime.ess.ESSCertIDv2;
 import iaik.x509.X509ExtensionException;
@@ -271,16 +270,14 @@ public class Signature {
       }
       
     } else if (("EC".equals(algorithm)) || ("ECDSA".equals(algorithm))) {
-
       int fieldSize = 0;
-      if (publicKey instanceof iaik.security.ecc.ecdsa.ECPublicKey) {
-        ECDSAParams params = ((iaik.security.ecc.ecdsa.ECPublicKey) publicKey).getParameter();
-        fieldSize = params.getG().getCurve().getField().getSize().bitLength();
-      } else if (publicKey instanceof ECPublicKey) {
+      if (publicKey instanceof ECPublicKey) {
         ECParameterSpec params = ((ECPublicKey) publicKey).getParams();
         fieldSize = params.getCurve().getField().getFieldSize();
+      } else {
+        throw new NoSuchAlgorithmException("Public key type not supported.");
       }
-      
+
       if (useStrongHash && fieldSize >= 512) {
         signatureAlgorithm = AlgorithmID.ecdsa_With_SHA512;
         digestAlgorithm = AlgorithmID.sha512;

@@ -65,7 +65,11 @@
     </dependency>
     <dependency>
       <groupId>iaik</groupId>
-      <artifactId>iaik_ecc_signed</artifactId>
+      <artifactId>iaik_eccelerate</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>iaik</groupId>
+      <artifactId>iaik_eccelerate_cms</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-fileupload</groupId>

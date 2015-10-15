@@ -27,7 +27,7 @@ package at.gv.egiz.bku.binding;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import iaik.security.ecc.provider.ECCProvider;
+import iaik.security.ec.provider.ECCelerate;
 import iaik.security.provider.IAIK;
 import iaik.xml.crypto.XSecProvider;
 
@@ -47,7 +47,7 @@ public abstract class AbstractBindingProcessorTest {
   @BeforeClass
   public static void setUpClass() {
     Security.insertProviderAt(new IAIK(), 1);
-    Security.insertProviderAt(new ECCProvider(false), 2);
+    Security.insertProviderAt(new ECCelerate(false), 2);
     XSecProvider.addAsProvider(false);
 
     ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
