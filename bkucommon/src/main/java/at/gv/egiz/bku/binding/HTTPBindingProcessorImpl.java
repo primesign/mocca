@@ -465,51 +465,50 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 			case 200:
 				String contentType = dataUrlResponse.getContentType();
 				log.debug("Got dataurl response content type: {}.", contentType);
-				if (contentType != null) {
-					if ((contentType.startsWith(HttpUtil.APPLICATION_URL_ENCODED))
-							|| (contentType.startsWith(HttpUtil.MULTIPART_FORMDATA))) {
-						log.debug("Detected SL Request in dataurl response.");
-						// process headers and request
-						setHTTPHeaders(dataUrlResponse.getResponseHeaders());
-						consumeRequestStream(dataUrlResponse.getUrl(), dataUrlResponse.getStream());
-						//TODO check for bindingProcessorError
-						closeDataUrlConnection();
-						srcContex.setSourceCertificate(serverCertificate);
-						srcContex.setSourceIsDataURL(true);
-						srcContex.setSourceUrl(conn.getURL());
-						currentState = State.PROCESS;
-					} else if (((contentType.startsWith(HttpUtil.TXT_HTML))
-							|| (contentType.startsWith(HttpUtil.TXT_PLAIN))
-							|| (contentType.startsWith(HttpUtil.TXT_XML)))
-							&& (dataUrlResponse.isHttpResponseXMLOK())) {
-						log.info(
-								"Dataurl response matches <ok/> with content type: {}.", contentType);
-						currentState = State.TRANSFORM;
-
-					} else if ((contentType.startsWith(HttpUtil.TXT_XML))
-							&& (!dataUrlResponse.isHttpResponseXMLOK())) {
-						log.debug("Detected text/xml  dataurl response with content != <ok/>");
-						headerMap.put(HttpUtil.HTTP_HEADER_CONTENT_TYPE, contentType);
-						assignXMLRequest(dataUrlResponse.getStream(), HttpUtil.getCharset(
-								contentType, true));
-						closeDataUrlConnection();
-						srcContex.setSourceCertificate(serverCertificate);
-						srcContex.setSourceIsDataURL(true);
-						srcContex.setSourceUrl(conn.getURL());
-						currentState = State.PROCESS;
-						// just to be complete, actually not used
-						srcContex.setSourceHTTPReferer(dataUrlResponse.getResponseHeaders()
-								.get(HttpUtil.HTTP_HEADER_REFERER));
-					} else {
-						resultContentType = contentType;
-						responseHeaders = dataUrlResponse.getResponseHeaders();
-						responseCode = dataUrlResponse.getResponseCode();
-						currentState = State.FINISHED;
-					}
-				} else {
+				if (contentType == null) {
 					log.info("Content type not set in dataurl response.");
 					closeDataUrlConnection();
 					throw new SLBindingException(2007);
+				}
+				if ((contentType.startsWith(HttpUtil.APPLICATION_URL_ENCODED))
+						|| (contentType.startsWith(HttpUtil.MULTIPART_FORMDATA))) {
+					log.debug("Detected SL Request in dataurl response.");
+					// process headers and request
+					setHTTPHeaders(dataUrlResponse.getResponseHeaders());
+					consumeRequestStream(dataUrlResponse.getUrl(), dataUrlResponse.getStream());
+					//TODO check for bindingProcessorError
+					closeDataUrlConnection();
+					srcContex.setSourceCertificate(serverCertificate);
+					srcContex.setSourceIsDataURL(true);
+					srcContex.setSourceUrl(conn.getURL());
+					currentState = State.PROCESS;
+				} else if (((contentType.startsWith(HttpUtil.TXT_HTML))
+						|| (contentType.startsWith(HttpUtil.TXT_PLAIN))
+						|| (contentType.startsWith(HttpUtil.TXT_XML)))
+						&& (dataUrlResponse.isHttpResponseXMLOK())) {
+					log.info(
+							"Dataurl response matches <ok/> with content type: {}.", contentType);
+					currentState = State.TRANSFORM;
+
+				} else if ((contentType.startsWith(HttpUtil.TXT_XML))
+						&& (!dataUrlResponse.isHttpResponseXMLOK())) {
+					log.debug("Detected text/xml  dataurl response with content != <ok/>");
+					headerMap.put(HttpUtil.HTTP_HEADER_CONTENT_TYPE, contentType);
+					assignXMLRequest(dataUrlResponse.getStream(), HttpUtil.getCharset(
+							contentType, true));
+					closeDataUrlConnection();
+					srcContex.setSourceCertificate(serverCertificate);
+					srcContex.setSourceIsDataURL(true);
+					srcContex.setSourceUrl(conn.getURL());
+					currentState = State.PROCESS;
+					// just to be complete, actually not used
+					srcContex.setSourceHTTPReferer(dataUrlResponse.getResponseHeaders()
+							.get(HttpUtil.HTTP_HEADER_REFERER));
+				} else {
+					resultContentType = contentType;
+					responseHeaders = dataUrlResponse.getResponseHeaders();
+					responseCode = dataUrlResponse.getResponseCode();
+					currentState = State.FINISHED;
 				}
 				break;
 
