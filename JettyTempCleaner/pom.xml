@@ -3,7 +3,7 @@
   <parent>
     <groupId>at.gv.egiz</groupId>
     <artifactId>mocca</artifactId>
-    <version>1.3.21</version>
+    <version>1.3.22-SNAPSHOT</version>
   </parent>
   <artifactId>JettyTempCleaner</artifactId>
   <name>Jetty Temp Cleaner</name>
