@@ -49,47 +49,6 @@ public class SSLSocketFactoryBean implements FactoryBean {
 
     private Configuration configuration;
 
-    //avoid ClassCastException: iaik.security.ecc.ecdsa.ECPublicKey cannot be cast to java.security.interfaces.ECPublicKey
-    private final String DEFAULT_DISABLED_CIPHER_SUITES =
-      "TLS_ECDH_ECDSA_WITH_NULL_SHA," +
-      "TLS_ECDH_ECDSA_WITH_RC4_128_SHA," +
-      "TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA," +
-      "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA," +
-      "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA," +
-      "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384,"+
-      "TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256," +
-      "TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384," +
-      "TLS_ECDHE_ECDSA_WITH_NULL_SHA," +
-      "TLS_ECDHE_ECDSA_WITH_RC4_128_SHA," +
-      "TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA," +
-      "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA," +
-      "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA," +
-      "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,"+
-      "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256," +
-      "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384," +
-      "TLS_ECDH_RSA_WITH_NULL_SHA," +
-      "TLS_ECDH_RSA_WITH_RC4_128_SHA," +
-      "TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA," +
-      "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA," +
-      "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA," +
-      "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384,"+
-      "TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256," +
-      "TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384," +
-      "TLS_ECDHE_RSA_WITH_NULL_SHA," +
-      "TLS_ECDHE_RSA_WITH_RC4_128_SHA," +
-      "TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA," +
-      "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA," +
-      "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256," +
-      "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA," +
-      "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,"+
-      "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256," +
-      "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384," +
-      "TLS_ECDH_anon_WITH_NULL_SHA," +
-      "TLS_ECDH_anon_WITH_RC4_128_SHA," +
-      "TLS_ECDH_anon_WITH_3DES_EDE_CBC_SHA," +
-      "TLS_ECDH_anon_WITH_AES_128_CBC_SHA," +
-      "TLS_ECDH_anon_WITH_AES_256_CBC_SHA";
-
     public static final String SSL_PROTOCOL = "SSL.sslProtocol";
 
     public static final String SSL_DISABLE_ALL_CHECKS = "SSL.disableAllChecks";
@@ -102,12 +61,6 @@ public class SSLSocketFactoryBean implements FactoryBean {
 
     public boolean disableAllSslChecks() {
       return configuration.getBoolean(SSL_DISABLE_ALL_CHECKS, false);
-    }
-
-    public String[] getDisabledCipherSuites() {
-      String suites = configuration.getString(SSL_DISABLED_CIPHER_SUITES,
-            DEFAULT_DISABLED_CIPHER_SUITES);
-      return suites.split(",");
     }
   }
 
@@ -148,9 +101,7 @@ public class SSLSocketFactoryBean implements FactoryBean {
     SSLContext sslContext = SSLContext.getInstance(configurationFacade.getSslProtocol());
     sslContext.init(null, new TrustManager[] {pkiTrustManager}, null);
 
-    SSLSocketFactory ssf = sslContext.getSocketFactory();
-
-    return new InternalSSLSocketFactory(ssf, configurationFacade.getDisabledCipherSuites());
+    return sslContext.getSocketFactory();
   }
 
   @Override
