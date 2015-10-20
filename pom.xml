@@ -33,6 +33,7 @@
     <module>BKUGuiExt</module>
     <module>smccSTALExt</module>
     <module>BKUFonts</module>
+    <module>JettyTempCleaner</module>
   </modules>
   <inceptionYear>2007</inceptionYear>
   <developers>

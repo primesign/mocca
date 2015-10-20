@@ -29,7 +29,7 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <includeArtifactIds>BKULocal</includeArtifactIds>
+              <includeArtifactIds>BKULocal,JettyTempCleaner</includeArtifactIds>
               <includeGroupIds>at.gv.egiz</includeGroupIds>
               <outputDirectory>${project.build.directory}/classes</outputDirectory>
               <stripVersion>true</stripVersion>
@@ -342,6 +342,11 @@
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUCertificates</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>at.gv.egiz</groupId>
+      <artifactId>JettyTempCleaner</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>iaik</groupId>
