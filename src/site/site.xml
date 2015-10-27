@@ -27,7 +27,7 @@
   <publishDate position="right"/>
   <bannerLeft>
     <name>MOCCA</name>
-    <src>/images/mocca-t_s.png</src>
+    <src>/images/mocca2-t_s.png</src>
     <href>http://joinup.ec.europa.eu/site/mocca/</href>
   </bannerLeft>
 
@@ -44,11 +44,10 @@
 
     <menu name="MOCCA" inherit="true">
       <item name="About" href="index.html"/>
-      <item name="News" href="http://joinup.ec.europa.eu/software/mocca/newsandblog/all"/>
+      <item name="News" href="https://joinup.ec.europa.eu/software/mocca/communications/all"/>
       <item name="Download" href="download.html"/>
-      <item name="Source" href="https://joinup.ec.europa.eu/svn/mocca"/>
+      <item name="Source" href="http://git.egiz.gv.at/mocca/"/>
       <item name="Wiki" href="http://joinup.ec.europa.eu/software/mocca/wiki/mocca-wiki"/>
-      <item name="Tracker" href="http://jira.egovlabs.gv.at/browse/MOCCA"/>
       <item name="What's new in 1.3?" href="new.html"/>
     </menu>
     

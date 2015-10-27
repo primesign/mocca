@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  Copyright 2011 by Graz University of Technology, Austria
+  Copyright 2015 by Graz University of Technology, Austria
   MOCCA has been developed by the E-Government Innovation Center EGIZ, a joint
   initiative of the Federal Chancellery Austria and Graz University of Technology.
 
@@ -34,10 +34,6 @@
   <body>
   
     <menu ref="parent"/>
-    
-    <menu name="${project.name}">
-      <item name="Configuration" href="configuration.html"/>
-    </menu>
   
     <menu ref="reports"/>
 
