@@ -241,9 +241,9 @@ public class PKIProfileFactoryBean implements FactoryBean, ResourceLoaderAware {
         return order.toArray(new String[order.size()]);
       }
     }
-    log.info("configure default revocation service type order: [OCSP, CRL]");
+    log.info("configure default revocation service type order: [CRL, OCSP]");
     return new String[]
-      { RevocationSourceTypes.OCSP, RevocationSourceTypes.CRL };
+      { RevocationSourceTypes.CRL, RevocationSourceTypes.OCSP };
   }
   
   @Override
