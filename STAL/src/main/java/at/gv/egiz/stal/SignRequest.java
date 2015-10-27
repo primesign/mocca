@@ -43,36 +43,36 @@ import javax.xml.bind.annotation.XmlValue;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="SignRequestType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.egiz.gv.at/stal}RequestType">
- *       &lt;sequence>
- *         &lt;element name="KeyIdentifier" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="SignedInfo">
- *           &lt;complexType>
- *             &lt;simpleContent>
- *               &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>base64Binary">
- *                 &lt;attribute name="IsCMSSignedAttributes" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *               &lt;/extension>
- *             &lt;/simpleContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="SignatureMethod" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="DigestMethod" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="ExcludedByteRange" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;attribute name="from" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
- *                 &lt;attribute name="to" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *       &lt;/sequence>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="SignRequestType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://www.egiz.gv.at/stal}RequestType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="KeyIdentifier" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="SignedInfo"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;simpleContent&gt;
+ *               &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema&gt;base64Binary"&gt;
+ *                 &lt;attribute name="IsCMSSignedAttributes" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *               &lt;/extension&gt;
+ *             &lt;/simpleContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name="SignatureMethod" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="DigestMethod" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="ExcludedByteRange" minOccurs="0"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;attribute name="from" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedLong" /&gt;
+ *                 &lt;attribute name="to" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedLong" /&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
@@ -129,8 +129,7 @@ public class SignRequest
      * Gets the value of the signedInfo property.
      * 
      * @return
-     *     possible object is
-     *     {@link SignRequestType.SignedInfo }
+     *     possible object is SignRequestType.SignedInfo
      *     
      */
     public SignRequest.SignedInfo getSignedInfo() {
@@ -141,8 +140,7 @@ public class SignRequest
      * Sets the value of the signedInfo property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link SignRequestType.SignedInfo }
+     *     allowed object is SignRequestType.SignedInfo
      *     
      */
     public void setSignedInfo(SignRequest.SignedInfo value) {
@@ -201,8 +199,7 @@ public class SignRequest
      * Gets the value of the excludedByteRange property.
      * 
      * @return
-     *     possible object is
-     *     {@link ExcludedByteRange.ExcludedByteRange }
+     *     possible object is ExcludedByteRange.ExcludedByteRange
      *     
      */
     public SignRequest.ExcludedByteRange getExcludedByteRange() {
@@ -213,8 +210,7 @@ public class SignRequest
      * Sets the value of the excludedByteRange property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link ExcludedByteRange.ExcludedByteRange }
+     *     allowed object is ExcludedByteRange.ExcludedByteRange
      *     
      */
     public void setExcludedByteRange(SignRequest.ExcludedByteRange value) {
@@ -236,14 +232,14 @@ public class SignRequest
      * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;attribute name="from" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
-     *       &lt;attribute name="to" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
+     * &lt;complexType&gt;
+     *   &lt;complexContent&gt;
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+     *       &lt;attribute name="from" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedLong" /&gt;
+     *       &lt;attribute name="to" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedLong" /&gt;
+     *     &lt;/restriction&gt;
+     *   &lt;/complexContent&gt;
+     * &lt;/complexType&gt;
      * </pre>
      * 
      * 
@@ -316,13 +312,13 @@ public class SignRequest
      * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
-     * &lt;complexType>
-     *   &lt;simpleContent>
-     *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>base64Binary">
-     *       &lt;attribute name="IsCMSSignedAttributes" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
-     *     &lt;/extension>
-     *   &lt;/simpleContent>
-     * &lt;/complexType>
+     * &lt;complexType&gt;
+     *   &lt;simpleContent&gt;
+     *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema&gt;base64Binary"&gt;
+     *       &lt;attribute name="IsCMSSignedAttributes" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+     *     &lt;/extension&gt;
+     *   &lt;/simpleContent&gt;
+     * &lt;/complexType&gt;
      * </pre>
      * 
      * 

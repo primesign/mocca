@@ -30,7 +30,7 @@ import java.awt.event.ActionListener;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public interface PINManagementGUIFacade extends BKUGUIFacade {
 

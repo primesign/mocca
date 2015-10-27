@@ -46,17 +46,17 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="PnBFieldParamsType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.w3.org/2001/04/xmldsig-more#}CharTwoFieldParamsType">
- *       &lt;sequence>
- *         &lt;element name="K1" type="{http://www.w3.org/2001/XMLSchema}positiveInteger"/>
- *         &lt;element name="K2" type="{http://www.w3.org/2001/XMLSchema}positiveInteger"/>
- *         &lt;element name="K3" type="{http://www.w3.org/2001/XMLSchema}positiveInteger"/>
- *       &lt;/sequence>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="PnBFieldParamsType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://www.w3.org/2001/04/xmldsig-more#}CharTwoFieldParamsType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="K1" type="{http://www.w3.org/2001/XMLSchema}positiveInteger"/&gt;
+ *         &lt;element name="K2" type="{http://www.w3.org/2001/XMLSchema}positiveInteger"/&gt;
+ *         &lt;element name="K3" type="{http://www.w3.org/2001/XMLSchema}positiveInteger"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

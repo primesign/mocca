@@ -45,15 +45,15 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ResponseAPDUType">
- *   &lt;simpleContent>
- *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>hexBinary">
- *       &lt;attribute name="sequence" use="required" type="{http://www.w3.org/2001/XMLSchema}positiveInteger" />
- *       &lt;attribute name="rc" type="{http://www.w3.org/2001/XMLSchema}integer" default="0" />
- *       &lt;attribute name="sw" type="{http://www.w3.org/2001/XMLSchema}hexBinary" default="9000" />
- *     &lt;/extension>
- *   &lt;/simpleContent>
- * &lt;/complexType>
+ * &lt;complexType name="ResponseAPDUType"&gt;
+ *   &lt;simpleContent&gt;
+ *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema&gt;hexBinary"&gt;
+ *       &lt;attribute name="sequence" use="required" type="{http://www.w3.org/2001/XMLSchema}positiveInteger" /&gt;
+ *       &lt;attribute name="rc" type="{http://www.w3.org/2001/XMLSchema}integer" default="0" /&gt;
+ *       &lt;attribute name="sw" type="{http://www.w3.org/2001/XMLSchema}hexBinary" default="9000" /&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/simpleContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

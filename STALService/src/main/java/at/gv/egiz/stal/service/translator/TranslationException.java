@@ -26,7 +26,7 @@ package at.gv.egiz.stal.service.translator;
 
 /**
  * 
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class TranslationException extends Exception {
 
@@ -41,8 +41,8 @@ public class TranslationException extends Exception {
    * Creates a new instance of <code>TranslationException</code> without detail message.
    * @param unknownClass the class that could not be translated
    */
-  public TranslationException(Class<?> unkownClass) {
-    this.unknownClass = unkownClass;
+  public TranslationException(Class<?> unknownClass) {
+    this.unknownClass = unknownClass;
   }
 
   @Override

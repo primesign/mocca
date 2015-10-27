@@ -28,7 +28,7 @@ package at.gv.egiz.smcc;
  * TODO check whether card readers distinguish specific reason (pin too short?)
  * and add getters/setters
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class PINConfirmationException extends SignatureCardException {
 

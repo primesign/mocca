@@ -42,7 +42,7 @@ import at.gv.egiz.stal.ext.GetCertificateResponse;
 
 /**
 *
-* @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
+* @author Thomas Lenz &lt;thomas.lenz@iaik.tugraz.at&gt;
 */
 
 public class GetCertificateBKUWorker extends AppletBKUWorker {

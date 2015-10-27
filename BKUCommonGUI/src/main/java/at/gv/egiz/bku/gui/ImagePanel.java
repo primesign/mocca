@@ -34,7 +34,7 @@ import javax.swing.JPanel;
 /**
  * paints the background image in the lower left corner of the component
  * 
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class ImagePanel extends JPanel {
 

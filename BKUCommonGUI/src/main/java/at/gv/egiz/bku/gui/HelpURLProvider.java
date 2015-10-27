@@ -30,7 +30,7 @@ package at.gv.egiz.bku.gui;
  * Make current context dependent help topic available (outside the applet).
  * Updated by the GUI whenever the current help topic changes.
  * 
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public interface HelpURLProvider {
 

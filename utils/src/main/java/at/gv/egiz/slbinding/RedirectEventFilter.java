@@ -59,8 +59,7 @@ public class RedirectEventFilter implements EventFilter {
    *
    * @param redirectStream
    *          if null, no events are redirected
-   * @param redirectTriggers
-   *          if null, all events are redirected
+   * @param encoding
    */
   public RedirectEventFilter(OutputStream redirectStream, String encoding)
           throws XMLStreamException { // , List<QName> redirectTriggers
@@ -164,7 +163,7 @@ public class RedirectEventFilter implements EventFilter {
    * Enable/disable redirection of <em>all</em> events from now on.
    * The redirected events will be UTF-8 encoded and written to the stream.
    *
-   * @param redirectstream
+   * @param redirectStream
    *          if null, redirection is disabled
    */
   public void setRedirectStream(OutputStream redirectStream) throws XMLStreamException {
@@ -186,7 +185,7 @@ public class RedirectEventFilter implements EventFilter {
    * Enable/disable redirection of all (child) elements contained in redirect triggers.
    * The redirected events will be UTF-8 encoded and written to the stream.
    *
-   * @param redirectstream
+   * @param redirectStream
    *          if null, redirection is disabled
    * @param redirectTriggers elements that trigger the redirection
    */
@@ -199,7 +198,7 @@ public class RedirectEventFilter implements EventFilter {
    *
    * TODO: don't set redirect stream from caller (caller does not know whether redirection will be triggered)
    * rather create on trigger and pass to caller
-   * @param redirectstream
+   * @param redirectStream
    *          if null, redirection is disabled
    * @param encoding The encoding for the redirect stream
    * @param redirectTriggers elements that trigger the redirection

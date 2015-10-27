@@ -1749,11 +1749,11 @@ public class BKUGUIImpl implements BKUGUIFacade {
 	// //////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * @param signedReferences
+	 * @param dataToBeSigned
 	 * @param backListener
 	 *            gets notified if pin-dialog has to be redrawn
 	 *            (signedRefencesList returns via BACK button)
-	 * @param okCommand
+	 * @param backCommand
 	 */
 	@Override
 	public void showSecureViewer(final List<HashDataInput> dataToBeSigned,

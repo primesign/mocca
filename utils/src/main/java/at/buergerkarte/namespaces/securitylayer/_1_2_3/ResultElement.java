@@ -21,16 +21,16 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ResultElement">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="CardAction" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CardActionType" />
- *       &lt;attribute name="ApplicationIdentifier" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ApplicationIdentifierType" />
- *       &lt;attribute name="Result" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CardActionResponseType" />
- *       &lt;attribute name="RetryCount" type="{http://www.w3.org/2001/XMLSchema}integer" />
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="ResultElement"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;attribute name="CardAction" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CardActionType" /&gt;
+ *       &lt;attribute name="ApplicationIdentifier" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ApplicationIdentifierType" /&gt;
+ *       &lt;attribute name="Result" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CardActionResponseType" /&gt;
+ *       &lt;attribute name="RetryCount" type="{http://www.w3.org/2001/XMLSchema}integer" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

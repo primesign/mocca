@@ -51,7 +51,7 @@ public class InfoboxFactory {
   private HashMap<String, AbstractInfoboxFactory> infoboxFactories = new HashMap<String, AbstractInfoboxFactory>();
   
   /**
-   * @param infoboxFactories the infoboxFactories to set
+   * @param factories the infoboxFactories to set
    */
   public void setInfoboxFactories(
       HashMap<String, AbstractInfoboxFactory> factories) {

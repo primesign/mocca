@@ -27,70 +27,70 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="BulkResponseType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice>
- *         &lt;element name="CreateSignatureResponse" maxOccurs="unbounded">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;choice>
- *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CreateCMSSignatureResponse"/>
- *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CreateXMLSignatureResponse"/>
- *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ErrorResponse"/>
- *                 &lt;/choice>
- *                 &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="VerifySignatureResponse" maxOccurs="unbounded">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;choice>
- *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}VerifyCMSSignatureResponse"/>
- *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}VerifyXMLSignatureResponse"/>
- *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ErrorResponse"/>
- *                 &lt;/choice>
- *                 &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="EncryptResponse" maxOccurs="unbounded">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;choice>
- *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}EncryptCMSResponse"/>
- *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}EncryptXMLResponse"/>
- *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ErrorResponse"/>
- *                 &lt;/choice>
- *                 &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="DecryptResponse" maxOccurs="unbounded">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;choice>
- *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}DecryptCMSResponse"/>
- *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}DecryptXMLResponse"/>
- *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ErrorResponse"/>
- *                 &lt;/choice>
- *                 &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *       &lt;/choice>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="BulkResponseType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice&gt;
+ *         &lt;element name="CreateSignatureResponse" maxOccurs="unbounded"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;choice&gt;
+ *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CreateCMSSignatureResponse"/&gt;
+ *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CreateXMLSignatureResponse"/&gt;
+ *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ErrorResponse"/&gt;
+ *                 &lt;/choice&gt;
+ *                 &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" /&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name="VerifySignatureResponse" maxOccurs="unbounded"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;choice&gt;
+ *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}VerifyCMSSignatureResponse"/&gt;
+ *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}VerifyXMLSignatureResponse"/&gt;
+ *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ErrorResponse"/&gt;
+ *                 &lt;/choice&gt;
+ *                 &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" /&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name="EncryptResponse" maxOccurs="unbounded"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;choice&gt;
+ *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}EncryptCMSResponse"/&gt;
+ *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}EncryptXMLResponse"/&gt;
+ *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ErrorResponse"/&gt;
+ *                 &lt;/choice&gt;
+ *                 &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" /&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name="DecryptResponse" maxOccurs="unbounded"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;choice&gt;
+ *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}DecryptCMSResponse"/&gt;
+ *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}DecryptXMLResponse"/&gt;
+ *                   &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ErrorResponse"/&gt;
+ *                 &lt;/choice&gt;
+ *                 &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" /&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *       &lt;/choice&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
@@ -236,18 +236,18 @@ public class BulkResponseType {
      * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;choice>
-     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CreateCMSSignatureResponse"/>
-     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CreateXMLSignatureResponse"/>
-     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ErrorResponse"/>
-     *       &lt;/choice>
-     *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
+     * &lt;complexType&gt;
+     *   &lt;complexContent&gt;
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+     *       &lt;choice&gt;
+     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CreateCMSSignatureResponse"/&gt;
+     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CreateXMLSignatureResponse"/&gt;
+     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ErrorResponse"/&gt;
+     *       &lt;/choice&gt;
+     *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" /&gt;
+     *     &lt;/restriction&gt;
+     *   &lt;/complexContent&gt;
+     * &lt;/complexType&gt;
      * </pre>
      * 
      * 
@@ -377,18 +377,18 @@ public class BulkResponseType {
      * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;choice>
-     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}DecryptCMSResponse"/>
-     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}DecryptXMLResponse"/>
-     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ErrorResponse"/>
-     *       &lt;/choice>
-     *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
+     * &lt;complexType&gt;
+     *   &lt;complexContent&gt;
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+     *       &lt;choice&gt;
+     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}DecryptCMSResponse"/&gt;
+     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}DecryptXMLResponse"/&gt;
+     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ErrorResponse"/&gt;
+     *       &lt;/choice&gt;
+     *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" /&gt;
+     *     &lt;/restriction&gt;
+     *   &lt;/complexContent&gt;
+     * &lt;/complexType&gt;
      * </pre>
      * 
      * 
@@ -518,18 +518,18 @@ public class BulkResponseType {
      * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;choice>
-     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}EncryptCMSResponse"/>
-     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}EncryptXMLResponse"/>
-     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ErrorResponse"/>
-     *       &lt;/choice>
-     *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
+     * &lt;complexType&gt;
+     *   &lt;complexContent&gt;
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+     *       &lt;choice&gt;
+     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}EncryptCMSResponse"/&gt;
+     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}EncryptXMLResponse"/&gt;
+     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ErrorResponse"/&gt;
+     *       &lt;/choice&gt;
+     *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" /&gt;
+     *     &lt;/restriction&gt;
+     *   &lt;/complexContent&gt;
+     * &lt;/complexType&gt;
      * </pre>
      * 
      * 
@@ -659,18 +659,18 @@ public class BulkResponseType {
      * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;choice>
-     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}VerifyCMSSignatureResponse"/>
-     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}VerifyXMLSignatureResponse"/>
-     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ErrorResponse"/>
-     *       &lt;/choice>
-     *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
+     * &lt;complexType&gt;
+     *   &lt;complexContent&gt;
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+     *       &lt;choice&gt;
+     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}VerifyCMSSignatureResponse"/&gt;
+     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}VerifyXMLSignatureResponse"/&gt;
+     *         &lt;element ref="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ErrorResponse"/&gt;
+     *       &lt;/choice&gt;
+     *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}ID" /&gt;
+     *     &lt;/restriction&gt;
+     *   &lt;/complexContent&gt;
+     * &lt;/complexType&gt;
      * </pre>
      * 
      * 

@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * GUI is painted using SwingUtilities.invokeLater, but TrayIcon ActionListener Thread (== webstart thread) joined Jetty Thread
  * 
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class PINManagementInvoker implements Runnable {
 

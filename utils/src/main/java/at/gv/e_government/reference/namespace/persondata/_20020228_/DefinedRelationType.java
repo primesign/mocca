@@ -19,19 +19,19 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="DefinedRelationType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="family:Parent"/>
- *     &lt;enumeration value="family:Child"/>
- *     &lt;enumeration value="family:Sibling"/>
- *     &lt;enumeration value="family:Grandparent"/>
- *     &lt;enumeration value="family:Grandchild"/>
- *     &lt;enumeration value="family:Spouse"/>
- *     &lt;enumeration value="function:LegalGuardian"/>
- *     &lt;enumeration value="function:IsGuardedBy"/>
- *     &lt;enumeration value="function:Cohabitant"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="DefinedRelationType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
+ *     &lt;enumeration value="family:Parent"/&gt;
+ *     &lt;enumeration value="family:Child"/&gt;
+ *     &lt;enumeration value="family:Sibling"/&gt;
+ *     &lt;enumeration value="family:Grandparent"/&gt;
+ *     &lt;enumeration value="family:Grandchild"/&gt;
+ *     &lt;enumeration value="family:Spouse"/&gt;
+ *     &lt;enumeration value="function:LegalGuardian"/&gt;
+ *     &lt;enumeration value="function:IsGuardedBy"/&gt;
+ *     &lt;enumeration value="function:Cohabitant"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  * 
  */

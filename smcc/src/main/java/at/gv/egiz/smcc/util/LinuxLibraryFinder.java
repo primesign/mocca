@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * There is one exception to this rule, the ELF variables DT_RPATH and
  * DT_RUNPATH are not evaluated, because they are not available in java.
  * 
- * @author Tobias Wich <tobias.wich@ecsec.de>
+ * @author Tobias Wich &lt;tobias.wich@ecsec.de&gt;
  */
 public class LinuxLibraryFinder {
 
@@ -51,6 +51,7 @@ public class LinuxLibraryFinder {
    * <p>
    * The algorithm to find the library can be found in the ld.so(8) manpage and
    * is as follows:
+   * </p>
    * <ol>
    * <li>Check paths in {@code LD_LIBRARY_PATH} environment variable.</li>
    * <li>Check for library in {@code /etc/ld.so.cache} by executing
@@ -58,7 +59,6 @@ public class LinuxLibraryFinder {
    * <li>Check the base library paths {@code /lib} and {@code /usr/lib} or
    * {@code /lib64} and {@code /usr/lib64} depending on the architecture.</li>
    * </ol>
-   * </p>
    * 
    * @param name
    *          Name of the library, such as pcsclite.

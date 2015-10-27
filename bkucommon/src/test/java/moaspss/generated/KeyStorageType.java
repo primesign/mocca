@@ -36,12 +36,12 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="KeyStorageType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="Software"/>
- *     &lt;enumeration value="Hardware"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="KeyStorageType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
+ *     &lt;enumeration value="Software"/&gt;
+ *     &lt;enumeration value="Hardware"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  * 
  */

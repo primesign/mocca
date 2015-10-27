@@ -48,7 +48,7 @@ import org.w3c.dom.Element;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 @Ignore
 public class KeyValueAttributeTypeTest {

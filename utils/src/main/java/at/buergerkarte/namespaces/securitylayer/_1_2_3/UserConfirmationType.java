@@ -21,13 +21,13 @@ import javax.xml.bind.annotation.XmlValue;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="UserConfirmationType">
- *   &lt;simpleContent>
- *     &lt;extension base="&lt;http://www.buergerkarte.at/namespaces/securitylayer/1.2#>UserConfirmationSimpleType">
- *       &lt;attribute name="UserMayChange" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
- *     &lt;/extension>
- *   &lt;/simpleContent>
- * &lt;/complexType>
+ * &lt;complexType name="UserConfirmationType"&gt;
+ *   &lt;simpleContent&gt;
+ *     &lt;extension base="&lt;http://www.buergerkarte.at/namespaces/securitylayer/1.2#&gt;UserConfirmationSimpleType"&gt;
+ *       &lt;attribute name="UserMayChange" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/simpleContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

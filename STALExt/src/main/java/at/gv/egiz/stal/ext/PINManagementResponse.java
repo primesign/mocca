@@ -29,7 +29,7 @@ import at.gv.egiz.stal.STALResponse;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class PINManagementResponse extends STALResponse {
 

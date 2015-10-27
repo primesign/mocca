@@ -23,14 +23,14 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="QualifiedBoxIdentifierType">
- *   &lt;simpleContent>
- *     &lt;extension base="&lt;http://www.buergerkarte.at/namespaces/securitylayer/1.2#>BoxIdentifierType">
- *       &lt;attribute name="Signature" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
- *       &lt;attribute name="Encryption" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
- *     &lt;/extension>
- *   &lt;/simpleContent>
- * &lt;/complexType>
+ * &lt;complexType name="QualifiedBoxIdentifierType"&gt;
+ *   &lt;simpleContent&gt;
+ *     &lt;extension base="&lt;http://www.buergerkarte.at/namespaces/securitylayer/1.2#&gt;BoxIdentifierType"&gt;
+ *       &lt;attribute name="Signature" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="Encryption" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/simpleContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

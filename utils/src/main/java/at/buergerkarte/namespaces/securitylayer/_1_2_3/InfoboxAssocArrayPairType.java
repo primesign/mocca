@@ -20,13 +20,13 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="InfoboxAssocArrayPairType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}Base64XMLContentType">
- *       &lt;attribute name="Key" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="InfoboxAssocArrayPairType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}Base64XMLContentType"&gt;
+ *       &lt;attribute name="Key" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

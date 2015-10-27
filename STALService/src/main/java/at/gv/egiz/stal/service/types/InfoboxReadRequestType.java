@@ -38,24 +38,24 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="InfoboxReadRequestType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.egiz.gv.at/stal}RequestType">
- *       &lt;sequence>
- *         &lt;element name="InfoboxIdentifier">
- *           &lt;simpleType>
- *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;enumeration value="Certificates"/>
- *               &lt;enumeration value="IdentityLink"/>
- *               &lt;enumeration value="Mandates"/>
- *             &lt;/restriction>
- *           &lt;/simpleType>
- *         &lt;/element>
- *         &lt;element name="DomainIdentifier" type="{http://www.w3.org/2001/XMLSchema}anyURI" minOccurs="0"/>
- *       &lt;/sequence>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="InfoboxReadRequestType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://www.egiz.gv.at/stal}RequestType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="InfoboxIdentifier"&gt;
+ *           &lt;simpleType&gt;
+ *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
+ *               &lt;enumeration value="Certificates"/&gt;
+ *               &lt;enumeration value="IdentityLink"/&gt;
+ *               &lt;enumeration value="Mandates"/&gt;
+ *             &lt;/restriction&gt;
+ *           &lt;/simpleType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name="DomainIdentifier" type="{http://www.w3.org/2001/XMLSchema}anyURI" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

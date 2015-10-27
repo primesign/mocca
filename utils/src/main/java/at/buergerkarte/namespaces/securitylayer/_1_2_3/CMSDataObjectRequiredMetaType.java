@@ -19,17 +19,17 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="CMSDataObjectRequiredMetaType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CMSDataObjectOptionalMetaType">
- *       &lt;sequence>
- *         &lt;element name="MetaInfo" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}MetaInfoType"/>
- *         &lt;element name="Content" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}Base64OptRefContentType"/>
- *         &lt;element name="ExcludedByteRange" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ExcludedByteRangeType" minOccurs="0"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="CMSDataObjectRequiredMetaType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CMSDataObjectOptionalMetaType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="MetaInfo" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}MetaInfoType"/&gt;
+ *         &lt;element name="Content" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}Base64OptRefContentType"/&gt;
+ *         &lt;element name="ExcludedByteRange" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ExcludedByteRangeType" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

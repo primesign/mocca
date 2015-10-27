@@ -34,7 +34,7 @@ import javax.xml.transform.Templates;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class GetStatusResultImpl extends SLResultImpl implements GetStatusResult {
 

@@ -20,19 +20,19 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="TelcomNumberListType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}Telephone" minOccurs="0"/>
- *         &lt;element ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}Mobile" minOccurs="0"/>
- *         &lt;element ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}Fax" minOccurs="0"/>
- *         &lt;element ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}Pager" minOccurs="0"/>
- *         &lt;element ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}TTYTDD" minOccurs="0"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="TelcomNumberListType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}Telephone" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}Mobile" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}Fax" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}Pager" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}TTYTDD" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

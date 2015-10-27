@@ -27,7 +27,7 @@ package at.gv.egiz.bku.gui.viewer;
 
 /**
  * Encapsulates the reason why a font could not be loaded.
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class FontProviderException extends Exception {
 

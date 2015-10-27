@@ -27,7 +27,7 @@ package at.gv.egiz.bku.slcommands;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public interface GetStatusResult extends SLResult {
 

@@ -35,13 +35,13 @@ import at.gv.egiz.smcc.PinInfo;
  * <li> new pin (pin activation, no current pin)
  * <li> puk and new pin (probably verify only?)
  * </ul>
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public interface ModifyPINProvider {
 
   /**
    *
-   * @param spec
+   * @param pinInfo
    * @param retries
    * @return null if no old value for this pin
    * @throws at.gv.egiz.smcc.CancelledException if cancelled by user

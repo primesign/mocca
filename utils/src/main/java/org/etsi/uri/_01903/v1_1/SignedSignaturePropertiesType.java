@@ -46,19 +46,19 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="SignedSignaturePropertiesType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="SigningTime" type="{http://www.w3.org/2001/XMLSchema}dateTime"/>
- *         &lt;element name="SigningCertificate" type="{http://uri.etsi.org/01903/v1.1.1#}CertIDListType"/>
- *         &lt;element name="SignaturePolicyIdentifier" type="{http://uri.etsi.org/01903/v1.1.1#}SignaturePolicyIdentifierType"/>
- *         &lt;element name="SignatureProductionPlace" type="{http://uri.etsi.org/01903/v1.1.1#}SignatureProductionPlaceType" minOccurs="0"/>
- *         &lt;element name="SignerRole" type="{http://uri.etsi.org/01903/v1.1.1#}SignerRoleType" minOccurs="0"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="SignedSignaturePropertiesType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="SigningTime" type="{http://www.w3.org/2001/XMLSchema}dateTime"/&gt;
+ *         &lt;element name="SigningCertificate" type="{http://uri.etsi.org/01903/v1.1.1#}CertIDListType"/&gt;
+ *         &lt;element name="SignaturePolicyIdentifier" type="{http://uri.etsi.org/01903/v1.1.1#}SignaturePolicyIdentifierType"/&gt;
+ *         &lt;element name="SignatureProductionPlace" type="{http://uri.etsi.org/01903/v1.1.1#}SignatureProductionPlaceType" minOccurs="0"/&gt;
+ *         &lt;element name="SignerRole" type="{http://uri.etsi.org/01903/v1.1.1#}SignerRoleType" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

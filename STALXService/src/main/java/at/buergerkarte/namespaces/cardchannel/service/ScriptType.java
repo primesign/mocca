@@ -45,17 +45,17 @@ import at.gv.egiz.stal.service.types.RequestType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ScriptType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.egiz.gv.at/stal}RequestType">
- *       &lt;choice maxOccurs="unbounded">
- *         &lt;element name="Reset" type="{http://www.buergerkarte.at/cardchannel}ResetType"/>
- *         &lt;element name="CommandAPDU" type="{http://www.buergerkarte.at/cardchannel}CommandAPDUType"/>
- *         &lt;element name="VerifyAPDU" type="{http://www.buergerkarte.at/cardchannel}VerifyAPDUType"/>
- *       &lt;/choice>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="ScriptType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://www.egiz.gv.at/stal}RequestType"&gt;
+ *       &lt;choice maxOccurs="unbounded"&gt;
+ *         &lt;element name="Reset" type="{http://www.buergerkarte.at/cardchannel}ResetType"/&gt;
+ *         &lt;element name="CommandAPDU" type="{http://www.buergerkarte.at/cardchannel}CommandAPDUType"/&gt;
+ *         &lt;element name="VerifyAPDU" type="{http://www.buergerkarte.at/cardchannel}VerifyAPDUType"/&gt;
+ *       &lt;/choice&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

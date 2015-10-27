@@ -44,17 +44,17 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ExplicitParamsType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="FieldParams" type="{http://www.w3.org/2001/04/xmldsig-more#}FieldParamsType"/>
- *         &lt;element name="CurveParams" type="{http://www.w3.org/2001/04/xmldsig-more#}CurveParamsType"/>
- *         &lt;element name="BasePointParams" type="{http://www.w3.org/2001/04/xmldsig-more#}BasePointParamsType"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="ExplicitParamsType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="FieldParams" type="{http://www.w3.org/2001/04/xmldsig-more#}FieldParamsType"/&gt;
+ *         &lt;element name="CurveParams" type="{http://www.w3.org/2001/04/xmldsig-more#}CurveParamsType"/&gt;
+ *         &lt;element name="BasePointParams" type="{http://www.w3.org/2001/04/xmldsig-more#}BasePointParamsType"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

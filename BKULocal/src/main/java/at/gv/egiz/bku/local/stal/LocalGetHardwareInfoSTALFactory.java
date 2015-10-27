@@ -47,7 +47,7 @@ import at.gv.egiz.stal.STALFactory;
 
 /**
 *
-* @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
+* @author Thomas Lenz &lt;thomas.lenz@iaik.tugraz.at&gt;
 */
 
 public class LocalGetHardwareInfoSTALFactory implements STALFactory {

@@ -37,15 +37,15 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="InfoboxReadResponseType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.egiz.gv.at/stal}ResponseType">
- *       &lt;sequence>
- *         &lt;element name="InfoboxValue" type="{http://www.w3.org/2001/XMLSchema}base64Binary"/>
- *       &lt;/sequence>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="InfoboxReadResponseType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://www.egiz.gv.at/stal}ResponseType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="InfoboxValue" type="{http://www.w3.org/2001/XMLSchema}base64Binary"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

@@ -30,7 +30,7 @@ import javax.swing.text.html.ImageView;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 /**
    * ImageViewer.refreshImage() (and loadImage()) is private :-(

@@ -25,7 +25,6 @@
 
 package at.gv.egiz.bku.binding;
 
-import java.io.IOException;
 import java.net.URL;
 import java.security.cert.Certificate;
 
@@ -39,7 +38,6 @@ public abstract class HttpsDataURLConnection extends HttpDataURLConnection {
    * Construct a new 
    * 
    * @param url
-   * @throws IOException 
    */
   public HttpsDataURLConnection(URL url) {
     super(url);

@@ -29,7 +29,7 @@ import java.awt.Font;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public interface FontProvider {
 
@@ -40,8 +40,7 @@ public interface FontProvider {
   /**
    *
    * @return
-   * @throws InterruptedException
-   * @throws FileNotFoundException if remote font file cannot be retrieved
+   * @throws FontProviderException if remote font file cannot be retrieved
    */
   Font getFont() throws FontProviderException;
 

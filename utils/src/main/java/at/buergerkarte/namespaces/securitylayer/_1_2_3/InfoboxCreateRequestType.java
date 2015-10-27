@@ -22,22 +22,22 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="InfoboxCreateRequestType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="InfoboxIdentifier" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}BoxIdentifierType"/>
- *         &lt;element name="InfoboxType" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}InfoboxTypeType"/>
- *         &lt;element name="Creator" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="Purpose" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="ReadAccessAuthorization" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}AccessAuthorizationType" minOccurs="0"/>
- *         &lt;element name="UpdateAccessAuthorization" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}AccessAuthorizationType" minOccurs="0"/>
- *         &lt;element name="ReadUserConfirmation" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}UserConfirmationType" minOccurs="0"/>
- *         &lt;element name="UpdateUserConfirmation" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}UserConfirmationType" minOccurs="0"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="InfoboxCreateRequestType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="InfoboxIdentifier" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}BoxIdentifierType"/&gt;
+ *         &lt;element name="InfoboxType" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}InfoboxTypeType"/&gt;
+ *         &lt;element name="Creator" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="Purpose" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="ReadAccessAuthorization" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}AccessAuthorizationType" minOccurs="0"/&gt;
+ *         &lt;element name="UpdateAccessAuthorization" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}AccessAuthorizationType" minOccurs="0"/&gt;
+ *         &lt;element name="ReadUserConfirmation" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}UserConfirmationType" minOccurs="0"/&gt;
+ *         &lt;element name="UpdateUserConfirmation" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}UserConfirmationType" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

@@ -30,7 +30,7 @@ import java.security.DigestException;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public interface SecureViewer {
 
@@ -40,7 +40,9 @@ public interface SecureViewer {
    * (LocalSignRequestHandler operates on DataObjectHashDataInput,
    * other SignRequestHandlers should cache the HashDataInputs obtained by webservice calls,
    * or simply forward to a HashDataInputServlet.)
-   * @param signedReferences The caller may select a subset of the references in SignedInfo to be displayed.
+   * @param signedInfo The caller may select a subset of the references in SignedInfo to be displayed.
+   * @param okListener
+   * @param okCommand
    * @throws java.security.DigestException if digest values are verified and do not correspond
    * (or any other digest computation error occurs)
    * @throws java.lang.Exception

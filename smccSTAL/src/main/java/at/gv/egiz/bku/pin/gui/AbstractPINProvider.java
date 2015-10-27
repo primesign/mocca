@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * common super class providing action listener for all PIN GUIs
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public abstract class AbstractPINProvider implements ActionListener {
 

@@ -202,7 +202,7 @@ public class DataObject {
   /**
    * Creates a new instance.
    * 
-   * @param document the document of the target signature
+   * @param signatureContext the SignatureContext
    */
   public DataObject(SignatureContext signatureContext) {
     this.ctx = signatureContext;

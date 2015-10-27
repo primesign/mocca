@@ -46,19 +46,19 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="TimeStampType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="HashDataInfo" type="{http://uri.etsi.org/01903/v1.1.1#}HashDataInfoType" maxOccurs="unbounded"/>
- *         &lt;choice>
- *           &lt;element name="EncapsulatedTimeStamp" type="{http://uri.etsi.org/01903/v1.1.1#}EncapsulatedPKIDataType"/>
- *           &lt;element name="XMLTimeStamp" type="{http://uri.etsi.org/01903/v1.1.1#}AnyType"/>
- *         &lt;/choice>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="TimeStampType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="HashDataInfo" type="{http://uri.etsi.org/01903/v1.1.1#}HashDataInfoType" maxOccurs="unbounded"/&gt;
+ *         &lt;choice&gt;
+ *           &lt;element name="EncapsulatedTimeStamp" type="{http://uri.etsi.org/01903/v1.1.1#}EncapsulatedPKIDataType"/&gt;
+ *           &lt;element name="XMLTimeStamp" type="{http://uri.etsi.org/01903/v1.1.1#}AnyType"/&gt;
+ *         &lt;/choice&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

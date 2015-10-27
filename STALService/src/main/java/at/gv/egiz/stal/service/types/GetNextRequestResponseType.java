@@ -43,20 +43,20 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="GetNextRequestResponseType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice maxOccurs="unbounded">
- *         &lt;element name="InfoboxReadRequest" type="{http://www.egiz.gv.at/stal}InfoboxReadRequestType"/>
- *         &lt;element name="SignRequest" type="{http://www.egiz.gv.at/stal}SignRequestType"/>
- *         &lt;element name="QuitRequest" type="{http://www.egiz.gv.at/stal}QuitRequestType"/>
- *         &lt;element name="StatusRequest" type="{http://www.egiz.gv.at/stal}StatusRequestType"/>
- *         &lt;element ref="{http://www.egiz.gv.at/stal}OtherRequest"/>
- *       &lt;/choice>
- *       &lt;attribute name="SessionId" type="{http://www.w3.org/2001/XMLSchema}string" />
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="GetNextRequestResponseType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice maxOccurs="unbounded"&gt;
+ *         &lt;element name="InfoboxReadRequest" type="{http://www.egiz.gv.at/stal}InfoboxReadRequestType"/&gt;
+ *         &lt;element name="SignRequest" type="{http://www.egiz.gv.at/stal}SignRequestType"/&gt;
+ *         &lt;element name="QuitRequest" type="{http://www.egiz.gv.at/stal}QuitRequestType"/&gt;
+ *         &lt;element name="StatusRequest" type="{http://www.egiz.gv.at/stal}StatusRequestType"/&gt;
+ *         &lt;element ref="{http://www.egiz.gv.at/stal}OtherRequest"/&gt;
+ *       &lt;/choice&gt;
+ *       &lt;attribute name="SessionId" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
@@ -99,7 +99,6 @@ public class GetNextRequestResponseType {
      * {@link JAXBElement }{@code <}{@link RequestType }{@code >}
      * {@link JAXBElement }{@code <}{@link QuitRequestType }{@code >}
      * {@link JAXBElement }{@code <}{@link InfoboxReadRequestType }{@code >}
-     * {@link JAXBElement }{@code <}{@link ScriptType }{@code >}
      * {@link JAXBElement }{@code <}{@link StatusRequestType }{@code >}
      * {@link JAXBElement }{@code <}{@link SignRequestType }{@code >}
      * 

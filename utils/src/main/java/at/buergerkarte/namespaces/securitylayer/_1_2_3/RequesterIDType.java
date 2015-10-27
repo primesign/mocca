@@ -21,13 +21,13 @@ import javax.xml.bind.annotation.XmlValue;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="RequesterIDType">
- *   &lt;simpleContent>
- *     &lt;extension base="&lt;http://www.buergerkarte.at/namespaces/securitylayer/1.2#>RequesterIDSimpleType">
- *       &lt;attribute name="AuthenticationClass" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}AuthenticationClassType" />
- *     &lt;/extension>
- *   &lt;/simpleContent>
- * &lt;/complexType>
+ * &lt;complexType name="RequesterIDType"&gt;
+ *   &lt;simpleContent&gt;
+ *     &lt;extension base="&lt;http://www.buergerkarte.at/namespaces/securitylayer/1.2#&gt;RequesterIDSimpleType"&gt;
+ *       &lt;attribute name="AuthenticationClass" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}AuthenticationClassType" /&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/simpleContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

@@ -44,7 +44,7 @@ import at.gv.egiz.bku.gui.viewer.FontProvider;
 /**
  * Implements GUI for the identity link informations
  * 
- * @author Andreas Fitzek <andreas.fitzek@iaik.tugraz.at>
+ * @author Andreas Fitzek &lt;andreas.fitzek@iaik.tugraz.at&gt;
  */
 public class IdentityLinkGUI extends CardMgmtGUI implements
 		IdentityLinkGUIFacade {

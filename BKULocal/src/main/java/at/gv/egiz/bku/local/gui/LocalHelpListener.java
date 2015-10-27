@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Open help document in browser, fallback to help viewer (swing dialog) if Java Desktop API not supported.
  * 
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class LocalHelpListener extends ViewerHelpListener {
 

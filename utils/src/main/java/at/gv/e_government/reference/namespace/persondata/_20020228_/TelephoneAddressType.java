@@ -27,18 +27,18 @@ import org.w3c.dom.Element;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="TelephoneAddressType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://reference.e-government.gv.at/namespace/persondata/20020228#}AbstractAddressType">
- *       &lt;sequence minOccurs="0">
- *         &lt;element name="Type" type="{http://www.w3.org/2001/XMLSchema}anyURI" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="Number" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}TelcomNumberType"/>
- *         &lt;any processContents='lax' namespace='##other' maxOccurs="unbounded" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;anyAttribute namespace='##other'/>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="TelephoneAddressType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://reference.e-government.gv.at/namespace/persondata/20020228#}AbstractAddressType"&gt;
+ *       &lt;sequence minOccurs="0"&gt;
+ *         &lt;element name="Type" type="{http://www.w3.org/2001/XMLSchema}anyURI" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="Number" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}TelcomNumberType"/&gt;
+ *         &lt;any processContents='lax' namespace='##other' maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;anyAttribute namespace='##other'/&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

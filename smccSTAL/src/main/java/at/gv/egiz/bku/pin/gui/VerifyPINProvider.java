@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * (ACOS: reload counter: between 0 and 15, where 15 meens deactivated)
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class VerifyPINProvider extends AbstractPINProvider implements PINProvider {
 

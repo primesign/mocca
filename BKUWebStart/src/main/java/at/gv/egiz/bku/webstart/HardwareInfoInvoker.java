@@ -33,7 +33,7 @@ import at.gv.egiz.bku.webstart.gui.StatusNotifier;
 
 /**
 *
-* @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
+* @author Thomas Lenz &lt;thomas.lenz@iaik.tugraz.at&gt;
 */
 
 public class HardwareInfoInvoker implements Runnable {

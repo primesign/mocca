@@ -60,7 +60,7 @@ import at.gv.egiz.stal.service.types.StatusResponseType;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class STALTranslator {
 
@@ -126,7 +126,7 @@ public class STALTranslator {
 
   /**
    * Translate a STAL response to a STAL Webservice response.
-   * @param request
+   * @param response
    * @return
    * @throws at.gv.egiz.stal.service.translator.TranslationException
    */
@@ -144,7 +144,7 @@ public class STALTranslator {
 
   /**
    * Translate a STAL Webservice response to a STAL response.
-   * @param request
+   * @param response
    * @return
    * @throws at.gv.egiz.stal.service.translator.TranslationException
    */

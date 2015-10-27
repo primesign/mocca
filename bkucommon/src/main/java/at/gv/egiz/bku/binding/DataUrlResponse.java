@@ -80,7 +80,7 @@ public class DataUrlResponse extends StreamData {
   }
 
   /**
-   * Checks if the http response equals "<ok/>"
+   * Checks if the http response equals "&lt;ok/&gt;"
    * 
    * @throws IOException
    */

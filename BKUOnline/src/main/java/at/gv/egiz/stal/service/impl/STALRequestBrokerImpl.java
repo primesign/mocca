@@ -88,11 +88,11 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
      * Produce requests (and HashDataInputCallback) and wait for responses.
      * This method is not thread safe, since every bindingprocessor thread possesses it's own instance.
      * It however assures cooperation with STAL webservice threads consuming the requests and producing responses.
+     * Requests: either single SignRequest, QuitRequest or multiple ReadInfoboxRequests
      * 
-     * @param requests
+     * @param stalRequests
      * @return
      * 
-     * @pre requests: either single SignRequest, QuitRequest or multiple ReadInfoboxRequests
      */
     @Override
     public List<STALResponse> handleRequest(List<? extends STALRequest> stalRequests) {
@@ -250,7 +250,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
      * (synchronizing the entire method does not 
      * hinder the zombie to interrupt two consecutive nextRequest() calls.)
      * 
-     * @param responses
+     * @param resps
      * @return QUIT if expected responses are not provided
      */
     @Override

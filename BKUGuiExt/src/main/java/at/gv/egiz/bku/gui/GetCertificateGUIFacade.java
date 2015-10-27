@@ -28,7 +28,7 @@ import java.io.File;
 
 /**
 *
-* @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
+* @author Thomas Lenz &lt;thomas.lenz@iaik.tugraz.at&gt;
 */
 
 public interface GetCertificateGUIFacade extends BKUGUIFacade {

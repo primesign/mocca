@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * This BKU Worker does not connect to STAL webservice
  * (no Internet connection permitted while activating PINs).
  * 
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class PINManagementBKUWorker extends AppletBKUWorker {
   

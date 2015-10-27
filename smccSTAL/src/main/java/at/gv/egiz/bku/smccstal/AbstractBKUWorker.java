@@ -44,10 +44,10 @@ import at.gv.egiz.stal.STALResponse;
  * Abstract base class for AppletBKUWorker and LocalBKUWorker, 
  * providing card specific functionality not implemented by AbstractSMCCSTAL
  * as well as common GUI functionality (action event handling).
- * <br/>
+ * <br>
  * This class implements SMCCSTALRequestHandler and registers itself as QUIT handler.
  * 
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public abstract class AbstractBKUWorker extends AbstractSMCCSTAL implements ActionListener, SMCCSTALRequestHandler {
 

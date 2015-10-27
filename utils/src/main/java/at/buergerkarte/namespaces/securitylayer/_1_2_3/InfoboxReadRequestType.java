@@ -22,20 +22,20 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="InfoboxReadRequestType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="InfoboxIdentifier" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}BoxIdentifierType"/>
- *         &lt;choice>
- *           &lt;element name="BinaryFileParameters" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}InfoboxReadParamsBinaryFileType"/>
- *           &lt;element name="AssocArrayParameters" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}InfoboxReadParamsAssocArrayType"/>
- *         &lt;/choice>
- *         &lt;element name="BoxSpecificParameters" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}AnyChildrenType" minOccurs="0"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="InfoboxReadRequestType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="InfoboxIdentifier" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}BoxIdentifierType"/&gt;
+ *         &lt;choice&gt;
+ *           &lt;element name="BinaryFileParameters" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}InfoboxReadParamsBinaryFileType"/&gt;
+ *           &lt;element name="AssocArrayParameters" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}InfoboxReadParamsAssocArrayType"/&gt;
+ *         &lt;/choice&gt;
+ *         &lt;element name="BoxSpecificParameters" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}AnyChildrenType" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

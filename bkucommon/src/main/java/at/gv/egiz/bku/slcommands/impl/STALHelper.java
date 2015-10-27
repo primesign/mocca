@@ -73,7 +73,7 @@ public class STALHelper {
   
   /**
    * An iterator over the <code>STALResponse</code>s received in
-   * {@link SLCommandImpl#transmitSTALRequest(List)}.
+   * {@link transmitSTALRequest(List)}.
    */
   protected Iterator<STALResponse> stalResponses;
   

@@ -40,16 +40,16 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="VerifyTransformsDataType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice maxOccurs="unbounded">
- *         &lt;element ref="{http://reference.e-government.gv.at/namespace/moa/20020822#}VerifyTransformsInfoProfile"/>
- *         &lt;element name="VerifyTransformsInfoProfileID" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *       &lt;/choice>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="VerifyTransformsDataType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice maxOccurs="unbounded"&gt;
+ *         &lt;element ref="{http://reference.e-government.gv.at/namespace/moa/20020822#}VerifyTransformsInfoProfile"/&gt;
+ *         &lt;element name="VerifyTransformsInfoProfileID" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *       &lt;/choice&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

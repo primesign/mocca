@@ -43,7 +43,7 @@ import at.gv.egiz.bku.gui.viewer.FontProvider;
 
 /**
 *
-* @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
+* @author Thomas Lenz &lt;thomas.lenz@iaik.tugraz.at&gt;
 */
 
 public class GetHardwareInfoGUI extends CardMgmtGUI implements

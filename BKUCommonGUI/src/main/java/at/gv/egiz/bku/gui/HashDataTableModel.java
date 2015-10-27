@@ -30,7 +30,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  * 
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 class HashDataTableModel extends DefaultTableModel {
 

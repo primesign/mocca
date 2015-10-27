@@ -23,13 +23,13 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="BindingType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}AnyChildrenType">
- *       &lt;attribute name="Identifier" use="required" type="{http://www.w3.org/2001/XMLSchema}token" />
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="BindingType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}AnyChildrenType"&gt;
+ *       &lt;attribute name="Identifier" use="required" type="{http://www.w3.org/2001/XMLSchema}token" /&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

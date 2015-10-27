@@ -102,7 +102,7 @@ public interface SignatureCard {
   /**
    * 
    * @param infobox
-   * @param provider
+   * @param pinGUI
    * @param domainId may be null.
    * @return
    * @throws SignatureCardException
@@ -115,7 +115,7 @@ public interface SignatureCard {
    * 
    * @param input
    * @param keyboxName
-   * @param provider
+   * @param pinGUI
    * @param alg TODO
    * @return
    * @throws at.gv.egiz.smcc.SignatureCardException

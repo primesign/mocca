@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * TODO pull out ResourceBundle to common superclass for activationGUI and
  * pinMgmtGUI
  * 
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class PINManagementGUI extends CardMgmtGUI implements
 		PINManagementGUIFacade {

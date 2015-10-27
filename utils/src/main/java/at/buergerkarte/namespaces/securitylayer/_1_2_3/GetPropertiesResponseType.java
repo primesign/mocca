@@ -26,20 +26,20 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="GetPropertiesResponseType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="ViewerMediaType" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}MimeTypeType" maxOccurs="unbounded"/>
- *         &lt;element name="XMLSignatureTransform" type="{http://www.w3.org/2001/XMLSchema}anyURI" maxOccurs="unbounded"/>
- *         &lt;element name="KeyboxIdentifier" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}QualifiedBoxIdentifierType" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="Binding" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}BindingType" maxOccurs="unbounded"/>
- *         &lt;element name="ProtocolVersion" type="{http://www.w3.org/2001/XMLSchema}token" maxOccurs="unbounded"/>
- *         &lt;any namespace='##other' maxOccurs="unbounded" minOccurs="0"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="GetPropertiesResponseType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="ViewerMediaType" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}MimeTypeType" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="XMLSignatureTransform" type="{http://www.w3.org/2001/XMLSchema}anyURI" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="KeyboxIdentifier" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}QualifiedBoxIdentifierType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="Binding" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}BindingType" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="ProtocolVersion" type="{http://www.w3.org/2001/XMLSchema}token" maxOccurs="unbounded"/&gt;
+ *         &lt;any namespace='##other' maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

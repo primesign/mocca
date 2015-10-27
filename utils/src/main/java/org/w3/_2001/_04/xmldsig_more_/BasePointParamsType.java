@@ -46,17 +46,17 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="BasePointParamsType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="BasePoint" type="{http://www.w3.org/2001/04/xmldsig-more#}ECPointType"/>
- *         &lt;element name="Order" type="{http://www.w3.org/2001/XMLSchema}positiveInteger"/>
- *         &lt;element name="Cofactor" type="{http://www.w3.org/2001/XMLSchema}positiveInteger" minOccurs="0"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="BasePointParamsType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="BasePoint" type="{http://www.w3.org/2001/04/xmldsig-more#}ECPointType"/&gt;
+ *         &lt;element name="Order" type="{http://www.w3.org/2001/XMLSchema}positiveInteger"/&gt;
+ *         &lt;element name="Cofactor" type="{http://www.w3.org/2001/XMLSchema}positiveInteger" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

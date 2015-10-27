@@ -46,15 +46,15 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="PrimeFieldParamsType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.w3.org/2001/04/xmldsig-more#}FieldParamsType">
- *       &lt;sequence>
- *         &lt;element name="P" type="{http://www.w3.org/2001/XMLSchema}positiveInteger"/>
- *       &lt;/sequence>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="PrimeFieldParamsType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://www.w3.org/2001/04/xmldsig-more#}FieldParamsType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="P" type="{http://www.w3.org/2001/XMLSchema}positiveInteger"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

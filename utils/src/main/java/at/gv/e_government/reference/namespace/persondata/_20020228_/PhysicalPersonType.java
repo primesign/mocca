@@ -30,45 +30,45 @@ import org.w3c.dom.Element;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="PhysicalPersonType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://reference.e-government.gv.at/namespace/persondata/20020228#}AbstractPersonType">
- *       &lt;sequence minOccurs="0">
- *         &lt;element name="Name" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}PersonNameType" minOccurs="0"/>
- *         &lt;element name="AlternativeName" maxOccurs="unbounded" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;extension base="{http://reference.e-government.gv.at/namespace/persondata/20020228#}PersonNameType">
- *                 &lt;attribute name="Type" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}AlternativeNameTypeType" />
- *               &lt;/extension>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="MaritalStatus" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}MaritalStatusType" minOccurs="0"/>
- *         &lt;element name="Sex" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}SexType" minOccurs="0"/>
- *         &lt;element name="DateOfBirth" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}DateOfBirthType" minOccurs="0"/>
- *         &lt;element name="PlaceOfBirth" type="{http://www.w3.org/2001/XMLSchema}token" minOccurs="0"/>
- *         &lt;element name="CountryOfBirth" type="{http://www.w3.org/2001/XMLSchema}token" minOccurs="0"/>
- *         &lt;element name="Nationality" type="{http://www.w3.org/2001/XMLSchema}token" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="Confession" type="{http://www.w3.org/2001/XMLSchema}token" minOccurs="0"/>
- *         &lt;element name="relatedPerson" maxOccurs="unbounded" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element name="TypeOfRelation" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}RelationType" maxOccurs="unbounded"/>
- *                   &lt;element ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}Person"/>
- *                 &lt;/sequence>
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;any processContents='lax' namespace='##other' maxOccurs="unbounded" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;anyAttribute namespace='##other'/>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="PhysicalPersonType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://reference.e-government.gv.at/namespace/persondata/20020228#}AbstractPersonType"&gt;
+ *       &lt;sequence minOccurs="0"&gt;
+ *         &lt;element name="Name" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}PersonNameType" minOccurs="0"/&gt;
+ *         &lt;element name="AlternativeName" maxOccurs="unbounded" minOccurs="0"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;extension base="{http://reference.e-government.gv.at/namespace/persondata/20020228#}PersonNameType"&gt;
+ *                 &lt;attribute name="Type" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}AlternativeNameTypeType" /&gt;
+ *               &lt;/extension&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name="MaritalStatus" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}MaritalStatusType" minOccurs="0"/&gt;
+ *         &lt;element name="Sex" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}SexType" minOccurs="0"/&gt;
+ *         &lt;element name="DateOfBirth" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}DateOfBirthType" minOccurs="0"/&gt;
+ *         &lt;element name="PlaceOfBirth" type="{http://www.w3.org/2001/XMLSchema}token" minOccurs="0"/&gt;
+ *         &lt;element name="CountryOfBirth" type="{http://www.w3.org/2001/XMLSchema}token" minOccurs="0"/&gt;
+ *         &lt;element name="Nationality" type="{http://www.w3.org/2001/XMLSchema}token" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="Confession" type="{http://www.w3.org/2001/XMLSchema}token" minOccurs="0"/&gt;
+ *         &lt;element name="relatedPerson" maxOccurs="unbounded" minOccurs="0"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;sequence&gt;
+ *                   &lt;element name="TypeOfRelation" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}RelationType" maxOccurs="unbounded"/&gt;
+ *                   &lt;element ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}Person"/&gt;
+ *                 &lt;/sequence&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;any processContents='lax' namespace='##other' maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;anyAttribute namespace='##other'/&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
@@ -413,13 +413,13 @@ public class PhysicalPersonType
      * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;extension base="{http://reference.e-government.gv.at/namespace/persondata/20020228#}PersonNameType">
-     *       &lt;attribute name="Type" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}AlternativeNameTypeType" />
-     *     &lt;/extension>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
+     * &lt;complexType&gt;
+     *   &lt;complexContent&gt;
+     *     &lt;extension base="{http://reference.e-government.gv.at/namespace/persondata/20020228#}PersonNameType"&gt;
+     *       &lt;attribute name="Type" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}AlternativeNameTypeType" /&gt;
+     *     &lt;/extension&gt;
+     *   &lt;/complexContent&gt;
+     * &lt;/complexType&gt;
      * </pre>
      * 
      * 
@@ -466,16 +466,16 @@ public class PhysicalPersonType
      * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;sequence>
-     *         &lt;element name="TypeOfRelation" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}RelationType" maxOccurs="unbounded"/>
-     *         &lt;element ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}Person"/>
-     *       &lt;/sequence>
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
+     * &lt;complexType&gt;
+     *   &lt;complexContent&gt;
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+     *       &lt;sequence&gt;
+     *         &lt;element name="TypeOfRelation" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}RelationType" maxOccurs="unbounded"/&gt;
+     *         &lt;element ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}Person"/&gt;
+     *       &lt;/sequence&gt;
+     *     &lt;/restriction&gt;
+     *   &lt;/complexContent&gt;
+     * &lt;/complexType&gt;
      * </pre>
      * 
      * 

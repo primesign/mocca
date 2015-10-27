@@ -21,13 +21,13 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="Base64XMLLocRefOptRefContentType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}Base64XMLLocRefContentType">
- *       &lt;attribute name="Reference" type="{http://www.w3.org/2001/XMLSchema}anyURI" />
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="Base64XMLLocRefOptRefContentType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}Base64XMLLocRefContentType"&gt;
+ *       &lt;attribute name="Reference" type="{http://www.w3.org/2001/XMLSchema}anyURI" /&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

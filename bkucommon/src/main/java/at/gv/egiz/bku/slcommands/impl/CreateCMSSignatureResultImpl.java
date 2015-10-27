@@ -68,9 +68,9 @@ public class CreateCMSSignatureResultImpl extends SLResultImpl implements Create
    * Creates a new instance of this CreateCMSSignatureResultImpl with the given
    * signature <code>signature</code>.
    * 
-   * @param document the signature document
+   * @param signature the signature
    * 
-   * @throws NullPointerException if <code>document</code> is <code>null</code>
+   * @throws NullPointerException if <code>signature</code> is <code>null</code>
    */
   public CreateCMSSignatureResultImpl(byte[] signature) {
     super();

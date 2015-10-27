@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class LocalSecureViewer implements SecureViewer {
 
@@ -63,7 +63,9 @@ public class LocalSecureViewer implements SecureViewer {
 
   /**
    *
-   * @param dsigReferences
+   * @param signedInfo
+   * @param okListener
+   * @param okCommand
    * @throws java.lang.Exception
    */
   @Override

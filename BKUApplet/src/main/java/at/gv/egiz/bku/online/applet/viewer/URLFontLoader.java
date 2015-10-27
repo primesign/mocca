@@ -41,7 +41,7 @@ import at.gv.egiz.bku.gui.viewer.FontProviderException;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class URLFontLoader extends SwingWorker<Font, Object> implements FontProvider {
 
@@ -68,7 +68,7 @@ public class URLFontLoader extends SwingWorker<Font, Object> implements FontProv
   /**
    * waits for loadInBackground to finish 
    * @return the font loaded in loadInbackground
-   * @throws Exception
+   * @throws FontProviderException
    */
   @Override
   public Font getFont() throws FontProviderException {

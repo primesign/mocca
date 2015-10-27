@@ -20,16 +20,16 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="InfoboxReadResponseType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice>
- *         &lt;element name="BinaryFileData" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}Base64XMLContentType"/>
- *         &lt;element name="AssocArrayData" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}InfoboxReadDataAssocArrayType"/>
- *       &lt;/choice>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="InfoboxReadResponseType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice&gt;
+ *         &lt;element name="BinaryFileData" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}Base64XMLContentType"/&gt;
+ *         &lt;element name="AssocArrayData" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}InfoboxReadDataAssocArrayType"/&gt;
+ *       &lt;/choice&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

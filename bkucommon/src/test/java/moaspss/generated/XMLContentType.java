@@ -39,13 +39,13 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="XMLContentType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://reference.e-government.gv.at/namespace/moa/20020822#}AnyChildrenType">
- *       &lt;attribute ref="{http://www.w3.org/XML/1998/namespace}space"/>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="XMLContentType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://reference.e-government.gv.at/namespace/moa/20020822#}AnyChildrenType"&gt;
+ *       &lt;attribute ref="{http://www.w3.org/XML/1998/namespace}space"/&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

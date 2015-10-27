@@ -48,23 +48,23 @@ import org.w3._2000._09.xmldsig_.KeyValueType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="CompressedIdentityLinkType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="IssuerTemplate" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="AssertionID" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="IssueInstant" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="PersonData" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}AbstractPersonType"/>
- *         &lt;element name="CitizenPublicKey" type="{http://www.w3.org/2000/09/xmldsig#}KeyValueType" maxOccurs="unbounded"/>
- *         &lt;element name="SignatureValue" type="{http://www.w3.org/2000/09/xmldsig#}CryptoBinary"/>
- *         &lt;element name="ReferenceDigest" type="{http://www.w3.org/2000/09/xmldsig#}CryptoBinary" minOccurs="0"/>
- *         &lt;element name="ReferenceManifestDigest" type="{http://www.w3.org/2000/09/xmldsig#}CryptoBinary" minOccurs="0"/>
- *         &lt;element name="ManifestReferenceDigest" type="{http://www.w3.org/2000/09/xmldsig#}CryptoBinary" minOccurs="0"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="CompressedIdentityLinkType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="IssuerTemplate" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="AssertionID" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="IssueInstant" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="PersonData" type="{http://reference.e-government.gv.at/namespace/persondata/20020228#}AbstractPersonType"/&gt;
+ *         &lt;element name="CitizenPublicKey" type="{http://www.w3.org/2000/09/xmldsig#}KeyValueType" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="SignatureValue" type="{http://www.w3.org/2000/09/xmldsig#}CryptoBinary"/&gt;
+ *         &lt;element name="ReferenceDigest" type="{http://www.w3.org/2000/09/xmldsig#}CryptoBinary" minOccurs="0"/&gt;
+ *         &lt;element name="ReferenceManifestDigest" type="{http://www.w3.org/2000/09/xmldsig#}CryptoBinary" minOccurs="0"/&gt;
+ *         &lt;element name="ManifestReferenceDigest" type="{http://www.w3.org/2000/09/xmldsig#}CryptoBinary" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

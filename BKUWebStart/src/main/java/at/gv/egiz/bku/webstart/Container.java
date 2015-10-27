@@ -212,12 +212,12 @@ public class Container {
     }
   }
 
-  /**
-   * grant all permissions, since we need read/write access to save signature data files anywhere (JFileChooser) in the local filesystem
-   * and Jetty does not allow declare (webapp) permissions on a codeBase basis.
-   * @param webappDir
-   * @return
-   */
+//  /**
+//   * grant all permissions, since we need read/write access to save signature data files anywhere (JFileChooser) in the local filesystem
+//   * and Jetty does not allow declare (webapp) permissions on a codeBase basis.
+//   * @param webappDir
+//   * @return
+//   */
 //  private Permissions getPermissions(File webappDir) {
 //    Permissions perms = new Permissions();
 //    perms.add(new AllPermission());

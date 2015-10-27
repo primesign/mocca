@@ -47,17 +47,17 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="CurveParamsType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="A" type="{http://www.w3.org/2001/04/xmldsig-more#}FieldElemType"/>
- *         &lt;element name="B" type="{http://www.w3.org/2001/04/xmldsig-more#}FieldElemType"/>
- *         &lt;element name="Seed" type="{http://www.w3.org/2001/XMLSchema}hexBinary" minOccurs="0"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="CurveParamsType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="A" type="{http://www.w3.org/2001/04/xmldsig-more#}FieldElemType"/&gt;
+ *         &lt;element name="B" type="{http://www.w3.org/2001/04/xmldsig-more#}FieldElemType"/&gt;
+ *         &lt;element name="Seed" type="{http://www.w3.org/2001/XMLSchema}hexBinary" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

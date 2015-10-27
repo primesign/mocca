@@ -19,13 +19,13 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="ApplicationIdentifierType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="SecureSignatureApplication"/>
- *     &lt;enumeration value="CertifiedApplication"/>
- *     &lt;enumeration value="InfoboxApplication"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="ApplicationIdentifierType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
+ *     &lt;enumeration value="SecureSignatureApplication"/&gt;
+ *     &lt;enumeration value="CertifiedApplication"/&gt;
+ *     &lt;enumeration value="InfoboxApplication"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  * 
  */

@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Loads font(s) as classpath resource.
  * Loaded fonts are shared within all instances in this VM (classloader)
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class ResourceFontLoader implements FontProvider {
   

@@ -45,16 +45,16 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ResponseType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.egiz.gv.at/stal}ResponseType">
- *       &lt;choice maxOccurs="unbounded">
- *         &lt;element name="ATR" type="{http://www.buergerkarte.at/cardchannel}ATRType"/>
- *         &lt;element name="ResponseAPDU" type="{http://www.buergerkarte.at/cardchannel}ResponseAPDUType"/>
- *       &lt;/choice>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="ResponseType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://www.egiz.gv.at/stal}ResponseType"&gt;
+ *       &lt;choice maxOccurs="unbounded"&gt;
+ *         &lt;element name="ATR" type="{http://www.buergerkarte.at/cardchannel}ATRType"/&gt;
+ *         &lt;element name="ResponseAPDU" type="{http://www.buergerkarte.at/cardchannel}ResponseAPDUType"/&gt;
+ *       &lt;/choice&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

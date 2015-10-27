@@ -40,13 +40,13 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;extension base="{http://reference.e-government.gv.at/namespace/moa/20020822#}VerifyCMSSignatureRequestType">
- *       &lt;attribute name="Signatories" type="{http://reference.e-government.gv.at/namespace/moa/20020822#}SignatoriesType" default="1" />
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://reference.e-government.gv.at/namespace/moa/20020822#}VerifyCMSSignatureRequestType"&gt;
+ *       &lt;attribute name="Signatories" type="{http://reference.e-government.gv.at/namespace/moa/20020822#}SignatoriesType" default="1" /&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

@@ -23,45 +23,45 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="InfoboxReadParamsAssocArrayType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice>
- *         &lt;element name="ReadKeys">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;attribute name="SearchString" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}WildCardSearchStringType" />
- *                 &lt;attribute name="UserMakesUnique" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="ReadPairs">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;attribute name="SearchString" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}WildCardSearchStringType" />
- *                 &lt;attribute name="UserMakesUnique" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *                 &lt;attribute name="ValuesAreXMLEntities" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="ReadValue">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;attribute name="Key" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}BoxIdentifierType" />
- *                 &lt;attribute name="ValueIsXMLEntity" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *       &lt;/choice>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="InfoboxReadParamsAssocArrayType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice&gt;
+ *         &lt;element name="ReadKeys"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;attribute name="SearchString" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}WildCardSearchStringType" /&gt;
+ *                 &lt;attribute name="UserMakesUnique" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name="ReadPairs"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;attribute name="SearchString" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}WildCardSearchStringType" /&gt;
+ *                 &lt;attribute name="UserMakesUnique" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *                 &lt;attribute name="ValuesAreXMLEntities" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name="ReadValue"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;attribute name="Key" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}BoxIdentifierType" /&gt;
+ *                 &lt;attribute name="ValueIsXMLEntity" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *       &lt;/choice&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
@@ -160,14 +160,14 @@ public class InfoboxReadParamsAssocArrayType {
      * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;attribute name="SearchString" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}WildCardSearchStringType" />
-     *       &lt;attribute name="UserMakesUnique" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
+     * &lt;complexType&gt;
+     *   &lt;complexContent&gt;
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+     *       &lt;attribute name="SearchString" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}WildCardSearchStringType" /&gt;
+     *       &lt;attribute name="UserMakesUnique" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+     *     &lt;/restriction&gt;
+     *   &lt;/complexContent&gt;
+     * &lt;/complexType&gt;
      * </pre>
      * 
      * 
@@ -242,15 +242,15 @@ public class InfoboxReadParamsAssocArrayType {
      * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;attribute name="SearchString" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}WildCardSearchStringType" />
-     *       &lt;attribute name="UserMakesUnique" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
-     *       &lt;attribute name="ValuesAreXMLEntities" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
+     * &lt;complexType&gt;
+     *   &lt;complexContent&gt;
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+     *       &lt;attribute name="SearchString" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}WildCardSearchStringType" /&gt;
+     *       &lt;attribute name="UserMakesUnique" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+     *       &lt;attribute name="ValuesAreXMLEntities" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+     *     &lt;/restriction&gt;
+     *   &lt;/complexContent&gt;
+     * &lt;/complexType&gt;
      * </pre>
      * 
      * 
@@ -355,14 +355,14 @@ public class InfoboxReadParamsAssocArrayType {
      * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;attribute name="Key" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}BoxIdentifierType" />
-     *       &lt;attribute name="ValueIsXMLEntity" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
+     * &lt;complexType&gt;
+     *   &lt;complexContent&gt;
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+     *       &lt;attribute name="Key" use="required" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}BoxIdentifierType" /&gt;
+     *       &lt;attribute name="ValueIsXMLEntity" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+     *     &lt;/restriction&gt;
+     *   &lt;/complexContent&gt;
+     * &lt;/complexType&gt;
      * </pre>
      * 
      * 
