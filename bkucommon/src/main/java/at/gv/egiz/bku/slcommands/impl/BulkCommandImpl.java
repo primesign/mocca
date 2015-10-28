@@ -48,9 +48,9 @@ import org.slf4j.LoggerFactory;
 import at.buergerkarte.namespaces.securitylayer._1_2_3.BulkRequestType;
 import at.buergerkarte.namespaces.securitylayer._1_2_3.BulkRequestType.CreateSignatureRequest;
 import at.buergerkarte.namespaces.securitylayer._1_2_3.CreateCMSSignatureRequestType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.DigestAndRefType;
 import at.buergerkarte.namespaces.securitylayer._1_2_3.ExcludedByteRangeType;
 import at.gv.egiz.bku.conf.MoccaConfigurationFacade;
-import at.gv.egiz.bku.gui.viewer.MimeTypes;
 import at.gv.egiz.bku.slcommands.BulkCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLResult;
@@ -58,6 +58,7 @@ import at.gv.egiz.bku.slcommands.impl.cms.BulkCollectionSecurityProvider;
 import at.gv.egiz.bku.slcommands.impl.cms.BulkSignature;
 import at.gv.egiz.bku.slcommands.impl.cms.BulkSignatureInfo;
 import at.gv.egiz.bku.slcommands.impl.cms.CMSHashDataInput;
+import at.gv.egiz.bku.slcommands.impl.cms.ReferencedHashDataInput;
 import at.gv.egiz.bku.slcommands.impl.xsect.STALSignatureException;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLException;
@@ -106,6 +107,8 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
     private Configuration configuration;
 
     public static final String USE_STRONG_HASH = "UseStrongHash";
+    
+    public static final String ENABLE_DIGESTANDREFF = "CCID.enableDigestAndRef";   
 
     public void setConfiguration(Configuration configuration) {
       this.configuration = configuration;
@@ -114,6 +117,10 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
     public boolean getUseStrongHash() {
       return configuration.getBoolean(USE_STRONG_HASH, true);
     }
+    
+		public boolean isEnableDigestAndRef() {
+			return configuration.getBoolean(ENABLE_DIGESTANDREFF, false);
+		}
   }
 
   @Override
@@ -150,32 +157,71 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
 
 
         for (int i=0; i<signatureRequests.size(); i++) {
-          
+        	
+        	ExcludedByteRangeType excludedByteRange = null;
+        	
           CreateSignatureRequest request = signatureRequests.get(i);
+          
+          
+          
           if (request.getCreateCMSSignatureRequest() != null) {
             log.info("execute CMSSignature request.");
             
+            CreateCMSSignatureRequestType cmsRequest =  request.getCreateCMSSignatureRequest();
+            DigestAndRefType digestAndRef = null;
+            
+            if(cmsRequest.getReferenceObject() != null && cmsRequest.getReferenceObject().getDigestAndRef() != null) {
+            	excludedByteRange = cmsRequest.getReferenceObject().getExcludedByteRange();
+            	digestAndRef = cmsRequest.getReferenceObject().getDigestAndRef();
+            }
+            
+            if(cmsRequest.getDataObject() != null &&  cmsRequest.getDataObject().getDigestAndRef() != null) {
+            	excludedByteRange = cmsRequest.getDataObject().getExcludedByteRange();
+            	digestAndRef = cmsRequest.getDataObject().getDigestAndRef();
+            }
+            
+            
+            if(digestAndRef != null && !configurationFacade.isEnableDigestAndRef()) {
+              log.error("Signature via DigestAndRefType is disabled.");
+              throw new SLCommandException(4125);
+            }
+            
             requestIds.add(request.getId());
             
-            BulkSignature signature = prepareCMSSignatureRequests(securityProvider, request.getCreateCMSSignatureRequest(),
+            BulkSignature signature = prepareCMSSignatureRequests(securityProvider, cmsRequest,
                 commandContext);
             
             signatures.add(signature);
       
-            //TODO : manage HashDataInputs
-//            for(HashDataInput hashDataInput : securityProvider.getBulkSignatureInfo().get(i).getHashDataInput()){
-//              CMSHashDataInput bulkHashDataInput = (CMSHashDataInput) hashDataInput;
-//              bulkHashDataInput.setDigest(signature.getSignerInfo().getDigest());
-//              
-//              log.debug("setting fileName {}", getFileName(request, i+1));
-//              bulkHashDataInput.setFilename(getFileName(request, i+1));
-//            }
-          }  else {
-            if (request.getCreateXMLSignatureRequest() != null) {
-              log.error("XML signature requests are currently not supported in bulk signature requests.");
-              throw new SLCommandException(4124);
-            }
-          }
+						for ( int j= 0; j< securityProvider.getBulkSignatureInfo().get(i).getHashDataInput().size(); j++) {
+
+							HashDataInput hashDataInput = securityProvider.getBulkSignatureInfo().get(i).getHashDataInput().get(j);
+							
+							
+							if (digestAndRef != null) {
+								ReferencedHashDataInput referencedHashDataInput = new ReferencedHashDataInput(hashDataInput.getMimeType(), commandContext.getURLDereferencer(), digestAndRef.getReference());
+								
+								referencedHashDataInput.setExcludedByteRange(excludedByteRange);
+								referencedHashDataInput.setDigest(signature.getSignerInfo().getDigest());
+								
+								log.debug("setting fileName {}", getFileName(request, i + 1));
+								referencedHashDataInput.setFilename(getFileName(request, i + 1));
+								
+								securityProvider.getBulkSignatureInfo().get(i).getHashDataInput().set(j, referencedHashDataInput);
+							} else {
+								CMSHashDataInput bulkHashDataInput = (CMSHashDataInput) hashDataInput;
+								bulkHashDataInput.setDigest(signature.getSignerInfo().getDigest());
+
+								log.debug("setting fileName {}", getFileName(request, i + 1));
+								bulkHashDataInput.setFilename(getFileName(request, i + 1));
+							}
+						}
+					} else {
+						if (request.getCreateXMLSignatureRequest() != null) {
+							log.error("XML signature requests are currently not supported in bulk signature requests.");
+							throw new SLCommandException(4124);
+						}
+					}
         }
 
 
@@ -189,16 +235,21 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
     } catch (SLException e) {
       return new ErrorResultImpl(e, commandContext.getLocale());
    } 
-//    catch (CMSException e) {
-//      log.error("Error reading message digest.",e);
-//    }
+    catch (CMSException e) {
+      log.error("Error reading message digest.",e);
+    }
     return null;
 
   }
 
   private String getFileName(CreateSignatureRequest request, int requestCounter) {
 
-    String referenceURL = request.getCreateCMSSignatureRequest().getDataObject().getContent().getReference();
+    String referenceURL = null;
+    		  
+		if (request.getCreateCMSSignatureRequest().getDataObject() != null
+				&& request.getCreateCMSSignatureRequest().getDataObject().getContent() != null) {
+			request.getCreateCMSSignatureRequest().getDataObject().getContent().getReference();
+		}
 
     if (StringUtils.isNotEmpty(referenceURL)) {
       return FilenameUtils.getBaseName(referenceURL);
@@ -213,12 +264,7 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
         fileNameBuilder.append("_");
         fileNameBuilder.append(requestCounter);
       }
-
-      String mimeType = request.getCreateCMSSignatureRequest().getDataObject().getMetaInfo().getMimeType();
-      if (mimeType != null) {
-        fileNameBuilder.append(MimeTypes.getExtension(mimeType));
-      }
-
+      
       return fileNameBuilder.toString();
     }
   }

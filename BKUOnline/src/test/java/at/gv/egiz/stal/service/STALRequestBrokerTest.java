@@ -148,6 +148,7 @@ public class STALRequestBrokerTest {
             public byte[] getDigest() {
               return null;
             }
+
         };
         r1.setHashDataInput(Collections.singletonList(hdi));
         requests.add(r1);
@@ -206,6 +207,7 @@ public class STALRequestBrokerTest {
             public byte[] getDigest() {
               return null;
             }
+
         };
         r1.setHashDataInput(Collections.singletonList(hdi));
         requests.add(r1);
@@ -277,6 +279,7 @@ public class STALRequestBrokerTest {
             public byte[] getDigest() {
               return null;
             }
+
         };
         r1.setHashDataInput(Collections.singletonList(hdi));
         requests.add(r1);
@@ -317,6 +320,7 @@ public class STALRequestBrokerTest {
             public byte[] getDigest() {
               return null;
             }
+
         };
         r2.setHashDataInput(Collections.singletonList(hdi2));
         requests2.add(r2);

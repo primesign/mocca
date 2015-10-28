@@ -81,5 +81,4 @@ public class DataObjectHashDataInput implements HashDataInput {
     public byte[] getDigest() {
       return dataObject.getReference().getDigestValue();
     }
-
 }

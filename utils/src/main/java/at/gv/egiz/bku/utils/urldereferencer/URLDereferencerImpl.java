@@ -104,6 +104,9 @@ public class URLDereferencerImpl implements URLDereferencer {
     for (String proto : HTTPURLProtocolHandlerImpl.PROTOCOLS) {
       handlerMap.put(proto, handler);
     }
+    
+  	FileURLProtocolHandlerImpl fileHandler = new FileURLProtocolHandlerImpl();
+  	handlerMap.put(FileURLProtocolHandlerImpl.FILE, fileHandler);
   }
   
   public void setHostnameVerifier(HostnameVerifier hostnameVerifier) {

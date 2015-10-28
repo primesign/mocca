@@ -38,10 +38,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.buergerkarte.namespaces.securitylayer._1_2_3.CreateCMSSignatureRequestType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.DigestAndRefType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.ExcludedByteRangeType;
 import at.gv.egiz.bku.conf.MoccaConfigurationFacade;
 import at.gv.egiz.bku.slcommands.CreateCMSSignatureCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLResult;
+import at.gv.egiz.bku.slcommands.impl.cms.ReferencedHashDataInput;
 import at.gv.egiz.bku.slcommands.impl.cms.Signature;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLException;
@@ -89,14 +92,20 @@ public class CreateCMSSignatureCommandImpl extends
     private Configuration configuration;
 
     public static final String USE_STRONG_HASH = "UseStrongHash";
+    
+    public static final String ENABLE_DIGESTANDREFF = "CCID.enableDigestAndRef";   
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
     }
 
     public boolean getUseStrongHash() {
-        return configuration.getBoolean(USE_STRONG_HASH, true);
+      return configuration.getBoolean(USE_STRONG_HASH, true);
     }
+    
+		public boolean isEnableDigestAndRef() {
+			return configuration.getBoolean(ENABLE_DIGESTANDREFF, false);
+		}
 }
 
   public void setConfiguration(Configuration configuration) {
@@ -108,14 +117,44 @@ public class CreateCMSSignatureCommandImpl extends
       SLRequestException {
 
     CreateCMSSignatureRequestType request = getRequestValue();
-
+    DigestAndRefType digestAndRef = null;
+    ExcludedByteRangeType excludedByteRange = null;
+    
+    if(request.getReferenceObject() != null && request.getReferenceObject().getDigestAndRef() != null) {
+    	digestAndRef = request.getReferenceObject().getDigestAndRef();
+    	excludedByteRange = request.getReferenceObject().getExcludedByteRange();
+    }
+    
+    if(request.getDataObject() != null &&  request.getDataObject().getDigestAndRef() != null) {
+    	digestAndRef = request.getDataObject().getDigestAndRef();
+    	excludedByteRange = request.getDataObject().getExcludedByteRange();
+    }
+    
+    if(digestAndRef != null && !configurationFacade.isEnableDigestAndRef()) {
+      log.error("Signature via DigestAndRefType is disabled.");
+      throw new SLCommandException(4125);
+    }
+      
     // DataObject, SigningCertificate, SigningTime
     try {
       Date signingTime = request.isPAdESCompatibility() ? null : new Date();
+      if (digestAndRef != null) {
+      	
+  			ReferencedHashDataInput referencedHashDataInput = new ReferencedHashDataInput(commandContext.getURLDereferencer(),
+  					digestAndRef.getReference());
+  			
+  			referencedHashDataInput.setExcludedByteRange(excludedByteRange);
+  			
+        signature = new Signature(referencedHashDataInput ,request.getDataObject() != null ? request.getDataObject()
+            : request.getReferenceObject(), request.getStructure(), signingCertificate, signingTime,
+            commandContext.getURLDereferencer(),
+            configurationFacade.getUseStrongHash());
+      } else {  	
       signature = new Signature(request.getDataObject() != null ? request.getDataObject()
           : request.getReferenceObject(), request.getStructure(), signingCertificate, signingTime,
           commandContext.getURLDereferencer(),
           configurationFacade.getUseStrongHash());
+      }
     } catch (SLCommandException e) {
       log.error("Error creating CMS Signature.", e);
       throw e;

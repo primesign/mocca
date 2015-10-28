@@ -27,7 +27,6 @@ package at.gv.egiz.bku.slcommands.impl.cms;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import at.gv.egiz.bku.gui.viewer.MimeTypes;
 import at.gv.egiz.stal.HashDataInput;
 
 public class CMSHashDataInput implements HashDataInput {
@@ -36,7 +35,7 @@ public class CMSHashDataInput implements HashDataInput {
 
   private byte[] data;
   private byte[] digest;
-  private String mimeType;
+  protected String mimeType;
   private String referenceId;
   private String fileName;
 
@@ -50,8 +49,10 @@ public class CMSHashDataInput implements HashDataInput {
     this.mimeType = mimeType;
   }
 
+	public CMSHashDataInput() {
+	}
 
-  @Override
+	@Override
   public String getReferenceId() {
 
     if (referenceId != null) {
@@ -100,8 +101,5 @@ public class CMSHashDataInput implements HashDataInput {
   public void setReferenceId(String referenceId) {
     this.referenceId = referenceId;
   }
-  
-  
-
 
 }

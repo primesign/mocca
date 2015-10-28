@@ -102,7 +102,27 @@ public class Signature {
   protected String signatureAlgorithmURI;
   protected String digestAlgorithmURI;
   protected ExcludedByteRangeType excludedByteRange;
+  private HashDataInput hashDataInput;
   
+
+
+	public Signature(HashDataInput hashDataInput, CMSDataObjectOptionalMetaType dataObject, String structure,
+			X509Certificate signingCertificate, Date signingTime, URLDereferencer urlDereferencer, boolean useStrongHash)
+			throws NoSuchAlgorithmException, CertificateEncodingException, CertificateException, X509ExtensionException,
+			InvalidParameterException, CodingException, SLCommandException, IOException {
+
+		this(dataObject, structure, signingCertificate, signingTime, urlDereferencer, useStrongHash);
+
+		if (hashDataInput instanceof ReferencedHashDataInput) {
+
+			ReferencedHashDataInput referencedHashDataInput = (ReferencedHashDataInput) hashDataInput;
+			this.hashDataInput = referencedHashDataInput;
+		} else {
+			this.hashDataInput = hashDataInput;
+		}
+
+	}
+
 
 public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
       X509Certificate signingCertificate, Date signingTime, URLDereferencer urlDereferencer,
@@ -280,9 +300,16 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
     }
   }
 
-  protected HashDataInput getHashDataInput() {
-    return new CMSHashDataInput(signedDocument, mimeType);
-  }
+	public HashDataInput getHashDataInput() {
+
+		if (hashDataInput != null) {
+			return hashDataInput;
+		} else {
+			return new CMSHashDataInput(signedDocument, mimeType);
+		}
+	}
+  
+  
 
   public byte[] sign(STAL stal, String keyboxIdentifier) throws CMSException, CMSSignatureException, SLCommandException {
     signedData.setSecurityProvider(new STALSecurityProvider(

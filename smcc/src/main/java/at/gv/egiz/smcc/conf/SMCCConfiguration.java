@@ -32,6 +32,7 @@ package at.gv.egiz.smcc.conf;
 public class SMCCConfiguration {
 
   boolean disablePinpad;
+  boolean enableDigestAndRef;
 
   /**
    * @return the disablePinpad
@@ -47,5 +48,21 @@ public class SMCCConfiguration {
     this.disablePinpad = disablePinpad;
   }
 
+  
+  /**
+   * @return the enableDigestAndRef
+   */
+	public boolean isEnableDigestAndRef() {
+		return enableDigestAndRef;
+	}
+
+  /**
+   * @param enableDigestAndRef the enableDigestAndRef to set
+   */
+	public void setEnableDigestAndRef(boolean enableDigestAndRef) {
+		this.enableDigestAndRef = enableDigestAndRef;
+	}
+
+  
   
 }

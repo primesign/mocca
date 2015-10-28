@@ -49,6 +49,7 @@ public class ReaderFactory {
   public void setConfiguration(SMCCConfiguration configuration) {
     if (configuration != null) {
       log.info("reader configuration: disablePinpad=" + configuration.isDisablePinpad());
+      log.info("reader configuration: enableDigestAndRef=" + configuration.isEnableDigestAndRef());
     }
     ReaderFactory.configuration = configuration;
   }
