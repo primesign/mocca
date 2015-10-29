@@ -118,7 +118,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
                   // DataObjectHashDataInput with reference caching enabled DataObject
                   
               log.info("Adding HashdataInput with id {} and digsest {}", ((SignRequest) stalRequest).getHashDataInput()
-                  .get(0).getReferenceId(), ((SignRequest) stalRequest).getHashDataInput().get(0).getHashDataInput());
+                  .get(0).getReferenceId(), ((SignRequest) stalRequest).getHashDataInput().get(0).getDigest());
                   hashDataInputs.addAll(((SignRequest) stalRequest).getHashDataInput());
                 }
                 

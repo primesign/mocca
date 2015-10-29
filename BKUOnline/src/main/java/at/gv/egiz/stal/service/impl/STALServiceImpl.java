@@ -278,7 +278,15 @@ public class STALServiceImpl implements STALPortType {
               throw new GetHashDataInputFault(msg, faultInfo);
             }
   
-            InputStream hashDataIS = reqHdi.getHashDataInput();
+            InputStream hashDataIS;
+            try {
+              hashDataIS = reqHdi.getHashDataInput();
+            } catch (IOException e) {
+              GetHashDataInputFaultType faultInfo = new GetHashDataInputFaultType();
+              faultInfo.setErrorCode(1);
+              faultInfo.setErrorMessage(e.getMessage());
+              throw new GetHashDataInputFault(e.getMessage(), faultInfo);
+            }
             if (hashDataIS == null) {
               //HashDataInput not cached?
               String msg = "Failed to obtain HashDataInput for reference " + reqRefId + ", reference not cached";
