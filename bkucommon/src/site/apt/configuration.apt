@@ -54,6 +54,10 @@ MOCCA Configuration
 	
 	Default: <<<true>>>
 	
+  [<<<enableFileURIs>>>] Whether to allow dereferencing of "file" URIs.
+
+  Default: <<<false>>>    
+	
 	[<<<SSL>>>]
 		
 		The following two configuration elements must provide an URL which resolves to a directory in the file system. It may either be an absolute URL or a relative URL, which is resolved using the URL of the configuration file.
@@ -153,10 +157,6 @@ MOCCA Configuration
 
 
 ** MOCCA Local Only Configuration Parameters
-
-		Default: <<<true>>>
-		
-		[<<<disableFileURI>>>] Whether to disable/enable reference by FileURI.
 		
 	[<<<CCID>>>]
 
