@@ -102,6 +102,7 @@ public class Signature {
   protected String signatureAlgorithmURI;
   protected String digestAlgorithmURI;
   protected ExcludedByteRangeType excludedByteRange;
+  private HashDataInput hashDataInput;
   
 
 public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
@@ -109,14 +110,20 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
       boolean useStrongHash)
           throws NoSuchAlgorithmException, CertificateEncodingException,
           CertificateException, X509ExtensionException, InvalidParameterException,
-          CodingException, SLCommandException, IOException {
+          CodingException, SLCommandException, IOException, CMSException {
     int mode = structure.equalsIgnoreCase("enveloping") ? SignedData.IMPLICIT : SignedData.EXPLICIT;
     if (dataObject.getContent() != null) {
       byte[] dataToBeSigned = getContent(dataObject, urlDereferencer);
       this.signedData = new SignedData(dataToBeSigned, mode);
+      hashDataInput = new CMSHashDataInput(signedDocument, mimeType);
+      
     } else {
       DigestAndRefType digestAndRef = dataObject.getDigestAndRef();
-      DigestMethodType digestMethod = digestAndRef.getDigestMethod();
+      DigestMethodType digestMethod = digestAndRef.getDigestMethod();     
+      
+      hashDataInput = new ReferencedHashDataInput(dataObject.getMetaInfo().getMimeType(), urlDereferencer,
+					digestAndRef.getReference(), dataObject.getExcludedByteRange());
+	
       try {
         digestAlgorithm = getAlgorithmID(digestMethod.getAlgorithm());
       } catch (URISyntaxException e) {
@@ -280,9 +287,16 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
     }
   }
 
-  protected HashDataInput getHashDataInput() {
-    return new CMSHashDataInput(signedDocument, mimeType);
-  }
+	public HashDataInput getHashDataInput() {
+
+		if (hashDataInput != null) {
+			return hashDataInput;
+		} else {
+			return new CMSHashDataInput(signedDocument, mimeType);
+		}
+	}
+  
+  
 
   public byte[] sign(STAL stal, String keyboxIdentifier) throws CMSException, CMSSignatureException, SLCommandException {
     signedData.setSecurityProvider(new STALSecurityProvider(
@@ -311,7 +325,6 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
     }
     return new AlgorithmID(new ObjectID(oid));
   }
- 
 }
 
 

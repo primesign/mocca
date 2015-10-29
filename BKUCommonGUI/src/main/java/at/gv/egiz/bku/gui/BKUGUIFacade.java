@@ -208,6 +208,9 @@ public interface BKUGUIFacade {
 
   public void showMessageDialog(String titleKey,
           String msgKey, Object[] msgParams);
+  
+	void updateMessageDialog(String titleKey, 
+			String msgKey, Object[] msgParams, String buttonKey, ActionListener okListener, String okCommand);
 
   public void showMessageDialog(String titleKey,
           String msgKey);

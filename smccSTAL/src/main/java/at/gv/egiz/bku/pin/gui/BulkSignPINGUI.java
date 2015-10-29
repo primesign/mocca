@@ -110,7 +110,7 @@ public class BulkSignPINGUI extends SignPINGUI implements OverrulePinpadPINGUI {
             gui.showErrorDialog(BKUGUIFacade.ERR_DISPLAY_HASHDATA, new Object[] { ex.getMessage() }, this, "error");
           }
         } else if ("sign".equals(action)) {
-          gui.showMessageDialog(BKUGUIFacade.TITLE_BULKSIGNATURE, BKUGUIFacade.MESSAGE_BULKSIGN, new Object[]{signatureCount,maxSignatures});
+            gui.showMessageDialog(BKUGUIFacade.TITLE_BULKSIGNATURE, BKUGUIFacade.MESSAGE_BULKSIGN, new Object[]{signatureCount,maxSignatures}, BKUGUIFacade.BUTTON_CANCEL, this, "cancel");
           retry = true;
           pin = gui.getPin();
           return pin;
@@ -131,7 +131,13 @@ public class BulkSignPINGUI extends SignPINGUI implements OverrulePinpadPINGUI {
         throw new BulkSignException("Limit of "+ signatureCount + "Signatures exceeded.");
       }
       
-      gui.showMessageDialog(BKUGUIFacade.TITLE_BULKSIGNATURE, BKUGUIFacade.MESSAGE_BULKSIGN, new Object[]{signatureCount, maxSignatures});
+      gui.updateMessageDialog(BKUGUIFacade.TITLE_BULKSIGNATURE, BKUGUIFacade.MESSAGE_BULKSIGN, new Object[]{signatureCount,maxSignatures}, BKUGUIFacade.BUTTON_CANCEL, this, "cancel");
+     
+      if ("cancel".equals(action) || "error".equals(action)) {
+        gui.showMessageDialog(BKUGUIFacade.TITLE_WAIT, BKUGUIFacade.MESSAGE_WAIT);
+        throw new CancelledException(spec.getLocalizedName() + " entry cancelled");
+        }
+      
       return pin;
     }
   }

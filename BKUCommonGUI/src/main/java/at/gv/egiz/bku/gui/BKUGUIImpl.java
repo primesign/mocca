@@ -1588,6 +1588,35 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
 		showMessageDialog(titleKey, null, msgKey, msgParams, null, null, null);
 	}
+	
+	
+	 @Override
+	  public void updateMessageDialog(final String titleKey, final String msgKey,
+	      final Object[] msgParams, String buttonKey,
+				final ActionListener okListener, final String okCommand) {
+
+     SwingUtilities.invokeLater(new Runnable() {
+
+       @Override
+       public void run() {
+
+         log.debug("[{}] Update message dialog.", Thread.currentThread().getName());
+
+
+         if (renderHeaderPanel) {
+           titleLabel.setText(getMessage(titleKey));
+         }
+
+         helpListener.setHelpTopic(msgKey);
+
+         String msgPattern = getMessage(msgKey);
+         String msg = MessageFormat.format(msgPattern, msgParams);
+
+         msgLabel.setText(msg);
+
+       }
+     });
+	  }
 
 	@Override
 	public void showMessageDialog(final String titleKey, final String msgKey) {

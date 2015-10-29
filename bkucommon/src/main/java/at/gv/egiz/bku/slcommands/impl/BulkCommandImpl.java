@@ -50,7 +50,6 @@ import at.buergerkarte.namespaces.securitylayer._1_2_3.BulkRequestType.CreateSig
 import at.buergerkarte.namespaces.securitylayer._1_2_3.CreateCMSSignatureRequestType;
 import at.buergerkarte.namespaces.securitylayer._1_2_3.ExcludedByteRangeType;
 import at.gv.egiz.bku.conf.MoccaConfigurationFacade;
-import at.gv.egiz.bku.gui.viewer.MimeTypes;
 import at.gv.egiz.bku.slcommands.BulkCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLResult;
@@ -162,14 +161,17 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
             
             signatures.add(signature);
       
-            //TODO : manage HashDataInputs
-//            for(HashDataInput hashDataInput : securityProvider.getBulkSignatureInfo().get(i).getHashDataInput()){
-//              CMSHashDataInput bulkHashDataInput = (CMSHashDataInput) hashDataInput;
-//              bulkHashDataInput.setDigest(signature.getSignerInfo().getDigest());
-//              
-//              log.debug("setting fileName {}", getFileName(request, i+1));
-//              bulkHashDataInput.setFilename(getFileName(request, i+1));
-//            }
+            for(HashDataInput hashDataInput : securityProvider.getBulkSignatureInfo().get(i).getHashDataInput()){
+              
+              if(hashDataInput instanceof CMSHashDataInput) {
+              	CMSHashDataInput cmsHashDataInput = (CMSHashDataInput) hashDataInput;
+                 log.debug("setting fileName {}", getFileName(request, i+1));
+                 cmsHashDataInput.setFilename(getFileName(request, i+1));
+                 cmsHashDataInput.setDigest(signature.getSignerInfo().getDigest());
+              } 
+              
+
+            }
           }  else {
             if (request.getCreateXMLSignatureRequest() != null) {
               log.error("XML signature requests are currently not supported in bulk signature requests.");
@@ -188,17 +190,21 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
 
     } catch (SLException e) {
       return new ErrorResultImpl(e, commandContext.getLocale());
-   } 
-//    catch (CMSException e) {
-//      log.error("Error reading message digest.",e);
-//    }
+     
+    } catch (CMSException e) {
+       log.error("Error reading message digest.",e);
+     }
     return null;
-
   }
 
   private String getFileName(CreateSignatureRequest request, int requestCounter) {
 
-    String referenceURL = request.getCreateCMSSignatureRequest().getDataObject().getContent().getReference();
+    String referenceURL = null;
+    		  
+		if (request.getCreateCMSSignatureRequest().getDataObject() != null
+				&& request.getCreateCMSSignatureRequest().getDataObject().getContent() != null) {
+			request.getCreateCMSSignatureRequest().getDataObject().getContent().getReference();
+		}
 
     if (StringUtils.isNotEmpty(referenceURL)) {
       return FilenameUtils.getBaseName(referenceURL);
@@ -213,12 +219,7 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
         fileNameBuilder.append("_");
         fileNameBuilder.append(requestCounter);
       }
-
-      String mimeType = request.getCreateCMSSignatureRequest().getDataObject().getMetaInfo().getMimeType();
-      if (mimeType != null) {
-        fileNameBuilder.append(MimeTypes.getExtension(mimeType));
-      }
-
+      
       return fileNameBuilder.toString();
     }
   }

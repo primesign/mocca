@@ -25,6 +25,7 @@
 
 package at.gv.egiz.stal;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -46,6 +47,6 @@ public interface HashDataInput {
     
     public byte[] getDigest();
 
-    public InputStream getHashDataInput();
+    public InputStream getHashDataInput() throws IOException;
 
 }

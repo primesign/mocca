@@ -40,14 +40,10 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import at.buergerkarte.namespaces.securitylayer._1_2_3.CMSDataObjectOptionalMetaType;
 import at.buergerkarte.namespaces.securitylayer._1_2_3.ExcludedByteRangeType;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
-import at.gv.egiz.stal.HashDataInput;
 import at.gv.egiz.stal.STAL;
 
 /**
@@ -58,20 +54,14 @@ import at.gv.egiz.stal.STAL;
  */
 public class BulkSignature extends Signature {
 
- public final static String ID_AA_ETS_MIMETYPE = "0.4.0.1733.2.1";
+  public final static String ID_AA_ETS_MIMETYPE = "0.4.0.1733.2.1";
 
-  /**
-   * Logging facility.
-   */
-  private final Logger log = LoggerFactory.getLogger(BulkSignature.class);
-
-  
   public BulkSignature(CMSDataObjectOptionalMetaType dataObject, String structure,
       X509Certificate signingCertificate, Date signingTime, URLDereferencer urlDereferencer,
       boolean useStrongHash)
           throws NoSuchAlgorithmException, CertificateEncodingException,
           CertificateException, X509ExtensionException, InvalidParameterException,
-          CodingException, SLCommandException, IOException {
+          CodingException, SLCommandException, IOException, CMSException {
 		super(dataObject, structure, signingCertificate, signingTime, urlDereferencer, useStrongHash);
   }
 
@@ -94,10 +84,6 @@ public class BulkSignature extends Signature {
 	    return contentInfo.getEncoded();
 	  }
   
-  @Override
-  public HashDataInput getHashDataInput() {
-    return new CMSHashDataInput(signedDocument, mimeType);
-	  }
   
   public ExcludedByteRangeType getExcludedByteRange() {
 		return excludedByteRange;

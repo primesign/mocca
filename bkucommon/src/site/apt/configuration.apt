@@ -54,6 +54,10 @@ MOCCA Configuration
 	
 	Default: <<<true>>>
 	
+  [<<<enableFileURIs>>>] Whether to allow dereferencing of "file" URIs.
+
+  Default: <<<false>>>    
+	
 	[<<<SSL>>>]
 		
 		The following two configuration elements must provide an URL which resolves to a directory in the file system. It may either be an absolute URL or a relative URL, which is resolved using the URL of the configuration file.
@@ -153,12 +157,13 @@ MOCCA Configuration
 
 
 ** MOCCA Local Only Configuration Parameters
-
+		
 	[<<<CCID>>>]
 
 		Smart card interface device configuration options. Currently, only one configuration item.
 
 		[<<<disablePinpad>>>] Whether to disable the pinpad on a card reader and use keyboard pin entry instead.
+		
 
 		Default: <<<false>>>
 
