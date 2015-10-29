@@ -25,7 +25,7 @@
 
 package at.gv.egiz.bku.local.webapp;
 
-import iaik.security.ecc.provider.ECCProvider;
+import iaik.security.ec.provider.ECCelerate;
 import iaik.security.provider.IAIK;
 import iaik.xml.crypto.XSecProvider;
 
@@ -81,8 +81,8 @@ public class MoccaContextListener implements ServletContextListener {
   
   protected static void registerProviders() {
     registerProvider(new IAIK(), 1);
-    registerProvider(new ECCProvider(false), 2);
-    
+    registerProvider(new ECCelerate(false), 2);
+
     final String name = XSecProvider.NAME;
     if (Security.getProvider(XSecProvider.NAME) == null) {
       // register XML Security provider

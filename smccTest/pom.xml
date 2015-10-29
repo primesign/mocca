@@ -59,7 +59,7 @@
     </dependency>
     <dependency>
       <groupId>iaik</groupId>
-      <artifactId>iaik_ecc</artifactId>
+      <artifactId>iaik_eccelerate</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

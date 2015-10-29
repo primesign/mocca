@@ -24,22 +24,21 @@
 
 package at.gv.egiz.xmldsig;
 
-import iaik.security.ecc.interfaces.ECDSAParams;
-import iaik.security.ecc.interfaces.ECDSAPublicKey;
-import iaik.security.ecc.math.ecgroup.Coordinate;
-import iaik.security.ecc.math.ecgroup.ECPoint;
-import iaik.security.ecc.math.ecgroup.EllipticCurve;
-import iaik.security.ecc.math.field.BinaryField;
-import iaik.security.ecc.math.field.Field;
-import iaik.security.ecc.math.field.FieldElement;
-import iaik.security.ecc.math.field.PrimeField;
+import iaik.security.ec.errorhandling.InvalidCurveParameterSpecException;
 
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.PublicKey;
 import java.security.interfaces.DSAParams;
 import java.security.interfaces.DSAPublicKey;
+import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.ECField;
+import java.security.spec.ECFieldF2m;
+import java.security.spec.ECFieldFp;
+import java.security.spec.ECParameterSpec;
+import java.security.spec.ECPoint;
+import java.security.spec.EllipticCurve;
 
 import javax.xml.bind.JAXBElement;
 
@@ -89,13 +88,13 @@ public class KeyValueFactory {
     } else if (publicKey instanceof DSAPublicKey) {
       DSAKeyValueType keyValueType = createKeyValueType((DSAPublicKey) publicKey);
       return dsFactory.createDSAKeyValue(keyValueType);
-    } else if (publicKey instanceof ECDSAPublicKey) {
-      ECDSAKeyValueType keyValueType = createKeyValueType((ECDSAPublicKey) publicKey);
+    } else if (publicKey instanceof ECPublicKey) {
+      ECDSAKeyValueType keyValueType = createKeyValueType((ECPublicKey) publicKey);
       return ecFactory.createECDSAKeyValue(keyValueType);
     } else if ("EC".equals(publicKey.getAlgorithm())) {
       byte[] encoded = publicKey.getEncoded();
       try {
-        iaik.security.ecc.ecdsa.ECPublicKey key = new iaik.security.ecc.ecdsa.ECPublicKey(encoded);
+        ECPublicKey key = new iaik.security.ec.common.ECPublicKey(encoded);
         ECDSAKeyValueType keyValueType = createKeyValueType(key);
         return ecFactory.createECDSAKeyValue(keyValueType);
       } catch (InvalidKeyException e) {
@@ -141,90 +140,71 @@ public class KeyValueFactory {
     return keyValueType;
   }
   
-  public ECDSAKeyValueType createKeyValueType(ECDSAPublicKey publicKey) throws KeyTypeNotSupportedException {
+  public ECDSAKeyValueType createKeyValueType(ECPublicKey publicKey) throws KeyTypeNotSupportedException {
     
     ECDSAKeyValueType keyValueType = ecFactory.createECDSAKeyValueType();
-    
-    ECDSAParams params = publicKey.getParameter();
+
+    ECParameterSpec params = publicKey.getParams();
     if (params != null) {
       keyValueType.setDomainParameters(createDomainParamsType(params));
     }
 
-    if (!publicKey.getW().isInfinity()) {
-      keyValueType.setPublicKey(createPointType(publicKey.getW()));
+    if (!publicKey.getW().equals(java.security.spec.ECPoint.POINT_INFINITY)) {
+      keyValueType.setPublicKey(createPointType(publicKey.getW(), params.getCurve().getField()));
     }
     
     return keyValueType;
   }
   
-  public ECPointType createPointType(ECPoint point) throws KeyTypeNotSupportedException {
+  public ECPointType createPointType(ECPoint point, ECField field) throws KeyTypeNotSupportedException {
     ECPointType pointType = ecFactory.createECPointType();
-    Coordinate affine = point.getCoordinates().toAffine();
-    pointType.setX(createFieldElemType(affine.getX()));
-    pointType.setY(createFieldElemType(affine.getY()));
+    pointType.setX(createFieldElemType(point.getAffineX(), field));
+    pointType.setY(createFieldElemType(point.getAffineY(), field));
     return pointType;
   }
   
-  public FieldElemType createFieldElemType(FieldElement fieldElement) throws KeyTypeNotSupportedException {
-    int fieldId = fieldElement.getField().getFieldId();
-    if (fieldId == PrimeField.PRIME_FIELD_ID) {
+  public FieldElemType createFieldElemType(BigInteger point, ECField field) throws KeyTypeNotSupportedException {
+    if (field instanceof ECFieldFp) {
       PrimeFieldElemType fieldElemType = ecFactory.createPrimeFieldElemType();
-      fieldElemType.setValue(fieldElement.toBigInt());
+      fieldElemType.setValue(point);
       return fieldElemType;
-    } else if (fieldId == BinaryField.BINARY_FIELD_ID) {
+    } else if (field instanceof ECFieldF2m) {
       CharTwoFieldElemType fieldElemType = ecFactory.createCharTwoFieldElemType();
-      fieldElemType.setValue(fieldElement.toByteArray());
+      fieldElemType.setValue(bigInteger2byteArray(point));
       return fieldElemType;
     } else {
-      throw new KeyTypeNotSupportedException("Field element of type " + fieldId + " not supported.");
+      throw new KeyTypeNotSupportedException("Field element type not supported.");
     }
   }
   
-  public FieldParamsType createFieldParamsType(Field field) throws KeyTypeNotSupportedException {
+  public FieldParamsType createFieldParamsType(ECField field) throws KeyTypeNotSupportedException {
     
-    if (field.getFieldId() == PrimeField.PRIME_FIELD_ID) {
+    if (field instanceof ECFieldFp) {
       // PrimeFieldParamsType
       PrimeFieldParamsType primeFieldParamsType = ecFactory.createPrimeFieldParamsType();
-      primeFieldParamsType.setP(field.getSize());
+      primeFieldParamsType.setP(((ECFieldFp) field).getP());
       return primeFieldParamsType;
-    } else if (field.getFieldId() == BinaryField.BINARY_FIELD_ID && field instanceof BinaryField) {
+    } else if (field instanceof ECFieldF2m) {
       // CharTwoFieldParamsType
-      
-      BinaryField binaryField = (BinaryField) field;
-      int[] irreduciblePolynomial = binaryField.getIrreduciblePolynomial();
+      ECFieldF2m fieldf2m = (ECFieldF2m) field;
+      int[] ks = fieldf2m.getMidTermsOfReductionPolynomial();
 
-      // The irreducible polynomial as a BinaryFieldValue
-      FieldElement irreducible = binaryField.newElement(irreduciblePolynomial);
-      
-      int order = binaryField.getOrder();
-      int[] coeffPositions = new int[3];
-      
-      // Get coefficients of irreducible polynomial
-      int coeffCount = 2;
-      for (int i = 1; i < order -1; i++) {
-        if (irreducible.testBit(i)) {
-          coeffPositions[coeffCount - 2] = i;
-          coeffCount++;
-          if (coeffCount == 5)
-            break;
-        }
-      }
       // detect if trinomial or pentanomial base is present...
-      switch (coeffCount) {
-      case 3:
+      switch (ks.length) {
+      case 1:
         // trinomial base
         TnBFieldParamsType tnBFieldParamsType = ecFactory.createTnBFieldParamsType();
-        tnBFieldParamsType.setM(BigInteger.valueOf(binaryField.getOrder()));
-        tnBFieldParamsType.setK(BigInteger.valueOf(coeffPositions[0]));
+        tnBFieldParamsType.setM(BigInteger.valueOf(fieldf2m.getM()));
+        tnBFieldParamsType.setK(BigInteger.valueOf(ks[0]));
         return tnBFieldParamsType;
 
-      case 5:
+      case 3:
         // pentanomial base
         PnBFieldParamsType pnBFieldParamsType = ecFactory.createPnBFieldParamsType();
-        pnBFieldParamsType.setM(BigInteger.valueOf(binaryField.getOrder()));
-        pnBFieldParamsType.setK1(BigInteger.valueOf(coeffPositions[0]));
-        pnBFieldParamsType.setK2(BigInteger.valueOf(coeffPositions[1]));
-        pnBFieldParamsType.setK3(BigInteger.valueOf(coeffPositions[2]));
+        pnBFieldParamsType.setM(BigInteger.valueOf(fieldf2m.getM()));
+        pnBFieldParamsType.setK1(BigInteger.valueOf(ks[0]));
+        pnBFieldParamsType.setK2(BigInteger.valueOf(ks[1]));
+        pnBFieldParamsType.setK3(BigInteger.valueOf(ks[2]));
         return pnBFieldParamsType;
       
       default:
@@ -232,17 +212,22 @@ public class KeyValueFactory {
       }
       
     } else {
-      throw new KeyTypeNotSupportedException("Field element of type " + field.getFieldId() + " not supported.");
+      throw new KeyTypeNotSupportedException("Field element type not supported.");
     }
     
   }
   
-  public DomainParamsType createDomainParamsType(ECDSAParams params) throws KeyTypeNotSupportedException {
-    
+  public DomainParamsType createDomainParamsType(ECParameterSpec params) throws KeyTypeNotSupportedException {
+    iaik.security.ec.common.ECParameterSpec params2;
+    try {
+      params2 = iaik.security.ec.common.ECParameterSpec.getParameterSpec(params);
+    } catch (InvalidCurveParameterSpecException e) {
+      throw new KeyTypeNotSupportedException(e);
+    }
     DomainParamsType domainParamsType = ecFactory.createDomainParamsType();
-    EllipticCurve curve = params.getG().getCurve();
-    
-    String oid = params.getOID();
+    EllipticCurve curve = params.getCurve();
+
+    String oid = params2.getOID();
     if (oid !=  null) {
       // NamedCurve
       NamedCurve namedCurve = ecFactory.createDomainParamsTypeNamedCurve();
@@ -252,31 +237,27 @@ public class KeyValueFactory {
       // Explicit parameters
       ExplicitParamsType explicitParamsType = ecFactory.createExplicitParamsType();
       explicitParamsType.setFieldParams(createFieldParamsType(curve.getField()));
-      
+
       CurveParamsType curveParamsType = ecFactory.createCurveParamsType();
-      
+      ECField field = params.getCurve().getField();
+
       // curve coefficients
-      curveParamsType.setA(createFieldElemType(curve.getA()));
-      curveParamsType.setB(createFieldElemType(curve.getB()));
+      curveParamsType.setA(createFieldElemType(curve.getA(), field));
+      curveParamsType.setB(createFieldElemType(curve.getB(), field));
       
       // seed
-      if (params.getS() != null) {
-        curveParamsType.setSeed(bigInteger2byteArray(params.getS()));
-      }
+      if (curve.getSeed() != null)
+        curveParamsType.setSeed(curve.getSeed());
       explicitParamsType.setCurveParams(curveParamsType);
-      
 
       // BasePoint parameters
       BasePointParamsType basePointParamsType = ecFactory.createBasePointParamsType();
-      if (!params.getG().isInfinity()) {
-        basePointParamsType.setBasePoint(createPointType(params.getG()));
+      if (!params.getGenerator().equals(ECPoint.POINT_INFINITY)) {
+        basePointParamsType.setBasePoint(createPointType(params.getGenerator(), field));
       }
-      basePointParamsType.setOrder(params.getR());
-      if(params.getK() != null) {
-        basePointParamsType.setCofactor(params.getK());
-      }
+      basePointParamsType.setOrder(params.getOrder());
+      basePointParamsType.setCofactor(BigInteger.valueOf(params.getCofactor()));
       explicitParamsType.setBasePointParams(basePointParamsType);
-      
       domainParamsType.setExplicitParams(explicitParamsType);
     }
 
