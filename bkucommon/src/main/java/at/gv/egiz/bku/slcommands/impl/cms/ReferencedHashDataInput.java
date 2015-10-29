@@ -34,21 +34,17 @@ import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 public class ReferencedHashDataInput extends CMSHashDataInput {
 
   private String urlReference;
-  URLDereferencer urlDereferencer;
-  ExcludedByteRangeType excludedByteRange;
+  private URLDereferencer urlDereferencer;
+  private ExcludedByteRangeType excludedByteRange;
   
-	public ReferencedHashDataInput(String mimeType, URLDereferencer urlDereferencer, String urlReference) {
-		this(urlDereferencer, urlReference);
-		this.mimeType = mimeType;
-	}
-
-	public ReferencedHashDataInput(URLDereferencer urlDereferencer, String urlReference) {
-		super();
+	public ReferencedHashDataInput(String mimeType, URLDereferencer urlDereferencer, String urlReference, ExcludedByteRangeType excludedByteRange) {
+		super(null, mimeType);	
 		this.urlDereferencer = urlDereferencer;
 		this.urlReference = urlReference;
+		this.excludedByteRange = excludedByteRange;
 	}
-  
  	
+	
 	public URLDereferencer getUrlDereferencer() {
 		return urlDereferencer;
 	}
@@ -58,8 +54,8 @@ public class ReferencedHashDataInput extends CMSHashDataInput {
 		this.urlDereferencer = urlDereferencer;
 	}
 
-  public InputStream getHashDataInput() {
-		try {
+  public InputStream getHashDataInput() throws IOException {
+
 			
 			InputStream hashDataInputStream = urlDereferencer.dereference(urlReference).getStream();
 			
@@ -77,18 +73,6 @@ public class ReferencedHashDataInput extends CMSHashDataInput {
 
 				return hashDataInputStream;
 			}
-		} catch (IOException e) {
-			return null;
-		}
+
 	}
-
-
-	public void setExcludedByteRange(ExcludedByteRangeType excludedByteRange) {
-		this.excludedByteRange = excludedByteRange;
-	}
-	
-  
-  
-	
-
 }

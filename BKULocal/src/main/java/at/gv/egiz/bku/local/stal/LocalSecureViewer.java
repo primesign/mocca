@@ -254,14 +254,18 @@ public class LocalSecureViewer implements SecureViewer, HashDataInputLoader {
        throw new Exception("No hashdata input for reference " + signedRefId + " returned by service");
      }
 
-     byte[] hdi = IOUtils.toByteArray(hashDataInput.getHashDataInput());
+     byte[] hdi = null;
+				
+     try {
+					hdi = IOUtils.toByteArray(hashDataInput.getHashDataInput());
+				} catch (IOException e) {
+					throw new Exception("No hashdata input for reference " + signedRefId + " provided by service.", e);
+				}
+     
      String mimeType = hashDataInput.getMimeType();
      String encoding = hashDataInput.getEncoding();
      String filename = hashDataInput.getFilename();
-
-     if (hdi == null) {
-       throw new Exception("No hashdata input for reference " + signedRefId + " provided by service");
-     }
+     
      if (log.isDebugEnabled()) {
        log.debug("Digesting reference " + signedRefId + " (" + mimeType + ";" + encoding + ")");
      }

@@ -79,9 +79,9 @@ public class ByteArrayHashDataInput implements HashDataInput {
       if (hdi == null) {
         throw new NullPointerException("HashDataInput not provided.");
       }
+      try {
       InputStream is = hdi.getHashDataInput();
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      try {
         byte[] buffer = new byte[1024];
         for (int i = is.read(buffer); i > -1; i = is.read(buffer)) {
           baos.write(buffer, 0, i);

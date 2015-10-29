@@ -57,10 +57,10 @@
     <property name="configuration" ref="configuration"/>
   </bean>
   
-  <bean id="urlDereferencer" class="at.gv.egiz.bku.utils.urldereferencer.URLDereferencerImpl"
-    factory-method="getInstance">
-    <property name="SSLSocketFactory" ref="sslSocketFactory"/>
+  <bean id="urlDereferencer" class="at.gv.egiz.bku.spring.URLDereferencerFactoryBean">
+    <property name="sslSocketFactory" ref="sslSocketFactory"/>
     <property name="hostnameVerifier" ref="hostnameVerifier"/>
+    <property name="configuration" ref="configuration"/>
   </bean>
   
 	<!-- security manager for the command invoker -->

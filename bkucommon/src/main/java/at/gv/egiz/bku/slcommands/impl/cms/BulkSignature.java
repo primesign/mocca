@@ -71,7 +71,7 @@ public class BulkSignature extends Signature {
       boolean useStrongHash)
           throws NoSuchAlgorithmException, CertificateEncodingException,
           CertificateException, X509ExtensionException, InvalidParameterException,
-          CodingException, SLCommandException, IOException {
+          CodingException, SLCommandException, IOException, CMSException {
 		super(dataObject, structure, signingCertificate, signingTime, urlDereferencer, useStrongHash);
   }
 
@@ -94,10 +94,6 @@ public class BulkSignature extends Signature {
 	    return contentInfo.getEncoded();
 	  }
   
-  @Override
-  public HashDataInput getHashDataInput() {
-    return new CMSHashDataInput(signedDocument, mimeType);
-	  }
   
   public ExcludedByteRangeType getExcludedByteRange() {
 		return excludedByteRange;

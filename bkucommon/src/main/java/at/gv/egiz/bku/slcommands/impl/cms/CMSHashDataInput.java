@@ -25,6 +25,7 @@
 package at.gv.egiz.bku.slcommands.impl.cms;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import at.gv.egiz.stal.HashDataInput;
@@ -80,7 +81,7 @@ public class CMSHashDataInput implements HashDataInput {
   }
 
   @Override
-  public InputStream getHashDataInput() {
+  public InputStream getHashDataInput() throws IOException {
     return new ByteArrayInputStream(data);
   }
 

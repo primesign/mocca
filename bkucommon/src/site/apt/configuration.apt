@@ -154,15 +154,16 @@ MOCCA Configuration
 
 ** MOCCA Local Only Configuration Parameters
 
+		Default: <<<true>>>
+		
+		[<<<disableFileURI>>>] Whether to disable/enable reference by FileURI.
+		
 	[<<<CCID>>>]
 
 		Smart card interface device configuration options. Currently, only one configuration item.
 
 		[<<<disablePinpad>>>] Whether to disable the pinpad on a card reader and use keyboard pin entry instead.
 		
-		Default: <<<false>>>
-		
-		[<<<enableDigestAndRef>>>] Whether to disable/enable requests by DigestAndRefType.
 
 		Default: <<<false>>>
 

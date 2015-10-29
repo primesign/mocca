@@ -105,38 +105,25 @@ public class Signature {
   private HashDataInput hashDataInput;
   
 
-
-	public Signature(HashDataInput hashDataInput, CMSDataObjectOptionalMetaType dataObject, String structure,
-			X509Certificate signingCertificate, Date signingTime, URLDereferencer urlDereferencer, boolean useStrongHash)
-			throws NoSuchAlgorithmException, CertificateEncodingException, CertificateException, X509ExtensionException,
-			InvalidParameterException, CodingException, SLCommandException, IOException {
-
-		this(dataObject, structure, signingCertificate, signingTime, urlDereferencer, useStrongHash);
-
-		if (hashDataInput instanceof ReferencedHashDataInput) {
-
-			ReferencedHashDataInput referencedHashDataInput = (ReferencedHashDataInput) hashDataInput;
-			this.hashDataInput = referencedHashDataInput;
-		} else {
-			this.hashDataInput = hashDataInput;
-		}
-
-	}
-
-
 public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
       X509Certificate signingCertificate, Date signingTime, URLDereferencer urlDereferencer,
       boolean useStrongHash)
           throws NoSuchAlgorithmException, CertificateEncodingException,
           CertificateException, X509ExtensionException, InvalidParameterException,
-          CodingException, SLCommandException, IOException {
+          CodingException, SLCommandException, IOException, CMSException {
     int mode = structure.equalsIgnoreCase("enveloping") ? SignedData.IMPLICIT : SignedData.EXPLICIT;
     if (dataObject.getContent() != null) {
       byte[] dataToBeSigned = getContent(dataObject, urlDereferencer);
       this.signedData = new SignedData(dataToBeSigned, mode);
+      hashDataInput = new CMSHashDataInput(signedDocument, mimeType);
+      
     } else {
       DigestAndRefType digestAndRef = dataObject.getDigestAndRef();
-      DigestMethodType digestMethod = digestAndRef.getDigestMethod();
+      DigestMethodType digestMethod = digestAndRef.getDigestMethod();     
+      
+      hashDataInput = new ReferencedHashDataInput(dataObject.getMetaInfo().getMimeType(), urlDereferencer,
+					digestAndRef.getReference(), dataObject.getExcludedByteRange());
+	
       try {
         digestAlgorithm = getAlgorithmID(digestMethod.getAlgorithm());
       } catch (URISyntaxException e) {
@@ -338,7 +325,6 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
     }
     return new AlgorithmID(new ObjectID(oid));
   }
- 
 }
 
 

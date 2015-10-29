@@ -51,8 +51,9 @@ public class URLDereferencerImpl implements URLDereferencer {
 
   private HostnameVerifier hostnameVerifier;
   private SSLSocketFactory sslSocketFactory;
+  boolean disableFIleURIs;
   
-  private URLDereferencerImpl() {
+  public URLDereferencerImpl() {
     registerHandlers();
   }
 
@@ -116,4 +117,10 @@ public class URLDereferencerImpl implements URLDereferencer {
   public void setSSLSocketFactory(SSLSocketFactory socketFactory) {
     this.sslSocketFactory = socketFactory;
   }
+
+	public void setHandlerMap(Map<String, URLProtocolHandler> handlerMap) {
+		this.handlerMap = handlerMap;
+	}
+  
+  
 }
