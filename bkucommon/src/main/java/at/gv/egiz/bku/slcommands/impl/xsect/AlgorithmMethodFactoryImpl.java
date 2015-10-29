@@ -25,7 +25,6 @@
 package at.gv.egiz.bku.slcommands.impl.xsect;
 
 import iaik.asn1.structures.AlgorithmID;
-import iaik.security.ecc.interfaces.ECDSAParams;
 import iaik.xml.crypto.XmldsigMore;
 
 import java.security.InvalidAlgorithmParameterException;
@@ -115,14 +114,13 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
     } else if (("EC".equals(algorithm)) || ("ECDSA".equals(algorithm))) {
       
       int fieldSize = 0;
-      if (publicKey instanceof iaik.security.ecc.ecdsa.ECPublicKey) {
-        ECDSAParams params = ((iaik.security.ecc.ecdsa.ECPublicKey) publicKey).getParameter();
-        fieldSize = params.getG().getCurve().getField().getSize().bitLength();
-      } else if (publicKey instanceof ECPublicKey) {
+      if (publicKey instanceof ECPublicKey) {
         ECParameterSpec params = ((ECPublicKey) publicKey).getParams();
         fieldSize = params.getCurve().getField().getFieldSize();
+      } else {
+        throw new NoSuchAlgorithmException("Public key type not supported.");
       }
-      
+
       if (useStrongHash && fieldSize >= 512) {
         signatureAlgorithmURI = XmldsigMore.SIGNATURE_ECDSA_SHA512;
         signatureAlgorithmID = AlgorithmID.ecdsa_With_SHA512;

@@ -57,7 +57,7 @@ public class Container {
   public static final String HTTP_PORT_PROPERTY = "mocca.http.port";
   public static final String HTTPS_PORT_PROPERTY = "mocca.https.port";
 
-  private static final String JETTY_TEMP_CLEANER_CLASSNAME = "JettyTempCleaner";
+  private static final String JETTY_TEMP_CLEANER_JAR = "JettyTempCleaner.jar";
 
   private static Logger log = LoggerFactory.getLogger(Container.class);
 
@@ -115,49 +115,6 @@ public class Container {
     String passwd = readPassword(new File(configDir, Configurator.PASSWD_FILE));
     sslConnector.setPassword(passwd);
     sslConnector.setKeyPassword(passwd);
-
-    //avoid jetty's ClassCastException: iaik.security.ecc.ecdsa.ECPublicKey cannot be cast to java.security.interfaces.ECPublicKey
-    String[] RFC4492CipherSuites = new String[] {
-      "TLS_ECDH_ECDSA_WITH_NULL_SHA",
-      "TLS_ECDH_ECDSA_WITH_RC4_128_SHA",
-      "TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA",
-      "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA",
-      "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA",
-      "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384",
-      "TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256",
-      "TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384",
-      "TLS_ECDHE_ECDSA_WITH_NULL_SHA",
-      "TLS_ECDHE_ECDSA_WITH_RC4_128_SHA",
-      "TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA",
-      "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
-      "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
-      "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,"+
-      "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
-      "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-      "TLS_ECDH_RSA_WITH_NULL_SHA",
-      "TLS_ECDH_RSA_WITH_RC4_128_SHA",
-      "TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA",
-      "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA",
-      "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA",
-      "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384,",
-      "TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256",
-      "TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384",
-      "TLS_ECDHE_RSA_WITH_NULL_SHA",
-      "TLS_ECDHE_RSA_WITH_RC4_128_SHA",
-      "TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
-      "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
-      "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-      "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
-      "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-      "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-      "TLS_ECDH_anon_WITH_NULL_SHA",
-      "TLS_ECDH_anon_WITH_RC4_128_SHA",
-      "TLS_ECDH_anon_WITH_3DES_EDE_CBC_SHA",
-      "TLS_ECDH_anon_WITH_AES_128_CBC_SHA",
-      "TLS_ECDH_anon_WITH_AES_256_CBC_SHA"
-    };
-
-    sslConnector.setExcludeCipherSuites(RFC4492CipherSuites);
 
     server.setConnectors(new Connector[]{connector, sslConnector});
 
@@ -219,11 +176,11 @@ public class Container {
   }
 
   private void copyCleaner(File dir) throws IOException {
-    File cleanerClass = new File(dir, JETTY_TEMP_CLEANER_CLASSNAME + ".class");
-    log.debug("copying JettyTempCleaner to " + cleanerClass);
-    InputStream is = getClass().getClassLoader().getResourceAsStream(JETTY_TEMP_CLEANER_CLASSNAME + ".class");
+    File cleanerJar = new File(dir, JETTY_TEMP_CLEANER_JAR);
+    log.debug("copying JettyTempCleaner to " + cleanerJar);
+    InputStream is = getClass().getClassLoader().getResourceAsStream(JETTY_TEMP_CLEANER_JAR);
     OutputStream os;
-    os = new BufferedOutputStream(new FileOutputStream(cleanerClass));
+    os = new BufferedOutputStream(new FileOutputStream(cleanerJar));
     new StreamCopier(is, os).copyStream();
     os.close();
   }
@@ -241,11 +198,12 @@ public class Container {
         copyCleaner(userDir);
         List<String> args = new ArrayList<String>();
         args.add("java");
-        args.add(JETTY_TEMP_CLEANER_CLASSNAME);
+        args.add("-jar");
+        args.add(JETTY_TEMP_CLEANER_JAR);
         args.add(tempDir.getAbsolutePath());
         ProcessBuilder pb = new ProcessBuilder(args);
         pb.directory(userDir);
-        log.debug("Starting " + JETTY_TEMP_CLEANER_CLASSNAME + " to remove " + tempDir.getAbsolutePath());
+        log.debug("Starting " + JETTY_TEMP_CLEANER_JAR + " to remove " + tempDir.getAbsolutePath());
         pb.start();
       } catch (IOException e) {
         log.error("Failed to copy jetty temp cleaner", e);
