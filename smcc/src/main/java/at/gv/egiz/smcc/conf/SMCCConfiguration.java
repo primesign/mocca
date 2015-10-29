@@ -32,7 +32,7 @@ package at.gv.egiz.smcc.conf;
 public class SMCCConfiguration {
 
   boolean disablePinpad;
-
+  
   /**
    * @return the disablePinpad
    */
@@ -46,6 +46,4 @@ public class SMCCConfiguration {
   public void setDisablePinpad(boolean disablePinpad) {
     this.disablePinpad = disablePinpad;
   }
-
-  
 }

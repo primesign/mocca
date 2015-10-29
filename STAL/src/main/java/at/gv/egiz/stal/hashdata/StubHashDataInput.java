@@ -96,5 +96,6 @@ public class StubHashDataInput implements HashDataInput {
 
   public ReferenceType getReference() {
     return reference;
-  }
+  }	
+
 }

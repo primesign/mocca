@@ -36,7 +36,7 @@ public class CMSHashDataInput implements HashDataInput {
 
   private byte[] data;
   private byte[] digest;
-  private String mimeType;
+  protected String mimeType;
   private String referenceId;
   private String fileName;
 
