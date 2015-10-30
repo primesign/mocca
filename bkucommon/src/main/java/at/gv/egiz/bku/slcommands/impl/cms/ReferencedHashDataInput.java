@@ -54,25 +54,28 @@ public class ReferencedHashDataInput extends CMSHashDataInput {
 		this.urlDereferencer = urlDereferencer;
 	}
 
-  public InputStream getHashDataInput() throws IOException {
+	public InputStream getHashDataInput() throws IOException {
 
-			
-			InputStream hashDataInputStream = urlDereferencer.dereference(urlReference).getStream();
-			
+		InputStream hashDataInputStream = urlDereferencer.dereference(urlReference).getStream();
+
+		try {
+			byte[] content = IOUtils.toByteArray(hashDataInputStream);
+
 			if (excludedByteRange != null) {
 
 				int from = excludedByteRange.getFrom().intValue();
 				int to = excludedByteRange.getTo().intValue();
-				
-				byte[] content = IOUtils.toByteArray(hashDataInputStream);
+
 				byte[] signedContent = ArrayUtils.addAll(ArrayUtils.subarray(content, 0, from), ArrayUtils.subarray(content, to, content.length));
-				
+
 				return new ByteArrayInputStream(signedContent);
 
 			} else {
-
-				return hashDataInputStream;
+				return new ByteArrayInputStream(content);
 			}
 
+		} finally {
+			hashDataInputStream.close();
+		}
 	}
 }
