@@ -98,7 +98,7 @@
             <version>2.2-mocca</version>
             <configuration>
               <keystore>${ks-file}</keystore>
-              <alias>a-sit-3</alias>
+              <alias>${ks-alias}</alias>
               <storepass>${ks-pass}</storepass>
               <keypass>${ks-pass}</keypass>
             </configuration>
