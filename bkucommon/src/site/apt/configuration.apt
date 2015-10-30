@@ -74,9 +74,9 @@ MOCCA Configuration
 		
 		[<<<sslProtocol>>>] Options: <<<TLS>>> (default) or <<<SSL>>>
 		
-		[<<<revocationServiceOrder>>>] Comma-separated (ordered) list of revocation services to be used, e.g. "<<<CRL,OCSP>>>". Any revocation service not contained in the list will be disabled.
+		[<<<revocationServiceOrder>>>] Comma-separated (ordered) list of revocation services to be used, e.g. "<<<OCSP,CRL>>>". Any revocation service not contained in the list will be disabled.
 
-		Default: <<<OCSP,CRL>>>
+		Default: <<<CRL,OCSP>>>
 
 		[]
 		
