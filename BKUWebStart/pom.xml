@@ -1,8 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>mocca</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.3.22-SNAPSHOT</version>
+    <version>1.3.22-PRIMESIGN-1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>BKUWebStart</artifactId>
@@ -360,7 +361,7 @@
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKULocal</artifactId>
-      <version>${project.version}</version>
+      <version>1.3.22-PRIMESIGN-1</version>
       <type>war</type>
       <!-- make dependency not transitive -->
       <optional>true</optional>
@@ -372,7 +373,7 @@
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>JettyTempCleaner</artifactId>
-      <version>${project.version}</version>
+      <version>1.3.22-PRIMESIGN-1</version>
     </dependency>
     <dependency>
       <groupId>iaik</groupId>
