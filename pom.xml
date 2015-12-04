@@ -334,12 +334,12 @@
       <dependency>
         <groupId>iaik</groupId>
         <artifactId>iaik_eccelerate</artifactId>
-        <version>3.0</version>
+        <version>3.01</version>
       </dependency>
       <dependency>
         <groupId>iaik</groupId>
         <artifactId>iaik_eccelerate_cms</artifactId>
-        <version>3.0</version>
+        <version>3.01</version>
       </dependency>
       <dependency>
         <groupId>iaik</groupId>
