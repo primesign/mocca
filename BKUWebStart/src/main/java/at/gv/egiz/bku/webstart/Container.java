@@ -37,10 +37,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import org.mortbay.jetty.Connector;
@@ -57,7 +56,7 @@ public class Container {
   public static final String HTTP_PORT_PROPERTY = "mocca.http.port";
   public static final String HTTPS_PORT_PROPERTY = "mocca.https.port";
 
-  private static final String JETTY_TEMP_CLEANER_JAR = "JettyTempCleaner.jar";
+  private static final String JETTY_TEMP_STORE = ".jettytemp";
 
   private static Logger log = LoggerFactory.getLogger(Container.class);
 
@@ -85,6 +84,7 @@ public class Container {
 
   public void init() throws IOException {
 //    System.setProperty("DEBUG", "true");
+    deleteJettyTemp();
     server = new Server();
     QueuedThreadPool qtp = new QueuedThreadPool();
     qtp.setMaxThreads(5);
@@ -175,40 +175,76 @@ public class Container {
     return webapp.getPath();
   }
 
-  private void copyCleaner(File dir) throws IOException {
-    File cleanerJar = new File(dir, JETTY_TEMP_CLEANER_JAR);
-    log.debug("copying JettyTempCleaner to " + cleanerJar);
-    InputStream is = getClass().getClassLoader().getResourceAsStream(JETTY_TEMP_CLEANER_JAR);
-    OutputStream os;
-    os = new BufferedOutputStream(new FileOutputStream(cleanerJar));
-    new StreamCopier(is, os).copyStream();
-    os.close();
+  private static boolean deleteRecursive(File f) {
+    if (f.isDirectory()) {
+      String[] children = f.list();
+      for (String child : children) {
+        if (!deleteRecursive(new File(f, child)))
+          return false;
+      }
+    }
+    return f.delete();
   }
 
-  private void cleanupJettyTemp() {
+  private static void clean(File tmpDir) {
+    log.debug("Trying to remove " + tmpDir);
+    if (deleteRecursive(tmpDir)) {
+      log.debug("Successfully removed temporary directory");
+    }
+  }
+
+  private void storeJettyTemp() {
     String os = System.getProperty("os.name");
-    if (os.toLowerCase().contains("windows")) {
-      try {
-        File userDir = new File(System.getProperty("user.home") + "/" + Configurator.BKU_USER_DIR);
-        if (!userDir.exists())
-        {
-          log.error("User directory " + userDir + " not found");
-          return;
-        }
-        copyCleaner(userDir);
-        List<String> args = new ArrayList<String>();
-        args.add("java");
-        args.add("-jar");
-        args.add(JETTY_TEMP_CLEANER_JAR);
-        args.add(tempDir.getAbsolutePath());
-        ProcessBuilder pb = new ProcessBuilder(args);
-        pb.directory(userDir);
-        log.debug("Starting " + JETTY_TEMP_CLEANER_JAR + " to remove " + tempDir.getAbsolutePath());
-        pb.start();
-      } catch (IOException e) {
-        log.error("Failed to copy jetty temp cleaner", e);
-        e.printStackTrace();
+    if (!os.toLowerCase().contains("windows"))
+      return;
+    try {
+      File userDir = new File(System.getProperty("user.home") + "/" + Configurator.BKU_USER_DIR);
+      if (!userDir.exists())
+      {
+        log.error("User directory " + userDir + " not found");
+        return;
       }
+      File jettytempstore = new File(userDir, JETTY_TEMP_STORE);
+      PrintWriter w = new PrintWriter(jettytempstore, "UTF-8");
+      w.println(tempDir.getAbsolutePath());
+      w.close();
+      log.debug("Stored jetty temp dir " + tempDir.getAbsolutePath() + " for removal on next start");
+    } catch (IOException e) {
+      log.error("Failed to copy jetty temp cleaner", e);
+      e.printStackTrace();
+    }
+  }
+
+  private void deleteJettyTemp() {
+    String os = System.getProperty("os.name");
+    if (!os.toLowerCase().contains("windows"))
+      return;
+    try {
+      File userDir = new File(System.getProperty("user.home") + "/" + Configurator.BKU_USER_DIR);
+      if (!userDir.exists())
+      {
+        log.error("User directory " + userDir + " not found");
+        return;
+      }
+      File jettytempstore = new File(userDir, JETTY_TEMP_STORE);
+      if (!jettytempstore.exists())
+      {
+        log.debug("No Jetty temp store file found");
+        return;
+      }
+      BufferedReader r = new BufferedReader(new FileReader(jettytempstore));
+      File oldTemp = new File(r.readLine());
+      if (oldTemp.exists()) {
+        log.info("Deleting old jetty temp dir " + oldTemp);
+        clean(oldTemp);
+      } else {
+        log.debug("Old jetty temp dir " + oldTemp + " doesn't exist anymore");
+      }
+      r.close();
+      jettytempstore.delete();
+    } catch (IOException e) {
+      log.error("Failed to copy jetty temp cleaner", e);
+      e.printStackTrace();
     }
   }
 
@@ -246,14 +282,11 @@ public class Container {
 
   public void stop() throws Exception {
     server.stop();
-
-    cleanupJettyTemp();
+    storeJettyTemp();
   }
 
   public void destroy() {
     server.destroy();
-
-    cleanupJettyTemp();
 }
 
   public void join() throws InterruptedException {
