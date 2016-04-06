@@ -23,17 +23,17 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="EncryptXMLRequestType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="RecipientPublicKey" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}XMLRecipientPublicKeyType" maxOccurs="unbounded"/>
- *         &lt;element name="ToBeEncrypted" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ToBeEncryptedType" maxOccurs="unbounded"/>
- *         &lt;element name="EncryptionInfo" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}EncryptionInfoType" minOccurs="0"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="EncryptXMLRequestType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="RecipientPublicKey" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}XMLRecipientPublicKeyType" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="ToBeEncrypted" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ToBeEncryptedType" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="EncryptionInfo" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}EncryptionInfoType" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

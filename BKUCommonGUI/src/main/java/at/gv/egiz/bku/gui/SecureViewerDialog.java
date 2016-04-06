@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class SecureViewerDialog extends JDialog {
 
@@ -245,9 +245,6 @@ public class SecureViewerDialog extends JDialog {
    * Sets the hashdataInput to be displayed and makes the dialog visible.
    * This method blocks until the dialog's close button is pressed.
    * 
-   * @param mimeType defaults to text/plain if null
-   * @param encoding must be null if document contains charset declaration (e.g. HTML page), otherwise the parser crashes
-
    * @param hashDataInput
    */
   public void setContent(HashDataInput hashDataInput) { //throws FontProviderException {

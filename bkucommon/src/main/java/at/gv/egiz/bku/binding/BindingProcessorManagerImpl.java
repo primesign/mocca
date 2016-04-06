@@ -115,14 +115,14 @@ public class BindingProcessorManagerImpl implements BindingProcessorManager, Com
   }
 
   /**
-   * @return the factoryMap
+   * @return the factory List
    */
   public List<BindingProcessorFactory> getFactories() {
     return factories;
   }
 
   /**
-   * @param factoryMap the factoryMap to set
+   * @param factories the factory List to set
    */
   public void setFactories(List<BindingProcessorFactory> factories) {
     this.factories = factories;

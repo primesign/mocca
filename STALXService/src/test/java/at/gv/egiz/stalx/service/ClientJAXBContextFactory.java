@@ -32,7 +32,7 @@ package at.gv.egiz.stalx.service;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class ClientJAXBContextFactory { //implements JAXBContextFactory {
 

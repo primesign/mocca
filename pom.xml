@@ -4,7 +4,7 @@
   <groupId>at.gv.egiz</groupId>
   <artifactId>mocca</artifactId>
   <packaging>pom</packaging>
-  <version>1.3.22-PRIMESIGN-2-SNAPSHOT</version>
+  <version>1.3.23-PRIMESIGN-1-SNAPSHOT</version>
   <name>MOCCA</name>
   <description>MOCCA (Modular Open Citizen Card Architecture) project</description>
   <url>http://joinup.ec.europa.eu/site/mocca/</url>
@@ -38,7 +38,6 @@
     <module>BKUFonts</module>
     <module>mocca-docker</module>
     <module>mocca-local-docker</module>
-    <module>JettyTempCleaner</module>
   </modules>
   <inceptionYear>2007</inceptionYear>
   <developers>
@@ -70,8 +69,8 @@
   <licenses>
     <license>
       <name>EUPL v1.1</name>
-      <url>http://joinup.ec.europa.eu/software/page/eupl/licence-eupl</url>
-      <distribution>manually</distribution>
+      <url>https://joinup.ec.europa.eu/sites/default/files/ckeditor_files/files/eupl%20v%20%201%201%20-%20EN.txt.txt</url>
+      <distribution>manual</distribution>
     </license>
   </licenses>
   <build>
@@ -210,6 +209,13 @@
         </plugin>
       </plugins>
     </pluginManagement>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav-jackrabbit</artifactId>
+        <version>2.10</version>
+      </extension>
+    </extensions>
   </build>
   <repositories>
     <repository>
@@ -333,12 +339,12 @@
       <dependency>
         <groupId>iaik</groupId>
         <artifactId>iaik_eccelerate</artifactId>
-        <version>3.0</version>
+        <version>3.01</version>
       </dependency>
       <dependency>
         <groupId>iaik</groupId>
         <artifactId>iaik_eccelerate_cms</artifactId>
-        <version>3.0</version>
+        <version>3.01</version>
       </dependency>
       <dependency>
         <groupId>iaik</groupId>
@@ -366,6 +372,11 @@
         <artifactId>servlet-api</artifactId>
         <version>2.5</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>commons-collections</groupId>
+        <artifactId>commons-collections</artifactId>
+        <version>3.2.2</version>
       </dependency>
       <dependency>
         <groupId>commons-fileupload</groupId>
@@ -409,19 +420,19 @@
       <dependency>
         <groupId>at.gv.egiz</groupId>
         <artifactId>BKUWebStart</artifactId>
-        <version>1.3.22-PRIMESIGN-2-SNAPSHOT</version>
+        <version>1.3.23-PRIMESIGN-1-SNAPSHOT</version>
         <type>zip</type>
       </dependency>
       <!-- dependency in BKULocal, BKUWebstart and BKUOnline -->
       <dependency>
         <groupId>at.gv.egiz</groupId>
         <artifactId>BKUCertificates</artifactId>
-        <version>1.3.22-PRIMESIGN-2-SNAPSHOT</version>
+        <version>1.3.23-PRIMESIGN-1-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>at.gv.egiz</groupId>
         <artifactId>BKUFonts</artifactId>
-        <version>1.3.22-PRIMESIGN-2-SNAPSHOT</version>
+        <version>1.3.23-PRIMESIGN-1-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
@@ -465,7 +476,7 @@
   </dependencyManagement>
   <distributionManagement>
     <site>
-      <id>project</id>
+      <id>mocca-site-joinup</id>
       <url>dav:https://joinup.ec.europa.eu/webdav/mocca/www</url>
     </site>
     <snapshotRepository>

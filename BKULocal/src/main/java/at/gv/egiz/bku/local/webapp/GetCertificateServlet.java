@@ -45,7 +45,7 @@ import at.gv.egiz.stal.ext.GetCertificateRequest;
 
 /**
 *
-* @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
+* @author Thomas Lenz &lt;thomas.lenz@iaik.tugraz.at&gt;
 */
 
 public class GetCertificateServlet extends HttpServlet {

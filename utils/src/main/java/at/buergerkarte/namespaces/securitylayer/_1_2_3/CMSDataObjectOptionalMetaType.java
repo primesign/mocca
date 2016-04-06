@@ -21,20 +21,20 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="CMSDataObjectOptionalMetaType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="MetaInfo" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}MetaInfoType" minOccurs="0"/>
- *         &lt;choice>
- *           &lt;element name="Content" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}Base64OptRefContentType"/>
- *           &lt;element name="DigestAndRef" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}DigestAndRefType"/>
- *         &lt;/choice>
- *         &lt;element name="ExcludedByteRange" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ExcludedByteRangeType" minOccurs="0"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="CMSDataObjectOptionalMetaType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="MetaInfo" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}MetaInfoType" minOccurs="0"/&gt;
+ *         &lt;choice&gt;
+ *           &lt;element name="Content" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}Base64OptRefContentType"/&gt;
+ *           &lt;element name="DigestAndRef" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}DigestAndRefType"/&gt;
+ *         &lt;/choice&gt;
+ *         &lt;element name="ExcludedByteRange" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ExcludedByteRangeType" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

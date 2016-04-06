@@ -41,7 +41,7 @@ import javax.swing.text.StyleConstants;
 
 /**
  * 
- * @author Thomas Zefferer <thomas.zefferer@iaik.tugraz.at>
+ * @author Thomas Zefferer &lt;thomas.zefferer@iaik.tugraz.at&gt;
  */
 public final class HelpLinkFocusManager extends KeyAdapter { 
 

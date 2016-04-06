@@ -25,18 +25,18 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="XMLToBeEncryptedNewType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="MetaInfo" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}MetaInfoType"/>
- *         &lt;element name="Content" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}XMLToBeEncryptedNewContentType"/>
- *       &lt;/sequence>
- *       &lt;attribute name="ParentSelector" use="required" type="{http://www.w3.org/2001/XMLSchema}token" />
- *       &lt;attribute name="NodeCount" use="required" type="{http://www.w3.org/2001/XMLSchema}nonNegativeInteger" />
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="XMLToBeEncryptedNewType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="MetaInfo" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}MetaInfoType"/&gt;
+ *         &lt;element name="Content" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}XMLToBeEncryptedNewContentType"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="ParentSelector" use="required" type="{http://www.w3.org/2001/XMLSchema}token" /&gt;
+ *       &lt;attribute name="NodeCount" use="required" type="{http://www.w3.org/2001/XMLSchema}nonNegativeInteger" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

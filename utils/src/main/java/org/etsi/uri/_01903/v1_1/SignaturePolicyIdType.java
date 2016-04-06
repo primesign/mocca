@@ -45,18 +45,18 @@ import org.w3._2000._09.xmldsig_.TransformsType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="SignaturePolicyIdType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="SigPolicyId" type="{http://uri.etsi.org/01903/v1.1.1#}ObjectIdentifierType"/>
- *         &lt;element ref="{http://www.w3.org/2000/09/xmldsig#}Transforms" minOccurs="0"/>
- *         &lt;element name="SigPolicyHash" type="{http://uri.etsi.org/01903/v1.1.1#}DigestAlgAndValueType"/>
- *         &lt;element name="SigPolicyQualifiers" type="{http://uri.etsi.org/01903/v1.1.1#}SigPolicyQualifiersListType" minOccurs="0"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="SignaturePolicyIdType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="SigPolicyId" type="{http://uri.etsi.org/01903/v1.1.1#}ObjectIdentifierType"/&gt;
+ *         &lt;element ref="{http://www.w3.org/2000/09/xmldsig#}Transforms" minOccurs="0"/&gt;
+ *         &lt;element name="SigPolicyHash" type="{http://uri.etsi.org/01903/v1.1.1#}DigestAlgAndValueType"/&gt;
+ *         &lt;element name="SigPolicyQualifiers" type="{http://uri.etsi.org/01903/v1.1.1#}SigPolicyQualifiersListType" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

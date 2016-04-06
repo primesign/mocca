@@ -44,16 +44,16 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ECDSAKeyValueType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="DomainParameters" type="{http://www.w3.org/2001/04/xmldsig-more#}DomainParamsType" minOccurs="0"/>
- *         &lt;element name="PublicKey" type="{http://www.w3.org/2001/04/xmldsig-more#}ECPointType"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="ECDSAKeyValueType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="DomainParameters" type="{http://www.w3.org/2001/04/xmldsig-more#}DomainParamsType" minOccurs="0"/&gt;
+ *         &lt;element name="PublicKey" type="{http://www.w3.org/2001/04/xmldsig-more#}ECPointType"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

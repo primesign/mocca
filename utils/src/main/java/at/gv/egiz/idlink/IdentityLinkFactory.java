@@ -268,15 +268,9 @@ public class IdentityLinkFactory {
    *          the parent node
    * @param nextSibling
    *          the next sibling node (may be <code>null</code>)
-   * @param applyWorkarounds
-   *          apply workarounds as spefiyed by
-   *          {@link #applyWorkarounds(Element, int)}
    * 
    * @throws JAXBException
    *           if an unexpected error occurs while marshalling
-   * @throws NullPointerException
-   *           if <code>compressdIdentityLink</code> or <code>parent</code> is
-   *           <code>null</code>
    */
   public void marshallIdentityLink(
       JAXBElement<AssertionType> identityLink,

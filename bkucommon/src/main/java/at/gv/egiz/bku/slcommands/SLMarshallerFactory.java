@@ -45,7 +45,6 @@ public class SLMarshallerFactory {
    * security layer requests and responses to avoid propagation of namespace
    * declarations of legacy namespaces into marshaled results.
    * </p>
-   * @see #jaxbContextLegacy
    */
   protected static JAXBContext context;
 

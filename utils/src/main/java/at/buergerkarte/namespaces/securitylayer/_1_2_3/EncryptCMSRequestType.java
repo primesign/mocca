@@ -23,17 +23,17 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="EncryptCMSRequestType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="RecipientPublicKey" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CMSRecipientPublicKeyType" maxOccurs="unbounded"/>
- *         &lt;element name="ToBeEncrypted" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CMSToBeEncryptedType"/>
- *       &lt;/sequence>
- *       &lt;attribute name="ReturnBinaryResult" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="EncryptCMSRequestType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="RecipientPublicKey" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CMSRecipientPublicKeyType" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="ToBeEncrypted" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CMSToBeEncryptedType"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="ReturnBinaryResult" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

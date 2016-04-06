@@ -38,7 +38,7 @@ import at.gv.egiz.smcc.pin.gui.PINGUI;
  *
  * (ACOS: reload counter: between 0 and 15, where 15 meens deactivated)
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class VerifyPINGUI extends VerifyPINProvider implements PINGUI {
 

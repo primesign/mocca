@@ -6,6 +6,23 @@ Tags:
 * TRUSTED	... certificate included in truststore
 
 -------------------
+'''BKUCertificates-1.14 (mocca-1.3.23)'''
+-------------------
+StartComCertificationAuthority.pem (''REMOVED'')
+* Serial Number: 45 (0x2d)
+* Issuer: C=IL, O=StartCom Ltd., OU=Secure Digital Certificate Signing, CN=StartCom Certification Authority
+* Subject: C=IL, O=StartCom Ltd., OU=Secure Digital Certificate Signing, CN=StartCom Certification Authority
+* Not Before: Sep 17 19:46:37 2006 GMT
+* Not After : Sep 17 19:46:36 2036 GMT
+
+StartComCertificationAuthority.cer (''ADDED'', TRUSTED)
+* Serial Number: 1 (0x1)
+* Issuer: C=IL, O=StartCom Ltd., OU=Secure Digital Certificate Signing, CN=StartCom Certification Authority
+* Subject: C=IL, O=StartCom Ltd., OU=Secure Digital Certificate Signing, CN=StartCom Certification Authority
+* Not Before: Sep 17 19:46:36 2006 GMT
+* Not After : Sep 17 19:46:36 2036 GMT
+
+-------------------
 '''BKUCertificates-1.13 (mocca-1.3.21)'''
 -------------------
 DigiCert_Assured_ID_Root_CA.cer (''ADDED'', TRUSTED)

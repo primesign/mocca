@@ -23,19 +23,19 @@ import org.w3._2000._09.xmldsig_.KeyInfoType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="VerifyXMLSignatureResponseType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="SignerInfo" type="{http://www.w3.org/2000/09/xmldsig#}KeyInfoType"/>
- *         &lt;element name="SignatureCheck" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ReferencesCheckResultType"/>
- *         &lt;element name="SignatureManifestCheck" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ReferencesCheckResultType"/>
- *         &lt;element name="XMLDSIGManifestCheck" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ManifestRefsCheckResultType" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="CertificateCheck" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CheckResultType"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="VerifyXMLSignatureResponseType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="SignerInfo" type="{http://www.w3.org/2000/09/xmldsig#}KeyInfoType"/&gt;
+ *         &lt;element name="SignatureCheck" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ReferencesCheckResultType"/&gt;
+ *         &lt;element name="SignatureManifestCheck" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ReferencesCheckResultType"/&gt;
+ *         &lt;element name="XMLDSIGManifestCheck" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ManifestRefsCheckResultType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="CertificateCheck" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CheckResultType"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

@@ -38,7 +38,7 @@ import at.gv.egiz.smcc.PinInfo;
  *
  * (ACOS: reload counter: between 0 and 15, where 15 meens deactivated)
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public interface PINProvider {
 
@@ -46,7 +46,7 @@ public interface PINProvider {
    * TODO change interface to void providePIN(char[] pin, pinspec, retries)
    * to allow caller to clear pin afterwards.
    *
-   * @param spec
+   * @param pinSpec
    * @param retries num of remaining retries or -1 if unknown
    * (a positive value does <em>not</em> necessarily signify that there was
    * already an unsuccessful PIN verification)

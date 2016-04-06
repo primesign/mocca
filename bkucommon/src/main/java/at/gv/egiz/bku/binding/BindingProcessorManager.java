@@ -71,13 +71,11 @@ public interface BindingProcessorManager {
 
   /**
    * Schedules the given BindingProcessor for processing.
-   * <p>
    * <ol>
    * <li>Creates a processing context with the given <code>id</code>.</li>
    * <li>Schedules the given BindingProcessor for processing, and</li>
    * <li>Immediately returns the processing context.</li>
    * </ol>
-   * </p>
    * 
    * @param id
    * @param bindingProcessor

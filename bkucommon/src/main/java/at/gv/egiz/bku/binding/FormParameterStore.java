@@ -101,14 +101,6 @@ public class FormParameterStore implements FormParameter {
     }
   }
 
-  /**
-   * Reads all data from the stream and stores it internally. The stream will
-   * not be closed.
-   * 
-   * @param datSource
-   * @param formName
-   * @param contentType
-   */
   @Override
   public String getFormParameterContentType() {
     ensureInitialized();

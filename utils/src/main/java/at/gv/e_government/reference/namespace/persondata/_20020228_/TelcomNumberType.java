@@ -21,16 +21,16 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="TelcomNumberType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice>
- *         &lt;element ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}FormattedNumber"/>
- *         &lt;group ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}TelcomNumberGroup"/>
- *       &lt;/choice>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="TelcomNumberType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice&gt;
+ *         &lt;element ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}FormattedNumber"/&gt;
+ *         &lt;group ref="{http://reference.e-government.gv.at/namespace/persondata/20020228#}TelcomNumberGroup"/&gt;
+ *       &lt;/choice&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

@@ -46,25 +46,25 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="UnsignedSignaturePropertiesType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="CounterSignature" type="{http://uri.etsi.org/01903/v1.1.1#}CounterSignatureType" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="SignatureTimeStamp" type="{http://uri.etsi.org/01903/v1.1.1#}TimeStampType" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="CompleteCertificateRefs" type="{http://uri.etsi.org/01903/v1.1.1#}CompleteCertificateRefsType" minOccurs="0"/>
- *         &lt;element name="CompleteRevocationRefs" type="{http://uri.etsi.org/01903/v1.1.1#}CompleteRevocationRefsType" minOccurs="0"/>
- *         &lt;choice>
- *           &lt;element name="SigAndRefsTimeStamp" type="{http://uri.etsi.org/01903/v1.1.1#}TimeStampType" maxOccurs="unbounded" minOccurs="0"/>
- *           &lt;element name="RefsOnlyTimeStamp" type="{http://uri.etsi.org/01903/v1.1.1#}TimeStampType" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;/choice>
- *         &lt;element name="CertificateValues" type="{http://uri.etsi.org/01903/v1.1.1#}CertificateValuesType" minOccurs="0"/>
- *         &lt;element name="RevocationValues" type="{http://uri.etsi.org/01903/v1.1.1#}RevocationValuesType" minOccurs="0"/>
- *         &lt;element name="ArchiveTimeStamp" type="{http://uri.etsi.org/01903/v1.1.1#}TimeStampType" maxOccurs="unbounded" minOccurs="0"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="UnsignedSignaturePropertiesType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="CounterSignature" type="{http://uri.etsi.org/01903/v1.1.1#}CounterSignatureType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="SignatureTimeStamp" type="{http://uri.etsi.org/01903/v1.1.1#}TimeStampType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="CompleteCertificateRefs" type="{http://uri.etsi.org/01903/v1.1.1#}CompleteCertificateRefsType" minOccurs="0"/&gt;
+ *         &lt;element name="CompleteRevocationRefs" type="{http://uri.etsi.org/01903/v1.1.1#}CompleteRevocationRefsType" minOccurs="0"/&gt;
+ *         &lt;choice&gt;
+ *           &lt;element name="SigAndRefsTimeStamp" type="{http://uri.etsi.org/01903/v1.1.1#}TimeStampType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *           &lt;element name="RefsOnlyTimeStamp" type="{http://uri.etsi.org/01903/v1.1.1#}TimeStampType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;/choice&gt;
+ *         &lt;element name="CertificateValues" type="{http://uri.etsi.org/01903/v1.1.1#}CertificateValuesType" minOccurs="0"/&gt;
+ *         &lt;element name="RevocationValues" type="{http://uri.etsi.org/01903/v1.1.1#}RevocationValuesType" minOccurs="0"/&gt;
+ *         &lt;element name="ArchiveTimeStamp" type="{http://uri.etsi.org/01903/v1.1.1#}TimeStampType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

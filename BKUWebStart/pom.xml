@@ -3,7 +3,7 @@
   <parent>
     <artifactId>mocca</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.3.22-PRIMESIGN-2-SNAPSHOT</version>
+    <version>1.3.23-PRIMESIGN-1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>BKUWebStart</artifactId>
@@ -30,7 +30,7 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <includeArtifactIds>BKULocal,JettyTempCleaner</includeArtifactIds>
+              <includeArtifactIds>BKULocal</includeArtifactIds>
               <includeGroupIds>at.gv.egiz</includeGroupIds>
               <outputDirectory>${project.build.directory}/classes</outputDirectory>
               <stripVersion>true</stripVersion>
@@ -361,7 +361,7 @@
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKULocal</artifactId>
-      <version>1.3.22-PRIMESIGN-2-SNAPSHOT</version>
+      <version>1.3.23-PRIMESIGN-1-SNAPSHOT</version>
       <type>war</type>
       <!-- make dependency not transitive -->
       <optional>true</optional>
@@ -369,11 +369,6 @@
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUCertificates</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>at.gv.egiz</groupId>
-      <artifactId>JettyTempCleaner</artifactId>
-      <version>1.3.22-PRIMESIGN-2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>iaik</groupId>

@@ -19,15 +19,15 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="CardActionResponseType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="OK"/>
- *     &lt;enumeration value="Error"/>
- *     &lt;enumeration value="Blocked"/>
- *     &lt;enumeration value="Activ"/>
- *     &lt;enumeration value="Inactive"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="CardActionResponseType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
+ *     &lt;enumeration value="OK"/&gt;
+ *     &lt;enumeration value="Error"/&gt;
+ *     &lt;enumeration value="Blocked"/&gt;
+ *     &lt;enumeration value="Activ"/&gt;
+ *     &lt;enumeration value="Inactive"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  * 
  */

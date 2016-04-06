@@ -25,18 +25,18 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="VerifyCMSSignatureRequestType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="DateTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
- *         &lt;element name="CMSSignature" type="{http://www.w3.org/2001/XMLSchema}base64Binary"/>
- *         &lt;element name="DataObject" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CMSDataObjectOptionalMetaType" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;attribute name="Signatories" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}SignatoriesType" default="1" />
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="VerifyCMSSignatureRequestType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="DateTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/&gt;
+ *         &lt;element name="CMSSignature" type="{http://www.w3.org/2001/XMLSchema}base64Binary"/&gt;
+ *         &lt;element name="DataObject" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CMSDataObjectOptionalMetaType" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="Signatories" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}SignatoriesType" default="1" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

@@ -47,13 +47,13 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="CharTwoFieldElemType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.w3.org/2001/04/xmldsig-more#}FieldElemType">
- *       &lt;attribute name="Value" use="required" type="{http://www.w3.org/2001/XMLSchema}hexBinary" />
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="CharTwoFieldElemType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://www.w3.org/2001/04/xmldsig-more#}FieldElemType"&gt;
+ *       &lt;attribute name="Value" use="required" type="{http://www.w3.org/2001/XMLSchema}hexBinary" /&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

@@ -38,16 +38,16 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ErrorResponseType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://www.egiz.gv.at/stal}ResponseType">
- *       &lt;sequence>
- *         &lt;element name="ErrorCode" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *         &lt;element name="ErrorMessage" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *       &lt;/sequence>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="ErrorResponseType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://www.egiz.gv.at/stal}ResponseType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="ErrorCode" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="ErrorMessage" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

@@ -25,7 +25,7 @@ package at.gv.egiz.bku.smccstal;
 
 /**
 *
-* @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
+* @author Thomas Lenz &lt;thomas.lenz@iaik.tugraz.at&gt;
 */
 
 import java.io.File;

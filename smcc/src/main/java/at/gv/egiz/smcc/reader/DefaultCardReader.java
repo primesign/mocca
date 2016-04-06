@@ -46,7 +46,7 @@ import at.gv.egiz.smcc.util.ISO7816Utils;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class DefaultCardReader implements CardReader {
 

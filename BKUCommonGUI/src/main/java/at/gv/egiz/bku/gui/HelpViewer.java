@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class HelpViewer extends JDialog
         implements ActionListener {
@@ -73,7 +73,6 @@ public class HelpViewer extends JDialog
    * 
    * @param ctx external links are opened via ctx.showDocument()
    * @param helpURL
-   * @param helpTopic
    * @param messages
    */
   public static void showHelpDialog(AppletContext ctx,

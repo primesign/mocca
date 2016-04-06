@@ -65,8 +65,7 @@ public class STALPrivateKey implements PrivateKey {
   /**
    * Creates a new instance of this <code>STALPrivateKey</code> with the given
    * <code>stal</code> implementation, signature <code>algorithm</code>,
-   * <code>keyboxIdentifier</code> and <code>hashDataInputCallback</code>
-   * interface.
+   * <code>keyboxIdentifier</code> and <code>dataObjects</code>.
    * 
    * @param stal
    *          the STAL implementation
@@ -74,8 +73,8 @@ public class STALPrivateKey implements PrivateKey {
    *          the signature algorithm
    * @param keyboxIdentifier
    *          the keybox identifier
-   * @param hashDataInputCallback
-   *          the interface for obtaining the has input data
+   * @param dataObjects
+   *          the data objects
    */
   public STALPrivateKey(STAL stal,
       String algorithm, String keyboxIdentifier, List<DataObject> dataObjects) {

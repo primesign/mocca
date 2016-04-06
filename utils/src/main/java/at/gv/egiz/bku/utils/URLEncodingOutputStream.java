@@ -74,7 +74,7 @@ public class URLEncodingOutputStream extends OutputStream {
    * <p>
    * Note: According to
    * http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars the input
-   * for the {@link #write()} methods should be the UTF-8.
+   * for the {@link #write(int)} methods should be the UTF-8.
    * </p>
    * 
    * @param out

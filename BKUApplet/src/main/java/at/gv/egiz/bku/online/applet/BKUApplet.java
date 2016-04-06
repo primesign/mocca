@@ -332,7 +332,6 @@ public class BKUApplet extends JApplet {
    * STALTranslator)
    *
    * @return
-   * @throws java.net.MalformedURLException
    */
   public STALTranslator getSTALTranslator() {
     return new STALTranslator();
@@ -340,9 +339,6 @@ public class BKUApplet extends JApplet {
 
   /**
    * Callback for BKUWorker to keep applet context out of BKUWorker
-   *
-   * @return
-   * @throws java.net.MalformedURLException
    */
   protected void sendRedirect() {
     try {

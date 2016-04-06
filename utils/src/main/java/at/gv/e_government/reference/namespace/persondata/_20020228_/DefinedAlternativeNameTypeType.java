@@ -19,15 +19,15 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="DefinedAlternativeNameTypeType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="ArtistName"/>
- *     &lt;enumeration value="NickName"/>
- *     &lt;enumeration value="FormerName"/>
- *     &lt;enumeration value="Alias"/>
- *     &lt;enumeration value="MaidenName"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="DefinedAlternativeNameTypeType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
+ *     &lt;enumeration value="ArtistName"/&gt;
+ *     &lt;enumeration value="NickName"/&gt;
+ *     &lt;enumeration value="FormerName"/&gt;
+ *     &lt;enumeration value="Alias"/&gt;
+ *     &lt;enumeration value="MaidenName"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  * 
  */

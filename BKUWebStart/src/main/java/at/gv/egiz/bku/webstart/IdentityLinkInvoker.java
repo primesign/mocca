@@ -34,7 +34,7 @@ import at.gv.egiz.bku.webstart.gui.StatusNotifier;
 
 /**
  * 
- * @author Andreas Fitzek <andreas.fitzek@iaik.tugraz.at>
+ * @author Andreas Fitzek &lt;andreas.fitzek@iaik.tugraz.at&gt;
  */
 public class IdentityLinkInvoker implements Runnable {
 	

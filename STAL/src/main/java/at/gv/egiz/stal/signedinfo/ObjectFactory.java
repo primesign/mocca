@@ -40,7 +40,7 @@ import javax.xml.namespace.QName;
 
 /**
  * <em>Do not use this package in jaxb context together with org.w3._2000._09.xmldsig_</em>
- * <br/>
+ * <br>
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
  * generated in the at.gv.egiz.stal.signedinfo package. 

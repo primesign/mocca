@@ -29,9 +29,9 @@ import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactorySpi;
 
 /**
- * OS X PC/SC provider. For more information see {@link package-info}.
+ * OS X PC/SC provider. For more information see {@link org.openecard.scio.osx}.
  * 
- * @author Benedikt Biallowons <benedikt.biallowons@ecsec.de>
+ * @author Benedikt Biallowons &lt;benedikt.biallowons@ecsec.de&gt;
  */
 public final class SunOSXPCSC extends Provider {
 
@@ -55,11 +55,11 @@ public final class SunOSXPCSC extends Provider {
    * Internal provider factory. For more information see
    * {@link TerminalFactorySpi}
    * 
-   * @author Benedikt Biallowons <benedikt.biallowons@ecsec.de>
+   * @author Benedikt Biallowons &lt;benedikt.biallowons@ecsec.de&gt;
    */
   public static final class Factory extends TerminalFactorySpi {
     /**
-     * Constructor checking availability & initializing context.
+     * Constructor checking availability &amp; initializing context.
      * 
      * @param obj
      *          provider parameters

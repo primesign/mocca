@@ -75,7 +75,7 @@ public class IdFactory {
   /**
    * Don't use this method unless you know exactly what you do !
    * Be sure to use a sufficient large entropy 
-   * @param numberOfBits >=1 (although this small entropy does not make sense)
+   * @param numberOfBits &gt;=1 (although this small entropy does not make sense)
    */
   public void setNumberOfBits(int numberOfBits) {
     if (numberOfBits <1) {

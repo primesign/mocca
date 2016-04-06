@@ -43,7 +43,7 @@ import at.gv.egiz.stal.ext.GetHardwareInfoResponse;
 
 /**
 *
-* @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
+* @author Thomas Lenz &lt;thomas.lenz@iaik.tugraz.at&gt;
 */
 
 public class HardwareInfoBKUWorker extends AppletBKUWorker {

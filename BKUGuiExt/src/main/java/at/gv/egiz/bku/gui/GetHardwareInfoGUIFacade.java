@@ -27,7 +27,7 @@ import java.awt.event.ActionListener;
 
 /**
 *
-* @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
+* @author Thomas Lenz &lt;thomas.lenz@iaik.tugraz.at&gt;
 */
 
 public interface GetHardwareInfoGUIFacade extends BKUGUIFacade {

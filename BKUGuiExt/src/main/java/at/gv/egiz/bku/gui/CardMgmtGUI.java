@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Common superclass for Activation and PinManagement GUIs
  * 
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class CardMgmtGUI extends BKUGUIImpl {
 

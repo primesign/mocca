@@ -56,7 +56,7 @@ import at.gv.egiz.stal.signedinfo.ReferenceType;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class LocalSecureViewer implements SecureViewer, HashDataInputLoader {
 
@@ -75,7 +75,9 @@ public class LocalSecureViewer implements SecureViewer, HashDataInputLoader {
 
   /**
    *
-   * @param dsigReferences
+   * @param signedInfo
+   * @param okListener
+   * @param okCommand
    * @throws java.lang.Exception
    */
   @Override

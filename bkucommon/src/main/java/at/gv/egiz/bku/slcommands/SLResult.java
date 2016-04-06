@@ -45,8 +45,8 @@ public interface SLResult {
   /**
    * 
    * @param result
+   * @param templates may be null.
    * @param fragment TODO
-   * @param transformer may be null.
    */
   public void writeTo(Result result, Templates templates, boolean fragment);
   

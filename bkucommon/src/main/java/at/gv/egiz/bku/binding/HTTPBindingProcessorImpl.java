@@ -82,7 +82,7 @@ import at.gv.egiz.stal.STALRequest;
  * Class performing the HTTP binding as defined by the CCE specification.
  * Currently a huge monolithic class.
  * 
- * @TODO refactor
+ * TODO: refactor
  */
 @SuppressWarnings("unchecked")
 public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implements

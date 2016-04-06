@@ -23,28 +23,28 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="CreateCMSSignatureRequestType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="KeyboxIdentifier" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}BoxIdentifierType"/>
- *         &lt;choice>
- *           &lt;element name="DataObject" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CMSDataObjectRequiredMetaType"/>
- *           &lt;element name="ReferenceObject" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CMSReferenceObject"/>
- *         &lt;/choice>
- *       &lt;/sequence>
- *       &lt;attribute name="Structure" use="required">
- *         &lt;simpleType>
- *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *             &lt;enumeration value="detached"/>
- *             &lt;enumeration value="enveloping"/>
- *           &lt;/restriction>
- *         &lt;/simpleType>
- *       &lt;/attribute>
- *       &lt;attribute name="PAdESCompatibility" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="CreateCMSSignatureRequestType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="KeyboxIdentifier" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}BoxIdentifierType"/&gt;
+ *         &lt;choice&gt;
+ *           &lt;element name="DataObject" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CMSDataObjectRequiredMetaType"/&gt;
+ *           &lt;element name="ReferenceObject" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CMSReferenceObject"/&gt;
+ *         &lt;/choice&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="Structure" use="required"&gt;
+ *         &lt;simpleType&gt;
+ *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
+ *             &lt;enumeration value="detached"/&gt;
+ *             &lt;enumeration value="enveloping"/&gt;
+ *           &lt;/restriction&gt;
+ *         &lt;/simpleType&gt;
+ *       &lt;/attribute&gt;
+ *       &lt;attribute name="PAdESCompatibility" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

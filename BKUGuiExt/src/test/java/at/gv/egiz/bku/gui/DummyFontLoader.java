@@ -31,7 +31,7 @@ import java.awt.Font;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class DummyFontLoader implements FontProvider {
 

@@ -29,21 +29,21 @@ import org.w3c.dom.Element;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="CorporateBodyType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://reference.e-government.gv.at/namespace/persondata/20020228#}AbstractPersonType">
- *       &lt;sequence minOccurs="0">
- *         &lt;element name="Type" type="{http://www.w3.org/2001/XMLSchema}anyURI" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="FullName" type="{http://www.w3.org/2001/XMLSchema}token" minOccurs="0"/>
- *         &lt;element name="AlternativeName" type="{http://www.w3.org/2001/XMLSchema}token" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="LegalForm" type="{http://www.w3.org/2001/XMLSchema}anyURI" minOccurs="0"/>
- *         &lt;element name="Organisation" type="{http://www.w3.org/2001/XMLSchema}token" minOccurs="0"/>
- *         &lt;any processContents='lax' namespace='##other' maxOccurs="unbounded" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;anyAttribute namespace='##other'/>
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="CorporateBodyType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://reference.e-government.gv.at/namespace/persondata/20020228#}AbstractPersonType"&gt;
+ *       &lt;sequence minOccurs="0"&gt;
+ *         &lt;element name="Type" type="{http://www.w3.org/2001/XMLSchema}anyURI" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="FullName" type="{http://www.w3.org/2001/XMLSchema}token" minOccurs="0"/&gt;
+ *         &lt;element name="AlternativeName" type="{http://www.w3.org/2001/XMLSchema}token" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="LegalForm" type="{http://www.w3.org/2001/XMLSchema}anyURI" minOccurs="0"/&gt;
+ *         &lt;element name="Organisation" type="{http://www.w3.org/2001/XMLSchema}token" minOccurs="0"/&gt;
+ *         &lt;any processContents='lax' namespace='##other' maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;anyAttribute namespace='##other'/&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

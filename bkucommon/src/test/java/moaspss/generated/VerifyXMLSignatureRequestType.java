@@ -45,45 +45,45 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="VerifyXMLSignatureRequestType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="DateTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
- *         &lt;element name="VerifySignatureInfo">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element name="VerifySignatureEnvironment" type="{http://reference.e-government.gv.at/namespace/moa/20020822#}ContentOptionalRefType"/>
- *                   &lt;element name="VerifySignatureLocation" type="{http://www.w3.org/2001/XMLSchema}token"/>
- *                 &lt;/sequence>
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;choice maxOccurs="unbounded" minOccurs="0">
- *           &lt;element ref="{http://reference.e-government.gv.at/namespace/moa/20020822#}SupplementProfile"/>
- *           &lt;element name="SupplementProfileID" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;/choice>
- *         &lt;element name="SignatureManifestCheckParams" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element name="ReferenceInfo" type="{http://reference.e-government.gv.at/namespace/moa/20020822#}VerifyTransformsDataType" maxOccurs="unbounded"/>
- *                 &lt;/sequence>
- *                 &lt;attribute name="ReturnReferenceInputData" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="ReturnHashInputData" type="{http://www.w3.org/2001/XMLSchema}anyType" minOccurs="0"/>
- *         &lt;element name="TrustProfileID" type="{http://www.w3.org/2001/XMLSchema}token"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="VerifyXMLSignatureRequestType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="DateTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/&gt;
+ *         &lt;element name="VerifySignatureInfo"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;sequence&gt;
+ *                   &lt;element name="VerifySignatureEnvironment" type="{http://reference.e-government.gv.at/namespace/moa/20020822#}ContentOptionalRefType"/&gt;
+ *                   &lt;element name="VerifySignatureLocation" type="{http://www.w3.org/2001/XMLSchema}token"/&gt;
+ *                 &lt;/sequence&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
+ *           &lt;element ref="{http://reference.e-government.gv.at/namespace/moa/20020822#}SupplementProfile"/&gt;
+ *           &lt;element name="SupplementProfileID" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;/choice&gt;
+ *         &lt;element name="SignatureManifestCheckParams" minOccurs="0"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;sequence&gt;
+ *                   &lt;element name="ReferenceInfo" type="{http://reference.e-government.gv.at/namespace/moa/20020822#}VerifyTransformsDataType" maxOccurs="unbounded"/&gt;
+ *                 &lt;/sequence&gt;
+ *                 &lt;attribute name="ReturnReferenceInputData" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name="ReturnHashInputData" type="{http://www.w3.org/2001/XMLSchema}anyType" minOccurs="0"/&gt;
+ *         &lt;element name="TrustProfileID" type="{http://www.w3.org/2001/XMLSchema}token"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
@@ -275,16 +275,16 @@ public class VerifyXMLSignatureRequestType {
      * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;sequence>
-     *         &lt;element name="ReferenceInfo" type="{http://reference.e-government.gv.at/namespace/moa/20020822#}VerifyTransformsDataType" maxOccurs="unbounded"/>
-     *       &lt;/sequence>
-     *       &lt;attribute name="ReturnReferenceInputData" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
+     * &lt;complexType&gt;
+     *   &lt;complexContent&gt;
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+     *       &lt;sequence&gt;
+     *         &lt;element name="ReferenceInfo" type="{http://reference.e-government.gv.at/namespace/moa/20020822#}VerifyTransformsDataType" maxOccurs="unbounded"/&gt;
+     *       &lt;/sequence&gt;
+     *       &lt;attribute name="ReturnReferenceInputData" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
+     *     &lt;/restriction&gt;
+     *   &lt;/complexContent&gt;
+     * &lt;/complexType&gt;
      * </pre>
      * 
      * 
@@ -366,16 +366,16 @@ public class VerifyXMLSignatureRequestType {
      * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
-     * &lt;complexType>
-     *   &lt;complexContent>
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;sequence>
-     *         &lt;element name="VerifySignatureEnvironment" type="{http://reference.e-government.gv.at/namespace/moa/20020822#}ContentOptionalRefType"/>
-     *         &lt;element name="VerifySignatureLocation" type="{http://www.w3.org/2001/XMLSchema}token"/>
-     *       &lt;/sequence>
-     *     &lt;/restriction>
-     *   &lt;/complexContent>
-     * &lt;/complexType>
+     * &lt;complexType&gt;
+     *   &lt;complexContent&gt;
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+     *       &lt;sequence&gt;
+     *         &lt;element name="VerifySignatureEnvironment" type="{http://reference.e-government.gv.at/namespace/moa/20020822#}ContentOptionalRefType"/&gt;
+     *         &lt;element name="VerifySignatureLocation" type="{http://www.w3.org/2001/XMLSchema}token"/&gt;
+     *       &lt;/sequence&gt;
+     *     &lt;/restriction&gt;
+     *   &lt;/complexContent&gt;
+     * &lt;/complexType&gt;
      * </pre>
      * 
      * 

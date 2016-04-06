@@ -19,14 +19,14 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="CardActionType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="ActivatePIN"/>
- *     &lt;enumeration value="ChangePIN"/>
- *     &lt;enumeration value="ReadPINStatus"/>
- *     &lt;enumeration value="UnblockPIN"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="CardActionType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
+ *     &lt;enumeration value="ActivatePIN"/&gt;
+ *     &lt;enumeration value="ChangePIN"/&gt;
+ *     &lt;enumeration value="ReadPINStatus"/&gt;
+ *     &lt;enumeration value="UnblockPIN"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  * 
  */

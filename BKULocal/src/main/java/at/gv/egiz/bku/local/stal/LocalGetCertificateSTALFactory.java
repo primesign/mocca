@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 
 /**
 *
-* @author Thomas Lenz <thomas.lenz@iaik.tugraz.at>
+* @author Thomas Lenz &lt;thomas.lenz@iaik.tugraz.at&gt;
 */
 
 public class LocalGetCertificateSTALFactory implements STALFactory {

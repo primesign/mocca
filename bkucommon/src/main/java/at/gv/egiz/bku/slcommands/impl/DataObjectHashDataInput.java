@@ -32,7 +32,7 @@ import java.io.InputStream;
 
 /**
  * DataObject-backed HashDataInput
- * If <a href="XMLSignContext.html#Supported Properties">reference caching</a> is enabled,
+ * If <a href="XMLSignContext.html#Supported%20Properties">reference caching</a> is enabled,
  * the hashdata input stream can be obtained repeatedly.
  * @author clemens
  */

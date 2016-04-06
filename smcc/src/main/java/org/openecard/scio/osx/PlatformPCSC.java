@@ -34,9 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * OS X specific PlatformPCSC. For more information see {@link package-info}.
+ * OS X specific PlatformPCSC. For more information see {@link org.openecard.scio.osx}.
  * 
- * @author Benedikt Biallowons <benedikt.biallowons@ecsec.de>
+ * @author Benedikt Biallowons &lt;benedikt.biallowons@ecsec.de&gt;
  */
 public class PlatformPCSC {
 

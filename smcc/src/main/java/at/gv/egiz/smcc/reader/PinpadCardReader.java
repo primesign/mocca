@@ -55,7 +55,7 @@ import at.gv.egiz.smcc.util.SMCCHelper;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class PinpadCardReader extends DefaultCardReader {
 

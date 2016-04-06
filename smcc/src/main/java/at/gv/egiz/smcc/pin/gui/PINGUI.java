@@ -39,7 +39,8 @@ public interface PINGUI extends PINProvider {
           throws CancelledException, InterruptedException;
   
   /**
-   * @throws CancelledException, InterruptedException if signature-data dialog is interrupted or cancelled
+   * @throws CancelledException if signature-data dialog is cancelled
+   * @throws InterruptedException if signature-data dialog is interrupted
    */
   void enterPIN(PinInfo pinInfo, int retries)
           throws CancelledException, InterruptedException;

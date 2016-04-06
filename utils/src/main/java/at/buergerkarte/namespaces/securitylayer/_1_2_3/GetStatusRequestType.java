@@ -22,16 +22,16 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="GetStatusRequestType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence minOccurs="0">
- *         &lt;element name="TokenStatus" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}TokenStatusType"/>
- *         &lt;element name="MaxDelay" type="{http://www.w3.org/2001/XMLSchema}nonNegativeInteger"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="GetStatusRequestType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence minOccurs="0"&gt;
+ *         &lt;element name="TokenStatus" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}TokenStatusType"/&gt;
+ *         &lt;element name="MaxDelay" type="{http://www.w3.org/2001/XMLSchema}nonNegativeInteger"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

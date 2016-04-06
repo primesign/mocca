@@ -36,17 +36,17 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ManifestRefsCheckResultInfoType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://reference.e-government.gv.at/namespace/moa/20020822#}AnyChildrenType">
- *       &lt;sequence>
- *         &lt;any/>
- *         &lt;element name="FailedReference" type="{http://www.w3.org/2001/XMLSchema}positiveInteger" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="ReferringSigReference" type="{http://www.w3.org/2001/XMLSchema}positiveInteger"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="ManifestRefsCheckResultInfoType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://reference.e-government.gv.at/namespace/moa/20020822#}AnyChildrenType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;any/&gt;
+ *         &lt;element name="FailedReference" type="{http://www.w3.org/2001/XMLSchema}positiveInteger" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="ReferringSigReference" type="{http://www.w3.org/2001/XMLSchema}positiveInteger"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

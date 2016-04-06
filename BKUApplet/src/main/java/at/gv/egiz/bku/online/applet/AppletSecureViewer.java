@@ -54,7 +54,7 @@ import at.gv.egiz.stal.signedinfo.ReferenceType;
 
 /**
  *
- * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
+ * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
 public class AppletSecureViewer implements SecureViewer, HashDataInputLoader {
 
@@ -84,11 +84,9 @@ public class AppletSecureViewer implements SecureViewer, HashDataInputLoader {
 
   /**
    * retrieves the data to be signed for
-   * @param signedReferences
+   * @param signedInfo
    * @param okListener
    * @param okCommand
-   * @param cancelListener
-   * @param cancelCommand
    * @throws java.security.DigestException
    * @throws java.lang.Exception
    */

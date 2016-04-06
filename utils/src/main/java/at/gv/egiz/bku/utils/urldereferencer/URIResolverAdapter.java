@@ -51,15 +51,14 @@ public class URIResolverAdapter implements URIResolver {
 
   /**
    * 
-   * @param deferecencer
+   * @param dereferencer
    *          must not be null
-   * @param ctx may be null
    */
-  public URIResolverAdapter(URLDereferencer deferecencer) {
-    if (deferecencer == null) {
+  public URIResolverAdapter(URLDereferencer dereferencer) {
+    if (dereferencer == null) {
       throw new NullPointerException("Urlderefencer must not be set to null");
     }
-    this.urlDereferencer = deferecencer;
+    this.urlDereferencer = dereferencer;
   }
 
   @Override

@@ -19,14 +19,14 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="AuthenticationClassType">
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="anonym"/>
- *     &lt;enumeration value="pseudoanonym"/>
- *     &lt;enumeration value="certified"/>
- *     &lt;enumeration value="certifiedGovAgency"/>
- *   &lt;/restriction>
- * &lt;/simpleType>
+ * &lt;simpleType name="AuthenticationClassType"&gt;
+ *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
+ *     &lt;enumeration value="anonym"/&gt;
+ *     &lt;enumeration value="pseudoanonym"/&gt;
+ *     &lt;enumeration value="certified"/&gt;
+ *     &lt;enumeration value="certifiedGovAgency"/&gt;
+ *   &lt;/restriction&gt;
+ * &lt;/simpleType&gt;
  * </pre>
  * 
  */

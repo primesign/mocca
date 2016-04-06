@@ -34,16 +34,16 @@ import java.security.SecureRandom;
  * This IdValueFactory creates <code>xsd:Id</code>-attribute values of the form
  * '<code>&lt;elementName&gt;-&lt;random&gt;-&lt;sequenceNumber&gt;</code>',
  * where
+ * </p>
  * <ul>
- * <li><code>&lt;elementName&gt;</code> is the name provided at
+ * <li><code>&lt;elementName&gt;</code>; is the name provided at
  * {@link #createIdValue(String)},</li>
- * <li><code>&lt;random&gt;</code> is a random generated fixed value for an
+ * <li><code>&lt;random&gt;</code>; is a random generated fixed value for an
  * instance of this IdValueFactory and</li>
- * <li><code>&lt;sequenceNumber&gt;</code> is the sequence number of the value
+ * <li><code>&lt;sequenceNumber&gt;</code>; is the sequence number of the value
  * generated for a given <code>elementName</code> by an instance of this
  * IdValueFactory.</li>
  * </ul>
- * </p>
  * 
  * @author mcentner
  */

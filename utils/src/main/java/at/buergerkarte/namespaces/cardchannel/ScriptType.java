@@ -42,17 +42,17 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ScriptType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice maxOccurs="unbounded">
- *         &lt;element name="Reset" type="{}ResetType"/>
- *         &lt;element name="CommandAPDU" type="{}CommandAPDUType"/>
- *         &lt;element name="VerifyAPDU" type="{}VerifyAPDUType"/>
- *       &lt;/choice>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="ScriptType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice maxOccurs="unbounded"&gt;
+ *         &lt;element name="Reset" type="{}ResetType"/&gt;
+ *         &lt;element name="CommandAPDU" type="{}CommandAPDUType"/&gt;
+ *         &lt;element name="VerifyAPDU" type="{}VerifyAPDUType"/&gt;
+ *       &lt;/choice&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
