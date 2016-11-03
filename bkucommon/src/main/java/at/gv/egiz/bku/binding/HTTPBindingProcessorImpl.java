@@ -129,6 +129,10 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 
 		public static final String ALLOW_OTHER_REDIRECTS = "AllowOtherRedirects";
 
+		public static final String SSL_DISSABLE_HOSTNAME_VERIFICATION = "SSL.disableHostnameVerification";
+
+		public static final String SSL_DISSABLE_ALL_CHECKS = "SSL.disableAllChecks";
+
 		public int getMaxDataUrlHops() {
 			return configuration.getInt(DATAURLCLIENT_MAXHOPS, 10);
 		}
@@ -186,6 +190,14 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 
 		public boolean getAllowOtherRedirects() {
 			return configuration.getBoolean(ALLOW_OTHER_REDIRECTS, false);
+		}
+
+		public boolean disableSslHostnameVerification() {
+			return configuration.getBoolean(SSL_DISSABLE_HOSTNAME_VERIFICATION, false);
+		}
+
+		public boolean disableAllSslChecks() {
+			return configuration.getBoolean(SSL_DISSABLE_ALL_CHECKS, false);
 		}
 	}
 	
@@ -388,7 +400,8 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 			// set user agent and signature layout headers
 			conn.setHTTPHeader(HttpUtil.HTTP_HEADER_USER_AGENT, getServerHeaderValue());
 			conn.setHTTPHeader(HttpUtil.HTTP_HEADER_SIGNATURE_LAYOUT, getSignatureLayoutHeaderValue());
-			conn.setHostnameVerifier(hostnameVerifier);
+			if (configurationFacade.disableAllSslChecks() || configurationFacade.disableSslHostnameVerification())
+				conn.setHostnameVerifier(hostnameVerifier);
 			conn.setSSLSocketFactory(sslSocketFactory);
 
 			// set transfer headers
