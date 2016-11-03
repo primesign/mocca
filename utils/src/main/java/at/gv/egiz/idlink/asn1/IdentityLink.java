@@ -22,7 +22,7 @@
  */
 
 
-package at.gv.egiz.idlink.ans1;
+package at.gv.egiz.idlink.asn1;
 
 import iaik.asn1.ASN1Object;
 import iaik.asn1.ASN1Type;

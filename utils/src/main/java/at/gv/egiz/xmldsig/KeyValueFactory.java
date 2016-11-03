@@ -24,6 +24,7 @@
 
 package at.gv.egiz.xmldsig;
 
+import iaik.security.ec.common.ECStandardizedParameterFactory;
 import iaik.security.ec.errorhandling.InvalidCurveParameterSpecException;
 
 import java.math.BigInteger;
@@ -39,6 +40,7 @@ import java.security.spec.ECFieldFp;
 import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
+import java.util.Enumeration;
 
 import javax.xml.bind.JAXBElement;
 
@@ -48,6 +50,7 @@ import org.w3._2001._04.xmldsig_more_.BasePointParamsType;
 import org.w3._2001._04.xmldsig_more_.CharTwoFieldElemType;
 import org.w3._2001._04.xmldsig_more_.CurveParamsType;
 import org.w3._2001._04.xmldsig_more_.DomainParamsType;
+import org.w3._2001._04.xmldsig_more_.DomainParamsType.NamedCurve;
 import org.w3._2001._04.xmldsig_more_.ECDSAKeyValueType;
 import org.w3._2001._04.xmldsig_more_.ECPointType;
 import org.w3._2001._04.xmldsig_more_.ExplicitParamsType;
@@ -57,10 +60,8 @@ import org.w3._2001._04.xmldsig_more_.PnBFieldParamsType;
 import org.w3._2001._04.xmldsig_more_.PrimeFieldElemType;
 import org.w3._2001._04.xmldsig_more_.PrimeFieldParamsType;
 import org.w3._2001._04.xmldsig_more_.TnBFieldParamsType;
-import org.w3._2001._04.xmldsig_more_.DomainParamsType.NamedCurve;
 
 public class KeyValueFactory {
-  
   private static byte[] bigInteger2byteArray(BigInteger bigPositiveInt) {
     if (bigPositiveInt == null)
       throw new NullPointerException("Argument 'bigPositiveInt' must not be null");
@@ -216,7 +217,53 @@ public class KeyValueFactory {
     }
     
   }
-  
+
+  private boolean fieldsEqual(ECField f1, ECField f2) {
+    if (f1 instanceof ECFieldF2m) {
+      if (!(f2 instanceof ECFieldF2m)) {
+        return false;
+      }
+      ECFieldF2m f2m1 = (ECFieldF2m) f1;
+      ECFieldF2m f2m2 = (ECFieldF2m) f2;
+      return (f2m1.getM() == f2m2.getM() && f2m1.getReductionPolynomial().equals(f2m2.getReductionPolynomial()));
+    } else if (f1 instanceof ECFieldFp) {
+      if (!(f2 instanceof ECFieldFp)) {
+        return false;
+      }
+      ECFieldFp fp1 = (ECFieldFp) f1;
+      ECFieldFp fp2 = (ECFieldFp) f2;
+      return (fp1.getP().equals(fp2.getP()));
+    }
+    return false;
+  }
+
+  private boolean curvesEqual(EllipticCurve c1, EllipticCurve c2) {
+    if (c1.getA().equals(c2.getA()) && c1.getB().equals(c2.getB()))
+      return fieldsEqual(c1.getField(), c2.getField());
+    return false;
+  }
+
+  private String findOID(ECParameterSpec params) {
+    EllipticCurve curve = params.getCurve();
+    Enumeration<String> oids = ECStandardizedParameterFactory.getPrimeCurveOIDs();
+    while (oids.hasMoreElements()) {
+      String oid = oids.nextElement();
+      iaik.security.ec.common.ECParameterSpec params2 = ECStandardizedParameterFactory.getParametersByOID(oid);
+      if (curvesEqual(curve, params2.getCurve())) {
+        return oid;
+      }
+    }
+    oids = ECStandardizedParameterFactory.getBinaryCurveOIDs();
+    while (oids.hasMoreElements()) {
+      String oid = oids.nextElement();
+      iaik.security.ec.common.ECParameterSpec params2 = ECStandardizedParameterFactory.getParametersByOID(oid);
+      if (curvesEqual(curve, params2.getCurve())) {
+        return oid;
+      }
+    }
+    return null;
+  }
+
   public DomainParamsType createDomainParamsType(ECParameterSpec params) throws KeyTypeNotSupportedException {
     iaik.security.ec.common.ECParameterSpec params2;
     try {
@@ -225,16 +272,19 @@ public class KeyValueFactory {
       throw new KeyTypeNotSupportedException(e);
     }
     DomainParamsType domainParamsType = ecFactory.createDomainParamsType();
-    EllipticCurve curve = params.getCurve();
-
     String oid = params2.getOID();
-    if (oid !=  null) {
+    if (oid == null) {
+      oid = findOID(params);
+    }
+    if (oid != null) {
       // NamedCurve
       NamedCurve namedCurve = ecFactory.createDomainParamsTypeNamedCurve();
       namedCurve.setURN("urn:oid:" + oid);
       domainParamsType.setNamedCurve(namedCurve);
     } else {
       // Explicit parameters
+      EllipticCurve curve = params.getCurve();
+
       ExplicitParamsType explicitParamsType = ecFactory.createExplicitParamsType();
       explicitParamsType.setFieldParams(createFieldParamsType(curve.getField()));
 

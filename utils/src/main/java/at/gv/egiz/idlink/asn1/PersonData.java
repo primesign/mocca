@@ -22,57 +22,54 @@
  */
 
 
-package at.gv.egiz.idlink.ans1;
-
-import java.math.BigInteger;
+package at.gv.egiz.idlink.asn1;
 
 import iaik.asn1.*;
 
 /**
- * This class implements the ASN.1 representation of the 
- * <code>CitizenPublicKey</code> of a compressed identity link.
+ * This class represents the ASN.1 version of the <code>PersonData</code>
+ * of a compressed identity link.
  * 
- * <pre>CitizenPublicKey ::= CHOICE { 
-    onToken [0] INTEGER, 
-    referenceURL [1] UTF8String, 
-    x509Data [2] SubjectPublicKeyInfo 
-}  
-</pre>
+ * <pre>
+PersonData ::= CHOICE { 
+    physcialPerson [0] PhysicalPersonData, 
+    corporateBody [1] CorporateBodyData 
+} </pre>
  * 
  * @author mivkovic@egiz.gv.at, mcentner@egiz.gv.at
+ *
  */
-public class CitizenPublicKey implements ASN1Type {
+public class PersonData implements ASN1Type {
 
   /**
-   * <code>onToken</code>
+   * <code>physicalPerson</code>
    */
-  private int onToken; // INTEGER
+  private PhysicalPersonData physicalPerson; // PhysicalPersonData
 
   /**
-   * Creates a new <code>CitizenPublicKey</code> with the given 
-   * <code>onToken</code> value.
+   * Creates a new <code>PersonData</code> with the given 
+   * <code>physicalPersonData</code>.
    * 
-   * @param onToken
+   * @param physicalPersonData
    */
-  public CitizenPublicKey(int onToken) {
-    this.onToken = onToken;
+  public PersonData(PhysicalPersonData physicalPersonData) {
+    physicalPerson = physicalPersonData;
   }
 
   /**
-   * Creates a new <code>CitizenPublicKey</code> from the given ASN.1 representation.
+   * Creates a new <code>PersonData</code> from its ASN.1 representation.
    * 
    * @param obj
    * @throws CodingException
    */
-  public CitizenPublicKey(ASN1Object obj) throws CodingException {
+  public PersonData(ASN1Object obj) throws CodingException {
     decode(obj);
   }
 
   @Override
   public void decode(ASN1Object obj) throws CodingException {
     try {
-       BigInteger Value = (BigInteger)(obj.getValue());
-       onToken = Value.intValue();
+      physicalPerson = new PhysicalPersonData(obj);
     } catch (Exception ex) {
       throw new CodingException(ex.toString());
     }
@@ -80,21 +77,23 @@ public class CitizenPublicKey implements ASN1Type {
 
   @Override
   public ASN1Object toASN1Object() {
-    INTEGER ot = new INTEGER(onToken);
-    return ot;
+    return physicalPerson.toASN1Object();
   }
 
   /**
-   * Returns the DER encoding of this <code>CitizenPublicKey</code>.
+   * Returns the DER encoded representation of this <code>PersonData</code>.
    * 
-   * @return the DER encoding of this <code>CitizenPublicKey</code>
+   * @return the DER encoded representation of this <code>PersonData</code>
    */
   public byte[] getEncoded() {
     return DerCoder.encode(toASN1Object());
   }
 
-  public int getOnToken() {
-    return onToken;
+  /**
+   * @return the physicalPerson
+   */
+  public PhysicalPersonData getPhysicalPerson() {
+    return physicalPerson;
   }
-
+  
 }

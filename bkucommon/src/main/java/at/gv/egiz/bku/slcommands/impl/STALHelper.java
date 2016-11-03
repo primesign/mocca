@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.slexceptions.SLExceptionMessages;
 import at.gv.egiz.bku.slexceptions.SLRuntimeException;
-import at.gv.egiz.idlink.ans1.IdentityLink;
+import at.gv.egiz.idlink.asn1.IdentityLink;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.InfoboxReadResponse;
 import at.gv.egiz.stal.STAL;
@@ -198,7 +198,7 @@ public class STALHelper {
             writer.write("\n-----END CERTIFICATE-----");
             writer.flush();
           } catch (IOException e1) {
-            log.info("Failed to decode certificate.", e);
+            log.debug("Failed to decode certificate.", e1);
           }
           log.debug("Failed to decode certificate.\n{}", certDump.toString(), e);
         } else {
