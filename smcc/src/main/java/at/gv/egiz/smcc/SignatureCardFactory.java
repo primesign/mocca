@@ -1130,6 +1130,20 @@ public class SignatureCardFactory {
 						(byte) 0xff, (byte) 0xff },
 				"at.gv.egiz.smcc.LIEZertifikatCard"));
 
+		// PrimeSign GmbH ATOS CardOS 5.3
+		supportedCards.add(new SupportedCard(
+				// FL-Post card
+				// [3B:D2:18:00:81:31:FE:58:C9:03:16]
+				new byte[] { (byte) 0x3b, (byte) 0xd2, (byte) 0x18,
+						(byte) 0x00, (byte) 0x81, (byte) 0x31, (byte) 0xFE,
+						(byte) 0x58, (byte) 0xC9, (byte) 0x03, (byte) 0x16 },
+				// mask
+				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+				"at.gv.egiz.smcc.PrimSignATOSCard"));
+
+		
 	}
 
 	/**
