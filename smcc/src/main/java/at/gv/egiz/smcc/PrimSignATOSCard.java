@@ -43,10 +43,10 @@ import at.gv.egiz.smcc.pin.gui.PINGUI;
 import at.gv.egiz.smcc.util.ISO7816Utils;
 import at.gv.egiz.smcc.util.SMCCHelper;
 
-@SuppressWarnings("restriction")
 /**
  * @author Christof Rath <christof.rath@prime-sign.com>
  */
+@SuppressWarnings("restriction")
 public class PrimSignATOSCard extends AbstractSignatureCard implements PINMgmtSignatureCard {
 
 	/**
@@ -59,17 +59,10 @@ public class PrimSignATOSCard extends AbstractSignatureCard implements PINMgmtSi
 	public static final byte[] DF_QES_ID = new byte[] { (byte) 0x3F, (byte) 0x04 };
 
 	public static final byte[] EF_C_X509_CH_DS_FID = new byte[] { (byte) 0xC0, (byte) 0x00 };
+
 	public static final byte[] EF_VERSION = new byte[] { (byte) 0x00, (byte) 0x32 };
 
-	// public static final byte MSE_SET_ALGO_REF = (byte) 0x02;
-
-	// public static final byte MSE_SET_PRIV_KEY_REF = (byte) 0x83;
-
-	// public static final int SIGNATURE_LENGTH = (int) 0x80;
-
 	public static final byte KID = (byte) 0x81;
-
-	// public static final int READ_BUFFER_LENGTH = 256;
 
 	public static final int PINSPEC_SS = 0;
 
@@ -80,25 +73,25 @@ public class PrimSignATOSCard extends AbstractSignatureCard implements PINMgmtSi
 	public void init(Card card, CardTerminal cardTerminal) {
 		super.init(card, cardTerminal);
 
-	    log.info("ATOS CardOS 5.3 card found");
+		log.info("ATOS CardOS 5.3 card found");
 
-	    // determine application version
-	    CardChannel channel = getCardChannel();
-	    try {
-	      // SELECT MF
-	      execSELECT_MF(channel);
-	      // SELECT EF_VERSION
-	      execSELECT_FID(channel, EF_VERSION);
-	      // READ BINARY
-	      byte[] ver = ISO7816Utils.readTransparentFile(channel, -1);
-	      log.info(new String(ver) + " card found");
-	    } catch (CardException e) {
-	        log.warn("Failed to execute command.", e);
-	      } catch (SignatureCardException e) {
-	        log.warn("Failed to execute command.", e);
-	    }
+		// determine application version
+		CardChannel channel = getCardChannel();
+		try {
+			// SELECT MF
+			execSELECT_MF(channel);
+			// SELECT EF_VERSION
+			execSELECT_FID(channel, EF_VERSION);
+			// READ BINARY
+			byte[] ver = ISO7816Utils.readTransparentFile(channel, -1);
+			log.info(new String(ver) + " card found");
+		} catch (CardException e) {
+			log.warn("Failed to execute command.", e);
+		} catch (SignatureCardException e) {
+			log.warn("Failed to execute command.", e);
+		}
 	}
-	    
+
 	@Override
 	@Exclusive
 	public byte[] getCertificate(KeyboxName keyboxName, PINGUI provider) throws SignatureCardException {
@@ -180,9 +173,6 @@ public class PrimSignATOSCard extends AbstractSignatureCard implements PINMgmtSi
 			execSELECT_MF(channel);
 			// VERIFY
 			verifyPIN(ssPinInfo, provider);
-//			verifyPINLoop(channel, ssPinInfo, provider);
-			// // MANAGE SECURITY ENVIRONMENT : SET DST
-			// execMSE(channel, 0x41, 0xb6, dst);
 			// PERFORM SECURITY OPERATION : COMPUTE DIGITAL SIGNATURE
 			return execPSO_COMPUTE_DIGITAL_SIGNATURE(channel, digest);
 
@@ -206,6 +196,7 @@ public class PrimSignATOSCard extends AbstractSignatureCard implements PINMgmtSi
 	}
 
 	@Override
+	@Exclusive
 	public void verifyPIN(PinInfo pinInfo, PINGUI pinGUI) throws LockedException, NotActivatedException,
 			CancelledException, SignatureCardException, InterruptedException {
 
@@ -226,6 +217,7 @@ public class PrimSignATOSCard extends AbstractSignatureCard implements PINMgmtSi
 	}
 
 	@Override
+	@Exclusive
 	public void changePIN(PinInfo pinInfo, ModifyPINGUI changePINGUI) throws LockedException, NotActivatedException,
 			CancelledException, PINFormatException, SignatureCardException, InterruptedException {
 
@@ -245,6 +237,7 @@ public class PrimSignATOSCard extends AbstractSignatureCard implements PINMgmtSi
 	}
 
 	@Override
+	@Exclusive
 	public void activatePIN(PinInfo pinInfo, ModifyPINGUI activatePINGUI)
 			throws CancelledException, SignatureCardException, InterruptedException {
 
