@@ -54,7 +54,7 @@
   </developers>
   <scm>
     <connection>scm:git:http://git.egiz.gv.at/git/mocca</connection>
-    <developerConnection>scm:git:git://gitlab@gitlab.iaik.tugraz.at:tobias.kellner/mocca.git</developerConnection>
+    <developerConnection>scm:git:git://gitlab@gitlab.iaik.tugraz.at:egiz/mocca.git</developerConnection>
     <url>http://git.egiz.gv.at/mocca</url>
   </scm>
   <organization>
