@@ -4,7 +4,7 @@
   <groupId>at.gv.egiz</groupId>
   <artifactId>mocca</artifactId>
   <packaging>pom</packaging>
-  <version>1.3.25-SNAPSHOT</version>
+  <version>1.3.25</version>
   <name>MOCCA</name>
   <description>MOCCA (Modular Open Citizen Card Architecture) project</description>
   <url>http://joinup.ec.europa.eu/site/mocca/</url>
@@ -56,7 +56,7 @@
     <connection>scm:git:http://git.egiz.gv.at/git/mocca</connection>
     <developerConnection>scm:git:ssh://gitlab@gitlab.iaik.tugraz.at/egiz/mocca.git</developerConnection>
     <url>http://git.egiz.gv.at/mocca</url>
-    <tag>HEAD</tag>
+    <tag>mocca-1.3.25</tag>
   </scm>
   <organization>
     <name>E-Government Innovation Center (EGIZ)</name>
