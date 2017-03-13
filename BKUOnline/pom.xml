@@ -96,8 +96,8 @@
          | see https://wsit.dev.java.net/issues/show_bug.cgi?id=970
     -->
     <dependency>
-      <groupId>com.sun.xml.ws</groupId>
-      <artifactId>jaxws-rt</artifactId>
+         <groupId>org.glassfish.metro</groupId>
+    <artifactId>webservices-rt</artifactId>
             <!-- use JAX-WS RI with SJSXP instead of Woodstox -->
       <exclusions>
         <exclusion>

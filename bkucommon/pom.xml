@@ -114,8 +114,8 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>com.sun.xml.ws</groupId>
-      <artifactId>jaxws-rt</artifactId>
+        <groupId>org.glassfish.metro</groupId>
+    <artifactId>webservices-rt</artifactId>
       <scope>test</scope>
     </dependency>
     <!-- dependency to ensure NamespacePrefixmapper -->
