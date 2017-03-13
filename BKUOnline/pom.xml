@@ -113,6 +113,10 @@
         <artifactId>saaj-impl</artifactId> </exclusion> </exclusions -->
     </dependency>
     <dependency>
+        <groupId>com.sun.xml.ws</groupId>
+        <artifactId>policy</artifactId>
+    </dependency>
+    <dependency>
       <artifactId>sjsxp</artifactId>
       <groupId>com.sun.xml.stream</groupId>
       <version>1.0.2</version>
