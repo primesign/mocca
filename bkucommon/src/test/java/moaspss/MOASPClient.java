@@ -63,6 +63,7 @@ import com.sun.xml.bind.api.JAXBRIContext;
 import com.sun.xml.bind.api.RawAccessor;
 import com.sun.xml.bind.api.TypeReference;
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+import com.sun.xml.bind.v2.model.runtime.RuntimeTypeInfoSet;
 import com.sun.xml.ws.api.model.SEIModel;
 import com.sun.xml.ws.developer.JAXBContextFactory;
 import com.sun.xml.ws.developer.UsesJAXBContextFeature;
@@ -171,6 +172,20 @@ public class MOASPClient {
         public Bridge<?> createBridge(TypeReference arg0) {
           return context.createBridge(arg0);
         }
+
+		@Override
+		public QName getElementName(Class arg0) throws JAXBException {
+			return context.getElementName(arg0);
+			// TODO Auto-generated method stub
+			//return null;
+		}
+
+		@Override
+		public RuntimeTypeInfoSet getRuntimeTypeInfoSet() {
+			// TODO Auto-generated method stub
+			//return null;
+			return context.getRuntimeTypeInfoSet();
+		}
       };
       
     }
