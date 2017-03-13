@@ -112,10 +112,7 @@
         <groupId>com.sun.xml.messaging.saaj</groupId>
         <artifactId>saaj-impl</artifactId> </exclusion> </exclusions -->
     </dependency>
-    <dependency>
-        <groupId>com.sun.xml.ws</groupId>
-        <artifactId>policy</artifactId>
-    </dependency>
+  
     <dependency>
       <artifactId>sjsxp</artifactId>
       <groupId>com.sun.xml.stream</groupId>
