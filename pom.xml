@@ -119,6 +119,9 @@
           <artifactId>maven-release-plugin</artifactId>
           <groupId>org.apache.maven.plugins</groupId>
           <version>2.5.3</version>
+          <configuration>
+          	<username>gitlab</username>
+          </configuration>
         </plugin>
         <plugin>
           <artifactId>buildnumber-maven-plugin</artifactId>
