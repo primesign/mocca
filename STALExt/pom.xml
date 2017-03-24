@@ -15,4 +15,8 @@
       <version>${project.parent.version}</version>
     </dependency>
   </dependencies>
+
+  <scm>
+    <tag>1.3.25</tag>
+  </scm>
 </project>
