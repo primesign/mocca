@@ -317,6 +317,27 @@ public class SignatureCardFactory {
 						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
 						(byte) 0x00 }, "at.gv.egiz.smcc.STARCOSCard"));
 
+		// a-sign premium (cardos 5.3)
+		supportedCards.add(new SupportedCard(
+				// ATR
+				// (3b:df:18:00:81:31:fe:58:80:31:90:52:41:01:64:05:c9:03:ac:73:b7:b1:d4:44)
+				new byte[] { (byte) 0x3b, (byte) 0xdf, (byte) 0x18,
+						(byte) 0x00, (byte) 0x81, (byte) 0x31, (byte) 0xfe,
+						(byte) 0x58, (byte) 0x80, (byte) 0x31, (byte) 0x90,
+						(byte) 0x52, (byte) 0x41, (byte) 0x01, (byte) 0x64,
+						(byte) 0x05, (byte) 0xc9, (byte) 0x03, (byte) 0xac,
+						(byte) 0x73, (byte) 0xb7, (byte) 0xb1, (byte) 0xd4,
+						(byte) 0x44 },
+				// mask
+				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:00:00:00:00:00:00:00:00:00:00:00:00:00)
+				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+						(byte) 0x00 }, "at.gv.egiz.smcc.STARCOSCard"));
+
 		// a-sign premium (EPA)
 		supportedCards.add(new SupportedCard(
 		// ATR
