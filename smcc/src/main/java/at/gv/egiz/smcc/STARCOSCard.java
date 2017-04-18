@@ -116,6 +116,10 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
   public static final byte[] AID_DF_SS = new byte[] { (byte) 0xd0, (byte) 0x40,
       (byte) 0x00, (byte) 0x00, (byte) 0x17, (byte) 0x00, (byte) 0x12,
       (byte) 0x01 };
+  
+  public static final byte[] AID_DF_SS_ASIGN = new byte[] { (byte) 0xd0, (byte) 0x40,
+          (byte) 0x00, (byte) 0x00, (byte) 0x22, (byte) 0x00, (byte) 0x01 };
+
 
   public static final byte[] EF_C_X509_CH_DS = new byte[] { (byte) 0xc0,
       (byte) 0x00 };
@@ -130,7 +134,11 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
   public static final byte[] AID_DF_GS = new byte[] { (byte) 0xd0, (byte) 0x40,
       (byte) 0x00, (byte) 0x00, (byte) 0x17, (byte) 0x00, (byte) 0x13,
       (byte) 0x01 };
+  
+  public static final byte[] AID_DF_GS_ASIGN = new byte[] { (byte) 0xd0, (byte) 0x40,
+          (byte) 0x00, (byte) 0x00, (byte) 0x22, (byte) 0x00, (byte) 0x02 };
 
+  
   public static final byte[] EF_C_X509_CH_AUT = new byte[] { (byte) 0x2f,
       (byte) 0x01 };
 
@@ -167,6 +175,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
       execSELECT_FID(channel, EF_VERSION);
       // READ BINARY
       byte[] ver = ISO7816Utils.readRecord(channel, 1);
+      byte[] cardATR = card.getATR().getBytes();
       if (ver[0] == (byte) 0xa5 && ver[2] == (byte) 0x53) {
         version = (0x0F & ver[4]) + (0xF0 & ver[5])/160.0 + (0x0F & ver[5])/100.0;
         friendlyName = (version < 1.2) ? "<= G2" : "G3+";
@@ -198,6 +207,21 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
           }
         }
         log.info("e-card version=" + version + " (" + friendlyName + ")");
+      } else if ((cardATR[12]) == 0x41) { // checking if there is a-trust a.sign premium card present
+          // data taken from a-trust cardos5.3 specification v0.05
+friendlyName = "a.sign premium";
+if (cardATR[13] == 0x01) {
+version = 1.2;
+generation = 4;
+if (((cardATR[16] & 0xFF) == 0xc9 ) && ((cardATR[17] & 0xFF )== 0x03)) {
+friendlyName += " (G1 CardOS5.3)";
+log.info("A-TRUST a.sign premium found, first generation with CardOS 5.3");
+} else {
+friendlyName += " (G1)";
+log.info("A-TRUST a.sign premium found, first generation");
+}
+}
+
       }
     } catch (CardException e) {
       log.warn("Failed to execute command.", e);
@@ -212,9 +236,14 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     //   cardPukInfo = new PinInfo(8, 12, "[0-9]",
     //       "at/gv/egiz/smcc/STARCOSCard", "card.puk", KID_PUK_CARD, null, 10);
     // }
+    if (friendlyName.matches("^a.sign premium.*")) {
+        ssPinInfo = new PinInfo(6, 12, "[0-9]",
+                "at/gv/egiz/smcc/STARCOSCard", "sig.pin", KID_PIN_SS, AID_DF_SS_ASIGN,
+                (version < 1.2) ? 3 : 10);
+      } else {
     ssPinInfo = new PinInfo(6, 12, "[0-9]",
         "at/gv/egiz/smcc/STARCOSCard", "sig.pin", KID_PIN_SS, AID_DF_SS,
-        (version < 1.2) ? 3 : 10);
+        (version < 1.2) ? 3 : 10);}
 
     if (SignatureCardFactory.ENFORCE_RECOMMENDED_PIN_LENGTH) {
       cardPinInfo.setRecLength(4);
@@ -232,10 +261,17 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     byte[] aid;
     byte[] fid;
     if (keyboxName == KeyboxName.SECURE_SIGNATURE_KEYPAIR) {
-      aid = AID_DF_SS;
+    	if (friendlyName.matches("^a.sign premium.*")) {
+            aid = AID_DF_SS_ASIGN;
+          } else {
+      aid = AID_DF_SS;}
       fid = EF_C_X509_CH_DS;
     } else if (keyboxName == KeyboxName.CERTIFIED_KEYPAIR) {
-      aid = AID_DF_GS;
+    	 // check if we are using a-trust card, then change the application
+        if (friendlyName.matches("^a.sign premium.*")) {
+          aid = AID_DF_GS_ASIGN;
+        } else {
+      aid = AID_DF_GS;}
       fid = EF_C_X509_CH_AUT;
     } else {
       throw new IllegalArgumentException("Keybox " + keyboxName
@@ -305,8 +341,12 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         for (Infobox box : infoboxContainer.getInfoboxes()) {
           if (box.getTag() == 0x01) {
             if (box.isEncrypted()) {
+            	  // SELECT application
+                if (friendlyName.matches("^a.sign premium.*")) {  // check if we are using a.sign premium card
+                  execSELECT_AID(channel, AID_DF_GS_ASIGN);
+                } else {
 
-              execSELECT_AID(channel, AID_DF_GS);
+              execSELECT_AID(channel, AID_DF_GS);}
 
               byte[] tlv;
               if (generation < 4)
@@ -540,7 +580,12 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
         // SELECT MF
         execSELECT_MF(channel);
         // SELECT application
+        if (friendlyName.matches("^a.sign premium.*")) {  // check if we are using a.sign premium card
+            execSELECT_AID(channel, AID_DF_SS_ASIGN);
+          } else {
         execSELECT_AID(channel, AID_DF_SS);
+        }
+        
         // VERIFY
         verifyPINLoop(channel, ssPinInfo, provider);
         // MANAGE SECURITY ENVIRONMENT : SET DST
@@ -564,7 +609,10 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
       } else if (KeyboxName.CERTIFIED_KEYPAIR.equals(keyboxName)) {
 
         // SELECT application
-        execSELECT_AID(channel, AID_DF_GS);
+    	  if (friendlyName.matches("^a.sign premium.*")) {  // check if we are using a.sign premium card
+              execSELECT_AID(channel, AID_DF_GS_ASIGN);
+            } else {
+        execSELECT_AID(channel, AID_DF_GS);}
         // MANAGE SECURITY ENVIRONMENT : SET DST
         execMSE(channel, 0x41, 0xb6, dst.toByteArray());
         if (version >= 1.2 && ht != null) {
