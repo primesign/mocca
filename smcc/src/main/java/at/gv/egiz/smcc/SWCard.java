@@ -100,7 +100,7 @@ public class SWCard implements SignatureCard {
     String userHome = System.getProperty("user.home");
     String fs = System.getProperty("file.separator");
     swCardDir = userHome + fs + BKU_USER_DIR + fs + SWCARD_DIR;
-    String swcDir = System.getProperty("mocca.swcard.directory");
+    String swcDir = System.getProperty("jnlp.mocca.swcard.directory");
     if (swcDir != null) {
       File f = new File(swcDir);
       if (!f.isAbsolute()) {

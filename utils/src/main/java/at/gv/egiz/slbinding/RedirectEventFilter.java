@@ -63,8 +63,10 @@ public class RedirectEventFilter implements EventFilter {
    */
   public RedirectEventFilter(OutputStream redirectStream, String encoding)
           throws XMLStreamException { // , List<QName> redirectTriggers
-    if (redirectStream != null) {
-      XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+    if (redirectStream != null) {   
+      System.setProperty("com.sun.xml.stream.ZephyrWriterFactory", "com.sun.xml.stream.ZephyrWriterFactory");    	
+      XMLOutputFactory outputFactory = XMLOutputFactory.newFactory("com.sun.xml.stream.ZephyrWriterFactory", null);
+   
       if (encoding == null) {
         encoding = DEFAULT_ENCODING;
       }
@@ -205,7 +207,8 @@ public class RedirectEventFilter implements EventFilter {
    */
   public void setRedirectStream(OutputStream redirectStream, String encoding, Set<QName> redirectTriggers) throws XMLStreamException {
     if (redirectStream != null) {
-      XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+    	System.setProperty("com.sun.xml.stream.ZephyrWriterFactory", "com.sun.xml.stream.ZephyrWriterFactory");    	
+        XMLOutputFactory outputFactory = XMLOutputFactory.newFactory("com.sun.xml.stream.ZephyrWriterFactory", null);
       if (encoding == null) {
         encoding = DEFAULT_ENCODING;
       }

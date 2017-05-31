@@ -237,7 +237,16 @@ public class SLUnmarshaller {
 public Object unmarshal(StreamSource source) throws XMLStreamException, JAXBException {
     
     ReportingValidationEventHandler validationEventHandler = new ReportingValidationEventHandler();
+//    System.setProperty("javax.xml.stream.XMLInputFactory", "com.sun.xml.stream.ZephyrParserFactory");
+//    System.setProperty("com.sun.xml.stream.ZephyrParserFactory", "com.sun.xml.stream.ZephyrParserFactory");
+//    XMLInputFactory inputFactory = XMLInputFactory.newInstance("com.sun.xml.stream.ZephyrParserFactory", null);
+    
     XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+    
+    //disallow DTD and external entities
+    inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+    inputFactory.setProperty("javax.xml.stream.isSupportingExternalEntities", false);
+    
     XMLEventReader eventReader = inputFactory.createXMLEventReader(source.getReader());
     RedirectEventFilter redirectEventFilter = new RedirectEventFilter();
     XMLEventReader filteredReader = inputFactory.createFilteredReader(eventReader, redirectEventFilter);

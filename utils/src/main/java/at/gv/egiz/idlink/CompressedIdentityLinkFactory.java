@@ -51,14 +51,14 @@ import org.w3c.dom.NodeList;
 import at.buergerkarte.namespaces.personenbindung._20020506_.CompressedIdentityLinkType;
 import at.gv.e_government.reference.namespace.persondata._20020228_.AbstractPersonType;
 import at.gv.e_government.reference.namespace.persondata._20020228_.IdentificationType;
-import at.gv.e_government.reference.namespace.persondata._20020228_.PersonNameType;
-import at.gv.e_government.reference.namespace.persondata._20020228_.PhysicalPersonType;
 import at.gv.e_government.reference.namespace.persondata._20020228_.IdentificationType.Value;
+import at.gv.e_government.reference.namespace.persondata._20020228_.PersonNameType;
 import at.gv.e_government.reference.namespace.persondata._20020228_.PersonNameType.FamilyName;
-import at.gv.egiz.idlink.ans1.CitizenPublicKey;
-import at.gv.egiz.idlink.ans1.IdentityLink;
-import at.gv.egiz.idlink.ans1.PersonData;
-import at.gv.egiz.idlink.ans1.PhysicalPersonData;
+import at.gv.e_government.reference.namespace.persondata._20020228_.PhysicalPersonType;
+import at.gv.egiz.idlink.asn1.CitizenPublicKey;
+import at.gv.egiz.idlink.asn1.IdentityLink;
+import at.gv.egiz.idlink.asn1.PersonData;
+import at.gv.egiz.idlink.asn1.PhysicalPersonData;
 import at.gv.egiz.marshal.MarshallerFactory;
 import at.gv.egiz.xmldsig.KeyTypeNotSupportedException;
 import at.gv.egiz.xmldsig.KeyValueFactory;
@@ -201,7 +201,7 @@ public class CompressedIdentityLinkFactory {
    *           of the <code>certificates</code> list
    */
   public JAXBElement<CompressedIdentityLinkType> createCompressedIdentityLink(
-      at.gv.egiz.idlink.ans1.IdentityLink idLink,
+      at.gv.egiz.idlink.asn1.IdentityLink idLink,
       List<X509Certificate> certificates, String domainId) {
 
     at.gv.e_government.reference.namespace.persondata._20020228_.ObjectFactory prFactory = 
@@ -254,7 +254,7 @@ public class CompressedIdentityLinkFactory {
 
       X509Certificate certificate = certificates.get(__citizenPublicKey.getOnToken());
       PublicKey publicKey = certificate.getPublicKey();
-      
+
       JAXBElement<?> keyValue;
       try {
         keyValue = keyValueFactory.createKeyValue(publicKey);

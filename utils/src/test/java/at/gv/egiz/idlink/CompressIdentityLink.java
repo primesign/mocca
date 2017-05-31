@@ -33,7 +33,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import at.buergerkarte.namespaces.personenbindung._20020506_.CompressedIdentityLinkType;
-import at.gv.egiz.idlink.ans1.IdentityLink;
+import at.gv.egiz.idlink.asn1.IdentityLink;
 
 public class CompressIdentityLink {
 

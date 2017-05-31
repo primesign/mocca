@@ -53,8 +53,8 @@ import org.slf4j.LoggerFactory;
 
 public class Container {
 
-  public static final String HTTP_PORT_PROPERTY = "mocca.http.port";
-  public static final String HTTPS_PORT_PROPERTY = "mocca.https.port";
+  public static final String HTTP_PORT_PROPERTY = "jnlp.mocca.http.port";
+  public static final String HTTPS_PORT_PROPERTY = "jnlp.mocca.https.port";
 
   private static final String JETTY_TEMP_STORE = ".jettytemp";
 
