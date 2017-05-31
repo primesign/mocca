@@ -62,7 +62,7 @@
 							</execution>
 						</executions>
 						<configuration>
-							<imageName>registry.datentechnik.com/mocca-local</imageName>
+							<imageName>registry.intra.prime-sign.com/mocca-local</imageName>
 							<dockerDirectory>${basedir}/docker</dockerDirectory>
 						</configuration>
 					</plugin>
