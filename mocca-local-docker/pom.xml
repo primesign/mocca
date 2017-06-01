@@ -63,7 +63,9 @@
 						</executions>
 						<configuration>
 							<imageName>reg.intra.prime-sign.com/mocca-local</imageName>
-							<dockerDirectory>${basedir}/docker</dockerDirectory>
+							<serverId>reg.intra.prime-sign.com</serverId>
+			  				<registryUrl>reg.intra.prime-sign.com</registryUrl>
+			  				<dockerDirectory>${basedir}/docker</dockerDirectory>
 						</configuration>
 					</plugin>
 				</plugins>

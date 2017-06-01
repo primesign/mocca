@@ -52,7 +52,7 @@
 					<plugin>
 						<groupId>com.spotify</groupId>
 						<artifactId>docker-maven-plugin</artifactId>
-						<version>0.2.6</version>
+						<version>0.4.13</version>
 						<executions>
 							<execution>
 							  <id>docker-build</id>
@@ -64,7 +64,9 @@
 						</executions>
             <configuration>
               <imageName>reg.intra.prime-sign.com/mocca-online</imageName>
-              <dockerDirectory>${basedir}/docker</dockerDirectory>
+              <serverId>reg.intra.prime-sign.com</serverId>
+			  <registryUrl>reg.intra.prime-sign.com</registryUrl>
+			  <dockerDirectory>${basedir}/docker</dockerDirectory>
             </configuration>
 					</plugin>
 				</plugins>
