@@ -115,6 +115,10 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
     if (dataObject.getContent() != null) {
       byte[] dataToBeSigned = getContent(dataObject, urlDereferencer);
       this.signedData = new SignedData(dataToBeSigned, mode);
+	  if (dataObject.getMetaInfo() != null) {
+			this.mimeType = dataObject.getMetaInfo().getMimeType();
+		}
+	  
       hashDataInput = new CMSHashDataInput(signedDocument, mimeType);
       
     } else {
@@ -219,7 +223,7 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
       is.close();
     }
     this.signedDocument = data.clone();
-
+  
     this.excludedByteRange = dataObject.getExcludedByteRange();
     if (this.excludedByteRange == null)
       return data;

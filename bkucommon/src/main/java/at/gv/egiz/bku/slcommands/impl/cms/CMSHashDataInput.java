@@ -28,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import at.gv.egiz.bku.gui.viewer.MimeTypes;
 import at.gv.egiz.stal.HashDataInput;
 
 public class CMSHashDataInput implements HashDataInput {
@@ -74,10 +75,15 @@ public class CMSHashDataInput implements HashDataInput {
 
   @Override
   public String getFilename() {
-    if (fileName != null) {
-      return fileName;
-    }
-    return DEFAULT_FILENAME;
+	  if (fileName != null) {
+		  return fileName;
+	  }
+
+	  if (mimeType != null) {
+		  return DEFAULT_FILENAME + MimeTypes.getExtension(mimeType);
+	  }
+
+	  return DEFAULT_FILENAME;
   }
 
   @Override
