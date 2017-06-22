@@ -135,7 +135,6 @@ public class DataURLServerServlet extends HttpServlet {
         }
         
         SLUnmarshaller slUnmarshaller = new SLUnmarshaller();
-        
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         dbf.setSchema(slUnmarshaller.getSlSchema());
@@ -152,6 +151,18 @@ public class DataURLServerServlet extends HttpServlet {
           log.warn("Failed to disable schema normalization " +
                 "(see http://www.w3.org/TR/xmldsig-bestpractices/#be-aware-schema-normalization)", e);
         }
+        
+        try {
+			dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+			dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+			dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+			dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+						
+		} catch (ParserConfigurationException e) {
+			log.error("Can NOT set SAX parser security features. -> XML parsing is possible insecure!!!! ", e);
+			
+		}
+        
         
         DocumentBuilder documentBuilder;
         try {

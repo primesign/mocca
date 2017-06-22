@@ -25,6 +25,7 @@
 
 package at.gv.egiz.slbinding;
 
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -49,7 +50,7 @@ public class UnmarshallCXSRTest {
     assertNotNull(s);
     
     SLUnmarshaller unmarshaller = new SLUnmarshaller();
-    Object object = unmarshaller.unmarshal(new StreamSource(new InputStreamReader(s)));
+    Object object = unmarshaller.unmarshal(new StreamSource(new InputStreamReader(new BufferedInputStream(s))));
 
     assertTrue(object.getClass().getName(), object instanceof JAXBElement<?>);
 
@@ -57,6 +58,29 @@ public class UnmarshallCXSRTest {
     
     assertTrue(value.getClass().getName(), value instanceof CreateXMLSignatureResponseType);
     
+  }
+  
+  @Test
+  public void testUnmarshalCreateXMLSignatureResponseWithDocTypeXXEOrSSRF() throws JAXBException {
+    
+    ClassLoader cl = UnmarshallCXSRTest.class.getClassLoader();
+    InputStream s = cl.getResourceAsStream("at/gv/egiz/slbinding/CreateXMLSignatureResponse_with_Attacke.xml");
+    
+    assertNotNull(s);
+    
+    SLUnmarshaller unmarshaller = new SLUnmarshaller();
+    Object object;
+	try {
+		object = unmarshaller.unmarshal(new StreamSource(new InputStreamReader(new BufferedInputStream(s))));
+		
+	    assertTrue(object.getClass().getName(), object instanceof JAXBElement<?>);
+	    Object value = ((JAXBElement<?>) object).getValue();	    
+	    assertFalse(value.getClass().getName(), value instanceof CreateXMLSignatureResponseType);
+		
+	} catch (XMLStreamException e) {
+		assertTrue(e.getClass().getName(), e instanceof XMLStreamException);
+		
+	}    
   }
   
 }

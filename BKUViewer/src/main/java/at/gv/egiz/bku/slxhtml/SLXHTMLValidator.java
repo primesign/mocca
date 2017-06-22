@@ -139,6 +139,16 @@ public class SLXHTMLValidator implements at.gv.egiz.bku.viewer.Validator {
     spf.setValidating(true);
     spf.setXIncludeAware(false);
     
+    try {    	
+    	spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+    	spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+    	spf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+    	
+    } catch (Exception e) {
+    	log.error("Can NOT set SAX parser security features. -> XML parsing is possible insecure!!!! ", e);
+    	
+	}
+    
     SAXParser parser;
     try {
       parser = spf.newSAXParser();
@@ -150,6 +160,7 @@ public class SLXHTMLValidator implements at.gv.egiz.bku.viewer.Validator {
       throw new RuntimeException("Failed to create SLXHTML parser.", e);
     }
     
+       
     InputSource source;
     if (charset != null) {
       source = new InputSource(new InputStreamReader(is, charset));

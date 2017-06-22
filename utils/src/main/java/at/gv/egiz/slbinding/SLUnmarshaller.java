@@ -25,7 +25,10 @@
 
 package at.gv.egiz.slbinding;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +41,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -46,6 +51,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -237,17 +243,67 @@ public class SLUnmarshaller {
 public Object unmarshal(StreamSource source) throws XMLStreamException, JAXBException {
     
     ReportingValidationEventHandler validationEventHandler = new ReportingValidationEventHandler();
-//    System.setProperty("javax.xml.stream.XMLInputFactory", "com.sun.xml.stream.ZephyrParserFactory");
-//    System.setProperty("com.sun.xml.stream.ZephyrParserFactory", "com.sun.xml.stream.ZephyrParserFactory");
-//    XMLInputFactory inputFactory = XMLInputFactory.newInstance("com.sun.xml.stream.ZephyrParserFactory", null);
-    
+    Reader inputReader = source.getReader();
+        
+    if (inputReader instanceof InputStreamReader) {
+    	DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    	
+    	try {
+			dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+			dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+			dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+			dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+						
+		} catch (ParserConfigurationException e) {
+			log.error("Can NOT set Xerces parser security features. -> XML parsing is possible insecure!!!! ", e);
+			
+		}
+    	    	        
+        try {        	
+        	//create copy of input stream
+        	InputStreamReader isReader = (InputStreamReader) inputReader;
+        	String encoding = isReader.getEncoding();        	
+        	byte[] backup = IOUtils.toByteArray(isReader, encoding);
+
+        	//validate input stream        	
+        	dbf.newDocumentBuilder().parse(new ByteArrayInputStream(backup));
+        	    		
+    		//create new inputStreamReader for reak processing
+    		inputReader = new InputStreamReader(new ByteArrayInputStream(backup), encoding);
+    		
+    		
+    	} catch (SAXException e) {
+    		log.error("XML data validation FAILED with msg: " + e.getMessage(), e);
+    		throw new XMLStreamException("XML data validation FAILED with msg: " + e.getMessage(), e);
+
+
+    	} catch (ParserConfigurationException e) {
+    		log.error("XML data validation FAILED with msg: " + e.getMessage(), e);
+    		throw new XMLStreamException("XML data validation FAILED with msg: " + e.getMessage(), e);
+    		
+    	} catch (IOException e) {
+    		log.error("XML data validation FAILED with msg: " + e.getMessage(), e);
+    		throw new XMLStreamException("XML data validation FAILED with msg: " + e.getMessage(), e);
+    		
+		}
+    	    	
+    } else {
+    	log.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    	log.error("Reader is not of type InputStreamReader -> can not make a copy of the InputStream --> extended XML validation is not possible!!! ");
+    	log.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    	
+    }
+        
+    //parse XML with original functionality
     XMLInputFactory inputFactory = XMLInputFactory.newInstance();
     
     //disallow DTD and external entities
     inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
     inputFactory.setProperty("javax.xml.stream.isSupportingExternalEntities", false);
     
-    XMLEventReader eventReader = inputFactory.createXMLEventReader(source.getReader());
+    
+    
+    XMLEventReader eventReader = inputFactory.createXMLEventReader(inputReader);
     RedirectEventFilter redirectEventFilter = new RedirectEventFilter();
     XMLEventReader filteredReader = inputFactory.createFilteredReader(eventReader, redirectEventFilter);
 
@@ -255,8 +311,8 @@ public Object unmarshal(StreamSource source) throws XMLStreamException, JAXBExce
     unmarshaller.setEventHandler(validationEventHandler);
 
     unmarshaller.setListener(new RedirectUnmarshallerListener(redirectEventFilter));
-    unmarshaller.setSchema(slSchema);
-
+    unmarshaller.setSchema(slSchema);    
+    
     Object object;
     try {
       log.trace("Before unmarshal().");

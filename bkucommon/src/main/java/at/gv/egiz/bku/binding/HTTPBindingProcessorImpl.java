@@ -26,6 +26,7 @@ package at.gv.egiz.bku.binding;
 
 import iaik.utils.Base64InputStream;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -737,7 +738,7 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 
 	protected void assignXMLRequest(InputStream is, String charset)
 			throws IOException, SLException {
-		Reader r = new InputStreamReader(is, charset);
+		Reader r = new InputStreamReader(new BufferedInputStream(is), charset);
 		StreamSource source = new StreamSource(r);
 		slCommand = slCommandFactory.createSLCommand(source);
 		log.info("XMLRequest={}. Created new command: {}.",
