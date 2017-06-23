@@ -73,6 +73,7 @@ import org.w3c.dom.ls.LSException;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSParser;
+import org.w3c.dom.ls.LSParserFilter;
 import org.w3c.dom.ls.LSResourceResolver;
 import org.w3c.dom.ls.LSSerializer;
 
@@ -103,6 +104,8 @@ import at.gv.egiz.xades.QualifyingPropertiesFactory;
  */
 public class Signature {
   public static final String XMLDSIG_PREFIX = "dsig";
+  
+  public static final String SYSTEM_PROPERTY_ALLOW_DOCTYPES = "egiz.mocca.xades.xml.allow.doctype";
   
   /**
    * Logging facility.
@@ -899,7 +902,12 @@ public class Signature {
     LSResourceResolverAdapter resourceResolver = new LSResourceResolverAdapter(supplements);
     domConfig.setParameter("resource-resolver", resourceResolver);
     domConfig.setParameter("validate", Boolean.TRUE);
-
+    
+    //Disallow DocTypes per default
+    String docTypeFlagString =  System.getProperty(SYSTEM_PROPERTY_ALLOW_DOCTYPES, String.valueOf(Boolean.FALSE));
+    boolean docTypeFlag = Boolean.parseBoolean(docTypeFlagString.toLowerCase());
+    domConfig.setParameter("disallow-doctype", !docTypeFlag);
+    
     Document doc;
     try {
       doc = parser.parse(input);
