@@ -175,6 +175,14 @@
 		<filter-name>RequestIdFilter</filter-name>
 		<filter-class>at.gv.egiz.bku.online.webapp.TransactionIdFilter</filter-class>
 	</filter>
+	<filter>
+		<filter-name>StalSecurityFilter</filter-name>
+		<filter-class>at.gv.egiz.bku.online.filter.StalSecurityFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>StalSecurityFilter</filter-name>
+		<servlet-name>STALService</servlet-name>
+	</filter-mapping>
 	<filter-mapping>
 		<filter-name>RequestIdFilter</filter-name>
 		<servlet-name>HTTPSecurityLayerServlet</servlet-name>

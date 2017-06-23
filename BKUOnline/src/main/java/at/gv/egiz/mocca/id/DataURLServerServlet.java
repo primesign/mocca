@@ -65,6 +65,7 @@ import at.gv.egiz.bku.slcommands.impl.SLCommandImpl;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.utils.DebugInputStream;
 import at.gv.egiz.bku.utils.StreamUtil;
+import at.gv.egiz.dom.DOMUtils;
 import at.gv.egiz.org.apache.tomcat.util.http.AcceptLanguage;
 import at.gv.egiz.slbinding.SLUnmarshaller;
 
@@ -135,7 +136,6 @@ public class DataURLServerServlet extends HttpServlet {
         }
         
         SLUnmarshaller slUnmarshaller = new SLUnmarshaller();
-        
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
         dbf.setSchema(slUnmarshaller.getSlSchema());
@@ -153,6 +153,9 @@ public class DataURLServerServlet extends HttpServlet {
                 "(see http://www.w3.org/TR/xmldsig-bestpractices/#be-aware-schema-normalization)", e);
         }
         
+        //set XML parser flags to prevent XXE, XEE and SSRF attacks
+        DOMUtils.setXMLParserFlagsAgainstXXEAndSSRFAttacks(dbf);
+                
         DocumentBuilder documentBuilder;
         try {
           documentBuilder = dbf.newDocumentBuilder();
