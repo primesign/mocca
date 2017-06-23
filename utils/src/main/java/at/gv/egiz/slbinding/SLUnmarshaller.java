@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import at.gv.egiz.bku.utils.ClasspathURLStreamHandler;
+import at.gv.egiz.dom.DOMUtils;
 import at.gv.egiz.validation.ReportingValidationEventHandler;
 
 public class SLUnmarshaller {
@@ -241,43 +242,28 @@ public class SLUnmarshaller {
    * @throws JAXBException
    */
 public Object unmarshal(StreamSource source) throws XMLStreamException, JAXBException {
+    Reader inputReader = source.getReader(); 
     
-    ReportingValidationEventHandler validationEventHandler = new ReportingValidationEventHandler();
-    Reader inputReader = source.getReader();
-        
-    if (inputReader instanceof InputStreamReader) {
-    	DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    	
-    	try {
-			dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
-			dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-			dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-			dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-						
-		} catch (ParserConfigurationException e) {
-			log.error("Can NOT set Xerces parser security features. -> XML parsing is possible insecure!!!! ", e);
-			
-		}
-    	    	        
+    /* Validate XML against XXE, XEE, and SSRF
+     * 
+     * This pre-validation step is required because com.sun.xml.stream.sjsxp-1.0.2 XML stream parser library does not 
+     * support all XML parser features to prevent these types of attacks  
+     */
+    if (inputReader instanceof InputStreamReader) {    	    	        
         try {        	
         	//create copy of input stream
         	InputStreamReader isReader = (InputStreamReader) inputReader;
         	String encoding = isReader.getEncoding();        	
         	byte[] backup = IOUtils.toByteArray(isReader, encoding);
 
-        	//validate input stream        	
-        	dbf.newDocumentBuilder().parse(new ByteArrayInputStream(backup));
+        	//validate input stream
+        	DOMUtils.validateXMLAgainstXXEAndSSRFAttacks(new ByteArrayInputStream(backup));
         	    		
     		//create new inputStreamReader for reak processing
     		inputReader = new InputStreamReader(new ByteArrayInputStream(backup), encoding);
     		
     		
-    	} catch (SAXException e) {
-    		log.error("XML data validation FAILED with msg: " + e.getMessage(), e);
-    		throw new XMLStreamException("XML data validation FAILED with msg: " + e.getMessage(), e);
-
-
-    	} catch (ParserConfigurationException e) {
+    	} catch (XMLStreamException e) {
     		log.error("XML data validation FAILED with msg: " + e.getMessage(), e);
     		throw new XMLStreamException("XML data validation FAILED with msg: " + e.getMessage(), e);
     		
@@ -294,20 +280,28 @@ public Object unmarshal(StreamSource source) throws XMLStreamException, JAXBExce
     	
     }
         
-    //parse XML with original functionality
+    /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     * parse XML with original functionality
+     * 
+     * This code implements the the original mocca XML processing by using 
+     *  com.sun.xml.stream.sjsxp-1.0.2 XML stream parser library. Currently, this library is required to get full 
+     *  security-layer specific XML processing. However, there this lib does not fully support XXE, XEE and SSRF
+     *  prevention mechanisms (e.g.: XMLInputFactory.SUPPORT_DTD flag is not used)    
+     * 
+     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     */
     XMLInputFactory inputFactory = XMLInputFactory.newInstance();
     
     //disallow DTD and external entities
     inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
     inputFactory.setProperty("javax.xml.stream.isSupportingExternalEntities", false);
-    
-    
-    
+        
     XMLEventReader eventReader = inputFactory.createXMLEventReader(inputReader);
     RedirectEventFilter redirectEventFilter = new RedirectEventFilter();
     XMLEventReader filteredReader = inputFactory.createFilteredReader(eventReader, redirectEventFilter);
 
     Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+    ReportingValidationEventHandler validationEventHandler = new ReportingValidationEventHandler();
     unmarshaller.setEventHandler(validationEventHandler);
 
     unmarshaller.setListener(new RedirectUnmarshallerListener(redirectEventFilter));

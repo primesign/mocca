@@ -77,6 +77,12 @@ public class UnmarshallCXSRTest {
 	    Object value = ((JAXBElement<?>) object).getValue();	    
 	    assertFalse(value.getClass().getName(), value instanceof CreateXMLSignatureResponseType);
 		
+	    /* If the parser has no exception and no CreateXMLSignatureResponseType than the test fails, because 
+	     * the tested XML document contains a CreateXMLSignatureResponseType and an XXE, SSRF attack vector.
+	     * Consequently, the parser result has to be an error
+	     */
+	    assertFalse(true);
+	    
 	} catch (XMLStreamException e) {
 		assertTrue(e.getClass().getName(), e instanceof XMLStreamException);
 		

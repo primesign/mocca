@@ -139,6 +139,9 @@ public class SLXHTMLValidator implements at.gv.egiz.bku.viewer.Validator {
     spf.setValidating(true);
     spf.setXIncludeAware(false);
     
+    /*
+     * Set parser features to disallow external entities and external dtd load operations
+     */
     try {    	
     	spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
     	spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
