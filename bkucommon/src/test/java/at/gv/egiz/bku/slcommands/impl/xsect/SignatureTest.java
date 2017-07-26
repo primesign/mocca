@@ -327,13 +327,54 @@ public class SignatureTest {
   }
 
   @Test
+  public void testSetSignature_Base64_WITH_DISALLOWED_DOCTYPE_And_SystemParameter() throws JAXBException, SLCommandException, XMLStreamException {
+
+    SignatureInfoCreationType signatureInfo = unmarshalSignatureInfo("SignatureInfo_Base64_2.xml");
+    
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null, false);
+    
+    //allow DocTypes to perform this test
+    System.setProperty(Signature.SYSTEM_PROPERTY_ALLOW_DOCTYPES, String.valueOf(Boolean.FALSE));  
+    try {
+    	signature.setSignatureInfo(signatureInfo);    	
+    	assertTrue("Check_ALLOW_DOCTYPES_System_Property", false);
+    	
+    } catch (SLCommandException e) {
+    	assertTrue("Check_ALLOW_DOCTYPES_System_Property", true);
+    	
+	}        
+  }
+  
+  @Test
+  public void testSetSignature_Base64_WITH_DISALLOWED_DOCTYPE_WithOut_SystemParameter() throws JAXBException, SLCommandException, XMLStreamException {
+
+    SignatureInfoCreationType signatureInfo = unmarshalSignatureInfo("SignatureInfo_Base64_2.xml");
+    
+    Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null, false);
+    
+    //allow DocTypes to perform this test
+    System.clearProperty(Signature.SYSTEM_PROPERTY_ALLOW_DOCTYPES);
+    try {
+    	signature.setSignatureInfo(signatureInfo);    	
+    	assertTrue("Check_ALLOW_DOCTYPES_WithOut_System_Property", false);
+    	
+    } catch (SLCommandException e) {
+    	assertTrue("Check_ALLOW_DOCTYPES_WithOut_System_Property", true);
+    	
+	}        
+  }
+  
+  @Test
   public void testSetSignature_Base64_2() throws JAXBException, SLCommandException, XMLStreamException {
 
     SignatureInfoCreationType signatureInfo = unmarshalSignatureInfo("SignatureInfo_Base64_2.xml");
     
     Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null, false);
     
+    //allow DocTypes to perform this test
+    System.setProperty(Signature.SYSTEM_PROPERTY_ALLOW_DOCTYPES, String.valueOf(Boolean.TRUE));  
     signature.setSignatureInfo(signatureInfo);
+    System.setProperty(Signature.SYSTEM_PROPERTY_ALLOW_DOCTYPES, String.valueOf(Boolean.FALSE));
     
     Node parent = signature.getParent();
     Node nextSibling = signature.getNextSibling();
@@ -353,7 +394,10 @@ public class SignatureTest {
     
     Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null, true);
     
+    //allow DocTypes to perform this test
+    System.setProperty(Signature.SYSTEM_PROPERTY_ALLOW_DOCTYPES, String.valueOf(Boolean.TRUE));  
     signature.setSignatureInfo(signatureInfo);
+    System.setProperty(Signature.SYSTEM_PROPERTY_ALLOW_DOCTYPES, String.valueOf(Boolean.FALSE));
     
     Node parent = signature.getParent();
     Node nextSibling = signature.getNextSibling();
@@ -373,7 +417,10 @@ public class SignatureTest {
     
     Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null, false);
     
+    //allow DocTypes to perform this test
+    System.setProperty(Signature.SYSTEM_PROPERTY_ALLOW_DOCTYPES, String.valueOf(Boolean.TRUE));  
     signature.setSignatureInfo(signatureInfo);
+    System.setProperty(Signature.SYSTEM_PROPERTY_ALLOW_DOCTYPES, String.valueOf(Boolean.FALSE));
     
     Node parent = signature.getParent();
     Node nextSibling = signature.getNextSibling();
@@ -393,7 +440,10 @@ public class SignatureTest {
     
     Signature signature = new Signature(urlDereferencer, new IdValueFactoryImpl(), null, true);
     
-    signature.setSignatureInfo(signatureInfo);
+    //allow DocTypes to perform this test
+    System.setProperty(Signature.SYSTEM_PROPERTY_ALLOW_DOCTYPES, String.valueOf(Boolean.TRUE));    
+    signature.setSignatureInfo(signatureInfo);    
+    System.setProperty(Signature.SYSTEM_PROPERTY_ALLOW_DOCTYPES, String.valueOf(Boolean.FALSE));
     
     Node parent = signature.getParent();
     Node nextSibling = signature.getNextSibling();

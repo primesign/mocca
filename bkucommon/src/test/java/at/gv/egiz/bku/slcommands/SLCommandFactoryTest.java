@@ -26,6 +26,7 @@ package at.gv.egiz.bku.slcommands;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.Reader;
 import java.io.StringReader;
 
@@ -83,10 +84,10 @@ public class SLCommandFactoryTest {
   
   @Test(expected=SLRequestException.class)
   public void createMalformedCommand() throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
-    Reader requestReader = new StringReader(
+    Reader requestReader = new BufferedReader(new StringReader(
         "<NullOperationRequest xmlns=\"http://www.buergerkarte.at/namespaces/securitylayer/1.2#\">" +
           "missplacedContent" +
-        "</NullOperationRequest>");
+        "</NullOperationRequest>"));
     StreamSource source = new StreamSource(requestReader);
     
     factory.createSLCommand(source);

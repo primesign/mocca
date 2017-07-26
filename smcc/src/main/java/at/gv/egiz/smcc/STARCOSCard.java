@@ -93,10 +93,18 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
     (byte) 0xEF, (byte) 0x04
   };
 
-  public static final byte[] AID_INFOBOX = new byte[] { (byte) 0xd0,
-      (byte) 0x40, (byte) 0x00, (byte) 0x00, (byte) 0x17, (byte) 0x00,
-      (byte) 0x18, (byte) 0x01 };
+ public static final byte[] AID_INFOBOX = new byte[] { (byte) 0xd0,
+     (byte) 0x40, (byte) 0x00, (byte) 0x00, (byte) 0x17, (byte) 0x00,
+     (byte) 0x18, (byte) 0x01 };
+  
 
+
+public static final byte[] AID_INFOBOXG4 = new byte[] { (byte) 0xD0,
+	      (byte) 0x40, (byte) 0x00, (byte) 0x00, (byte) 0x22, (byte) 0x00,
+	      (byte) 0x03};
+
+
+  
   public static final byte[] EF_INFOBOX_LEGACY = new byte[] { (byte) 0xef, (byte) 0x01 };
   
   public static final byte[] EF_INFOBOX = { (byte) 0xc0, (byte) 0x02 };
@@ -176,6 +184,7 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
       // READ BINARY
       byte[] ver = ISO7816Utils.readRecord(channel, 1);
       byte[] cardATR = card.getATR().getBytes();
+   
       if (ver[0] == (byte) 0xa5 && ver[2] == (byte) 0x53) {
         version = (0x0F & ver[4]) + (0xF0 & ver[5])/160.0 + (0x0F & ver[5])/100.0;
         friendlyName = (version < 1.2) ? "<= G2" : "G3+";
@@ -190,32 +199,40 @@ public class STARCOSCard extends AbstractSignatureCard implements PINMgmtSignatu
             } else {
               i += hb[i] & 0x0f;
             }
-          }
           friendlyName = "G" + generation;
 
+          
+        }
+        
           if (generation == 3) {
-            // SELECT application
-            execSELECT_AID(channel, AID_INFOBOX);
-            // SELECT file
-            try {
-              // the file identifier has changed with version G3b
-              execSELECT_FID(channel, EF_INFOBOX);
-              friendlyName = "G3b";
-            } catch (FileNotFoundException e) {
-              friendlyName = "G3a";
+              // SELECT application
+              execSELECT_AID(channel, AID_INFOBOX);
+              // SELECT file
+              try {
+                // the file identifier has changed with version G3b
+                execSELECT_FID(channel, EF_INFOBOX);
+                friendlyName = "G3b";
+              } catch (FileNotFoundException e) {
+                friendlyName = "G3a";
+              }
             }
+        
+          if (generation==4)
+          {
+        	  friendlyName = "G4";
           }
         }
-        log.info("e-card version=" + version + " (" + friendlyName + ")");
       } else if ((cardATR[12]) == 0x41) { // checking if there is a-trust a.sign premium card present
           // data taken from a-trust cardos5.3 specification v0.05
-friendlyName = "a.sign premium";
+
 if (cardATR[13] == 0x01) {
 version = 1.2;
 generation = 4;
 if (((cardATR[16] & 0xFF) == 0xc9 ) && ((cardATR[17] & 0xFF )== 0x03)) {
+	friendlyName = "a.sign premium";
 friendlyName += " (G1 CardOS5.3)";
 log.info("A-TRUST a.sign premium found, first generation with CardOS 5.3");
+execSELECT_AID(channel,AID_INFOBOXG4);
 } else {
 friendlyName += " (G1)";
 log.info("A-TRUST a.sign premium found, first generation");
@@ -233,9 +250,9 @@ log.info("A-TRUST a.sign premium found, first generation");
         "at/gv/egiz/smcc/STARCOSCard", "card.pin", KID_PIN_CARD, null, 10);
     // Currently not used
     // if (generation == 4) {
-    //   cardPukInfo = new PinInfo(8, 12, "[0-9]",
-    //       "at/gv/egiz/smcc/STARCOSCard", "card.puk", KID_PUK_CARD, null, 10);
-    // }
+    //  cardPukInfo = new PinInfo(8, 12, "[0-9]",
+     //      "at/gv/egiz/smcc/STARCOSCard", "card.puk", KID_PUK_CARD, null, 10);
+   //  }
     if (friendlyName.matches("^a.sign premium.*")) {
         ssPinInfo = new PinInfo(6, 12, "[0-9]",
                 "at/gv/egiz/smcc/STARCOSCard", "sig.pin", KID_PIN_SS, AID_DF_SS_ASIGN,
@@ -291,6 +308,7 @@ log.info("A-TRUST a.sign premium found, first generation");
       }
       return certificate;
     } catch (FileNotFoundException e) {
+    	log.info("FileNotFoundExcpetion"+e.toString());
       throw new NotActivatedException();
     } catch (CardException e) {
       log.info("Failed to get certificate.", e);
@@ -302,14 +320,21 @@ log.info("A-TRUST a.sign premium found, first generation");
   @Override
   @Exclusive
   public byte[] getInfobox(String infobox, PINGUI pinGUI, String domainId)
-      throws SignatureCardException, InterruptedException {
+  throws SignatureCardException, InterruptedException {
   
     try {
+    	
       if ("IdentityLink".equals(infobox)) {
 
         CardChannel channel = getCardChannel();
         // SELECT application
-        execSELECT_AID(channel, AID_INFOBOX);
+        if (friendlyName.matches("^a.sign premium.*"))
+        {
+        	execSELECT_AID(channel, AID_INFOBOXG4);
+        }
+        else 
+        	{execSELECT_AID(channel, AID_INFOBOX);
+        	}
         // SELECT file
         try {
           // the file identifier has changed with version G3b
@@ -344,6 +369,7 @@ log.info("A-TRUST a.sign premium found, first generation");
             	  // SELECT application
                 if (friendlyName.matches("^a.sign premium.*")) {  // check if we are using a.sign premium card
                   execSELECT_AID(channel, AID_DF_GS_ASIGN);
+              
                 } else {
 
               execSELECT_AID(channel, AID_DF_GS);}
@@ -421,7 +447,11 @@ log.info("A-TRUST a.sign premium found, first generation");
        
         CardChannel channel = getCardChannel();
         // SELECT application
-        execSELECT_AID(channel, AID_SV_PERSONENDATEN);
+        
+        if (friendlyName.matches("^a.sign premium.*")) 
+        {execSELECT_AID(channel, AID_INFOBOXG4);}
+        else
+        {execSELECT_AID(channel, AID_SV_PERSONENDATEN);}
         // SELECT file
         execSELECT_FID(channel, fid);
         // READ BINARY
@@ -790,6 +820,11 @@ log.info("A-TRUST a.sign premium found, first generation");
 
   @Override
   public String toString() {
+	  
+	  if (friendlyName.matches("^a.sign premium.*"))
+	  {
+		  return friendlyName;
+	  }else
     return ("e-card version " + version + " (" + friendlyName + ")");
   }
   
