@@ -34,6 +34,7 @@ import java.io.StringWriter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -48,6 +49,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
+import org.xml.sax.SAXException;
 
 public final class DOMUtils {
 
@@ -161,5 +163,75 @@ public final class DOMUtils {
     base64OutputStream.close();
     return doc.createTextNode(outputStream.toString("ASCII"));
   }
+  
+  /**
+   * Set XML parser features to {@link DocumentBuilderFactory} to prevent XXE, XEE and SSRF attacks
+   * <br>
+   * <br>
+   * These features are set by this method:
+   * <ul>
+   * 	<li>http://xml.org/sax/features/external-general-entities --> false</li>
+   * 	<li>http://xml.org/sax/features/external-parameter-entities --> false</li>
+   * 	<li>http://apache.org/xml/features/nonvalidating/load-external-dtd --> false</li>
+   * 	<li>http://apache.org/xml/features/disallow-doctype-decl --> true</li>
+   * </ul>
+   *  
+   * 
+   * @param dbf {@link DocumentBuilderFactory} on which the features should be registered
+   */
+  public static void setXMLParserFlagsAgainstXXEAndSSRFAttacks(DocumentBuilderFactory dbf) {
+	  try {
+			dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+			dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+			dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+			dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+						
+		} catch (ParserConfigurationException e) {
+			log.error("Can NOT set Xerces parser security features. -> XML parsing is possible insecure!!!! ", e);
+			
+		}
+	  
+  }
+  
+  /**
+   * Parse an {@link InputStream} that contains a XML document into a {@link Document}
+   * This method set all features to prevent XXE, XEE and SSRF attacks
+   * 
+   * These features are set by this method:
+   * <ul>
+   * 	<li>http://xml.org/sax/features/external-general-entities --> false</li>
+   * 	<li>http://xml.org/sax/features/external-parameter-entities --> false</li>
+   * 	<li>http://apache.org/xml/features/nonvalidating/load-external-dtd --> false</li>
+   * 	<li>http://apache.org/xml/features/disallow-doctype-decl --> true</li>
+   * </ul>
+   * 
+   * @param is {@link InputStream} that contains a serialized XML document 
+   * @return Deserialized {@link Document} from input XML 
+   * @throws XMLStreamException XML parser has an error 
+   * @throws IOException 
+   */
+	public static Document validateXMLAgainstXXEAndSSRFAttacks(InputStream is) throws XMLStreamException, IOException {		
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();		
+		setXMLParserFlagsAgainstXXEAndSSRFAttacks(dbf);
+		    	    	        
+		try {        	
+			//validate input stream        	
+			return dbf.newDocumentBuilder().parse(is);
+            		    		    		
+		} catch (SAXException e) {
+			log.error("XML data validation FAILED with msg: " + e.getMessage(), e);
+			throw new XMLStreamException("XML data validation FAILED with msg: " + e.getMessage(), e);
+
+		} catch (ParserConfigurationException e) {
+			log.error("XML data validation FAILED with msg: " + e.getMessage(), e);
+			throw new XMLStreamException("XML data validation FAILED with msg: " + e.getMessage(), e);
+    		
+		} catch (IOException e) {
+			log.error("XML data validation FAILED with msg: " + e.getMessage(), e);
+			throw new XMLStreamException("XML data validation FAILED with msg: " + e.getMessage(), e);
+    		
+		}
+		
+	}
 
 }

@@ -25,7 +25,10 @@
 
 package at.gv.egiz.slbinding;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +41,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -46,11 +51,13 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import at.gv.egiz.bku.utils.ClasspathURLStreamHandler;
+import at.gv.egiz.dom.DOMUtils;
 import at.gv.egiz.validation.ReportingValidationEventHandler;
 
 public class SLUnmarshaller {
@@ -235,28 +242,71 @@ public class SLUnmarshaller {
    * @throws JAXBException
    */
 public Object unmarshal(StreamSource source) throws XMLStreamException, JAXBException {
+    Reader inputReader = source.getReader(); 
     
-    ReportingValidationEventHandler validationEventHandler = new ReportingValidationEventHandler();
-//    System.setProperty("javax.xml.stream.XMLInputFactory", "com.sun.xml.stream.ZephyrParserFactory");
-//    System.setProperty("com.sun.xml.stream.ZephyrParserFactory", "com.sun.xml.stream.ZephyrParserFactory");
-//    XMLInputFactory inputFactory = XMLInputFactory.newInstance("com.sun.xml.stream.ZephyrParserFactory", null);
-    
+    /* Validate XML against XXE, XEE, and SSRF
+     * 
+     * This pre-validation step is required because com.sun.xml.stream.sjsxp-1.0.2 XML stream parser library does not 
+     * support all XML parser features to prevent these types of attacks  
+     */
+    if (inputReader instanceof InputStreamReader) {    	    	        
+        try {        	
+        	//create copy of input stream
+        	InputStreamReader isReader = (InputStreamReader) inputReader;
+        	String encoding = isReader.getEncoding();        	
+        	byte[] backup = IOUtils.toByteArray(isReader, encoding);
+
+        	//validate input stream
+        	DOMUtils.validateXMLAgainstXXEAndSSRFAttacks(new ByteArrayInputStream(backup));
+        	    		
+    		//create new inputStreamReader for reak processing
+    		inputReader = new InputStreamReader(new ByteArrayInputStream(backup), encoding);
+    		
+    		
+    	} catch (XMLStreamException e) {
+    		log.error("XML data validation FAILED with msg: " + e.getMessage(), e);
+    		throw new XMLStreamException("XML data validation FAILED with msg: " + e.getMessage(), e);
+    		
+    	} catch (IOException e) {
+    		log.error("XML data validation FAILED with msg: " + e.getMessage(), e);
+    		throw new XMLStreamException("XML data validation FAILED with msg: " + e.getMessage(), e);
+    		
+		}
+    	    	
+    } else {
+    	log.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    	log.error("Reader is not of type InputStreamReader -> can not make a copy of the InputStream --> extended XML validation is not possible!!! ");
+    	log.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    	
+    }
+        
+    /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     * parse XML with original functionality
+     * 
+     * This code implements the the original mocca XML processing by using 
+     *  com.sun.xml.stream.sjsxp-1.0.2 XML stream parser library. Currently, this library is required to get full 
+     *  security-layer specific XML processing. However, there this lib does not fully support XXE, XEE and SSRF
+     *  prevention mechanisms (e.g.: XMLInputFactory.SUPPORT_DTD flag is not used)    
+     * 
+     * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     */
     XMLInputFactory inputFactory = XMLInputFactory.newInstance();
     
     //disallow DTD and external entities
     inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
     inputFactory.setProperty("javax.xml.stream.isSupportingExternalEntities", false);
-    
-    XMLEventReader eventReader = inputFactory.createXMLEventReader(source.getReader());
+        
+    XMLEventReader eventReader = inputFactory.createXMLEventReader(inputReader);
     RedirectEventFilter redirectEventFilter = new RedirectEventFilter();
     XMLEventReader filteredReader = inputFactory.createFilteredReader(eventReader, redirectEventFilter);
 
     Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+    ReportingValidationEventHandler validationEventHandler = new ReportingValidationEventHandler();
     unmarshaller.setEventHandler(validationEventHandler);
 
     unmarshaller.setListener(new RedirectUnmarshallerListener(redirectEventFilter));
-    unmarshaller.setSchema(slSchema);
-
+    unmarshaller.setSchema(slSchema);    
+    
     Object object;
     try {
       log.trace("Before unmarshal().");

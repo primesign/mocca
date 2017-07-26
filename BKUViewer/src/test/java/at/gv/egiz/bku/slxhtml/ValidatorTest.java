@@ -71,4 +71,26 @@ public class ValidatorTest {
     
   }
   
+  @Test
+  public void testValidateWithDocType() throws ValidationException {
+    
+    String slxhtmlFile = "at/gv/egiz/bku/slxhtml/zugang_with_DocType.xhtml";
+    
+    Validator validator = ValidatorFactory.newValidator("application/xhtml+xml");
+
+    ClassLoader cl = ValidatorTest.class.getClassLoader();
+    InputStream slxhtml = cl.getResourceAsStream(slxhtmlFile);
+    long t0 = System.currentTimeMillis();
+    try {
+      validator.validate(slxhtml, null);
+      
+    } catch (ValidationException e) {
+      e.printStackTrace();
+      throw e;
+    }
+    long t1 = System.currentTimeMillis();
+    log.info("Validated SLXHTML file '{}' in {}ms.", slxhtmlFile, t1 - t0);
+    
+  }
+  
 }
