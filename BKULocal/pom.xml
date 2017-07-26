@@ -96,47 +96,47 @@
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>STAL</artifactId>
-      <version>1.3.23-PRIMESIGN-1-SNAPSHOT</version>
+      <version>1.3.27-PRIMESIGN-1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>bkucommon</artifactId>
-      <version>1.3.23-PRIMESIGN-1-SNAPSHOT</version>
+      <version>1.3.27-PRIMESIGN-1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>smcc</artifactId>
-      <version>1.3.23-PRIMESIGN-1-SNAPSHOT</version>
+      <version>1.3.27-PRIMESIGN-1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>smccSTAL</artifactId>
-      <version>1.3.23-PRIMESIGN-1-SNAPSHOT</version>
+      <version>1.3.27-PRIMESIGN-1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUGuiExt</artifactId>
-      <version>1.3.23-PRIMESIGN-1-SNAPSHOT</version>
+      <version>1.3.27-PRIMESIGN-1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>smccSTALExt</artifactId>
-      <version>1.3.23-PRIMESIGN-1-SNAPSHOT</version>
+      <version>1.3.27-PRIMESIGN-1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUViewer</artifactId>
-      <version>1.3.23-PRIMESIGN-1-SNAPSHOT</version>
+      <version>1.3.27-PRIMESIGN-1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <artifactId>BKUHelp</artifactId>
       <groupId>at.gv.egiz</groupId>
-      <version>1.3.23-PRIMESIGN-1-SNAPSHOT</version>
+      <version>1.3.27-PRIMESIGN-1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <artifactId>BKUHelpWebStart</artifactId>
       <groupId>at.gv.egiz</groupId>
-      <version>1.3.23-PRIMESIGN-1-SNAPSHOT</version>
+      <version>1.3.27-PRIMESIGN-1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <artifactId>BKUCertificates</artifactId>
