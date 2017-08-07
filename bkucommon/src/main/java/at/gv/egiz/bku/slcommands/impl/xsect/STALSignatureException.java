@@ -38,8 +38,8 @@ public class STALSignatureException extends SignatureException {
   /**
    * The STAL error code.
    */
-  private int errorCode;
   
+  private Integer errorCode;
   /**
    * Creates a new instance of this STALSignatureException. 
    */
@@ -106,7 +106,26 @@ public class STALSignatureException extends SignatureException {
    * @return the error code
    */
   public int getErrorCode() {
-    return errorCode;
+    return errorCode != null ? errorCode : 0;
   }
   
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("STALSignatureException [");
+    if (errorCode != null) {
+      builder.append("errorCode=");
+      builder.append(errorCode);
+      if (getMessage() != null) {
+        builder.append(", ");
+      }
+    }
+    if (getMessage() != null) {
+      builder.append("message=");
+      builder.append(getMessage());
+    }
+    builder.append("]");
+    return builder.toString();
+  }
+
 }

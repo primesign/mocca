@@ -32,7 +32,6 @@ import java.net.URISyntaxException;
 import java.security.InvalidParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.SignatureException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -40,6 +39,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.crypto.dsig.DigestMethod;
 
@@ -53,7 +54,6 @@ import at.buergerkarte.namespaces.securitylayer._1_2_3.DigestAndRefType;
 import at.buergerkarte.namespaces.securitylayer._1_2_3.ExcludedByteRangeType;
 import at.gv.egiz.bku.slcommands.impl.xsect.AlgorithmMethodFactory;
 import at.gv.egiz.bku.slcommands.impl.xsect.AlgorithmMethodFactoryImpl;
-import at.gv.egiz.bku.slcommands.impl.xsect.STALSignatureException;
 import at.gv.egiz.bku.slexceptions.SLCommandException;
 import at.gv.egiz.bku.utils.urldereferencer.URLDereferencer;
 import at.gv.egiz.stal.HashDataInput;
@@ -253,18 +253,16 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
     try {
       signedData.addSignerInfo(signerInfo);
     } catch (NoSuchAlgorithmException e) {
-      if (e.getCause() instanceof CMSException) {
-        CMSException e2 = (CMSException) e.getCause();
-        if (e2.getCause() instanceof SignatureException)
-        {
-          SignatureException e3 = (SignatureException) e2.getCause();
-          if (e3.getCause() instanceof STALSignatureException) {
-            STALSignatureException e4 = (STALSignatureException) e3.getCause();
-            throw new SLCommandException(e4.getErrorCode());
-          }
+      String message = e.getMessage();
+      if (message.contains("STALSignatureException")) {
+        Matcher matcher = Pattern.compile("errorCode=([0-9]+)").matcher(message);
+        if (matcher.find()) {
+          throw new SLCommandException(Integer.parseInt(matcher.group(1)));
+        } else {
+          throw new SLCommandException(4000);
         }
-        throw e2;
       }
+
       throw new CMSSignatureException(e);
     }
   }
