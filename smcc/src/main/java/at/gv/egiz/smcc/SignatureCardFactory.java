@@ -1151,6 +1151,25 @@ public class SignatureCardFactory {
 						(byte) 0xff, (byte) 0xff },
 				"at.gv.egiz.smcc.LIEZertifikatCard"));
 
+		supportedCards.add(new SupportedCard(
+				// PrimeSign GmbH ATOS CardOS 5.3
+				// [3b:de:18:00:81:31:fe:58:80:62:c9:03:59:50:72:69:6d:65:53:69:67:6e:d1]
+				new byte[] { (byte) 0x3b, (byte) 0xde, (byte) 0x18,
+						(byte) 0x00, (byte) 0x81, (byte) 0x31, (byte) 0xFE,
+						(byte) 0x58, (byte) 0x80, (byte) 0x62,(byte) 0xC9,
+						(byte) 0x03,  (byte) 0x59, 'P', 'r', 'i', 'm', 'e',
+						'S', 'i', 'g', 'n', (byte) 0xD1},
+				// mask
+				// (ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff:ff)
+				new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
+						(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff },
+				"at.gv.egiz.smcc.PrimSignATOSCard"));
+
+		
 	}
 
 	/**
