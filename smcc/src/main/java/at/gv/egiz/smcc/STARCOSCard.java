@@ -308,7 +308,6 @@ log.info("A-TRUST a.sign premium found, first generation");
       }
       return certificate;
     } catch (FileNotFoundException e) {
-    	log.info("FileNotFoundExcpetion"+e.toString());
       throw new NotActivatedException();
     } catch (CardException e) {
       log.info("Failed to get certificate.", e);
