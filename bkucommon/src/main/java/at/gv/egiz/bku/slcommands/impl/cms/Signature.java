@@ -32,7 +32,6 @@ import java.net.URISyntaxException;
 import java.security.InvalidParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.SignatureException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -249,26 +248,6 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
     return data;
   }
 
-  protected void setSignerInfo() throws SLCommandException, CMSException, CMSSignatureException {
-    try {
-      signedData.addSignerInfo(signerInfo);
-    } catch (NoSuchAlgorithmException e) {
-      if (e.getCause() instanceof CMSException) {
-        CMSException e2 = (CMSException) e.getCause();
-        if (e2.getCause() instanceof SignatureException)
-        {
-          SignatureException e3 = (SignatureException) e2.getCause();
-          if (e3.getCause() instanceof STALSignatureException) {
-            STALSignatureException e4 = (STALSignatureException) e3.getCause();
-            throw new SLCommandException(e4.getErrorCode());
-          }
-        }
-        throw e2;
-      }
-      throw new CMSSignatureException(e);
-    }
-  }
-
   private void setAlgorithmIDs(X509Certificate signingCertificate, boolean useStrongHash) throws NoSuchAlgorithmException {
     AlgorithmMethodFactory amf = new AlgorithmMethodFactoryImpl(signingCertificate, useStrongHash);
     signatureAlgorithmURI = amf.getSignatureAlgorithmURI();
@@ -303,9 +282,17 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
   
 
   public byte[] sign(STAL stal, String keyboxIdentifier) throws CMSException, CMSSignatureException, SLCommandException {
-    signedData.setSecurityProvider(new STALSecurityProvider(
-        stal, keyboxIdentifier, getHashDataInput(), this.excludedByteRange));
-    setSignerInfo();
+    STALSecurityProvider securityProvider = new STALSecurityProvider(stal, keyboxIdentifier, getHashDataInput(), this.excludedByteRange);
+    signedData.setSecurityProvider(securityProvider);
+    try {
+      signedData.addSignerInfo(signerInfo);
+    } catch (NoSuchAlgorithmException e) {
+      STALSignatureException stalSignatureException = securityProvider.getStalSignatureException();
+      if (stalSignatureException != null) {
+        throw new SLCommandException(stalSignatureException.getErrorCode());
+      }
+      throw new CMSSignatureException(e);
+    }
     if (digestValue != null) {
       try {
         signedData.setMessageDigest(digestAlgorithm, digestValue);

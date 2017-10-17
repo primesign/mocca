@@ -72,7 +72,11 @@ public class BulkSignature extends Signature {
    */
   public byte[] sign(SecurityProvider securityProvider, STAL stal, String keyboxIdentifier) throws CMSException, CMSSignatureException, SLCommandException {
 	    signedData.setSecurityProvider(securityProvider);
-	    setSignerInfo();
+	    try {
+	      signedData.addSignerInfo(signerInfo);
+	    } catch (NoSuchAlgorithmException e) {
+	      throw new CMSSignatureException(e);
+	    }
 	    if (digestValue != null) {
 	      try {
 	        signedData.setMessageDigest(digestAlgorithm, digestValue);
