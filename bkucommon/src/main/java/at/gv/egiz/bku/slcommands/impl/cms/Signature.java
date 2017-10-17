@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import org.w3._2000._09.xmldsig_.DigestMethodType;
 
 import at.buergerkarte.namespaces.securitylayer._1_2_3.CMSDataObjectOptionalMetaType;
+import at.buergerkarte.namespaces.securitylayer._1_2_3.CMSDataObjectRequiredMetaType;
 import at.buergerkarte.namespaces.securitylayer._1_2_3.DigestAndRefType;
 import at.buergerkarte.namespaces.securitylayer._1_2_3.ExcludedByteRangeType;
 import at.gv.egiz.bku.slcommands.impl.xsect.AlgorithmMethodFactory;
@@ -140,8 +141,28 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
     createSignerInfo(signingCertificate);
     setSignerCertificate(signingCertificate);
     this.mimeType = dataObject.getMetaInfo().getMimeType();
+    
     setAttributes(this.mimeType, signingCertificate, signingTime);
   }
+  
+  public Signature(CMSDataObjectRequiredMetaType dataObject, String structure,
+	      X509Certificate signingCertificate, URLDereferencer urlDereferencer,
+	      boolean useStrongHash)
+	          throws NoSuchAlgorithmException, CertificateEncodingException,
+	          CertificateException, X509ExtensionException, InvalidParameterException,
+	          CodingException, SLCommandException, IOException {
+	    byte[] dataToBeSigned = getContent(dataObject, urlDereferencer);
+	    int mode = structure.equalsIgnoreCase("enveloping") ? SignedData.IMPLICIT : SignedData.EXPLICIT;
+	    this.signedData = new SignedData(dataToBeSigned, mode);
+	    setAlgorithmIDs(signingCertificate, useStrongHash);
+	    createSignerInfo(signingCertificate);
+	    setSignerCertificate(signingCertificate);
+	 
+	    
+	    setAttributes(signingCertificate);
+	  }
+  
+  
 
   private void createSignerInfo(X509Certificate signingCertificate) throws CertificateEncodingException, CertificateException {
     iaik.x509.X509Certificate sigcert =
@@ -168,6 +189,16 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
     Attribute[] attributeArray = attributes.toArray(new Attribute[attributes.size()]);
     signerInfo.setSignedAttributes(attributeArray);
   }
+  
+  private void setAttributes(X509Certificate signingCertificate) throws CertificateException, NoSuchAlgorithmException, CodingException {
+	    List<Attribute> attributes = new ArrayList<Attribute>();
+	    setContentTypeAttrib(attributes);
+	    setSigningCertificateAttrib(attributes, signingCertificate);
+	    Attribute[] attributeArray = attributes.toArray(new Attribute[attributes.size()]);
+	    signerInfo.setSignedAttributes(attributeArray);
+	  }
+  
+
 
   private void setMimeTypeAttrib(List<Attribute> attributes, String mimeType) {
     String oidStr = ID_AA_ETS_MIMETYPE;
