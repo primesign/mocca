@@ -67,6 +67,7 @@ public class STALSecurityProvider extends IaikProvider {
   private STAL stal;
   private List<HashDataInput> hashDataInput;
   private ExcludedByteRangeType excludedByteRange;
+  private STALSignatureException stalSignatureException;
 
   public STALSecurityProvider(STAL stal, String keyboxIdentifier,
       HashDataInput hashDataInput, ExcludedByteRangeType excludedByteRange) {
@@ -106,8 +107,8 @@ public class STALSecurityProvider extends IaikProvider {
       return wrapSignatureValue(sig, signatureAlgorithm);
     } else if (response instanceof ErrorResponse) {
       ErrorResponse err = (ErrorResponse) response;
-      STALSignatureException se = new STALSignatureException(err.getErrorCode(), err.getErrorMessage());
-      throw new SignatureException(se);
+      stalSignatureException = new STALSignatureException(err.getErrorCode(), err.getErrorMessage());
+      throw new SignatureException(stalSignatureException);
     } else {
       throw new SignatureException("Failed to access STAL.");
     }
@@ -151,4 +152,8 @@ public class STALSecurityProvider extends IaikProvider {
       return sig;
   }
 
+  public STALSignatureException getStalSignatureException() {
+    return stalSignatureException;
+  }
+  
 }
