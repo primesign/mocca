@@ -3,7 +3,7 @@
   <parent>
     <artifactId>mocca</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.3.29-PRIMESIGN-2-SNAPSHOT</version>
+    <version>1.3.29-PRIMESIGN-2</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>BKUAppletExt</artifactId>
@@ -284,37 +284,37 @@
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>STALExt</artifactId>
-      <version>1.3.29-PRIMESIGN-2-SNAPSHOT</version>
+      <version>1.3.29-PRIMESIGN-2</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>STALXService</artifactId>
-      <version>1.3.29-PRIMESIGN-2-SNAPSHOT</version>
+      <version>1.3.29-PRIMESIGN-2</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>smccSTAL</artifactId>
-      <version>1.3.29-PRIMESIGN-2-SNAPSHOT</version>
+      <version>1.3.29-PRIMESIGN-2</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUApplet</artifactId>
-      <version>1.3.29-PRIMESIGN-2-SNAPSHOT</version>
+      <version>1.3.29-PRIMESIGN-2</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUGuiExt</artifactId>
-      <version>1.3.29-PRIMESIGN-2-SNAPSHOT</version>
+      <version>1.3.29-PRIMESIGN-2</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>smccSTALExt</artifactId>
-      <version>1.3.29-PRIMESIGN-2-SNAPSHOT</version>
+      <version>1.3.29-PRIMESIGN-2</version>
       <optional>true</optional>
     </dependency>
     <dependency>

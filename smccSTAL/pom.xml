@@ -3,7 +3,7 @@
     <parent>
         <artifactId>mocca</artifactId>
         <groupId>at.gv.egiz</groupId>
-        <version>1.3.29-PRIMESIGN-2-SNAPSHOT</version>
+        <version>1.3.29-PRIMESIGN-2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>smccSTAL</artifactId>
@@ -24,17 +24,17 @@
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>STAL</artifactId>
-            <version>1.3.29-PRIMESIGN-2-SNAPSHOT</version>
+            <version>1.3.29-PRIMESIGN-2</version>
         </dependency>
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>smcc</artifactId>
-            <version>1.3.29-PRIMESIGN-2-SNAPSHOT</version>
+            <version>1.3.29-PRIMESIGN-2</version>
         </dependency>
         <dependency>
             <groupId>at.gv.egiz</groupId>
             <artifactId>BKUCommonGUI</artifactId>
-            <version>1.3.29-PRIMESIGN-2-SNAPSHOT</version>
+            <version>1.3.29-PRIMESIGN-2</version>
         </dependency>
         <dependency>
             <groupId>iaik</groupId>
