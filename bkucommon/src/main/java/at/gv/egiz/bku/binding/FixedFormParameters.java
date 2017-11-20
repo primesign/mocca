@@ -31,6 +31,7 @@ package at.gv.egiz.bku.binding;
 public interface FixedFormParameters {
   String XMLREQUEST = "XMLRequest";
   String REDIRECTURL = "RedirectURL";
+  String REDIRECTTARGET = "redirectTarget";
   String DATAURL = "DataURL";
   String STYLESHEETURL = "StylesheetURL";
 }
