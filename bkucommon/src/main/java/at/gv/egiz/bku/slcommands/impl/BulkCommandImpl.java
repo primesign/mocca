@@ -203,7 +203,7 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
     		  
 		if (request.getCreateCMSSignatureRequest().getDataObject() != null
 				&& request.getCreateCMSSignatureRequest().getDataObject().getContent() != null) {
-			request.getCreateCMSSignatureRequest().getDataObject().getContent().getReference();
+			referenceURL = request.getCreateCMSSignatureRequest().getDataObject().getContent().getReference();
 		}
 
     if (StringUtils.isNotEmpty(referenceURL)) {
