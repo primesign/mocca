@@ -261,8 +261,8 @@ public class BulkCommandImpl extends SLCommandImpl<BulkRequestType> implements B
       } else if (response instanceof ErrorResponse) {
 
         ErrorResponse err = (ErrorResponse) response;
-        STALSignatureException se = new STALSignatureException(err.getErrorCode(), err.getErrorMessage());
-        throw new SignatureException(se);
+        log.debug("Error signing bulk request. Error response code: " + err.getErrorCode() + " (" + err.getErrorMessage() + ").");
+        throw new SLCommandException(err.getErrorCode());
       }
 
     } catch (SignatureException e) {
