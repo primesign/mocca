@@ -3,7 +3,7 @@
   <parent>
     <artifactId>mocca</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.3.29-PRIMESIGN-3-SNAPSHOT</version>
+    <version>1.3.29-PRIMESIGN-4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>BKUOnline</artifactId>
@@ -19,22 +19,22 @@
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>bkucommon</artifactId>
-      <version>1.3.29-PRIMESIGN-3-SNAPSHOT</version>
+      <version>1.3.29-PRIMESIGN-4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUViewer</artifactId>
-      <version>1.3.29-PRIMESIGN-3-SNAPSHOT</version>
+      <version>1.3.29-PRIMESIGN-4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>STALService</artifactId>
-      <version>1.3.29-PRIMESIGN-3-SNAPSHOT</version>
+      <version>1.3.29-PRIMESIGN-4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>STALXService</artifactId>
-      <version>1.3.29-PRIMESIGN-3-SNAPSHOT</version>
+      <version>1.3.29-PRIMESIGN-4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <artifactId>BKUCertificates</artifactId>
@@ -44,7 +44,7 @@
     <dependency>
       <artifactId>BKUHelp</artifactId>
       <groupId>at.gv.egiz</groupId>
-      <version>1.3.29-PRIMESIGN-3-SNAPSHOT</version>
+      <version>1.3.29-PRIMESIGN-4-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -126,14 +126,14 @@
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUApplet</artifactId>
-      <version>1.3.29-PRIMESIGN-3-SNAPSHOT</version>
+      <version>1.3.29-PRIMESIGN-4-SNAPSHOT</version>
       <classifier>single</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>at.gv.egiz</groupId>
       <artifactId>BKUAppletExt</artifactId>
-      <version>1.3.29-PRIMESIGN-3-SNAPSHOT</version>
+      <version>1.3.29-PRIMESIGN-4-SNAPSHOT</version>
       <classifier>single</classifier>
       <scope>provided</scope>
     </dependency>
