@@ -15,17 +15,17 @@
     <module>utils</module>
     <module>bkucommon</module>
     <module>STAL</module>
-    <module>BKUOnline</module>
+    <!-- <module>BKUOnline</module> -->
     <module>smcc</module>
     <module>BKULocal</module>
-    <module>BKUApplet</module>
+    <!-- <module>BKUApplet</module> -->
     <module>smccSTAL</module>
     <module>STALService</module>
     <module>BKUCommonGUI</module>
     <module>BKUViewer</module>
     <module>STALExt</module>
     <module>STALXService</module>
-    <module>BKUAppletExt</module>
+    <!-- <module>BKUAppletExt</module> -->
     <module>BKUWebStart</module>
     <module>BKUCertificates</module>
     <module>BKUHelp</module>
@@ -217,7 +217,7 @@
     <repository>
       <id>mocca-joinup</id>
       <name>MOCCA JoinUp</name>
-      <url>http://joinup.ec.europa.eu/site/mocca/m2/repository/</url>
+      <url>https://apps.egiz.gv.at/maven/</url>
     </repository>
     <repository>
       <id>maven2-repository.dev.java.net</id>
@@ -246,7 +246,7 @@
     <pluginRepository>
       <id>mocca-joinup</id>
       <name>MOCCA JoinUp</name>
-      <url>http://joinup.ec.europa.eu/site/mocca/m2/repository/</url>
+      <url>https://apps.egiz.gv.at/maven/</url>
     </pluginRepository>
   </pluginRepositories>
   <dependencies>
@@ -445,7 +445,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.6.4-s</version>
+        <version>1.6.4</version>
         <type>jar</type>
         <scope>compile</scope>
       </dependency>

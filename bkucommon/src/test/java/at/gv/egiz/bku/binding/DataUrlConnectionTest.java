@@ -109,7 +109,7 @@ public class DataUrlConnectionTest extends AbstractBindingProcessorTest {
 
   @Test
   public void testBasicNop() {
-    bindingProcessor.consumeRequestStream("http://localhost:3495/http-security-layer-request", requestStream);
+    bindingProcessor.consumeRequestStream("http://localhost:8082/http-security-layer-request", requestStream);
     bindingProcessor.run();
     SLException e = bindingProcessor.bindingProcessorError;
     if (e != null) {
