@@ -1,1 +1,1 @@
-export CATALINA_OPTS="-Dlog4j.configuration=file:///$CATALINA_HOME/conf/log4j.properties -Dmocca.swcard.directory=$CATALINA_HOME/conf/mocca/smcc -server"
+export CATALINA_OPTS="-Dlog4j.configuration=file:///$CATALINA_HOME/conf/log4j.properties -Djnlp.mocca.swcard.directory=$CATALINA_HOME/conf/mocca/smcc"
