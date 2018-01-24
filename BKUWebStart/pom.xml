@@ -76,8 +76,8 @@
       </plugin>
       
       <plugin>
-          <artifactId>webstart-maven-plugin</artifactId>
-          <groupId>org.codehaus.mojo.webstart</groupId>
+          <groupId>org.codehaus.mojo</groupId>
+    	  <artifactId>webstart-maven-plugin</artifactId>
           <executions>
             <execution>
               <phase>package</phase>
@@ -86,8 +86,21 @@
               </goals>
             </execution>
           </executions>
+          <dependencies>
+          			<dependency>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>webstart-pack200-impl</artifactId>
+                        <version>1.0-beta-6</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>keytool-api-1.7</artifactId>
+                        <version>1.4</version>
+                    </dependency>
+          </dependencies>
           <configuration>
             <excludeTransitive>false</excludeTransitive>
+            <pack200><enabled>false</enabled></pack200>
             <jnlp>
               <inputTemplateResourcePath>${project.basedir}/src/main/jnlp</inputTemplateResourcePath>
               <inputTemplate>template-unstable.xml</inputTemplate>
@@ -105,7 +118,6 @@
                 <gen>false</gen>
               </keystoreConfig>
             </sign>
-            <pack200>false</pack200>
             <gzip>false</gzip>
             <outputJarVersions>false</outputJarVersions>
             <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
@@ -123,9 +135,10 @@
       <build>
         <plugins>
         <plugin>
-          <artifactId>webstart-maven-plugin</artifactId>
-          <groupId>org.codehaus.mojo.webstart</groupId>
+          <groupId>org.codehaus.mojo</groupId>
+    	  <artifactId>webstart-maven-plugin</artifactId>
           <configuration>
+          	<pack200><enabled>false</enabled></pack200>
             <jnlp>
               <inputTemplate>template-local.xml</inputTemplate>
               <outputFile>mocca-local.jnlp</outputFile>
@@ -173,7 +186,7 @@
                 <gen>false</gen>
               </keystoreConfig>
             </sign>
-            <pack200>false</pack200>
+            <pack200><enabled>false</enabled></pack200>
             <gzip>false</gzip>
             <outputJarVersions>false</outputJarVersions>
             <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
@@ -189,10 +202,10 @@
       <build>
         <plugins>
         <plugin>
-          <artifactId>webstart-maven-plugin</artifactId>
-          <groupId>org.codehaus.mojo.webstart</groupId>
+          <groupId>org.codehaus.mojo</groupId>
+    	  <artifactId>webstart-maven-plugin</artifactId>
           <!-- use pkcs11-patched webstart-maven-plugin-->
-          <version>1.0-beta-1-mocca</version>
+          <!-- <version>1.0-beta-1-mocca</version> -->
           <executions>
             <execution>
               <phase>package</phase>
@@ -202,6 +215,7 @@
             </execution>
           </executions>
           <configuration>
+          	<pack200><enabled>false</enabled></pack200>
             <excludeTransitive>false</excludeTransitive>
             <jnlp>
               <inputTemplateResourcePath>${project.basedir}/src/main/jnlp</inputTemplateResourcePath>
@@ -220,7 +234,7 @@
                 <gen>false</gen>
               </keystoreConfig>
             </sign>
-            <pack200>false</pack200>
+            <pack200><enabled>false</enabled></pack200>
             <gzip>false</gzip>
             <outputJarVersions>false</outputJarVersions>
             <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
