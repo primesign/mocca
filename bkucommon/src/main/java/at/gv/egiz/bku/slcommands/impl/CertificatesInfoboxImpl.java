@@ -57,22 +57,27 @@ public class CertificatesInfoboxImpl extends AbstractAssocArrayInfobox {
    */
   public static final String[] CERTIFICATES_KEYS = new String[] {
     "SecureSignatureKeypair", 
-    "CertifiedKeypair",
-    "00",
-    "01",
-    "02",
-    "03",
-    "04",
-    "05",
-    "06",
-    "07",
-    "08",
-    "09",
-    "10",
-    "11",
-    "12",
-    "13",
-    "14"};
+    "CertifiedKeypair"};
+  
+  
+//  public static final String[] CERTIFICATES_KEYS = new String[] {
+//		    "SecureSignatureKeypair", 
+//		    "CertifiedKeypair",
+//		    "00",
+//		    "01",
+//		    "02",
+//		    "03",
+//		    "04",
+//		    "05",
+//		    "06",
+//		    "07",
+//		    "08",
+//		    "09",
+//		    "10",
+//		    "11",
+//		    "12",
+//		    "13",
+//		    "14"};
   
   @Override
   public String getIdentifier() {
@@ -128,8 +133,7 @@ public class CertificatesInfoboxImpl extends AbstractAssocArrayInfobox {
       return new HashMap<String, Object>();
       
     }
-    
-    
   }
+  
 
 }
