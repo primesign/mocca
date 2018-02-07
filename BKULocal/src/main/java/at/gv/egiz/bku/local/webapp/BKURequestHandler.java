@@ -140,6 +140,8 @@ public class BKURequestHandler extends SpringBKUServlet {
 		for (String header : responseHeaders.keySet()) {
 		  resp.setHeader(header, responseHeaders.get(header));
 		}
+		//set response header for CORS manually
+		resp.setHeader("Access-Control-Allow-Origin", "*");
 		String serverHeader = bindingProcessor.getServerHeaderValue();
 		if (serverHeader != null && !serverHeader.isEmpty()) {
 		  resp.setHeader(HttpUtil.HTTP_HEADER_SERVER, serverHeader);
