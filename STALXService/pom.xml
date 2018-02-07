@@ -3,7 +3,7 @@
   <parent>
     <artifactId>mocca</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.3.29-PRIMESIGN-4-SNAPSHOT</version>
+    <version>1.3.30-PRIMESIGN-1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>STALXService</artifactId>
@@ -13,12 +13,12 @@
     <dependency>
       <artifactId>STALService</artifactId>
       <groupId>at.gv.egiz</groupId>
-      <version>1.3.29-PRIMESIGN-4-SNAPSHOT</version>
+      <version>1.3.30-PRIMESIGN-1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <artifactId>STALExt</artifactId>
       <groupId>at.gv.egiz</groupId>
-      <version>1.3.29-PRIMESIGN-4-SNAPSHOT</version>
+      <version>1.3.30-PRIMESIGN-1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
