@@ -33,8 +33,6 @@ import javax.xml.transform.dom.DOMResult;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import at.buergerkarte.namespaces.securitylayer._1_2_3.CreateCMSSignatureResponseType;
@@ -113,7 +111,7 @@ public class CreateCMSSignatureResultImpl extends SLResultImpl implements Create
   }
 
   @Override
-  public Element getContent() {
-    return (Element) content;
+  public Node getContent() {
+    return content;
   }
 }
