@@ -285,7 +285,7 @@ public Object unmarshal(StreamSource source) throws XMLStreamException, JAXBExce
      * 
      * This code implements the the original mocca XML processing by using 
      *  com.sun.xml.stream.sjsxp-1.0.2 XML stream parser library. Currently, this library is required to get full 
-     *  security-layer specific XML processing. However, there this lib does not fully support XXE, XEE and SSRF
+     *  security-layer specific XML processing. However, this lib does not fully support XXE, XEE and SSRF
      *  prevention mechanisms (e.g.: XMLInputFactory.SUPPORT_DTD flag is not used)    
      * 
      * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

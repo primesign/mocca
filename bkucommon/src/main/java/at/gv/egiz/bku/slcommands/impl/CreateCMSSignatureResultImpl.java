@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import at.buergerkarte.namespaces.securitylayer._1_2_3.CreateCMSSignatureResponseType;
 import at.buergerkarte.namespaces.securitylayer._1_2_3.ObjectFactory;
@@ -62,7 +63,7 @@ public class CreateCMSSignatureResultImpl extends SLResultImpl implements Create
   /**
    * The CMSSignatureResponse.
    */
-  private Element content;
+  private Node content;
 
   /**
    * Creates a new instance of this CreateCMSSignatureResultImpl with the given
@@ -102,7 +103,8 @@ public class CreateCMSSignatureResultImpl extends SLResultImpl implements Create
       log.error("Failed to marshall 'CreateCMSSignatureResponse'.", e);
       throw new SLRuntimeException(e);
     }
-    content = ((Document)res.getNode()).getDocumentElement();
+    
+    content = res.getNode();
   }
 
   @Override
@@ -112,6 +114,6 @@ public class CreateCMSSignatureResultImpl extends SLResultImpl implements Create
 
   @Override
   public Element getContent() {
-    return content;
+    return (Element) content;
   }
 }
