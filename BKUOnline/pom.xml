@@ -99,6 +99,7 @@
     
     <groupId>org.glassfish.metro</groupId>
     <artifactId>webservices-rt</artifactId>
+    <scope>compile</scope>
             <!-- use JAX-WS RI with SJSXP instead of Woodstox -->
 <!--       <exclusions>
         <exclusion>
