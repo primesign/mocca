@@ -24,10 +24,10 @@
 
 package at.gv.egiz.bku.slcommands;
 
-import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 public interface CreateCMSSignatureResult extends SLResult {
 
-  public Element getContent();
+  public Node getContent();
 
 }
