@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import at.gv.egiz.bku.gui.BKUGUIFacade;
 import at.gv.egiz.bku.gui.GetHardwareInfoGUIFacade;
 import at.gv.egiz.bku.smccstal.GetHardwareInfoRequestHandler;
+import at.gv.egiz.stal.BulkSignRequest;
 import at.gv.egiz.stal.ErrorResponse;
 import at.gv.egiz.stal.InfoboxReadRequest;
 import at.gv.egiz.stal.QuitRequest;
@@ -52,6 +53,7 @@ public class HardwareInfoBKUWorker extends AppletBKUWorker {
 	    super(applet, gui);
 	    removeRequestHandler(InfoboxReadRequest.class);
 	    removeRequestHandler(SignRequest.class);
+	    removeRequestHandler(BulkSignRequest.class);
 	    addRequestHandler(GetHardwareInfoRequest.class, new GetHardwareInfoRequestHandler());
 	  }
 

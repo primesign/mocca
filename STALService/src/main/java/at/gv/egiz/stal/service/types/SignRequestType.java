@@ -65,6 +65,8 @@ import javax.xml.bind.annotation.XmlValue;
  *         &lt;/element&gt;
  *         &lt;element name="SignatureMethod" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="DigestMethod" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="displayName" type="{http://www.w3.org/2001/XMLSchema}string minOccurs="0"/&gt;
+ *         &lt;element name="mimeType" type="{http://www.w3.org/2001/XMLSchema}string minOccurs="0"/&gt;
  *         &lt;element name="ExcludedByteRange" minOccurs="0"&gt;
  *           &lt;complexType&gt;
  *             &lt;complexContent&gt;
@@ -89,6 +91,8 @@ import javax.xml.bind.annotation.XmlValue;
     "signedInfo",
     "signatureMethod",
     "digestMethod",
+    "displayName",
+    "mimeType",
     "excludedByteRange"
 })
 public class SignRequestType
@@ -103,6 +107,10 @@ public class SignRequestType
     protected String signatureMethod;
     @XmlElement(name = "DigestMethod")
     protected String digestMethod;
+    @XmlElement(name = "displayName", required = true)
+    protected String displayName;
+    @XmlElement(name = "mimeType", required = true)
+    protected String mimeType;
     @XmlElement(name = "ExcludedByteRange")
     protected SignRequestType.ExcludedByteRange excludedByteRange;
 
@@ -191,6 +199,55 @@ public class SignRequestType
     }
 
     /**
+     * Sets the value of the displayName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDisplayName(String value) {
+        this.displayName = value;
+    }
+    
+    /**
+     * Gets the value of the displayName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDisplayName() {
+        return displayName;
+    }
+    
+    /**
+     * Gets the value of the mimeType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    
+    /**
+     * Sets the value of the mimeType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setMimeType(String value) {
+        this.mimeType = value;
+    }
+    
+    /**
      * Sets the value of the digestMethod property.
      * 
      * @param value
@@ -233,14 +290,14 @@ public class SignRequestType
      * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
-     * &lt;complexType&gt;
-     *   &lt;complexContent&gt;
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
-     *       &lt;attribute name="from" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedLong" /&gt;
-     *       &lt;attribute name="to" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedLong" /&gt;
-     *     &lt;/restriction&gt;
-     *   &lt;/complexContent&gt;
-     * &lt;/complexType&gt;
+     * &lt;complexType>
+     *   &lt;complexContent>
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+     *       &lt;attribute name="from" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+     *       &lt;attribute name="to" use="required" type="{http://www.w3.org/2001/XMLSchema}unsignedLong" />
+     *     &lt;/restriction>
+     *   &lt;/complexContent>
+     * &lt;/complexType>
      * </pre>
      * 
      * 
@@ -313,13 +370,13 @@ public class SignRequestType
      * <p>The following schema fragment specifies the expected content contained within this class.
      * 
      * <pre>
-     * &lt;complexType&gt;
-     *   &lt;simpleContent&gt;
-     *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema&gt;base64Binary"&gt;
-     *       &lt;attribute name="IsCMSSignedAttributes" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
-     *     &lt;/extension&gt;
-     *   &lt;/simpleContent&gt;
-     * &lt;/complexType&gt;
+     * &lt;complexType>
+     *   &lt;simpleContent>
+     *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>base64Binary">
+     *       &lt;attribute name="IsCMSSignedAttributes" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+     *     &lt;/extension>
+     *   &lt;/simpleContent>
+     * &lt;/complexType>
      * </pre>
      * 
      * 

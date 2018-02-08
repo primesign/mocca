@@ -22,15 +22,16 @@
  */
 
 
-package at.gv.egiz.bku.smccstal;
+package at.gv.egiz.bku.gui.viewer;
 
-import at.gv.egiz.stal.signedinfo.SignedInfoType;
+import at.gv.egiz.stal.SignatureInfo;
+
 import java.awt.event.ActionListener;
-import java.security.DigestException;
+import java.util.List;
 
 /**
  *
- * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
+ * @author Clemens Orthacker <clemens.orthacker@iaik.tugraz.at>
  */
 public interface SecureViewer {
 
@@ -40,14 +41,18 @@ public interface SecureViewer {
    * (LocalSignRequestHandler operates on DataObjectHashDataInput,
    * other SignRequestHandlers should cache the HashDataInputs obtained by webservice calls,
    * or simply forward to a HashDataInputServlet.)
-   * @param signedInfo The caller may select a subset of the references in SignedInfo to be displayed.
-   * @param okListener
-   * @param okCommand
+   * @param signedReferences The caller may select a subset of the references in SignedInfo to be displayed.
    * @throws java.security.DigestException if digest values are verified and do not correspond
    * (or any other digest computation error occurs)
    * @throws java.lang.Exception
    */
-  void displayDataToBeSigned(SignedInfoType signedInfo,
+  void displayDataToBeSigned(SignatureInfo signatureInfo,
           ActionListener okListener, String okCommand)
-        throws DigestException, Exception;
+        throws Exception;
+  
+  
+  void displayDataToBeSigned(List<SignatureInfo> signatureInfo,
+      ActionListener okListener, String okCommand)
+    throws Exception;
+
 }

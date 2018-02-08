@@ -41,6 +41,7 @@ public class ByteArrayHashDataInput implements HashDataInput {
     private final Logger log = LoggerFactory.getLogger(ByteArrayHashDataInput.class);
   
     protected byte[] hashData;
+    protected byte[] digest;
     protected String id;
     protected String mimeType;
     protected String encoding;
@@ -57,6 +58,18 @@ public class ByteArrayHashDataInput implements HashDataInput {
         this.filename = filename;
     }
     
+    public ByteArrayHashDataInput(byte[] hashData, String id, String mimeType, String encoding, String filename, byte[] digest) {
+      if (hashData == null) {
+          throw new NullPointerException("HashDataInput not provided.");
+      }
+      this.hashData = hashData;
+      this.id = id;
+      this.mimeType = mimeType;
+      this.encoding = encoding;
+      this.filename = filename;
+      this.digest = digest;
+  }
+    
     /**
      * caches the hashdata input's stream
      * @param hdi to be cached
@@ -65,9 +78,9 @@ public class ByteArrayHashDataInput implements HashDataInput {
       if (hdi == null) {
         throw new NullPointerException("HashDataInput not provided.");
       }
+      try {
       InputStream is = hdi.getHashDataInput();
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      try {
         byte[] buffer = new byte[1024];
         for (int i = is.read(buffer); i > -1; i = is.read(buffer)) {
           baos.write(buffer, 0, i);
@@ -109,6 +122,11 @@ public class ByteArrayHashDataInput implements HashDataInput {
   @Override
   public String getFilename() {
     return filename;
+  }
+
+  @Override
+  public byte[] getDigest() {
+    return digest;
   }
 
     

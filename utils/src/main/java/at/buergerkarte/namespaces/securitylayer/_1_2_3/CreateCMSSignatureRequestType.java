@@ -28,7 +28,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="KeyboxIdentifier" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}BoxIdentifierType"/&gt;
- *         &lt;element name="DataObject" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CMSDataObjectRequiredMetaType"/&gt;
+ *         &lt;choice&gt;
+ *           &lt;element name="DataObject" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CMSDataObjectRequiredMetaType"/&gt;
+ *           &lt;element name="ReferenceObject" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}CMSReferenceObject"/&gt;
+ *         &lt;/choice&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="Structure" use="required"&gt;
  *         &lt;simpleType&gt;
@@ -49,15 +52,18 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "CreateCMSSignatureRequestType", propOrder = {
     "keyboxIdentifier",
-    "dataObject"
+    "dataObject",
+    "referenceObject"
 })
 public class CreateCMSSignatureRequestType {
 
     @XmlElement(name = "KeyboxIdentifier", required = true)
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String keyboxIdentifier;
-    @XmlElement(name = "DataObject", required = true)
+    @XmlElement(name = "DataObject")
     protected CMSDataObjectRequiredMetaType dataObject;
+    @XmlElement(name = "ReferenceObject")
+    protected CMSReferenceObject referenceObject;
     @XmlAttribute(name = "Structure", required = true)
     protected String structure;
     @XmlAttribute(name = "PAdESCompatibility")
@@ -109,6 +115,30 @@ public class CreateCMSSignatureRequestType {
      */
     public void setDataObject(CMSDataObjectRequiredMetaType value) {
         this.dataObject = value;
+    }
+    
+    /**
+     * Ruft den Wert der referenceObject-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CMSReferenceObject }
+     *     
+     */
+    public CMSReferenceObject getReferenceObject() {
+        return referenceObject;
+    }
+
+    /**
+     * Legt den Wert der referenceObject-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CMSReferenceObject }
+     *     
+     */
+    public void setReferenceObject(CMSReferenceObject value) {
+        this.referenceObject = value;
     }
 
     /**

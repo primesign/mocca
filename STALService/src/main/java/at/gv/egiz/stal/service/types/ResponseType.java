@@ -54,7 +54,8 @@ import javax.xml.bind.annotation.XmlType;
     ErrorResponseType.class,
     InfoboxReadResponseType.class,
     SignResponseType.class,
-    StatusResponseType.class
+    StatusResponseType.class,
+    BulkSignResponseType.class
 })
 public abstract class ResponseType {
 

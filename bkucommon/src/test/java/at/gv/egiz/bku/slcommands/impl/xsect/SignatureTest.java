@@ -27,7 +27,7 @@ package at.gv.egiz.bku.slcommands.impl.xsect;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
+import iaik.asn1.structures.AlgorithmID;
 import iaik.xml.crypto.XSecProvider;
 
 import java.io.IOException;
@@ -138,6 +138,16 @@ public class SignatureTest {
     @Override
     public String getDigestAlgorithmURI() {
       return DigestMethod.SHA1;
+    }
+    
+    @Override
+    public AlgorithmID getSignatureAlgorithmID() {
+      return null;
+    }
+
+    @Override
+    public AlgorithmID getDigestAlgorithmID() {
+      return null;
     }
     
   }

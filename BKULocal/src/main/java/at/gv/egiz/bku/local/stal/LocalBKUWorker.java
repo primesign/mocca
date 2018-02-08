@@ -30,6 +30,7 @@ import at.gv.egiz.bku.smccstal.GetCertificateRequestHandler;
 import at.gv.egiz.bku.smccstal.GetHardwareInfoRequestHandler;
 import at.gv.egiz.bku.smccstal.PINManagementRequestHandler;
 import at.gv.egiz.bku.smccstal.IdentityLinkRequestHandler;
+import at.gv.egiz.stal.BulkSignRequest;
 import at.gv.egiz.stal.QuitRequest;
 import at.gv.egiz.stal.STALRequest;
 import at.gv.egiz.stal.STALResponse;
@@ -53,8 +54,8 @@ public class LocalBKUWorker extends AbstractBKUWorker {
   public LocalBKUWorker(BKUGUIFacade gui, JFrame container) {
     super(gui);
     this.container = container;
-    addRequestHandler(SignRequest.class, 
-            new LocalSignRequestHandler(new LocalSecureViewer(gui)));
+    addRequestHandler(SignRequest.class, new LocalSignRequestHandler(new LocalSecureViewer(gui)));
+    addRequestHandler(BulkSignRequest.class, new LocalBulkSignRequestHandler(new LocalSecureViewer(gui)));
     addRequestHandler(PINManagementRequest.class, new PINManagementRequestHandler());
     addRequestHandler(IdentityLinkRequest.class, new IdentityLinkRequestHandler());
     addRequestHandler(GetCertificateRequest.class, new GetCertificateRequestHandler());
