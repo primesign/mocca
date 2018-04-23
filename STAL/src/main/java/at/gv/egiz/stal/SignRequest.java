@@ -59,6 +59,8 @@ import javax.xml.bind.annotation.XmlValue;
  *         &lt;/element&gt;
  *         &lt;element name="SignatureMethod" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="DigestMethod" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="displayName" type="{http://www.w3.org/2001/XMLSchema}string minOccurs="0"&gt;
+ *         &lt;element name="mimeType" type="{http://www.w3.org/2001/XMLSchema}string minOccurs="0"/&gt;
  *         &lt;element name="ExcludedByteRange" minOccurs="0"&gt;
  *           &lt;complexType&gt;
  *             &lt;complexContent&gt;
@@ -83,6 +85,7 @@ import javax.xml.bind.annotation.XmlValue;
     "signedInfo",
     "signatureMethod",
     "digestMethod",
+    "mimeType",
     "excludedByteRange"
 })
 public class SignRequest
@@ -96,6 +99,10 @@ public class SignRequest
     protected String signatureMethod;
     @XmlElement(name = "DigestMethod")
     protected String digestMethod;
+    @XmlElement(name = "displayName")
+    protected String displayName;
+    @XmlElement(name = "mimeType")
+    protected String mimeType;
     @XmlElement(name = "ExcludedByteRange")
     protected SignRequest.ExcludedByteRange excludedByteRange;
     @XmlTransient
@@ -193,6 +200,55 @@ public class SignRequest
      */
     public void setDigestMethod(String value) {
         this.digestMethod = value;
+    }
+    
+    /**
+     * Sets the value of the displayName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDisplayName(String value) {
+        this.displayName = value;
+    }
+    
+    /**
+     * Gets the value of the displayName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDisplayName() {
+        return displayName;
+    }
+    
+    /**
+     * Gets the value of the mimeType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getMimeType() {
+        return mimeType;
+    }
+    
+    
+    /**
+     * Sets the value of the mimeType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setMimeType(String value) {
+        this.mimeType = value;
     }
 
     /**

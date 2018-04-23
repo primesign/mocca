@@ -24,13 +24,21 @@
 
 package at.gv.egiz.bku.slcommands.impl;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import iaik.asn1.ObjectID;
+import iaik.cms.CMSParsingException;
+import iaik.cms.SignedData;
 import iaik.xml.crypto.XSecProvider;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -40,7 +48,9 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import at.buergerkarte.namespaces.securitylayer._1_2_3.CreateCMSSignatureResponseType;
 import at.gv.egiz.bku.slcommands.CreateCMSSignatureCommand;
+import at.gv.egiz.bku.slcommands.CreateCMSSignatureResult;
 import at.gv.egiz.bku.slcommands.SLCommand;
 import at.gv.egiz.bku.slcommands.SLCommandContext;
 import at.gv.egiz.bku.slcommands.SLCommandFactory;
@@ -89,8 +99,11 @@ public class CreateCMSSignatureCommandImplTest {
   }
   
   @Test
-  public void testCreateCMSSignatureRequest() throws SLCommandException, SLRuntimeException, SLRequestException, SLVersionException {
-    InputStream inputStream = getClass().getClassLoader().getResourceAsStream("at/gv/egiz/bku/slcommands/createcmssignaturerequest/CreateCMSSignatureRequest.xml");
+  public void testCreateCMSSignatureRequest() throws SLCommandException, SLRuntimeException, SLRequestException,
+      SLVersionException, JAXBException, CMSParsingException, IOException {
+    
+    InputStream inputStream = getClass().getClassLoader().getResourceAsStream(
+        "at/gv/egiz/bku/slcommands/createcmssignaturerequest/CreateCMSSignatureRequest.xml");
     assertNotNull(inputStream);
     
     SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
@@ -98,6 +111,22 @@ public class CreateCMSSignatureCommandImplTest {
     
     SLCommandContext context = new SLCommandContext(stal, urlDereferencer, null);
     SLResult result = command.execute(context);
+
+    assertTrue(result instanceof CreateCMSSignatureResult);
+    CreateCMSSignatureResult sigResult = (CreateCMSSignatureResult) result;
+    
+    //unmarshall response
+    Unmarshaller unmarshaller = factory.getJaxbContext().createUnmarshaller();
+    
+    CreateCMSSignatureResponseType response = unmarshaller.unmarshal(sigResult.getContent(), CreateCMSSignatureResponseType.class).getValue();
+
+    //verify ContentType of singature 
+    byte[] cmsSignature = response.getCMSSignature();
+    SignedData signedData = new SignedData(new ByteArrayInputStream(cmsSignature));
+
+    assertNotNull(signedData);
+    assertEquals(ObjectID.pkcs7_signedData, signedData.getContentType());
+ 
     result.writeTo(new StreamResult(System.out), false);
   }
 }

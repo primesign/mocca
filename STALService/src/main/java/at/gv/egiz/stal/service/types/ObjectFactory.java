@@ -64,6 +64,8 @@ public class ObjectFactory {
     private final static QName _GetNextRequestTypeInfoboxReadResponse_QNAME = new QName("http://www.egiz.gv.at/stal", "InfoboxReadResponse");
     private final static QName _GetNextRequestResponseTypeStatusRequest_QNAME = new QName("http://www.egiz.gv.at/stal", "StatusRequest");
     private final static QName _GetNextRequestTypeStatusResponse_QNAME = new QName("http://www.egiz.gv.at/stal", "StatusResponse");
+    private final static QName _GetNextRequestTypeBulkSignResponse_QNAME = new QName("http://www.egiz.gv.at/stal", "BulkSignResponse");
+    private final static QName _GetNextRequestResponseTypeBulkSignRequest_QNAME = new QName("http://www.egiz.gv.at/stal", "BulkSignRequest");
     
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: at.gv.egiz.stal.service.types
@@ -72,6 +74,15 @@ public class ObjectFactory {
     public ObjectFactory() {
     }
 
+    
+    /**
+     * Create an instance of {@link BulkSignResponseType }
+     * 
+     */
+    public BulkSignResponseType createBulkSignResponseType() {
+        return new BulkSignResponseType();
+    }
+    
     /**
      * Create an instance of {@link StatusResponseType }
      *
@@ -168,6 +179,15 @@ public class ObjectFactory {
         return new InfoboxReadResponseType();
     }
 
+    /**
+     * Create an instance of {@link BulkSignRequestType }
+     * 
+     */
+    public BulkSignRequestType createBulkSignRequestType() {
+        return new BulkSignRequestType();
+    }
+
+    
     /**
      * Create an instance of {@link InfoboxReadRequestType }
      * 
@@ -327,6 +347,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link BulkSignResponseType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "BulkSignResponse", scope = GetNextRequestType.class)
+    public JAXBElement<BulkSignResponseType> createGetNextRequestTypeBulkSignResponse(BulkSignResponseType value) {
+        return new JAXBElement<BulkSignResponseType>(_GetNextRequestTypeBulkSignResponse_QNAME, BulkSignResponseType.class, GetNextRequestType.class, value);
+    }
+    
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ErrorResponseType }{@code >}}
      * 
      */
@@ -344,6 +373,17 @@ public class ObjectFactory {
         return new JAXBElement<SignResponseType>(_GetNextRequestTypeSignResponse_QNAME, SignResponseType.class, GetNextRequestType.class, value);
     }
 
+    
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link BulkSignRequestType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://www.egiz.gv.at/stal", name = "BulkSignRequest", scope = GetNextRequestResponseType.class)
+    public JAXBElement<BulkSignRequestType> createGetNextRequestResponseTypeBulkSignRequest(BulkSignRequestType value) {
+        return new JAXBElement<BulkSignRequestType>(_GetNextRequestResponseTypeBulkSignRequest_QNAME, BulkSignRequestType.class, GetNextRequestResponseType.class, value);
+    }
+    
+    
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link InfoboxReadResponseType }{@code >}}
      * 

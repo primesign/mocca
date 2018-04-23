@@ -24,8 +24,10 @@
 
 package at.gv.egiz.bku.gui;
 
-  import at.gv.egiz.stal.HashDataInput;
+import at.gv.egiz.bku.gui.hashdata.HashDataInputLoader;
 import at.gv.egiz.smcc.PinInfo;
+  import at.gv.egiz.stal.HashDataInput;
+
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -67,6 +69,7 @@ public interface BKUGUIFacade {
   public static final String TITLE_INSERTCARD = "title.insertcard";
   public static final String TITLE_CARD_NOT_SUPPORTED = "title.cardnotsupported";
   public static final String TITLE_VERIFY_PIN = "title.verify.pin";
+  public static final String TITLE_OVERRULE_PINPAD = "title.overrule.pinpad";
   public static final String TITLE_SIGN = "title.sign";
   public static final String TITLE_VERIFY_PINPAD = "title.verify.pinpad";
   public static final String TITLE_ERROR = "title.error";
@@ -74,6 +77,7 @@ public interface BKUGUIFacade {
   public static final String TITLE_ENTRY_TIMEOUT = "title.entry.timeout";
   public static final String TITLE_RETRY = "title.retry";
   public static final String TITLE_WAIT = "title.wait";
+  public static final String TITLE_BULKSIGNATURE = "title.bulksign";
   public static final String TITLE_SIGNATURE_DATA = "title.signature.data";
   public static final String WINDOWTITLE_SAVE = "windowtitle.save";
   public static final String WINDOWTITLE_ERROR = "windowtitle.error";
@@ -89,6 +93,7 @@ public interface BKUGUIFacade {
   public static final String MESSAGE_CARD_NOT_SUPPORTED = "cardnotsupported";
   public static final String MESSAGE_ENTERPIN = "enterpin";
   public static final String MESSAGE_ENTERPIN_PINPAD = "enterpin.pinpad";
+  public static final String MESSAGE_OVERRULE_PINPAD = "overrule.pinpad";
   public static final String MESSAGE_ENTERPIN_PINPAD_DIRECT = "enterpin.pinpad.direct";
   public static final String MESSAGE_HASHDATALINK = "hashdatalink";
   public static final String MESSAGE_HASHDATALINK_TINY = "hashdatalink.tiny";
@@ -103,6 +108,7 @@ public interface BKUGUIFacade {
   public static final String MESSAGE_LAST_RETRY_PINPAD = "retries.pinpad.last";
   public static final String MESSAGE_OVERWRITE = "overwrite";
   public static final String MESSAGE_HELP = "help";
+  public static final String MESSAGE_BULKSIGN = "bulksign";
 
   public static final String WARNING_XHTML = "warning.xhtml";
   public static final String WARNING_CERT_NOTYETVALID = "warning.cert.notyetvalid";
@@ -165,6 +171,11 @@ public interface BKUGUIFacade {
           ActionListener cancelListener, String cancelCommand,
           ActionListener viewerListener, String viewerCommand);
 
+  public void showSignaturePINDialog(PinInfo pinSpec, int numRetries, int numSignatures, 
+          ActionListener signListener, String signCommand,
+          ActionListener cancelListener, String cancelCommand,
+          ActionListener viewerListener, String viewerCommand);
+
   public char[] getPin();
 
   /**
@@ -176,7 +187,7 @@ public interface BKUGUIFacade {
    * @param backCommand
    */
   public void showSecureViewer(List<HashDataInput> dataToBeSigned,
-          ActionListener backListener, String backCommand);
+      ActionListener backListener, String backCommand, HashDataInputLoader hashDataInputLoader);
 
   public void showErrorDialog(String errorMsgKey, Object[] errorMsgParams,
           ActionListener okListener, String okCommand);
@@ -196,8 +207,14 @@ public interface BKUGUIFacade {
   public void showMessageDialog(String titleKey,
           String msgKey, Object[] msgParams);
 
+	void updateMessageDialog(String titleKey, 
+			String msgKey, Object[] msgParams, String buttonKey, ActionListener okListener, String okCommand);
+
   public void showMessageDialog(String titleKey,
           String msgKey);
   
   public void getFocusFromBrowser();
+
+  public void showPinPadDeactivationDialog(ActionListener okListener, String okCommand, 
+      ActionListener cancelListener, String cancelCommand);
 }

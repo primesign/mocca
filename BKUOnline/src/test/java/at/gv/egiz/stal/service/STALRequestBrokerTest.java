@@ -143,6 +143,12 @@ public class STALRequestBrokerTest {
             public String getFilename() {
                 return "file.txt";
             }
+
+            @Override
+            public byte[] getDigest() {
+              return null;
+            }
+
         };
         r1.setHashDataInput(Collections.singletonList(hdi));
         requests.add(r1);
@@ -196,6 +202,12 @@ public class STALRequestBrokerTest {
             public String getFilename() {
                 return "file.txt";
             }
+
+            @Override
+            public byte[] getDigest() {
+              return null;
+            }
+
         };
         r1.setHashDataInput(Collections.singletonList(hdi));
         requests.add(r1);
@@ -262,6 +274,12 @@ public class STALRequestBrokerTest {
             public String getFilename() {
                 return "file.txt";
             }
+
+            @Override
+            public byte[] getDigest() {
+              return null;
+            }
+
         };
         r1.setHashDataInput(Collections.singletonList(hdi));
         requests.add(r1);
@@ -297,6 +315,12 @@ public class STALRequestBrokerTest {
             public String getFilename() {
                 return "file.xml";
             }
+
+            @Override
+            public byte[] getDigest() {
+              return null;
+            }
+
         };
         r2.setHashDataInput(Collections.singletonList(hdi2));
         requests2.add(r2);

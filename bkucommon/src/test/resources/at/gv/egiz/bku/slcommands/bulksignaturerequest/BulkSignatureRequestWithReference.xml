@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sl:BulkRequest
+	xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#"
+	xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" >
+	<sl:CreateSignatureRequest displayName="Urlaubsantrag &quot;RÃ¶ssler&quot;">
+    <sl:CreateCMSSignatureRequest
+      xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#"
+      Structure="detached">
+      <sl:KeyboxIdentifier>SecureSignatureKeypair</sl:KeyboxIdentifier>
+      <sl:ReferenceObject>
+        <sl:MetaInfo>
+          <sl:MimeType>text/plain</sl:MimeType>
+        </sl:MetaInfo>
+       <sl:DigestAndRef>
+           <dsig:DigestMethod Algorithm="urn:oid:1.3.14.3.2.26"/> 
+           <dsig:DigestValue>j6lwx3rvEPO0vKtMup4NbeVu8nk=</dsig:DigestValue> 
+       </sl:DigestAndRef>
+      </sl:ReferenceObject>
+    </sl:CreateCMSSignatureRequest>
+	</sl:CreateSignatureRequest>
+	<sl:CreateSignatureRequest displayName="Krankmeldung &quot;Meyer&quot;">
+		<sl:CreateCMSSignatureRequest
+			xmlns:sl="http://www.buergerkarte.at/namespaces/securitylayer/1.2#"
+			Structure="detached">
+			<sl:KeyboxIdentifier>SecureSignatureKeypair</sl:KeyboxIdentifier>
+			<sl:ReferenceObject>
+				<sl:MetaInfo>
+					<sl:MimeType>text/plain</sl:MimeType>heis
+				</sl:MetaInfo>
+       <sl:DigestAndRef>
+           <dsig:DigestMethod Algorithm="urn:oid:1.3.14.3.2.26"/> 
+           <dsig:DigestValue>j6lwx3rvEPO0vKtMup4NbeVu8nk=</dsig:DigestValue> 
+       </sl:DigestAndRef>
+			</sl:ReferenceObject>
+		</sl:CreateCMSSignatureRequest>
+	</sl:CreateSignatureRequest>
+</sl:BulkRequest>

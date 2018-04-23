@@ -76,4 +76,8 @@ public class DataObjectHashDataInput implements HashDataInput {
       return dataObject.getFilename();
     }
 
+    @Override
+    public byte[] getDigest() {
+      return dataObject.getReference().getDigestValue();
+    }
 }

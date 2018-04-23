@@ -32,27 +32,31 @@ import java.security.DigestException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
-import at.gv.egiz.bku.smccstal.SecureViewer;
+import at.gv.egiz.bku.gui.hashdata.HashDataInputLoader;
+import at.gv.egiz.bku.gui.viewer.SecureViewer;
 import at.gv.egiz.stal.HashDataInput;
+import at.gv.egiz.stal.SignatureInfo;
+import at.gv.egiz.stal.hashdata.StubHashDataInput;
 import at.gv.egiz.stal.impl.ByteArrayHashDataInput;
 import at.gv.egiz.stal.service.GetHashDataInputFault;
 import at.gv.egiz.stal.service.STALPortType;
 import at.gv.egiz.stal.service.types.GetHashDataInputResponseType;
 import at.gv.egiz.stal.service.types.GetHashDataInputType;
 import at.gv.egiz.stal.signedinfo.ReferenceType;
-import at.gv.egiz.stal.signedinfo.SignedInfoType;
 
 /**
  *
  * @author Clemens Orthacker &lt;clemens.orthacker@iaik.tugraz.at&gt;
  */
-public class AppletSecureViewer implements SecureViewer {
+public class AppletSecureViewer implements SecureViewer, HashDataInputLoader {
 
   private static final Logger log = LoggerFactory.getLogger(AppletSecureViewer.class);
 
@@ -86,19 +90,19 @@ public class AppletSecureViewer implements SecureViewer {
    * @throws java.lang.Exception
    */
   @Override
-  public void displayDataToBeSigned(SignedInfoType signedInfo,
+  public void displayDataToBeSigned(SignatureInfo signatureInfo,
           ActionListener okListener, String okCommand)
           throws DigestException, Exception {
     
     if (verifiedDataToBeSigned == null) {
-      log.info("Retrieve data to be signed for dsig:SignedInfo {}.", signedInfo.getId());
+      log.info("Retrieve data to be signed for dsig:SignedInfo {}.", signatureInfo.getId());
       List<GetHashDataInputResponseType.Reference> hdi = 
-              getHashDataInput(signedInfo.getReference());
-      verifiedDataToBeSigned = verifyHashDataInput(signedInfo.getReference(),
+              getHashDataInput(signatureInfo.getReference());
+      verifiedDataToBeSigned = verifyHashDataInput(signatureInfo.getReference(),
               hdi);
     }
     if (verifiedDataToBeSigned.size() > 0) {
-      gui.showSecureViewer(verifiedDataToBeSigned, okListener, okCommand);
+      gui.showSecureViewer(verifiedDataToBeSigned, okListener, okCommand, this);
     } else {
       throw new Exception("No data to be signed (apart from any QualifyingProperties or a Manifest)");
     }
@@ -119,14 +123,16 @@ public class AppletSecureViewer implements SecureViewer {
       //don't get Manifest, QualifyingProperties, ...
       if (signedRef.getType() == null) {
         String signedRefId = signedRef.getId();
-        if (signedRefId != null) {
-          log.trace("Requesting hashdata input for reference {}.", signedRefId);
+        byte[] digest = signedRef.getDigestValue();
+        if (signedRefId != null || digest != null) {
+          log.trace("Requesting hashdata input for reference {}.", new String(digest));
           GetHashDataInputType.Reference ref = new GetHashDataInputType.Reference();
           ref.setID(signedRefId);
+          ref.setDigest(digest);
           request.getReference().add(ref);
 
         } else {
-          throw new Exception("Cannot resolve signature data for dsig:Reference without Id attribute");
+          throw new Exception("Cannot resolve signature data for dsig:Reference without Id or digest attribute");
         }
       }
     }
@@ -258,5 +264,77 @@ public class AppletSecureViewer implements SecureViewer {
       throw new NoSuchAlgorithmException(e);
     }
     return md.digest(hashDataInput);
+  }
+
+  @Override
+  public void displayDataToBeSigned(List<SignatureInfo> signatureInfoList, ActionListener okListener, String okCommand)
+      throws DigestException, Exception {
+
+    log.trace("Creating referenceMap");
+
+    for (SignatureInfo signatureInfo : signatureInfoList) {
+      for (ReferenceType reference : signatureInfo.getReference()) {
+        log.trace("Adding entry {} : {} to referenceMap", reference.getDigestValue(), reference.getId());
+      }
+    }
+
+    ArrayList<HashDataInput> selectedHashDataInputs = new ArrayList<HashDataInput>();
+    
+    log.trace("Adding empty hashDataInputs to selectedHashDataInputs");
+    for (SignatureInfo nextSignatureInfo : signatureInfoList) {
+      log.trace("Adding {} : {} to selectedHashDataInputs", nextSignatureInfo.getId(), nextSignatureInfo.getReference().get(0).getDigestValue());
+      selectedHashDataInputs.addAll(addEmptyHashDataInputs(nextSignatureInfo));
+    }
+
+    log.trace("Show Secure Viewer for selectedHashDataInputs");
+    gui.showSecureViewer(selectedHashDataInputs, okListener, okCommand, this);
+
+  }
+
+
+  @Override
+  public HashDataInput getHashDataInput(HashDataInput hashDataInput) throws Exception {
+
+    if (hashDataInput instanceof StubHashDataInput) {
+      
+      StubHashDataInput stabHashDataInput = (StubHashDataInput) hashDataInput;
+      
+      ReferenceType reference = stabHashDataInput.getReference();
+
+      List<HashDataInput> hashDataInputs = new LinkedList<HashDataInput>();
+
+      if (reference != null) {
+        log.trace("Retrieve data to be signed for dsig:SignedInfo {}.", hashDataInput.getReferenceId());
+        List<GetHashDataInputResponseType.Reference> hdi = getHashDataInput(Arrays.asList(reference));
+        hashDataInputs = verifyHashDataInput(Arrays.asList(reference), hdi);
+
+        if (hashDataInputs.size() == 0) {
+          throw new Exception("No data to be signed (apart from any QualifyingProperties or a Manifest)");
+        }
+
+        return hashDataInputs.get(0);
+      }
+
+      throw new Exception("No reference found for hashDataInput with id " + hashDataInput.getReferenceId());
+    }
+    return hashDataInput;
+  }
+  
+  private Collection<? extends HashDataInput> addEmptyHashDataInputs(SignatureInfo signedInfo) throws Exception {
+    if (signedInfo.getReference().size() == 0) {
+      log.error("No hashdata input selected to be displayed: null.");
+      throw new Exception("No HashData Input selected to be displayed.");
+    }
+    
+    log.trace("Adding HashDataInputs from signedInfo");
+    ArrayList<HashDataInput> selectedHashDataInputs = new ArrayList<HashDataInput>();
+    for (ReferenceType dsigRef : signedInfo.getReference()) {
+
+      if (dsigRef.getType() == null) {       
+        log.trace("Adding HashDataInput with id {}, name {} of type {}",new Object[]{dsigRef.getId(), signedInfo.getDisplayName(), signedInfo.getMimeType()});
+        selectedHashDataInputs.add(new StubHashDataInput(dsigRef, signedInfo.getDisplayName(), signedInfo.getMimeType()));
+      }
+    }
+    return selectedHashDataInputs;
   }
 }

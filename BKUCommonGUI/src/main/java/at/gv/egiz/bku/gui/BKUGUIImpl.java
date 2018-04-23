@@ -25,6 +25,7 @@
 
 package at.gv.egiz.bku.gui;
 
+import at.gv.egiz.bku.gui.hashdata.HashDataInputLoader;
 import at.gv.egiz.bku.gui.viewer.FontProviderException;
 import at.gv.egiz.bku.gui.viewer.FontProvider;
 import at.gv.egiz.bku.gui.viewer.SecureViewerSaveDialog;
@@ -67,6 +68,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.LayoutStyle;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -90,7 +92,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 	}
 
 	protected Component primaryFocusHolder;
-	protected SecureViewerDialog secureViewer;
+	protected SecureViewerDialog secureViewerDialog;
 
 	protected HelpListener helpListener;
 	protected FontProvider fontProvider;
@@ -155,7 +157,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
 //	protected HashDataInput storedSelection;
 	protected List<HashDataInput> signedReferences;
 	protected Integer referenceIndex;
-	private at.gv.egiz.bku.gui.BKUGUIImpl.SignedReferencesSelectionListener.SignedReferencesListDisplayer storedBackToListListener;
+	protected at.gv.egiz.bku.gui.BKUGUIImpl.SignedReferencesSelectionListener.SignedReferencesListDisplayer storedBackToListListener;
+	
+	protected HashDataInputLoader hashDataInputLoader;
 
 	/**
 	 * set contentPane init message bundle configure the style register the help
@@ -1205,6 +1209,15 @@ public class BKUGUIImpl implements BKUGUIFacade {
             final ActionListener signListener, final String signCommand,
             final ActionListener cancelListener, final String cancelCommand,
             final ActionListener hashdataListener, final String hashdataCommand) {
+    showSignaturePINDialog(pinSpec, numRetries, 1, signListener, signCommand, cancelListener, cancelCommand,
+        hashdataListener, hashdataCommand);
+  }
+
+  @Override
+  public void showSignaturePINDialog(final PinInfo pinSpec, final int numRetries, final int numSignatures,
+            final ActionListener signListener, final String signCommand,
+            final ActionListener cancelListener, final String cancelCommand,
+            final ActionListener hashdataListener, final String hashdataCommand) {
 
 		log.debug("Scheduling signature-pin dialog.");
 
@@ -1228,7 +1241,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
 				if (renderHeaderPanel) {
 					if (numRetries < 0) {
-						titleLabel.setText(getMessage(TITLE_SIGN));
+					  String msgPattern = getMessage(TITLE_SIGN);
+					  String msg = MessageFormat.format(msgPattern, numSignatures);
+						titleLabel.setText(msg);
 					} else {
 						titleLabel.setText(getMessage(TITLE_RETRY));
 					}
@@ -1571,6 +1586,35 @@ public class BKUGUIImpl implements BKUGUIFacade {
 		showMessageDialog(titleKey, null, msgKey, msgParams, null, null, null);
 	}
 
+	
+	 @Override
+	  public void updateMessageDialog(final String titleKey, final String msgKey,
+	      final Object[] msgParams, String buttonKey,
+				final ActionListener okListener, final String okCommand) {
+
+     SwingUtilities.invokeLater(new Runnable() {
+
+       @Override
+       public void run() {
+
+         log.debug("[{}] Update message dialog.", Thread.currentThread().getName());
+
+
+         if (renderHeaderPanel) {
+           titleLabel.setText(getMessage(titleKey));
+         }
+
+         helpListener.setHelpTopic(msgKey);
+
+         String msgPattern = getMessage(msgKey);
+         String msg = MessageFormat.format(msgPattern, msgParams);
+
+         msgLabel.setText(msg);
+
+       }
+     });
+	  }
+
 	@Override
 	public void showMessageDialog(final String titleKey, final String msgKey) {
 
@@ -1718,6 +1762,158 @@ public class BKUGUIImpl implements BKUGUIFacade {
 		});
 	}
 
+
+  private void showOptionDialog(final String titleKey, final String msgKey, final Object[] msgParams,
+      final String cancelButtonKey, final String okButtonKey, final ActionListener cancelListener,
+      final String cancelCommand, final ActionListener okListener, final String okCommand) {
+
+    log.debug("Scheduling message dialog.");
+
+    SwingUtilities.invokeLater(new Runnable() {
+
+      @Override
+      public void run() {
+
+        log.debug("[{}] Show option dialog.", Thread.currentThread().getName());
+
+        log.debug("ButtonKey: {}.", okButtonKey);
+        
+        log.debug("ButtonKey: {}.", cancelButtonKey);
+
+        mainPanel.removeAll();
+        buttonPanel.removeAll();
+
+        if (renderHeaderPanel) {
+          titleLabel.setText(getMessage(titleKey));
+        }
+
+        helpListener.setHelpTopic(msgKey);
+
+        String msgPattern = getMessage(msgKey);
+        String msg = MessageFormat.format(msgPattern, msgParams);
+
+        // we need to create a new JLabel object every time in order to
+        // ensure
+        // that screen reading software will read each updated label
+        msgLabel = new JLabel();
+
+        msgLabel.setFocusable(true);
+
+        msgLabel.setFont(msgLabel.getFont().deriveFont(
+            msgLabel.getFont().getStyle() & ~Font.BOLD));
+        msgLabel.setText(msg);
+
+        GroupLayout mainPanelLayout = new GroupLayout(mainPanel);
+        mainPanel.setLayout(mainPanelLayout);
+
+        GroupLayout.ParallelGroup mainHorizontal = mainPanelLayout
+            .createParallelGroup(GroupLayout.Alignment.LEADING);
+        GroupLayout.SequentialGroup mainVertical = mainPanelLayout
+            .createSequentialGroup();
+
+        String accessibleData = "";
+
+        if (!renderHeaderPanel) {
+          msgTitleLabel = new JLabel();
+          msgTitleLabel.setFont(msgTitleLabel.getFont().deriveFont(
+              msgTitleLabel.getFont().getStyle() | Font.BOLD));
+          msgTitleLabel.setText(getMessage(titleKey));
+
+          accessibleData = accessibleData + getMessage(titleKey);
+
+          GroupLayout.SequentialGroup titleHorizontal = mainPanelLayout
+              .createSequentialGroup()
+              .addComponent(msgTitleLabel);
+
+          GroupLayout.ParallelGroup titleVertical = mainPanelLayout
+              .createParallelGroup(GroupLayout.Alignment.LEADING)
+              .addComponent(msgTitleLabel);
+
+          if (helpListener.implementsListener()) {
+            titleHorizontal.addPreferredGap(
+                LayoutStyle.ComponentPlacement.UNRELATED, 0,
+                Short.MAX_VALUE).addComponent(helpLabel);
+            titleVertical.addComponent(helpLabel);
+          }
+
+          mainHorizontal.addGroup(titleHorizontal);
+          mainVertical.addGroup(titleVertical);
+
+        } else {
+
+          accessibleData = accessibleData + titleLabel.getText();
+        }
+
+        msgLabel.getAccessibleContext().setAccessibleName(
+            accessibleData + msgLabel.getText());
+        msgLabel.getAccessibleContext().setAccessibleDescription(
+            accessibleData + msgLabel.getText());
+
+        mainPanelLayout.setHorizontalGroup(mainHorizontal
+            .addComponent(msgLabel));
+        mainPanelLayout.setVerticalGroup(mainVertical
+            .addComponent(msgLabel));
+
+
+        cancelButton.setFont(cancelButton.getFont().deriveFont(cancelButton.getFont().getStyle() & ~java.awt.Font.BOLD));
+        cancelButton.setText(getMessage((cancelButtonKey != null) ? cancelButtonKey : BUTTON_CANCEL));
+        cancelButton.setActionCommand(okCommand);
+        cancelButton.addActionListener(okListener);
+
+        okButton.setFont(okButton.getFont().deriveFont(okButton.getFont().getStyle() & ~java.awt.Font.BOLD));
+        okButton.setText(getMessage((okButtonKey != null) ? okButtonKey : BUTTON_OK));
+        okButton.setActionCommand(cancelCommand);
+        okButton.addActionListener(okListener);
+          
+          primaryFocusHolder = okButton;
+     
+        renderShowOptionDialogueButtonPanel();
+        
+        GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+        buttonPanel.setLayout(buttonPanelLayout);
+
+        buttonPanelLayout.setHorizontalGroup(buttonPanelLayout
+            .createSequentialGroup().addComponent(okButton,
+                GroupLayout.PREFERRED_SIZE, buttonSize,
+                GroupLayout.PREFERRED_SIZE));
+        buttonPanelLayout.setVerticalGroup(buttonPanelLayout
+            .createSequentialGroup().addComponent(okButton));
+
+        // okListener might be null (up to windowCloseAdapter what to do)
+        if (windowCloseAdapter != null) {
+          windowCloseAdapter.registerListener(okListener, okCommand);
+        }
+
+        updateMethodToRunAtResize("at.gv.egiz.bku.gui.BKUGUIImpl",
+            "renderShowOptionDialogueButtonPanel");
+
+        // put focus to msgLabel to guarantee that label is read by
+        // screen reader upon loading
+        msgLabel.requestFocus();
+        msgLabel.setFocusable(false);
+
+        contentPanel.validate();
+
+        resize();
+      }
+    });
+  }
+
+
+  public void renderShowOptionDialogueButtonPanel() {
+
+    GroupLayout buttonPanelLayout = new GroupLayout(buttonPanel);
+    buttonPanel.setLayout(buttonPanelLayout);
+
+    buttonPanelLayout.setHorizontalGroup(buttonPanelLayout.createSequentialGroup()
+        .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+        .addComponent(okButton, GroupLayout.PREFERRED_SIZE, buttonSize, GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(ComponentPlacement.UNRELATED));
+
+    buttonPanelLayout.setVerticalGroup(buttonPanelLayout.createParallelGroup().addComponent(cancelButton).addComponent(okButton));
+
+}
+  
 	public void renderShowMessageDialogueButtonPanel() {
 
 		if (showMessageOKButton) {
@@ -1757,7 +1953,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
 	 */
 	@Override
 	public void showSecureViewer(final List<HashDataInput> dataToBeSigned,
-			final ActionListener backListener, final String backCommand) {
+      final ActionListener backListener, final String backCommand, HashDataInputLoader hashDataInputLoader) {
+
+    this.hashDataInputLoader = hashDataInputLoader;
 
 		if (dataToBeSigned == null) {
 			showErrorDialog(getMessage(ERR_NO_HASHDATA),
@@ -1819,7 +2017,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 			throws FontProviderException {
 
 		log.debug("[{}] Show secure viewer.", Thread.currentThread().getName());
-		secureViewer = new SecureViewerDialog(null, messages, closeListener,
+		secureViewerDialog = new SecureViewerDialog(null, messages, closeListener,
 				closeCommand, fontProvider, helpListener, getResizeFactor());
 
 		// workaround for [#439]
@@ -1829,56 +2027,55 @@ public class BKUGUIImpl implements BKUGUIFacade {
 		//Window window = SwingUtilities.getWindowAncestor(contentPane);
 		//if (window != null && window.isAlwaysOnTop()) {
 			log.debug("Make secureViewer alwaysOnTop.");
-			secureViewer.setAlwaysOnTop(true);
+			secureViewerDialog.setAlwaysOnTop(true);
 		//}
 
-		secureViewer.setContent(dataToBeSigned);
+		secureViewerDialog.setContent(dataToBeSigned);
 		log.trace("Viewer setContent returned.");
 	}
 
 	private void openSecureViewerDialog() {
 		
-		final HashDataInput storedSelection = signedReferences.get(referenceIndex);
+    try {
+      
+      log.trace("Opening SecureViewer dialog for list entry {}", referenceIndex);
+      final HashDataInput storedSelection = hashDataInputLoader.getHashDataInput(signedReferences.get(referenceIndex));
 		
-		if (SecureViewerDialog.SUPPORTED_MIME_TYPES.contains(storedSelection
-				.getMimeType())) {
+      if (SecureViewerDialog.SUPPORTED_MIME_TYPES.contains(storedSelection.getMimeType())) {
 			log.debug("[{}] Scheduling secure viewer dialog.", Thread.currentThread().getName());
 
-			showMessageDialog(TITLE_SIGNATURE_DATA,
-					MESSAGE_HASHDATA_VIEWER);
+        showMessageDialog(TITLE_SIGNATURE_DATA, MESSAGE_HASHDATA_VIEWER);
 
 			SwingUtilities.invokeLater(new Runnable() {
 
 				@Override
 				public void run() {
 					try {
-						showSecureViewer(storedSelection, storedBackToListListener,
-								null);
+              showSecureViewer(storedSelection, storedBackToListListener, null);
 						// SecureViewerDialog.showSecureViewer(selection,
 						// messages, fontProvider,
 						// helpMouseListener.getActionListener(),
 						// false);
 					} catch (FontProviderException ex) {
 						log.error("Failed to display secure viewer.", ex);
-						showErrorDialog(BKUGUIFacade.ERR_VIEWER,
-								new Object[] { ex.getMessage() },
-								storedBackToListListener, null);
+              showErrorDialog(BKUGUIFacade.ERR_VIEWER, new Object[] { ex.getMessage() }, storedBackToListListener, null);
 					}
 
 				}
 			});
 		} else {
-			log.debug("[{}] Mime-type not supported by secure viewer, " +
-					"scheduling save dialog.", Thread.currentThread().getName());
-			showMessageDialog(BKUGUIFacade.TITLE_SIGNATURE_DATA,
-					BKUGUIFacade.MESSAGE_UNSUPPORTED_MIMETYPE,
+        log.debug("[{}] Mime-type not supported by secure viewer, " + "scheduling save dialog.", Thread.currentThread()
+            .getName());
+        showMessageDialog(BKUGUIFacade.TITLE_SIGNATURE_DATA, BKUGUIFacade.MESSAGE_UNSUPPORTED_MIMETYPE,
 					new Object[] { storedSelection.getMimeType() });
-			SecureViewerSaveDialog.showSaveDialog(contentPane, storedSelection, messages,
-					storedBackToListListener, null,
+        SecureViewerSaveDialog.showSaveDialog(contentPane, storedSelection, messages, storedBackToListListener, null,
 					(int) (baseFontSize * getResizeFactor()));
 		}		
 		
-		
+    } catch (Exception ex) {
+      log.error("Failed to display secure viewer.", ex);
+      showErrorDialog(BKUGUIFacade.ERR_VIEWER, new Object[] { ex.getMessage() }, storedBackToListListener, null);
+    }
 	}
 	
 	private void showSignedReferencesListDialog(
@@ -2446,9 +2643,9 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
 		}
 		
-		if (secureViewer != null && secureViewer.isVisible()) {
+		if (secureViewerDialog != null && secureViewerDialog.isVisible()) {
 
-			secureViewer.resize(factor);
+			secureViewerDialog.resize(factor);
 		}
 
 		try {
@@ -2682,4 +2879,12 @@ public class BKUGUIImpl implements BKUGUIFacade {
 			}
 		}
 	}
+
+  @Override
+  public void showPinPadDeactivationDialog(ActionListener okListener, String okCommand, ActionListener cancelListener,
+      String cancelCommand) {
+    
+    showOptionDialog(TITLE_OVERRULE_PINPAD, MESSAGE_OVERRULE_PINPAD, null, null, null, cancelListener, cancelCommand, okListener, okCommand);
+    
+  }
 }

@@ -120,7 +120,7 @@ public class BKUGUIWorker implements Runnable {
 //                    signedRefs.add(signedRef4);
 //                    signedRefs.add(signedRef4);
 //                    signedRefs = Collections.singletonList(signedRef1);
-        gui.showSecureViewer(signedRefs, returnListener, "return");
+        gui.showSecureViewer(signedRefs, returnListener, "return", null);
       }
     };
 

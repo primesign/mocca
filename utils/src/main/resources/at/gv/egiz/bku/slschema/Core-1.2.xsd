@@ -16,7 +16,10 @@
   <xsd:complexType name="CreateCMSSignatureRequestType">
     <xsd:sequence>
       <xsd:element name="KeyboxIdentifier" type="BoxIdentifierType"/>
-      <xsd:element name="DataObject" type="CMSDataObjectRequiredMetaType"/>
+			<xsd:choice>
+				<xsd:element name="DataObject" type="CMSDataObjectRequiredMetaType"/>
+				<xsd:element name="ReferenceObject" type="CMSReferenceObject"/>
+			</xsd:choice>
     </xsd:sequence>
     <xsd:attribute name="Structure" use="required">
       <xsd:simpleType>
@@ -33,7 +36,21 @@
       <xsd:restriction base="CMSDataObjectOptionalMetaType">
         <xsd:sequence>
           <xsd:element name="MetaInfo" type="MetaInfoType"/>
-          <xsd:element name="Content" type="Base64OptRefContentType"/>
+           <xsd:element name="Content" type="Base64OptRefContentType"/> 
+          <xsd:element name="ExcludedByteRange" type="ExcludedByteRangeType" minOccurs="0"/>
+        </xsd:sequence>
+      </xsd:restriction>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="CMSReferenceObject">
+    <xsd:complexContent>
+      <xsd:restriction base="CMSDataObjectOptionalMetaType">
+        <xsd:sequence>
+          <xsd:element name="MetaInfo" type="MetaInfoType"/>
+		      <xsd:choice>
+		          <xsd:element name="Content" type="Base64OptRefContentType"/>
+		          <xsd:element name="DigestAndRef" type="DigestAndRefType" />
+		      </xsd:choice>
           <xsd:element name="ExcludedByteRange" type="ExcludedByteRangeType" minOccurs="0"/>
         </xsd:sequence>
       </xsd:restriction>
@@ -42,7 +59,10 @@
   <xsd:complexType name="CMSDataObjectOptionalMetaType">
     <xsd:sequence>
       <xsd:element name="MetaInfo" type="MetaInfoType" minOccurs="0"/>
-      <xsd:element name="Content" type="Base64OptRefContentType"/>
+      <xsd:choice>
+          <xsd:element name="Content" type="Base64OptRefContentType"/>
+          <xsd:element name="DigestAndRef" type="DigestAndRefType" />
+      </xsd:choice>
       <xsd:element name="ExcludedByteRange" type="ExcludedByteRangeType" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -1086,6 +1106,13 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+	<xsd:complexType name="DigestAndRefType">
+		<xsd:sequence>
+			<xsd:element ref="dsig:DigestMethod" />
+			<xsd:element ref="dsig:DigestValue" />
+		</xsd:sequence>
+		<xsd:attribute name="Reference" type="xsd:anyURI" />
+	</xsd:complexType>
   <xsd:complexType name="Base64OptRefContentType">
     <xsd:complexContent>
       <xsd:extension base="Base64ContentType">

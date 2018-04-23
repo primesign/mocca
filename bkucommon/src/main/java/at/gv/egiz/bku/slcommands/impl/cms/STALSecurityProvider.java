@@ -69,8 +69,8 @@ public class STALSecurityProvider extends IaikProvider {
   private ExcludedByteRangeType excludedByteRange;
   private STALSignatureException stalSignatureException;
 
-  public STALSecurityProvider(STAL stal, String keyboxIdentifier,
-      HashDataInput hashDataInput, ExcludedByteRangeType excludedByteRange) {
+  public STALSecurityProvider(STAL stal, String keyboxIdentifier, HashDataInput hashDataInput,
+      ExcludedByteRangeType excludedByteRange) {
     this.keyboxIdentifier = keyboxIdentifier;
     this.stal = stal;
     this.hashDataInput = new ArrayList<HashDataInput>();
@@ -78,23 +78,27 @@ public class STALSecurityProvider extends IaikProvider {
     this.excludedByteRange = excludedByteRange;
   }
 
-  /* (non-Javadoc)
-   * @see iaik.cms.IaikProvider#calculateSignatureFromSignedAttributes(iaik.asn1.structures.AlgorithmID, iaik.asn1.structures.AlgorithmID, java.security.PrivateKey, byte[])
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * iaik.cms.IaikProvider#calculateSignatureFromSignedAttributes(iaik.asn1.
+   * structures.AlgorithmID, iaik.asn1.structures.AlgorithmID,
+   * java.security.PrivateKey, byte[])
    */
   @Override
-  public byte[] calculateSignatureFromSignedAttributes(AlgorithmID signatureAlgorithm,
-      AlgorithmID digestAlgorithm, PrivateKey privateKey,
-      byte[] signedAttributes)
-      throws SignatureException, InvalidKeyException, NoSuchAlgorithmException {
+  public byte[] calculateSignatureFromSignedAttributes(AlgorithmID signatureAlgorithm, AlgorithmID digestAlgorithm,
+      PrivateKey privateKey, byte[] signedAttributes) throws SignatureException, InvalidKeyException,
+      NoSuchAlgorithmException {
+    stalSignatureException = null;
     log.debug("calculateSignatureFromSignedAttributes: " + signatureAlgorithm + ", " + digestAlgorithm);
 
     STALPrivateKey spk = (STALPrivateKey) privateKey;
-    SignRequest signRequest = getSTALSignRequest(keyboxIdentifier, signedAttributes,
-        spk.getAlgorithm(), spk.getDigestAlgorithm(), hashDataInput, excludedByteRange);
+    SignRequest signRequest = getSTALSignRequest(keyboxIdentifier, signedAttributes, spk.getAlgorithm(),
+        spk.getDigestAlgorithm(), hashDataInput, excludedByteRange);
 
     log.debug("Sending STAL request ({})", privateKey.getAlgorithm());
-    List<STALResponse> responses =
-      stal.handleRequest(Collections.singletonList((STALRequest) signRequest));
+    List<STALResponse> responses = stal.handleRequest(Collections.singletonList((STALRequest) signRequest));
 
     if (responses == null || responses.size() != 1) {
       throw new SignatureException("Failed to access STAL.");
@@ -114,9 +118,9 @@ public class STALSecurityProvider extends IaikProvider {
     }
   }
 
-  private static SignRequest getSTALSignRequest(String keyboxIdentifier,
-      byte[] signedAttributes, String signatureMethod, String digestMethod,
-      List<HashDataInput> hashDataInput, ExcludedByteRangeType excludedByteRange) {
+  private static SignRequest getSTALSignRequest(String keyboxIdentifier, byte[] signedAttributes,
+      String signatureMethod, String digestMethod, List<HashDataInput> hashDataInput,
+      ExcludedByteRangeType excludedByteRange) {
     SignRequest signRequest = new SignRequest();
     signRequest.setKeyIdentifier(keyboxIdentifier);
     log.debug("SignedAttributes: " + Util.toBase64String(signedAttributes));
@@ -147,8 +151,7 @@ public class STALSecurityProvider extends IaikProvider {
       sigS.addComponent(new INTEGER(new BigInteger(1, r)));
       sigS.addComponent(new INTEGER(new BigInteger(1, s)));
       return DerCoder.encode(sigS);
-    }
-    else
+    } else
       return sig;
   }
 

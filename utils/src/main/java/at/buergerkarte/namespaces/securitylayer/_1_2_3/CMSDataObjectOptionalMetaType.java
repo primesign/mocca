@@ -26,7 +26,10 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="MetaInfo" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}MetaInfoType" minOccurs="0"/&gt;
- *         &lt;element name="Content" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}Base64OptRefContentType"/&gt;
+ *         &lt;choice&gt;
+ *           &lt;element name="Content" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}Base64OptRefContentType"/&gt;
+ *           &lt;element name="DigestAndRef" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}DigestAndRefType"/&gt;
+ *         &lt;/choice&gt;
  *         &lt;element name="ExcludedByteRange" type="{http://www.buergerkarte.at/namespaces/securitylayer/1.2#}ExcludedByteRangeType" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
@@ -40,10 +43,12 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "CMSDataObjectOptionalMetaType", propOrder = {
     "metaInfo",
     "content",
+    "digestAndRef",
     "excludedByteRange"
 })
 @XmlSeeAlso({
-    CMSDataObjectRequiredMetaType.class
+  CMSReferenceObject.class,
+  CMSDataObjectRequiredMetaType.class
 })
 public class CMSDataObjectOptionalMetaType {
 
@@ -51,6 +56,8 @@ public class CMSDataObjectOptionalMetaType {
     protected MetaInfoType metaInfo;
     @XmlElement(name = "Content", required = true)
     protected Base64OptRefContentType content;
+    @XmlElement(name = "DigestAndRef")
+    protected DigestAndRefType digestAndRef;
     @XmlElement(name = "ExcludedByteRange")
     protected ExcludedByteRangeType excludedByteRange;
 
@@ -100,6 +107,30 @@ public class CMSDataObjectOptionalMetaType {
      */
     public void setContent(Base64OptRefContentType value) {
         this.content = value;
+    }
+    
+    /**
+     * Ruft den Wert der digestAndRef-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link DigestAndRefType }
+     *     
+     */
+    public DigestAndRefType getDigestAndRef() {
+        return digestAndRef;
+    }
+
+    /**
+     * Legt den Wert der digestAndRef-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DigestAndRefType }
+     *     
+     */
+    public void setDigestAndRef(DigestAndRefType value) {
+        this.digestAndRef = value;
     }
 
     /**

@@ -24,6 +24,7 @@
 
 package at.gv.egiz.smcc.pin.gui;
 
+import at.gv.egiz.smcc.BulkSignException;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.PinInfo;
 
@@ -38,7 +39,7 @@ public class SMCCTestPINProvider extends DummyPINGUI implements PINGUI {
 
   @Override
   public char[] providePIN(PinInfo spec, int retries)
-          throws CancelledException, InterruptedException {
+          throws CancelledException, InterruptedException, BulkSignException {
     provided++;
     return pin;
   }

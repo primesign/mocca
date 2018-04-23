@@ -25,12 +25,14 @@
 package at.gv.egiz.bku.pin.gui;
 
 import at.gv.egiz.bku.gui.BKUGUIFacade;
-import at.gv.egiz.bku.smccstal.SecureViewer;
+import at.gv.egiz.bku.gui.viewer.SecureViewer;
 import at.gv.egiz.smcc.CancelledException;
 import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.smcc.pin.gui.PINGUI;
-import at.gv.egiz.stal.signedinfo.SignedInfoType;
+import at.gv.egiz.stal.SignatureInfo;
+
 import java.security.DigestException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +53,7 @@ public class SignPINGUI extends SignPINProvider implements PINGUI {
 
   private boolean retry = false;
 
-  public SignPINGUI(BKUGUIFacade gui, SecureViewer viewer, SignedInfoType signedInfo) {
+  public SignPINGUI(BKUGUIFacade gui, SecureViewer viewer, SignatureInfo signedInfo) {
     super(gui, viewer, signedInfo);
   }
 

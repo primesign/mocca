@@ -25,6 +25,7 @@
 package at.gv.egiz.bku.slcommands.impl.cms;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import at.gv.egiz.bku.gui.viewer.MimeTypes;
@@ -32,18 +33,33 @@ import at.gv.egiz.stal.HashDataInput;
 
 public class CMSHashDataInput implements HashDataInput {
 
-  private final static String DEFAULT_FILENAME = "SignatureData";
+  public final static String DEFAULT_FILENAME = "SignatureData";
 
   private byte[] data;
-  private String mimeType;
+  private byte[] digest;
+  protected String mimeType;
+  private String referenceId;
+  private String fileName;
 
   public CMSHashDataInput(byte[] data, String mimeType) {
     this.data = data;
     this.mimeType = mimeType;
   }
 
+  public CMSHashDataInput(byte[] data, String mimeType, byte[] digest) {
+    this.data = data;
+    this.mimeType = mimeType;
+  }
+
+	public CMSHashDataInput() {
+	}
+
   @Override
   public String getReferenceId() {
+
+    if (referenceId != null) {
+      return referenceId;
+    }
     return CMS_DEF_REFERENCE_ID;
   }
 
@@ -59,11 +75,38 @@ public class CMSHashDataInput implements HashDataInput {
 
   @Override
   public String getFilename() {
+	  if (fileName != null) {
+		  return fileName;
+	  }
+
+	  if (mimeType != null) {
     return DEFAULT_FILENAME + MimeTypes.getExtension(mimeType);
   }
 
+	  return DEFAULT_FILENAME;
+  }
+
   @Override
-  public InputStream getHashDataInput() {
+  public InputStream getHashDataInput() throws IOException {
     return new ByteArrayInputStream(data);
   }
+
+  @Override
+  public byte[] getDigest() {
+    return digest;
+  }
+
+
+  public void setFilename(String fileName) {
+    this.fileName = fileName;
+  }
+ 
+  public void setDigest(byte[] digest) {
+    this.digest = digest;
+  }
+
+  public void setReferenceId(String referenceId) {
+    this.referenceId = referenceId;
+  }
+
 }
