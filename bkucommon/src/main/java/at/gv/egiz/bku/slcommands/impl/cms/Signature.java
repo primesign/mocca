@@ -113,8 +113,8 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
           CodingException, SLCommandException, IOException, CMSException {
     int mode = structure.equalsIgnoreCase("enveloping") ? SignedData.IMPLICIT : SignedData.EXPLICIT;
     if (dataObject.getContent() != null) {
-      byte[] dataToBeSigned = getContent(dataObject, urlDereferencer);
-      this.signedData = new SignedData(dataToBeSigned, mode);
+    byte[] dataToBeSigned = getContent(dataObject, urlDereferencer);
+    this.signedData = new SignedData(dataToBeSigned, mode);
 	  if (dataObject.getMetaInfo() != null) {
 			this.mimeType = dataObject.getMetaInfo().getMimeType();
 		}
@@ -253,7 +253,7 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
       is.close();
     }
     this.signedDocument = data.clone();
-  
+
     this.excludedByteRange = dataObject.getExcludedByteRange();
     if (this.excludedByteRange == null)
       return data;
@@ -296,21 +296,20 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
         throw new NoSuchAlgorithmException("Algorithm '" + digestAlgorithm + "' not supported.");
       }
     } else {
-      digestAlgorithmURI = amf.getDigestAlgorithmURI();
+    digestAlgorithmURI = amf.getDigestAlgorithmURI();
       digestAlgorithm = amf.getDigestAlgorithmID();
-    }
-  }
-
+      }
+      }
+      
 	public HashDataInput getHashDataInput() {
 
 		if (hashDataInput != null) {
 			return hashDataInput;
-		} else {
+      } else {
 			return new CMSHashDataInput(signedDocument, mimeType);
-		}
-	}
-  
-  
+    }
+  }
+
 
   public byte[] sign(STAL stal, String keyboxIdentifier) throws CMSException, CMSSignatureException, SLCommandException {
     STALSecurityProvider securityProvider = new STALSecurityProvider(stal, keyboxIdentifier, getHashDataInput(), this.excludedByteRange);
@@ -343,7 +342,7 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
       String schemeSpecificPart = urn.getSchemeSpecificPart().toLowerCase();
       if (schemeSpecificPart.startsWith("oid:")) {
         oid = schemeSpecificPart.substring(4, schemeSpecificPart.length());
-      }
+}
     }
     return new AlgorithmID(new ObjectID(oid));
   }

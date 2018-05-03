@@ -84,7 +84,7 @@ public class LocalSecureViewer implements SecureViewer, HashDataInputLoader {
   public void displayDataToBeSigned(SignatureInfo signedInfo,
           ActionListener okListener, String okCommand)
           throws Exception {
-    
+
       log.info("Retrieve data to be signed for dsig:SignedInfo {}.", signedInfo.getId());
       List<HashDataInput> hdi = getHashDataInputs(signedInfo);
       List<HashDataInput> verifiedDataToBeSigned = verifyHashDataInput(signedInfo.getReference(), hdi.get(0));
@@ -92,7 +92,7 @@ public class LocalSecureViewer implements SecureViewer, HashDataInputLoader {
     ArrayList<HashDataInput> selectedHashDataInputs = new ArrayList<HashDataInput>();
     selectedHashDataInputs.addAll(verifiedDataToBeSigned);
       
-      
+
     if (selectedHashDataInputs.size() < 1) {
       log.error("dsig:SignedInfo does not contain a data reference.");
       throw new Exception("dsig:SignedInfo does not contain a data reference.");

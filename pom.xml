@@ -4,7 +4,7 @@
   <groupId>at.gv.egiz</groupId>
   <artifactId>mocca</artifactId>
   <packaging>pom</packaging>
-  <version>1.3.31-PRIMESIGN-2-SNAPSHOT</version>
+  <version>1.3.33-PRIMESIGN-1-SNAPSHOT</version>
   <name>MOCCA</name>
   <description>MOCCA (Modular Open Citizen Card Architecture) project</description>
   <url>http://joinup.ec.europa.eu/site/mocca/</url>
@@ -65,7 +65,7 @@
    <!-- <developerConnection>scm:git:ssh://gitlab@gitlab.iaik.tugraz.at/egiz/mocca.git</developerConnection> -->
 	<developerConnection>scm:git:https://gitlab.iaik.tugraz.at/egiz/mocca.git</developerConnection>
     <url>http://git.egiz.gv.at/mocca</url>
-    <tag>mocca-1.3.28</tag>
+    <tag>mocca-1.3.25</tag>
   </scm>
   <organization>
     <name>E-Government Innovation Center (EGIZ)</name>
@@ -421,38 +421,38 @@
         <version>2.5.5</version>
       </dependency>
       <dependency>
-    <groupId>org.glassfish.jaxb</groupId>
-    <artifactId>jaxb-runtime</artifactId>
+    	<groupId>org.glassfish.jaxb</groupId>
+    	<artifactId>jaxb-runtime</artifactId>
     	<version>${jaxb.version}</version>
 	  </dependency>
 	  <dependency>
     	<groupId>javax.xml.bind</groupId>
     	<artifactId>jaxb-api</artifactId>
     	<version>${jaxb.version}</version>
-</dependency>
-      <dependency>
+	  </dependency>
+	  <dependency>
     	<groupId>javax.activation</groupId>
     	<artifactId>activation</artifactId>
     	<version>${activation.version}</version>
-      </dependency>
+	  </dependency>
       <!-- version not defined in BKUOnline pom "include-webstart" profile,
        |   it wouldn't be adjusted by release:prepare -->
       <dependency>
         <groupId>at.gv.egiz</groupId>
         <artifactId>BKUWebStart</artifactId>
-        <version>1.3.31-PRIMESIGN-2-SNAPSHOT</version>
+        <version>${project.version}</version>
         <type>zip</type>
       </dependency>
       <!-- dependency in BKULocal, BKUWebstart and BKUOnline -->
       <dependency>
         <groupId>at.gv.egiz</groupId>
         <artifactId>BKUCertificates</artifactId>
-        <version>1.3.31-PRIMESIGN-2-SNAPSHOT</version>
+        <version>1.1.16-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>at.gv.egiz</groupId>
         <artifactId>BKUFonts</artifactId>
-        <version>1.3.31-PRIMESIGN-2-SNAPSHOT</version>
+        <version>1.2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
@@ -591,3 +591,4 @@
     </profile>
   </profiles>
 </project>
+

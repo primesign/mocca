@@ -64,7 +64,7 @@ public class AlgorithmMethodFactoryImpl implements AlgorithmMethodFactory {
    * the digest algorithm URI.
    */
   private String digestAlgorithmURI = DigestMethod.SHA1;
-  
+
   /**
    * The digest algorithm ID.
    */

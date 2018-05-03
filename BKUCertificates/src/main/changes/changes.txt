@@ -4,6 +4,36 @@ Tags:
 * ''ADDED''	... certificate newly added in this release
 * ''REMOVED''  ... certificate removed in this release
 * TRUSTED	... certificate included in truststore
+-------------------
+'''BKUCertificates-1.15 (mocca-1.3.32)'''
+-------------------
+DigiCertGlobalRootG2.crt (''ADDED'', TRUSTED)
+* Serial Number: 033af1e6a711a9a0bb2864b11d09fae5
+* Issuer: CN = DigiCert Global Root G2, OU = www.digicert.com, O = DigiCert Inc, C = US
+* Subject: CN = DigiCert Global Root G2, OU = www.digicert.com, O = DigiCert Inc, C = US
+* Not Before: Thu Aug 01 14:00:00 CEST 2013 
+* Not After:  Fri Jan 15 13:00:00 CET 2038
+
+securegesundheitgvat.crt (''ADDED'')
+* Serial Number: 090ee8c5de5bfa62d2ae2ff7097c4857
+* Issuer: CN = DigiCert Global Root G2, OU = www.digicert.com, O = DigiCert Inc, C = US
+* Subject: CN = Thawte TLS RSA CA G1, OU = www.digicert.com, O = DigiCert Inc, C = US
+* Not Before: Thu Nov 02 13:24:25 CET 2017 
+* Not After: Tue Nov 02 13:24:25 CET 2027
+
+securegesundheitgvat.crt (''ADDED'')
+* Serial Number: 06abe90fbbda2fb9c10df32c95ce96dd
+* Issuer: CN = Thawte TLS RSA CA G1, OU = www.digicert.com, O = DigiCert Inc, C = US
+* Subject: CN = secure.gesundheit.gv.at, O = Bundesministerium für Gesundheit, L = Wien, S = Wien, C = AT
+* Not Before: Fri Apr 13 02:00:00 CEST 2018  
+* Not After: Thu Jun 11 14:00:00 CEST 2020
+
+ISRG Root X1.crt (''ADDED'', TRUSTED)
+* Serial Number: 8210cfb0d240e3594463e0bb63828b00
+* Issuer: CN=ISRG Root X1, O=Internet Security Research Group, C=US
+* Subject: CN=ISRG Root X1, O=Internet Security Research Group, C=US
+* Not Before: Thu Jun 04 13:04:38 CEST 2015 
+* Not After: Mon Jun 04 13:04:38 CEST 2035
 
 -------------------
 '''BKUCertificates-1.14 (mocca-1.3.23)'''

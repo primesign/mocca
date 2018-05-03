@@ -45,7 +45,7 @@ public class CMSHashDataInput implements HashDataInput {
     this.data = data;
     this.mimeType = mimeType;
   }
-  
+
   public CMSHashDataInput(byte[] data, String mimeType, byte[] digest) {
     this.data = data;
     this.mimeType = mimeType;
@@ -54,7 +54,7 @@ public class CMSHashDataInput implements HashDataInput {
 	public CMSHashDataInput() {
 	}
 
-	@Override
+  @Override
   public String getReferenceId() {
 
     if (referenceId != null) {
@@ -80,8 +80,8 @@ public class CMSHashDataInput implements HashDataInput {
 	  }
 
 	  if (mimeType != null) {
-		  return DEFAULT_FILENAME + MimeTypes.getExtension(mimeType);
-	  }
+    return DEFAULT_FILENAME + MimeTypes.getExtension(mimeType);
+  }
 
 	  return DEFAULT_FILENAME;
   }

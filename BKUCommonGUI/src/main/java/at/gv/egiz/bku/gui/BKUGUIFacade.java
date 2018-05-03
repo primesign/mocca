@@ -26,7 +26,7 @@ package at.gv.egiz.bku.gui;
 
 import at.gv.egiz.bku.gui.hashdata.HashDataInputLoader;
 import at.gv.egiz.smcc.PinInfo;
-import at.gv.egiz.stal.HashDataInput;
+  import at.gv.egiz.stal.HashDataInput;
 
 import java.awt.Color;
 import java.awt.event.ActionListener;
@@ -138,7 +138,6 @@ public interface BKUGUIFacade {
 
   public static final String SIGDATA_TOOLTIPTEXT = "dialog.sigpin.infolabel.sigdata.tooltiptext";
   public static final String SWITCH_FOCUS_DUMMY_LABEL_NAME = "DummyLabel";
-
   
   public enum DIALOG_TYPE {DIALOGUE_UNDEFINED, DIALOGUE_VERIFY_PIN, DIALOGUE_ENTER_PIN, DIALOGUE_SHOW_SIG_DATA, DIALOGUE_SIGNATURE_PIN, DIALOGUE_MESSAGE};
   
@@ -187,7 +186,6 @@ public interface BKUGUIFacade {
    * needs to be re-paint)
    * @param backCommand
    */
-
   public void showSecureViewer(List<HashDataInput> dataToBeSigned,
       ActionListener backListener, String backCommand, HashDataInputLoader hashDataInputLoader);
 
@@ -208,7 +206,7 @@ public interface BKUGUIFacade {
 
   public void showMessageDialog(String titleKey,
           String msgKey, Object[] msgParams);
-  
+
 	void updateMessageDialog(String titleKey, 
 			String msgKey, Object[] msgParams, String buttonKey, ActionListener okListener, String okCommand);
 

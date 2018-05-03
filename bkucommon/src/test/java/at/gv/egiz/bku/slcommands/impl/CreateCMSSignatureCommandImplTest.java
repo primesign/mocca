@@ -105,7 +105,7 @@ public class CreateCMSSignatureCommandImplTest {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream(
         "at/gv/egiz/bku/slcommands/createcmssignaturerequest/CreateCMSSignatureRequest.xml");
     assertNotNull(inputStream);
- 
+    
     SLCommand command = factory.createSLCommand(new StreamSource(new InputStreamReader(inputStream)));
     assertTrue(command instanceof CreateCMSSignatureCommand);
     

@@ -52,9 +52,9 @@
 
   <bean id="urlDereferencer" class="at.gv.egiz.bku.spring.URLDereferencerFactoryBean">
     <property name="sslSocketFactory" ref="sslSocketFactory"/>
-    <property name="hostnameVerifier" ref="hostnameVerifier"/>
+		<property name="hostnameVerifier" ref="hostnameVerifier"/>
     <property name="configuration" ref="configuration"/>
-  </bean>
+	</bean>
   
 	<!-- security manager for the command invoker -->
 	<bean id="securityManager" class="at.gv.egiz.bku.spring.SecurityManagerFactoryBean">

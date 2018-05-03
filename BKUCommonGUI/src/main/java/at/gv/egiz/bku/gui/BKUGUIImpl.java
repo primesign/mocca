@@ -31,7 +31,6 @@ import at.gv.egiz.bku.gui.viewer.FontProvider;
 import at.gv.egiz.bku.gui.viewer.SecureViewerSaveDialog;
 import at.gv.egiz.smcc.PinInfo;
 import at.gv.egiz.stal.HashDataInput;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -77,7 +76,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -158,7 +156,6 @@ public class BKUGUIImpl implements BKUGUIFacade {
 	
 //	protected HashDataInput storedSelection;
 	protected List<HashDataInput> signedReferences;
-
 	protected Integer referenceIndex;
 	protected at.gv.egiz.bku.gui.BKUGUIImpl.SignedReferencesSelectionListener.SignedReferencesListDisplayer storedBackToListListener;
 	
@@ -1588,7 +1585,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 
 		showMessageDialog(titleKey, null, msgKey, msgParams, null, null, null);
 	}
-	
+
 	
 	 @Override
 	  public void updateMessageDialog(final String titleKey, final String msgKey,
@@ -1764,7 +1761,7 @@ public class BKUGUIImpl implements BKUGUIFacade {
 			}
 		});
 	}
-	
+
 
   private void showOptionDialog(final String titleKey, final String msgKey, final Object[] msgParams,
       final String cancelButtonKey, final String okButtonKey, final ActionListener cancelListener,
@@ -1954,63 +1951,63 @@ public class BKUGUIImpl implements BKUGUIFacade {
 	 *            (signedRefencesList returns via BACK button)
 	 * @param backCommand
 	 */
-  @Override
-  public void showSecureViewer(final List<HashDataInput> dataToBeSigned,
+	@Override
+	public void showSecureViewer(final List<HashDataInput> dataToBeSigned,
       final ActionListener backListener, final String backCommand, HashDataInputLoader hashDataInputLoader) {
 
     this.hashDataInputLoader = hashDataInputLoader;
-    
-    if (dataToBeSigned == null) {
-      showErrorDialog(getMessage(ERR_NO_HASHDATA),
-          new Object[] { "no signature data provided" },
-          backListener, backCommand);
-    } else if (dataToBeSigned.size() == 1) {
-      // TODO pull out (see also SignedReferencesSelectionListener)
-      if (SecureViewerDialog.SUPPORTED_MIME_TYPES.contains(dataToBeSigned
-          .get(0).getMimeType())) {
-        try {
-          log.debug("[{}] Scheduling secure viewer.", Thread.currentThread().getName());
 
-          showMessageDialog(TITLE_SIGNATURE_DATA,
-              MESSAGE_HASHDATA_VIEWER);
+		if (dataToBeSigned == null) {
+			showErrorDialog(getMessage(ERR_NO_HASHDATA),
+					new Object[] { "no signature data provided" },
+					backListener, backCommand);
+		} else if (dataToBeSigned.size() == 1) {
+			// TODO pull out (see also SignedReferencesSelectionListener)
+			if (SecureViewerDialog.SUPPORTED_MIME_TYPES.contains(dataToBeSigned
+					.get(0).getMimeType())) {
+				try {
+					log.debug("[{}] Scheduling secure viewer.", Thread.currentThread().getName());
 
-          SwingUtilities.invokeLater(new Runnable() {
+					showMessageDialog(TITLE_SIGNATURE_DATA,
+							MESSAGE_HASHDATA_VIEWER);
 
-            @Override
-            public void run() {
-              try {
-                showSecureViewer(dataToBeSigned.get(0),
-                    backListener, backCommand);
-              } catch (FontProviderException ex) {
-                log.error("Failed to display secure viewer.", ex);
-                showErrorDialog(ERR_VIEWER, new Object[] { ex
-                    .getMessage() }, backListener,
-                    backCommand);
-              }
-            }
-          });
+					SwingUtilities.invokeLater(new Runnable() {
 
-        } catch (Exception ex) { // InterruptedException
-          // InvocationTargetException
-          log.error("Failed to display secure viewer. ", ex);
-          showErrorDialog(ERR_UNKNOWN, null, backListener,
-              backCommand);
-        }
-      } else {
-        log.debug("[{}] mime-type not supported by secure viewer, " +
-            "scheduling save dialog.", Thread.currentThread().getName());
-        showMessageDialog(TITLE_SIGNATURE_DATA,
-            MESSAGE_UNSUPPORTED_MIMETYPE,
-            new Object[] { dataToBeSigned.get(0).getMimeType() });
-        SecureViewerSaveDialog.showSaveDialog(contentPane, dataToBeSigned.get(0),
-            messages, backListener, backCommand,
-            (int) (baseFontSize * getResizeFactor()));
-      }
-    } else {
-      showSignedReferencesListDialog(dataToBeSigned, backListener,
-          backCommand);
-    }
-  }
+						@Override
+						public void run() {
+							try {
+								showSecureViewer(dataToBeSigned.get(0),
+										backListener, backCommand);
+							} catch (FontProviderException ex) {
+								log.error("Failed to display secure viewer.", ex);
+								showErrorDialog(ERR_VIEWER, new Object[] { ex
+										.getMessage() }, backListener,
+										backCommand);
+							}
+						}
+					});
+
+				} catch (Exception ex) { // InterruptedException
+					// InvocationTargetException
+					log.error("Failed to display secure viewer. ", ex);
+					showErrorDialog(ERR_UNKNOWN, null, backListener,
+							backCommand);
+				}
+			} else {
+				log.debug("[{}] mime-type not supported by secure viewer, " +
+						"scheduling save dialog.", Thread.currentThread().getName());
+				showMessageDialog(TITLE_SIGNATURE_DATA,
+						MESSAGE_UNSUPPORTED_MIMETYPE,
+						new Object[] { dataToBeSigned.get(0).getMimeType() });
+				SecureViewerSaveDialog.showSaveDialog(contentPane, dataToBeSigned.get(0),
+						messages, backListener, backCommand,
+						(int) (baseFontSize * getResizeFactor()));
+			}
+		} else {
+			showSignedReferencesListDialog(dataToBeSigned, backListener,
+					backCommand);
+		}
+	}
 
 	/**
 	 * has to be called from event dispatcher thread
@@ -2037,51 +2034,50 @@ public class BKUGUIImpl implements BKUGUIFacade {
 		log.trace("Viewer setContent returned.");
 	}
 
-  private void openSecureViewerDialog() {
-
+	private void openSecureViewerDialog() {
+		
     try {
       
       log.trace("Opening SecureViewer dialog for list entry {}", referenceIndex);
       final HashDataInput storedSelection = hashDataInputLoader.getHashDataInput(signedReferences.get(referenceIndex));
-
+		
       if (SecureViewerDialog.SUPPORTED_MIME_TYPES.contains(storedSelection.getMimeType())) {
-        log.debug("[{}] Scheduling secure viewer dialog.", Thread.currentThread().getName());
+			log.debug("[{}] Scheduling secure viewer dialog.", Thread.currentThread().getName());
 
         showMessageDialog(TITLE_SIGNATURE_DATA, MESSAGE_HASHDATA_VIEWER);
 
-        SwingUtilities.invokeLater(new Runnable() {
+			SwingUtilities.invokeLater(new Runnable() {
 
-          @Override
-          public void run() {
-            try {
+				@Override
+				public void run() {
+					try {
               showSecureViewer(storedSelection, storedBackToListListener, null);
-              // SecureViewerDialog.showSecureViewer(selection,
-              // messages, fontProvider,
-              // helpMouseListener.getActionListener(),
-              // false);
-            } catch (FontProviderException ex) {
-              log.error("Failed to display secure viewer.", ex);
+						// SecureViewerDialog.showSecureViewer(selection,
+						// messages, fontProvider,
+						// helpMouseListener.getActionListener(),
+						// false);
+					} catch (FontProviderException ex) {
+						log.error("Failed to display secure viewer.", ex);
               showErrorDialog(BKUGUIFacade.ERR_VIEWER, new Object[] { ex.getMessage() }, storedBackToListListener, null);
-            }
+					}
 
-          }
-        });
-
-      } else {
+				}
+			});
+		} else {
         log.debug("[{}] Mime-type not supported by secure viewer, " + "scheduling save dialog.", Thread.currentThread()
             .getName());
         showMessageDialog(BKUGUIFacade.TITLE_SIGNATURE_DATA, BKUGUIFacade.MESSAGE_UNSUPPORTED_MIMETYPE,
-            new Object[] { storedSelection.getMimeType() });
+					new Object[] { storedSelection.getMimeType() });
         SecureViewerSaveDialog.showSaveDialog(contentPane, storedSelection, messages, storedBackToListListener, null,
-            (int) (baseFontSize * getResizeFactor()));
-      }
-
+					(int) (baseFontSize * getResizeFactor()));
+		}		
+		
     } catch (Exception ex) {
       log.error("Failed to display secure viewer.", ex);
       showErrorDialog(BKUGUIFacade.ERR_VIEWER, new Object[] { ex.getMessage() }, storedBackToListListener, null);
     }
-  }
-
+	}
+	
 	private void showSignedReferencesListDialog(
 			final List<HashDataInput> signedReferences,
 			final ActionListener backListener, final String backCommand) {
