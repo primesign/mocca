@@ -79,15 +79,13 @@
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <groupId>org.apache.maven.plugins</groupId>
-          <version>2.1</version>
-          <configuration>
-            <!--
-            <fork>true</fork>
-            <executable>${java_150_sun}/bin/javac</executable>
-            <compilerVersion>1.5</compilerVersion>
-            -->
-            <source>1.6</source>
-            <target>1.6</target>
+          <version>3.7.0</version>
+          <configuration>            
+            <fork>true</fork> 
+            <executable>${env.JAVA_HOME}\bin\javac.exe</executable> 
+            <compilerVersion>9</compilerVersion> 
+            <source>1.7</source>
+            <target>1.7</target>
             <verbose>true</verbose>
             <showWarnings>true</showWarnings>
             <encoding>UTF-8</encoding>
