@@ -34,7 +34,7 @@ import java.util.ResourceBundle;
  */
 public class PinInfo {
 
-  public enum STATE {UNKNOWN, ACTIV, NOT_ACTIV, BLOCKED};
+  public enum STATE {UNKNOWN, ACTIV, NOT_ACTIV, BLOCKED}
   
   /**
    * the number of remaining retries is unknown or irrelevant (blocked, not active states)

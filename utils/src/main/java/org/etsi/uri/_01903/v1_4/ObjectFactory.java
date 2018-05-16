@@ -56,8 +56,8 @@ import org.etsi.uri._01903.v1_3.XAdESTimeStampType;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _ArchiveTimeStamp_QNAME = new QName("http://uri.etsi.org/01903/v1.4.1#", "ArchiveTimeStamp");
-    private final static QName _TimeStampValidationData_QNAME = new QName("http://uri.etsi.org/01903/v1.4.1#", "TimeStampValidationData");
+    private static final QName _ArchiveTimeStamp_QNAME = new QName("http://uri.etsi.org/01903/v1.4.1#", "ArchiveTimeStamp");
+    private static final QName _TimeStampValidationData_QNAME = new QName("http://uri.etsi.org/01903/v1.4.1#", "TimeStampValidationData");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.etsi.uri._01903.v1_4

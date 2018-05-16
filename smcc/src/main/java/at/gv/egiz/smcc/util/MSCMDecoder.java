@@ -217,8 +217,7 @@ public class MSCMDecoder implements MSCMConstants {
 			utf8Data[i] = data[offset + 2 + i];
 		}
 		
-		String str = new String(utf8Data, "UTF-8");
-		return str;
+		return new String(utf8Data, "UTF-8");
 	}
 	
 	

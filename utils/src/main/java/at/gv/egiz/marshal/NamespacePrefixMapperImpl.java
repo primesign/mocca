@@ -24,7 +24,6 @@
 
 package at.gv.egiz.marshal;
 
-//import com.sun.xml.internal.bind.marshaller.NamespacePrefixMapper;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -55,7 +55,7 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _ECDSAKeyValue_QNAME = new QName("http://www.w3.org/2001/04/xmldsig-more#", "ECDSAKeyValue");
+    private static final QName _ECDSAKeyValue_QNAME = new QName("http://www.w3.org/2001/04/xmldsig-more#", "ECDSAKeyValue");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.w3._2001._04.xmldsig_more_

@@ -25,6 +25,7 @@
 package at.gv.egiz.bku.accesscontroller;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import at.gv.egiz.bku.accesscontroller.RuleChecker.PEER_TYPE;
@@ -106,6 +107,54 @@ public class RuleCheckerTest {
 		ctx = new AccessCheckerContext(null, null, "https://www.buergerkarte.at:80/");
 		rr = onlyPeerChecker.check(ctx);
 		assertTrue(rr.matchFound());
+	}
+
+	@Test
+	public void testMatchPeerIdReturnsFalseIfGivenInvalidUrl(){
+		RuleChecker ruleChecker = new RuleChecker("1");
+		ruleChecker.setPeerId("a", PEER_TYPE.HOST);
+
+		assertFalse(ruleChecker.matchPeerId("asdf"));
+	}
+
+	@Test
+	public void testMatchPeerId(){
+		RuleChecker ruleChecker = new RuleChecker("1");
+		ruleChecker.setPeerId("a", PEER_TYPE.HOST);
+
+		assertFalse(ruleChecker.matchPeerId("http://me:secret@127.0.0.1:80/myPath"));
+
+		ruleChecker.setPeerId("127.0.0.1:80", PEER_TYPE.HOST);
+		assertFalse(ruleChecker.matchPeerId("http://me:secret@127.0.0.1:80/myPath"));
+
+		ruleChecker.setPeerId("orf.at", PEER_TYPE.HOST);
+		assertTrue(ruleChecker.matchPeerId("http://me:secret@orf.at/myPath"));
+
+		ruleChecker.setPeerId("a", PEER_TYPE.IP);
+		assertFalse(ruleChecker.matchPeerId("http://me:secret@127.0.0.1:80/myPath"));
+
+		ruleChecker.setPeerId("127.0.0.1:80", PEER_TYPE.IP);
+		assertFalse(ruleChecker.matchPeerId("http://me:secret@127.0.0.1:80/myPath"));
+
+		ruleChecker.setPeerId("127.0.0.1", PEER_TYPE.IP);
+		assertTrue(ruleChecker.matchPeerId("http://me:secret@127.0.0.1:80/myPath"));
+
+		ruleChecker.setPeerId("orf.at", PEER_TYPE.IP);
+		assertFalse(ruleChecker.matchPeerId("http://me:secret@orf.at/myPath"));
+	}
+
+	@Ignore("Address resolution would slow down Unit tests too much. " +
+					"Mocking libraries not integrated in the project yet." +
+					"Therefore ignored.")
+	@Test
+	public void testMatchPeerIdCatchesUnknownHostException(){
+		RuleChecker ruleChecker = new RuleChecker("1");
+		ruleChecker.setPeerId("a", PEER_TYPE.HOST);
+
+		assertFalse(ruleChecker.matchPeerId("http://me:secret@127.0_01:80/myPath"));
+
+		ruleChecker.setPeerId("orf.at", PEER_TYPE.IP);
+		assertFalse(ruleChecker.matchPeerId("http://me:secret@or f.at/myPath"));
 	}
 
 }
