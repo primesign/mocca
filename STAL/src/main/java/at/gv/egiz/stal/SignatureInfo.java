@@ -1,12 +1,3 @@
-package at.gv.egiz.stal;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import at.gv.egiz.stal.signedinfo.ReferenceType;
-import at.gv.egiz.stal.signedinfo.SignatureMethodType;
-import at.gv.egiz.stal.signedinfo.SignedInfoType;
-
 /*
  * Copyright 2015 Datentechnik Innovation GmbH and Prime Sign GmbH, Austria
  *
@@ -27,6 +18,15 @@ import at.gv.egiz.stal.signedinfo.SignedInfoType;
  * The "NOTICE" text file is part of the distribution. Any derivative works
  * that you distribute must include a readable copy of the "NOTICE" text file.
  */
+package at.gv.egiz.stal;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import at.gv.egiz.stal.signedinfo.ReferenceType;
+import at.gv.egiz.stal.signedinfo.SignatureMethodType;
+import at.gv.egiz.stal.signedinfo.SignedInfoType;
+
 
 /**
  * This class wraps a {@link SignatureInfo} and adds the additional parameters displayName and mimeType.

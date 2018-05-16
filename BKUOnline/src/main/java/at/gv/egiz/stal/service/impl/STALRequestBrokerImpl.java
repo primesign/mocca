@@ -279,7 +279,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
         try {
           synchronized (requests) {
             log.trace("Received responses, now consume request.");
-            if (requests.size() != 0) {
+            if (!requests.isEmpty()) {
               requests.clear();
             } else {
               log.warn("Requests queue is empty, response might have already been produced previously.");
@@ -288,7 +288,7 @@ public class STALRequestBrokerImpl implements STALRequestBroker {
           }
           
           synchronized (responses) { 
-            if (resps != null && resps.size() > 0) {
+            if (resps != null && !resps.isEmpty()) {
                 long beforeWait = System.currentTimeMillis();
                 while (!responses.isEmpty()) {
                     log.trace("waiting to produce response");

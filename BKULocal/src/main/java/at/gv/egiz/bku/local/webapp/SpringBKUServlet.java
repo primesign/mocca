@@ -30,9 +30,9 @@ import at.gv.egiz.bku.binding.BindingProcessorManager;
 
 public abstract class SpringBKUServlet extends HttpServlet {
 
-  private static final long serialVersionUID = 1L;
-
   public final static String BEAN_NAME = "bindingProcessorManager";
+
+  private static final long serialVersionUID = 1L;
 
   protected BindingProcessorManager getBindingProcessorManager() {
     return (BindingProcessorManager) getServletContext()

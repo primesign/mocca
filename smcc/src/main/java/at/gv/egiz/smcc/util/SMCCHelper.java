@@ -178,7 +178,7 @@ public class SMCCHelper {
 		}
 
 		byte high = 0x00;
-		byte low = 0x00;
+		byte low;
 
 		if (hexString.length() <= 2) {
 
