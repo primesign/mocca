@@ -33,13 +33,30 @@
     <script type="text/javascript" src="js/jquery.soap-1.7.2.js"></script>
     <script type="text/javascript" src="js/xml2json.js"></script>
     
+    <script type="text/javascript" src="mocca-js/libs/require.js"></script>
+    <script type="text/javascript" src="mocca-js/mocca-js.js"></script>
+    
+    <script>
+    	inIframe = false;
+    	try{
+	        if (top.location != window.location) {
+	            inIframe = true;
+	        }
+    	} catch(e) {
+            inIframe = true;
+    	}
+        document.write('<base href="' + document.location.pathname + '" />');
+        document.write("<script type='text/javascript' src='mocca-js/libs/require.js?t=" + Date.now() + "'><\/script>");
+        document.write("<script type='text/javascript' src='mocca-js/mocca-js.js?t=" + Date.now() + "'><\/script>");
+    </script>
+    
     </head>
     <body>
     	  <h1>Mocca-JS DEMO</h1>     
         
         <script type="text/javascript">
           
-          var parameters = {
+          parameters = {
             GuiStyle : '<c:out value="${requestScope.moccaParam.guiStyle}" default="simple"/>',
             Locale : '<c:out value="${requestScope.moccaParam.locale}" default=""/>',
             Background : '<c:out value="${requestScope.moccaParam.appletBackground}" default=""/>',
