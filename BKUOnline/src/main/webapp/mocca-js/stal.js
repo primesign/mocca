@@ -1,7 +1,8 @@
 
 define(function () {
 
-    log.debug('WorkflowExe: ' + JSON.stringify(WorkflowExe));
+    var _log = log.getInstance('stal.js');
+    _log.debug('WorkflowExe: ' + JSON.stringify(WorkflowExe));
     // Function   : selectCertificate
     // Description: Allows the user to select a signing certificate and returns the selected certificate (DER-Encoding). 
     // Parameters :

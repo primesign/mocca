@@ -1,8 +1,9 @@
 define(function () {
     var baseUrl = '/BKUOnline/stal';
+    var _log = log.getInstance('backend.js');
 
     function connect(successCallback, errorCallback) {
-        log.debug('sending connect request to backend');
+        _log.debug('sending connect request to backend');
         $.soap({
             url: baseUrl,
             method: 'connect',
