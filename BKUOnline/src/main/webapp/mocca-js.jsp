@@ -81,8 +81,8 @@
                 RedirectURL : '<c:out value="${resultUrl}"/>',
                 RedirectTarget : '<c:out value="${requestScope.moccaParam.redirectTarget}" default="_parent"/>'
               };
-          require(['libs/workflowexe', 'moccajs', 'backend', 'stal'], function (workflowexe, moccajs){
-        	  moccajs.run(parameters);
+          require(['libs/workflowexe', 'moccajs', 'backend', 'stal', 'stalMock', 'errorHandler'], function (workflowexe, moccajs){
+        	  moccajs.run(parameters, false);
         });
           
           var demoCertBase64 = "MIIEFTCCAv2gAwIBAgIJAMtFZnr7TIzkMA0GCSqGSIb3DQEBBQUAMGQxCzAJBgNV"+
