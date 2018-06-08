@@ -95,6 +95,23 @@
     <!--
          | see https://wsit.dev.java.net/issues/show_bug.cgi?id=970
     -->
+    
+	<!--     js webjars -->
+	<dependency>
+	  <groupId>org.webjars</groupId>
+	  <artifactId>jquery</artifactId>
+	  <version>${version.jquery}</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.webjars</groupId>
+	  <artifactId>requirejs</artifactId>
+	  <version>${version.require}</version>
+	</dependency>
+	<dependency>
+	  <groupId>org.webjars</groupId>
+	  <artifactId>jasmine</artifactId>
+	  <version>${version.jasmine}</version>
+	</dependency>
     <dependency>
 
     <groupId>org.glassfish.metro</groupId>
@@ -386,5 +403,8 @@
   </profiles>
   <properties>
     <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
+    <version.jquery>3.3.1</version.jquery>
+    <version.require>2.3.5</version.require>
+    <version.jasmine>2.2.0</version.jasmine>
   </properties>
 </project>

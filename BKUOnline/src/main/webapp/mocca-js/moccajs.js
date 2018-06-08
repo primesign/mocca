@@ -78,7 +78,7 @@ define('moccajs', function(require) {
     function parseDataToBeSigned(responseData, certificate) {
         var deferred = $.Deferred();
         log.debug('received certificate response: ' + responseData);
-        var dataToBeSigned = $($.parseXML(responseData)).find('SignedInfo').text();
+        var dataToBeSigned = $(responseData).find('SignedInfo').text();
         var signedData = mocca_js.stal.sign(certificate, algorithmId, dataToBeSigned);
         deferred.resolve(signedData);
         return deferred.promise();
@@ -90,10 +90,7 @@ define('moccajs', function(require) {
     }
 
     function parseSignedDataResponse(response) {
-        var deferred = $.Deferred();
         log.debug("received signed data response: " + response);
-        deferred.resolve();
-        return deferred.promise();
     }
 
     function redirectUser() {

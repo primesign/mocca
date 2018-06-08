@@ -12,12 +12,12 @@ define(function () {
             namespaceURL: 'http://www.egiz.gv.at/stal',
             appendMethodToURL: false,
             elementName: 'SessionId',
-
+            enableLogging: true,
             data: parameters.SessionID
         });
     }
 
-    function sendCertificate(sessionId, certificate, successCallback, errorCallback) {
+    function sendCertificate(sessionId, certificate) {
         _log.debug('sending certificate to backend');
 
         
@@ -43,12 +43,12 @@ define(function () {
             namespaceQualifier: 'stal',
             namespaceURL: 'http://www.egiz.gv.at/stal',
             appendMethodToURL: false,
-            elementName: 'SessionId',
+            enableLogging: true,
             data: infoboxReadResponse.join(''),
         });
     }
 
-    function sendSignedData(sessionId, signedValue, successCallback, errorCallback) {
+    function sendSignedData(sessionId, signedValue) {
         var signResponse = [
           '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stal="http://www.egiz.gv.at/stal">',
              '<soapenv:Header/>',
@@ -64,6 +64,16 @@ define(function () {
                 '</stal:GetNextRequest>',
              '</soapenv:Body>',
           '</soapenv:Envelope>'];
+
+        return $.soap({
+            url: baseUrl,
+            method: 'nextRequest',
+            namespaceQualifier: 'stal',
+            namespaceURL: 'http://www.egiz.gv.at/stal',
+            appendMethodToURL: false,
+            enableLogging: true,
+            data: signResponse.join(''),
+        });
     }
 
 
