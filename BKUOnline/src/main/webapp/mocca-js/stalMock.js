@@ -28,6 +28,7 @@ define('stalMock', function () {
             return demoCertBase64;
         },
         sign: function (certificate, algorithmId, dataToBeSigned) {
+            // TODO convert dataToBeSigned to signedData
             return dataToBeSigned;
         }
     };

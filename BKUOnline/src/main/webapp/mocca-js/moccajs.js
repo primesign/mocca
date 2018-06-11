@@ -35,7 +35,6 @@ define('moccajs', function(require) {
     mocca_js.errorHandler = require('errorHandler');
     var _log = log.getInstance('moccajs.js');
     _log.debug('mocca_js: ' + JSON.stringify(mocca_js));
-    _log.debug('inIframe: ' + inIframe);
     _log.debug('mocca_js initialized!');
     var _parameters;
 
