@@ -21,7 +21,7 @@
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-  <head>
+<head>
     <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
     <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
     <META HTTP-EQUIV="EXPIRES" CONTENT="Mon, 22 Jul 2002 11:12:01 GMT">
@@ -31,7 +31,9 @@
     
 	<script data-main="scripts/main" src="<%= request.getContextPath() %>/webjars/jquery/3.3.1/jquery.js"></script>
 	<script data-main="scripts/main" src="<%= request.getContextPath() %>/webjars/requirejs/2.3.5/require.js"></script>
-    <script type="text/javascript" src="mocca-js/libs/jquery.soap-1.7.2.js"></script>
+	<script type="text/javascript" src="mocca-js/libs/jquery.soap-1.7.2.js"></script>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js" ></script> -->
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/8.1.0/i18next.min.js" ></script>   -->
 		<!-- Latest compiled and minified CSS -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
 			integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" />
@@ -59,14 +61,15 @@
     
     </head>
     <body>
-    	  <h1>Mocca-JS DEMO</h1>     
+    	<h1 id="title"></h1>     
         
-        <script type="text/javascript">
-	        require.config({
+		<script type="text/javascript"> 
+			require.config({
 	            //By default load any module IDs from mocca-js/*
 	            baseUrl: 'mocca-js',
 	            paths: {
-	                app: '../app'
+					app: '../app',
+					json: 'libs/json'
 	            }
 	        });
 	        var parameters = {
@@ -80,9 +83,21 @@
 	                RedirectURL : '<c:out value="${resultUrl}"/>',
 	                RedirectTarget : '<c:out value="${requestScope.moccaParam.redirectTarget}" default="_parent"/>'
 	              };
-	          require(['libs/workflowexe', 'moccajs', 'backend', 'stal', 'stalMock', 'errorHandler'], function (workflowexe, moccajs){
-	        	  moccajs.run(parameters, true);
-	        });
+	          require(['libs/workflowexe', 'moccajs', 'backend', 'stal', 'stalMock', 'errorHandler', 'lang/translation', 'libs/i18next.min' ], function (workflowexe, moccajs, backend, stal, stalMock, errorHandler, translation, i18next){
+				  moccajs.run(parameters, true);
+				  console.log("translation: " + translation);
+				  console.log("i18next: " + i18next);
+				  i18next.init({
+					  lng: 'en',
+					  debug: true,
+					  resources: {
+						  en: {
+							translation: translation
+						  }
+					  }
+				  });
+            	document.getElementById('title').innerHTML = i18next.t('title');
+			});
 	    </script>
   </body>
 </html>
