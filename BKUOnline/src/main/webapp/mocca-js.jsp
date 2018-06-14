@@ -61,8 +61,8 @@
     
     </head>
     <body>
-    	<h1 id="title"></h1>     
-        
+		<h1 id="title"></h1>    
+		      
 		<script type="text/javascript"> 
 			require.config({
 	            //By default load any module IDs from mocca-js/*
@@ -83,20 +83,28 @@
 	                RedirectURL : '<c:out value="${resultUrl}"/>',
 	                RedirectTarget : '<c:out value="${requestScope.moccaParam.redirectTarget}" default="_parent"/>'
 	              };
-	          require(['libs/workflowexe', 'moccajs', 'backend', 'stal', 'stalMock', 'errorHandler', 'lang/translation', 'libs/i18next.min' ], function (workflowexe, moccajs, backend, stal, stalMock, errorHandler, translation, i18next){
+	          require(['libs/workflowexe', 'moccajs', 'backend', 'stal', 'stalMock', 'errorHandler', 'lang/translation', 'lang/translationDE', 'libs/i18next.min', 'libs/LngDetector' ], function (workflowexe, moccajs, backend, stal, stalMock, errorHandler, translation, translationDE, i18next, LngDetector){
 				  moccajs.run(parameters, true);
-				  console.log("translation: " + translation);
-				  console.log("i18next: " + i18next);
-				  i18next.init({
-					  lng: 'en',
-					  debug: true,
-					  resources: {
+
+				//   i18next
+				  i18next
+				  .use(LngDetector)	  
+				  .init({
+					detection: {// Order of Language Detection
+						order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
+					},
+					fallbackLng: 'en',
+					debug: true,
+					resources: {
 						  en: {
 							translation: translation
+						  },
+						  de: {
+							  translation: translationDE	
 						  }
 					  }
-				  });
-            	document.getElementById('title').innerHTML = i18next.t('title');
+				  });		
+				document.getElementById('title').innerHTML = i18next.t('title');
 			});
 	    </script>
   </body>
