@@ -102,7 +102,7 @@ public class Signature {
   protected String signatureAlgorithmURI;
   protected String digestAlgorithmURI;
   protected ExcludedByteRangeType excludedByteRange;
-  private HashDataInput hashDataInput;
+  private CMSHashDataInput hashDataInput;
   
 
 public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
@@ -113,14 +113,17 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
           CodingException, SLCommandException, IOException, CMSException {
     int mode = structure.equalsIgnoreCase("enveloping") ? SignedData.IMPLICIT : SignedData.EXPLICIT;
     if (dataObject.getContent() != null) {
-    byte[] dataToBeSigned = getContent(dataObject, urlDereferencer);
-    this.signedData = new SignedData(dataToBeSigned, mode);
-	  if (dataObject.getMetaInfo() != null) {
-			this.mimeType = dataObject.getMetaInfo().getMimeType();
-		}
-	  
+      String filename = null;
+      byte[] dataToBeSigned = getContent(dataObject, urlDereferencer);
+      this.signedData = new SignedData(dataToBeSigned, mode);
+      MetaInfoType metaInfo = dataObject.getMetaInfo();
+      if (metaInfo != null) {
+        this.mimeType = metaInfo.getMimeType();
+        filename = metaInfo.getDescription(); // security layer doesn't specify explicit filename property for
+                                              // single signature requests
+      }
       hashDataInput = new CMSHashDataInput(signedDocument, mimeType);
-      
+      hashDataInput.setFilename(filename);
     } else {
       DigestAndRefType digestAndRef = dataObject.getDigestAndRef();
       DigestMethodType digestMethod = digestAndRef.getDigestMethod();     
@@ -158,7 +161,13 @@ public Signature(CMSDataObjectOptionalMetaType dataObject, String structure,
 	    createSignerInfo(signingCertificate);
 	    setSignerCertificate(signingCertificate);
 	 
-	    
+	    hashDataInput = new CMSHashDataInput(signedDocument, mimeType);
+	    MetaInfoType metaInfo = dataObject.getMetaInfo();
+	    if (metaInfo != null) {
+	      // security layer doesn't specify explicit filename property for
+	      // single signature requests
+	      hashDataInput.setFilename(metaInfo.getDescription());
+	    }
 	    setAttributes(signingCertificate);
 	  }
   
