@@ -29,11 +29,9 @@
     <title><fmt:message key="title"/></title>
     
     
-	<script data-main="scripts/main" src="<%= request.getContextPath() %>/webjars/jquery/3.3.1/jquery.js"></script>
-	<script data-main="scripts/main" src="<%= request.getContextPath() %>/webjars/requirejs/2.3.5/require.js"></script>
+	<script src="<%= request.getContextPath() %>/webjars/jquery/3.3.1/jquery.js"></script>
+	<script src="<%= request.getContextPath() %>/webjars/requirejs/2.3.5/require.js"></script> 
 	<script type="text/javascript" src="mocca-js/libs/jquery.soap-1.7.2.js"></script>
-	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js" ></script> -->
-	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/8.1.0/i18next.min.js" ></script>   -->
 		<!-- Latest compiled and minified CSS -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
 			integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" />
@@ -55,14 +53,14 @@
 	        inIframe = true;
 		}
 	    document.write('<base href="' + document.location.pathname + '" />');
-	    document.write("<script type='text/javascript' src='mocca-js/moccajs.js'><\/script>");
-        
+		document.write("<script type='text/javascript' src='mocca-js/moccajs.js'><\/script>");
+		
     </script>
     
     </head>
     <body>
-		<h1 id="title"></h1>    
-		      
+		<h1 id="title"></h1> 
+			      
 		<script type="text/javascript"> 
 			require.config({
 	            //By default load any module IDs from mocca-js/*
@@ -70,7 +68,7 @@
 	            paths: {
 					app: '../app',
 					json: 'libs/json'
-	            }
+				}
 	        });
 	        var parameters = {
 	                GuiStyle : '<c:out value="${requestScope.moccaParam.guiStyle}" default="simple"/>',
@@ -83,7 +81,7 @@
 	                RedirectURL : '<c:out value="${resultUrl}"/>',
 	                RedirectTarget : '<c:out value="${requestScope.moccaParam.redirectTarget}" default="_parent"/>'
 	              };
-	          require(['libs/workflowexe', 'moccajs', 'backend', 'stal', 'stalMock', 'errorHandler', 'lang/translation', 'lang/translationDE', 'libs/i18next.min', 'libs/LngDetector' ], function (workflowexe, moccajs, backend, stal, stalMock, errorHandler, translation, translationDE, i18next, LngDetector){
+				require(['libs/workflowexe', 'moccajs', 'backend', 'stal', 'stalMock', 'errorHandler', 'lang/translation', 'lang/translationDE', 'libs/i18next.min', 'libs/LngDetector' ], function (workflowexe, moccajs, backend, stal, stalMock, errorHandler, translation, translationDE, i18next, LngDetector){
 				  moccajs.run(parameters, true);
 
 				//   i18next
