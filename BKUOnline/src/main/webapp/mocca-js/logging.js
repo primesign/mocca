@@ -47,19 +47,19 @@ if (isRunningInSelfServiceClient()) {
         getInstance: function(context) {
             return {
                 log: function (message) {
-                    console.log(enhanceLogging(message, context));
+                    console.log(enhanceLoggingMessage(message, context));
                 },
                 info: function (message) {
-                    console.info(enhanceLogging(message, context));
+                    console.info(enhanceLoggingMessage(message, context));
                 },
                 warn: function (message) {
-                    console.warn(enhanceLogging(message, context));
+                    console.warn(enhanceLoggingMessage(message, context));
                 },
                 debug: function (message) {
-                    console.debug(enhanceLogging(message, context));
+                    console.debug(enhanceLoggingMessage(message, context));
                 },
                 error: function (message) {
-                    console.error(enhanceLogging(message, context));
+                    console.error(enhanceLoggingMessage(message, context));
                 },
             };
         }
