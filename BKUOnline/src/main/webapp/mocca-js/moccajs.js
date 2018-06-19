@@ -1,31 +1,6 @@
 
 var mocca_js = {};
 
-function enhanceLogging(loggingFunc, context) {
-    return function () {
-      var modifiedArguments = [].slice.call(arguments);
-      // add component name and date to log message
-      modifiedArguments[0] = [new Date().toISOString() + ' [' + context + '] '] + modifiedArguments[0];
-      loggingFunc.apply(null, modifiedArguments);
-    };
-  }
-log = {
-    debug: function(message) {
-        console.log(message);
-    },
-    error: function(message) {
-        console.log(message);
-    },
-    getInstance: function(context) {
-        return {
-            log: enhanceLogging(console.log, context),
-            info: enhanceLogging(console.log, context),
-            warn: enhanceLogging(console.log, context),
-            debug: enhanceLogging(console.debug, context),
-            error: enhanceLogging(console.error, context)
-          };
-    }
-}
 var WorkflowExe;
 define('moccajs', function(require) {
 
@@ -67,7 +42,7 @@ define('moccajs', function(require) {
 
     function sendCertificate(certificate) {
         var deferred = $.Deferred();
-        log.debug('selectedCertificate: ' + certificate);
+        _log.debug('selectedCertificate: ' + certificate);
         mocca_js.backend.sendCertificate(_parameters.SessionID, certificate).then(function (data, textStatus, jqXHR) {
             deferred.resolve(data, certificate);
         });
@@ -76,7 +51,7 @@ define('moccajs', function(require) {
 
     function parseDataToBeSigned(responseData, certificate) {
         var deferred = $.Deferred();
-        log.debug('received certificate response: ' + responseData);
+        _log.debug('received certificate response: ' + responseData);
         var dataToBeSigned = $(responseData).find('SignedInfo').text();
         var signedData = mocca_js.stal.sign(certificate, algorithmId, dataToBeSigned);
         deferred.resolve(signedData);
@@ -84,12 +59,12 @@ define('moccajs', function(require) {
     }
 
     function sendSignedData(signedData) {
-        log.debug("Signed data: " + signedData);
+        _log.debug("Signed data: " + signedData);
         return mocca_js.backend.sendSignedData(_parameters.SessionID, signedData);
     }
 
     function parseSignedDataResponse(response) {
-        log.debug("received signed data response: " + response);
+        _log.debug("received signed data response: " + response);
     }
 
     function redirectUser() {

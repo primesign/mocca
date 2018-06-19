@@ -28,6 +28,7 @@
     <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
     <title><fmt:message key="title"/></title>
     
+	<script src="mocca-js/logging.js"></script>
     
 	<script src="<%= request.getContextPath() %>/webjars/jquery/3.3.1/jquery.js"></script>
 	<script src="<%= request.getContextPath() %>/webjars/requirejs/2.3.5/require.js"></script> 
