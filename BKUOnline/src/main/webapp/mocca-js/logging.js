@@ -16,27 +16,27 @@ if (isRunningInSelfServiceClient()) {
             return {
                 log: function(message) {
                     var enhancedMessage = enhanceLoggingMessage(message, context);
-                    WorkflowExe.writeToLogFile(WorkflowExe.logINFO, enhancedMessage);
+                    WorkflowExe && WorkflowExe.writeToLogFile(WorkflowExe.logINFO, enhancedMessage);
                     console.log(enhancedMessage);
                 },
                 info: function(message) {
                     var enhancedMessage = enhanceLoggingMessage(message, context);
-                    WorkflowExe.writeToLogFile(WorkflowExe.logINFO, enhancedMessage);
+                    WorkflowExe && WorkflowExe.writeToLogFile(WorkflowExe.logINFO, enhancedMessage);
                     console.info(enhancedMessage);
                 },
                 warn: function(message) {
                     var enhancedMessage = enhanceLoggingMessage(message, context);
-                    WorkflowExe.writeToLogFile(WorkflowExe.logEXCEPT, enhancedMessage);
+                    WorkflowExe && WorkflowExe.writeToLogFile(WorkflowExe.logEXCEPT, enhancedMessage);
                     console.warn(enhancedMessage);
                 },
                 debug: function(message) {
                     var enhancedMessage = enhanceLoggingMessage(message, context);
-                    WorkflowExe.writeToLogFile(WorkflowExe.logINFO, enhancedMessage);
-                    console.debug(enhancedMessage);
+                    WorkflowExe && WorkflowExe.writeToLogFile(WorkflowExe.logINFO, enhancedMessage);
+                    console.info(enhancedMessage);
                 },
                 error: function(message) {
                     var enhancedMessage = enhanceLoggingMessage(message, context);
-                    WorkflowExe.writeToLogFile(WorkflowExe.logERROR, enhancedMessage);
+                    WorkflowExe && WorkflowExe.writeToLogFile(WorkflowExe.logERROR, enhancedMessage);
                     console.error(enhancedMessage);
                 }
             };
@@ -64,4 +64,8 @@ if (isRunningInSelfServiceClient()) {
             };
         }
     }
+}
+
+log.printXML = function(xml) {
+    return new XMLSerializer().serializeToString(xml);
 }
