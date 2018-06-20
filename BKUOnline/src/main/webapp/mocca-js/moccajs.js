@@ -33,8 +33,9 @@ define('moccajs', function(require) {
             .fail(mocca_js.errorHandler.handleError);
     }
 
-    function selectCertificate() {
+    function selectCertificate(responseData) {
         var deferred = $.Deferred();
+        _log.debug('connect responseData: ' + log.printXML(responseData));
         var certificate = mocca_js.stal.selectCertificate();
         deferred.resolve(certificate);
         return deferred.promise();
@@ -51,24 +52,33 @@ define('moccajs', function(require) {
 
     function parseDataToBeSigned(responseData, certificate) {
         var deferred = $.Deferred();
-        _log.debug('received certificate response: ' + responseData);
-        var dataToBeSigned = $(responseData).find('SignedInfo').text();
-        var signedData = mocca_js.stal.sign(certificate, algorithmId, dataToBeSigned);
-        deferred.resolve(signedData);
+        _log.debug('received certificate response: ' + log.printXML(responseData));
+        var signedInfo = $(responseData).find('SignedInfo').text();
+        if (signedInfo.length === undefined || signedInfo.length == 0){
+            _log.debug('if signedInfo: ' + signedInfo + ' length: ' + signedInfo.length);
+            sendCertificate(certificate).then(parseDataToBeSigned).then(function(signedData) {
+                deferred.resolve(signedData);
+            });
+        } else {
+            _log.debug('else signedInfo: ' + signedInfo + ' length: ' + signedInfo.length);
+            _log.debug('signedInfo: ' + signedInfo.length + ' value: ' + signedInfo);
+            var signedData = mocca_js.stal.sign(certificate, algorithmId, signedInfo);
+            deferred.resolve(signedData);
+        }
         return deferred.promise();
     }
 
     function sendSignedData(signedData) {
-        _log.debug("Signed data: " + signedData);
+        _log.debug('Signed data: ' + signedData);
         return mocca_js.backend.sendSignedData(_parameters.SessionID, signedData);
     }
 
     function parseSignedDataResponse(response) {
-        _log.debug("received signed data response: " + response);
+        _log.debug('received signed data response: ' + response);
     }
 
     function redirectUser() {
-        parent.document.location.href = _parameters.RedirectURL;
+        _log.debug('finished signing document!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     }
 
     return {
