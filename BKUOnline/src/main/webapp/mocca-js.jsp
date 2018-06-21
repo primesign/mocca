@@ -55,7 +55,6 @@
 		}
 	    document.write('<base href="' + document.location.pathname + '" />');
 		document.write("<script type='text/javascript' src='mocca-js/moccajs.js'><\/script>");
-		
     </script>
     
     </head>
@@ -63,49 +62,30 @@
 		<h1 id="title"></h1> 
 			      
 		<script type="text/javascript"> 
-			require.config({
-	            //By default load any module IDs from mocca-js/*
-	            baseUrl: 'mocca-js',
-	            paths: {
-					app: '../app',
-					json: 'libs/json'
-				}
-	        });
-	        var parameters = {
-	                GuiStyle : '<c:out value="${requestScope.moccaParam.guiStyle}" default="simple"/>',
-	                Locale : '<c:out value="${requestScope.moccaParam.locale}" default=""/>',
-	                Background : '<c:out value="${requestScope.moccaParam.appletBackground}" default=""/>',
-	                BackgroundColor : '<c:out value="${requestScope.moccaParam.appletBackgroundColor}" default="#eeeeee"/>',
-	                WSDL_URL : '<c:out value="${wsdlUrl}"/>',
-	                HelpURL : '<c:out value="${helpUrl}"/>',
-	                SessionID : '<c:out value="${requestScope.id}"/>',
-	                RedirectURL : '<c:out value="${resultUrl}"/>',
-	                RedirectTarget : '<c:out value="${requestScope.moccaParam.redirectTarget}" default="_parent"/>'
-	              };
-				require(['libs/workflowexe', 'moccajs', 'backend', 'stal', 'stalMock', 'errorHandler', 'lang/translation', 'lang/translationDE', 'libs/i18next.min', 'libs/LngDetector' ], function (workflowexe, moccajs, backend, stal, stalMock, errorHandler, translation, translationDE, i18next, LngDetector){
-				  moccajs.run(parameters, true);
-
-				//   i18next
-				  i18next
-				  .use(LngDetector)	  
-				  .init({
-					detection: {// Order of Language Detection
-						order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
-					},
-					fallbackLng: 'en',
-					debug: true,
-					resources: {
-						  en: {
-							translation: translation
-						  },
-						  de: {
-							  translation: translationDE	
-						  }
-					  }
-				  });		
-				document.getElementById('title').innerHTML = i18next.t('title');
-			});
-	    </script>
+      require.config({
+        //By default load any module IDs from mocca-js/*
+        baseUrl: 'mocca-js',
+        paths: {
+          app: '../app',
+          json: 'libs/json',
+          text: 'libs/text'
+        }
+      });
+      var parameters = {
+        GuiStyle: '<c:out value="${requestScope.moccaParam.guiStyle}" default="simple"/>',
+        Locale: '<c:out value="${requestScope.moccaParam.locale}" default=""/>',
+        Background: '<c:out value="${requestScope.moccaParam.appletBackground}" default=""/>',
+        BackgroundColor: '<c:out value="${requestScope.moccaParam.appletBackgroundColor}" default="#eeeeee"/>',
+        WSDL_URL: '<c:out value="${wsdlUrl}"/>',
+        HelpURL: '<c:out value="${helpUrl}"/>',
+        SessionID: '<c:out value="${requestScope.id}"/>',
+        RedirectURL: '<c:out value="${resultUrl}"/>',
+        RedirectTarget: '<c:out value="${requestScope.moccaParam.redirectTarget}" default="_parent"/>'
+      };
+      require(['libs/workflowexe', 'moccajs', 'backend', 'stal', 'stalMock', 'errorHandler', 'lang'], function (workflowexe, moccajs) {
+        moccajs.run(parameters, false);
+      });
+	  </script>
   </body>
 </html>
 </fmt:bundle>
