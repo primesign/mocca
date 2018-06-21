@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.Buffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 
@@ -80,13 +81,13 @@ public class TextValidator implements Validator {
       char c;
       CharBuffer cb = CharBuffer.allocate(256);
       for (int l; (l = reader.read(cb)) != -1;) {
-        cb.flip();
+        ((Buffer)cb).flip(); //java 9 workaround 
         for (int i = 0; i < l; i++) {
           c = cb.get();
           if (!viewerFont.canDisplay(c)) invalid(c);
         }
       }
-      cb.clear();
+      ((Buffer)cb).clear(); //java 9 workaround 
     } catch (IOException e) {
       // TODO: localize
       throw new ValidationException(e);
