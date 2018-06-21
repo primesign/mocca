@@ -257,33 +257,27 @@
           <revisionOnScmFailure>SvnRevMissing</revisionOnScmFailure>
         </configuration>
       </plugin>
-          <plugin>
-		      <groupId>com.github.searls</groupId>
-		      <artifactId>jasmine-maven-plugin</artifactId>
-		      <version>2.1</version>
-		      
-		      <executions>
-		        <execution>
-		          <goals>
-		            <goal>test</goal>
-		          </goals>
-		        </execution>
-		      </executions>
-		      <!-- keep the configuration out of the execution so that the bdd goal has access to it -->
-		      <configuration>
-		        <!-- configuration properties will go here -->
-<!-- 		        <debug>true</debug> -->
-<!-- 		        <detail>true</detail> -->
-    			<specRunnerTemplate>REQUIRE_JS</specRunnerTemplate>
-    			
-			    <preloadSources>
-			      <source>/webjars/requirejs/2.1.1/require.js</source>
-			      <source>/src/main/webapp/mocca-js/libs/jasmine-3.1.0/jasmine.js</source>
-			      <source>/src/main/webapp/mocca-js/libs/jasmine-3.1.0/jasmine-html.js</source>
-			      <source>/src/main/webapp/mocca-js/libs/jasmine-3.1.0/boot.js</source>
-			    </preloadSources>
-		      </configuration>
-		    </plugin>
+      <plugin>
+        <groupId>com.github.searls</groupId>
+        <artifactId>jasmine-maven-plugin</artifactId>
+        <version>2.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>bdd</goal>
+              <goal>test</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <specRunnerTemplate>REQUIRE_JS</specRunnerTemplate>
+          <preloadSources>
+            <source>/webjars/requirejs/2.3.5/require.js</source>
+            <source>/webjars/jquery/3.3.1/jquery.js</source>
+            <source>/src/main/webapp/mocca-js/logging.js</source>
+          </preloadSources>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <profiles>
