@@ -24,5 +24,4 @@ define(['libs/i18next.min', 'libs/LngDetector', 'text!lang/locale-en.json', 'tex
 
 
 
-    document.getElementById('title').innerHTML = i18next.t('title');
 })

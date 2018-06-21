@@ -11,7 +11,6 @@ define('moccajs', function(require) {
     var _log = log.getInstance('moccajs.js');
     _log.debug('mocca_js: ' + JSON.stringify(mocca_js));
     _log.debug('mocca_js initialized!');
-    var _parameters;
 
     function mockSTAL() {
         mocca_js.stal = require('stalMock');
@@ -22,8 +21,9 @@ define('moccajs', function(require) {
             mockSTAL();
         }
         _log.debug('starting mocca-js with parameters: ' + JSON.stringify(parameters));
-        _parameters = parameters;
-        mocca_js.backend.connect()
+        mocca_js._parameters = parameters;
+        mocca_js.backend.setBaseUrl(parameters.ContextPath);
+        mocca_js.backend.connect(parameters.SessionID)
             .then(selectCertificate)
             .then(sendCertificate)
             .then(parseDataToBeSigned)
@@ -44,7 +44,7 @@ define('moccajs', function(require) {
     function sendCertificate(certificate) {
         var deferred = $.Deferred();
         _log.debug('selectedCertificate: ' + certificate);
-        mocca_js.backend.sendCertificate(_parameters.SessionID, certificate).then(function (data, textStatus, jqXHR) {
+        mocca_js.backend.sendCertificate(mocca_js._parameters.SessionID, certificate).then(function (data, textStatus, jqXHR) {
             deferred.resolve(data, certificate);
         });
         return deferred.promise();
@@ -70,7 +70,7 @@ define('moccajs', function(require) {
 
     function sendSignedData(signedData) {
         _log.debug('Signed data: ' + signedData);
-        return mocca_js.backend.sendSignedData(_parameters.SessionID, signedData);
+        return mocca_js.backend.sendSignedData(mocca_js._parameters.SessionID, signedData);
     }
 
     function parseSignedDataResponse(response) {

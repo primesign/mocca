@@ -59,7 +59,7 @@
     
     </head>
     <body>
-		<h1 id="title"></h1> 
+		<div id="messageContainer"></div> 
 			      
 		<script type="text/javascript"> 
       require.config({
@@ -71,7 +71,8 @@
           text: 'libs/text'
         }
       });
-      var parameters = {
+      require(['libs/workflowexe', 'moccajs', 'backend', 'stal', 'stalMock', 'errorHandler', 'lang'], function (workflowexe, moccajs) {
+        moccajs.run({
         GuiStyle: '<c:out value="${requestScope.moccaParam.guiStyle}" default="simple"/>',
         Locale: '<c:out value="${requestScope.moccaParam.locale}" default=""/>',
         Background: '<c:out value="${requestScope.moccaParam.appletBackground}" default=""/>',
@@ -80,10 +81,9 @@
         HelpURL: '<c:out value="${helpUrl}"/>',
         SessionID: '<c:out value="${requestScope.id}"/>',
         RedirectURL: '<c:out value="${resultUrl}"/>',
+        ContextPath: '<%= request.getContextPath() %>',
         RedirectTarget: '<c:out value="${requestScope.moccaParam.redirectTarget}" default="_parent"/>'
-      };
-      require(['libs/workflowexe', 'moccajs', 'backend', 'stal', 'stalMock', 'errorHandler', 'lang'], function (workflowexe, moccajs) {
-        moccajs.run(parameters, false);
+      }, false);
       });
 	  </script>
   </body>
