@@ -4,7 +4,7 @@ function enhanceLoggingMessage(message, context) {
       return [new Date().toISOString() + ' [' + context + '] '] + message;
   }
 function isRunningInSelfServiceClient() {
-    if (window && window.external && window.external.writeToLogFile && typeof window.external.WriteToLogFile !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof window.external !== 'undefined' && typeof window.external.writeToLogFile !== 'undefined' && typeof window.external.WriteToLogFile !== 'undefined') {
         return true;
     } else {
         return false;
