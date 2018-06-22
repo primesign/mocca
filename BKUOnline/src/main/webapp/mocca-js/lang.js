@@ -12,6 +12,7 @@ define(['libs/i18next.min', 'libs/LngDetector', 'text!lang/locale-en.json', 'tex
             },
             fallbackLng: 'de',
             debug: true,
+            keySeparator: false,
             resources: {
                 en: {
                     translation: JSON.parse(translationEN)
@@ -22,6 +23,17 @@ define(['libs/i18next.min', 'libs/LngDetector', 'text!lang/locale-en.json', 'tex
             }
         });
 
+    function translate(message) {
+        try {
+            return i18next.t(message);
+        } catch (error) {
+            _log.debug('An error occured while trying to translate message: "' + message + '", error was: "' + error + '"');
+            return message;
+        }
+    }
 
+    return {
+        translate: translate
+    }
 
 })

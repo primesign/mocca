@@ -59,7 +59,7 @@
     
     </head>
     <body>
-		<div id="messageContainer"></div> 
+		<div id="messageContainer" class="col-xs-12" style="padding-top: 15px;"></div> 
 			      
 		<script type="text/javascript"> 
       require.config({
@@ -71,7 +71,7 @@
           text: 'libs/text'
         }
       });
-      require(['libs/workflowexe', 'moccajs', 'backend', 'stal', 'stalMock', 'errorHandler', 'lang'], function (workflowexe, moccajs) {
+      require(['libs/workflowexe', 'backend', 'stal', 'stalMock', 'errorHandler', 'lang', 'moccajs'], function (workflowexe, backend, stal, stalMock, errorHandler, lang, moccajs) {
         moccajs.run({
         GuiStyle: '<c:out value="${requestScope.moccaParam.guiStyle}" default="simple"/>',
         Locale: '<c:out value="${requestScope.moccaParam.locale}" default=""/>',

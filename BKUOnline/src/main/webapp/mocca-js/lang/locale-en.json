@@ -1,3 +1,5 @@
 {
-  "title": "Mocca-JS DEMO en"
+  "title": "Mocca-JS DEMO en",
+  "error.prefix": "Error",
+  "error.1001": "The request couldn't be processed"
 }
