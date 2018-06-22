@@ -80,7 +80,7 @@
 				used if no specific page was requested.
 			-->
 			<param-name>uiPage</param-name>
-			<param-value>applet.jsp</param-value>
+			<param-value>mocca-js.jsp</param-value>
 		</init-param>
 		<init-param>
 			<!--
@@ -176,9 +176,17 @@
 		<filter-class>at.gv.egiz.bku.online.webapp.TransactionIdFilter</filter-class>
 	</filter>
 	<filter>
+		<filter-name>CacheControlFilter</filter-name>
+		<filter-class>at.gv.egiz.bku.online.filter.CacheControlFilter</filter-class>
+	</filter>
+	<filter>
 		<filter-name>StalSecurityFilter</filter-name>
 		<filter-class>at.gv.egiz.bku.online.filter.StalSecurityFilter</filter-class>
 	</filter>
+	<filter-mapping>
+		<filter-name>CacheControlFilter</filter-name>
+		<url-pattern>/mocca-js/*</url-pattern>
+	</filter-mapping>
 	<filter-mapping>
 		<filter-name>StalSecurityFilter</filter-name>
 		<servlet-name>STALService</servlet-name>
