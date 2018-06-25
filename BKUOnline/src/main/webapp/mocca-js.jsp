@@ -32,18 +32,12 @@
     
 	<script src="<%= request.getContextPath() %>/webjars/jquery/3.3.1/jquery.js"></script>
 	<script src="<%= request.getContextPath() %>/webjars/requirejs/2.3.5/require.js"></script> 
-	<script type="text/javascript" src="mocca-js/libs/jquery.soap-1.7.2.js"></script>
-		<!-- Latest compiled and minified CSS -->
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-			integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" />
-		
-		<!-- Optional theme -->
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-			integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous" />
-		
-		<!-- Latest compiled and minified JavaScript -->
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-			integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="mocca-js/libs/jquery.soap-1.7.2.js"></script>
+  
+  <link rel="stylesheet" type="text/css" href="mocca-js/libs/bootstrap.min.css" /><!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" type="text/css" href="mocca-js/libs/bootstrap-theme.min.css" /><!-- Optional theme -->
+  <script type="text/javascript" src="mocca-js/libs/bootstrap.min.js"></script><!-- Latest compiled and minified JavaScript -->
+      
 		<script type="text/javascript">
 		inIframe = false;
 		try{
