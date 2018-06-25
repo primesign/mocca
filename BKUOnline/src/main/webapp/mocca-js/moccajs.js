@@ -5,6 +5,7 @@ var WorkflowExe;
 define('moccajs', function(require) {
 
     var algorithmId = 'rsa-sha256';
+    mocca_js.lang = require('lang');
     mocca_js.backend = require('backend');
     mocca_js.stal = require('stal');
     mocca_js.errorHandler = require('errorHandler');
@@ -24,6 +25,7 @@ define('moccajs', function(require) {
         }
         _log.debug('Starting mocca-js with parameters: ' + JSON.stringify(parameters));
         mocca_js._parameters = parameters;
+        mocca_js.lang.setLocale(parameters.Locale);
         mocca_js.backend.setBaseUrl(parameters.ContextPath);
         function callBackend() {
             if (!mocca_js.data.responseType) {

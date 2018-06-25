@@ -3,14 +3,19 @@ define(['libs/i18next.min', 'libs/LngDetector', 'text!lang/locale-en.json', 'tex
     var _log = log.getInstance('lang.js');
     _log.debug('i18next: ' + i18next);
 
-    //   i18next
+    function setLocale(locale) {
+        if(locale.length>=2){
+        i18next.changeLanguage(locale.substring(0,2));}
+        else{locale='en';}
+    }
+
     i18next
         .use(LngDetector)
         .init({
             detection: {// Order of Language Detection
                 order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
             },
-            fallbackLng: 'de',
+            fallbackLng: 'en',
             debug: true,
             keySeparator: false,
             resources: {
@@ -33,6 +38,7 @@ define(['libs/i18next.min', 'libs/LngDetector', 'text!lang/locale-en.json', 'tex
     }
 
     return {
+        setLocale : setLocale,
         translate: translate
     }
 
