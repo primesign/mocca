@@ -2,6 +2,7 @@ define([], function () {
     var _log = log.getInstance('backend.js');
     var INFOBOX_READ_REQ = 'InfoboxReadRequest';
     var INFOBOX_SIGN_REQ = 'SignRequest';
+    var INFOBOX_QUIT_REQ = 'QuitRequest';
 
     function setBaseUrl(baseUrl) {
         this.baseUrl = baseUrl;
@@ -41,7 +42,8 @@ define([], function () {
             else if (childNode.nodeName === 'GetNextRequestResponse') {
                 return validateXMLChildNodes(childNode.childNodes, 3);
             } else if (depth === 3 && (childNode.nodeName === INFOBOX_READ_REQ ||
-                childNode.nodeName === INFOBOX_SIGN_REQ)) {
+                childNode.nodeName === INFOBOX_SIGN_REQ) ||
+                childNode.nodeName === INFOBOX_QUIT_REQ) {
                 return childNode.nodeName;
             }
         }
@@ -110,6 +112,7 @@ define([], function () {
     return {
         INFOBOX_READ_REQ: INFOBOX_READ_REQ,
         INFOBOX_SIGN_REQ: INFOBOX_SIGN_REQ,
+        INFOBOX_QUIT_REQ: INFOBOX_QUIT_REQ,
         validateXMLResponse: validateXMLResponse,
         setBaseUrl: setBaseUrl,
         connect: connect,
