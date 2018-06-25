@@ -8,6 +8,14 @@ define('moccajs', function(require) {
     mocca_js.backend = require('backend');
     mocca_js.stal = require('stal');
     mocca_js.errorHandler = require('errorHandler');
+    mocca_js.data = {};
+    mocca_js.flow = [{
+        responseType: "",
+        methodToCall: sendCertificate
+    },{
+        responseType: "",
+        methodToCall: sendCertificate
+    }];
     var _log = log.getInstance('moccajs.js');
     _log.debug('mocca_js: ' + JSON.stringify(mocca_js));
     _log.debug('mocca_js initialized!');
@@ -23,49 +31,53 @@ define('moccajs', function(require) {
         _log.debug('starting mocca-js with parameters: ' + JSON.stringify(parameters));
         mocca_js._parameters = parameters;
         mocca_js.backend.setBaseUrl(parameters.ContextPath);
-        mocca_js.backend.connect(parameters.SessionID)
-            .then(selectCertificate)
-            .then(sendCertificate)
-            .then(parseDataToBeSigned)
-            .then(sendSignedData)
-            .then(parseSignedDataResponse)
-            .then(redirectUser)
-            .fail(mocca_js.errorHandler.handleError);
+        function callBackend() {
+            if (!mocca_js.data.responseType) {
+                mocca_js.backend.connect(parameters.SessionID).then(parseResponse).then(callBackend).fail(mocca_js.errorHandler.handleError);
+            } else if (mocca_js.data.responseType === mocca_js.backend.INFOBOX_READ_REQ) {
+                sendCertificate().then(parseResponse).then(callBackend).fail(mocca_js.errorHandler.handleError);
+            } else if (mocca_js.data.responseType === mocca_js.backend.INFOBOX_SIGN_REQ) {
+                sendSignedData().then(parseResponse).then(callBackend).fail(mocca_js.errorHandler.handleError);
+            }
+        }
+        callBackend();
     }
 
-    function selectCertificate(responseData) {
-        var deferred = $.Deferred();
-        _log.debug('connect responseData: ' + log.printXML(responseData));
+
+    function parseResponse(responseData) {
+        _log.debug('parseResponse responseData: ' + log.printXML(responseData));
+        var responseType = mocca_js.backend.validateXMLResponse(responseData);
+        _log.debug('received response of type "' +responseType + '"');
+        if (responseType === mocca_js.backend.INFOBOX_READ_REQ && !mocca_js.data.certificate) {
+            selectCertificate();
+        } else if (responseType === mocca_js.backend.INFOBOX_SIGN_REQ && !mocca_js.data.signedData) {
+            parseDataToBeSigned(responseData);
+        }
+        mocca_js.data.responseType = responseType;
+    }
+
+    function selectCertificate() {
         var certificate = mocca_js.stal.selectCertificate();
-        deferred.resolve(certificate);
-        return deferred.promise();
+        _log.debug('select certificate: ' + log.printXML(certificate));
+        mocca_js.data.certificate = certificate;
     }
 
-    function sendCertificate(certificate) {
+    function sendCertificate() {
         var deferred = $.Deferred();
-        _log.debug('selectedCertificate: ' + certificate);
-        mocca_js.backend.sendCertificate(mocca_js._parameters.SessionID, certificate).then(function (data, textStatus, jqXHR) {
-            deferred.resolve(data, certificate);
+        _log.debug('sendCertificate: ' + mocca_js.data.certificate);
+        mocca_js.backend.sendCertificate(mocca_js._parameters.SessionID, mocca_js.data.certificate).then(function (response, textStatus, jqXHR) {
+            mocca_js.data.response = response;
+            deferred.resolve();
         });
         return deferred.promise();
     }
 
-    function parseDataToBeSigned(responseData, certificate) {
+    function getDataToBeSigned(responseData) {
         var deferred = $.Deferred();
-        _log.debug('received certificate response: ' + log.printXML(responseData));
         var signedInfo = $(responseData).find('SignedInfo').text();
-        if (signedInfo.length === undefined || signedInfo.length == 0){
-            _log.debug('if signedInfo: ' + signedInfo + ' length: ' + signedInfo.length);
-            sendCertificate(certificate).then(parseDataToBeSigned).then(function(signedData) {
-                deferred.resolve(signedData);
-            });
-        } else {
-            _log.debug('else signedInfo: ' + signedInfo + ' length: ' + signedInfo.length);
-            _log.debug('signedInfo: ' + signedInfo.length + ' value: ' + signedInfo);
-            var signedData = mocca_js.stal.sign(certificate, algorithmId, signedInfo);
-            deferred.resolve(signedData);
-        }
-        return deferred.promise();
+        _log.debug('signedInfo: ' + signedInfo.length + ' value: ' + signedInfo);
+        var signedData = mocca_js.stal.sign(certificate, algorithmId, signedInfo);
+        mocca_js.data.signedData = signedData;
     }
 
     function sendSignedData(signedData) {
