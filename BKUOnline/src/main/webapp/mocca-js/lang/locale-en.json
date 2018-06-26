@@ -7,6 +7,8 @@
   "error.1006": "Unsupported signature algorithm.",
   "error.1007": "Invalid argument.",
   "error.1008": "Missing argument.",
-  "error.PARSING_ERROR": "Error processing request. The server response could not be validated.",
-  "error.INVALID_XML": "Error processing request. The server response could not be validated."
+  "error.2001": "Error processing request. The server response could not be validated.",
+  "error.2002": "Error processing request. The server response could not be validated.",
+  "info.start": "Please wait for the Windows dialog to execute the signature process.",
+  "info.finished": "Signature was successfully completed."
 }

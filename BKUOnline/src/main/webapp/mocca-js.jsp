@@ -20,7 +20,7 @@
     <title><fmt:message key="title"/></title>
     
 	<script src="mocca-js/logging.js"></script>
-    
+  
 	<script src="<%= request.getContextPath() %>/webjars/jquery/3.3.1/jquery.js"></script>
 	<script src="<%= request.getContextPath() %>/webjars/requirejs/2.3.5/require.js"></script> 
   <script type="text/javascript" src="mocca-js/libs/jquery.soap-1.7.2.js"></script>
@@ -44,9 +44,14 @@
     
     </head>
     <body>
-		<div id="messageContainer" class="col-xs-12" style="padding-top: 15px;"></div> 
+		<div id="messageContainer" class="col-xs-12" style="padding-top: 15px;">
+      <div id ="alert" class="alert alert-info">
+        <p id="paragraph"></p>
+      </div>
+    </div> 
 			      
-		<script type="text/javascript"> 
+    <script type="text/javascript"> 
+    
       require.config({
         //By default load any module IDs from mocca-js/*
         baseUrl: 'mocca-js',
@@ -57,11 +62,17 @@
         }
       });
       require(['libs/workflowexe', 'backend', 'stal', 'stalMock', 'errorHandler', 'lang', 'moccajs'], function (workflowexe, backend, stal, stalMock, errorHandler, lang, moccajs) {
+        lang.setLocale('<c:out value="${requestScope.moccaParam.locale}" default=""/>');
+        document.getElementById('paragraph').innerHTML = mocca_js.lang.translate('info.start');
         moccajs.run({
-          Locale: '<c:out value="${requestScope.moccaParam.locale}" default=""/>',
           SessionID: '<c:out value="${requestScope.id}"/>',
           ContextPath: '<%= request.getContextPath() %>'
-        }, false);
+        }, false).then(function(){
+            var alert = $("#alert");
+            alert.text = lang.translate('info.finished');
+            alert.removeClass('alert-info');
+            alert.addClass('alert-success');
+        });
       });
 	  </script>
   </body>

@@ -1,10 +1,8 @@
-define([], function () {
+define(['errorHandler'], function (errorHandler) {
     var _log = log.getInstance('backend.js');
     var INFOBOX_READ_REQ = 'InfoboxReadRequest';
     var SIGN_REQ = 'SignRequest';
     var QUIT_REQ = 'QuitRequest';
-    var PARSING_ERROR = 'PARSING_ERROR';
-    var INVALID_XML = 'INVALID_XML';
 
     function setBaseUrl(baseUrl) {
         this.baseUrl = baseUrl;
@@ -28,8 +26,13 @@ define([], function () {
         if (xml && xml.childNodes) {
             return validateXMLChildNodes(xml.childNodes, 0);
         } else {
-            _log.debug('An error occured while parsing the XML data.');
-            throw INVALID_XML;
+            if (xml) {
+                _log.debug('XML Parameter has no childNodes.');
+            } else {
+                _log.debug('XML Parameter undefined.');
+            }
+
+            throw errorHandler.UNEXPECTED_XML_PARAMETER;
         }
     }
 
@@ -50,7 +53,7 @@ define([], function () {
                 return childNode.nodeName;
             }
         }
-        throw PARSING_ERROR;
+        throw errorHandler.PARSING_ERROR;
     }
 
     function sendCertificate(sessionId, certificate) {

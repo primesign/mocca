@@ -1,13 +1,14 @@
 define(['lang'], function (lang) {
+    var PARSING_ERROR = '2001';
+    var UNEXPECTED_XML_PARAMETER = '2002';
     var _log = log.getInstance('errorHandler.js');
 
     function getErrorAlert(message) {
         return '<div id ="erroralert" class="alert alert-danger">' +
             '<strong>' + lang.translate('error.prefix') + ': </strong>' +
-            '<p id="paragraph"/>' + message + '</p>' +
-            '</div>';
+            '<p id="paragraph">' + message + '</p>' +
+            '</div>';   
     }
-
 
     return {
         handleError: function (message) {

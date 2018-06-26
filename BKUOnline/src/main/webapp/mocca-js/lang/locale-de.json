@@ -7,6 +7,9 @@
   "error.1006": "Nicht unterstützter Signaturalgorithmus.",
   "error.1007": "Ungültiges Argument.",
   "error.1008": "Fehlendes Argument.",
-  "error.PARSING_ERROR": "Die Anfrage konnte nicht bearbeitet werden. Fehler beim Auswerten der Serverantwort.",
-  "error.INVALID_XML": "Die Anfrage konnte nicht bearbeitet werden. Fehler beim Auswerten der Serverantwort."
+  "error.2001": "Die Anfrage konnte nicht bearbeitet werden. Fehler beim Auswerten der Serverantwort.",
+  "error.2002": "Die Anfrage konnte nicht bearbeitet werden. Fehler beim Auswerten der Serverantwort.",
+  "info.prefix": "Info",
+  "info.start": "Bitte warten Sie auf das Windows-Eingabefenster, um die Signatur durchzuführen.",
+  "info.finished": "Signatur wurde erfolgreich durchgeführt."
 }
