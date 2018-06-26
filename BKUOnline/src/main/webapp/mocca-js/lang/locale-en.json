@@ -1,12 +1,12 @@
 {
-  "title": "Mocca-JS DEMO en",
   "error.prefix": "Error",
-  "error.1001": "The request couldn't be processed",
-  "error.1002": "Cancelled by user",
-  "error.1003": "No (suitable) certificate found",
-  "error.1005": "No key found for the requested certificate",
-  "error.1006": "Unsupported signature algorith",
-  "error.1007": "Invalid Argument",
-  "error.1008": "Missing Argument",
-  "error.3": "Validation failed"
+  "error.1001": "Error processing request.",
+  "error.1002": "Process was cancelled by the user.",
+  "error.1003": "No (suitable) certificate found.",
+  "error.1005": "No key found for the selected certificate.",
+  "error.1006": "Unsupported signature algorithm.",
+  "error.1007": "Invalid argument.",
+  "error.1008": "Missing argument.",
+  "error.PARSING_ERROR": "Error processing request. The server response could not be validated.",
+  "error.INVALID_XML": "Error processing request. The server response could not be validated."
 }

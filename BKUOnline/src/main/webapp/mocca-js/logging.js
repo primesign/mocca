@@ -31,7 +31,7 @@ if (isRunningInSelfServiceClient()) {
                 },
                 debug: function(message) {
                     var enhancedMessage = enhanceLoggingMessage(message, context);
-                    WorkflowExe && WorkflowExe.writeToLogFile(4, enhancedMessage);
+                    WorkflowExe && WorkflowExe.writeToLogFile(WorkflowExe.logDEBUG, enhancedMessage);
                     console.info(enhancedMessage);
                 },
                 error: function(message) {

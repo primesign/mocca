@@ -12,8 +12,8 @@ define('moccajs', function(require) {
     mocca_js.data = {};
 
     var _log = log.getInstance('moccajs.js');
-    _log.debug('mocca_js: ' + JSON.stringify(mocca_js));
-    _log.debug('mocca_js initialized!');
+    _log.debug('Mocca-JS initializing with data: ' + JSON.stringify(mocca_js)+".");
+    _log.info('Mocca-JS initialized.');
 
     function mockSTAL() {
         mocca_js.stal = require('stalMock');
@@ -23,7 +23,7 @@ define('moccajs', function(require) {
         if (isMockSTAL && isMockSTAL === true) {
             mockSTAL();
         }
-        _log.debug('Starting mocca-js with parameters: ' + JSON.stringify(parameters));
+        _log.info('Running Mocca-JS with parameters: ' + JSON.stringify(parameters)+".");
         mocca_js._parameters = parameters;
         mocca_js.lang.setLocale(parameters.Locale);
         mocca_js.backend.setBaseUrl(parameters.ContextPath);
@@ -32,10 +32,10 @@ define('moccajs', function(require) {
                 mocca_js.backend.connect(parameters.SessionID).then(parseResponse).then(callBackend).fail(mocca_js.errorHandler.handleError);
             } else if (mocca_js.data.responseType === mocca_js.backend.INFOBOX_READ_REQ) {
                 sendCertificate().then(parseResponse).then(callBackend).fail(mocca_js.errorHandler.handleError);
-            } else if (mocca_js.data.responseType === mocca_js.backend.INFOBOX_SIGN_REQ) {
+            } else if (mocca_js.data.responseType === mocca_js.backend.SIGN_REQ) {
                 sendSignedData().then(parseResponse).then(function(){
-                    if (mocca_js.data.responseType === mocca_js.backend.INFOBOX_QUIT_REQ){
-                        _log.debug('finished signing document!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+                    if (mocca_js.data.responseType === mocca_js.backend.QUIT_REQ){
+                        _log.info('Successfully signed document.');
                     } else {
                         callBackend();
                     }
@@ -47,28 +47,29 @@ define('moccajs', function(require) {
 
 
     function parseResponse(responseData) {
-        _log.debug('ParseResponse responseData: ' + log.printXML(responseData));
+        _log.debug('Parsing STAL response: ' + log.printXML(responseData)+".");
         var responseType = mocca_js.backend.parseXMLResponse(responseData);
-        _log.debug('Received response of type "' +responseType + '"');
+        _log.debug('Received STAL response of type: "' +responseType + '".');
+        _log.debug('Mocca-JS current data: ' + JSON.stringify(mocca_js)+".");
         if (responseType === mocca_js.backend.INFOBOX_READ_REQ && !mocca_js.data.certificate) {
             selectCertificate();
-        } else if (responseType === mocca_js.backend.INFOBOX_SIGN_REQ && !mocca_js.data.signedData) {
+        } else if (responseType === mocca_js.backend.SIGN_REQ && !mocca_js.data.signedData) {
             getDataToBeSigned(responseData);
-        }
+        } 
         mocca_js.data.responseType = responseType;
-        _log.debug('Finished parsing response');
+        _log.debug('Finished parsing response.');
     }
 
     function selectCertificate() {
-        _log.debug('Starting selectCertificate');
+        _log.info('Selecting certificate...');
         var certificate = mocca_js.stal.selectCertificate();
-        _log.debug('Finished select certificate: ' + certificate);
+        _log.debug('Selected certificate: ' + certificate+ '.');
         mocca_js.data.certificate = certificate;
     }
 
     function sendCertificate() {
         var deferred = $.Deferred();
-        _log.debug('SendCertificate: ' + mocca_js.data.certificate);
+        _log.info('Sending certificate: ' + mocca_js.data.certificate+ '.');
         mocca_js.backend.sendCertificate(mocca_js._parameters.SessionID, mocca_js.data.certificate).then(function (response, textStatus, jqXHR) {
             deferred.resolve(response);
         });
@@ -77,14 +78,15 @@ define('moccajs', function(require) {
 
     function getDataToBeSigned(responseData) {
         var signedInfo = $(responseData).find('SignedInfo').text();
-        _log.debug('getDataToBeSigned info length: ' + signedInfo.length + ' value: "' + signedInfo + '"');
+        _log.debug('Parse data to be signed. Length: ' + signedInfo.length + ', value: "' + signedInfo + '".');
+        _log.info('Signing data: '+ signedInfo +'.');
         var signedData = mocca_js.stal.sign(mocca_js.data.certificate, algorithmId, signedInfo);
-        _log.debug('getDataToBeSigned finished signedData: ' + signedData.length + ' value: ' + signedData);
+        _log.debug('Finished signing data. Length: ' + signedData.length + ', value: "' + signedData+'".');
         mocca_js.data.signedData = signedData;
     }
 
     function sendSignedData() {
-        _log.debug('Signed data: ' + mocca_js.data.signedData);
+        _log.info('Sending signed data: ' + mocca_js.data.signedData +'.');
         return mocca_js.backend.sendSignedData(mocca_js._parameters.SessionID, mocca_js.data.signedData);
     }
 

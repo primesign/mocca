@@ -1,4 +1,4 @@
-﻿/*****************************************************************************
+/*****************************************************************************
 * The WorkflowExe API                                                        *
 * Description  : Library for interfacing with Workflow.exe                   *
 * Project Name : Self Service                                                *
@@ -13,6 +13,7 @@ WorkflowExe = {
     "logERROR": 1,
     "logWARNING": 2,
     "logINFO": 3,
+    "logDEBUG": 4,
 
     // Log File: Support log kinds EXCEPT, ERROR, WARNING and INFO
     writeToLogFile: function (iLogKind, strEntry) {

@@ -1,12 +1,13 @@
 define(['libs/i18next.min', 'libs/LngDetector', 'text!lang/locale-en.json', 'text!lang/locale-de.json'], function (i18next, LngDetector, translationEN, translationDE) {
 
     var _log = log.getInstance('lang.js');
-    _log.debug('i18next: ' + i18next);
 
     function setLocale(locale) {
-        if(locale.length>=2){
-        i18next.changeLanguage(locale.substring(0,2));}
-        else{locale='en';}
+        if (locale.length>=2) {
+            i18next.changeLanguage(locale.substring(0,2));
+        } else {
+            locale='en';
+        }
     }
 
     i18next
@@ -32,7 +33,7 @@ define(['libs/i18next.min', 'libs/LngDetector', 'text!lang/locale-en.json', 'tex
         try {
             return i18next.t(message);
         } catch (error) {
-            _log.debug('An error occured while trying to translate message: "' + message + '", error was: "' + error + '"');
+            _log.debug('An error occured while trying to translate message: "' + message + '", error was: "' + error + '".');
             return message;
         }
     }

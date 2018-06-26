@@ -11,7 +11,7 @@ define(['lang'], function (lang) {
 
     return {
         handleError: function (message) {
-            _log.debug('handleError was called with parameter: ' + message);
+            _log.error('An error occured: ' + message +'.');
             var translatedMessage = lang.translate('error.' + message);
             var displayingMessage;
             if (translatedMessage === 'error.' + message) {

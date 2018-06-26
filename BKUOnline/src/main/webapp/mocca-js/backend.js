@@ -1,15 +1,17 @@
 define([], function () {
     var _log = log.getInstance('backend.js');
     var INFOBOX_READ_REQ = 'InfoboxReadRequest';
-    var INFOBOX_SIGN_REQ = 'SignRequest';
-    var INFOBOX_QUIT_REQ = 'QuitRequest';
+    var SIGN_REQ = 'SignRequest';
+    var QUIT_REQ = 'QuitRequest';
+    var PARSING_ERROR = 'PARSING_ERROR';
+    var INVALID_XML = 'INVALID_XML';
 
     function setBaseUrl(baseUrl) {
         this.baseUrl = baseUrl;
     }
 
     function connect(sessionId) {
-        _log.debug('sending connect request to backend');
+        _log.info('Connecting to backend...');
         return $.soap({
             url: this.baseUrl + '/stal',
             method: 'connect',
@@ -26,7 +28,8 @@ define([], function () {
         if (xml && xml.childNodes) {
             return validateXMLChildNodes(xml.childNodes, 0);
         } else {
-            throw 3;
+            _log.debug('An error occured while parsing the XML data.');
+            throw INVALID_XML;
         }
     }
 
@@ -42,16 +45,16 @@ define([], function () {
             else if (childNode.nodeName === 'GetNextRequestResponse') {
                 return validateXMLChildNodes(childNode.childNodes, 3);
             } else if (depth === 3 && (childNode.nodeName === INFOBOX_READ_REQ ||
-                childNode.nodeName === INFOBOX_SIGN_REQ) ||
-                childNode.nodeName === INFOBOX_QUIT_REQ) {
+                childNode.nodeName === SIGN_REQ) ||
+                childNode.nodeName === QUIT_REQ) {
                 return childNode.nodeName;
             }
         }
-        throw 3;
+        throw PARSING_ERROR;
     }
 
     function sendCertificate(sessionId, certificate) {
-        _log.debug('sending certificate to backend');
+        _log.info('Sending certificate to backend. SessionID: "' + sessionId + '".');
 
         var infoboxReadResponse = [
             '<?xml version="1.0" encoding="UTF-8"?>',
@@ -111,8 +114,8 @@ define([], function () {
 
     return {
         INFOBOX_READ_REQ: INFOBOX_READ_REQ,
-        INFOBOX_SIGN_REQ: INFOBOX_SIGN_REQ,
-        INFOBOX_QUIT_REQ: INFOBOX_QUIT_REQ,
+        SIGN_REQ: SIGN_REQ,
+        QUIT_REQ: QUIT_REQ,
         parseXMLResponse: parseXMLResponse,
         setBaseUrl: setBaseUrl,
         connect: connect,
