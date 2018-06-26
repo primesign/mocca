@@ -31,7 +31,7 @@ if (isRunningInSelfServiceClient()) {
                 },
                 debug: function(message) {
                     var enhancedMessage = enhanceLoggingMessage(message, context);
-                    WorkflowExe && WorkflowExe.writeToLogFile(WorkflowExe.logINFO, enhancedMessage);
+                    WorkflowExe && WorkflowExe.writeToLogFile(4, enhancedMessage);
                     console.info(enhancedMessage);
                 },
                 error: function(message) {
@@ -67,5 +67,9 @@ if (isRunningInSelfServiceClient()) {
 }
 
 log.printXML = function(xml) {
-    return new XMLSerializer().serializeToString(xml);
+    try{
+        return new XMLSerializer().serializeToString(xml);
+    } catch(e){
+        return xml;
+    }
 }
