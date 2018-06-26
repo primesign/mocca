@@ -8,15 +8,6 @@
   
  --%>
  
-<%-- Images --%>
-<c:set var="defaultButtonWidth" value="16"/>
-<c:set var="defaultButtonHeight" value="22"/>
-<%-- URLs --%>
-<c:set value="./applet" var="codebase"/>
-<c:url value="/help/" var="helpUrl"/>
-<c:url value="/stal?wsdl" var="wsdlUrl"/>
-<c:url value="/result" var="resultUrl"/>
-<%-- Messages --%>
 <fmt:bundle basename="web">
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -67,17 +58,10 @@
       });
       require(['libs/workflowexe', 'backend', 'stal', 'stalMock', 'errorHandler', 'lang', 'moccajs'], function (workflowexe, backend, stal, stalMock, errorHandler, lang, moccajs) {
         moccajs.run({
-        GuiStyle: '<c:out value="${requestScope.moccaParam.guiStyle}" default="simple"/>',
-        Locale: '<c:out value="${requestScope.moccaParam.locale}" default=""/>',
-        Background: '<c:out value="${requestScope.moccaParam.appletBackground}" default=""/>',
-        BackgroundColor: '<c:out value="${requestScope.moccaParam.appletBackgroundColor}" default="#eeeeee"/>',
-        WSDL_URL: '<c:out value="${wsdlUrl}"/>',
-        HelpURL: '<c:out value="${helpUrl}"/>',
-        SessionID: '<c:out value="${requestScope.id}"/>',
-        RedirectURL: '<c:out value="${resultUrl}"/>',
-        ContextPath: '<%= request.getContextPath() %>',
-        RedirectTarget: '<c:out value="${requestScope.moccaParam.redirectTarget}" default="_parent"/>'
-      }, false);
+          Locale: '<c:out value="${requestScope.moccaParam.locale}" default=""/>',
+          SessionID: '<c:out value="${requestScope.id}"/>',
+          ContextPath: '<%= request.getContextPath() %>'
+        }, false);
       });
 	  </script>
   </body>

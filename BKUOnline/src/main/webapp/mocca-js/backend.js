@@ -22,7 +22,7 @@ define([], function () {
         });
     }
 
-    function validateXMLResponse(xml) {
+    function parseXMLResponse(xml) {
         if (xml && xml.childNodes) {
             return validateXMLChildNodes(xml.childNodes, 0);
         } else {
@@ -113,7 +113,7 @@ define([], function () {
         INFOBOX_READ_REQ: INFOBOX_READ_REQ,
         INFOBOX_SIGN_REQ: INFOBOX_SIGN_REQ,
         INFOBOX_QUIT_REQ: INFOBOX_QUIT_REQ,
-        validateXMLResponse: validateXMLResponse,
+        parseXMLResponse: parseXMLResponse,
         setBaseUrl: setBaseUrl,
         connect: connect,
         sendCertificate: sendCertificate,

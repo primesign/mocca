@@ -48,7 +48,7 @@ define('moccajs', function(require) {
 
     function parseResponse(responseData) {
         _log.debug('ParseResponse responseData: ' + log.printXML(responseData));
-        var responseType = mocca_js.backend.validateXMLResponse(responseData);
+        var responseType = mocca_js.backend.parseXMLResponse(responseData);
         _log.debug('Received response of type "' +responseType + '"');
         if (responseType === mocca_js.backend.INFOBOX_READ_REQ && !mocca_js.data.certificate) {
             selectCertificate();
