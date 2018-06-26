@@ -1,5 +1,12 @@
 {
   "title": "Mocca-JS DEMO de",
   "error.prefix": "Fehler",
-  "error.1001": "Die Anfrage konnte nicht bearbeitet werden"
+  "error.1001": "Die Anfrage konnte nicht bearbeitet werden",
+  "error.1002": "Der Vorgang wurde durch den Benutzer abgebrochen",
+  "error.1003": "Kein (passendes) Zertifikat gefunden",
+  "error.1005": "Kein Schlüssel für das angeforderte Zertifikat gefunden",
+  "error.1006": "Nicht unterstützter Signaturalgorithmus",
+  "error.1007": "Ungültiges Argument",
+  "error.1008": "Fehlendes Argument",
+  "error.3": "Validierung fehlgeschlagen"
 }

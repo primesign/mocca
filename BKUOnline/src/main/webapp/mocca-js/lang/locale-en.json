@@ -1,5 +1,12 @@
 {
   "title": "Mocca-JS DEMO en",
   "error.prefix": "Error",
-  "error.1001": "The request couldn't be processed"
+  "error.1001": "The request couldn't be processed",
+  "error.1002": "Cancelled by user",
+  "error.1003": "No (suitable) certificate found",
+  "error.1005": "No key found for the requested certificate",
+  "error.1006": "Unsupported signature algorith",
+  "error.1007": "Invalid Argument",
+  "error.1008": "Missing Argument",
+  "error.3": "Validation failed"
 }

@@ -1,10 +1,9 @@
 define(['lang'], function (lang) {
     var _log = log.getInstance('errorHandler.js');
-    var errorPrefix = lang.translate('error.prefix');
 
     function getErrorAlert(message) {
         return '<div id ="erroralert" class="alert alert-danger">' +
-            '<strong>' + errorPrefix + ': </strong>' +
+            '<strong>' + lang.translate('error.prefix') + ': </strong>' +
             '<p id="paragraph"/>' + message + '</p>' +
             '</div>';
     }
