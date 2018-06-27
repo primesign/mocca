@@ -20,7 +20,6 @@
     <title><fmt:message key="title"/></title>
     
 	<script src="mocca-js/logging.js"></script>
-  
 	<script src="<%= request.getContextPath() %>/webjars/jquery/3.3.1/jquery.js"></script>
 	<script src="<%= request.getContextPath() %>/webjars/requirejs/2.3.5/require.js"></script> 
   <script type="text/javascript" src="mocca-js/libs/jquery.soap-1.7.2.js"></script>
@@ -29,6 +28,23 @@
   <link rel="stylesheet" type="text/css" href="mocca-js/libs/bootstrap-theme.min.css" /><!-- Optional theme -->
   <script type="text/javascript" src="mocca-js/libs/bootstrap.min.js"></script><!-- Latest compiled and minified JavaScript -->
       
+  <style>
+    #messageContainer {
+      padding-top:15px;
+    }
+    @media (min-width:768px) {
+      .container {
+        width: 620px;
+      }
+    }
+    @media (max-width:767px) {
+      .container {
+        padding-left:0px;
+        padding-right:0px;
+      }
+    }
+  </style>
+
 		<script type="text/javascript">
 		inIframe = false;
 		try{
@@ -44,11 +60,14 @@
     
     </head>
     <body>
-		<div id="messageContainer" class="col-xs-12" style="padding-top: 15px;">
-      <div id ="alert" class="alert alert-info">
-        <p id="paragraph"></p>
-      </div>
-    </div> 
+    <!-- The Bootstrap 3 grid system has four tiers of classes: xs (phones), sm (tablets), md (desktops), and lg (larger desktops) -->
+    <div class="container">
+      <div id="messageContainer" class="col-xs-12">
+        <div id ="alert" class="alert alert-info">
+          <p id="paragraph"></p>
+        </div>
+      </div> 
+    </div>
 			      
     <script type="text/javascript"> 
     
