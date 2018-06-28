@@ -1,5 +1,7 @@
 
 define(function () {
+    var TIMEOUT_SIGN = 180000;
+    var TIMEOUT_SELECTCERTIFICATE = 30000;
 
     var _log = log.getInstance('stal.js');
     _log.debug('WorkflowExe: ' + JSON.stringify(WorkflowExe));
@@ -23,7 +25,7 @@ define(function () {
 
         try {
             // Execute command and wait for command completion:
-            var jsonResult = WorkflowExe.execCommand("Signer.exe", "-select " + strGuiOptions, true);
+            var jsonResult = WorkflowExe.execCommand("Signer.exe", "-select " + strGuiOptions, true, TIMEOUT_SELECTCERTIFICATE);
 
             // Check first if the program Signer.exe could be executed:
             if (jsonResult.strErrorExecution == "") {
@@ -104,7 +106,7 @@ define(function () {
             var jsonSignRequest = { "algo": algorithmId, "cert": certificate, "data": dataToBeSigned };
 
             // Execute command and wait for command completion:
-            var jsonResult = WorkflowExe.execCommand("Signer.exe", "-sign", true, 0, false, JSON.stringify(jsonSignRequest));
+            var jsonResult = WorkflowExe.execCommand("Signer.exe", "-sign", true, TIMEOUT_SIGN, false, JSON.stringify(jsonSignRequest));
 
             // Check first if the program Signer.exe could be executed:
             if (jsonResult.strErrorExecution == "") {
