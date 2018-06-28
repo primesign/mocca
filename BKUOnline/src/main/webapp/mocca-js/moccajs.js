@@ -3,8 +3,6 @@ var mocca_js = {};
 
 var WorkflowExe;
 define('moccajs', function(require) {
-
-    var algorithmId = 'rsa-sha256';
     mocca_js.lang = require('lang');
     mocca_js.backend = require('backend');
     mocca_js.stal = require('stal');
@@ -80,9 +78,13 @@ define('moccajs', function(require) {
 
     function getDataToBeSigned(responseData) {
         var signedInfo = $(responseData).find('SignedInfo').text();
+        var splitted = $(responseData).find('SignatureMethod').text().split('#');
+        var signatureMethod = splitted[splitted.length - 1];
+        
         _log.debug('Parse data to be signed. Length: ' + signedInfo.length + ', value: "' + signedInfo + '".');
-        _log.info('Signing data: '+ signedInfo +'.');
-        var signedData = mocca_js.stal.sign(mocca_js.data.certificate, algorithmId, signedInfo);
+        _log.info('Signing data: '+ signedInfo + '.');
+        _log.info('Signature Method: '+ signatureMethod + '.');
+        var signedData = mocca_js.stal.sign(mocca_js.data.certificate, signatureMethod, signedInfo);
         _log.debug('Finished signing data. Length: ' + signedData.length + ', value: "' + signedData+'".');
         mocca_js.data.signedData = signedData;
     }
