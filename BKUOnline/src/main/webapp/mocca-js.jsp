@@ -20,15 +20,11 @@
     <title><fmt:message key="title"/></title>
     
 	<script src="mocca-js/logging.js"></script>
-    
 	<script src="<%= request.getContextPath() %>/webjars/jquery/3.3.1/jquery.js"></script>
 	<script src="<%= request.getContextPath() %>/webjars/requirejs/2.3.5/require.js"></script> 
   <script type="text/javascript" src="mocca-js/libs/jquery.soap-1.7.2.js"></script>
+  <link rel="stylesheet" type="text/css" href="mocca-js/libs/formatting.css" />
   
-  <link rel="stylesheet" type="text/css" href="mocca-js/libs/bootstrap.min.css" /><!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" type="text/css" href="mocca-js/libs/bootstrap-theme.min.css" /><!-- Optional theme -->
-  <script type="text/javascript" src="mocca-js/libs/bootstrap.min.js"></script><!-- Latest compiled and minified JavaScript -->
-      
 		<script type="text/javascript">
 		inIframe = false;
 		try{
@@ -44,9 +40,17 @@
     
     </head>
     <body>
-		<div id="messageContainer" class="col-xs-12" style="padding-top: 15px;"></div> 
+    <!-- The Bootstrap 3 grid system has four tiers of classes: xs (phones), sm (tablets), md (desktops), and lg (larger desktops) -->
+    <div class="container">
+      <div id="messageContainer" class="col-xs-12">
+        <div id ="alert" class="alert alert-info">
+          <p id="paragraph"></p>
+        </div>
+      </div> 
+    </div>
 			      
-		<script type="text/javascript"> 
+    <script type="text/javascript"> 
+    
       require.config({
         //By default load any module IDs from mocca-js/*
         baseUrl: 'mocca-js',
@@ -57,11 +61,17 @@
         }
       });
       require(['libs/workflowexe', 'backend', 'stal', 'stalMock', 'errorHandler', 'lang', 'moccajs'], function (workflowexe, backend, stal, stalMock, errorHandler, lang, moccajs) {
+        lang.setLocale('<c:out value="${requestScope.moccaParam.locale}" default=""/>');
+        document.getElementById('paragraph').innerHTML = mocca_js.lang.translate('info.start');
         moccajs.run({
-          Locale: '<c:out value="${requestScope.moccaParam.locale}" default=""/>',
           SessionID: '<c:out value="${requestScope.id}"/>',
           ContextPath: '<%= request.getContextPath() %>'
-        }, false);
+        }, false).then(function(){
+            var alert = $("#alert");
+            alert.text = lang.translate('info.finished');
+            alert.removeClass('alert-info');
+            alert.addClass('alert-success');
+        });
       });
 	  </script>
   </body>
