@@ -80,7 +80,7 @@
 				used if no specific page was requested.
 			-->
 			<param-name>uiPage</param-name>
-			<param-value>mocca-js.jsp</param-value>
+			<param-value>applet.jsp</param-value>
 		</init-param>
 		<init-param>
 			<!--
