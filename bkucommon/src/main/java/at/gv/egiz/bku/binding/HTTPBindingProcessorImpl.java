@@ -811,11 +811,14 @@ public class HTTPBindingProcessorImpl extends AbstractBindingProcessor implement
 			log.debug("Start consuming request stream.");
 			FormParameter redirectURL = formParameterMap.get(FixedFormParameters.REDIRECTURL);
 			FormParameter redirectTarget = formParameterMap.get(FixedFormParameters.REDIRECTTARGET);
+			FormParameter appletPage = formParameterMap.get(FixedFormParameters.APPLETPAGE);
 			formParameterMap.clear();
 			if (redirectURL != null)
 				formParameterMap.put(FixedFormParameters.REDIRECTURL, redirectURL);
 			if (redirectTarget != null)
 			  formParameterMap.put(FixedFormParameters.REDIRECTTARGET, redirectTarget);
+			if (appletPage != null)
+				  formParameterMap.put(FixedFormParameters.APPLETPAGE, appletPage);
 			String ct = headerMap
 					.get(HttpUtil.HTTP_HEADER_CONTENT_TYPE.toLowerCase());
 			if (ct == null) {
