@@ -22,6 +22,14 @@ define(['errorHandler'], function (errorHandler) {
         });
     }
 
+     /**
+     * Function checks if XML is defined and has childNodes. 
+     * In case of true, it calls function {@link validateXMLChildNodes} and passes first childenode of XML and depth.
+     * 
+     * @param {xml} xml
+     * @throws error.2001
+     * @returns type of the passed xml
+     */
     function parseXMLResponse(xml) {
         if (xml && xml.childNodes) {
             return validateXMLChildNodes(xml.childNodes, 0);
@@ -36,6 +44,17 @@ define(['errorHandler'], function (errorHandler) {
         }
     }
 
+     /**
+     * Function iterates and checks the structure of the XML. 
+     * Structure: First level S:Envelope, second level S:Body, third level GetNextRequestResponse,
+     *            Fourth level can be eather InfoboxReadRequest, SignRequest or QuitRequest.
+     * Return value depends which fourth level is found.
+     * 
+     * @param {xml} xmlChildNodes passed from {@link parseXMLResponse}
+     * @param {number} depth 
+     * @returns childNode Name
+     * @throws error.2002
+     */
     function validateXMLChildNodes(xmlChildNodes, depth) {
         for (var childNodeIndex in xmlChildNodes) {
             var childNode = xmlChildNodes[childNodeIndex];
