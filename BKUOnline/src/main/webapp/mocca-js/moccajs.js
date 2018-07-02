@@ -26,6 +26,7 @@ define('moccajs', function(require) {
         mocca_js._parameters = parameters;
         mocca_js.backend.setBaseUrl(parameters.ContextPath);
         function callBackend() {
+            _log.debug('CallBackend called with responsetype: "' + mocca_js.data.responseType + '"');
             if (!mocca_js.data.responseType) {
                 mocca_js.backend.connect(parameters.SessionID).then(parseResponse).then(callBackend).fail(mocca_js.errorHandler.handleError);
             } else if (mocca_js.data.responseType === mocca_js.backend.INFOBOX_READ_REQ) {
@@ -39,6 +40,11 @@ define('moccajs', function(require) {
                         callBackend();
                     }
                 }).fail(mocca_js.errorHandler.handleError);
+            } else  if (mocca_js.data.responseType === mocca_js.backend.QUIT_REQ) {
+                _log.info('Processing quit request although document is not yet signed.');
+                mocca_js.errorHandler.handleError(1001);
+                deferred.reject({});
+                // evt. woanders angeben: mocca_js.errorHandler.handleError();
             }
         }
         callBackend();
@@ -64,7 +70,15 @@ define('moccajs', function(require) {
         _log.info('Selecting certificate...');
         var certificate = mocca_js.stal.selectCertificate();
         _log.debug('Selected certificate: ' + certificate+ '.');
-        mocca_js.data.certificate = certificate;
+        if ($.type(certificate) === 'string' && certificate.trim().length) {
+            mocca_js.data.certificate = certificate;
+        } else if ($.type(certificate) === 'string'){
+            _log.debug('Stal.selectCertificate retrieved empty string as certificate!');
+            throw 1010;
+        } else {
+            _log.debug('Stal.selectCertificate was not of type "string", found "' + $.type(certificate) + '" instead, parameter was: "' + JSON.stringify(certificate) + '"');
+            throw 1011;
+        }
     }
 
     function sendCertificate() {
@@ -77,6 +91,7 @@ define('moccajs', function(require) {
     }
 
     function getDataToBeSigned(responseData) {
+        _log.debug('getDataToBeSigned started with "' + log.printXML(responseData) + '"')
         var signedInfo = $(responseData).find('SignedInfo').text();
         var splitted = $(responseData).find('SignatureMethod').text().split('#');
         var signatureMethod = splitted[splitted.length - 1];
@@ -86,7 +101,15 @@ define('moccajs', function(require) {
         _log.info('Signature Method: '+ signatureMethod + '.');
         var signedData = mocca_js.stal.sign(mocca_js.data.certificate, signatureMethod, signedInfo);
         _log.debug('Finished signing data. Length: ' + signedData.length + ', value: "' + signedData+'".');
-        mocca_js.data.signedData = signedData;
+        if ($.type(signedData) === 'string' && signedData.trim().length) {
+            mocca_js.data.signedData = signedData;
+        } else if ($.type(signedData) === 'string'){
+            _log.debug('GetDataToBeSigned retrieved empty string as signedData!');
+            throw 1010;
+        } else {
+            _log.debug('signedData was not of type "string", found "' + $.type(signedData) + '" instead');
+            throw 1011;
+        }
     }
 
     function sendSignedData() {

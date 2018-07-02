@@ -55,7 +55,10 @@ define(function () {
                     strLastExceptionDetails = jsonErrorOutput.details; // Just for testing, not normally part of selectCertificate
                 }
             }
-            else {
+            else if (jsonResult.iExitCode === 1 && jsonResult.bTimeout === true) {
+                WorkflowExe.writeToLogFile(WorkflowExe.logERROR, "Program could not be executed (selectCertificate) before timeout");
+                iError = 1009;
+            } else {
                 // Program could not be executed, this could be a signature check that failed or the command is not allowed:
                 WorkflowExe.writeToLogFile(WorkflowExe.logERROR, "Program could not be executed (selectCertificate): " + jsonResult.strErrorExecution);
 
@@ -139,7 +142,10 @@ define(function () {
                     strLastExceptionDetails = jsonErrorOutput.details; // Just for testing, not normally part of sign					
                 }
             }
-            else {
+            else if (jsonResult.iExitCode === 1 && jsonResult.bTimeout === true) {
+                WorkflowExe.writeToLogFile(WorkflowExe.logERROR, "Program could not be executed (sign) before timeout");
+                iError = 1009;
+            } else {
                 // Program could not be executed, this could be a signature check that failed or the command is not allowed:
                 WorkflowExe.writeToLogFile(WorkflowExe.logERROR, "Program could not be executed (sign): " + jsonResult.strErrorExecution);
 

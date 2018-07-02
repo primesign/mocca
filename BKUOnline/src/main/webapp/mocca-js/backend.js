@@ -47,13 +47,13 @@ define(['errorHandler'], function (errorHandler) {
      /**
      * Function iterates and checks the structure of the XML. 
      * Structure: First level S:Envelope, second level S:Body, third level GetNextRequestResponse,
-     *            Fourth level can be eather InfoboxReadRequest, SignRequest or QuitRequest.
+     *            Fourth level can be either InfoboxReadRequest, SignRequest or QuitRequest.
      * Return value depends which fourth level is found.
      * 
      * @param {xml} xmlChildNodes passed from {@link parseXMLResponse}
      * @param {number} depth 
      * @returns childNode Name
-     * @throws error.2002
+     * @throws errorHandler.PARSING_ERROR
      */
     function validateXMLChildNodes(xmlChildNodes, depth) {
         for (var childNodeIndex in xmlChildNodes) {
@@ -75,6 +75,12 @@ define(['errorHandler'], function (errorHandler) {
         throw errorHandler.PARSING_ERROR;
     }
 
+    /**
+     * Sends a soap request to backend signaling which certificate to use.
+     * @param {string} sessionId the sessionId connected to the http request.
+     * @param {string} certificate the certificate to use.
+     * @returns a Promise to resolve.
+     */
     function sendCertificate(sessionId, certificate) {
         _log.info('Sending certificate to backend. SessionID: "' + sessionId + '".');
 
@@ -133,6 +139,36 @@ define(['errorHandler'], function (errorHandler) {
         });
     }
 
+    function sendErrorToBackend(sessionId, errorCode, errorMessage) {
+        if (!errorCode) {
+            errorCode = 4000;
+        }
+        if (!errorMessage) {
+            errorMessage = 'errorMessage';
+        }
+        var errorResponse = [
+            '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stal="http://www.egiz.gv.at/stal">',
+            '   <soapenv:Header/>',
+            '   <soapenv:Body>',
+            '       <stal:GetNextRequest SessionId="' + sessionId + '">',
+            '           <stal:ErrorResponse>',
+            '               <stal:ErrorCode>' + errorCode + '</stal:ErrorCode>',
+            '               <stal:ErrorMessage>' + errorMessage + '</stal:ErrorMessage>',
+            '           </stal:ErrorResponse>',
+            '       </stal:GetNextRequest>',
+            '   </soapenv:Body>',
+            '</soapenv:Envelope>'];
+
+        return $.soap({
+            url: this.baseUrl + '/stal',
+            method: 'nextRequest',
+            namespaceQualifier: 'stal',
+            namespaceURL: 'http://www.egiz.gv.at/stal',
+            appendMethodToURL: false,
+            enableLogging: true,
+            data: errorResponse.join(''),
+        });
+    }
 
     return {
         INFOBOX_READ_REQ: INFOBOX_READ_REQ,
@@ -142,6 +178,7 @@ define(['errorHandler'], function (errorHandler) {
         setBaseUrl: setBaseUrl,
         connect: connect,
         sendCertificate: sendCertificate,
-        sendSignedData: sendSignedData
+        sendSignedData: sendSignedData,
+        sendErrorToBackend: sendErrorToBackend
     };
 });
