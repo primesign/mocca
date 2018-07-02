@@ -8,6 +8,10 @@ define(['errorHandler'], function (errorHandler) {
         this.baseUrl = baseUrl;
     }
 
+    /**
+     * Sends a connect request to the backend.
+     * @param {string} sessionId the sessionId connected to the http request. Mustn't be null.
+     */
     function connect(sessionId) {
         _log.info('Connecting to backend...');
         return $.soap({
@@ -26,13 +30,13 @@ define(['errorHandler'], function (errorHandler) {
      * Function checks if XML is defined and has childNodes. 
      * In case of true, it calls function {@link validateXMLChildNodes} and passes first childenode of XML and depth.
      * 
-     * @param {xml} xml
-     * @throws error.2001
+     * @param {xml} xml the xml to parse. Mustn't be null.
+     * @throws errorHandler.UNEXPECTED_XML_PARAMETER
      * @returns type of the passed xml
      */
     function parseXMLResponse(xml) {
         if (xml && xml.childNodes) {
-            return validateXMLChildNodes(xml.childNodes, 0);
+            return parseXMLChildNodes(xml.childNodes, 0);
         } else {
             if (xml) {
                 _log.debug('XML Parameter has no childNodes.');
@@ -50,22 +54,22 @@ define(['errorHandler'], function (errorHandler) {
      *            Fourth level can be either InfoboxReadRequest, SignRequest or QuitRequest.
      * Return value depends which fourth level is found.
      * 
-     * @param {xml} xmlChildNodes passed from {@link parseXMLResponse}
-     * @param {number} depth 
+     * @param {xml} xmlChildNodes the xmlChildNodes to parse. Mustn't be null.
+     * @param {number} depth Mustn't be null.
      * @returns childNode Name
      * @throws errorHandler.PARSING_ERROR
      */
-    function validateXMLChildNodes(xmlChildNodes, depth) {
+    function parseXMLChildNodes(xmlChildNodes, depth) {
         for (var childNodeIndex in xmlChildNodes) {
             var childNode = xmlChildNodes[childNodeIndex];
             if (childNode.nodeName === 'S:Envelope' && depth === 0) {
-                return validateXMLChildNodes(childNode.childNodes, 1);
+                return parseXMLChildNodes(childNode.childNodes, 1);
             }
             else if (childNode.nodeName === 'S:Body') {
-                return validateXMLChildNodes(childNode.childNodes, 2);
+                return parseXMLChildNodes(childNode.childNodes, 2);
             }
             else if (childNode.nodeName === 'GetNextRequestResponse') {
-                return validateXMLChildNodes(childNode.childNodes, 3);
+                return parseXMLChildNodes(childNode.childNodes, 3);
             } else if (depth === 3 && (childNode.nodeName === INFOBOX_READ_REQ ||
                 childNode.nodeName === SIGN_REQ) ||
                 childNode.nodeName === QUIT_REQ) {
@@ -76,9 +80,9 @@ define(['errorHandler'], function (errorHandler) {
     }
 
     /**
-     * Sends a soap request to backend signaling which certificate to use.
-     * @param {string} sessionId the sessionId connected to the http request.
-     * @param {string} certificate the certificate to use.
+     * Sends a soap request to backend with the certificate to use.
+     * @param {string} sessionId the sessionId connected to the http request. Mustn't be null.
+     * @param {string} certificate the certificate to use. Mustn't be null.
      * @returns a Promise to resolve.
      */
     function sendCertificate(sessionId, certificate) {
@@ -87,17 +91,13 @@ define(['errorHandler'], function (errorHandler) {
         var infoboxReadResponse = [
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<soapenv:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stal="http://www.egiz.gv.at/stal">',
-            '<soapenv:Body>',
-            '<stal:GetNextRequest SessionId="',
-            sessionId,
-            '">',
-            '<stal:InfoboxReadResponse>',
-            '<stal:InfoboxValue>',
-            certificate,
-            '</stal:InfoboxValue>',
-            '</stal:InfoboxReadResponse>',
-            '</stal:GetNextRequest>',
-            '</soapenv:Body>',
+            '   <soapenv:Body>',
+            '       <stal:GetNextRequest SessionId="' + sessionId + '">',
+            '           <stal:InfoboxReadResponse>',
+            '               <stal:InfoboxValue>' + certificate + '</stal:InfoboxValue>',
+            '           </stal:InfoboxReadResponse>',
+            '       </stal:GetNextRequest>',
+            '   </soapenv:Body>',
             '</soapenv:Envelope>'];
 
         return $.soap({
@@ -111,21 +111,23 @@ define(['errorHandler'], function (errorHandler) {
         });
     }
 
+    /**
+     * Sends a soap request to backend with the signed data.
+     * @param {string} sessionId the sessionId connected to the http request. Mustn't be null.
+     * @param {string} signedValue the signed value.
+     * @returns a Promise to resolve.
+     */
     function sendSignedData(sessionId, signedValue) {
         var signResponse = [
             '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stal="http://www.egiz.gv.at/stal">',
-            '<soapenv:Header/>',
-            '<soapenv:Body>',
-            '<stal:GetNextRequest SessionId="',
-            sessionId,
-            '">',
-            '<stal:SignResponse>',
-            '<stal:SignatureValue>',
-            signedValue,
-            '</stal:SignatureValue>',
-            '</stal:SignResponse>',
-            '</stal:GetNextRequest>',
-            '</soapenv:Body>',
+            '   <soapenv:Header/>',
+            '   <soapenv:Body>',
+            '       <stal:GetNextRequest SessionId="' + sessionId + '">',
+            '           <stal:SignResponse>',
+            '               <stal:SignatureValue>' + signedValue + '</stal:SignatureValue>',
+            '           </stal:SignResponse>',
+            '       </stal:GetNextRequest>',
+            '   </soapenv:Body>',
             '</soapenv:Envelope>'];
 
         return $.soap({
@@ -139,6 +141,13 @@ define(['errorHandler'], function (errorHandler) {
         });
     }
 
+    /**
+     * Sends a soap request to backend with the signed data.
+     * @param {string} sessionId the sessionId connected to the http request. Mustn't be null.
+     * @param {string} errorCode the errorCode to send to the backend. Default value 4000.
+     * @param {string} errorMessage the errorMessage connected to the errorCode. Default value 'errorMessage'
+     * @returns a Promise to resolve.
+     */
     function sendErrorToBackend(sessionId, errorCode, errorMessage) {
         if (!errorCode) {
             errorCode = 4000;

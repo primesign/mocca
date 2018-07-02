@@ -1,10 +1,20 @@
+// Adds a global object for appropiate logging. If run inside selfservice portal logoutput will be written to console.* and WorkflowExe.writeToLogFile.
 
+/**
+ * Adds datetime and given context to the log output.
+ * @param {string} message the message to log. Mustn't be null.
+ * @param {string} context the calling context of the log output, filename for example
+ */
 function enhanceLoggingMessage(message, context) {
-      // add component name and date to log message
-      return [new Date().toISOString() + ' [' + context + '] '] + message;
-  }
+    // add component name and date to log message
+    return [new Date().toISOString() + ' [' + context + '] '] + message;
+}
+/**
+ * Tries to figure out if the javascript is running in webcontext accessible to the selfservicelibrary context.
+ * @returns true if type of window.external.writeToLogFile is defined
+ */
 function isRunningInSelfServiceClient() {
-    if (typeof window !== 'undefined' && typeof window.external !== 'undefined' && typeof window.external.writeToLogFile !== 'undefined' && typeof window.external.WriteToLogFile !== 'undefined') {
+    if (typeof window !== 'undefined' && typeof window.external !== 'undefined' && typeof window.external.writeToLogFile !== 'undefined') {
         return true;
     } else {
         return false;
@@ -12,29 +22,29 @@ function isRunningInSelfServiceClient() {
 }
 if (isRunningInSelfServiceClient()) {
     log = {
-        getInstance: function(context) {
+        getInstance: function (context) {
             return {
-                log: function(message) {
+                log: function (message) {
                     var enhancedMessage = enhanceLoggingMessage(message, context);
                     WorkflowExe && WorkflowExe.writeToLogFile(WorkflowExe.logINFO, enhancedMessage);
                     console.log(enhancedMessage);
                 },
-                info: function(message) {
+                info: function (message) {
                     var enhancedMessage = enhanceLoggingMessage(message, context);
                     WorkflowExe && WorkflowExe.writeToLogFile(WorkflowExe.logINFO, enhancedMessage);
                     console.info(enhancedMessage);
                 },
-                warn: function(message) {
+                warn: function (message) {
                     var enhancedMessage = enhanceLoggingMessage(message, context);
                     WorkflowExe && WorkflowExe.writeToLogFile(WorkflowExe.logEXCEPT, enhancedMessage);
                     console.warn(enhancedMessage);
                 },
-                debug: function(message) {
+                debug: function (message) {
                     var enhancedMessage = enhanceLoggingMessage(message, context);
                     WorkflowExe && WorkflowExe.writeToLogFile(WorkflowExe.logDEBUG, enhancedMessage);
                     console.info(enhancedMessage);
                 },
-                error: function(message) {
+                error: function (message) {
                     var enhancedMessage = enhanceLoggingMessage(message, context);
                     WorkflowExe && WorkflowExe.writeToLogFile(WorkflowExe.logERROR, enhancedMessage);
                     console.error(enhancedMessage);
@@ -44,7 +54,7 @@ if (isRunningInSelfServiceClient()) {
     }
 } else {
     log = {
-        getInstance: function(context) {
+        getInstance: function (context) {
             return {
                 log: function (message) {
                     console.log(enhanceLoggingMessage(message, context));
@@ -66,10 +76,14 @@ if (isRunningInSelfServiceClient()) {
     }
 }
 
-log.printXML = function(xml) {
-    try{
+/**
+ * Attempts to stringify an xml object to a string for logging purpose.
+ * @param {XMLDocument} xml the xml to stringify
+ */
+log.stringifyXML = function (xml) {
+    try {
         return new XMLSerializer().serializeToString(xml);
-    } catch(e){
+    } catch (e) {
         return xml;
     }
 }

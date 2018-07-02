@@ -1,6 +1,8 @@
 define(['lang'], function (lang) {
     var PARSING_ERROR = '2001';
     var UNEXPECTED_XML_PARAMETER = '2002';
+    var WORKFLOWEXE_EMPTY_RESPONSE = '1010';
+    var WORKFLOWEXE_UNEXPECTED_RESPONSE = '1011';
     var _log = log.getInstance('errorHandler.js');
 
     var backendErrorToInternalErrorMap = new Map([
@@ -30,10 +32,21 @@ define(['lang'], function (lang) {
             '</div>';   
     }
 
+    function showDefaultError() {
+        document.getElementById('messageContainer').innerHTML = getErrorAlert(lang.translate('error.' + 1001));
+    }
+
+    /**
+     * Attempts to display an appropiate message to the user. If an {@link Error} is received the default error message will be shown and error will be logged to error. Otherwise attempts to translate the given parameter and displays the given translated message. If parameter was translated also attempts to send an errorResponse to the backend.
+     * @param {string} parameter 
+     */
     function handleError(parameter) {
         if (parameter instanceof Error) {
             _log.error('An error occured: ' + parameter.message +'. Stack: ' + parameter.stack);
-            document.getElementById('messageContainer').innerHTML = getErrorAlert(lang.translate('error.' + 1001));
+            showDefaultError();
+        } else if (!parameter) {
+            _log.error('An error occured with unspecified parameter!');
+            showDefaultError();
         } else {
             _log.error('An error occured: ' + parameter +'.');
             var translatedMessage = lang.translate('error.' + parameter);
@@ -53,6 +66,10 @@ define(['lang'], function (lang) {
     }
 
     return {
-        handleError: handleError
+        handleError: handleError,
+        PARSING_ERROR: PARSING_ERROR,
+        UNEXPECTED_XML_PARAMETER: UNEXPECTED_XML_PARAMETER,
+        WORKFLOWEXE_EMPTY_RESPONSE: WORKFLOWEXE_EMPTY_RESPONSE,
+        WORKFLOWEXE_UNEXPECTED_RESPONSE: WORKFLOWEXE_UNEXPECTED_RESPONSE
     };
 });

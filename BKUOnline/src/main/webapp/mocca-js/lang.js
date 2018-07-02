@@ -2,14 +2,6 @@ define(['libs/i18next.min', 'libs/LngDetector', 'text!lang/locale-en.json', 'tex
 
     var _log = log.getInstance('lang.js');
 
-    function setLocale(locale) {
-        if (locale.length>=2) {
-            i18next.changeLanguage(locale.substring(0,2));
-        } else {
-            locale='en';
-        }
-    }
-
     i18next
         .use(LngDetector)
         .init({
@@ -29,6 +21,23 @@ define(['libs/i18next.min', 'libs/LngDetector', 'text!lang/locale-en.json', 'tex
             }
         });
 
+    /**
+     * Sets a locale or uses english locale if given locale cannot be found or parsed.
+     * @param {string} locale the locale to set. Mustn't be null.
+     */
+    function setLocale(locale) {
+        if (locale.length>=2) {
+            i18next.changeLanguage(locale.substring(0,2));
+        } else {
+            locale='en';
+        }
+    }
+
+    /**
+     * Attempts to translate given message. If an error is caused then given message will be returned.
+     * @param {string} message 
+     * @returns the translated message.
+     */
     function translate(message) {
         try {
             return i18next.t(message);
