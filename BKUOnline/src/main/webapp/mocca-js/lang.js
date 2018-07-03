@@ -5,7 +5,7 @@ define(['libs/i18next.min', 'libs/LngDetector', 'text!lang/locale-en.json', 'tex
     i18next
         .use(LngDetector)
         .init({
-            detection: {// Order of Language Detection
+            detection: {// Order of Language Detection, usually overriden with method call lang.setLocale()
                 order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
             },
             fallbackLng: 'en',

@@ -26,14 +26,14 @@ define(['errorHandler'], function (errorHandler) {
         });
     }
 
-     /**
-     * Function checks if XML is defined and has childNodes. 
-     * In case of true, it calls function {@link validateXMLChildNodes} and passes first childenode of XML and depth.
-     * 
-     * @param {xml} xml the xml to parse. Mustn't be null.
-     * @throws errorHandler.UNEXPECTED_XML_PARAMETER
-     * @returns type of the passed xml
-     */
+    /**
+    * Function checks if XML is defined and has childNodes. 
+    * In case of true, it calls function {@link validateXMLChildNodes} and passes first childenode of XML and depth.
+    * 
+    * @param {xml} xml the xml to parse. Mustn't be null.
+    * @throws errorHandler.UNEXPECTED_XML_PARAMETER
+    * @returns type of the passed xml
+    */
     function parseXMLResponse(xml) {
         if (xml && xml.childNodes) {
             return parseXMLChildNodes(xml.childNodes, 0);
@@ -48,17 +48,17 @@ define(['errorHandler'], function (errorHandler) {
         }
     }
 
-     /**
-     * Function iterates and checks the structure of the XML. 
-     * Structure: First level S:Envelope, second level S:Body, third level GetNextRequestResponse,
-     *            Fourth level can be either InfoboxReadRequest, SignRequest or QuitRequest.
-     * Return value depends which fourth level is found.
-     * 
-     * @param {xml} xmlChildNodes the xmlChildNodes to parse. Mustn't be null.
-     * @param {number} depth Mustn't be null.
-     * @returns childNode Name
-     * @throws errorHandler.PARSING_ERROR
-     */
+    /**
+    * Function iterates and checks the structure of the XML. 
+    * Structure: First level S:Envelope, second level S:Body, third level GetNextRequestResponse,
+    *            Fourth level can be either InfoboxReadRequest, SignRequest or QuitRequest.
+    * Return value depends which fourth level is found.
+    * 
+    * @param {xml} xmlChildNodes the xmlChildNodes to parse. Mustn't be null.
+    * @param {number} depth Mustn't be null.
+    * @returns childNode Name
+    * @throws errorHandler.PARSING_ERROR
+    */
     function parseXMLChildNodes(xmlChildNodes, depth) {
         for (var childNodeIndex in xmlChildNodes) {
             var childNode = xmlChildNodes[childNodeIndex];

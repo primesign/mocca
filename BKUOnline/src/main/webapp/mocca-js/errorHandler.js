@@ -3,17 +3,16 @@ define(['lang'], function (lang) {
     var UNEXPECTED_XML_PARAMETER = '2002';
     var WORKFLOWEXE_EMPTY_RESPONSE = '1010';
     var WORKFLOWEXE_UNEXPECTED_RESPONSE = '1011';
+    var DEFAULT_ERRORCODE = '1001';
     var _log = log.getInstance('errorHandler.js');
 
     var backendErrorToInternalErrorMap = [
         ['6000', ['1003', '1005']],
-        ['4500', ['1009']],
-        ['1002', ['6001']],
+        ['6001', ['1002', '1009']],
         ['4000', ['1001']]
     ];
 
     function translateInternalErrorToBackendError(internalError) {
-        // var entries = backendErrorToInternalErrorMap.entries();
         for (var index in backendErrorToInternalErrorMap) {
             var map = backendErrorToInternalErrorMap[index];
             var key = map[0];
@@ -72,6 +71,7 @@ define(['lang'], function (lang) {
         PARSING_ERROR: PARSING_ERROR,
         UNEXPECTED_XML_PARAMETER: UNEXPECTED_XML_PARAMETER,
         WORKFLOWEXE_EMPTY_RESPONSE: WORKFLOWEXE_EMPTY_RESPONSE,
+        DEFAULT_ERRORCODE: DEFAULT_ERRORCODE,
         WORKFLOWEXE_UNEXPECTED_RESPONSE: WORKFLOWEXE_UNEXPECTED_RESPONSE
     };
 });
