@@ -5,15 +5,17 @@ define(['lang'], function (lang) {
     var WORKFLOWEXE_UNEXPECTED_RESPONSE = '1011';
     var _log = log.getInstance('errorHandler.js');
 
-    var backendErrorToInternalErrorMap = new Map([
+    var backendErrorToInternalErrorMap = [
         ['6000', ['1003', '1005']],
         ['4500', ['1009']],
         ['1002', ['6001']],
         ['4000', ['1001']]
-    ]);
+    ];
 
     function translateInternalErrorToBackendError(internalError) {
-        for (var map of backendErrorToInternalErrorMap.entries()) {
+        // var entries = backendErrorToInternalErrorMap.entries();
+        for (var index in backendErrorToInternalErrorMap) {
+            var map = backendErrorToInternalErrorMap[index];
             var key = map[0];
             var value = map[1];
             for (var index in value) {
