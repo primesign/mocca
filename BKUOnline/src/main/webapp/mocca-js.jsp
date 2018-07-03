@@ -22,7 +22,7 @@
       <script src="<%= request.getContextPath() %>/webjars/jquery/3.3.1/jquery.js"></script>
       <script src="<%= request.getContextPath() %>/webjars/requirejs/2.3.5/require.js"></script> 
       <script type="text/javascript" src="mocca-js/libs/jquery.soap-1.7.2.js"></script>
-      <link rel="stylesheet" type="text/css" href="mocca-js/libs/formatting.css" />
+      <link rel="stylesheet" type="text/css" href="mocca-js/style/main.css" />
 
       <script type="text/javascript">
         inIframe = false;
