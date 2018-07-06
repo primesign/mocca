@@ -45,7 +45,7 @@ define(function () {
                     WorkflowExe.writeToLogFile(WorkflowExe.logERROR, "Error (selectCertificate): errcode=" + jsonErrorOutput.errcode +
                         ", message=" + jsonErrorOutput.message + ", details=" + jsonErrorOutput.details);
 
-                    // 	1001 Undefined error 
+                    //  1001 Undefined error 
                     //  1002 Cancelled by user
                     //  1003 No (suitable) certificate found - In case no certificate is found											   
                     iError = jsonErrorOutput.errcode;
@@ -95,7 +95,7 @@ define(function () {
     // Function   : sign
     // Description: Applies an electronic signature with certificate and algorithmId on the given dataToBeSigned and returns the resulting signature.
     // Parameters :
-    //		certificate	  : The signing certificate (DER encoded) as Base64-encoded string.
+    //	certificate	  : The signing certificate (DER encoded) as Base64-encoded string.
     //  	algorithmId	  : A signature algorithm identifier the specifies the signature algorithm to be applied. 
     //  	dataToBeSigned:	The data to-be signed as Base64-encoded string.
     // Return: The resulting signature string in case of a successful signing, otherwise an exception is thrown with the error code.
