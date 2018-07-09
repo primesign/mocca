@@ -95,23 +95,6 @@
     <!--
          | see https://wsit.dev.java.net/issues/show_bug.cgi?id=970
     -->
-    
-	<!--     js webjars -->
-	<dependency>
-	  <groupId>org.webjars</groupId>
-	  <artifactId>jquery</artifactId>
-	  <version>${version.jquery}</version>
-	</dependency>
-	<dependency>
-	  <groupId>org.webjars</groupId>
-	  <artifactId>requirejs</artifactId>
-	  <version>${version.require}</version>
-	</dependency>
-	<dependency>
-	  <groupId>org.webjars</groupId>
-	  <artifactId>jasmine</artifactId>
-	  <version>${version.jasmine}</version>
-	</dependency>
     <dependency>
 
     <groupId>org.glassfish.metro</groupId>
@@ -255,27 +238,6 @@
           <doCheck>false</doCheck>
           <doUpdate>false</doUpdate>
           <revisionOnScmFailure>SvnRevMissing</revisionOnScmFailure>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>com.github.searls</groupId>
-        <artifactId>jasmine-maven-plugin</artifactId>
-        <version>2.2</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>bdd</goal>
-              <goal>test</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <specRunnerTemplate>REQUIRE_JS</specRunnerTemplate>
-          <preloadSources>
-            <source>/webjars/requirejs/2.3.5/require.js</source>
-            <source>/webjars/jquery/3.3.1/jquery.js</source>
-            <source>/src/main/webapp/mocca-js/logging.js</source>
-          </preloadSources>
         </configuration>
       </plugin>
     </plugins>
@@ -424,8 +386,5 @@
   </profiles>
   <properties>
     <netbeans.hint.deploy.server>Tomcat60</netbeans.hint.deploy.server>
-    <version.jquery>3.3.1</version.jquery>
-    <version.require>2.3.5</version.require>
-    <version.jasmine>2.2.0</version.jasmine>
   </properties>
 </project>
