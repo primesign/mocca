@@ -4,7 +4,7 @@
   <parent>
     <artifactId>mocca</artifactId>
     <groupId>at.gv.egiz</groupId>
-    <version>1.3.34-PRIMESIGN-1-SNAPSHOT</version>
+    <version>1.3.33-PRIMESIGN-2</version>
   </parent>
   <artifactId>BKUHelpWebStart</artifactId>
   <name>BKU Help WebStart</name>
