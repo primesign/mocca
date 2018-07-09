@@ -32,6 +32,7 @@ public interface FixedFormParameters {
   String XMLREQUEST = "XMLRequest";
   String REDIRECTURL = "RedirectURL";
   String REDIRECTTARGET = "redirectTarget";
+  String APPLETPAGE = "appletPage";
   String DATAURL = "DataURL";
   String STYLESHEETURL = "StylesheetURL";
 }

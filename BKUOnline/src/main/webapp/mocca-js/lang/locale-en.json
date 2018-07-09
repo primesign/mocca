@@ -1,0 +1,17 @@
+{
+  "error.prefix": "Error",
+  "error.1001": "Error processing request.",
+  "error.1002": "Process was cancelled by the user.",
+  "error.1003": "No (suitable) certificate found.",
+  "error.1005": "No key found for the selected certificate.",
+  "error.1006": "Unsupported signature algorithm.",
+  "error.1007": "Invalid argument.",
+  "error.1008": "Missing argument.",
+  "error.1009": "A component was not able to respond in time. Please try again.",
+  "error.1010": "Empty return value found.",
+  "error.1011": "Unexpected return value found.",
+  "error.2001": "Error processing request. The server response could not be validated.",
+  "error.2002": "Error processing request. The server response could not be validated.",
+  "info.start": "Please wait for the Windows dialog to execute the signature process.",
+  "info.finished": "Signature was successfully completed."
+}
