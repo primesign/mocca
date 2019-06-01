@@ -93,7 +93,7 @@ public class SLXHTMLValidator implements at.gv.egiz.bku.viewer.Validator {
   /**
    * Initialize the security layer schema.
    */
-  private synchronized static void ensureSchema() {
+  private static synchronized void ensureSchema() {
       if (slSchema == null) {
           try {
               SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);

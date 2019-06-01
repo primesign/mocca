@@ -56,11 +56,11 @@ import at.gv.egiz.stal.SignResponse;
 
 public class STALSecurityProvider extends IaikProvider {
 
-  private final static Logger log = LoggerFactory.getLogger(STALSecurityProvider.class);
+  private static final Logger log = LoggerFactory.getLogger(STALSecurityProvider.class);
 
-  private final static String ID_ECSIGTYPE = "1.2.840.10045.4";
+  private static final String ID_ECSIGTYPE = "1.2.840.10045.4";
   @SuppressWarnings("unused")
-  private final static String ECDSA_PLAIN_SIGNATURES = "0.4.0.127.0.7.1.1.4.1";
+  private static final String ECDSA_PLAIN_SIGNATURES = "0.4.0.127.0.7.1.1.4.1";
 
   private String keyboxIdentifier;
   private STAL stal;

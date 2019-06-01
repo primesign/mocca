@@ -1300,15 +1300,21 @@ public class SignatureCardFactory {
 
 	public static String toString(byte[] b) {
 		StringBuffer sb = new StringBuffer();
-		if (b != null && b.length > 0) {
-			sb.append(Integer.toHexString((b[0] & 240) >> 4));
-			sb.append(Integer.toHexString(b[0] & 15));
+
+		if (b != null) {
+
+			if (b.length > 0) {
+				sb.append(Integer.toHexString((b[0] & 240) >> 4));
+				sb.append(Integer.toHexString(b[0] & 15));
+			}
+			for (int i = 1; i < b.length; i++) {
+				sb.append(':');
+				sb.append(Integer.toHexString((b[i] & 240) >> 4));
+				sb.append(Integer.toHexString(b[i] & 15));
+			}
+
 		}
-		for (int i = 1; i < b.length; i++) {
-			sb.append(':');
-			sb.append(Integer.toHexString((b[i] & 240) >> 4));
-			sb.append(Integer.toHexString(b[i] & 15));
-		}
+
 		return sb.toString();
 	}
 
