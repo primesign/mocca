@@ -151,7 +151,7 @@ public class RedirectTest {
                 NamespaceContext ctx = sigLocation.getNamespaceContext();
                 assertNotNull(ctx);
                 String samlNS = ctx.getNamespaceURI("saml");
-                assertEquals(samlNS, "urn:oasis:names:tc:SAML:2.0:assertion");
+                assertEquals("urn:oasis:names:tc:SAML:2.0:assertion", samlNS);
                 System.out.println("found preserved namespace xmlns:saml " + samlNS);
 
             }

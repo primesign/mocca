@@ -136,7 +136,7 @@ public class ResponseAPDUType {
      */
     public BigInteger getRc() {
         if (rc == null) {
-            return new BigInteger("0");
+            return BigInteger.valueOf(0);
         } else {
             return rc;
         }

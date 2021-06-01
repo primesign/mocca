@@ -41,9 +41,9 @@ public class RuleChecker implements AccessChecker {
 
 	private final Logger log = LoggerFactory.getLogger(RuleChecker.class);
 
-	public static enum PEER_TYPE {
+	public enum PEER_TYPE {
 		HOST, IP, URL
-	};
+	}
 
 	protected String id;
 	protected AuthenticationClass authenticationClass;
@@ -163,31 +163,38 @@ public class RuleChecker implements AccessChecker {
 			try {
 				URL url = new URL(peerUrl);
 				if (peerType == PEER_TYPE.HOST) {
-					try {
-						String host = url.getHost();
-						String hostName = InetAddress.getByName(host)
-								.getCanonicalHostName();
-						Matcher matcher = peerIdPattern.matcher(hostName);
-						return matcher.matches();
-					} catch (UnknownHostException e) {
-						log.error("Cannot resolve hostname.", e);
-						return false;
-					}
+					return matchByCanonicalHostName(url);
 				} else {
-					try {
-						String hostAddr = InetAddress.getByName(url.getHost())
-								.getHostAddress();
-						Matcher matcher = peerIdPattern.matcher(hostAddr);
-						return matcher.matches();
-					} catch (UnknownHostException e) {
-						log.error("Cannot resolve host address.", e);
-						return false;
-					}
+					return matchByHostAddress(url);
 				}
 			} catch (MalformedURLException e) {
 				log.error("Cannot parse url.", e);
 				return false;
 			}
+		}
+	}
+
+	private boolean matchByCanonicalHostName(URL url) {
+		try {
+      String hostName = InetAddress.getByName(url.getHost())
+          .getCanonicalHostName();
+      Matcher matcher = peerIdPattern.matcher(hostName);
+      return matcher.matches();
+    } catch (UnknownHostException e) {
+      log.error("Cannot resolve hostname.", e);
+      return false;
+    }
+	}
+
+	private boolean matchByHostAddress(URL url) {
+		try {
+			String hostAddr = InetAddress.getByName(url.getHost())
+							.getHostAddress();
+			Matcher matcher = peerIdPattern.matcher(hostAddr);
+			return matcher.matches();
+		} catch (UnknownHostException e) {
+			log.error("Cannot resolve host address.", e);
+			return false;
 		}
 	}
 

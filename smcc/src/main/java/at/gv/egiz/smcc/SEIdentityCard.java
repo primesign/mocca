@@ -277,9 +277,7 @@ public class SEIdentityCard extends AbstractSignatureCard implements
 		(byte) 0x00, (byte) 0xB0, offsetHi, offsetLo, numBytes };
 
 		CommandAPDU command = new CommandAPDU(apdu);
-		ResponseAPDU resp = channel.transmit(command);
-
-		return resp;
+		return channel.transmit(command);
 
 	}
 

@@ -29,7 +29,7 @@ import javax.xml.transform.Templates;
 
 public interface SLResult {
   
-  public static enum SLResultType {BINARY, XML}; 
+  public enum SLResultType {BINARY, XML}
   
   public SLResultType getResultType();
   

@@ -54,6 +54,7 @@ public class ReferencedHashDataInput extends CMSHashDataInput {
 		this.urlDereferencer = urlDereferencer;
 	}
 
+	@Override
 	public InputStream getHashDataInput() throws IOException {
 
 		InputStream hashDataInputStream = urlDereferencer.dereference(urlReference).getStream();

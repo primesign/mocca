@@ -26,8 +26,6 @@ package at.gv.egiz.bku.online.webapp;
 
 import java.io.IOException;
 import java.io.OutputStream;
-//import java.net.MalformedURLException;
-//import java.net.URL;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -70,22 +68,18 @@ public class ResultServlet extends HttpServlet {
     }
     String url = MoccaParameterBean.getInitParameter("expiredPageUrl", getServletConfig(), getServletContext());
     if (url != null) {
-//      try {
-//        expiredPageUrl = new URL(url).toString();
-//        log.info("Init expiredPageUrl to: {}.", expiredPageUrl);
-//      } catch (MalformedURLException e) {
-//        log.error("Failed to set expiredUrlPage '{}': {}.", url, e);
-//      }
       expiredPageUrl = url;
       log.info("Init expiredPageUrl to: {}.", expiredPageUrl);
     }
   }
 
+  @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
     doGet(req, resp);
   }
 
+  @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, java.io.IOException { 
 

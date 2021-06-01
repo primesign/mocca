@@ -78,7 +78,7 @@ public class SLCommandFactory extends SLUnmarshaller {
   /**
    * Get an instance of the <code>SLCommandFactory</code>.
    */
-  public synchronized static SLCommandFactory getInstance() {
+  public static synchronized SLCommandFactory getInstance() {
     return SLCommandFactoryInstance.INSTANCE;
   }
 

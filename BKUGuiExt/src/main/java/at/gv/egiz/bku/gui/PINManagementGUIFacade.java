@@ -99,9 +99,9 @@ public interface PINManagementGUIFacade extends BKUGUIFacade {
   public static final String STATUS_UNKNOWN = "status.unknown";
 
 //  public enum STATUS { ACTIV, NOT_ACTIV, BLOCKED, UNKNOWN };
-  public enum DIALOG { VERIFY, ACTIVATE, CHANGE, UNBLOCK };
+  public enum DIALOG { VERIFY, ACTIVATE, CHANGE, UNBLOCK }
 
-  public enum PIN_MANAGEMENT_DIALOG_TYPE {DIALOGUE_UNDEFINED, DIALOGUE_PIN_MANAGEMENT, DIALOGUE_PIN};
+  public enum PIN_MANAGEMENT_DIALOG_TYPE {DIALOGUE_UNDEFINED, DIALOGUE_PIN_MANAGEMENT, DIALOGUE_PIN}
   /**
    * list pins
    */
